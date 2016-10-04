@@ -29,5 +29,10 @@
     "snazzy": "^5.0.0",
     "standard": "^8.2.0",
     "tap": "^7.1.2"
+  },
+  "dependencies": {
+    "fast-json-stringify": "^0.8.1",
+    "is-my-json-valid": "^2.14.0",
+    "wayfarer": "^6.2.1"
   }
 }

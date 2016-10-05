@@ -7,22 +7,19 @@ const server = http.createServer(beo)
 
 t.plan(2)
 
-beo.route({
-  method: 'GET',
-  url: '/',
-  schema: {
-    out: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
-        }
+const schema = {
+  out: {
+    type: 'object',
+    properties: {
+      hello: {
+        type: 'string'
       }
     }
-  },
-  handler: function (req, reply) {
-    reply(null, { hello: 'world' })
   }
+}
+
+beo.get('/', schema, function (req, reply) {
+  reply(null, { hello: 'world' })
 })
 
 server.listen(0, function (err) {

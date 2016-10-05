@@ -8,12 +8,31 @@ function build () {
   const router = wayfarer()
   const map = new Map()
 
-  beo.route = route
+  beo.get = get
+  beo.post = post
 
   return beo
 
   function beo (req, res) {
     router(req.url, req, res)
+  }
+
+  function get (url, schema, handler) {
+    return route({
+      method: 'GET',
+      url: url,
+      schema: schema,
+      handler: handler
+    })
+  }
+
+  function post (url, schema, handler) {
+    return route({
+      method: 'POST',
+      url: url,
+      schema: schema,
+      handler: handler
+    })
   }
 
   function route (opts) {

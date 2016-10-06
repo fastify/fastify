@@ -19,7 +19,11 @@ beo.get('/', schema, function (req, reply) {
   reply(null, { hello: 'world' })
 })
 
-server.listen(3000, function (err) {
+beo.post('/', schema, function (req, reply) {
+  reply(null, { hello: 'world' })
+})
+
+server.listen(8000, function (err) {
   if (err) {
     throw err
   }

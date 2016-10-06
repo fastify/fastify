@@ -2,14 +2,19 @@
 
 const wayfarer = require('wayfarer')
 const fastJsonStringify = require('fast-json-stringify')
+const jsonParser = require('body/json')
 const schema = Symbol('schema')
+const supportedMethods = ['GET', 'POST']
 
 function build () {
   const router = wayfarer()
   const map = new Map()
 
+  // shorthand methods
   beo.get = get
   beo.post = post
+  // extended route
+  beo.route = route
 
   return beo
 
@@ -36,6 +41,10 @@ function build () {
   }
 
   function route (opts) {
+    if (supportedMethods.indexOf(opts.method) === -1) {
+      throw new Error(`${opts.method} method is not supported!`)
+    }
+
     opts[schema] = fastJsonStringify(opts.schema.out)
 
     if (map.has(opts.url)) {
@@ -57,35 +66,49 @@ function build () {
     router.on(url, function handle (params, req, res) {
       const handle = node[req.method]
 
-      if (!handle) {
-        res.statusCode = 404
-        res.end()
+      if (req.method === 'GET') {
+        handleNode(handle, params, req, res, null)
+      } else if (req.method === 'POST') {
+        jsonParser(req, function (err, body) {
+          if (err) throw err
+          handleNode(handle, params, req, res, body)
+        })
+      } else {
+        throw new Error(`${req.method} method is not supported!`)
       }
-
-      const request = new Request(params, req)
-
-      handle.handler(request, function reply (err, statusCode, data) {
-        if (err) {
-          res.statusCode = 500
-          res.end()
-        }
-
-        if (!data) {
-          data = statusCode
-          statusCode = 200
-        }
-
-        res.statusCode = statusCode
-        res.end(handle[schema](data))
-      })
     })
 
     return node
   }
 
-  function Request (params, req) {
+  function handleNode (handle, params, req, res, body) {
+    if (!handle) {
+      res.statusCode = 404
+      res.end()
+    }
+
+    const request = new Request(params, req, body)
+
+    handle.handler(request, function reply (err, statusCode, data) {
+      if (err) {
+        res.statusCode = 500
+        res.end()
+      }
+
+      if (!data) {
+        data = statusCode
+        statusCode = 200
+      }
+
+      res.statusCode = statusCode
+      res.end(handle[schema](data))
+    })
+  }
+
+  function Request (params, req, body) {
     this.params = params
     this.req = req
+    this.body = body
   }
 }
 

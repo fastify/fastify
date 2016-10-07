@@ -60,6 +60,14 @@ function build () {
     }
   }
 
+  function bodyParsed (handle, params, req, res) {
+    function parsed (err, body) {
+      if (err) throw err
+      handleNode(handle, params, req, res, body)
+    }
+    return parsed
+  }
+
   function createNode (url) {
     const node = {}
 
@@ -69,12 +77,10 @@ function build () {
       if (req.method === 'GET') {
         handleNode(handle, params, req, res, null)
       } else if (req.method === 'POST') {
-        jsonParser(req, function (err, body) {
-          if (err) throw err
-          handleNode(handle, params, req, res, body)
-        })
+        jsonParser(req, bodyParsed(handle, params, req, res))
       } else {
-        throw new Error(`${req.method} method is not supported!`)
+        res.statusCode = 404
+        res.end()
       }
     })
 

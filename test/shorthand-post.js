@@ -17,8 +17,16 @@ const schema = {
   }
 }
 
-beo.post('/', schema, function (req, reply) {
-  reply(null, 200, req.body)
+test('shorthand post', t => {
+  t.plan(1)
+  try {
+    beo.post('/', schema, function (req, reply) {
+      reply(null, 200, req.body)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
 })
 
 test('shorthand - post', t => {

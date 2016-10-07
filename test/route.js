@@ -6,21 +6,29 @@ const http = require('http')
 const beo = require('..')()
 const server = http.createServer(beo)
 
-beo.route({
-  method: 'GET',
-  url: '/',
-  schema: {
-    out: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+test('route - get', t => {
+  t.plan(1)
+  try {
+    beo.route({
+      method: 'GET',
+      url: '/',
+      schema: {
+        out: {
+          type: 'object',
+          properties: {
+            hello: {
+              type: 'string'
+            }
+          }
         }
+      },
+      handler: function (req, reply) {
+        reply(null, 200, { hello: 'world' })
       }
-    }
-  },
-  handler: function (req, reply) {
-    reply(null, 200, { hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
   }
 })
 

@@ -17,8 +17,16 @@ const schema = {
   }
 }
 
-beo.get('/', schema, function (req, reply) {
-  reply(null, 200, { hello: 'world' })
+test('shorthand - get', t => {
+  t.plan(1)
+  try {
+    beo.get('/', schema, function (req, reply) {
+      reply(null, 200, { hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
 })
 
 test('shorthand - get', t => {

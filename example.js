@@ -4,25 +4,26 @@ const beo = require('.')()
 const http = require('http')
 const server = http.createServer(beo)
 
-beo.route({
-  method: 'GET',
-  url: '/',
-  schema: {
-    out: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
-        }
+const schema = {
+  out: {
+    type: 'object',
+    properties: {
+      hello: {
+        type: 'string'
       }
     }
-  },
-  handler: function (req, reply) {
-    reply(null, { hello: 'world' })
   }
+}
+
+beo.get('/', schema, function (req, reply) {
+  reply(null, { hello: 'world' })
 })
 
-server.listen(3000, function (err) {
+beo.post('/', schema, function (req, reply) {
+  reply(null, { hello: 'world' })
+})
+
+server.listen(8000, function (err) {
   if (err) {
     throw err
   }

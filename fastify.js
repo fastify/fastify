@@ -11,14 +11,14 @@ function build () {
   const map = new Map()
 
   // shorthand methods
-  beo.get = get
-  beo.post = post
+  fastify.get = get
+  fastify.post = post
   // extended route
-  beo.route = route
+  fastify.route = route
 
-  return beo
+  return fastify
 
-  function beo (req, res) {
+  function fastify (req, res) {
     router(req.url, req, res)
   }
 

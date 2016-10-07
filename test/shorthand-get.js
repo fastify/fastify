@@ -3,8 +3,8 @@
 const { test } = require('tap')
 const request = require('request')
 const http = require('http')
-const beo = require('..')()
-const server = http.createServer(beo)
+const fastify = require('..')()
+const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -20,7 +20,7 @@ const schema = {
 test('shorthand - get', t => {
   t.plan(1)
   try {
-    beo.get('/', schema, function (req, reply) {
+    fastify.get('/', schema, function (req, reply) {
       reply(null, 200, { hello: 'world' })
     })
     t.pass()

@@ -1,13 +1,12 @@
-
 'use strict'
 
 const { test } = require('tap')
-const beo = require('..')()
+const fastify = require('..')()
 
 test('Should throw on unsupported method', t => {
   t.plan(1)
   try {
-    beo.route({
+    fastify.route({
       method: 'TROLL',
       url: '/',
       schema: {},
@@ -22,7 +21,7 @@ test('Should throw on unsupported method', t => {
 test('Should throw on empty schema', t => {
   t.plan(1)
   try {
-    beo.route({
+    fastify.route({
       method: 'GET',
       url: '/',
       schema: {},

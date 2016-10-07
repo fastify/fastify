@@ -1,14 +1,14 @@
 {
-  "name": "beo",
+  "name": "fastify",
   "version": "0.0.1",
   "description": "go away",
-  "main": "beo.js",
+  "main": "fastify.js",
   "scripts": {
     "test": "standard | snazzy && tap test/*.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mcollina/beo.git"
+    "url": "git+https://github.com/mcollina/fastify.git"
   },
   "keywords": [
     "web",
@@ -21,9 +21,9 @@
   "author": "Matteo Collina <hello@matteocollina.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mcollina/beo/issues"
+    "url": "https://github.com/mcollina/fastify/issues"
   },
-  "homepage": "https://github.com/mcollina/beo#readme",
+  "homepage": "https://github.com/mcollina/fastify#readme",
   "devDependencies": {
     "express": "^4.14.0",
     "hapi": "^15.1.1",

@@ -3,13 +3,13 @@
 const { test } = require('tap')
 const request = require('request')
 const http = require('http')
-const beo = require('..')()
-const server = http.createServer(beo)
+const fastify = require('..')()
+const server = http.createServer(fastify)
 
 test('route - get', t => {
   t.plan(1)
   try {
-    beo.route({
+    fastify.route({
       method: 'GET',
       url: '/',
       schema: {

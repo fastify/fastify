@@ -1,8 +1,8 @@
 'use strict'
 
-const beo = require('.')()
+const fastify = require('.')()
 const http = require('http')
-const server = http.createServer(beo)
+const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -15,11 +15,11 @@ const schema = {
   }
 }
 
-beo.get('/', schema, function (req, reply) {
+fastify.get('/', schema, function (req, reply) {
   reply(null, { hello: 'world' })
 })
 
-beo.post('/', schema, function (req, reply) {
+fastify.post('/', schema, function (req, reply) {
   reply(null, { hello: 'world' })
 })
 

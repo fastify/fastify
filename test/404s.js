@@ -1,6 +1,7 @@
 'use strict'
 
-const { test } = require('tap')
+const t = require('tap')
+const test = t.test
 const request = require('request')
 const http = require('http')
 const fastify = require('..')()
@@ -21,10 +22,13 @@ fastify.get('/', schema, function (req, reply) {
   reply(null, 200, { hello: 'world' })
 })
 
-test('404 on unsupported method', t => {
-  t.plan(3)
-  server.listen(3000, err => {
-    t.error(err)
+server.listen(3000, err => {
+  t.error(err)
+
+  server.unref()
+
+  test('404 on unsupported method', t => {
+    t.plan(2)
     request({
       method: 'PUT',
       uri: 'http://localhost:' + server.address().port,
@@ -32,7 +36,18 @@ test('404 on unsupported method', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      server.close()
+    })
+  })
+
+  test('404 on unsupported route', t => {
+    t.plan(2)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + server.address().port + '/notSupported',
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
     })
   })
 })

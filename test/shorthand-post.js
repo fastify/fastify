@@ -65,5 +65,21 @@ server.listen(0, function (err) {
       t.strictEqual(response.statusCode, 415)
     })
   })
+
+  test('returns 422 - Unprocessable Entity', t => {
+    t.plan(2)
+    request({
+      method: 'POST',
+      uri: 'http://localhost:' + server.address().port,
+      body: 'hello world',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 200
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 422)
+    })
+  })
 })
 

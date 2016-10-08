@@ -62,7 +62,11 @@ function build () {
 
   function bodyParsed (handle, params, req, res) {
     function parsed (err, body) {
-      if (err) throw err
+      if (err) {
+        res.statusCode = 422
+        res.end()
+        return
+      }
       handleNode(handle, params, req, res, body)
     }
     return parsed

@@ -62,7 +62,11 @@ function build () {
 
   function bodyParsed (handle, params, req, res) {
     function parsed (err, body) {
-      if (err) throw err
+      if (err) {
+        res.statusCode = 422
+        res.end()
+        return
+      }
       handleNode(handle, params, req, res, body)
     }
     return parsed
@@ -77,7 +81,12 @@ function build () {
       if (req.method === 'GET') {
         handleNode(handle, params, req, res, null)
       } else if (req.method === 'POST') {
-        jsonParser(req, bodyParsed(handle, params, req, res))
+        if (req.headers['content-type'] === 'application/json') {
+          jsonParser(req, bodyParsed(handle, params, req, res))
+        } else {
+          res.statusCode = 415
+          res.end()
+        }
       } else {
         res.statusCode = 404
         res.end()

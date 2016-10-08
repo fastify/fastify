@@ -7,8 +7,9 @@ const schema = Symbol('schema')
 const supportedMethods = ['GET', 'POST']
 
 function build () {
-  const router = wayfarer()
+  const router = wayfarer('/404')
   const map = new Map()
+  router.on('/404', defaultRoute)
 
   // shorthand methods
   fastify.get = get
@@ -109,6 +110,11 @@ function build () {
       res.statusCode = statusCode
       res.end(handle[schema](data))
     })
+  }
+
+  function defaultRoute (params, req, res) {
+    res.statusCode = 404
+    res.end()
   }
 
   function Request (params, req, body) {

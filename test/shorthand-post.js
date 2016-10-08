@@ -1,6 +1,7 @@
 'use strict'
 
-const { test } = require('tap')
+const t = require('tap')
+const test = t.test
 const request = require('request')
 const http = require('http')
 const fastify = require('..')()
@@ -29,21 +30,40 @@ test('shorthand post', t => {
   }
 })
 
-test('shorthand - post', t => {
-  t.plan(4)
-  server.listen(3000, err => {
+server.listen(0, function (err) {
+  if (err) {
     t.error(err)
+  }
+
+  server.unref()
+
+  test('shorthand - post', t => {
+    t.plan(3)
     request({
       method: 'POST',
       uri: 'http://localhost:' + server.address().port,
-      json: {
+      body: {
         hello: 'world'
-      }
+      },
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body, { hello: 'world' })
-      server.close()
+    })
+  })
+
+  test('returns 415 - incorrect media type if body is not json', t => {
+    t.plan(2)
+    request({
+      method: 'POST',
+      uri: 'http://localhost:' + server.address().port,
+      body: 'hello world',
+      timeout: 200
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
     })
   })
 })
+

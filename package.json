@@ -4,7 +4,7 @@
   "description": "go away",
   "main": "fastify.js",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.js"
+    "test": "standard | snazzy && tap test/*.test.js"
   },
   "repository": {
     "type": "git",

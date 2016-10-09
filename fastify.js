@@ -4,7 +4,7 @@ const wayfarer = require('wayfarer')
 const fastJsonStringify = require('fast-json-stringify')
 const jsonParser = require('body/json')
 const schema = Symbol('schema')
-const supportedMethods = ['GET', 'POST']
+const supportedMethods = ['GET', 'POST', 'PUT']
 
 function build () {
   const router = wayfarer('/404')
@@ -14,6 +14,7 @@ function build () {
   // shorthand methods
   fastify.get = get
   fastify.post = post
+  fastify.put = put
   // extended route
   fastify.route = route
 
@@ -35,6 +36,15 @@ function build () {
   function post (url, schema, handler) {
     return route({
       method: 'POST',
+      url: url,
+      schema: schema,
+      handler: handler
+    })
+  }
+
+  function put (url, schema, handler) {
+    return route({
+      method: 'PUT',
       url: url,
       schema: schema,
       handler: handler
@@ -80,9 +90,9 @@ function build () {
     router.on(url, function handle (params, req, res) {
       const handle = node[req.method]
 
-      if (req.method === 'GET') {
+      if (handle && req.method === 'GET') {
         handleNode(handle, params, req, res, null)
-      } else if (req.method === 'POST') {
+      } else if (handle && (req.method === 'POST' || req.method === 'PUT')) {
         if (req.headers['content-type'] === 'application/json') {
           jsonParser(req, bodyParsed(handle, params, req, res))
         } else {

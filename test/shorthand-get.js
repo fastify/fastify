@@ -30,8 +30,8 @@ test('shorthand - get', t => {
 })
 
 test('shorthand - get', t => {
-  t.plan(4)
-  server.listen(3000, err => {
+  t.plan(5)
+  server.listen(0, err => {
     t.error(err)
     request({
       method: 'GET',
@@ -39,6 +39,7 @@ test('shorthand - get', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
       server.close()
     })

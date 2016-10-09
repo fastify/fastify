@@ -59,6 +59,7 @@ function build () {
       node[opts.method] = opts
       map.set(opts.url, node)
     }
+    return fastify
   }
 
   function bodyParsed (handle, params, req, res) {

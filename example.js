@@ -15,13 +15,13 @@ const schema = {
   }
 }
 
-fastify.get('/', schema, function (req, reply) {
-  reply(null, { hello: 'world' })
-})
-
-fastify.post('/', schema, function (req, reply) {
-  reply(null, { hello: 'world' })
-})
+fastify
+  .get('/', schema, function (req, reply) {
+    reply(null, { hello: 'world' })
+  })
+  .post('/', schema, function (req, reply) {
+    reply(null, { hello: 'world' })
+  })
 
 server.listen(8000, function (err) {
   if (err) {

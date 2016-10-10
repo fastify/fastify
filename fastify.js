@@ -2,6 +2,7 @@
 
 const wayfarer = require('wayfarer')
 const fastJsonStringify = require('fast-json-stringify')
+const fastSafeStringify = require('fast-safe-stringify')
 const jsonParser = require('body/json')
 const schema = Symbol('schema')
 const supportedMethods = ['GET', 'POST', 'PUT']
@@ -56,7 +57,22 @@ function build () {
       throw new Error(`${opts.method} method is not supported!`)
     }
 
-    opts[schema] = fastJsonStringify(opts.schema.out)
+    // Missing handler => schema is a function
+    if (!opts.handler && typeof opts.schema === 'function') {
+      opts.handler = opts.schema
+      opts.schema = {}
+    }
+
+    if (!opts.handler) {
+      throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
+    }
+
+    // Missing out schema
+    if (opts.schema && opts.schema.out) {
+      opts[schema] = fastJsonStringify(opts.schema.out)
+    } else {
+      opts[schema] = fastSafeStringify
+    }
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {

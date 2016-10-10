@@ -33,6 +33,18 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
+  test(`${upMethod} without schema can be created`, t => {
+    t.plan(1)
+    try {
+      fastify[loMethod]('/missing', function (req, reply) {
+        reply(null, 200, req.body)
+      })
+      t.pass()
+    } catch (e) {
+      t.fail()
+    }
+  })
+
   server.listen(0, function (err) {
     if (err) {
       t.error(err)
@@ -45,6 +57,22 @@ module.exports.payloadMethod = function (method, t) {
       request({
         method: upMethod,
         uri: 'http://localhost:' + server.address().port,
+        body: {
+          hello: 'world'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 'world' })
+      })
+    })
+
+    test(`${upMethod} without schema - correctly replies`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + server.address().port + '/missing',
         body: {
           hello: 'world'
         },

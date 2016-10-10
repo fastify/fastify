@@ -26,6 +26,10 @@ function build () {
   }
 
   function get (url, schema, handler) {
+    if (!handler && typeof schema === 'function') {
+      handler = schema
+      schema = {}
+    }
     return route({
       method: 'GET',
       url: url,
@@ -35,6 +39,10 @@ function build () {
   }
 
   function post (url, schema, handler) {
+    if (!handler && typeof schema === 'function') {
+      handler = schema
+      schema = {}
+    }
     return route({
       method: 'POST',
       url: url,
@@ -44,6 +52,10 @@ function build () {
   }
 
   function put (url, schema, handler) {
+    if (!handler && typeof schema === 'function') {
+      handler = schema
+      schema = {}
+    }
     return route({
       method: 'PUT',
       url: url,
@@ -57,17 +69,10 @@ function build () {
       throw new Error(`${opts.method} method is not supported!`)
     }
 
-    // Missing handler => schema is a function
-    if (!opts.handler && typeof opts.schema === 'function') {
-      opts.handler = opts.schema
-      opts.schema = {}
-    }
-
     if (!opts.handler) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    // Missing out schema
     if (opts.schema && opts.schema.out) {
       opts[schema] = fastJsonStringify(opts.schema.out)
     } else {

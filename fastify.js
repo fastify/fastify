@@ -26,42 +26,23 @@ function build () {
   }
 
   function get (url, schema, handler) {
-    if (!handler && typeof schema === 'function') {
-      handler = schema
-      schema = {}
-    }
-    return route({
-      method: 'GET',
-      url: url,
-      schema: schema,
-      handler: handler
-    })
+    return _route('GET', url, schema, handler)
   }
 
   function post (url, schema, handler) {
-    if (!handler && typeof schema === 'function') {
-      handler = schema
-      schema = {}
-    }
-    return route({
-      method: 'POST',
-      url: url,
-      schema: schema,
-      handler: handler
-    })
+    return _route('POST', url, schema, handler)
   }
 
   function put (url, schema, handler) {
+    return _route('PUT', url, schema, handler)
+  }
+
+  function _route (method, url, schema, handler) {
     if (!handler && typeof schema === 'function') {
       handler = schema
       schema = {}
     }
-    return route({
-      method: 'PUT',
-      url: url,
-      schema: schema,
-      handler: handler
-    })
+    return route({ method, url, schema, handler })
   }
 
   function route (opts) {

@@ -29,8 +29,10 @@
     "hapi": "^15.1.1",
     "pre-commit": "^1.1.3",
     "request": "^2.75.0",
+    "restify": "^4.1.1",
     "snazzy": "^5.0.0",
     "standard": "^8.2.0",
+    "take-five": "^1.3.0",
     "tap": "^7.1.2"
   },
   "dependencies": {

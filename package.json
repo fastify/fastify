@@ -36,6 +36,7 @@
   "dependencies": {
     "body": "^5.1.0",
     "fast-json-stringify": "^0.8.1",
+    "fast-safe-stringify": "^1.1.0",
     "is-my-json-valid": "^2.14.0",
     "wayfarer": "^6.2.1"
   }

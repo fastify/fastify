@@ -18,14 +18,12 @@ test('Should throw on unsupported method', t => {
   }
 })
 
-test('Should throw on empty schema', t => {
+test('Should throw on missing handler', t => {
   t.plan(1)
   try {
     fastify.route({
       method: 'GET',
-      url: '/',
-      schema: {},
-      handler: function (req, reply) {}
+      url: '/'
     })
     t.fail()
   } catch (e) {

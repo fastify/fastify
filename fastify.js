@@ -1,11 +1,45 @@
 'use strict'
 
 const wayfarer = require('wayfarer')
+const stripUrl = require('pathname-match')
+const urlUtil = require('url')
 const fastJsonStringify = require('fast-json-stringify')
 const fastSafeStringify = require('fast-safe-stringify')
+const Ajv = require('ajv')
 const jsonParser = require('body/json')
-const schema = Symbol('schema')
+
+const inSchema = Symbol('inSchema')
+const outSchema = Symbol('outSchema')
+const ajv = new Ajv({ coerceTypes: true })
 const supportedMethods = ['GET', 'POST', 'PUT']
+const inputSchemaError = fastJsonStringify({
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      keyword: {
+        type: 'string'
+      },
+      dataPath: {
+        type: 'string'
+      },
+      schemaPath: {
+        type: 'string'
+      },
+      params: {
+        type: 'object',
+        properties: {
+          type: {
+            type: 'string'
+          }
+        }
+      },
+      message: {
+        type: 'string'
+      }
+    }
+  }
+})
 
 function build () {
   const router = wayfarer('/404')
@@ -22,7 +56,7 @@ function build () {
   return fastify
 
   function fastify (req, res) {
-    router(req.url, req, res)
+    router(stripUrl(req.url), req, res)
   }
 
   function get (url, schema, handler) {
@@ -55,9 +89,13 @@ function build () {
     }
 
     if (opts.schema && opts.schema.out) {
-      opts[schema] = fastJsonStringify(opts.schema.out)
+      opts[outSchema] = fastJsonStringify(opts.schema.out)
     } else {
-      opts[schema] = fastSafeStringify
+      opts[outSchema] = fastSafeStringify
+    }
+
+    if (opts.schema && opts.schema.in) {
+      opts[inSchema] = ajv.compile(opts.schema.in)
     }
 
     if (map.has(opts.url)) {
@@ -93,7 +131,7 @@ function build () {
       const handle = node[req.method]
 
       if (handle && req.method === 'GET') {
-        handleNode(handle, params, req, res, null)
+        handleNode(handle, params, req, res, urlUtil.parse(req.url, true).query)
       } else if (handle && (req.method === 'POST' || req.method === 'PUT')) {
         if (req.headers['content-type'] === 'application/json') {
           jsonParser(req, bodyParsed(handle, params, req, res))
@@ -116,9 +154,16 @@ function build () {
       res.end()
     }
 
-    const request = new Request(params, req, body)
+    if (handle[inSchema] && !handle[inSchema](body)) {
+      res.statusCode = 400
+      res.end(inputSchemaError(handle[inSchema].errors))
+      return
+    }
 
-    handle.handler(request, function reply (err, statusCode, data) {
+    const request = new Request(params, req, body)
+    handle.handler(request, reply)
+
+    function reply (err, statusCode, data) {
       if (err) {
         res.statusCode = 500
         res.end()
@@ -130,8 +175,8 @@ function build () {
       }
 
       res.statusCode = statusCode
-      res.end(handle[schema](data))
-    })
+      res.end(handle[outSchema](data))
+    }
   }
 
   function defaultRoute (params, req, res) {

@@ -77,5 +77,21 @@ module.exports.payloadMethod = function (method, t) {
         })
       })
     })
+
+    test(`${upMethod} - input-validation coerce`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + server.address().port,
+        body: {
+          hello: '42'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 42 })
+      })
+    })
   })
 }

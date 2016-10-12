@@ -36,10 +36,11 @@
     "tap": "^7.1.2"
   },
   "dependencies": {
+    "ajv": "^4.7.7",
     "body": "^5.1.0",
     "fast-json-stringify": "^0.10.0",
     "fast-safe-stringify": "^1.1.0",
-    "is-my-json-valid": "^2.14.0",
+    "pathname-match": "^1.2.0",
     "wayfarer": "^6.2.1"
   }
 }

@@ -1,11 +1,19 @@
 'use strict'
 
 const wayfarer = require('wayfarer')
+const stripUrl = require('pathname-match')
 const fastJsonStringify = require('fast-json-stringify')
 const fastSafeStringify = require('fast-safe-stringify')
+const Ajv = require('ajv')
 const jsonParser = require('body/json')
-const schema = Symbol('schema')
+
 const supportedMethods = ['GET', 'POST', 'PUT']
+const payloadSchema = Symbol('payloadSchema')
+const outputSchema = Symbol('outputSchema')
+const ajv = new Ajv({ coerceTypes: true })
+
+const schemas = require('./lib/schemas.json')
+const inputSchemaError = fastJsonStringify(schemas.inputSchemaError)
 
 function build () {
   const router = wayfarer('/404')
@@ -22,7 +30,7 @@ function build () {
   return fastify
 
   function fastify (req, res) {
-    router(req.url, req, res)
+    router(stripUrl(req.url), req, res)
   }
 
   function get (url, schema, handler) {
@@ -55,9 +63,13 @@ function build () {
     }
 
     if (opts.schema && opts.schema.out) {
-      opts[schema] = fastJsonStringify(opts.schema.out)
+      opts[outputSchema] = fastJsonStringify(opts.schema.out)
     } else {
-      opts[schema] = fastSafeStringify
+      opts[outputSchema] = fastSafeStringify
+    }
+
+    if (opts.schema && opts.schema.in) {
+      opts[payloadSchema] = ajv.compile(opts.schema.in)
     }
 
     if (map.has(opts.url)) {
@@ -116,9 +128,16 @@ function build () {
       res.end()
     }
 
-    const request = new Request(params, req, body)
+    if (handle[payloadSchema] && !handle[payloadSchema](body)) {
+      res.statusCode = 400
+      res.end(inputSchemaError(handle[payloadSchema].errors))
+      return
+    }
 
-    handle.handler(request, function reply (err, statusCode, data) {
+    const request = new Request(params, req, body)
+    handle.handler(request, reply)
+
+    function reply (err, statusCode, data) {
       if (err) {
         res.statusCode = 500
         res.end()
@@ -130,8 +149,8 @@ function build () {
       }
 
       res.statusCode = statusCode
-      res.end(handle[schema](data))
-    })
+      res.end(handle[outputSchema](data))
+    }
   }
 
   function defaultRoute (params, req, res) {

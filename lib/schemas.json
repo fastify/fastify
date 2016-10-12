@@ -1,0 +1,30 @@
+{
+  "inputSchemaError": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "dataPath": {
+          "type": "string"
+        },
+        "schemaPath": {
+          "type": "string"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

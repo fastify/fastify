@@ -1,3 +1,5 @@
 'use strict'
 
-require('./helper').payloadMethod('put', require('tap'))
+const t = require('tap')
+require('./helper').payloadMethod('put', t)
+require('./input-validation').payloadMethod('put', t)

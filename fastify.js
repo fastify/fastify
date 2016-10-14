@@ -100,7 +100,7 @@ function build () {
         res.end()
         return
       }
-      handleNode(handle, params, req, res, { body })
+      handleNode(handle, params, req, res, body, null)
     }
     return parsed
   }
@@ -112,7 +112,7 @@ function build () {
       const handle = node[req.method]
 
       if (handle && req.method === 'GET') {
-        handleNode(handle, params, req, res, { query: urlUtil.parse(req.url, true).query })
+        handleNode(handle, params, req, res, null, urlUtil.parse(req.url, true).query)
       } else if (handle && (req.method === 'POST' || req.method === 'PUT')) {
         if (req.headers['content-type'] === 'application/json') {
           jsonParser(req, bodyParsed(handle, params, req, res))
@@ -129,25 +129,25 @@ function build () {
     return node
   }
 
-  function handleNode (handle, params, req, res, data) {
+  function handleNode (handle, params, req, res, body, query) {
     if (!handle) {
       res.statusCode = 404
       res.end()
     }
 
-    if (handle[payloadSchema] && !handle[payloadSchema](data.body)) {
+    if (handle[payloadSchema] && !handle[payloadSchema](body)) {
       res.statusCode = 400
       res.end(inputSchemaError(handle[payloadSchema].errors))
       return
     }
 
-    if (handle[querystringSchema] && !handle[querystringSchema](data.query)) {
+    if (handle[querystringSchema] && !handle[querystringSchema](query)) {
       res.statusCode = 400
       res.end(inputSchemaError(handle[querystringSchema].errors))
       return
     }
 
-    const request = new Request(params, req, data.body, data.query)
+    const request = new Request(params, req, body, query)
     handle.handler(request, reply)
 
     function reply (err, statusCode, data) {

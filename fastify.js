@@ -1,6 +1,7 @@
 'use strict'
 
 const wayfarer = require('wayfarer')
+const urlUtil = require('url')
 const stripUrl = require('pathname-match')
 const fastJsonStringify = require('fast-json-stringify')
 const fastSafeStringify = require('fast-safe-stringify')
@@ -8,9 +9,11 @@ const Ajv = require('ajv')
 const jsonParser = require('body/json')
 
 const supportedMethods = ['GET', 'POST', 'PUT']
-const payloadSchema = Symbol('payloadSchema')
-const outputSchema = Symbol('outputSchema')
 const ajv = new Ajv({ coerceTypes: true })
+
+const payloadSchema = Symbol('payload-schema')
+const querystringSchema = Symbol('querystring-schema')
+const outputSchema = Symbol('output-schema')
 
 const schemas = require('./lib/schemas.json')
 const inputSchemaError = fastJsonStringify(schemas.inputSchemaError)
@@ -68,8 +71,12 @@ function build () {
       opts[outputSchema] = fastSafeStringify
     }
 
-    if (opts.schema && opts.schema.in) {
-      opts[payloadSchema] = ajv.compile(opts.schema.in)
+    if (opts.schema && opts.schema.payload) {
+      opts[payloadSchema] = ajv.compile(opts.schema.payload)
+    }
+
+    if (opts.schema && opts.schema.querystring) {
+      opts[querystringSchema] = ajv.compile(opts.schema.querystring)
     }
 
     if (map.has(opts.url)) {
@@ -93,7 +100,7 @@ function build () {
         res.end()
         return
       }
-      handleNode(handle, params, req, res, body)
+      handleNode(handle, params, req, res, body, null)
     }
     return parsed
   }
@@ -105,7 +112,7 @@ function build () {
       const handle = node[req.method]
 
       if (handle && req.method === 'GET') {
-        handleNode(handle, params, req, res, null)
+        handleNode(handle, params, req, res, null, urlUtil.parse(req.url, true).query)
       } else if (handle && (req.method === 'POST' || req.method === 'PUT')) {
         if (req.headers['content-type'] === 'application/json') {
           jsonParser(req, bodyParsed(handle, params, req, res))
@@ -122,7 +129,7 @@ function build () {
     return node
   }
 
-  function handleNode (handle, params, req, res, body) {
+  function handleNode (handle, params, req, res, body, query) {
     if (!handle) {
       res.statusCode = 404
       res.end()
@@ -134,7 +141,13 @@ function build () {
       return
     }
 
-    const request = new Request(params, req, body)
+    if (handle[querystringSchema] && !handle[querystringSchema](query)) {
+      res.statusCode = 400
+      res.end(inputSchemaError(handle[querystringSchema].errors))
+      return
+    }
+
+    const request = new Request(params, req, body, query)
     handle.handler(request, reply)
 
     function reply (err, statusCode, data) {
@@ -158,10 +171,11 @@ function build () {
     res.end()
   }
 
-  function Request (params, req, body) {
+  function Request (params, req, body, query) {
     this.params = params
     this.req = req
     this.body = body
+    this.query = query
   }
 }
 

@@ -11,7 +11,7 @@ module.exports.payloadMethod = function (method, t) {
   const loMethod = method.toLowerCase()
 
   const schema = {
-    in: {
+    payload: {
       type: 'object',
       properties: {
         hello: {

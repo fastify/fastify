@@ -14,6 +14,7 @@ const ajv = new Ajv({ coerceTypes: true })
 const payloadSchema = Symbol('payload-schema')
 const querystringSchema = Symbol('querystring-schema')
 const outputSchema = Symbol('output-schema')
+const paramsSchema = Symbol('params-scehma')
 
 const schemas = require('./lib/schemas.json')
 const inputSchemaError = fastJsonStringify(schemas.inputSchemaError)
@@ -79,6 +80,10 @@ function build () {
       opts[querystringSchema] = ajv.compile(opts.schema.querystring)
     }
 
+    if (opts.schema && opts.schema.params) {
+      opts[paramsSchema] = ajv.compile(opts.schema.params)
+    }
+
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
         throw new Error(`${opts.method} already set for ${opts.url}`)
@@ -133,6 +138,12 @@ function build () {
     if (!handle) {
       res.statusCode = 404
       res.end()
+    }
+
+    if (handle[paramsSchema] && !handle[paramsSchema](params)) {
+      res.statusCode = 400
+      res.end(inputSchemaError(handle[paramsSchema].errors))
+      return
     }
 
     if (handle[payloadSchema] && !handle[payloadSchema](body)) {

@@ -29,11 +29,37 @@ const querySchema = {
   }
 }
 
+const paramsSchema = {
+  params: {
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      },
+      test: {
+        type: 'integer'
+      }
+    }
+  }
+}
+
 test('shorthand - get', t => {
   t.plan(1)
   try {
     fastify.get('/', schema, function (req, reply) {
       reply(null, 200, { hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - get params', t => {
+  t.plan(1)
+  try {
+    fastify.get('/params/:foo/:test', paramsSchema, function (req, reply) {
+      reply(null, 200, req.params)
     })
     t.pass()
   } catch (e) {
@@ -79,6 +105,37 @@ server.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('shorthand - request get params schema', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + server.address().port + '/params/world/123'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { foo: 'world', test: 123 })
+    })
+  })
+
+  test('shorthand - request get params schema error', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + server.address().port + '/params/world/string'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(body)[0], {
+        keyword: 'type',
+        dataPath: '.test',
+        schemaPath: '#/properties/test/type',
+        params: { type: 'integer' },
+        message: 'should be integer'
+      })
     })
   })
 

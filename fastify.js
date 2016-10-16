@@ -3,21 +3,10 @@
 const wayfarer = require('wayfarer')
 const urlUtil = require('url')
 const stripUrl = require('pathname-match')
-const fastJsonStringify = require('fast-json-stringify')
-const fastSafeStringify = require('fast-safe-stringify')
-const Ajv = require('ajv')
 const jsonParser = require('body/json')
 
 const supportedMethods = ['GET', 'POST', 'PUT']
-const ajv = new Ajv({ coerceTypes: true })
-
-const payloadSchema = Symbol('payload-schema')
-const querystringSchema = Symbol('querystring-schema')
-const outputSchema = Symbol('output-schema')
-const paramsSchema = Symbol('params-scehma')
-
-const schemas = require('./lib/schemas.json')
-const inputSchemaError = fastJsonStringify(schemas.inputSchemaError)
+const validation = require('./lib/validation')
 
 function build () {
   const router = wayfarer('/404')
@@ -66,23 +55,7 @@ function build () {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    if (opts.schema && opts.schema.out) {
-      opts[outputSchema] = fastJsonStringify(opts.schema.out)
-    } else {
-      opts[outputSchema] = fastSafeStringify
-    }
-
-    if (opts.schema && opts.schema.payload) {
-      opts[payloadSchema] = ajv.compile(opts.schema.payload)
-    }
-
-    if (opts.schema && opts.schema.querystring) {
-      opts[querystringSchema] = ajv.compile(opts.schema.querystring)
-    }
-
-    if (opts.schema && opts.schema.params) {
-      opts[paramsSchema] = ajv.compile(opts.schema.params)
-    }
+    validation.buildSchema(opts)
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -140,21 +113,10 @@ function build () {
       res.end()
     }
 
-    if (handle[paramsSchema] && !handle[paramsSchema](params)) {
+    const valid = validation.validateSchema(handle, params, body, query)
+    if (valid !== true) {
       res.statusCode = 400
-      res.end(inputSchemaError(handle[paramsSchema].errors))
-      return
-    }
-
-    if (handle[payloadSchema] && !handle[payloadSchema](body)) {
-      res.statusCode = 400
-      res.end(inputSchemaError(handle[payloadSchema].errors))
-      return
-    }
-
-    if (handle[querystringSchema] && !handle[querystringSchema](query)) {
-      res.statusCode = 400
-      res.end(inputSchemaError(handle[querystringSchema].errors))
+      res.end(valid)
       return
     }
 
@@ -173,7 +135,7 @@ function build () {
       }
 
       res.statusCode = statusCode
-      res.end(handle[outputSchema](data))
+      res.end(handle[validation.outputSchema](data))
     }
   }
 

@@ -7,6 +7,9 @@ const jsonParser = require('body/json')
 
 const supportedMethods = ['GET', 'POST', 'PUT']
 const validation = require('./lib/validation')
+const buildSchema = validation.buildSchema
+const validateSchema = validation.validateSchema
+const serialize = validation.serialize
 
 function build () {
   const router = wayfarer('/404')
@@ -55,7 +58,7 @@ function build () {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    validation.buildSchema(opts)
+    buildSchema(opts)
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -113,7 +116,7 @@ function build () {
       res.end()
     }
 
-    const valid = validation.validateSchema(handle, params, body, query)
+    const valid = validateSchema(handle, params, body, query)
     if (valid !== true) {
       res.statusCode = 400
       res.end(valid)
@@ -135,7 +138,7 @@ function build () {
       }
 
       res.statusCode = statusCode
-      res.end(handle[validation.outputSchema](data))
+      res.end(serialize(handle, data))
     }
   }
 

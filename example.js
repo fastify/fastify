@@ -23,7 +23,7 @@ fastify
     reply(null, { hello: 'world' })
   })
 
-server.listen(8000, function (err) {
+server.listen(3000, function (err) {
   if (err) {
     throw err
   }

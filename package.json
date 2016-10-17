@@ -38,6 +38,7 @@
   "dependencies": {
     "ajv": "^4.7.7",
     "body": "^5.1.0",
+    "boot-in-the-arse": "^0.2.1",
     "fast-json-stringify": "^0.10.0",
     "fast-safe-stringify": "^1.1.0",
     "pathname-match": "^1.2.0",

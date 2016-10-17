@@ -15,7 +15,7 @@ const serialize = validation.serialize
 function build () {
   const router = wayfarer('/404')
   const map = new Map()
-  bootInTheArse(fastify)
+  bootInTheArse(fastify, {})
   router.on('/404', defaultRoute)
 
   // shorthand methods

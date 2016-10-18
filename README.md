@@ -81,7 +81,6 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
   * <a href="#get"><code>fastify.<b>get()</b></code></a>
   * <a href="#post"><code>fastify.<b>post()</b></code></a>
   * <a href="#put"><code>fastify.<b>put()</b></code></a>
-  * <a href="#request"><code>fastify.<b>Request</b></code></a>
 
 <a name="constructor"></a>
 ### fastify(req, res)
@@ -129,6 +128,16 @@ JSONified, possibly using the schema defined `options.schema.out`.
 
 For POST and PUT, the incoming request body will be parsed.
 
+<a name="request"></a>
+#### Request
+
+An object including the following properties:
+
+* `query` - the parsed querystring
+* `body` - the body
+* `params` - the params matching the URL
+* `req` - the incoming HTTP request from Node core
+
 <a name="get"></a>
 ### fastify.get(path, [schema], handler)
 
@@ -146,16 +155,6 @@ up the POST method.
 
 Calls [route](#route) with the given path, schemas and handler, setting
 up the PUT method.
-
-<a name="request"></a>
-### Request
-
-An object including the following properties:
-
-* `query` - the parsed querystring
-* `body` - the body
-* `params` - the params matching the URL
-* `req` - the incoming HTTP request from Node core
 
 <a name="team"></a>
 ## The Team

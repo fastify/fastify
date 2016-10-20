@@ -4,7 +4,7 @@ const fastify = require('.')()
 const http = require('http')
 const server = http.createServer(fastify)
 
-/* const schema = {
+const schema = {
   out: {
     type: 'object',
     properties: {
@@ -22,9 +22,6 @@ fastify
   .post('/', schema, function (req, reply) {
     reply(null, { hello: 'world' })
   })
-*/
-
-fastify.use(require('./plugin'), {}, console.log)
 
 server.listen(8000, function (err) {
   if (err) {

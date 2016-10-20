@@ -81,6 +81,7 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
   * <a href="#get"><code>fastify.<b>get()</b></code></a>
   * <a href="#post"><code>fastify.<b>post()</b></code></a>
   * <a href="#put"><code>fastify.<b>put()</b></code></a>
+  * <a href="#register"><code>fastify.<b>register()</b></code></a>
 
 <a name="constructor"></a>
 ### fastify(req, res)
@@ -155,6 +156,52 @@ up the POST method.
 
 Calls [route](#route) with the given path, schemas and handler, setting
 up the PUT method.
+
+<a name="register"></a>
+### fastify.register(plugin, [options], [callback])
+Used to register one or more plugins.  
+`plugin` can be a single function or an array of functions.  
+In case of the array of functions, the same options object and callback will be passed to them.  
+[boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse) is used to load the plugins.  
+Example:
+```js
+// server.js
+const fastify = require('fastify')()
+const http = require('http')
+const server = http.createServer(fastify)
+
+fastify.register(require('./plugin'), function (err) {
+  if (err) throw err
+})
+
+const opts = {
+  hello: 'world',
+  something: true
+}
+fastify.register([
+  require('./another-plugin')
+  require('./yet-another-plugin')
+], opts, function (err) {
+  if (err) throw err
+})
+
+server.listen(8000, function (err) {
+  if (err) {
+    throw err
+  }
+
+  console.log(`server listening on ${server.address().port}`)
+})
+```
+```js
+// plugin.js
+module.exports = function (fastify, options, next) {
+  fastify.get('/', schema, function (req, reply) {
+    reply(null, { hello: 'world' })
+  })
+  next()
+}
+```
 
 <a name="team"></a>
 ## The Team

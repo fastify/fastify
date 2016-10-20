@@ -4,6 +4,7 @@ const wayfarer = require('wayfarer')
 const urlUtil = require('url')
 const stripUrl = require('pathname-match')
 const jsonParser = require('body/json')
+const pluginLoader = require('boot-in-the-arse')
 
 const supportedMethods = ['GET', 'POST', 'PUT']
 const validation = require('./lib/validation')
@@ -14,6 +15,7 @@ const serialize = validation.serialize
 function build () {
   const router = wayfarer('/404')
   const map = new Map()
+  pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
 
   // shorthand methods
@@ -22,6 +24,8 @@ function build () {
   fastify.put = put
   // extended route
   fastify.route = route
+  // plugin
+  fastify.register = fastify.use
 
   return fastify
 

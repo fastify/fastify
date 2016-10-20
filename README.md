@@ -170,7 +170,20 @@ const fastify = require('fastify')()
 const http = require('http')
 const server = http.createServer(fastify)
 
-fastify.register(require('./plugin.js'))
+fastify.register(require('./plugin'), function (err) {
+  if (err) throw err
+})
+
+const opts = {
+  hello: 'world',
+  something: true
+}
+fastify.register([
+  require('./another-plugin')
+  require('./yet-another-plugin')
+], opts, function (err) {
+  if (err) throw err
+})
 
 server.listen(8000, function (err) {
   if (err) {

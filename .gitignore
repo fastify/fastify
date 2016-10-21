@@ -38,3 +38,9 @@ jspm_packages
 
 # 0x
 profile-*
+
+# mac files
+.DS_Store
+
+# vim swap files
+*.swp

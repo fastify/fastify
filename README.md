@@ -113,7 +113,7 @@ Options:
 * `url`: the path of the url to match this route, it uses
   [wayfarer][wayfarer] as a router.
 * `schema`: an object containing the schemas for the request and response. They need to be in
-  [JSON Schema][jsonschema] format:
+  [JSON Schema](http://json-schema.org/) format:
 
   * `payload`: validates the body of the request if it is a POST or a
     PUT. It uses [ajv][ajv].
@@ -122,10 +122,9 @@ Options:
   * `out`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput. It uses
     [fast-json-stringify][fast-json-stringify].
-* `handler(request, repy(err, statusCode, object)`: the function that will handle this request.
-  The `request` parameter is defined in [Request](#request).
-`object` inside the request is a JavaScript object that will be
-JSONified, possibly using the schema defined `options.schema.out`.
+* `handler(request, reply(err, statusCode, object)`: the function that will handle this request.  
+`request` is defined in [Request](#request).  
+`reply` is the function that handle the response object, defined in [Reply](#reply).
 
 For POST and PUT, the incoming request body will be parsed.
 
@@ -138,6 +137,15 @@ An object including the following properties:
 * `body` - the body
 * `params` - the params matching the URL
 * `req` - the incoming HTTP request from Node core
+
+<a name="reply"></a>
+#### Reply
+
+A function that accepts the following parameters:
+
+* `error` - error object *(mandatory)*
+* `statusCode` - the http status code *(optional, default to 200)*
+* `object` - JavaScript object that will be JSONified *(mandatory)*
 
 <a name="get"></a>
 ### fastify.get(path, [schema], handler)

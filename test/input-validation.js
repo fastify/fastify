@@ -41,19 +41,30 @@ module.exports.payloadMethod = function (method, t) {
     server.unref()
 
     test(`${upMethod} - correctly replies`, t => {
-      t.plan(3)
-      request({
-        method: upMethod,
-        uri: 'http://localhost:' + server.address().port,
-        body: {
-          hello: 42
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
-      })
+      if (upMethod === 'HEAD') {
+        t.plan(2)
+        request({
+          method: upMethod,
+          uri: 'http://localhost:' + server.address().port
+        }, (err, response) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 200)
+        })
+      } else {
+        t.plan(3)
+        request({
+          method: upMethod,
+          uri: 'http://localhost:' + server.address().port,
+          body: {
+            hello: 42
+          },
+          json: true
+        }, (err, response, body) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 200)
+          t.deepEqual(body, { hello: 42 })
+        })
+      }
     })
 
     test(`${upMethod} - 400 on bad parameters`, t => {

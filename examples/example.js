@@ -22,8 +22,8 @@ fastify
   .post('/', schema, function (req, reply) {
     reply(null, { hello: 'world' })
   })
-  .head('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+  .head('/', {}, function (req, reply) {
+    reply(null)
   })
   .delete('/', schema, function (req, reply) {
     reply(null, { hello: 'world' })

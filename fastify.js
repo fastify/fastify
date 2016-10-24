@@ -115,6 +115,7 @@ function build () {
         switch (req.method) {
           case 'GET':
           case 'HEAD':
+          case 'DELETE':
             handleNode(handle, params, req, res, null, urlUtil.parse(req.url, true).query)
             break
           case 'PATCH':
@@ -127,7 +128,6 @@ function build () {
             break
           case 'POST':
           case 'PUT':
-          case 'DELETE':
             if (req.headers['content-type'] === 'application/json') {
               jsonParser(req, bodyParsed(handle, params, req, res))
             } else {
@@ -136,7 +136,8 @@ function build () {
             }
             break
           default:
-            throw Error(`Invalid method: ${req.method}`)
+            res.statusCode = 404
+            res.end()
         }
       } else {
         res.statusCode = 404

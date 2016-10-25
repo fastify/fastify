@@ -6,7 +6,7 @@ const stripUrl = require('pathname-match')
 const jsonParser = require('body/json')
 const pluginLoader = require('boot-in-the-arse')
 
-const supportedMethods = ['GET', 'POST', 'PUT']
+const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT']
 const validation = require('./lib/validation')
 const buildSchema = validation.buildSchema
 const validateSchema = validation.validateSchema
@@ -19,7 +19,10 @@ function build () {
   router.on('/404', defaultRoute)
 
   // shorthand methods
+  fastify.delete = delete_
   fastify.get = get
+  fastify.head = head
+  fastify.patch = patch
   fastify.post = post
   fastify.put = put
   // extended route
@@ -33,8 +36,20 @@ function build () {
     router(stripUrl(req.url), req, res)
   }
 
+  function delete_ (url, schema, handler) {
+    return _route('DELETE', url, schema, handler)
+  }
+
   function get (url, schema, handler) {
     return _route('GET', url, schema, handler)
+  }
+
+  function head (url, schema, handler) {
+    return _route('HEAD', url, schema, handler)
+  }
+
+  function patch (url, schema, handler) {
+    return _route('PATCH', url, schema, handler)
   }
 
   function post (url, schema, handler) {
@@ -96,14 +111,33 @@ function build () {
     router.on(url, function handle (params, req, res) {
       const handle = node[req.method]
 
-      if (handle && req.method === 'GET') {
-        handleNode(handle, params, req, res, null, urlUtil.parse(req.url, true).query)
-      } else if (handle && (req.method === 'POST' || req.method === 'PUT')) {
-        if (req.headers['content-type'] === 'application/json') {
-          jsonParser(req, bodyParsed(handle, params, req, res))
-        } else {
-          res.statusCode = 415
-          res.end()
+      if (handle) {
+        switch (req.method) {
+          case 'GET':
+          case 'HEAD':
+          case 'DELETE':
+            handleNode(handle, params, req, res, null, urlUtil.parse(req.url, true).query)
+            break
+          case 'PATCH':
+            if (req.headers['content-type'] === 'application/json') {
+              jsonParser(req, bodyParsed(handle, params, req, res))
+            } else {
+              res.statusCode = 415
+              res.end()
+            }
+            break
+          case 'POST':
+          case 'PUT':
+            if (req.headers['content-type'] === 'application/json') {
+              jsonParser(req, bodyParsed(handle, params, req, res))
+            } else {
+              res.statusCode = 415
+              res.end()
+            }
+            break
+          default:
+            res.statusCode = 404
+            res.end()
         }
       } else {
         res.statusCode = 404

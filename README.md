@@ -81,6 +81,10 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
   * <a href="#get"><code>fastify.<b>get()</b></code></a>
   * <a href="#post"><code>fastify.<b>post()</b></code></a>
   * <a href="#put"><code>fastify.<b>put()</b></code></a>
+  * <a href="#delete"><code>fastify.<b>delete()</b></code></a>
+  * <a href="#head"><code>fastify.<b>head()</b></code></a>
+  * <a href="#patch"><code>fastify.<b>patch()</b></code></a>
+  * <a href="#options"><code>fastify.<b>options()</b></code></a>
   * <a href="#register"><code>fastify.<b>register()</b></code></a>
 
 <a name="constructor"></a>
@@ -151,19 +155,43 @@ A function that accepts the following parameters:
 ### fastify.get(path, [schema], handler)
 
 Calls [route](#route) with the given path, schemas and handler, setting
-up the GET method.
+up the `GET` method.
 
 <a name="post"></a>
 ### fastify.post(path, [schema], handler)
 
 Calls [route](#route) with the given path, schemas and handler, setting
-up the POST method.
+up the `POST` method.
 
 <a name="put"></a>
 ### fastify.put(path, [schema], handler)
 
 Calls [route](#route) with the given path, schemas and handler, setting
-up the PUT method.
+up the `PUT` method.
+
+<a name="delete"></a>
+### fastify.delete(path, [schema], handler)
+
+Calls [route](#route) with the given path, schemas and handler, setting
+up the `DELETE` method.
+
+<a name="head"></a>
+### fastify.head(path, [schema], handler)
+
+Calls [route](#route) with the given path, schemas and handler, setting
+up the `HEAD` method.
+
+<a name="patch"></a>
+### fastify.patch(path, [schema], handler)
+
+Calls [route](#route) with the given path, schemas and handler, setting
+up the `PATCH` method.
+
+<a name="options"></a>
+### fastify.options(path, [schema], handler)
+
+Calls [route](#route) with the given path, schemas and handler, setting
+up the `OPTIONS` method.
 
 <a name="register"></a>
 ### fastify.register(plugin, [options], [callback])

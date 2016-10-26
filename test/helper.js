@@ -93,7 +93,11 @@ module.exports.payloadMethod = function (method, t) {
         timeout: 200
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 415)
+        if (upMethod === 'OPTIONS') {
+          t.strictEqual(response.statusCode, 200)
+        } else {
+          t.strictEqual(response.statusCode, 415)
+        }
       })
     })
 

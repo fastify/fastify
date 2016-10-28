@@ -1,12 +1,10 @@
 'use strict'
 
 const request = require('request')
-const http = require('http')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
   const fastify = require('..')()
-  const server = http.createServer(fastify)
   const upMethod = method.toUpperCase()
   const loMethod = method.toLowerCase()
 
@@ -45,18 +43,18 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
-  server.listen(0, function (err) {
+  fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
     }
 
-    server.unref()
+    fastify.server.unref()
 
     test(`${upMethod} - correctly replies`, t => {
       t.plan(3)
       request({
         method: upMethod,
-        uri: 'http://localhost:' + server.address().port,
+        uri: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: 'world'
         },
@@ -72,7 +70,7 @@ module.exports.payloadMethod = function (method, t) {
       t.plan(3)
       request({
         method: upMethod,
-        uri: 'http://localhost:' + server.address().port + '/missing',
+        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: {
           hello: 'world'
         },
@@ -88,7 +86,7 @@ module.exports.payloadMethod = function (method, t) {
       t.plan(2)
       request({
         method: upMethod,
-        uri: 'http://localhost:' + server.address().port,
+        uri: 'http://localhost:' + fastify.server.address().port,
         body: 'hello world',
         timeout: 200
       }, (err, response, body) => {
@@ -105,7 +103,7 @@ module.exports.payloadMethod = function (method, t) {
       t.plan(2)
       request({
         method: upMethod,
-        uri: 'http://localhost:' + server.address().port,
+        uri: 'http://localhost:' + fastify.server.address().port,
         body: 'hello world',
         headers: {
           'Content-Type': 'application/json'

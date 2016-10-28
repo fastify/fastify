@@ -3,9 +3,7 @@
 const t = require('tap')
 const test = t.test
 const request = require('request')
-const http = require('http')
 const fastify = require('..')()
-const server = http.createServer(fastify)
 
 test('route - get', t => {
   t.plan(1)
@@ -49,15 +47,15 @@ test('missing schema - route', t => {
   }
 })
 
-server.listen(0, function (err) {
+fastify.listen(0, function (err) {
   if (err) t.error(err)
-  server.unref()
+  fastify.server.unref()
 
   test('route - get', t => {
     t.plan(3)
     request({
       method: 'GET',
-      uri: 'http://localhost:' + server.address().port
+      uri: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -69,7 +67,7 @@ server.listen(0, function (err) {
     t.plan(3)
     request({
       method: 'GET',
-      uri: 'http://localhost:' + server.address().port + '/missing'
+      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

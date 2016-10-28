@@ -3,9 +3,7 @@
 const t = require('tap')
 const test = t.test
 const request = require('request')
-const http = require('http')
 const fastify = require('..')()
-const server = http.createServer(fastify)
 
 test('fastify.register', t => {
   t.plan(7)
@@ -70,9 +68,9 @@ test('fastify.register array', t => {
   }
 })
 
-server.listen(0, err => {
+fastify.listen(0, err => {
   t.error(err)
-  server.unref()
+  fastify.server.unref()
 
   makeRequest('first')
   makeRequest('second')
@@ -85,7 +83,7 @@ function makeRequest (path) {
     t.plan(4)
     request({
       method: 'GET',
-      uri: 'http://localhost:' + server.address().port + '/' + path
+      uri: 'http://localhost:' + fastify.server.address().port + '/' + path
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

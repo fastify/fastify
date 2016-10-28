@@ -3,9 +3,7 @@
 const t = require('tap')
 const test = t.test
 const request = require('request')
-const http = require('http')
 const fastify = require('..')()
-const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -22,16 +20,16 @@ fastify.get('/', schema, function (req, reply) {
   reply(null, 200, { hello: 'world' })
 })
 
-server.listen(3000, err => {
+fastify.listen(3000, err => {
   t.error(err)
 
-  server.unref()
+  fastify.server.unref()
 
   test('404 on unsupported method', t => {
     t.plan(2)
     request({
       method: 'PUT',
-      uri: 'http://localhost:' + server.address().port,
+      uri: 'http://localhost:' + fastify.server.address().port,
       json: {}
     }, (err, response, body) => {
       t.error(err)
@@ -43,7 +41,7 @@ server.listen(3000, err => {
     t.plan(2)
     request({
       method: 'GET',
-      uri: 'http://localhost:' + server.address().port + '/notSupported',
+      uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
       json: {}
     }, (err, response, body) => {
       t.error(err)

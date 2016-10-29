@@ -51,7 +51,9 @@ function build (options) {
   }
 
   function listen (port, cb) {
-    server.listen(port, cb)
+    fastify.ready(function () {
+      server.listen(port, cb)
+    })
   }
 
   // Shorthand methods

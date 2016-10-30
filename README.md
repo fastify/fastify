@@ -76,6 +76,7 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
 
   * <a href="#constructor"><code><b>fastify()</b></code></a>
   * <a href="#server"><code>fastify.<b>server</b></code></a>
+  * <a href="#ready"><code>fastify.<b>ready()</b></code></a>
   * <a href="#listen"><code>fastify.<b>listen()</b></code></a>
   * <a href="#route"><code>fastify.<b>route()</b></code></a>
   * <a href="#get"><code>fastify.<b>get()</b></code></a>
@@ -106,18 +107,7 @@ fastify.listen(8000, function (err) {
 })
 ```
 
-<a name="server"></a>
-### fastify.server
-
-The Node core [server object](https://nodejs.org/api/net.html#net_class_net_server).
-
-<a name="listen"></a>
-### fastify.listen(port, [callback])
-
-Starts the server on the given port after all the plugins are loaded.  
-The callback is the same as the Node core.
-
-If you need an `HTTPS` server, pass an option object with the keys to the *fastify* constructor.
+If you need an `HTTPS` server, pass an [option](https://nodejs.org/api/https.html) object with the keys to the *fastify* constructor.
 ```js
 const options = {
   https: {
@@ -127,6 +117,23 @@ const options = {
 }
 const fastify = require('fastify')(options)
 ```
+
+<a name="server"></a>
+### fastify.server
+
+The Node core [server object](https://nodejs.org/api/http.html#http_class_http_server).
+
+<a name="ready"></a>
+### fastify.ready(callback)
+
+Function called when all the plugins has been loaded.  
+Emitted by [boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse).
+
+<a name="listen"></a>
+### fastify.listen(port, [callback])
+
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event.  
+The callback is the same as the Node core.
 
 <a name="route"></a>
 ### fastify.route(options)

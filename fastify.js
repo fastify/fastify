@@ -3,16 +3,30 @@
 const wayfarer = require('wayfarer')
 const stripUrl = require('pathname-match')
 const pluginLoader = require('boot-in-the-arse')
+const http = require('http')
+const https = require('https')
 
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 
-function build () {
+function build (options) {
+  options = options || {}
+  if (typeof options !== 'object') {
+    throw new TypeError('Options must be an object')
+  }
+
   const router = wayfarer('/404')
   const map = new Map()
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
+
+  var server
+  if (options.https) {
+    server = https.createServer(options.https, fastify)
+  } else {
+    server = http.createServer(fastify)
+  }
 
   // shorthand methods
   fastify.delete = _delete
@@ -24,13 +38,22 @@ function build () {
   fastify.options = _options
   // extended route
   fastify.route = route
+
   // plugin
   fastify.register = fastify.use
+  fastify.listen = listen
+  fastify.server = server
 
   return fastify
 
   function fastify (req, res) {
     router(stripUrl(req.url), req, res)
+  }
+
+  function listen (port, cb) {
+    fastify.ready(function () {
+      server.listen(port, cb)
+    })
   }
 
   // Shorthand methods

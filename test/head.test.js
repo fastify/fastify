@@ -3,9 +3,7 @@
 const t = require('tap')
 const test = t.test
 const request = require('request')
-const http = require('http')
 const fastify = require('..')()
-const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -91,15 +89,15 @@ test('missing schema - head', t => {
   }
 })
 
-server.listen(0, err => {
+fastify.listen(0, err => {
   t.error(err)
-  server.unref()
+  fastify.server.unref()
 
   test('shorthand - request head', t => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port
+      uri: 'http://localhost:' + fastify.server.address().port
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -110,7 +108,7 @@ server.listen(0, err => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port + '/params/world/123'
+      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -121,7 +119,7 @@ server.listen(0, err => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port + '/params/world/string'
+      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -132,7 +130,7 @@ server.listen(0, err => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port + '/query?hello=123'
+      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -143,7 +141,7 @@ server.listen(0, err => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port + '/query?hello=world'
+      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -154,7 +152,7 @@ server.listen(0, err => {
     t.plan(2)
     request({
       method: 'HEAD',
-      uri: 'http://localhost:' + server.address().port + '/missing'
+      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

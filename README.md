@@ -26,8 +26,6 @@ npm install fastify --save
 'use strict'
 
 const fastify = require('fastify')()
-const http = require('http')
-const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -51,12 +49,12 @@ fastify
     reply(null, { hello: 'world' })
   })
 
-server.listen(8000, function (err) {
+fastify.listen(8000, function (err) {
   if (err) {
     throw err
   }
 
-  console.log(`server listening on ${server.address().port}`)
+  console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
 
@@ -77,6 +75,9 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
 ## API
 
   * <a href="#constructor"><code><b>fastify()</b></code></a>
+  * <a href="#server"><code>fastify.<b>server</b></code></a>
+  * <a href="#ready"><code>fastify.<b>ready()</b></code></a>
+  * <a href="#listen"><code>fastify.<b>listen()</b></code></a>
   * <a href="#route"><code>fastify.<b>route()</b></code></a>
   * <a href="#get"><code>fastify.<b>get()</b></code></a>
   * <a href="#post"><code>fastify.<b>post()</b></code></a>
@@ -96,17 +97,43 @@ Core.
 
 ```js
 const fastify = require('fastify')()
-const http = require('http')
-const server = http.createServer(fastify)
 
-server.listen(8000, function (err) {
+fastify.listen(8000, function (err) {
   if (err) {
     throw err
   }
 
-  console.log(`server listening on ${server.address().port}`)
+  console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
+If you need an `HTTPS` server, pass an [option](https://nodejs.org/api/https.html) object with the keys to the *fastify* constructor.
+```js
+const options = {
+  https: {
+    key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
+    cert: fs.readFileSync('test/fixtures/keys/agent2-cert.pem')
+  }
+}
+const fastify = require('fastify')(options)
+```
+
+<a name="server"></a>
+### fastify.server
+
+The Node core [server object](https://nodejs.org/api/http.html#http_class_http_server).
+
+<a name="ready"></a>
+### fastify.ready(callback)
+
+Function called when all the plugins has been loaded.  
+Emitted by [boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse).
+
+<a name="listen"></a>
+### fastify.listen(port, [callback])
+
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event.  
+The callback is the same as the Node core.
 
 <a name="route"></a>
 ### fastify.route(options)
@@ -203,8 +230,6 @@ Example:
 ```js
 // server.js
 const fastify = require('fastify')()
-const http = require('http')
-const server = http.createServer(fastify)
 
 fastify.register(require('./plugin'), function (err) {
   if (err) throw err
@@ -221,12 +246,12 @@ fastify.register([
   if (err) throw err
 })
 
-server.listen(8000, function (err) {
+fastify.listen(8000, function (err) {
   if (err) {
     throw err
   }
 
-  console.log(`server listening on ${server.address().port}`)
+  console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
 ```js

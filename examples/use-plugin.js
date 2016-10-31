@@ -1,6 +1,4 @@
 const fastify = require('../fastify')()
-const http = require('http')
-const server = http.createServer(fastify)
 
 const opts = {
   schema: {
@@ -18,10 +16,9 @@ fastify.register(require('./plugin'), opts, function (err) {
   if (err) throw err
 })
 
-server.listen(8000, function (err) {
+fastify.listen(8000, function (err) {
   if (err) {
     throw err
   }
-
-  console.log(`server listening on ${server.address().port}`)
+  console.log(`server listening on ${fastify.server.address().port}`)
 })

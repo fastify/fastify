@@ -1,8 +1,6 @@
 'use strict'
 
 const fastify = require('../fastify')()
-const http = require('http')
-const server = http.createServer(fastify)
 
 const schema = {
   out: {
@@ -32,10 +30,7 @@ fastify
     reply(null, { hello: 'world' })
   })
 
-server.listen(3000, function (err) {
-  if (err) {
-    throw err
-  }
-
-  console.log(`server listening on ${server.address().port}`)
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
 })

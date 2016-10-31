@@ -4,3 +4,6 @@ node_js:
   - "6"
   - "5"
   - "4"
+after_script:
+  - npm run coveralls
+

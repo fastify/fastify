@@ -4,7 +4,9 @@
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.test.js"
+    "test": "standard | snazzy && tap test/*.test.js",
+    "coverage": "tap --cov --coverage-report=html test/*.test.js",
+    "coveralls": "tap test/*test.js --cov --coverage-report=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/mcollina/fastify#readme",
   "devDependencies": {
+    "coveralls": "^2.11.14",
     "express": "^4.14.0",
     "hapi": "^15.1.1",
     "koa": "^1.2.4",

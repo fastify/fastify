@@ -4,28 +4,28 @@ const t = require('tap')
 const test = t.test
 
 const validation = require('../../lib/validation')
-const internals = require('../../lib/validation')._internals
+const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {
   t.plan(4)
-  t.is(typeof internals.outputSchema, 'symbol')
-  t.is(typeof internals.payloadSchema, 'symbol')
-  t.is(typeof internals.querystringSchema, 'symbol')
-  t.is(typeof internals.paramsSchema, 'symbol')
+  t.is(typeof symbols.outputSchema, 'symbol')
+  t.is(typeof symbols.payloadSchema, 'symbol')
+  t.is(typeof symbols.querystringSchema, 'symbol')
+  t.is(typeof symbols.paramsSchema, 'symbol')
 })
 
 test('build schema - missing schema', t => {
   t.plan(1)
   const opts = {}
   validation.build(opts)
-  t.is(typeof opts[internals.outputSchema], 'function')
+  t.is(typeof opts[symbols.outputSchema], 'function')
 })
 
 test('build schema - missing output schema', t => {
   t.plan(1)
   const opts = { schema: {} }
   validation.build(opts)
-  t.is(typeof opts[internals.outputSchema], 'function')
+  t.is(typeof opts[symbols.outputSchema], 'function')
 })
 
 test('build schema - output schema', t => {
@@ -41,7 +41,7 @@ test('build schema - output schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[internals.outputSchema], 'function')
+  t.is(typeof opts[symbols.outputSchema], 'function')
 })
 
 test('build schema - payload schema', t => {
@@ -57,7 +57,7 @@ test('build schema - payload schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[internals.payloadSchema], 'function')
+  t.is(typeof opts[symbols.payloadSchema], 'function')
 })
 
 test('build schema - querystring schema', t => {
@@ -73,7 +73,7 @@ test('build schema - querystring schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[internals.querystringSchema], 'function')
+  t.is(typeof opts[symbols.querystringSchema], 'function')
 })
 
 test('build schema - params schema', t => {
@@ -89,5 +89,5 @@ test('build schema - params schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[internals.paramsSchema], 'function')
+  t.is(typeof opts[symbols.paramsSchema], 'function')
 })

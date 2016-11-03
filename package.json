@@ -4,9 +4,9 @@
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.test.js",
-    "coverage": "tap --cov --coverage-report=html test/*.test.js",
-    "coveralls": "tap test/*test.js --cov --coverage-report=text-lcov | coveralls"
+    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
+    "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
+    "coveralls": "tap test/*test.js  test/*/*.test.js --cov --coverage-report=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -29,22 +29,21 @@
   "devDependencies": {
     "coveralls": "^2.11.14",
     "express": "^4.14.0",
-    "hapi": "^15.1.1",
+    "hapi": "^15.2.0",
     "koa": "^1.2.4",
     "pre-commit": "^1.1.3",
-    "request": "^2.75.0",
-    "restify": "^4.1.1",
+    "request": "^2.76.0",
     "snazzy": "^5.0.0",
-    "standard": "^8.4.0",
+    "standard": "^8.5.0",
     "take-five": "^1.3.0",
-    "tap": "^7.1.2"
+    "tap": "^8.0.0"
   },
   "dependencies": {
-    "ajv": "^4.7.7",
+    "ajv": "^4.8.2",
     "body": "^5.1.0",
     "boot-in-the-arse": "^0.3.0",
     "fast-json-stringify": "^0.10.0",
-    "fast-safe-stringify": "^1.1.0",
+    "fast-safe-stringify": "^1.1.1",
     "pathname-match": "^1.2.0",
     "wayfarer": "^6.2.1"
   }

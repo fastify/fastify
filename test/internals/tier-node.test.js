@@ -131,3 +131,28 @@ test('routerHandler function - call handle', t => {
   }
   handle(null, req, res)
 })
+
+test('reply function - error 500', t => {
+  t.plan(3)
+  const handleNode = {
+    handler: (req, reply) => {
+      t.equal(req.req.url, 'http://example.com')
+      reply(new Error('error'), null)
+    }
+  }
+  buildSchema(handleNode)
+
+  const handle = internals.routerHandler({
+    'GET': handleNode
+  })
+  const res = {}
+  res.end = () => {
+    t.equal(res.statusCode, 500)
+    t.pass()
+  }
+  const req = {
+    method: 'GET',
+    url: 'http://example.com'
+  }
+  handle(null, req, res)
+})

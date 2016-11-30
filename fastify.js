@@ -5,6 +5,7 @@ const stripUrl = require('pathname-match')
 const pluginLoader = require('boot-in-the-arse')
 const http = require('http')
 const https = require('https')
+const pinoHttp = require('pino-http')
 
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
@@ -15,6 +16,10 @@ function build (options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')
   }
+
+  options.logger = options.logger || {}
+  options.logger.level = options.logger.level || 'fatal'
+  const logger = pinoHttp(options.logger)
 
   const router = wayfarer('/404')
   const map = new Map()
@@ -47,6 +52,7 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
+    logger(req, res)
     router(stripUrl(req.url), req, res)
   }
 

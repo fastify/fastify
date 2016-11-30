@@ -16,9 +16,11 @@ function build (options) {
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')
   }
-  if (options.logger === true) options.logger = {}
 
+  options.logger = options.logger || {}
+  options.logger.level = options.logger.level || 'fatal'
   const logger = pinoHttp(options.logger)
+
   const router = wayfarer('/404')
   const map = new Map()
   pluginLoader(fastify, {})
@@ -50,9 +52,7 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
-    if (options.logger) {
-      logger(req, res)
-    }
+    logger(req, res)
     router(stripUrl(req.url), req, res)
   }
 

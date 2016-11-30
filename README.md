@@ -10,6 +10,7 @@ contribute!
 * [Usage](#usage)
 * [Benchmarks](#benchmarks)
 * [API](#api)
+* [Logging](#logging)
 * [Team](#team)
 * [Acknowledgements](#acknowledgements)
 * [License](#license)
@@ -262,6 +263,25 @@ module.exports = function (fastify, options, next) {
   })
   next()
 }
+```
+
+<a name="logging"></a>
+## Logging
+Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!  
+By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as logger, with the log level setted to `'fatal'`.
+
+If you want to pass some options to the logger, just pass the logger option to fastify.
+You can find all the options [here](https://github.com/pinojs/pino#pinoopts-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+```js
+const split = require('split2')
+const stream = split(JSON.parse)
+
+const fastify = require('fastify')({
+  logger: {
+    level: 'info',
+    stream: stream
+  }
+})
 ```
 
 <a name="team"></a>

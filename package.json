@@ -47,6 +47,7 @@
     "fast-safe-stringify": "^1.1.3",
     "pathname-match": "^1.2.0",
     "pino-http": "^2.1.0",
+    "pump": "^1.0.1",
     "wayfarer": "^6.3.0"
   }
 }

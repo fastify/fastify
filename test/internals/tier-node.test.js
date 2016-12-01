@@ -61,6 +61,7 @@ test('handler function - reply', t => {
     t.equal(res.statusCode, 200)
     t.pass()
   }
+  res.setHeader = () => {}
   const handle = {
     handler: (req, reply) => {
       t.is(typeof reply, 'function')
@@ -125,6 +126,8 @@ test('routerHandler function - call handle', t => {
     t.equal(res.statusCode, 200)
     t.pass()
   }
+  res.setHeader = () => {}
+
   const req = {
     method: 'GET',
     url: 'http://example.com'

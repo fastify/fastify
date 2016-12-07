@@ -15,7 +15,8 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.header('Content-Type', 'application-json').code(200)
+    reply.reply(null, { hello: 'world' })
   })
   .post('/', schema, function (req, reply) {
     reply(null, { hello: 'world' })

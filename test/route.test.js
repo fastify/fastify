@@ -22,7 +22,7 @@ test('route - get', t => {
         }
       },
       handler: function (req, reply) {
-        reply(null, 200, { hello: 'world' })
+        reply.send({ hello: 'world' })
       }
     })
     t.pass()
@@ -38,7 +38,7 @@ test('missing schema - route', t => {
       method: 'GET',
       url: '/missing',
       handler: function (req, reply) {
-        reply(null, 200, { hello: 'world' })
+        reply.send({ hello: 'world' })
       }
     })
     t.pass()

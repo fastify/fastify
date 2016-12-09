@@ -23,7 +23,7 @@ module.exports.payloadMethod = function (method, t) {
     t.plan(1)
     try {
       fastify[loMethod]('/', schema, function (req, reply) {
-        reply(null, 200, req.body)
+        reply.code(200).send(req.body)
       })
       t.pass()
     } catch (e) {
@@ -35,7 +35,7 @@ module.exports.payloadMethod = function (method, t) {
     t.plan(1)
     try {
       fastify[loMethod]('/missing', function (req, reply) {
-        reply(null, 200, req.body)
+        reply.code(200).send(req.body)
       })
       t.pass()
     } catch (e) {
@@ -86,7 +86,7 @@ module.exports.payloadMethod = function (method, t) {
       t.plan(2)
       request({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: 'hello world',
         timeout: 200
       }, (err, response, body) => {
@@ -98,6 +98,24 @@ module.exports.payloadMethod = function (method, t) {
         }
       })
     })
+
+    if (loMethod === 'options') {
+      test(`OPTIONS returns 415 - should return 415 if Content-Type is not json`, t => {
+        t.plan(2)
+        request({
+          method: upMethod,
+          uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+          body: 'hello world',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          timeout: 200
+        }, (err, response, body) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 415)
+        })
+      })
+    }
 
     test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
       t.plan(2)

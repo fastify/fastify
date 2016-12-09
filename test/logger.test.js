@@ -22,7 +22,7 @@ try {
 
 fastify.get('/', function (req, reply) {
   t.ok(req.req.log)
-  reply(null, 200, { hello: 'world' })
+  reply.send(null, 200, { hello: 'world' })
 })
 
 test('test log stream', t => {

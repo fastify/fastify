@@ -15,20 +15,20 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    reply.header('Content-Type', 'application-json').code(200)
-    reply.reply(null, { hello: 'world' })
+    reply.header('Content-Type', 'text/plain').code(200)
+    reply.send({ hello: 'world' })
   })
   .post('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
-    reply(null)
+    reply.send(null)
   })
   .delete('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
   .patch('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
 
 fastify.listen(3000, err => {

@@ -7,17 +7,19 @@ const fastify = require('../..')()
 
 const internals = require('../../lib/tier-node')._internals
 
-test('Reply should be an object', t => {
+test('Reply should be a function', t => {
   t.plan(1)
-  t.is(typeof internals.Reply, 'function')
+  t.is(typeof internals.reply, 'function')
 })
 
-test('Once called, Reply should return an object with methods', t => {
+test('reply is a function with methods', t => {
   t.plan(6)
   const response = { res: 'res' }
   function handle () {}
-  const reply = new internals.Reply(response, handle)
-  t.is(typeof reply, 'object')
+  const reply = internals.reply
+  reply.res = response
+  reply.handle = handle
+  t.is(typeof reply, 'function')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')

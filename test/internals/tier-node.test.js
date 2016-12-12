@@ -69,7 +69,7 @@ test('handler function - reply', t => {
   }
   const handle = {
     handler: (req, reply) => {
-      t.is(typeof reply, 'object')
+      t.is(typeof reply, 'function')
       reply.send(null)
     }
   }

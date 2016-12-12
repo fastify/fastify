@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 
-const internals = require('../../lib/tier-node')._internals
+const internals = require('../../lib/tier-node')[Symbol.for('internals')]
 const buildSchema = require('../../lib/validation').build
 
 test('Request object', t => {

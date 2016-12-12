@@ -5,7 +5,7 @@ const test = t.test
 const request = require('request')
 const fastify = require('../..')()
 
-const internals = require('../../lib/tier-node')._internals
+const internals = require('../../lib/tier-node')[Symbol.for('internals')]
 
 test('Reply should be an object', t => {
   t.plan(1)
@@ -23,6 +23,14 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.header, 'function')
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.handle, handle)
+})
+
+test('reply.header and reply.code should return an instance of Reply', t => {
+  t.plan(2)
+  const response = { setHeader: () => {} }
+  const reply = new internals.Reply(response, null)
+  t.type(reply.code(1), internals.Reply)
+  t.type(reply.header('hello', 'world'), internals.Reply)
 })
 
 test('Reply can set code and header of a response', t => {
@@ -64,7 +72,7 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'text/plain')
-      t.deepEqual(JSON.parse(body), 'hello world!')
+      t.deepEqual(body, 'hello world!')
     })
   })
 

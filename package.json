@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/mcollina/fastify#readme",
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "coveralls": "^2.11.15",
     "express": "^4.14.0",
     "hapi": "^15.2.0",

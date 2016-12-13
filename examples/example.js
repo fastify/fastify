@@ -16,15 +16,14 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    // reply.header('Content-Type', 'application/json').code(200)
-    // reply.send({ hello: 'world' })
-    reply.header('content-type', 'text/plain').code(200).send('callback!')
+    reply.header('Content-Type', 'application/json').code(200)
+    reply.send({ hello: 'world' })
   })
-  .get('/promise', function (req, reply) {
+  .get('/promise', schema, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
-      resolve('promise!')
+      resolve({ hello: 'world' })
     })
-    reply.header('content-type', 'text/plain').code(200).send(promise)
+    reply.header('content-type', 'application/json').code(200).send(promise)
   })
   .post('/', schema, function (req, reply) {
     reply.send(null, { hello: 'world' })

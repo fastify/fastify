@@ -59,6 +59,18 @@ test('Reply can set code and header of a response', t => {
   }
 })
 
+test('Reply.send should return undefined', t => {
+  t.plan(2)
+  try {
+    fastify.get('/undefined', function (req, reply) {
+      t.strictEqual(reply.send('hello world!'), undefined)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -86,5 +98,12 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), 'hello world!')
     })
+  })
+
+  request({
+    method: 'GET',
+    uri: 'http://localhost:' + fastify.server.address().port + '/undefined'
+  }, (err, response, body) => {
+    t.error(err)
   })
 })

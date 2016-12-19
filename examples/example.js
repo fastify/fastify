@@ -1,7 +1,6 @@
 'use strict'
 
 const fastify = require('../fastify')()
-const Promise = require('bluebird')
 
 const schema = {
   out: {

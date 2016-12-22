@@ -1,4 +1,4 @@
-# Fastify&nbsp;&nbsp;[![Build Status](https://travis-ci.org/mcollina/fastify.svg)](https://travis-ci.org/mcollina/fastify)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/mcollina/fastify/badge.svg?branch=master)](https://coveralls.io/github/mcollina/fastify?branch=master)
+# Fastify&nbsp;&nbsp;[![Build Status](https://travis-ci.org/mcollina/fastify.svg)](https://travis-ci.org/mcollina/fastify)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/mcollina/fastify/badge.svg?branch=master)](https://coveralls.io/github/mcollina/fastify?branch=master) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
 [Extremely fast](#benchmarks) node.js web framework, inspired by
 [Express][express], [Hapi][hapi] and [Restify][restify].
@@ -41,13 +41,13 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
   .get('/no-schema', function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
   .post('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
 
 fastify.listen(8000, function (err) {
@@ -68,7 +68,7 @@ As far as we know, it is one of the fastest web frameworks in town:
 * Restify: 6133 req/sec
 * Express: 8534 req/sec
 * Koa: 9640 req/sec
-* *Fastify: 17140 req/sec*
+* *Fastify: 19580 req/sec*
 
 All benchmarks where average taken over 5 seconds, on the second run of `autocannon -c 100 -d 5 -p 10 localhost:3000`.
 
@@ -110,13 +110,12 @@ fastify.listen(8000, function (err) {
 
 If you need an `HTTPS` server, pass an [option](https://nodejs.org/api/https.html) object with the keys to the *fastify* constructor.
 ```js
-const options = {
+const fastify = require('fastify')({
   https: {
     key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
     cert: fs.readFileSync('test/fixtures/keys/agent2-cert.pem')
   }
-}
-const fastify = require('fastify')(options)
+})
 ```
 
 <a name="server"></a>
@@ -141,7 +140,7 @@ The callback is the same as the Node core.
 
 Options:
 
-* `method`: currently it supports only GET, POST and PUT.
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`.
 * `url`: the path of the url to match this route, it uses
   [wayfarer][wayfarer] as a router.
 * `schema`: an object containing the schemas for the request and response. They need to be in
@@ -154,11 +153,30 @@ Options:
   * `out`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput. It uses
     [fast-json-stringify][fast-json-stringify].
-* `handler(request, reply(err, statusCode, object)`: the function that will handle this request.  
+* `handler(request, reply)`: the function that will handle this request.  
 `request` is defined in [Request](#request).  
-`reply` is the function that handle the response object, defined in [Reply](#reply).
+`reply` is defined in [Reply](#reply).
 
-For POST and PUT, the incoming request body will be parsed.
+Example:
+```js
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: {
+    out: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
+      }
+    }
+  },
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+```
 
 <a name="request"></a>
 #### Request
@@ -173,11 +191,47 @@ An object including the following properties:
 <a name="reply"></a>
 #### Reply
 
-A function that accepts the following parameters:
+An object that exposes three APIs.
+* `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+* `.code(statusCode)` - Sets the status code (default to 200).
+* `.header(name, value)` - Sets the headers.
 
-* `error` - error object *(mandatory)*
-* `statusCode` - the http status code *(optional, default to 200)*
-* `object` - JavaScript object that will be JSONified *(mandatory)*
+Example:
+```js
+fastify.get('/', schema, function (request, reply) {
+  reply
+    .code(200)
+    .header('Content-Type', 'application/json')
+    .send({ hello 'world' })
+})
+```
+
+Reply.send() accepts also Promises:
+```js
+fastify.get('/', schema, function (request, reply) {
+  const promise = new Promise(function (resolve, reject) {
+    if (condition) {
+      resolve({ hello: 'world' })
+    } else {
+      reject(new Error('some error'))
+    }
+  })
+
+  reply
+    .code(200)
+    .header('Content-Type', 'application/json')
+    .send(promise)
+})
+```
+
+To send a stream, just pass it as a parameter to .send(), the default `Content-Type` for the streams is `application/octet-stream`. [Pump](https://github.com/mafintosh/pump) is used to pipe the streams.
+```js
+fastify.get('/', schema, function (request, reply) {
+  const fs = require('fs')
+  const stream = fs.createReadStream('some-file', 'utf8')  
+  reply.send(stream)
+})
+```
 
 <a name="get"></a>
 ### fastify.get(path, [schema], handler)
@@ -241,7 +295,7 @@ const opts = {
   something: true
 }
 fastify.register([
-  require('./another-plugin')
+  require('./another-plugin'),
   require('./yet-another-plugin')
 ], opts, function (err) {
   if (err) throw err
@@ -259,7 +313,7 @@ fastify.listen(8000, function (err) {
 // plugin.js
 module.exports = function (fastify, options, next) {
   fastify.get('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
   next()
 }

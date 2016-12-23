@@ -24,6 +24,12 @@ fastify
     })
     reply.header('content-type', 'application/json').code(200).send(promise)
   })
+  .get('/return-promise', schema, function (req, reply) {
+    const promise = new Promise(function (resolve, reject) {
+      resolve({ hello: 'world' })
+    })
+    return promise
+  })
   .get('/stream', function (req, reply) {
     const fs = require('fs')
     const stream = fs.createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')

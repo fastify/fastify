@@ -13,22 +13,25 @@ test('Reply should be an object', t => {
 })
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(6)
+  t.plan(7)
+  const request = { req: 'req' }
   const response = { res: 'res' }
   function handle () {}
-  const reply = new internals.Reply(response, handle)
+  const reply = new internals.Reply(request, response, handle)
   t.is(typeof reply, 'object')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
+  t.strictEqual(reply.req, request)
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.handle, handle)
 })
 
 test('reply.header and reply.code should return an instance of Reply', t => {
   t.plan(2)
+  const request = {}
   const response = { setHeader: () => {} }
-  const reply = new internals.Reply(response, null)
+  const reply = new internals.Reply(request, response, null)
   t.type(reply.code(1), internals.Reply)
   t.type(reply.header('hello', 'world'), internals.Reply)
 })

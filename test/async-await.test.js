@@ -1,11 +1,14 @@
 'use strict'
 
-const t = require('tap')
+const path = require('path')
+const childProcess = require('child_process')
+const tap = require('tap')
 
 if (Number(process.versions.node[0]) >= 7) {
-  const v8 = require('v8')
-  v8.setFlagsFromString('--harmony_async_await')
-  require('./async-await.js')(t)
+  childProcess.fork(path.join(__dirname, 'async-await'), [], {
+    execArgv: ['--harmony-async-await']
+  })
 } else {
-  t.pass('Skip because Node version < 7')
+  tap.pass('Skip because Node version < 7')
+  tap.end()
 }

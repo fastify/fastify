@@ -21,8 +21,20 @@ function asyncTest (t) {
   test('shorthand - async await get', t => {
     t.plan(1)
     try {
-      fastify.get('/', schema, async function (req, reply) {
-        await sleep(500)
+      fastify.get('/', schema, async function awaitMyFunc (req, reply) {
+        await sleep(200)
+        return { hello: 'world' }
+      })
+      t.pass()
+    } catch (e) {
+      t.fail()
+    }
+  })
+
+  test('shorthand - async await get', t => {
+    t.plan(1)
+    try {
+      fastify.get('/no-await', schema, async function (req, reply) {
         return { hello: 'world' }
       })
       t.pass()
@@ -47,7 +59,24 @@ function asyncTest (t) {
         t.deepEqual(JSON.parse(body), { hello: 'world' })
       })
     })
+
+    test('shorthand - request async test', t => {
+      t.plan(4)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + fastify.server.address().port + '/no-await'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-length'], '' + body.length)
+        t.deepEqual(JSON.parse(body), { hello: 'world' })
+      })
+    })
   })
 }
 
 module.exports = asyncTest
+
+if (require.main === module) {
+  asyncTest(require('tap'))
+}

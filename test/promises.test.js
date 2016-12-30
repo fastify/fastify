@@ -156,4 +156,25 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 500)
     })
   })
+
+  test('request promise double send', t => {
+    t.plan(4)
+    fastify.get('/kaboom', function (req, reply) {
+      setTimeout(function () {
+        t.throws(function () {
+          reply.send(Promise.resolve({ hello: 'world' }))
+        }, 'double send throws')
+      }, 20)
+      return Promise.resolve({ hello: '42' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/kaboom'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { hello: '42' })
+    })
+  })
 })

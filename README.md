@@ -178,6 +178,31 @@ fastify.route({
 })
 ```
 
+The handler can also return a Promise, and it supports async/await:
+
+```js
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: {
+    out: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
+      }
+    }
+  },
+  handler: async function (request) {
+    var res = await new Promise(function (resolve) {
+      setTimeout(resolve, 200, { hello: 'world' })
+    })
+    return res
+  }
+})
+```
+
 <a name="request"></a>
 #### Request
 

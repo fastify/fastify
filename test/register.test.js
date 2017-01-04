@@ -14,7 +14,7 @@ test('fastify.register', t => {
       t.is(typeof done, 'function')
 
       instance.get('/first', function (req, reply) {
-        reply(null, 200, { hello: 'world' })
+        reply.send({ hello: 'world' })
       })
       done()
     })
@@ -24,7 +24,7 @@ test('fastify.register', t => {
       t.is(typeof done, 'function')
 
       instance.get('/second', function (req, reply) {
-        reply(null, 200, { hello: 'world' })
+        reply.send({ hello: 'world' })
       })
       done()
     })
@@ -44,7 +44,7 @@ test('fastify.register array', t => {
     t.is(typeof done, 'function')
 
     instance.get('/third', function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.send({ hello: 'world' })
     })
     done()
   }
@@ -55,7 +55,7 @@ test('fastify.register array', t => {
     t.is(typeof done, 'function')
 
     instance.get('/fourth', function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.send({ hello: 'world' })
     })
     done()
   }

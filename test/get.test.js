@@ -45,7 +45,7 @@ test('shorthand - get', t => {
   t.plan(1)
   try {
     fastify.get('/', schema, function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.code(200).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {
@@ -57,7 +57,7 @@ test('shorthand - get params', t => {
   t.plan(1)
   try {
     fastify.get('/params/:foo/:test', paramsSchema, function (req, reply) {
-      reply(null, 200, req.params)
+      reply.code(200).send(req.params)
     })
     t.pass()
   } catch (e) {
@@ -69,7 +69,7 @@ test('shorthand - get, querystring schema', t => {
   t.plan(1)
   try {
     fastify.get('/query', querySchema, function (req, reply) {
-      reply(null, 200, req.query)
+      reply.code(200).send(req.query)
     })
     t.pass()
   } catch (e) {
@@ -81,7 +81,7 @@ test('missing schema - get', t => {
   t.plan(1)
   try {
     fastify.get('/missing', function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.code(200).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {

@@ -15,19 +15,37 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.header('Content-Type', 'application/json').code(200)
+    reply.send({ hello: 'world' })
+  })
+  .get('/promise', schema, function (req, reply) {
+    const promise = new Promise(function (resolve, reject) {
+      resolve({ hello: 'world' })
+    })
+    reply.header('content-type', 'application/json').code(200).send(promise)
+  })
+  .get('/return-promise', schema, function (req, reply) {
+    const promise = new Promise(function (resolve, reject) {
+      resolve({ hello: 'world' })
+    })
+    return promise
+  })
+  .get('/stream', function (req, reply) {
+    const fs = require('fs')
+    const stream = fs.createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')
+    reply.code(200).send(stream)
   })
   .post('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
-    reply(null)
+    reply.send(null)
   })
   .delete('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
   .patch('/', schema, function (req, reply) {
-    reply(null, { hello: 'world' })
+    reply.send(null, { hello: 'world' })
   })
 
 fastify.listen(3000, err => {

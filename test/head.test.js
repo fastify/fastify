@@ -7,12 +7,7 @@ const fastify = require('..')()
 
 const schema = {
   out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'string'
-      }
-    }
+    type: 'null'
   }
 }
 
@@ -45,7 +40,7 @@ test('shorthand - head', t => {
   t.plan(1)
   try {
     fastify.head('/', schema, function (req, reply) {
-      reply(null, 200)
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {
@@ -57,7 +52,7 @@ test('shorthand - head params', t => {
   t.plan(1)
   try {
     fastify.head('/params/:foo/:test', paramsSchema, function (req, reply) {
-      reply(null, 200)
+      reply.send(null)
     })
     t.pass()
   } catch (e) {
@@ -69,7 +64,7 @@ test('shorthand - head, querystring schema', t => {
   t.plan(1)
   try {
     fastify.head('/query', querySchema, function (req, reply) {
-      reply(null, 200)
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {
@@ -81,7 +76,7 @@ test('missing schema - head', t => {
   t.plan(1)
   try {
     fastify.head('/missing', function (req, reply) {
-      reply(null, 200)
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {

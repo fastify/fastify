@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 
-const internals = require('../../lib/tier-node')._internals
+const internals = require('../../lib/tier-node')[Symbol.for('internals')]
 const buildSchema = require('../../lib/validation').build
 
 test('Request object', t => {
@@ -58,13 +58,19 @@ test('handler function - reply', t => {
   t.plan(3)
   const res = {}
   res.end = () => {
-    t.equal(res.statusCode, 200)
+    t.equal(res.statusCode, 204)
     t.pass()
+  }
+  res.getHeader = (key) => {
+    return false
+  }
+  res.setHeader = (key, value) => {
+    return
   }
   const handle = {
     handler: (req, reply) => {
-      t.is(typeof reply, 'function')
-      reply(null, null)
+      t.is(typeof reply, 'object')
+      reply.send(null)
     }
   }
   buildSchema(handle)
@@ -112,7 +118,7 @@ test('routerHandler function - call handle', t => {
   const handleNode = {
     handler: (req, reply) => {
       t.equal(req.req.url, 'http://example.com')
-      reply(null, null)
+      reply.send(null)
     }
   }
   buildSchema(handleNode)
@@ -122,8 +128,14 @@ test('routerHandler function - call handle', t => {
   })
   const res = {}
   res.end = () => {
-    t.equal(res.statusCode, 200)
+    t.equal(res.statusCode, 204)
     t.pass()
+  }
+  res.getHeader = (key) => {
+    return false
+  }
+  res.setHeader = (key, value) => {
+    return
   }
   const req = {
     method: 'GET',
@@ -137,7 +149,7 @@ test('reply function - error 500', t => {
   const handleNode = {
     handler: (req, reply) => {
       t.equal(req.req.url, 'http://example.com')
-      reply(new Error('error'), null)
+      reply.send(new Error('error'))
     }
   }
   buildSchema(handleNode)

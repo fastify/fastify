@@ -45,7 +45,7 @@ test('shorthand - delete', t => {
   t.plan(1)
   try {
     fastify.delete('/', schema, function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.code(200).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {
@@ -57,7 +57,7 @@ test('shorthand - delete params', t => {
   t.plan(1)
   try {
     fastify.delete('/params/:foo/:test', paramsSchema, function (req, reply) {
-      reply(null, 200, req.params)
+      reply.code(200).send(req.params)
     })
     t.pass()
   } catch (e) {
@@ -69,7 +69,7 @@ test('shorthand - delete, querystring schema', t => {
   t.plan(1)
   try {
     fastify.delete('/query', querySchema, function (req, reply) {
-      reply(null, 200, req.query)
+      reply.send(req.query)
     })
     t.pass()
   } catch (e) {
@@ -81,7 +81,7 @@ test('missing schema - delete', t => {
   t.plan(1)
   try {
     fastify.delete('/missing', function (req, reply) {
-      reply(null, 200, { hello: 'world' })
+      reply.code(200).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {

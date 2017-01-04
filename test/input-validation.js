@@ -23,7 +23,7 @@ module.exports.payloadMethod = function (method, t) {
     t.plan(1)
     try {
       fastify[loMethod]('/', schema, function (req, reply) {
-        reply(null, 200, req.body)
+        reply.send(req.body)
       })
       t.pass()
     } catch (e) {

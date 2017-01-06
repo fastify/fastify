@@ -33,6 +33,14 @@ npm install fastify --save
 const fastify = require('fastify')()
 
 const schema = {
+  querystring: {
+    name: {
+      type: 'string'
+    },
+    excitement: {
+      type: 'integer'
+    }
+  },
   out: {
     type: 'object',
     properties: {
@@ -45,7 +53,13 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    reply.send({ hello: 'world' })
+    let response = 'world'
+
+    if (req.query.name) response = req.query.name
+
+    while(req.query.excitement--) response += '!'
+
+    reply.send({ hello: response })
   })
   .get('/no-schema', function (req, reply) {
     reply.send({ hello: 'world' })

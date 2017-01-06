@@ -33,14 +33,6 @@ npm install fastify --save
 const fastify = require('fastify')()
 
 const schema = {
-  querystring: {
-    name: {
-      type: 'string'
-    },
-    excitement: {
-      type: 'integer'
-    }
-  },
   out: {
     type: 'object',
     properties: {
@@ -53,13 +45,7 @@ const schema = {
 
 fastify
   .get('/', schema, function (req, reply) {
-    let response = 'world'
-
-    if (req.query.name) response = req.query.name
-
-    while(req.query.excitement--) response += '!'
-
-    reply.send({ hello: response })
+    reply.send({ hello: 'world' })
   })
   .get('/no-schema', function (req, reply) {
     reply.send({ hello: 'world' })
@@ -166,7 +152,9 @@ Options:
 
   * `payload`: validates the body of the request if it is a POST or a
     PUT. It uses [ajv][ajv].
-  * `querystring`: validates the querystring. It uses [ajv][ajv].
+  * `querystring`: validates the querystring. It uses [ajv][ajv]. This can be a complete JSON
+  Schema object, with the property `type` of `object` and `properties` object of parameters, or
+  simply the values of what would be contained in the `properties` object as shown below.
   * `params`: validates the params. It uses [ajv][ajv].
   * `out`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput. It uses
@@ -181,6 +169,14 @@ fastify.route({
   method: 'GET',
   url: '/',
   schema: {
+    querystring: {
+      name: {
+        type: 'string'
+      },
+      excitement: {
+        type: 'integer'
+      }
+    },
     out: {
       type: 'object',
       properties: {

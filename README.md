@@ -2,7 +2,7 @@
 <img src="https://github.com/fastify/graphics/raw/master/full-logo.png" width="650" height="auto"/>
 </p>
 
-# Fastify&nbsp;&nbsp;[![Build Status](https://travis-ci.org/mcollina/fastify.svg)](https://travis-ci.org/mcollina/fastify)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/mcollina/fastify/badge.svg?branch=master)](https://coveralls.io/github/mcollina/fastify?branch=master) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+# Fastify&nbsp;&nbsp;[![Build Status](https://travis-ci.org/fastify/fastify.svg?branch=master)](https://travis-ci.org/fastify/fastify)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/mcollina/fastify/badge.svg?branch=master)](https://coveralls.io/github/mcollina/fastify?branch=master) [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
 [Extremely fast](#benchmarks) node.js web framework, inspired by
 [Express][express], [Hapi][hapi] and [Restify][restify].

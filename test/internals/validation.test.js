@@ -61,7 +61,7 @@ test('build schema - payload schema', t => {
 })
 
 test('build schema - querystring schema', t => {
-  t.plan(1)
+  t.plan(2)
   const opts = {
     schema: {
       querystring: {
@@ -73,6 +73,21 @@ test('build schema - querystring schema', t => {
     }
   }
   validation.build(opts)
+  t.type(opts[symbols.querystringSchema].schema.type, 'string')
+  t.is(typeof opts[symbols.querystringSchema], 'function')
+})
+
+test('build schema - querystring schema abbreviated', t => {
+  t.plan(2)
+  const opts = {
+    schema: {
+      querystring: {
+        hello: { type: 'string' }
+      }
+    }
+  }
+  validation.build(opts)
+  t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
 

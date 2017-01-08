@@ -38,17 +38,17 @@
     "split2": "^2.1.0",
     "standard": "^8.6.0",
     "take-five": "^1.3.1",
-    "tap": "^8.0.1",
+    "tap": "^9.0.1",
     "then-sleep": "^1.0.1"
   },
   "dependencies": {
-    "ajv": "^4.9.0",
+    "ajv": "^4.10.4",
     "body": "^5.1.0",
     "boot-in-the-arse": "^0.3.0",
-    "fast-json-stringify": "^0.10.1",
+    "fast-json-stringify": "^0.10.3",
     "fast-safe-stringify": "^1.1.3",
     "pathname-match": "^1.2.0",
-    "pino-http": "^2.1.0",
+    "pino-http": "^2.2.0",
     "pump": "^1.0.2",
     "wayfarer": "^6.3.0"
   }

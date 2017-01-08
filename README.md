@@ -72,7 +72,7 @@ As far as we know, it is one of the fastest web frameworks in town:
 * Restify: 6133 req/sec
 * Express: 8534 req/sec
 * Koa: 9640 req/sec
-* *Fastify: 19580 req/sec*
+* *Fastify: 19860 req/sec*
 
 All benchmarks where average taken over 5 seconds, on the second run of `autocannon -c 100 -d 5 -p 10 localhost:3000`.
 

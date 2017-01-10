@@ -130,13 +130,15 @@ The Node core [server object](https://nodejs.org/api/http.html#http_class_http_s
 <a name="ready"></a>
 ### fastify.ready(callback)
 
-Function called when all the plugins has been loaded.  
+Function called when all the plugins has been loaded.
+
 Emitted by [boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse).
 
 <a name="listen"></a>
 ### fastify.listen(port, [callback])
 
-Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event.  
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event.
+
 The callback is the same as the Node core.
 
 <a name="route"></a>
@@ -159,9 +161,11 @@ Options:
   * `out`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput. It uses
     [fast-json-stringify][fast-json-stringify].
-* `handler(request, reply)`: the function that will handle this request.  
-`request` is defined in [Request](#request).  
-`reply` is defined in [Reply](#reply).
+* `handler(request, reply)`: the function that will handle this request.
+
+  `request` is defined in [Request](#request).
+
+  `reply` is defined in [Reply](#reply).
 
 Example:
 ```js
@@ -267,7 +271,7 @@ To send a stream, just pass it as a parameter to .send(), the default `Content-T
 ```js
 fastify.get('/', schema, function (request, reply) {
   const fs = require('fs')
-  const stream = fs.createReadStream('some-file', 'utf8')  
+  const stream = fs.createReadStream('some-file', 'utf8')
   reply.send(stream)
 })
 ```
@@ -316,10 +320,14 @@ up the `OPTIONS` method.
 
 <a name="register"></a>
 ### fastify.register(plugin, [options], [callback])
-Used to register one or more plugins.  
-`plugin` can be a single function or an array of functions.  
-In case of the array of functions, the same options object and callback will be passed to them.  
-[boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse) is used to load the plugins.  
+Used to register one or more plugins.
+
+`plugin` can be a single function or an array of functions.
+
+In case of the array of functions, the same options object and callback will be passed to them.
+
+[boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse) is used to load the plugins.
+
 Example:
 ```js
 // server.js
@@ -360,11 +368,12 @@ module.exports = function (fastify, options, next) {
 
 <a name="logging"></a>
 ## Logging
-Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!  
+Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!
+
 By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as logger, with the log level setted to `'fatal'`.
 
 If you want to pass some options to the logger, just pass the logger option to fastify.
-You can find all the options [here](https://github.com/pinojs/pino#pinoopts-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
 ```js
 const split = require('split2')
 const stream = split(JSON.parse)

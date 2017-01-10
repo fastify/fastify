@@ -131,12 +131,14 @@ The Node core [server object](https://nodejs.org/api/http.html#http_class_http_s
 ### fastify.ready(callback)
 
 Function called when all the plugins has been loaded.
+
 Emitted by [boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse).
 
 <a name="listen"></a>
 ### fastify.listen(port, [callback])
 
 Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event.
+
 The callback is the same as the Node core.
 
 <a name="route"></a>
@@ -160,8 +162,10 @@ Options:
     schema allows us to have 10-20% more throughput. It uses
     [fast-json-stringify][fast-json-stringify].
 * `handler(request, reply)`: the function that will handle this request.
-`request` is defined in [Request](#request).
-`reply` is defined in [Reply](#reply).
+
+  `request` is defined in [Request](#request).
+
+  `reply` is defined in [Reply](#reply).
 
 Example:
 ```js
@@ -317,9 +321,13 @@ up the `OPTIONS` method.
 <a name="register"></a>
 ### fastify.register(plugin, [options], [callback])
 Used to register one or more plugins.
+
 `plugin` can be a single function or an array of functions.
+
 In case of the array of functions, the same options object and callback will be passed to them.
+
 [boot-in-the-arse](https://github.com/mcollina/boot-in-the-arse) is used to load the plugins.
+
 Example:
 ```js
 // server.js
@@ -361,6 +369,7 @@ module.exports = function (fastify, options, next) {
 <a name="logging"></a>
 ## Logging
 Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!
+
 By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as logger, with the log level setted to `'fatal'`.
 
 If you want to pass some options to the logger, just pass the logger option to fastify.

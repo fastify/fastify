@@ -60,3 +60,22 @@ test('use two functions', t => {
 
   instance.run(req, res)
 })
+
+test('stop the middleware chain if one errors', t => {
+  t.plan(1)
+
+  const instance = middleman(function (err, a, b) {
+    t.ok(err, 'error is forwarded')
+  })
+  const req = {}
+  const res = {}
+
+  instance.use(function (req, res, next) {
+    next(new Error('kaboom'))
+  }).use(function (req, res, next) {
+    t.fail('this should never be called')
+    next()
+  })
+
+  instance.run(req, res)
+})

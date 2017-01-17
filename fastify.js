@@ -10,6 +10,7 @@ const pinoHttp = require('pino-http')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
+const Middleman = require('./lib/middleman')
 
 function build (options) {
   options = options || {}
@@ -22,6 +23,8 @@ function build (options) {
   const logger = pinoHttp(options.logger)
 
   const router = wayfarer('/404')
+  const middleman = Middleman(_runMiddlewares)
+  const run = middleman.run
   const map = new Map()
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
@@ -49,10 +52,25 @@ function build (options) {
   fastify.listen = listen
   fastify.server = server
 
+  // middleware support
+  fastify.use = middleman.use
+
   return fastify
 
   function fastify (req, res) {
     logger(req, res)
+    run(req, res)
+  }
+
+  function _runMiddlewares (err, req, res) {
+    if (err) {
+      // TODO route this to the Reply error handling logic
+      logger.error(err)
+      res.statusCode = 500
+      res.end()
+      return
+    }
+
     router(stripUrl(req.url), req, res)
   }
 
@@ -122,6 +140,7 @@ function build (options) {
       node[opts.method] = opts
       map.set(opts.url, node)
     }
+
     // chainable api
     return fastify
   }

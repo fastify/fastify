@@ -50,6 +50,7 @@
     "pathname-match": "^1.2.0",
     "pino-http": "^2.2.0",
     "pump": "^1.0.2",
-    "wayfarer": "^6.3.0"
+    "wayfarer": "^6.3.0",
+    "reusify": "^1.0.0"
   }
 }

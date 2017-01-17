@@ -37,3 +37,26 @@ test('use a function', t => {
 
   instance.run(req, res)
 })
+
+test('use two functions', t => {
+  t.plan(5)
+
+  const instance = middleman(function (err, a, b) {
+    t.error(err)
+    t.equal(a, req)
+    t.equal(b, res)
+  })
+  const req = {}
+  const res = {}
+  var counter = 0
+
+  instance.use(function (req, res, next) {
+    t.is(counter++, 0, 'first function called')
+    next()
+  }).use(function (req, res, next) {
+    t.is(counter++, 1, 'second function called')
+    next()
+  })
+
+  instance.run(req, res)
+})

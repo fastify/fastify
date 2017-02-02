@@ -96,6 +96,7 @@ function build (options) {
       handler = schema
       schema = {}
     }
+
     return route({ method, url, schema, handler })
   }
 
@@ -108,6 +109,8 @@ function build (options) {
     if (!opts.handler) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
+
+    opts.schema.cors = typeof options.cors === 'undefined' ? true : options.cors
 
     buildSchema(opts)
 

@@ -411,6 +411,7 @@ const fastify = require('fastify')({
 
 This project was kindly sponsored by [nearForm](http://nearform.com).
 
+<a name="license"></a>
 ## License
 
 Licensed under [MIT](./LICENSE).

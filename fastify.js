@@ -6,6 +6,7 @@ const pluginLoader = require('boot-in-the-arse')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
+const Reply = require('./lib/reply')
 
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
@@ -64,10 +65,8 @@ function build (options) {
 
   function _runMiddlewares (err, req, res) {
     if (err) {
-      // TODO route this to the Reply error handling logic
-      logger.error(err)
-      res.statusCode = 500
-      res.end()
+      const reply = new Reply(req, res, null)
+      reply.send(err)
       return
     }
 

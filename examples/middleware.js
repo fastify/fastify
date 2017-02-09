@@ -2,7 +2,7 @@
 
 const fastify = require('../fastify')()
 const cors = require('cors')
-const helmet = require('cors')
+const helmet = require('helmet')
 
 const schema = {
   out: {

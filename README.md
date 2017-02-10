@@ -380,7 +380,7 @@ Example:
 ```js
 const fastify = require('fastify')()
 const cors = require('cors')
-const helmet = require('cors')
+const helmet = require('helmet')
 
 fastify
   .use(cors())

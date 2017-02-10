@@ -72,7 +72,7 @@ As far as we know, it is one of the fastest web frameworks in town:
 * Restify: 6133 req/sec
 * Express: 8534 req/sec
 * Koa: 9640 req/sec
-* *Fastify: 19860 req/sec*
+* *Fastify: 20256 req/sec*
 
 All benchmarks where average taken over 5 seconds, on the second run of `autocannon -c 100 -d 5 -p 10 localhost:3000`.
 
@@ -374,6 +374,11 @@ Use to add one or more middlewares, [express](http://npm.im/express)/[connect](h
 
 This does not support the full syntax `middleware(err, req, res, next)`,
 because error handling is done inside Fastify.
+
+Benchmarks with cors and helmet (used as single modules):
+* Express: 9.6k req/sec  
+* *Fastify: 14.4k req/sec*
+
 
 Example:
 

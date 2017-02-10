@@ -1,8 +1,14 @@
 'use strict'
 
 const fastify = require('../fastify')()
-const cors = require('cors')
-const helmet = require('helmet')
+
+fastify.use(require('cors')())
+fastify.use(require('dns-prefetch-control')())
+fastify.use(require('frameguard')())
+fastify.use(require('hide-powered-by')())
+fastify.use(require('hsts')())
+fastify.use(require('ienoopen')())
+fastify.use(require('x-xss-protection')())
 
 const schema = {
   out: {
@@ -16,8 +22,6 @@ const schema = {
 }
 
 fastify
-  .use(cors())
-  .use(helmet())
   .get('/', schema, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })

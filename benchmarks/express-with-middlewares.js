@@ -1,12 +1,15 @@
 'use strict'
 
 var express = require('express')
-var cors = require('cors')
-var helmet = require('helmet')
 var app = express()
 
-app.use(cors())
-app.use(helmet())
+app.use(require('cors')())
+app.use(require('dns-prefetch-control')())
+app.use(require('frameguard')())
+app.use(require('hide-powered-by')())
+app.use(require('hsts')())
+app.use(require('ienoopen')())
+app.use(require('x-xss-protection')())
 
 app.get('/', function (req, res) {
   res.send({ hello: 'world' })

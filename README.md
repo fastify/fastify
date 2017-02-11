@@ -72,7 +72,7 @@ As far as we know, it is one of the fastest web frameworks in town:
 * Restify: 6133 req/sec
 * Express: 8534 req/sec
 * Koa: 9640 req/sec
-* *Fastify: 19860 req/sec*
+* *Fastify: 20256 req/sec*
 
 All benchmarks where average taken over 5 seconds, on the second run of `autocannon -c 100 -d 5 -p 10 localhost:3000`.
 
@@ -92,6 +92,7 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
   * <a href="#patch"><code>fastify.<b>patch()</b></code></a>
   * <a href="#options"><code>fastify.<b>options()</b></code></a>
   * <a href="#register"><code>fastify.<b>register()</b></code></a>
+  * <a href="#use"><code>fastify.<b>use()</b></code></a>
 
 <a name="constructor"></a>
 ### fastify(req, res)
@@ -364,6 +365,40 @@ module.exports = function (fastify, options, next) {
   })
   next()
 }
+```
+
+<a name="use"></a>
+### fastify.use(middleware(req, res, next))
+
+Use to add one or more middlewares, [express](http://npm.im/express)/[connect](https://www.npmjs.com/package/connect) style.
+
+This does not support the full syntax `middleware(err, req, res, next)`,
+because error handling is done inside Fastify.
+
+Benchmarks with cors and helmet (used as single modules):
+* Express: 9.6k req/sec  
+* *Fastify: 14.4k req/sec*
+
+
+Example:
+
+```js
+const fastify = require('fastify')()
+const cors = require('cors')
+const helmet = require('helmet')
+
+fastify
+  .use(cors())
+  .use(helmet())
+  .get('/', function (req, reply) {
+    reply.header('Content-Type', 'application/json').code(200)
+    reply.send({ hello: 'world' })
+  })
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
 ```
 
 <a name="logging"></a>

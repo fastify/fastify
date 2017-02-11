@@ -4,12 +4,13 @@ const t = require('tap')
 const test = t.test
 
 const internals = require('../../lib/tier-node')[Symbol.for('internals')]
+const Request = require('../../lib/request')
 const buildSchema = require('../../lib/validation').build
 
 test('Request object', t => {
   t.plan(5)
-  const req = new internals.Request('params', 'req', 'body', 'query')
-  t.type(req, internals.Request)
+  const req = new Request('params', 'req', 'body', 'query')
+  t.type(req, Request)
   t.equal(req.params, 'params')
   t.equal(req.req, 'req')
   t.equal(req.body, 'body')
@@ -164,7 +165,10 @@ test('reply function - error 500', t => {
   }
   const req = {
     method: 'GET',
-    url: 'http://example.com'
+    url: 'http://example.com',
+    log: {
+      error: () => {}
+    }
   }
   handle(null, req, res)
 })

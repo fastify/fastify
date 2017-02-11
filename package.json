@@ -28,9 +28,16 @@
   "homepage": "https://github.com/mcollina/fastify#readme",
   "devDependencies": {
     "bluebird": "^3.4.7",
+    "cors": "^2.8.1",
     "coveralls": "^2.11.15",
+    "dns-prefetch-control": "^0.1.0",
     "express": "^4.14.0",
+    "frameguard": "^3.0.0",
     "hapi": "^16.0.2",
+    "helmet": "^3.4.0",
+    "hide-powered-by": "^1.0.0",
+    "hsts": "^2.0.0",
+    "ienoopen": "^1.0.0",
     "koa": "^1.2.4",
     "pre-commit": "^1.1.3",
     "request": "^2.79.0",
@@ -39,7 +46,8 @@
     "standard": "^8.6.0",
     "take-five": "^1.3.1",
     "tap": "^9.0.1",
-    "then-sleep": "^1.0.1"
+    "then-sleep": "^1.0.1",
+    "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
     "ajv": "^4.10.4",
@@ -47,6 +55,7 @@
     "boot-in-the-arse": "^0.3.0",
     "fast-json-stringify": "^0.10.3",
     "fast-safe-stringify": "^1.1.3",
+    "fastify-middleman": "^0.1.0",
     "pathname-match": "^1.2.0",
     "pino-http": "^2.2.0",
     "pump": "^1.0.2",

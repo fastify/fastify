@@ -6,12 +6,12 @@ const pluginLoader = require('boot-in-the-arse')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
+const Middleman = require('fastify-middleman')
 const Reply = require('./lib/reply')
 
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
-const Middleman = require('./lib/middleman')
 
 function build (options) {
   options = options || {}

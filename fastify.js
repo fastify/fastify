@@ -6,7 +6,7 @@ const pluginLoader = require('boot-in-the-arse')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
-const Middleman = require('fastify-middleman')
+const Middie = require('middie')
 const Reply = require('./lib/reply')
 
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -24,8 +24,8 @@ function build (options) {
   const logger = pinoHttp(options.logger)
 
   const router = wayfarer('/404')
-  const middleman = Middleman(_runMiddlewares)
-  const run = middleman.run
+  const middie = Middie(_runMiddlewares)
+  const run = middie.run
   const map = new Map()
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
@@ -54,7 +54,7 @@ function build (options) {
   fastify.server = server
 
   // middleware support
-  fastify.use = middleman.use
+  fastify.use = middie.use
 
   return fastify
 

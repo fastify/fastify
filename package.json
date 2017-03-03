@@ -51,14 +51,15 @@
   },
   "dependencies": {
     "ajv": "^4.11.2",
+    "avvio": "^0.3.0",
     "body": "^5.1.0",
-    "boot-in-the-arse": "^0.3.0",
     "fast-json-stringify": "^0.10.3",
     "fast-safe-stringify": "^1.1.6",
     "middie": "^0.1.1",
     "pathname-match": "^1.2.0",
     "pino-http": "^2.4.1",
     "pump": "^1.0.2",
+    "steed": "^1.1.3",
     "wayfarer": "^6.4.0"
   }
 }

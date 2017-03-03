@@ -2,16 +2,19 @@
 
 const wayfarer = require('wayfarer')
 const stripUrl = require('pathname-match')
-const pluginLoader = require('boot-in-the-arse')
+const pluginLoader = require('avvio')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
-const Reply = require('./lib/reply')
+const mapSeries = require('steed')().mapSeries
 
+const Reply = require('./lib/reply')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
+const hooks = require('./lib/hooks')
+const onRequestRaw = hooks.get.onRequestRaw
 
 function build (options) {
   options = options || {}
@@ -48,6 +51,9 @@ function build (options) {
   // extended route
   fastify.route = route
 
+  // hooks
+  fastify.addHook = hooks.add
+
   // plugin
   fastify.register = fastify.use
   fastify.listen = listen
@@ -70,7 +76,21 @@ function build (options) {
       return
     }
 
-    router(stripUrl(req.url), req, res)
+    mapSeries(onRequestRaw(), _onRequestIterator, routeCallback)
+
+    function _onRequestIterator (fn, cb) {
+      setImmediate(fn, req, res, cb)
+    }
+
+    function routeCallback (err) {
+      if (err) {
+        const reply = new Reply(req, res, null)
+        reply.send(err)
+        return
+      }
+
+      router(stripUrl(req.url), req, res)
+    }
   }
 
   function listen (port, cb) {

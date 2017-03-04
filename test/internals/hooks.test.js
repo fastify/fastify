@@ -3,7 +3,11 @@
 const t = require('tap')
 const test = t.test
 
-const hooks = require('../../lib/hooks')
+const hooksManager = require('../../lib/hooks')
+const hooks = hooksManager({
+  onRequest: [],
+  onRequestRaw: []
+})
 const noop = () => {}
 
 test('hooks should store an object with the hooks and .get shoudl return it', t => {

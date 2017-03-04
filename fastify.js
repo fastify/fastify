@@ -7,14 +7,13 @@ const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
-const mapSeries = require('steed')().mapSeries
+const fastseries = require('fastseries')
 
 const Reply = require('./lib/reply')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
-const hooks = require('./lib/hooks')
-const onRequestRaw = hooks.get.onRequestRaw
+const hooksManager = require('./lib/hooks')
 
 function build (options) {
   options = options || {}
@@ -30,6 +29,14 @@ function build (options) {
   const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
+  const runInSeries = fastseries()
+
+  const hooks = hooksManager({
+    onRequest: [],
+    onRequestRaw: []
+  })
+  const onRequestRaw = hooks.get.onRequestRaw
+
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
 
@@ -76,21 +83,31 @@ function build (options) {
       return
     }
 
-    mapSeries(onRequestRaw(), _onRequestIterator, routeCallback)
+    runInSeries(
+      new State(req, res),
+      _onRequestIterator,
+      onRequestRaw(),
+      routeCallback
+    )
+  }
 
-    function _onRequestIterator (fn, cb) {
-      setImmediate(fn, req, res, cb)
+  function State (req, res) {
+    this.req = req
+    this.res = res
+  }
+
+  function _onRequestIterator (fn, cb) {
+    setImmediate(fn, this.req, this.res, cb)
+  }
+
+  function routeCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, null)
+      reply.send(err)
+      return
     }
 
-    function routeCallback (err) {
-      if (err) {
-        const reply = new Reply(req, res, null)
-        reply.send(err)
-        return
-      }
-
-      router(stripUrl(req.url), req, res)
-    }
+    router(stripUrl(this.req.url), this.req, this.res)
   }
 
   function listen (port, cb) {
@@ -155,7 +172,7 @@ function build (options) {
 
       map.get(opts.url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router)
+      const node = buildNode(opts.url, router, hooks.get)
       node[opts.method] = opts
       map.set(opts.url, node)
     }

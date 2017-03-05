@@ -29,13 +29,11 @@ function build (options) {
   const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
-  const runInSeries = fastseries()
+  const runHooks = fastseries()
 
-  const hooks = hooksManager({
-    onRequest: [],
-    onRequestRaw: []
-  })
-  const onRequestRaw = hooks.get.onRequestRaw
+  const hooks = hooksManager()
+  const preMiddleware = hooks.get.preMiddleware
+  const preRouting = hooks.get.preRouting
 
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
@@ -73,7 +71,14 @@ function build (options) {
 
   function fastify (req, res) {
     logger(req, res)
-    run(req, res)
+
+    // preMiddleware hook
+    runHooks(
+      new State(req, res),
+      hookIterator,
+      preMiddleware(),
+      middlewareCallback
+    )
   }
 
   function _runMiddlewares (err, req, res) {
@@ -83,10 +88,11 @@ function build (options) {
       return
     }
 
-    runInSeries(
+    // postMiddleware|preRouting hook
+    runHooks(
       new State(req, res),
-      _onRequestIterator,
-      onRequestRaw(),
+      hookIterator,
+      preRouting(),
       routeCallback
     )
   }
@@ -96,8 +102,17 @@ function build (options) {
     this.res = res
   }
 
-  function _onRequestIterator (fn, cb) {
-    setImmediate(fn, this.req, this.res, cb)
+  function hookIterator (fn, cb) {
+    fn(this.req, this.res, cb)
+  }
+
+  function middlewareCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, null)
+      reply.send(err)
+      return
+    }
+    run(this.req, this.res)
   }
 
   function routeCallback (err) {

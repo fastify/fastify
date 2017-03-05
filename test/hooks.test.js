@@ -9,7 +9,7 @@ test('hooks - add onRequest', t => {
   t.plan(1)
   try {
     fastify.addHook({
-      onRequest: function (req, res, next) {
+      preHandler: function (req, res, next) {
         req.test = 'the request is coming'
         res.test = 'the reply has come'
         if (req.req.method === 'HEAD') {
@@ -29,7 +29,7 @@ test('hooks - add onRequestRaw', t => {
   t.plan(1)
   try {
     fastify.addHook({
-      onRequestRaw: function (req, res, next) {
+      preMiddleware: function (req, res, next) {
         req.raw = 'the request is coming'
         res.raw = 'the reply has come'
         if (req.method === 'DELETE') {

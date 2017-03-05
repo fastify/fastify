@@ -3,7 +3,7 @@
 var koa = require('koa')
 var app = koa()
 
-app.use(function *() {
+app.use(function * () {
   this.body = JSON.stringify({ hello: 'world' })
 })
 

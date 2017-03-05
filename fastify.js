@@ -32,7 +32,7 @@ function build (options) {
   const runHooks = fastseries()
 
   const hooks = hooksManager()
-  const preMiddleware = hooks.get.preMiddleware
+  const onRequest = hooks.get.onRequest
   const preRouting = hooks.get.preRouting
 
   pluginLoader(fastify, {})
@@ -72,11 +72,11 @@ function build (options) {
   function fastify (req, res) {
     logger(req, res)
 
-    // preMiddleware hook
+    // onRequest hook
     runHooks(
       new State(req, res),
       hookIterator,
-      preMiddleware(),
+      onRequest(),
       middlewareCallback
     )
   }
@@ -88,7 +88,7 @@ function build (options) {
       return
     }
 
-    // postMiddleware|preRouting hook
+    // preRouting hook
     runHooks(
       new State(req, res),
       hookIterator,

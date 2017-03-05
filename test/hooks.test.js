@@ -5,18 +5,16 @@ const test = t.test
 const request = require('request')
 const fastify = require('..')()
 
-test('hooks - add onRequest', t => {
+test('hooks - add preHandler', t => {
   t.plan(1)
   try {
-    fastify.addHook({
-      preHandler: function (req, res, next) {
-        req.test = 'the request is coming'
-        res.test = 'the reply has come'
-        if (req.req.method === 'HEAD') {
-          next(new Error('some error'))
-        } else {
-          next()
-        }
+    fastify.addHook('preHandler', function (request, reply, next) {
+      request.test = 'the request is coming'
+      reply.test = 'the reply has come'
+      if (request.req.method === 'HEAD') {
+        next(new Error('some error'))
+      } else {
+        next()
       }
     })
     t.pass()
@@ -25,24 +23,27 @@ test('hooks - add onRequest', t => {
   }
 })
 
-test('hooks - add onRequestRaw', t => {
+test('hooks - add onRequest', t => {
   t.plan(1)
   try {
-    fastify.addHook({
-      onRequest: function (req, res, next) {
-        req.raw = 'the request is coming'
-        res.raw = 'the reply has come'
-        if (req.method === 'DELETE') {
-          next(new Error('some error'))
-        } else {
-          next()
-        }
+    fastify.addHook('onRequest', function (req, res, next) {
+      req.raw = 'the request is coming'
+      res.raw = 'the reply has come'
+      if (req.method === 'DELETE') {
+        next(new Error('some error'))
+      } else {
+        next()
       }
     })
     t.pass()
   } catch (e) {
     t.fail()
   }
+})
+
+test('hooks - addHook returns an instance of fastify', t => {
+  t.plan(1)
+  t.type(fastify.addHook('preRouting', (req, res, next) => next()), fastify)
 })
 
 fastify.get('/', function (req, reply) {
@@ -78,7 +79,7 @@ fastify.listen(0, err => {
     })
   })
 
-  test('hooks - throw onRequest', t => {
+  test('hooks - throw preHandler', t => {
     t.plan(2)
     request({
       method: 'HEAD',
@@ -89,7 +90,7 @@ fastify.listen(0, err => {
     })
   })
 
-  test('hooks - throw onRequestRaw', t => {
+  test('hooks - throw onRequest', t => {
     t.plan(2)
     request({
       method: 'DELETE',

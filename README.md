@@ -93,6 +93,7 @@ All benchmarks where average taken over 5 seconds, on the second run of `autocan
   * <a href="#options"><code>fastify.<b>options()</b></code></a>
   * <a href="#register"><code>fastify.<b>register()</b></code></a>
   * <a href="#use"><code>fastify.<b>use()</b></code></a>
+  * <a href="#hooks"><code>fastify.<b>addHook()</b></code></a>
 
 <a name="constructor"></a>
 ### fastify(req, res)
@@ -400,6 +401,27 @@ fastify.listen(3000, err => {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
+<a name="hooks"></a>
+### fastify.addHook({ hook: callback })
+Use to add one or more hooks inside the fastify lifecycle.  
+Currently supported hooks (in order of execution):
+- *onRequest*
+- *preRouting*
+- *preHandler*
+
+Example:
+```js
+fastify.addHook({
+  onRequest: function (request, response, next) {
+    // perform some operation
+    next()
+  }
+})
+```
+
+`addHook` can accept an array of hooks, and you can register more than one callback for every hook.  
+*preHandler* gets as parameters the same object of the route handler, the fastify `request` and `reply` objects.
 
 <a name="logging"></a>
 ## Logging

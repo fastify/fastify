@@ -29,7 +29,7 @@ test('hooks - add onRequestRaw', t => {
   t.plan(1)
   try {
     fastify.addHook({
-      preMiddleware: function (req, res, next) {
+      onRequest: function (req, res, next) {
         req.raw = 'the request is coming'
         res.raw = 'the reply has come'
         if (req.method === 'DELETE') {

@@ -8,40 +8,52 @@ const hooks = hooksManager()
 const otherHooks = hooksManager()
 const noop = () => {}
 
-test('hooks should store an object with the hooks and .get shoudl return it', t => {
-  t.plan(2)
+test('hooks should store an object with the hooks and .get should return it', t => {
+  t.plan(4)
   const h = hooks.get()
-  t.ok(Array.isArray(h.preMiddleware))
+  t.is(typeof h, 'object')
+  t.ok(Array.isArray(h.onRequest))
   t.ok(Array.isArray(h.preRouting))
+  t.ok(Array.isArray(h.preHandler))
 })
 
 test('hooks.add should add an hook to the given hook', t => {
-  t.plan(4)
+  t.plan(6)
   hooks.add({
-    preMiddleware: noop
+    onRequest: noop
   })
-  t.is(hooks.get.preMiddleware().length, 1)
-  t.is(typeof hooks.get.preMiddleware()[0], 'function')
+  t.is(hooks.get.onRequest().length, 1)
+  t.is(typeof hooks.get.onRequest()[0], 'function')
 
   hooks.add({
-    postMiddleware: noop
+    preRouting: noop
   })
-  t.is(hooks.get.postMiddleware().length, 1)
-  t.is(typeof hooks.get.postMiddleware()[0], 'function')
+  t.is(hooks.get.preRouting().length, 1)
+  t.is(typeof hooks.get.preRouting()[0], 'function')
+
+  hooks.add({
+    preHandler: noop
+  })
+  t.is(hooks.get.preHandler().length, 1)
+  t.is(typeof hooks.get.preHandler()[0], 'function')
 })
 
 test('hooks.add can accept an array of functions', t => {
-  t.plan(4)
+  t.plan(6)
   hooks.add([{
-    preMiddleware: noop
+    onRequest: noop
   }, {
-    postMiddleware: noop
+    preRouting: noop
+  }, {
+    preHandler: noop
   }])
 
-  t.is(hooks.get.preMiddleware().length, 2)
-  t.is(typeof hooks.get.preMiddleware()[1], 'function')
-  t.is(hooks.get.postMiddleware().length, 2)
-  t.is(typeof hooks.get.postMiddleware()[1], 'function')
+  t.is(hooks.get.onRequest().length, 2)
+  t.is(typeof hooks.get.onRequest()[1], 'function')
+  t.is(hooks.get.preRouting().length, 2)
+  t.is(typeof hooks.get.preRouting()[1], 'function')
+  t.is(hooks.get.preHandler().length, 2)
+  t.is(typeof hooks.get.preHandler()[1], 'function')
 })
 
 test('hooks should throw on unexisting handler', t => {
@@ -59,37 +71,8 @@ test('hooks should throw on unexisting handler', t => {
 test('different instances does not affect each other', t => {
   t.plan(1)
   hooks.add({
-    preMiddleware: noop
+    onRequest: noop
   })
 
-  t.is(otherHooks.get.preMiddleware.length, 0)
-})
-
-test('hooks aliases', t => {
-  t.plan(5)
-  otherHooks.add([{
-    preMiddleware: noop
-  }, {
-    postMiddleware: noop
-  }, {
-    preRouting: noop
-  }, {
-    postRouting: noop
-  }, {
-    preParsing: noop
-  }, {
-    postParsing: noop
-  }, {
-    preValidation: noop
-  }, {
-    postValidation: noop
-  }, {
-    preHandler: noop
-  }])
-
-  t.is(otherHooks.get.preMiddleware().length, 1)
-  t.is(otherHooks.get.preRouting().length, 2)
-  t.is(otherHooks.get.preParsing().length, 2)
-  t.is(otherHooks.get.preValidation().length, 2)
-  t.is(otherHooks.get.preHandler().length, 2)
+  t.is(otherHooks.get.onRequest.length, 0)
 })

@@ -412,16 +412,13 @@ Currently supported hooks (in order of execution):
 
 Example:
 ```js
-fastify.addHook({
-  onRequest: function (request, response, next) {
-    // perform some operation
-    next()
-  }
+fastify.addHook('onRequest', function (req, res, next) {
+  // perform some operation
+  next()
 })
 ```
-
-`addHook` can accept an array of hooks, and you can register more than one callback for every hook.  
-*preHandler* gets as parameters the same object of the route handler, the fastify `request` and `reply` objects.
+*preHandler* gets as parameters the same object of the route handler, the fastify `request` and `reply` objects.  
+`addHook` returns an instance of fastify, so you can chain more addHooks calls.
 
 <a name="logging"></a>
 ## Logging

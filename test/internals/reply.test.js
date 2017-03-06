@@ -22,7 +22,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
-  t.strictEqual(reply.req, request)
+  t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.handle, handle)
 })

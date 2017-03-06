@@ -2,16 +2,18 @@
 
 const wayfarer = require('wayfarer')
 const stripUrl = require('pathname-match')
-const pluginLoader = require('boot-in-the-arse')
+const pluginLoader = require('avvio')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
-const Reply = require('./lib/reply')
+const fastseries = require('fastseries')
 
+const Reply = require('./lib/reply')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
+const hooksManager = require('./lib/hooks')
 
 function build (options) {
   options = options || {}
@@ -27,6 +29,12 @@ function build (options) {
   const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
+  const runHooks = fastseries()
+
+  const hooks = hooksManager()
+  const onRequest = hooks.get.onRequest
+  const preRouting = hooks.get.preRouting
+
   pluginLoader(fastify, {})
   router.on('/404', defaultRoute)
 
@@ -48,6 +56,9 @@ function build (options) {
   // extended route
   fastify.route = route
 
+  // hooks
+  fastify.addHook = hooks.add
+
   // plugin
   fastify.register = fastify.use
   fastify.listen = listen
@@ -60,7 +71,14 @@ function build (options) {
 
   function fastify (req, res) {
     logger(req, res)
-    run(req, res)
+
+    // onRequest hook
+    runHooks(
+      new State(req, res),
+      hookIterator,
+      onRequest(),
+      middlewareCallback
+    )
   }
 
   function _runMiddlewares (err, req, res) {
@@ -70,7 +88,41 @@ function build (options) {
       return
     }
 
-    router(stripUrl(req.url), req, res)
+    // preRouting hook
+    runHooks(
+      new State(req, res),
+      hookIterator,
+      preRouting(),
+      routeCallback
+    )
+  }
+
+  function State (req, res) {
+    this.req = req
+    this.res = res
+  }
+
+  function hookIterator (fn, cb) {
+    fn(this.req, this.res, cb)
+  }
+
+  function middlewareCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, null)
+      reply.send(err)
+      return
+    }
+    run(this.req, this.res)
+  }
+
+  function routeCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, null)
+      reply.send(err)
+      return
+    }
+
+    router(stripUrl(this.req.url), this.req, this.res)
   }
 
   function listen (port, cb) {
@@ -135,7 +187,7 @@ function build (options) {
 
       map.get(opts.url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router)
+      const node = buildNode(opts.url, router, hooks.get)
       node[opts.method] = opts
       map.set(opts.url, node)
     }

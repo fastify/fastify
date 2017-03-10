@@ -21,7 +21,7 @@ try {
 }
 
 fastify.get('/', function (req, reply) {
-  t.ok(req.req.log)
+  t.ok(req.log)
   reply.send(null, 200, { hello: 'world' })
 })
 

@@ -14,13 +14,14 @@ const hooks = hooksManager({
 }).get
 
 test('Request object', t => {
-  t.plan(5)
-  const req = new Request('params', 'req', 'body', 'query')
+  t.plan(6)
+  const req = new Request('params', { log: null }, 'body', 'query')
   t.type(req, Request)
   t.equal(req.params, 'params')
-  t.equal(req.req, 'req')
+  t.deepEqual(req.req, { log: null })
   t.equal(req.body, 'body')
   t.equal(req.query, 'query')
+  t.equal(req.log, null)
 })
 
 test('bodyParsed function', t => {
@@ -81,7 +82,7 @@ test('handler function - reply', t => {
     }
   }
   buildSchema(handle)
-  internals.handler(hooks, handle, null, null, res, null, null)
+  internals.handler(hooks, handle, null, { log: null }, res, null, null)
 })
 
 test('routerHandler function - return a function', t => {

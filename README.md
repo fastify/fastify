@@ -232,12 +232,13 @@ An object including the following properties:
 * `body` - the body
 * `params` - the params matching the URL
 * `req` - the incoming HTTP request from Node core
+* `log` - the logger instance of the incoming request
 
 <a name="reply"></a>
 #### Reply
 
 An object that exposes three APIs.
-* `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+* `.send(payload, [serializeSchema])` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object. *serializeSchema* if setted to `false`, disables the custom serializer for the current handler and uses the default one.
 * `.code(statusCode)` - Sets the status code (default to 200).
 * `.header(name, value)` - Sets the headers.
 
@@ -248,6 +249,14 @@ fastify.get('/', schema, function (request, reply) {
     .code(200)
     .header('Content-Type', 'application/json')
     .send({ hello 'world' })
+})
+// - or -
+fastify.get('/', schema, function (request, reply) {
+  reply
+    .code(200)
+    .header('Content-Type', 'application/json')
+    // disables the custom serializer for the current handler and uses the default one
+    .send({ hello 'world' }, false)
 })
 ```
 
@@ -403,7 +412,7 @@ fastify.listen(3000, err => {
 ```
 
 <a name="hooks"></a>
-### fastify.addHook({ hook: callback })
+### fastify.addHook('hookName', callback)
 Use to add one or more hooks inside the fastify lifecycle.  
 Currently supported hooks (in order of execution):
 - *onRequest*
@@ -437,6 +446,11 @@ const fastify = require('fastify')({
     level: 'info',
     stream: stream
   }
+})
+
+fastify.get('/', schema, function (req, reply) {
+  req.log.info('Some info about the current request')
+  reply.send({ hello: 'world' })
 })
 ```
 

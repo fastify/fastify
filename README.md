@@ -238,9 +238,10 @@ An object including the following properties:
 #### Reply
 
 An object that exposes three APIs.
-* `.send(payload, [serializeSchema])` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object. *serializeSchema* if setted to `false`, disables the custom serializer for the current handler and uses the default one.
+* `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
 * `.code(statusCode)` - Sets the status code (default to 200).
 * `.header(name, value)` - Sets the headers.
+* `.serializer(function)` - Sets a custom serializer for the payload.
 
 Example:
 ```js
@@ -248,15 +249,16 @@ fastify.get('/', schema, function (request, reply) {
   reply
     .code(200)
     .header('Content-Type', 'application/json')
-    .send({ hello 'world' })
+    .send({ hello: 'world' })
 })
-// - or -
-fastify.get('/', schema, function (request, reply) {
+
+// If you need a custom serializer
+fastify.get('/custom-serializer', schema, function (request, reply) {
   reply
     .code(200)
-    .header('Content-Type', 'application/json')
-    // disables the custom serializer for the current handler and uses the default one
-    .send({ hello 'world' }, false)
+    .header('Content-Type', 'application/x-protobuf')
+    .serializer(protoBuf.serialize)
+    .send({ hello: 'world' })
 })
 ```
 

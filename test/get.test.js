@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const request = require('request')
 const fastify = require('..')()
+const safeStringify = require('fast-safe-stringify')
 
 const schema = {
   out: {
@@ -113,11 +114,11 @@ test('wrong object for schema - get', t => {
   }
 })
 
-test('Avoid the schema serializer - get', t => {
+test('custom serializer - get', t => {
   t.plan(1)
   try {
-    fastify.get('/avoid-schema', numberSchema, function (req, reply) {
-      reply.code(200).send({ hello: 'world' }, false)
+    fastify.get('/custom-serializer', numberSchema, function (req, reply) {
+      reply.code(200).serializer(safeStringify).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {
@@ -230,11 +231,11 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - avoid the schema serializer', t => {
+  test('shorthand - custom serializer', t => {
     t.plan(4)
     request({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/avoid-schema'
+      uri: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

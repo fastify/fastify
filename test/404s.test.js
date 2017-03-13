@@ -20,7 +20,7 @@ fastify.get('/', schema, function (req, reply) {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(3000, err => {
+fastify.listen(0, err => {
   t.error(err)
 
   fastify.server.unref()

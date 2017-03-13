@@ -27,12 +27,13 @@ test('Once called, Reply should return an object with methods', t => {
   t.strictEqual(reply.handle, handle)
 })
 
-test('reply.header and reply.code should return an instance of Reply', t => {
-  t.plan(2)
+test('reply.header, reply.code and reply-serializer should return an instance of Reply', t => {
+  t.plan(3)
   const request = {}
   const response = { setHeader: () => {} }
   const reply = new Reply(request, response, null)
   t.type(reply.code(1), Reply)
+  t.type(reply.serializer(() => {}), Reply)
   t.type(reply.header('hello', 'world'), Reply)
 })
 
@@ -48,6 +49,14 @@ test('Reply can set code and header of a response', t => {
   } catch (e) {
     t.fail()
   }
+})
+
+test('reply.serializer should set a custom serializer', t => {
+  t.plan(2)
+  const reply = new Reply(null, null, null)
+  t.equal(reply._serializer, null)
+  reply.serializer('serializer')
+  t.equal(reply._serializer, 'serializer')
 })
 
 test('Reply can set code and header of a response', t => {

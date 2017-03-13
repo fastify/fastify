@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const request = require('request')
 const fastify = require('..')()
+const safeStringify = require('fast-safe-stringify')
 
 const schema = {
   out: {
@@ -11,6 +12,17 @@ const schema = {
     properties: {
       hello: {
         type: 'string'
+      }
+    }
+  }
+}
+
+const numberSchema = {
+  out: {
+    type: 'object',
+    properties: {
+      hello: {
+        type: 'number'
       }
     }
   }
@@ -82,6 +94,31 @@ test('missing schema - get', t => {
   try {
     fastify.get('/missing', function (req, reply) {
       reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('wrong object for schema - get', t => {
+  t.plan(1)
+  try {
+    fastify.get('/wrong-object-for-schema', numberSchema, function (req, reply) {
+      // will send { hello: null }
+      reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('custom serializer - get', t => {
+  t.plan(1)
+  try {
+    fastify.get('/custom-serializer', numberSchema, function (req, reply) {
+      reply.code(200).serializer(safeStringify).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {
@@ -173,6 +210,32 @@ fastify.listen(0, err => {
     request({
       method: 'GET',
       uri: 'http://localhost:' + fastify.server.address().port + '/missing'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('shorthand - request get missing schema', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: null })
+    })
+  })
+
+  test('shorthand - custom serializer', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

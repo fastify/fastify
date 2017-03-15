@@ -18,15 +18,18 @@ fastify.get('/', schema, function (request, reply) {
     .send({ hello: 'world' })
 })
 ```
+<a name="code"></a>
 ### Code
 If not setted via `reply.code`, the resulting `statusCode` will be `200` or `204` if there is not content to send.
 
+<a name="header"></a>
 ### Header
 Sets a custom header to the response.  
 If you not set a `'Content-Type'` header, Fastify assumes that you are using `'application/json'`, unless you are send a stream, in that cases Fastify recognize it and sets the `'Content-Type'` at `'application/octet-stream'`.
 
 *Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
 
+<a name="serializer"></a>
 ### Serializer
 Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
 
@@ -37,10 +40,13 @@ reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
+*Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#serialize) to understand how serialize is done.*
 
+<a name="send"></a>
 ### Send
  As the name suggests, `.send()` is the function that sends the payload to the end user.
 
+<a name="send-object"></a>
 #### Objects
 As writed above, if you are sending JSON objects, *send* will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
 ```js
@@ -49,6 +55,7 @@ fastify.get('/json', schema, function (request, reply) {
 })
 ```
 
+<a name="send-promise"></a>
 #### Promises
 *send* handle natively the *promises* and supports out of the box *async-await*.
 ```js
@@ -69,6 +76,7 @@ fastify.get('/async-await', schema, async function (request, reply) {
 })
 ```
 
+<a name="send-streams"></a>
 #### Streams
 *send* can also handle strems out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not setted a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
@@ -79,8 +87,10 @@ fastify.get('/streams', function (request, reply) {
 })
 ```
 
+<a name="errors"></a>
 #### Errors
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically set the error code to 500 if is not setted or if the *statusCode* is lower than 500.
 
+<a name="payload-type"></a>
 #### Type of the final payload
 It is crucial that the sent payload is a `string` or a `Buffer`, otherwise *send* will throw at runtime.

@@ -81,6 +81,12 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+- `fastify.server`: The Node core server object
+- `fastify.ready(callback)`: Function called when all the plugins has been loaded.
+- `fastify.listen(callback)`: Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core.
+- `fastify.route(options)`: check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
+
+<a name="register"></a>
 ### Register
 As you can see use Fastify is very easy and handy.
 Obviously register all the routes in the same file is not a good idea, Fastify offers an utility to solve this problem, `register`.
@@ -120,9 +126,12 @@ module.exports = function (fastify, options, next) {
   next()
 }
 ```
+
+<a name="middlewares"></a>
 ### Middlewares
 Fastify supports out of the box all the *Express/Restify* compatible middlewares.  
-This does not support the full syntax `middleware(err, req, res, next)`, because error handling is done inside Fastify.
+This does not support the full syntax `middleware(err, req, res, next)`, because error handling is done inside Fastify.  
+Check [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) for more info.
 ```js
 const fastify = require('fastify')()
 const cors = require('cors')
@@ -143,6 +152,8 @@ fastify.listen(3000, err => {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
+<a name="hooks"></a>
 ### Hooks
 You can register one or more hooks inside the fastify lifecycle.
 Currently supported hooks (in order of execution):
@@ -157,13 +168,13 @@ fastify.addHook('onRequest', function (req, res, next) {
 })
 ```
 *preHandler* gets as parameters the same object of the route handler, the fastify `request` and `reply` objects.
-`addHook` returns an instance of fastify, so you can chain more addHooks calls.
+`addHook` returns an instance of fastify, so you can chain more addHooks calls.  
+Check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md) for more info.
+
+<a name="logging"></a>
 ### Logging
-Since Fastify is really focused on performances, we choose the best logger to achieve the goal. Pino!
-
-By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as logger, with the log level setted to 'fatal'.
-
-If you want to pass some options to the logger, just pass the logger option to fastify. You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as logger, with the log level setted to 'fatal'.  
+Check [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md) for more info.
 
 ```js
 const split = require('split2')
@@ -180,5 +191,17 @@ fastify.get('/', schema, function (req, reply) {
   // You can access the logger instance via 'req.log'
   req.log.info('Some info')
   reply.send({ hello: 'world' })
+})
+```
+
+<a name="https"></a>
+### HTTPS
+
+```js
+const fastify = require('fastify')({
+  https: {
+    key: fs.readFileSync('test/fixtures/keys/agent2-key.pem'),
+    cert: fs.readFileSync('test/fixtures/keys/agent2-cert.pem')
+  }
 })
 ```

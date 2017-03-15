@@ -34,13 +34,16 @@ Use Fastify can increase your throughput up to 100%.
 - **Fastify: 20256 req/sec**
 
 ## Documentation
-* <a href="#constructor"><code><b>Usage</b></code></a>
-* <a href="#constructor"><code><b>Routes</b></code></a>
-* <a href="#constructor"><code><b>Logging</b></code></a>
-* <a href="#constructor"><code><b>Middlewares</b></code></a>
-* <a href="#constructor"><code><b>Hooks</b></code></a>
-* <a href="#constructor"><code><b>Validation and Serialization</b></code></a>
-* <a href="#constructor"><code><b>Lifecycle</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Routes.md"><code><b>Routes</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Logging.md"><code><b>Logging</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Middlewares.md"><code><b>Middlewares</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Hooks.md"><code><b>Hooks</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md"><code><b>Validation and Serialize</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md"><code><b>Lifecycle</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code><b>Reply</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code><b>Request</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
 
 
 ## Team

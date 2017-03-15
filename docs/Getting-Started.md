@@ -1,6 +1,12 @@
 <h1 align="center">Fastify</h1>
 
 ## Getting Started
+
+### Install
+```
+npm i fastify --save
+```
+### Your first server
 Let's write a *Hello world* server!
 ```js
 // Require the framework and instantiate it

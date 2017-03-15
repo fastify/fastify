@@ -6,3 +6,7 @@ node_js:
   - "4"
 after_script:
   - npm run coveralls
+notifications:
+  email:
+    on_success: never
+    on_failure: always

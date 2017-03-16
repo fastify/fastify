@@ -66,6 +66,22 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
+    test(`${upMethod} - correctly replies if the content type has the charset`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + fastify.server.address().port,
+        body: JSON.stringify({ hello: 'world' }),
+        headers: {
+          'content-type': 'application/json;charset=utf-8'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+      })
+    })
+
     test(`${upMethod} without schema - correctly replies`, t => {
       t.plan(3)
       request({

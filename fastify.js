@@ -15,15 +15,33 @@ const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
 
+function isValidLogger (logger) {
+  var result = true
+  const methods = ['info', 'error', 'debug', 'fatal', 'warn', 'trace']
+  const keys = Object.keys(logger)
+  for (var i = 0; i < methods.length; i += 1) {
+    if (keys.includes(methods[i]) === false || typeof logger[methods[i]] !== 'function') {
+      result = false
+      break
+    }
+  }
+  return result
+}
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')
   }
 
-  options.logger = options.logger || {}
-  options.logger.level = options.logger.level || 'fatal'
-  const logger = pinoHttp(options.logger)
+  var logger
+  if (options.logger && isValidLogger(options.logger)) {
+    logger = pinoHttp({logger: options.logger})
+  } else {
+    options.logger = options.logger || {}
+    options.logger.level = options.logger.level || 'fatal'
+    logger = pinoHttp(options.logger)
+  }
 
   const router = wayfarer('/404')
   const middie = Middie(_runMiddlewares)

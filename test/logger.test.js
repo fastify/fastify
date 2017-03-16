@@ -42,3 +42,43 @@ test('test log stream', t => {
     })
   })
 })
+
+test('can use external logger instance', t => {
+  t.plan(7)
+
+  const lines = []
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    lines.push(line)
+  })
+  splitStream.on('end', () => {
+    t.is(lines.length, 4)
+    t.is(lines[0].msg, 'log success')
+    t.is(lines[1].msg, 'log success')
+    t.is(lines[2].msg, 'log success')
+    t.is(lines[3].msg, 'request completed')
+  })
+
+  const logger = require('pino')(splitStream)
+  logger.info('log success')
+
+  const localFastify = Fastify({logger: logger})
+
+  localFastify.get('/foo', function (req, reply) {
+    t.ok(req.log)
+    req.log.info('log success')
+    reply.send(null, 200, { hello: 'world' })
+    setImmediate(() => {
+      localFastify.server.close(() => {
+        splitStream.end()
+        localFastify.server.unref()
+      })
+    })
+  })
+
+  localFastify.listen(0, err => {
+    t.error(err)
+    logger.info('log success')
+    http.get('http://localhost:' + localFastify.server.address().port + '/foo')
+  })
+})

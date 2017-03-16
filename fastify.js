@@ -17,10 +17,9 @@ const hooksManager = require('./lib/hooks')
 
 function isValidLogger (logger) {
   var result = true
-  const methods = ['info', 'error', 'debug', 'fatal', 'warn', 'trace']
-  const keys = Object.keys(logger)
+  const methods = ['info', 'error', 'debug', 'fatal', 'warn', 'trace', 'child']
   for (var i = 0; i < methods.length; i += 1) {
-    if (keys.includes(methods[i]) === false || typeof logger[methods[i]] !== 'function') {
+    if (!logger[methods[i]] || typeof logger[methods[i]] !== 'function') {
       result = false
       break
     }

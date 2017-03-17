@@ -14,6 +14,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
+const isValidLogger = require('./lib/validation').isValidLogger
 
 function build (options) {
   options = options || {}
@@ -21,9 +22,14 @@ function build (options) {
     throw new TypeError('Options must be an object')
   }
 
-  options.logger = options.logger || {}
-  options.logger.level = options.logger.level || 'fatal'
-  const logger = pinoHttp(options.logger)
+  var logger
+  if (options.logger && isValidLogger(options.logger)) {
+    logger = pinoHttp({logger: options.logger})
+  } else {
+    options.logger = options.logger || {}
+    options.logger.level = options.logger.level || 'fatal'
+    logger = pinoHttp(options.logger)
+  }
 
   const router = wayfarer('/404')
   const middie = Middie(_runMiddlewares)

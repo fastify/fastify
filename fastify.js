@@ -14,18 +14,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
-
-function isValidLogger (logger) {
-  var result = true
-  const methods = ['info', 'error', 'debug', 'fatal', 'warn', 'trace', 'child']
-  for (var i = 0; i < methods.length; i += 1) {
-    if (!logger[methods[i]] || typeof logger[methods[i]] !== 'function') {
-      result = false
-      break
-    }
-  }
-  return result
-}
+const isValidLogger = require('./lib/validation').isValidLogger
 
 function build (options) {
   options = options || {}

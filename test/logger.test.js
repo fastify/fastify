@@ -22,7 +22,7 @@ try {
 
 fastify.get('/', function (req, reply) {
   t.ok(req.log)
-  reply.send(null, 200, { hello: 'world' })
+  reply.send({ hello: 'world' })
 })
 
 test('test log stream', t => {
@@ -67,7 +67,7 @@ test('can use external logger instance', t => {
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
     req.log.info('log success')
-    reply.send(null, 200, { hello: 'world' })
+    reply.send({ hello: 'world' })
     setImmediate(() => {
       localFastify.server.close(() => {
         splitStream.end()

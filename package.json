@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "ajv": "^4.11.4",
-    "avvio": "^0.3.0",
+    "avvio": "^0.4.1",
     "body": "^5.1.0",
     "fast-json-stringify": "^0.10.4",
     "fast-safe-stringify": "^1.1.11",

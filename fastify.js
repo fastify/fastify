@@ -2,7 +2,7 @@
 
 const wayfarer = require('wayfarer')
 const stripUrl = require('pathname-match')
-const pluginLoader = require('avvio')
+const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
@@ -15,6 +15,7 @@ const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
+const serverMethods = require('./lib/serverMethods')
 
 function build (options) {
   options = options || {}
@@ -41,7 +42,11 @@ function build (options) {
   const onRequest = hooks.get.onRequest
   const preRouting = hooks.get.preRouting
 
-  pluginLoader(fastify, {})
+  const app = avvio(fastify, {})
+  // Override to allow the plugin incapsulation
+  app.override = function (s) {
+    return Object.create(s)
+  }
   router.on('/404', defaultRoute)
 
   var server
@@ -69,6 +74,11 @@ function build (options) {
   fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
+
+  // extend server methods
+  fastify.plugin = plugin
+  fastify.addServerMethod = serverMethods.add
+  fastify.hasServerMethod = serverMethods.exist
 
   // middleware support
   fastify.use = middie.use
@@ -129,6 +139,11 @@ function build (options) {
     }
 
     router(stripUrl(this.req.url), this.req, this.res)
+  }
+
+  function plugin (func, opts, cb) {
+    func[Symbol.for('skip-override')] = true
+    return fastify.register(func, opts, cb)
   }
 
   function listen (port, cb) {

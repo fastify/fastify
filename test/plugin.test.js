@@ -52,6 +52,67 @@ test('fastify.plugin should not incapsulate his code', t => {
   })
 })
 
+test('fastify.plugin registers root level plugins', t => {
+  t.plan(15)
+  const fastify = Fastify()
+
+  fastify.plugin((instance, opts, next) => {
+    instance.addServerMethod('test', 'first')
+    t.ok(instance.test)
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    t.ok(instance.test)
+    instance.plugin((i, o, n) => {
+      i.addServerMethod('test2', 'second')
+      n()
+    })
+
+    instance.get('/test2', (req, reply) => {
+      t.ok(instance.test2)
+      reply.send({ test2: instance.test2 })
+    })
+
+    next()
+  })
+
+  fastify.ready(() => {
+    t.ok(fastify.test)
+    t.notOk(fastify.test2)
+  })
+
+  fastify.get('/', (req, reply) => {
+    t.ok(fastify.test)
+    reply.send({ test: fastify.test })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { test: 'first' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/test2'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { test2: 'second' })
+    })
+  })
+})
+
 test('check dependencies - should not throw', t => {
   t.plan(12)
   const fastify = Fastify()

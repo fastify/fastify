@@ -2,12 +2,12 @@
 
 const t = require('tap')
 const test = t.test
-const serverMethods = require('../../lib/serverMethods')
+const decorator = require('../../lib/decorate')
 
-test('addServerMethod should add the given method to its instance', t => {
+test('decorate should add the given method to its instance', t => {
   t.plan(1)
   function build () {
-    server.add = serverMethods.add
+    server.add = decorator.add
     return server
     function server () {}
   }
@@ -17,10 +17,10 @@ test('addServerMethod should add the given method to its instance', t => {
   t.ok(server.test)
 })
 
-test('addServerMethod is chainable', t => {
+test('decorate is chainable', t => {
   t.plan(3)
   function build () {
-    server.add = serverMethods.add
+    server.add = decorator.add
     return server
     function server () {}
   }
@@ -39,14 +39,14 @@ test('addServerMethod is chainable', t => {
 test('checkExistence should check if a property is part of the given instance', t => {
   t.plan(1)
   const instance = { test: () => {} }
-  t.ok(serverMethods.exist(instance, 'test'))
+  t.ok(decorator.exist(instance, 'test'))
 })
 
 test('checkExistence should find the instance if not given', t => {
   t.plan(1)
   function build () {
-    server.add = serverMethods.add
-    server.check = serverMethods.exist
+    server.add = decorator.add
+    server.check = decorator.exist
     return server
     function server () {}
   }
@@ -62,24 +62,24 @@ test('checkExistence should check the prototype as well', t => {
   Instance.prototype.test = () => {}
 
   const instance = new Instance()
-  t.ok(serverMethods.exist(instance, 'test'))
+  t.ok(decorator.exist(instance, 'test'))
 })
 
 test('checkDependencies should throw if a dependency is not present', t => {
   t.plan(1)
   const instance = {}
   try {
-    serverMethods.dependencies(instance, ['test'])
+    decorator.dependencies(instance, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify plugin: missing dependency: \'test\'.')
+    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
   }
 })
 
-test('addServerMethod should internally call checkDependencies', t => {
+test('decorate should internally call checkDependencies', t => {
   t.plan(1)
   function build () {
-    server.add = serverMethods.add
+    server.add = decorator.add
     return server
     function server () {}
   }
@@ -90,6 +90,6 @@ test('addServerMethod should internally call checkDependencies', t => {
     server.add('method', () => {}, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify plugin: missing dependency: \'test\'.')
+    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
   }
 })

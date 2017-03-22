@@ -56,22 +56,26 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
   })
 })
 
-test('fastify.plugin registers root level plugins', t => {
+test('fastify.register with fastify-plugin registers root level plugins', t => {
   t.plan(15)
   const fastify = Fastify()
 
-  fastify.plugin((instance, opts, next) => {
-    instance.addServerMethod('test', 'first')
+  function rootPlugin (instance, opts, next) {
+    instance.decorate('test', 'first')
     t.ok(instance.test)
     next()
-  })
+  }
+
+  function innerPlugin (instance, opts, next) {
+    instance.decorate('test2', 'second')
+    next()
+  }
+
+  fastify.register(fp(rootPlugin))
 
   fastify.register((instance, opts, next) => {
     t.ok(instance.test)
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test2', 'second')
-      n()
-    })
+    instance.register(fp(innerPlugin))
 
     instance.get('/test2', (req, reply) => {
       t.ok(instance.test2)

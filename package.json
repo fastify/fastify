@@ -38,6 +38,7 @@
     "coveralls": "^2.12.0",
     "dns-prefetch-control": "^0.1.0",
     "express": "^4.15.2",
+    "fastify-plugin": "^0.1.0",
     "frameguard": "^3.0.0",
     "hapi": "^16.1.0",
     "helmet": "^3.5.0",
@@ -58,7 +59,7 @@
   },
   "dependencies": {
     "ajv": "^4.11.4",
-    "avvio": "^0.4.1",
+    "avvio": "^0.5.0",
     "body": "^5.1.0",
     "fast-json-stringify": "^0.10.4",
     "fast-safe-stringify": "^1.1.11",

@@ -4,23 +4,27 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const request = require('request')
+const fp = require('fastify-plugin')
 
-test('fastify.plugin should exist', t => {
+test('require a plugin', t => {
   t.plan(1)
   const fastify = Fastify()
-  t.ok(fastify.plugin)
+  fastify.register(require('./plugin.helper'))
+  fastify.ready(() => {
+    t.ok(fastify.test)
+  })
 })
 
-test('fastify.plugin should not incapsulate his code', t => {
+test('fastify.register with fastify-plugin should not incapsulate his code', t => {
   t.plan(9)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test', () => {})
+    instance.register(fp((i, o, n) => {
+      i.decorate('test', () => {})
       t.ok(i.test)
       n()
-    })
+    }))
 
     t.notOk(instance.test)
 
@@ -118,22 +122,22 @@ test('check dependencies - should not throw', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test', () => {})
+    instance.register(fp((i, o, n) => {
+      i.decorate('test', () => {})
       t.ok(i.test)
       n()
-    })
+    }))
 
-    instance.plugin((i, o, n) => {
+    instance.register(fp((i, o, n) => {
       try {
-        i.addServerMethod('otherTest', () => {}, ['test'])
+        i.decorate('otherTest', () => {}, ['test'])
         t.ok(i.test)
         t.ok(i.otherTest)
         n()
       } catch (e) {
         t.fail()
       }
-    })
+    }))
 
     instance.get('/', (req, reply) => {
       t.ok(instance.test)
@@ -170,22 +174,22 @@ test('check dependencies - should throw', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.plugin((i, o, n) => {
+    instance.register(fp((i, o, n) => {
       try {
-        i.addServerMethod('otherTest', () => {}, ['test'])
+        i.decorate('otherTest', () => {}, ['test'])
         t.fail()
       } catch (e) {
-        t.is(e.message, 'Fastify plugin: missing dependency: \'test\'.')
+        t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
       }
       n()
-    })
+    }))
 
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test', () => {})
+    instance.register(fp((i, o, n) => {
+      i.decorate('test', () => {})
       t.ok(i.test)
       t.notOk(i.otherTest)
       n()
-    })
+    }))
 
     instance.get('/', (req, reply) => {
       t.ok(instance.test)
@@ -221,10 +225,10 @@ test('plugin incapsulation', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test', 'first')
+    instance.register(fp((i, o, n) => {
+      i.decorate('test', 'first')
       n()
-    })
+    }))
 
     instance.get('/first', (req, reply) => {
       reply.send({ plugin: instance.test })
@@ -234,10 +238,10 @@ test('plugin incapsulation', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.plugin((i, o, n) => {
-      i.addServerMethod('test', 'second')
+    instance.register(fp((i, o, n) => {
+      i.decorate('test', 'second')
       n()
-    })
+    }))
 
     instance.get('/second', (req, reply) => {
       reply.send({ plugin: instance.test })

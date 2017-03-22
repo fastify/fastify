@@ -15,7 +15,7 @@ const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
-const serverMethods = require('./lib/serverMethods')
+const decorator = require('./lib/decorate')
 
 function build (options) {
   options = options || {}
@@ -44,8 +44,11 @@ function build (options) {
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
-  app.override = function (s) {
-    return Object.create(s)
+  app.override = function (server, fn) {
+    if (fn[Symbol.for('skip-override')]) {
+      return server
+    }
+    return Object.create(server)
   }
   router.on('/404', defaultRoute)
 
@@ -76,9 +79,8 @@ function build (options) {
   fastify.server = server
 
   // extend server methods
-  fastify.plugin = plugin
-  fastify.addServerMethod = serverMethods.add
-  fastify.hasServerMethod = serverMethods.exist
+  fastify.decorate = decorator.add
+  fastify.hasDecorator = decorator.exist
 
   // middleware support
   fastify.use = middie.use
@@ -139,11 +141,6 @@ function build (options) {
     }
 
     router(stripUrl(this.req.url), this.req, this.res)
-  }
-
-  function plugin (func, opts, cb) {
-    func[Symbol.for('skip-override')] = true
-    return fastify.register(func, opts, cb)
   }
 
   function listen (port, cb) {

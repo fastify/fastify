@@ -44,12 +44,7 @@ function build (options) {
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
-  app.override = function (server, fn) {
-    if (fn[Symbol.for('skip-override')]) {
-      return server
-    }
-    return Object.create(server)
-  }
+  app.override = override
   router.on('/404', defaultRoute)
 
   var server
@@ -147,6 +142,13 @@ function build (options) {
     fastify.ready(function () {
       server.listen(port, cb)
     })
+  }
+
+  function override (server, fn) {
+    if (fn[Symbol.for('skip-override')]) {
+      return server
+    }
+    return Object.create(server)
   }
 
   // Shorthand methods

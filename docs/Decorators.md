@@ -6,7 +6,7 @@ If you need to add functionalities to the Fastify instance, the `decorate` api i
 
 This api allows you to add new properties to the Fastify instance, a property value is not restricted to be a function, could also be an object or a string for example.
 
-*Note that `decorate` will add new properties to the Fastify instance, not Reply or Request objects.*
+*Note that `decorate` will add new properties to the Fastify instance, not Reply or Request objects;  future versions of Fastify will support that.*
 
 <a name="usage"></a>
 ### Usage
@@ -31,7 +31,9 @@ console.log(fastify.conf.db)
 ```
 Decorators are not *overwritable*, if you try to declare a decorator already declared *(in other words, use the same name)*, `decorate` will throw an exception.
 
-*If you are a plugin creator, please check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.*
+<a name="sync-async"></a>
+#### Sync and Async
+`decorate` is a *synchronous* API, if you need to add a decorator that has an *asynchronous* bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use `register` api in combination with `fastify-plugin`, to know more check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.
 
 <a name="dependencies"></a>
 #### Dependencies

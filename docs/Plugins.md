@@ -2,8 +2,15 @@
 
 ## Plugins
 Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server decorator or whatever. The API that you will need to use one or more plugins, is `register`.  
+A plugin can be a set of routes, a server [decorator](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) or whatever. The API that you will need to use one or more plugins, is `register`.  
+
+By default, `register` creates a *new scope*, this means that if you do some changes to the Fastify instance (via `decorate`), this change will not be reflected to the current context ancestors, but only to its sons. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
+
 You already see in the [getting started](https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md#register) section how use this API, is pretty straightforward.
+```
+fastify.register(plugin, [options], [callback])
+```
+Example:
 ```js
 fastify.register([
   require('./another-route'),
@@ -13,42 +20,47 @@ fastify.register([
 })
 ```
 
-By default, `register` creates a *new scope*, this means that everything you do to the current Fastify instance is not reflected to the current context ancestors, but only to its sons. This feature allows us to achieve plugin *encapsulation* and *inheritance*.
-
-
-### Use a plugin
-Use a plugin is very easy, you just need to require it and pass it as parameter to the `register` API.
-You can pass a single plugin or an array of plugins if all of them can share the same options object/callback.
-
-Sometimes you don't want to use the plugin *encapsulation*, in that cases you have two ways to tell Fastify to skip the creation of a new scope:
-- Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
-- Use the `'skip-override'` hidden property
-
-We recommend to use the `fastify-plugin` module.
-```js
-const fp = require('fastify-plugin')
-
-module.exports = fp(function (fastify, opts, next) {
-  // your plugin code
-  next()
-})
-```
-
+<a name="create-plugin"></a>
 ### Create a plugin
-If you are a plugin creator, this section is for you.
-As you probably know, Fastify creates a new scope every time the user uses the `register` API.   
-As plugin creator obviously you want that the user can use your code, so you don't need that a new context (or scope) is created.
+Create a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.  
+Example:
+```js
+module.exports = function (fastify, opts, next) {
+  fastify.decorate('utility', () => {})
+
+  fastify.get('/', handler)
+
+  next()
+}
+```
+You can also use `register` inside another `register`:
+```js
+module.exports = function (fastify, opts, next) {
+  fastify.decorate('utility', () => {})
+
+  fastify.get('/', handler)
+
+  fastify.register(require('./other-plugin'))
+
+  next()
+}
+```
+Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
+
+<a name="handle-scope"></a>
+### Handle the scope
+If you are using `register` only for extend a functionality of the server with  [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
 
 You have two ways to tell Fastify to avoid the creation of a new context:
-- Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
+- Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module
 - Use the `'skip-override'` hidden property
 
-We recommend to use the `fastify-plugin` module, because it solves this problem for you and you can pass as parameter a version range of Fastify that your plugin support.
+We recommend to use the `fastify-plugin` module, because it solves this problem for you, and you can pass as parameter a version range of Fastify that your plugin support.
 ```js
 const fp = require('fastify-plugin')
 
 module.exports = fp(function (fastify, opts, next) {
-  // your plugin code
+  fastify.decorate('utility', () => {})
   next()
 }, '0.x')
 ```
@@ -57,19 +69,9 @@ Check the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) document
 If you won't use the `fastify-plugin` module, you can use the `'skip-override'` hidden property, but we do not recommend it, because if in the future the Fastify API will change, it will be a your responsibility update the module, while if you use `fastify-plugin`, you can be sure about back compatibility.
 ```js
 function yourPlugin (fastify, opts, next) {
-  // your plugin code
+  fastify.decorate('utility', () => {})
   next()
 }
 yourPlugin[Symbol.for('skip-override')] = true
 module.exports = yourPlugin
-```
-
-If you want to decorate Fastify with new features, check the [decorator](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) API.
-```js
-const fp = require('fastify-plugin')
-
-module.exports = fp(function (fastify, opts, next) {
-  fastify.decorate('utility', () => {})
-  next()
-})
 ```

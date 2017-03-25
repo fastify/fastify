@@ -41,6 +41,7 @@ function build (options) {
   const hooks = hooksManager()
   const onRequest = hooks.get.onRequest
   const preRouting = hooks.get.preRouting
+  const onClose = hooks.get.onClose
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -67,6 +68,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = hooks.add
+  fastify.close = close
 
   // plugin
   fastify.register = fastify.use
@@ -149,6 +151,29 @@ function build (options) {
       return server
     }
     return Object.create(server)
+  }
+
+  function close (cb) {
+    runHooks(
+      fastify,
+      onCloseIterator,
+      onClose(),
+      onCloseCallback(cb)
+    )
+  }
+
+  function onCloseIterator (fn, cb) {
+    fn(this, cb)
+  }
+
+  function onCloseCallback (cb) {
+    return (err) => {
+      if (err) {
+        throw err
+      }
+
+      fastify.server.close(cb)
+    }
   }
 
   // Shorthand methods

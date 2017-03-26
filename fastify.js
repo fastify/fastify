@@ -9,7 +9,7 @@ const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const fastseries = require('fastseries')
 
-const Reply = require('./lib/reply')
+const buildReply = require('./lib/reply')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
@@ -78,6 +78,8 @@ function build (options) {
   // extend server methods
   fastify.decorate = decorator.add
   fastify.hasDecorator = decorator.exist
+  fastify.decorateReply = decorator.decorateReply
+  fastify._Reply = buildReply()
 
   // middleware support
   fastify.use = middie.use
@@ -98,7 +100,7 @@ function build (options) {
 
   function _runMiddlewares (err, req, res) {
     if (err) {
-      const reply = new Reply(req, res, null)
+      const reply = new fastify._Reply(req, res, null)
       reply.send(err)
       return
     }
@@ -123,7 +125,7 @@ function build (options) {
 
   function middlewareCallback (err) {
     if (err) {
-      const reply = new Reply(this.req, this.res, null)
+      const reply = new fastify._Reply(this.req, this.res, null)
       reply.send(err)
       return
     }
@@ -132,7 +134,7 @@ function build (options) {
 
   function routeCallback (err) {
     if (err) {
-      const reply = new Reply(this.req, this.res, null)
+      const reply = new fastify._Reply(this.req, this.res, null)
       reply.send(err)
       return
     }
@@ -225,6 +227,11 @@ function build (options) {
 
     buildSchema(opts)
 
+    opts.Reply = buildReply()
+    overwriteProto(opts.Reply, Object.create(fastify._Reply).prototype)
+    // opts.Reply.prototype = Object.create(fastify._Reply.prototype)
+    // aug(opts.Reply.prototype, Object.create(fastify._Reply.prototype))
+
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
         throw new Error(`${opts.method} already set for ${opts.url}`)
@@ -239,6 +246,16 @@ function build (options) {
 
     // chainable api
     return fastify
+  }
+
+  function overwriteProto (obj, props) {
+    var proto = {}
+    Object.keys(props).forEach(key => {
+      proto[key] = {
+        value: props[key]
+      }
+    })
+    Object.defineProperties(obj.prototype, proto)
   }
 
   function defaultRoute (params, req, res) {

@@ -6,12 +6,10 @@ const test = t.test
 
 const internals = require('../../lib/tier-node')[Symbol.for('internals')]
 const Request = require('../../lib/request')
+const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const hooksManager = require('../../lib/hooks')
-const hooks = hooksManager({
-  onRequest: [],
-  onRequestRaw: []
-}).get
+const hooks = hooksManager().get
 
 test('Request object', t => {
   t.plan(6)
@@ -56,7 +54,8 @@ test('handler function - invalid schema', t => {
         }
       }
     },
-    handler: () => {}
+    handler: () => {},
+    Reply: Reply()
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, null, res, { hello: 'world' }, null)
@@ -79,7 +78,8 @@ test('handler function - reply', t => {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
       reply.send(null)
-    }
+    },
+    Reply: Reply()
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, { log: null }, res, null, null)
@@ -127,7 +127,8 @@ test('routerHandler function - call handle', t => {
     handler: (req, reply) => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(null)
-    }
+    },
+    Reply: Reply()
   }
   buildSchema(handleNode)
 
@@ -158,7 +159,8 @@ test('reply function - error 500', t => {
     handler: (req, reply) => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(new Error('error'))
-    }
+    },
+    Reply: Reply()
   }
   buildSchema(handleNode)
 

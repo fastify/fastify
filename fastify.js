@@ -229,8 +229,6 @@ function build (options) {
 
     opts.Reply = buildReply()
     overwriteProto(opts.Reply, Object.create(fastify._Reply).prototype)
-    // opts.Reply.prototype = Object.create(fastify._Reply.prototype)
-    // aug(opts.Reply.prototype, Object.create(fastify._Reply.prototype))
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {

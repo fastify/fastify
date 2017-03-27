@@ -9,7 +9,7 @@ const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const fastseries = require('fastseries')
 
-const buildReply = require('./lib/reply')
+const Reply = require('./lib/reply')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
@@ -79,7 +79,7 @@ function build (options) {
   fastify.decorate = decorator.add
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
-  fastify._Reply = buildReply()
+  fastify._Reply = Reply
 
   // middleware support
   fastify.use = middie.use
@@ -227,8 +227,7 @@ function build (options) {
 
     buildSchema(opts)
 
-    opts.Reply = buildReply()
-    overwriteProto(opts.Reply, Object.create(fastify._Reply).prototype)
+    opts.Reply = buildReply(fastify._Reply)
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -246,14 +245,12 @@ function build (options) {
     return fastify
   }
 
-  function overwriteProto (obj, props) {
-    var proto = {}
-    Object.keys(props).forEach(key => {
-      proto[key] = {
-        value: props[key]
-      }
-    })
-    Object.defineProperties(obj.prototype, proto)
+  function buildReply (R) {
+    function _Reply (req, res, handle) {
+      R.call(this, req, res, handle)
+    }
+    _Reply.prototype = new R()
+    return _Reply
   }
 
   function defaultRoute (params, req, res) {

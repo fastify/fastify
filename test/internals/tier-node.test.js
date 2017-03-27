@@ -55,7 +55,7 @@ test('handler function - invalid schema', t => {
       }
     },
     handler: () => {},
-    Reply: Reply()
+    Reply: Reply
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, null, res, { hello: 'world' }, null)
@@ -79,7 +79,7 @@ test('handler function - reply', t => {
       t.is(typeof reply, 'object')
       reply.send(null)
     },
-    Reply: Reply()
+    Reply: Reply
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, { log: null }, res, null, null)
@@ -128,7 +128,7 @@ test('routerHandler function - call handle', t => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(null)
     },
-    Reply: Reply()
+    Reply: Reply
   }
   buildSchema(handleNode)
 
@@ -160,7 +160,7 @@ test('reply function - error 500', t => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(new Error('error'))
     },
-    Reply: Reply()
+    Reply: Reply
   }
   buildSchema(handleNode)
 

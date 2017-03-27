@@ -5,7 +5,7 @@ const test = t.test
 const request = require('request')
 const fastify = require('../..')()
 
-const Reply = require('../../lib/reply')()
+const Reply = require('../../lib/reply')
 
 test('Reply should be an object', t => {
   t.plan(1)

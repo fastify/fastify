@@ -104,7 +104,7 @@ function build (options) {
 
   function _runMiddlewares (err, req, res) {
     if (err) {
-      const reply = new fastify._Reply(req, res, null)
+      const reply = new Reply(req, res, null)
       reply.send(err)
       return
     }
@@ -129,7 +129,7 @@ function build (options) {
 
   function middlewareCallback (err) {
     if (err) {
-      const reply = new fastify._Reply(this.req, this.res, null)
+      const reply = new Reply(this.req, this.res, null)
       reply.send(err)
       return
     }
@@ -138,7 +138,7 @@ function build (options) {
 
   function routeCallback (err) {
     if (err) {
-      const reply = new fastify._Reply(this.req, this.res, null)
+      const reply = new Reply(this.req, this.res, null)
       reply.send(err)
       return
     }

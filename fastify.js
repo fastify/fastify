@@ -10,6 +10,7 @@ const Middie = require('middie')
 const fastseries = require('fastseries')
 
 const Reply = require('./lib/reply')
+const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
@@ -79,7 +80,10 @@ function build (options) {
   fastify.decorate = decorator.add
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
+  fastify.decorateRequest = decorator.decorateRequest
+
   fastify._Reply = Reply
+  fastify._Request = Request
 
   // middleware support
   fastify.use = middie.use
@@ -155,6 +159,7 @@ function build (options) {
 
     server = Object.create(server)
     server._Reply = buildReply(server._Reply)
+    server._Request = buildRequest(server._Request)
 
     return server
   }
@@ -216,7 +221,7 @@ function build (options) {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler, Reply: self._Reply })
+    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request })
   }
 
   // Route management
@@ -232,6 +237,7 @@ function build (options) {
     buildSchema(opts)
 
     opts.Reply = opts.Reply || this._Reply
+    opts.Request = opts.Request || this._Request
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -249,12 +255,30 @@ function build (options) {
     return fastify
   }
 
+  // TODO: find a better solution than
+  // copy paste the code of the constructor
   function buildReply (R) {
     function _Reply (req, res, handle) {
-      R.call(this, req, res, handle)
+      this.res = res
+      this.handle = handle
+      this._req = req
+      this.sent = false
+      this._serializer = null
     }
     _Reply.prototype = new R()
     return _Reply
+  }
+
+  function buildRequest (R) {
+    function _Request (params, req, body, query, log) {
+      this.params = params
+      this.req = req
+      this.body = body
+      this.query = query
+      this.log = log
+    }
+    _Request.prototype = new R()
+    return _Request
   }
 
   function defaultRoute (params, req, res) {

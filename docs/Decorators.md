@@ -6,10 +6,10 @@ If you need to add functionalities to the Fastify instance, the `decorate` api i
 
 This api allows you to add new properties to the Fastify instance, a property value is not restricted to be a function, could also be an object or a string for example.
 
-*Note that `decorate` will add new properties to the Fastify instance, not Reply or Request objects;  future versions of Fastify will support that.*
-
 <a name="usage"></a>
 ### Usage
+<a name="decorate"></a>
+**decorate**  
 Just call the `decorate` api and pass the name of the new property and its value.
 ```js
 fastify.decorate('utility', () => {
@@ -30,6 +30,26 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 Decorators are not *overwritable*, if you try to declare a decorator already declared *(in other words, use the same name)*, `decorate` will throw an exception.
+
+<a name="decorate-reply"></a>
+**decorateReply**  
+As the name suggest, this api is needed if you want to add new methods to the `Reply` core object.  
+Just call the `decorateReply` api and pass the name of the new property and its value.
+```js
+fastify.decorateReply('utility', () => {
+  // something very useful
+})
+```
+
+<a name="decorate-request"></a>
+**decorateRequest**  
+As above, this api is needed if you want to add new methods to the `Request` core object.  
+Just call the `decorateRequest` api and pass the name of the new property and its value.
+```js
+fastify.decorateRequest('utility', () => {
+  // something very useful
+})
+```
 
 <a name="sync-async"></a>
 #### Sync and Async

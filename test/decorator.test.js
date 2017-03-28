@@ -162,8 +162,8 @@ test('decorateReply as plugin (outside .after)', t => {
       n()
     }))
 
-    fastify.get('/yes', (req, reply) => {
-      t.notOk(reply.test)
+    instance.get('/yes', (req, reply) => {
+      t.ok(reply.test)
       reply.send({ hello: 'world' })
     })
     next()
@@ -305,8 +305,8 @@ test('decorateRequest as plugin (outside .after)', t => {
       n()
     }))
 
-    fastify.get('/yes', (req, reply) => {
-      t.notOk(req.test)
+    instance.get('/yes', (req, reply) => {
+      t.ok(req.test)
       reply.send({ hello: 'world' })
     })
     next()

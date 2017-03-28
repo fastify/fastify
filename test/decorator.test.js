@@ -65,10 +65,11 @@ test('decorateReply inside register', t => {
     instance.decorateReply('test', 'test')
     t.ok(instance._Reply.prototype.test)
 
-    fastify.get('/yes', (req, reply) => {
-      t.ok(reply.test)
+    instance.get('/yes', (req, reply) => {
+      t.ok(reply.test, 'test exists')
       reply.send({ hello: 'world' })
     })
+
     next()
   })
 
@@ -112,7 +113,7 @@ test('decorateReply as plugin (inside .after)', t => {
       instance.decorateReply('test', 'test')
       n()
     })).after(() => {
-      fastify.get('/yes', (req, reply) => {
+      instance.get('/yes', (req, reply) => {
         t.ok(reply.test)
         reply.send({ hello: 'world' })
       })

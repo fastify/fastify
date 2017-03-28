@@ -152,7 +152,11 @@ function build (options) {
     if (fn[Symbol.for('skip-override')]) {
       return server
     }
-    return Object.create(server)
+
+    server = Object.create(server)
+    server._Reply = buildReply(server._Reply)
+
+    return server
   }
 
   function close (cb) {
@@ -180,39 +184,39 @@ function build (options) {
 
   // Shorthand methods
   function _delete (url, schema, handler) {
-    return _route('DELETE', url, schema, handler)
+    return _route(this, 'DELETE', url, schema, handler)
   }
 
   function _get (url, schema, handler) {
-    return _route('GET', url, schema, handler)
+    return _route(this, 'GET', url, schema, handler)
   }
 
   function _head (url, schema, handler) {
-    return _route('HEAD', url, schema, handler)
+    return _route(this, 'HEAD', url, schema, handler)
   }
 
   function _patch (url, schema, handler) {
-    return _route('PATCH', url, schema, handler)
+    return _route(this, 'PATCH', url, schema, handler)
   }
 
   function _post (url, schema, handler) {
-    return _route('POST', url, schema, handler)
+    return _route(this, 'POST', url, schema, handler)
   }
 
   function _put (url, schema, handler) {
-    return _route('PUT', url, schema, handler)
+    return _route(this, 'PUT', url, schema, handler)
   }
 
   function _options (url, schema, handler) {
-    return _route('OPTIONS', url, schema, handler)
+    return _route(this, 'OPTIONS', url, schema, handler)
   }
 
-  function _route (method, url, schema, handler) {
+  function _route (self, method, url, schema, handler) {
     if (!handler && typeof schema === 'function') {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler })
+    return route({ method, url, schema, handler, Reply: self._Reply })
   }
 
   // Route management
@@ -227,7 +231,7 @@ function build (options) {
 
     buildSchema(opts)
 
-    opts.Reply = buildReply(fastify._Reply)
+    opts.Reply = opts.Reply || this._Reply
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {

@@ -13,13 +13,13 @@ const hooks = hooksManager().get
 
 test('Request object', t => {
   t.plan(6)
-  const req = new Request('params', { log: null }, 'body', 'query')
+  const req = new Request('params', 'req', 'body', 'query', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
-  t.deepEqual(req.req, { log: null })
+  t.deepEqual(req.req, 'req')
   t.equal(req.body, 'body')
   t.equal(req.query, 'query')
-  t.equal(req.log, null)
+  t.equal(req.log, 'log')
 })
 
 test('bodyParsed function', t => {
@@ -55,7 +55,8 @@ test('handler function - invalid schema', t => {
       }
     },
     handler: () => {},
-    Reply: Reply
+    Reply: Reply,
+    Request: Request
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, null, res, { hello: 'world' }, null)
@@ -79,7 +80,8 @@ test('handler function - reply', t => {
       t.is(typeof reply, 'object')
       reply.send(null)
     },
-    Reply: Reply
+    Reply: Reply,
+    Request: Request
   }
   buildSchema(handle)
   internals.handler(hooks, handle, null, { log: null }, res, null, null)
@@ -128,7 +130,8 @@ test('routerHandler function - call handle', t => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(null)
     },
-    Reply: Reply
+    Reply: Reply,
+    Request: Request
   }
   buildSchema(handleNode)
 
@@ -160,7 +163,8 @@ test('reply function - error 500', t => {
       t.equal(req.req.url, 'http://example.com')
       reply.send(new Error('error'))
     },
-    Reply: Reply
+    Reply: Reply,
+    Request: Request
   }
   buildSchema(handleNode)
 

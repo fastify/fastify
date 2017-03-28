@@ -199,3 +199,146 @@ test('decorateReply as plugin (outside .after)', t => {
     })
   })
 })
+
+test('decorateRequest inside register', t => {
+  t.plan(12)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorateRequest('test', 'test')
+    t.ok(instance._Request.prototype.test)
+
+    instance.get('/yes', (req, reply) => {
+      t.ok(req.test, 'test exists')
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.get('/no', (req, reply) => {
+    t.notOk(req.test)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest as plugin (inside .after)', t => {
+  t.plan(11)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.register(fp((i, o, n) => {
+      instance.decorateRequest('test', 'test')
+      n()
+    })).after(() => {
+      instance.get('/yes', (req, reply) => {
+        t.ok(req.test)
+        reply.send({ hello: 'world' })
+      })
+    })
+    next()
+  })
+
+  fastify.get('/no', (req, reply) => {
+    t.notOk(req.test)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest as plugin (outside .after)', t => {
+  t.plan(11)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.register(fp((i, o, n) => {
+      instance.decorateRequest('test', 'test')
+      n()
+    }))
+
+    fastify.get('/yes', (req, reply) => {
+      t.notOk(req.test)
+      reply.send({ hello: 'world' })
+    })
+    next()
+  })
+
+  fastify.get('/no', (req, reply) => {
+    t.notOk(req.test)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})

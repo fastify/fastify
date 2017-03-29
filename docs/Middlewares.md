@@ -18,3 +18,16 @@ fastify.use(require('ienoopen')())
 fastify.use(require('x-xss-protection')())
 ```
 *If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.*
+
+<a name="restrict-usage"></a>
+#### Restrict middleware execution to a certain path(s)
+If you need to run a middleware only under certains path(s), just pass the path as first parameter to `use` and you are done!  
+*Note that this does not support routes with parameters, (eg: `/user/:id/comments`)*
+```js
+// Single path
+fastify.use('/public', staticFiles('/assets'))
+
+// Multiple paths
+fastify.use(['/public', '/dist'], staticFiles('/assets'))
+
+```

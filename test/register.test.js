@@ -6,10 +6,12 @@ const request = require('request')
 const fastify = require('..')()
 
 test('fastify.register', t => {
-  t.plan(7)
+  t.plan(9)
   try {
     fastify.register(function (instance, opts, done) {
-      t.type(instance, fastify)
+      t.notEqual(instance, fastify)
+      t.ok(fastify.isPrototypeOf(instance))
+
       t.is(typeof opts, 'object')
       t.is(typeof done, 'function')
 
@@ -19,7 +21,9 @@ test('fastify.register', t => {
       done()
     })
     fastify.register(function (instance, opts, done) {
-      t.type(instance, fastify)
+      t.notEqual(instance, fastify)
+      t.ok(fastify.isPrototypeOf(instance))
+
       t.is(typeof opts, 'object')
       t.is(typeof done, 'function')
 
@@ -36,10 +40,12 @@ test('fastify.register', t => {
 })
 
 test('fastify.register array', t => {
-  t.plan(7)
+  t.plan(9)
 
   const route1 = function (instance, opts, done) {
-    t.type(instance, fastify)
+    t.notEqual(instance, fastify)
+    t.ok(fastify.isPrototypeOf(instance))
+
     t.is(typeof opts, 'object')
     t.is(typeof done, 'function')
 
@@ -50,7 +56,9 @@ test('fastify.register array', t => {
   }
 
   const route2 = function (instance, opts, done) {
-    t.type(instance, fastify)
+    t.notEqual(instance, fastify)
+    t.ok(fastify.isPrototypeOf(instance))
+
     t.is(typeof opts, 'object')
     t.is(typeof done, 'function')
 

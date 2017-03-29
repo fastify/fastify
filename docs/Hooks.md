@@ -6,6 +6,7 @@ By using the hooks you can interact directly inside the lifecycle of Fastify, th
 - `'onRequest'`
 - `'preRouting'`
 - `'preHandler'`
+- `'onClose'`
 
 Example:
 ```js
@@ -22,3 +23,14 @@ If you get an error during the execution of you hook, just pass it to `next()` a
 The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
 You can add more than one function to every hook and as all the others, the api is chainable.
+
+<a name="on-close"></a>
+**'onClose'**  
+The unique hook that is not inside the lifecycle is `'onClose'`, this one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) that need a "shutdown" part, such as a connection to a database.  
+Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the `done` callback.
+```js
+fastify.addHook('onClose', (instance, done) => {
+  // some code
+  done()
+})
+```

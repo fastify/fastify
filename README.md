@@ -19,6 +19,7 @@ Enter Fastify. Fastify is a web framework highly focused on speed and low overhe
 Use Fastify can increase your throughput up to 100%.
 
 ### Core features
+
 - **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.
 - **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.

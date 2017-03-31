@@ -283,3 +283,17 @@ test('plugin incapsulation', t => {
     })
   })
 })
+
+test('if a plugin raises an error and there is not a callback to handle it, the server must not start', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    next(new Error('err'))
+  })
+
+  fastify.listen(0, err => {
+    t.ok(err instanceof Error)
+    t.is(err.message, 'err')
+  })
+})

@@ -147,7 +147,8 @@ function build (options) {
   }
 
   function listen (port, cb) {
-    fastify.ready(function () {
+    fastify.ready(function (err) {
+      if (err) return cb(err)
       server.listen(port, cb)
     })
   }

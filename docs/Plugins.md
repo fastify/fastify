@@ -20,6 +20,11 @@ fastify.register([
 })
 ```
 
+<a name="error-handling"></a>
+#### Error handling
+The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).  
+As general rule is highly recommended that you handle your errors in the `register`'s callback, otherwise the server will not start, and you will find the unhandled error in the `listen` callback.
+
 <a name="create-plugin"></a>
 ### Create a plugin
 Create a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.  

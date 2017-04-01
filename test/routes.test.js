@@ -17,15 +17,15 @@ test('fastify.routes contain an iterator with all the routes', t => {
   t.is(typeof fastify.routes()[Symbol.iterator], 'function')
 
   for (var route of fastify.routes()) {
-    t.ok(['/', '/test'].indexOf(route[0]) > -1)
+    t.ok(route['/'] || route['/test'])
 
-    if (route[0] === '/') {
-      t.ok(route[1].GET)
-      t.ok(route[1].POST)
+    if (route['/']) {
+      t.ok(route['/'].get)
+      t.ok(route['/'].post)
     }
 
-    if (route[0] === '/test') {
-      t.ok(route[1].GET)
+    if (route['/test']) {
+      t.ok(route['/test'].get)
     }
   }
 })

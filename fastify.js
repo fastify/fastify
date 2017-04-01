@@ -89,7 +89,7 @@ function build (options) {
   fastify.use = middie.use
 
   // exposes the routes map
-  fastify._routes = map
+  fastify.routes = exposeRoutes
 
   return fastify
 
@@ -257,6 +257,10 @@ function build (options) {
 
     // chainable api
     return fastify
+  }
+
+  function exposeRoutes () {
+    return map.entries()
   }
 
   // TODO: find a better solution than

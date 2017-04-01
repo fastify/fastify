@@ -259,8 +259,39 @@ function build (options) {
     return fastify
   }
 
+  // creates an iterator with all the routes
   function exposeRoutes () {
-    return map.entries()
+    var iterable = {}
+    iterable[Symbol.iterator] = function () {
+      var entries = map.entries()
+      var it = {}
+      it.next = function () {
+        var next = entries.next()
+
+        if (next.done) {
+          return {
+            value: null,
+            done: true
+          }
+        }
+
+        var value = {}
+        // out methods are saved Uppercase,
+        // so we lowercase them for a better usability
+        for (var method in next.value[1]) {
+          next.value[1][method.toLowerCase()] = next.value[1][method]
+          delete next.value[1][method]
+        }
+
+        value[next.value[0]] = next.value[1]
+        return {
+          value: value,
+          done: false
+        }
+      }
+      return it
+    }
+    return iterable
   }
 
   // TODO: find a better solution than

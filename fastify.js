@@ -88,6 +88,9 @@ function build (options) {
   // middleware support
   fastify.use = middie.use
 
+  // exposes the routes map
+  fastify._routes = map
+
   return fastify
 
   function fastify (req, res) {

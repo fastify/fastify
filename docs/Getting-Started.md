@@ -30,7 +30,7 @@ fastify.listen(3000, function (err) {
 - `fastify.listen(callback)`: Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core.
 - `fastify.route(options)`: check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 - `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
-- `fastify.routes()`: function that returns an Iterable object with all the registered routes.
+- `fastify.routes()`: function that returns an Iterable object with all the registered routes. The route properties are the same the developer has declared [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 
 <a name="schema"></a>
 ### Schema serialization

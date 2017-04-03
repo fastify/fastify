@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mcollina/fastify.git"
+    "url": "git+https://github.com/fastify/fastify.git"
   },
   "keywords": [
     "web",
@@ -29,9 +29,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mcollina/fastify/issues"
+    "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://github.com/mcollina/fastify#readme",
+  "homepage": "https://github.com/fastify/fastify#readme",
   "devDependencies": {
     "bluebird": "^3.5.0",
     "cors": "^2.8.2",

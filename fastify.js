@@ -88,6 +88,9 @@ function build (options) {
   // middleware support
   fastify.use = middie.use
 
+  // exposes the routes map
+  fastify[Symbol.iterator] = iterator
+
   return fastify
 
   function fastify (req, res) {
@@ -254,6 +257,38 @@ function build (options) {
 
     // chainable api
     return fastify
+  }
+
+  function iterator () {
+    var entries = map.entries()
+    var it = {}
+    it.next = function () {
+      var next = entries.next()
+
+      if (next.done) {
+        return {
+          value: null,
+          done: true
+        }
+      }
+
+      var value = {}
+      var methods = {}
+
+      value[next.value[0]] = methods
+
+      // out methods are saved Uppercase,
+      // so we lowercase them for a better usability
+      for (var method in next.value[1]) {
+        methods[method.toLowerCase()] = next.value[1][method]
+      }
+
+      return {
+        value: value,
+        done: false
+      }
+    }
+    return it
   }
 
   // TODO: find a better solution than

@@ -36,6 +36,7 @@ Use Fastify can increase your throughput up to 100%.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md"><code><b>Server Methods</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Routes.md"><code><b>Routes</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Logging.md"><code><b>Logging</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Middlewares.md"><code><b>Middlewares</b></code></a>

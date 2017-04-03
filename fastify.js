@@ -89,7 +89,7 @@ function build (options) {
   fastify.use = middie.use
 
   // exposes the routes map
-  fastify.routes = exposeRoutes
+  fastify[Symbol.iterator] = iterator
 
   return fastify
 
@@ -259,39 +259,36 @@ function build (options) {
     return fastify
   }
 
-  // creates an iterator with all the routes
-  function exposeRoutes () {
-    var iterable = {}
-    iterable[Symbol.iterator] = function () {
-      var entries = map.entries()
-      var it = {}
-      it.next = function () {
-        var next = entries.next()
+  function iterator () {
+    var entries = map.entries()
+    var it = {}
+    it.next = function () {
+      var next = entries.next()
 
-        if (next.done) {
-          return {
-            value: null,
-            done: true
-          }
-        }
-
-        var value = {}
-        // out methods are saved Uppercase,
-        // so we lowercase them for a better usability
-        for (var method in next.value[1]) {
-          next.value[1][method.toLowerCase()] = next.value[1][method]
-          delete next.value[1][method]
-        }
-
-        value[next.value[0]] = next.value[1]
+      if (next.done) {
         return {
-          value: value,
-          done: false
+          value: null,
+          done: true
         }
       }
-      return it
+
+      var value = {}
+      var methods = {}
+
+      value[next.value[0]] = methods
+
+      // out methods are saved Uppercase,
+      // so we lowercase them for a better usability
+      for (var method in next.value[1]) {
+        methods[method.toLowerCase()] = next.value[1][method]
+      }
+
+      return {
+        value: value,
+        done: false
+      }
     }
-    return iterable
+    return it
   }
 
   // TODO: find a better solution than

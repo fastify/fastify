@@ -49,6 +49,16 @@ Use Fastify can increase your throughput up to 100%.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md"><code><b>Plugins</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
 
+## Ecosystem
+- [`point-of-view`](https://github.com/fastify/point-of-view)  
+Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
+- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)  
+Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
+- [`fastify-redis`](https://github.com/fastify/fastify-redis)  
+Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
+- [`fastify-swagger`](https://github.com/fastify/fastify-swagger)  
+Swagger documentation generator for Fastify
+- *More coming soon*
 
 ## Team
 

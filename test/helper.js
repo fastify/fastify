@@ -43,6 +43,19 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
+  test(`${upMethod} with body and querystring`, t => {
+    t.plan(1)
+    try {
+      fastify[loMethod]('/with-query', function (req, reply) {
+        req.body.hello = req.body.hello + req.query.foo
+        reply.code(200).send(req.body)
+      })
+      t.pass()
+    } catch (e) {
+      t.fail()
+    }
+  })
+
   fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
@@ -95,6 +108,22 @@ module.exports.payloadMethod = function (method, t) {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body, { hello: 'world' })
+      })
+    })
+
+    test(`${upMethod} with body and querystring - correctly replies`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
+        body: {
+          hello: 'world'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 'worldhello' })
       })
     })
 

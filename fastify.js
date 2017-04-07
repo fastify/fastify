@@ -17,7 +17,7 @@ const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
-const customParsingBuilder = require('./lib/customParsing')
+const ContentTypeParser = require('./lib/ContentTypeParser')
 
 function build (options) {
   options = options || {}
@@ -39,7 +39,6 @@ function build (options) {
   const run = middie.run
   const map = new Map()
   const runHooks = fastseries()
-  const customParsing = customParsingBuilder()
 
   const hooks = hooksManager()
   const onRequest = hooks.get.onRequest
@@ -74,8 +73,7 @@ function build (options) {
   fastify.close = close
 
   // custom parsers
-  fastify.addParseStrategy = customParsing.add
-  fastify.hasParser = customParsing.hasParser
+  fastify.contentTypeParser = new ContentTypeParser()
 
   // plugin
   fastify.register = fastify.use
@@ -162,16 +160,17 @@ function build (options) {
     })
   }
 
-  function override (server, fn) {
+  function override (instance, fn) {
     if (fn[Symbol.for('skip-override')]) {
-      return server
+      return instance
     }
 
-    server = Object.create(server)
-    server._Reply = buildReply(server._Reply)
-    server._Request = buildRequest(server._Request)
+    instance = Object.create(instance)
+    instance._Reply = buildReply(instance._Reply)
+    instance._Request = buildRequest(instance._Request)
+    instance.contentTypeParser = buildContentTypeParser(instance.contentTypeParser)
 
-    return server
+    return instance
   }
 
   function close (cb) {
@@ -231,7 +230,7 @@ function build (options) {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request })
+    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request, contentTypeParser: self.contentTypeParser, hooks: self.hooks })
   }
 
   // Route management
@@ -248,6 +247,7 @@ function build (options) {
 
     opts.Reply = opts.Reply || this._Reply
     opts.Request = opts.Request || this._Request
+    opts.contentTypeParser = opts.contentTypeParser || this.contentTypeParser
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -256,7 +256,7 @@ function build (options) {
 
       map.get(opts.url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router, hooks.get, customParsing)
+      const node = buildNode(opts.url, router)
       node[opts.method] = opts
       map.set(opts.url, node)
     }
@@ -323,6 +323,14 @@ function build (options) {
     return _Request
   }
 
+  function buildContentTypeParser (c) {
+    function _ContentTypeParser () {}
+    _ContentTypeParser.prototype = new ContentTypeParser()
+    const C = new _ContentTypeParser()
+    C.customParsers = Object.create(c.customParsers)
+    C.parserList = Object.create(c.parserList)
+    return C
+  }
   function defaultRoute (params, req, res) {
     res.statusCode = 404
     res.end()

@@ -3,12 +3,13 @@
 const t = require('tap')
 const test = t.test
 const request = require('request')
+const Fastify = require('..')
 const fastify = require('..')()
 
 test('hooks - add preHandler', t => {
   t.plan(1)
   try {
-    fastify.addHook('preHandler', function (request, reply, next) {
+    fastify.hooks.add('preHandler', function (request, reply, next) {
       request.test = 'the request is coming'
       reply.test = 'the reply has come'
       if (request.req.method === 'HEAD') {
@@ -26,7 +27,7 @@ test('hooks - add preHandler', t => {
 test('hooks - add onRequest', t => {
   t.plan(1)
   try {
-    fastify.addHook('onRequest', function (req, res, next) {
+    fastify.hooks.add('onRequest', function (req, res, next) {
       req.raw = 'the request is coming'
       res.raw = 'the reply has come'
       if (req.method === 'DELETE') {
@@ -39,11 +40,6 @@ test('hooks - add onRequest', t => {
   } catch (e) {
     t.fail()
   }
-})
-
-test('hooks - addHook returns an instance of fastify', t => {
-  t.plan(1)
-  t.type(fastify.addHook('preRouting', (req, res, next) => next()), fastify)
 })
 
 fastify.get('/', function (req, reply) {
@@ -98,6 +94,208 @@ fastify.listen(0, err => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
+    })
+  })
+})
+
+test('hooks should support encapsulation / 1', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.hooks.add('onRequest', () => {})
+    t.is(instance.hooks.onRequest.length, 1)
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify.hooks.onRequest.length, 0)
+  })
+})
+
+test('hooks should support encapsulation / 2', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.hooks.add('onRequest', () => {})
+
+  fastify.register((instance, opts, next) => {
+    instance.hooks.add('onRequest', () => {})
+    t.is(instance.hooks.onRequest.length, 2)
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify.hooks.onRequest.length, 1)
+  })
+})
+
+test('hooks should support encapsulation / 3', t => {
+  t.plan(13)
+  const fastify = Fastify()
+
+  fastify.hooks.add('onRequest', (req, res, next) => {
+    req.first = true
+    next()
+  })
+
+  fastify.get('/first', (req, reply) => {
+    t.ok(req.req.first)
+    t.notOk(req.req.second)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.hooks.add('onRequest', (req, res, next) => {
+      req.second = true
+      next()
+    })
+
+    instance.get('/second', (req, reply) => {
+      t.ok(req.req.first)
+      t.ok(req.req.second)
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('hooks should support encapsulation / 4', t => {
+  t.plan(13)
+  const fastify = Fastify()
+
+  fastify.hooks.add('preRouting', (req, res, next) => {
+    req.first = true
+    next()
+  })
+
+  fastify.get('/first', (req, reply) => {
+    t.ok(req.req.first)
+    t.notOk(req.req.second)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.hooks.add('preRouting', (req, res, next) => {
+      req.second = true
+      next()
+    })
+
+    instance.get('/second', (req, reply) => {
+      t.ok(req.req.first)
+      t.ok(req.req.second)
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('hooks should support encapsulation / 5', t => {
+  t.plan(13)
+  const fastify = Fastify()
+
+  fastify.hooks.add('preHandler', (req, res, next) => {
+    req.first = true
+    next()
+  })
+
+  fastify.get('/first', (req, reply) => {
+    t.ok(req.first)
+    t.notOk(req.second)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.hooks.add('preHandler', (req, res, next) => {
+      req.second = true
+      next()
+    })
+
+    instance.get('/second', (req, reply) => {
+      t.ok(req.first)
+      t.ok(req.second)
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
 })

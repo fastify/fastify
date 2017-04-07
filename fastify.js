@@ -14,10 +14,10 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
-const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
+const Hooks = require('./lib/hooks')
 
 function build (options) {
   options = options || {}
@@ -35,15 +35,10 @@ function build (options) {
   }
 
   const router = wayfarer('/404')
-  const middie = Middie(_runMiddlewares)
+  const middie = Middie(_runMiddlewares.bind(fastify))
   const run = middie.run
   const map = new Map()
   const runHooks = fastseries()
-
-  const hooks = hooksManager()
-  const onRequest = hooks.get.onRequest
-  const preRouting = hooks.get.preRouting
-  const onClose = hooks.get.onClose
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -52,9 +47,9 @@ function build (options) {
 
   var server
   if (options.https) {
-    server = https.createServer(options.https, fastify)
+    server = https.createServer(options.https, fastify.bind(fastify))
   } else {
-    server = http.createServer(fastify)
+    server = http.createServer(fastify.bind(fastify))
   }
 
   // shorthand methods
@@ -69,7 +64,7 @@ function build (options) {
   fastify.route = route
 
   // hooks
-  fastify.addHook = hooks.add
+  fastify.hooks = new Hooks()
   fastify.close = close
 
   // custom parsers
@@ -99,12 +94,11 @@ function build (options) {
 
   function fastify (req, res) {
     logger(req, res)
-
     // onRequest hook
     runHooks(
       new State(req, res),
       hookIterator,
-      onRequest(),
+      this.hooks.onRequest,
       middlewareCallback
     )
   }
@@ -120,7 +114,7 @@ function build (options) {
     runHooks(
       new State(req, res),
       hookIterator,
-      preRouting(),
+      this.hooks.preRouting,
       routeCallback
     )
   }
@@ -169,6 +163,7 @@ function build (options) {
     instance._Reply = buildReply(instance._Reply)
     instance._Request = buildRequest(instance._Request)
     instance.contentTypeParser = buildContentTypeParser(instance.contentTypeParser)
+    instance.hooks = buildHooks(instance.hooks)
 
     return instance
   }
@@ -177,7 +172,7 @@ function build (options) {
     runHooks(
       fastify,
       onCloseIterator,
-      onClose(),
+      this.hooks.onClose,
       onCloseCallback(cb)
     )
   }
@@ -248,6 +243,7 @@ function build (options) {
     opts.Reply = opts.Reply || this._Reply
     opts.Request = opts.Request || this._Request
     opts.contentTypeParser = opts.contentTypeParser || this.contentTypeParser
+    opts.hooks = opts.hooks || this.hooks
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -331,6 +327,18 @@ function build (options) {
     C.parserList = Object.create(c.parserList)
     return C
   }
+
+  function buildHooks (h) {
+    function _Hooks () {}
+    _Hooks.prototype = new Hooks()
+    const H = new _Hooks()
+    H.onRequest = Object.create(h.onRequest)
+    H.preRouting = Object.create(h.preRouting)
+    H.preHandler = Object.create(h.preHandler)
+    H.onClose = Object.create(h.onClose)
+    return H
+  }
+
   function defaultRoute (params, req, res) {
     res.statusCode = 404
     res.end()

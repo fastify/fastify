@@ -8,8 +8,7 @@ const internals = require('../../lib/tier-node')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
-const hooksManager = require('../../lib/hooks')
-const hooks = hooksManager().get
+const Hooks = require('../../lib/hooks')
 
 test('Request object', t => {
   t.plan(6)
@@ -24,7 +23,7 @@ test('Request object', t => {
 
 test('bodyParsed function', t => {
   t.plan(1)
-  const parsed = internals.bodyParsed(hooks, null, null, null, null)
+  const parsed = internals.bodyParsed(null, null, null, null)
   t.is(typeof parsed, 'function')
 })
 
@@ -35,7 +34,7 @@ test('handler function - missing handler', t => {
     t.equal(res.statusCode, 404)
     t.pass()
   }
-  internals.handler(hooks, null, null, null, res, null, null)
+  internals.handler(null, null, null, res, null, null)
 })
 
 test('handler function - invalid schema', t => {
@@ -56,10 +55,11 @@ test('handler function - invalid schema', t => {
     },
     handler: () => {},
     Reply: Reply,
-    Request: Request
+    Request: Request,
+    hooks: new Hooks()
   }
   buildSchema(handle)
-  internals.handler(hooks, handle, null, null, res, { hello: 'world' }, null)
+  internals.handler(handle, null, null, res, { hello: 'world' }, null)
 })
 
 test('handler function - reply', t => {
@@ -81,10 +81,11 @@ test('handler function - reply', t => {
       reply.send(null)
     },
     Reply: Reply,
-    Request: Request
+    Request: Request,
+    hooks: new Hooks()
   }
   buildSchema(handle)
-  internals.handler(hooks, handle, null, { log: null }, res, null, null)
+  internals.handler(handle, null, { log: null }, res, null, null)
 })
 
 test('routerHandler function - return a function', t => {
@@ -95,7 +96,7 @@ test('routerHandler function - return a function', t => {
 
 test('routerHandler function - missing handle', t => {
   t.plan(2)
-  const handle = internals.routerHandler({}, hooks)
+  const handle = internals.routerHandler({})
   const res = {}
   res.end = () => {
     t.equal(res.statusCode, 404)
@@ -111,7 +112,7 @@ test('routerHandler function - unhandled method', t => {
   t.plan(2)
   const handle = internals.routerHandler({
     'SAD': {}
-  }, hooks)
+  })
   const res = {}
   res.end = () => {
     t.equal(res.statusCode, 404)
@@ -131,13 +132,14 @@ test('routerHandler function - call handle', t => {
       reply.send(null)
     },
     Reply: Reply,
-    Request: Request
+    Request: Request,
+    hooks: new Hooks()
   }
   buildSchema(handleNode)
 
   const handle = internals.routerHandler({
     'GET': handleNode
-  }, hooks)
+  })
   const res = {}
   res.end = () => {
     t.equal(res.statusCode, 204)
@@ -164,13 +166,14 @@ test('reply function - error 500', t => {
       reply.send(new Error('error'))
     },
     Reply: Reply,
-    Request: Request
+    Request: Request,
+    hooks: new Hooks()
   }
   buildSchema(handleNode)
 
   const handle = internals.routerHandler({
     'GET': handleNode
-  }, hooks)
+  })
   const res = {}
   res.end = () => {
     t.equal(res.statusCode, 500)

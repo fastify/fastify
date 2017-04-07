@@ -17,6 +17,7 @@ const buildNode = require('./lib/tier-node')
 const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
+const customParsingBuilder = require('./lib/customParsing')
 
 function build (options) {
   options = options || {}
@@ -38,6 +39,7 @@ function build (options) {
   const run = middie.run
   const map = new Map()
   const runHooks = fastseries()
+  const customParsing = customParsingBuilder()
 
   const hooks = hooksManager()
   const onRequest = hooks.get.onRequest
@@ -70,6 +72,10 @@ function build (options) {
   // hooks
   fastify.addHook = hooks.add
   fastify.close = close
+
+  // custom parsers
+  fastify.addParseStrategy = customParsing.add
+  fastify.hasParser = customParsing.hasParser
 
   // plugin
   fastify.register = fastify.use
@@ -250,7 +256,7 @@ function build (options) {
 
       map.get(opts.url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router, hooks.get)
+      const node = buildNode(opts.url, router, hooks.get, customParsing)
       node[opts.method] = opts
       map.set(opts.url, node)
     }

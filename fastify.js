@@ -35,7 +35,7 @@ function build (options) {
   }
 
   const router = wayfarer('/404')
-  const middie = Middie(_runMiddlewares.bind(fastify))
+  const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
   const runHooks = fastseries()
@@ -47,9 +47,9 @@ function build (options) {
 
   var server
   if (options.https) {
-    server = https.createServer(options.https, fastify.bind(fastify))
+    server = https.createServer(options.https, fastify)
   } else {
-    server = http.createServer(fastify.bind(fastify))
+    server = http.createServer(fastify)
   }
 
   // shorthand methods
@@ -64,11 +64,14 @@ function build (options) {
   fastify.route = route
 
   // hooks
-  fastify.hooks = new Hooks()
+  fastify.addHook = addHook
+  fastify._hooks = new Hooks()
   fastify.close = close
 
   // custom parsers
-  fastify.contentTypeParser = new ContentTypeParser()
+  fastify.addContentTypeParser = addContentTypeParser
+  fastify.hasContentTypeParser = hasContentTypeParser
+  fastify._contentTypeParser = new ContentTypeParser()
 
   // plugin
   fastify.register = fastify.use
@@ -94,11 +97,13 @@ function build (options) {
 
   function fastify (req, res) {
     logger(req, res)
+
     // onRequest hook
-    runHooks(
+    setImmediate(
+      runHooks,
       new State(req, res),
       hookIterator,
-      this.hooks.onRequest,
+      fastify._hooks.onRequest,
       middlewareCallback
     )
   }
@@ -111,10 +116,11 @@ function build (options) {
     }
 
     // preRouting hook
-    runHooks(
+    setImmediate(
+      runHooks,
       new State(req, res),
       hookIterator,
-      this.hooks.preRouting,
+      fastify._hooks.preRouting,
       routeCallback
     )
   }
@@ -144,7 +150,7 @@ function build (options) {
       return
     }
 
-    router(stripUrl(this.req.url), this.req, this.res)
+    router(stripUrl(this.req.url), this.req, this.res, this.req.method)
   }
 
   function listen (port, cb) {
@@ -162,8 +168,8 @@ function build (options) {
     instance = Object.create(instance)
     instance._Reply = buildReply(instance._Reply)
     instance._Request = buildRequest(instance._Request)
-    instance.contentTypeParser = buildContentTypeParser(instance.contentTypeParser)
-    instance.hooks = buildHooks(instance.hooks)
+    instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
+    instance._hooks = Hooks.buildHooks(instance._hooks)
 
     return instance
   }
@@ -172,7 +178,7 @@ function build (options) {
     runHooks(
       fastify,
       onCloseIterator,
-      this.hooks.onClose,
+      fastify._hooks.onClose,
       onCloseCallback(cb)
     )
   }
@@ -225,7 +231,7 @@ function build (options) {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request, contentTypeParser: self.contentTypeParser, hooks: self.hooks })
+    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request, contentTypeParser: self._contentTypeParser, hooks: self._hooks })
   }
 
   // Route management
@@ -242,8 +248,8 @@ function build (options) {
 
     opts.Reply = opts.Reply || this._Reply
     opts.Request = opts.Request || this._Request
-    opts.contentTypeParser = opts.contentTypeParser || this.contentTypeParser
-    opts.hooks = opts.hooks || this.hooks
+    opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+    opts.hooks = opts.hooks || this._hooks
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -293,6 +299,18 @@ function build (options) {
     return it
   }
 
+  function addHook (name, fn) {
+    return this._hooks.add(name, fn)
+  }
+
+  function addContentTypeParser (contentType, fn) {
+    return this._contentTypeParser.add(contentType, fn)
+  }
+
+  function hasContentTypeParser (contentType, fn) {
+    return this._contentTypeParser.hasParser(contentType)
+  }
+
   // TODO: find a better solution than
   // copy paste the code of the constructor
   function buildReply (R) {
@@ -317,26 +335,6 @@ function build (options) {
     }
     _Request.prototype = new R()
     return _Request
-  }
-
-  function buildContentTypeParser (c) {
-    function _ContentTypeParser () {}
-    _ContentTypeParser.prototype = new ContentTypeParser()
-    const C = new _ContentTypeParser()
-    C.customParsers = Object.create(c.customParsers)
-    C.parserList = Object.create(c.parserList)
-    return C
-  }
-
-  function buildHooks (h) {
-    function _Hooks () {}
-    _Hooks.prototype = new Hooks()
-    const H = new _Hooks()
-    H.onRequest = Object.create(h.onRequest)
-    H.preRouting = Object.create(h.preRouting)
-    H.preHandler = Object.create(h.preHandler)
-    H.onClose = Object.create(h.onClose)
-    return H
   }
 
   function defaultRoute (params, req, res) {

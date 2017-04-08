@@ -12,7 +12,7 @@ function onClose (instance, done) {
 test('hooks - add onClose', t => {
   t.plan(3)
   try {
-    fastify.hooks.add('onClose', onClose)
+    fastify.addHook('onClose', onClose)
     t.ok('should not throw')
   } catch (e) {
     t.fail()
@@ -32,7 +32,7 @@ test('hooks - add onClose', t => {
 
 test('close callback', t => {
   t.plan(3)
-  fastify.hooks.add('onClose', onClose)
+  fastify.addHook('onClose', onClose)
 
   fastify.listen(0, err => {
     t.error(err)
@@ -47,7 +47,7 @@ test('close callback', t => {
 test('inside register', t => {
   t.plan(3)
   fastify.register(function (f, opts, next) {
-    f.hooks.add('onClose', onClose)
+    f.addHook('onClose', onClose)
     next()
   })
 

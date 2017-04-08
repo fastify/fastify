@@ -27,16 +27,6 @@ test('bodyParsed function', t => {
   t.is(typeof parsed, 'function')
 })
 
-test('handler function - missing handler', t => {
-  t.plan(2)
-  const res = {}
-  res.end = () => {
-    t.equal(res.statusCode, 404)
-    t.pass()
-  }
-  internals.handler(null, null, null, res, null, null)
-})
-
 test('handler function - invalid schema', t => {
   t.plan(2)
   const res = {}
@@ -155,7 +145,7 @@ test('routerHandler function - call handle', t => {
     method: 'GET',
     url: 'http://example.com'
   }
-  handle(null, req, res)
+  handle(null, req, res, 'GET')
 })
 
 test('reply function - error 500', t => {
@@ -186,5 +176,5 @@ test('reply function - error 500', t => {
       error: () => {}
     }
   }
-  handle(null, req, res)
+  handle(null, req, res, 'GET')
 })

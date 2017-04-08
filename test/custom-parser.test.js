@@ -9,7 +9,7 @@ const jsonParser = require('body/json')
 test('contentTypeParser method should exist', t => {
   t.plan(1)
   const fastify = Fastify()
-  t.ok(fastify.contentTypeParser)
+  t.ok(fastify.addContentTypeParser)
 })
 
 test('contentTypeParser should add a custom parser', t => {
@@ -20,7 +20,7 @@ test('contentTypeParser should add a custom parser', t => {
     reply.send(req.body)
   })
 
-  fastify.contentTypeParser.add('application/jsoff', function (req, done) {
+  fastify.addContentTypeParser('application/jsoff', function (req, done) {
     jsonParser(req, function (err, body) {
       if (err) return done(err)
       done(body)
@@ -65,8 +65,8 @@ test('contentTypeParser should handle multiple custom parsers', t => {
     })
   }
 
-  fastify.contentTypeParser.add('application/jsoff', customParser)
-  fastify.contentTypeParser.add('application/ffosj', customParser)
+  fastify.addContentTypeParser('application/jsoff', customParser)
+  fastify.addContentTypeParser('application/ffosj', customParser)
 
   fastify.listen(0, err => {
     t.error(err)
@@ -108,7 +108,7 @@ test('contentTypeParser should handle errors', t => {
     reply.send(req.body)
   })
 
-  fastify.contentTypeParser.add('application/jsoff', function (req, done) {
+  fastify.addContentTypeParser('application/jsoff', function (req, done) {
     done(new Error('kaboom!'))
   })
 
@@ -135,13 +135,13 @@ test('contentTypeParser should support encapsulation', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.contentTypeParser.add('application/jsoff', () => {})
-    t.ok(instance.contentTypeParser.hasParser('application/jsoff'))
+    instance.addContentTypeParser('application/jsoff', () => {})
+    t.ok(instance.hasContentTypeParser('application/jsoff'))
 
     instance.register((instance, opts, next) => {
-      instance.contentTypeParser.add('application/ffosj', () => {})
-      t.ok(instance.contentTypeParser.hasParser('application/jsoff'))
-      t.ok(instance.contentTypeParser.hasParser('application/ffosj'))
+      instance.addContentTypeParser('application/ffosj', () => {})
+      t.ok(instance.hasContentTypeParser('application/jsoff'))
+      t.ok(instance.hasContentTypeParser('application/ffosj'))
       next()
     })
 
@@ -150,8 +150,8 @@ test('contentTypeParser should support encapsulation', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.notOk(fastify.contentTypeParser.hasParser('application/jsoff'))
-    t.notOk(fastify.contentTypeParser.hasParser('application/ffosj'))
+    t.notOk(fastify.hasContentTypeParser('application/jsoff'))
+    t.notOk(fastify.hasContentTypeParser('application/ffosj'))
   })
 })
 
@@ -164,7 +164,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
       reply.send(req.body)
     })
 
-    instance.contentTypeParser.add('application/jsoff', function (req, done) {
+    instance.addContentTypeParser('application/jsoff', function (req, done) {
       jsonParser(req, function (err, body) {
         if (err) return done(err)
         done(body)

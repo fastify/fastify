@@ -9,7 +9,7 @@ const fastify = require('..')()
 test('hooks - add preHandler', t => {
   t.plan(1)
   try {
-    fastify.hooks.add('preHandler', function (request, reply, next) {
+    fastify.addHook('preHandler', function (request, reply, next) {
       request.test = 'the request is coming'
       reply.test = 'the reply has come'
       if (request.req.method === 'HEAD') {
@@ -27,7 +27,7 @@ test('hooks - add preHandler', t => {
 test('hooks - add onRequest', t => {
   t.plan(1)
   try {
-    fastify.hooks.add('onRequest', function (req, res, next) {
+    fastify.addHook('onRequest', function (req, res, next) {
       req.raw = 'the request is coming'
       res.raw = 'the reply has come'
       if (req.method === 'DELETE') {
@@ -98,57 +98,57 @@ fastify.listen(0, err => {
   })
 })
 
-test('hooks should support encapsulation / 1', t => {
+test('onRequest hook should not support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.hooks.add('onRequest', () => {})
-    t.is(instance.hooks.onRequest.length, 1)
+    instance.addHook('onRequest', () => {})
+    t.is(instance._hooks.onRequest.length, 1)
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify.hooks.onRequest.length, 0)
+    t.is(fastify._hooks.onRequest.length, 1)
   })
 })
 
-test('hooks should support encapsulation / 2', t => {
+test('onRequest hook should not support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.hooks.add('onRequest', () => {})
+  fastify.addHook('onRequest', () => {})
 
   fastify.register((instance, opts, next) => {
-    instance.hooks.add('onRequest', () => {})
-    t.is(instance.hooks.onRequest.length, 2)
+    instance.addHook('onRequest', () => {})
+    t.is(instance._hooks.onRequest.length, 2)
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify.hooks.onRequest.length, 1)
+    t.is(fastify._hooks.onRequest.length, 2)
   })
 })
 
-test('hooks should support encapsulation / 3', t => {
+test('onRequest hook should not support encapsulation / 3', t => {
   t.plan(13)
   const fastify = Fastify()
 
-  fastify.hooks.add('onRequest', (req, res, next) => {
+  fastify.addHook('onRequest', (req, res, next) => {
     req.first = true
     next()
   })
 
   fastify.get('/first', (req, reply) => {
     t.ok(req.req.first)
-    t.notOk(req.req.second)
+    t.ok(req.req.second)
     reply.send({ hello: 'world' })
   })
 
   fastify.register((instance, opts, next) => {
-    instance.hooks.add('onRequest', (req, res, next) => {
+    instance.addHook('onRequest', (req, res, next) => {
       req.second = true
       next()
     })
@@ -188,23 +188,23 @@ test('hooks should support encapsulation / 3', t => {
   })
 })
 
-test('hooks should support encapsulation / 4', t => {
+test('preRouting hook should not support encapsulation / 4', t => {
   t.plan(13)
   const fastify = Fastify()
 
-  fastify.hooks.add('preRouting', (req, res, next) => {
+  fastify.addHook('preRouting', (req, res, next) => {
     req.first = true
     next()
   })
 
   fastify.get('/first', (req, reply) => {
     t.ok(req.req.first)
-    t.notOk(req.req.second)
+    t.ok(req.req.second)
     reply.send({ hello: 'world' })
   })
 
   fastify.register((instance, opts, next) => {
-    instance.hooks.add('preRouting', (req, res, next) => {
+    instance.addHook('preRouting', (req, res, next) => {
       req.second = true
       next()
     })
@@ -244,11 +244,11 @@ test('hooks should support encapsulation / 4', t => {
   })
 })
 
-test('hooks should support encapsulation / 5', t => {
+test('preHandler hook should support encapsulation / 5', t => {
   t.plan(13)
   const fastify = Fastify()
 
-  fastify.hooks.add('preHandler', (req, res, next) => {
+  fastify.addHook('preHandler', (req, res, next) => {
     req.first = true
     next()
   })
@@ -260,7 +260,7 @@ test('hooks should support encapsulation / 5', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.hooks.add('preHandler', (req, res, next) => {
+    instance.addHook('preHandler', (req, res, next) => {
       req.second = true
       next()
     })

@@ -14,9 +14,10 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const buildNode = require('./lib/tier-node')
-const hooksManager = require('./lib/hooks')
 const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
+const ContentTypeParser = require('./lib/ContentTypeParser')
+const Hooks = require('./lib/hooks')
 
 function build (options) {
   options = options || {}
@@ -38,11 +39,6 @@ function build (options) {
   const run = middie.run
   const map = new Map()
   const runHooks = fastseries()
-
-  const hooks = hooksManager()
-  const onRequest = hooks.get.onRequest
-  const preRouting = hooks.get.preRouting
-  const onClose = hooks.get.onClose
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -68,8 +64,14 @@ function build (options) {
   fastify.route = route
 
   // hooks
-  fastify.addHook = hooks.add
+  fastify.addHook = addHook
+  fastify._hooks = new Hooks()
   fastify.close = close
+
+  // custom parsers
+  fastify.addContentTypeParser = addContentTypeParser
+  fastify.hasContentTypeParser = hasContentTypeParser
+  fastify._contentTypeParser = new ContentTypeParser()
 
   // plugin
   fastify.register = fastify.use
@@ -97,10 +99,11 @@ function build (options) {
     logger(req, res)
 
     // onRequest hook
-    runHooks(
+    setImmediate(
+      runHooks,
       new State(req, res),
       hookIterator,
-      onRequest(),
+      fastify._hooks.onRequest,
       middlewareCallback
     )
   }
@@ -113,10 +116,11 @@ function build (options) {
     }
 
     // preRouting hook
-    runHooks(
+    setImmediate(
+      runHooks,
       new State(req, res),
       hookIterator,
-      preRouting(),
+      fastify._hooks.preRouting,
       routeCallback
     )
   }
@@ -146,7 +150,7 @@ function build (options) {
       return
     }
 
-    router(stripUrl(this.req.url), this.req, this.res)
+    router(stripUrl(this.req.url), this.req, this.res, this.req.method)
   }
 
   function listen (port, cb) {
@@ -156,23 +160,25 @@ function build (options) {
     })
   }
 
-  function override (server, fn) {
+  function override (instance, fn) {
     if (fn[Symbol.for('skip-override')]) {
-      return server
+      return instance
     }
 
-    server = Object.create(server)
-    server._Reply = buildReply(server._Reply)
-    server._Request = buildRequest(server._Request)
+    instance = Object.create(instance)
+    instance._Reply = buildReply(instance._Reply)
+    instance._Request = buildRequest(instance._Request)
+    instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
+    instance._hooks = Hooks.buildHooks(instance._hooks)
 
-    return server
+    return instance
   }
 
   function close (cb) {
     runHooks(
       fastify,
       onCloseIterator,
-      onClose(),
+      fastify._hooks.onClose,
       onCloseCallback(cb)
     )
   }
@@ -225,7 +231,7 @@ function build (options) {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request })
+    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request, contentTypeParser: self._contentTypeParser, hooks: self._hooks })
   }
 
   // Route management
@@ -242,6 +248,8 @@ function build (options) {
 
     opts.Reply = opts.Reply || this._Reply
     opts.Request = opts.Request || this._Request
+    opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+    opts.hooks = opts.hooks || this._hooks
 
     if (map.has(opts.url)) {
       if (map.get(opts.url)[opts.method]) {
@@ -250,7 +258,7 @@ function build (options) {
 
       map.get(opts.url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router, hooks.get)
+      const node = buildNode(opts.url, router)
       node[opts.method] = opts
       map.set(opts.url, node)
     }
@@ -289,6 +297,18 @@ function build (options) {
       }
     }
     return it
+  }
+
+  function addHook (name, fn) {
+    return this._hooks.add(name, fn)
+  }
+
+  function addContentTypeParser (contentType, fn) {
+    return this._contentTypeParser.add(contentType, fn)
+  }
+
+  function hasContentTypeParser (contentType, fn) {
+    return this._contentTypeParser.hasParser(contentType)
   }
 
   // TODO: find a better solution than

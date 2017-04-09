@@ -22,8 +22,6 @@ If you get an error during the execution of you hook, just pass it to `next()` a
 
 The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
-You can add more than one function to every hook and as all the others, the api is chainable.
-
 <a name="on-close"></a>
 **'onClose'**  
 The unique hook that is not inside the lifecycle is `'onClose'`, this one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) that need a "shutdown" part, such as a connection to a database.  
@@ -34,3 +32,6 @@ fastify.addHook('onClose', (instance, done) => {
   done()
 })
 ```
+<a name="scope"></a>
+### Scope
+Talking about scope, the hooks works in a slightly different way from the Request/Reply encapsulation model. For instance, `onRequest`, `preRouting` and `onClose` are never encapsulated, not matter where you are declaring them, while the `preHandler` hook is always encapsulated if you declare it inside a `register`.

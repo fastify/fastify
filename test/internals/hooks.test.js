@@ -3,37 +3,42 @@
 const t = require('tap')
 const test = t.test
 
-const hooksManager = require('../../lib/hooks')
-const hooks = hooksManager()
-const otherHooks = hooksManager()
+const Hooks = require('../../lib/hooks')
 const noop = () => {}
 
-test('hooks should store an object with the hooks and .get should return it', t => {
-  t.plan(4)
-  const h = hooks.get()
-  t.is(typeof h, 'object')
-  t.ok(Array.isArray(h.onRequest))
-  t.ok(Array.isArray(h.preRouting))
-  t.ok(Array.isArray(h.preHandler))
+test('hooks should have 4 array with the registered hooks', t => {
+  t.plan(5)
+  const hooks = new Hooks()
+  t.is(typeof hooks, 'object')
+  t.ok(Array.isArray(hooks.onRequest))
+  t.ok(Array.isArray(hooks.preRouting))
+  t.ok(Array.isArray(hooks.preHandler))
+  t.ok(Array.isArray(hooks.onClose))
 })
 
 test('hooks.add should add an hook to the given hook', t => {
-  t.plan(6)
+  t.plan(8)
+  const hooks = new Hooks()
   hooks.add('onRequest', noop)
-  t.is(hooks.get.onRequest().length, 1)
-  t.is(typeof hooks.get.onRequest()[0], 'function')
+  t.is(hooks.onRequest.length, 1)
+  t.is(typeof hooks.onRequest[0], 'function')
 
   hooks.add('preRouting', noop)
-  t.is(hooks.get.preRouting().length, 1)
-  t.is(typeof hooks.get.preRouting()[0], 'function')
+  t.is(hooks.preRouting.length, 1)
+  t.is(typeof hooks.preRouting[0], 'function')
 
   hooks.add('preHandler', noop)
-  t.is(hooks.get.preHandler().length, 1)
-  t.is(typeof hooks.get.preHandler()[0], 'function')
+  t.is(hooks.preHandler.length, 1)
+  t.is(typeof hooks.preHandler[0], 'function')
+
+  hooks.add('onClose', noop)
+  t.is(hooks.onClose.length, 1)
+  t.is(typeof hooks.onClose[0], 'function')
 })
 
 test('hooks should throw on unexisting handler', t => {
   t.plan(1)
+  const hooks = new Hooks()
   try {
     hooks.add('onUnexistingHook', noop)
     t.fail()
@@ -42,14 +47,8 @@ test('hooks should throw on unexisting handler', t => {
   }
 })
 
-test('different instances does not affect each other', t => {
-  t.plan(1)
-  hooks.add('onRequest', noop)
-
-  t.is(otherHooks.get.onRequest.length, 0)
-})
-
 test('should throw on wrong parameters', t => {
+  const hooks = new Hooks()
   t.plan(2)
   try {
     hooks.add(null, noop)

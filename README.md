@@ -59,6 +59,8 @@ Fastify MongoDB connection plugin, with this you can share the same MongoDb conn
 Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger)  
 Swagger documentation generator for Fastify
+- [`fastify-multipart`](https://github.com/fastify/fastify-multipart)  
+Multipart support for Fastify
 - *More coming soon*
 
 ## Team

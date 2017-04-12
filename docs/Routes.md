@@ -61,10 +61,10 @@ fastify.route({
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
 The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
-`fastify.get(path, [schema], handler)`
-`fastify.head(path, [schema], handler)`
-`fastify.post(path, [schema], handler)`
-`fastify.put(path, [schema], handler)`
-`fastify.delete(path, [schema], handler)`
-`fastify.options(path, [schema], handler)`
-`fastify.patch(path, [schema], handler)`
+`fastify.get(path, [schema], handler)`  
+`fastify.head(path, [schema], handler)`  
+`fastify.post(path, [schema], handler)`  
+`fastify.put(path, [schema], handler)`  
+`fastify.delete(path, [schema], handler)`  
+`fastify.options(path, [schema], handler)`  
+`fastify.patch(path, [schema], handler)`  

@@ -251,16 +251,17 @@ function build (options) {
     opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
     opts.hooks = opts.hooks || this._hooks
 
-    if (map.has(opts.url)) {
-      if (map.get(opts.url)[opts.method]) {
+    const url = opts.url || opts.path
+    if (map.has(url)) {
+      if (map.get(url)[opts.method]) {
         throw new Error(`${opts.method} already set for ${opts.url}`)
       }
 
-      map.get(opts.url)[opts.method] = opts
+      map.get(url)[opts.method] = opts
     } else {
-      const node = buildNode(opts.url, router)
+      const node = buildNode(url, router)
       node[opts.method] = opts
-      map.set(opts.url, node)
+      map.set(url, node)
     }
 
     // chainable api

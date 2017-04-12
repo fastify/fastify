@@ -8,8 +8,8 @@ fastify.route(options)
 ```
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`.
 
-* `url`: the path of the url to match this route.
-* `schema`: an object containing the schemas for the request and response.  
+* `url`: the path of the url to match this route (alias: `path`).
+* `schema`: an object containing the schemas for the request and response.
 They need to be in
   [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md) for more info.
 
@@ -60,7 +60,7 @@ fastify.route({
 
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
 `fastify.get(path, [schema], handler)`  
 `fastify.head(path, [schema], handler)`  
 `fastify.post(path, [schema], handler)`  

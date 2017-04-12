@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const request = require('request')
 const Fastify = require('..')
-const jsonParser = require('body/json')
+const jsonParser = require('fast-json-body')
 
 test('contentTypeParser method should exist', t => {
   t.plan(1)

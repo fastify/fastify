@@ -21,12 +21,6 @@ test('Request object', t => {
   t.equal(req.log, 'log')
 })
 
-test('bodyParsed function', t => {
-  t.plan(1)
-  const parsed = internals.bodyParsed(null, null, null, null)
-  t.is(typeof parsed, 'function')
-})
-
 test('handler function - invalid schema', t => {
   t.plan(2)
   const res = {}

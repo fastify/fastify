@@ -25,6 +25,14 @@ fastify.listen(3000, err => {
 })
 ```
 
+Specifying an address is also supported:
+
+```js
+fastify.listen(3000, '127.0.0.1', err => {
+  if (err) throw err
+})
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).

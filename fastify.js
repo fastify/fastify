@@ -153,10 +153,16 @@ function build (options) {
     router(stripUrl(this.req.url), this.req, this.res, this.req.method)
   }
 
-  function listen (port, cb) {
+  function listen (port, address, cb) {
+    const hasAddress = arguments.length === 3
+    const _cb = (hasAddress) ? cb : address
     fastify.ready(function (err) {
-      if (err) return cb(err)
-      server.listen(port, cb)
+      if (err) return _cb(err)
+      if (hasAddress) {
+        server.listen(port, address, _cb)
+      } else {
+        server.listen(port, _cb)
+      }
     })
   }
 

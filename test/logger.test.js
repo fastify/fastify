@@ -82,3 +82,9 @@ test('can use external logger instance', t => {
     http.get('http://localhost:' + localFastify.server.address().port + '/foo')
   })
 })
+
+test('expose the logger', t => {
+  t.plan(2)
+  t.ok(fastify.logger)
+  t.is(typeof fastify.logger, 'function')
+})

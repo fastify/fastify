@@ -36,16 +36,16 @@ fastify
     reply.code(200).send(stream)
   })
   .post('/', schema, function (req, reply) {
-    reply.send(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
-    reply.send(null)
+    reply.send()
   })
   .delete('/', schema, function (req, reply) {
-    reply.send(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
   .patch('/', schema, function (req, reply) {
-    reply.send(null, { hello: 'world' })
+    reply.send({ hello: 'world' })
   })
 
 fastify.listen(3000, err => {

@@ -8,14 +8,14 @@ Fastify uses a schema based approach, and even if it is not mandatory we recomme
 The route validation internally uses [Ajv](https://www.npmjs.com/package/ajv), which is an highly performant JSON schema validator.
 Validate the input is very easy, just add the fields that you need inside the route schema and you are done!  
 The supported validations are:
-- `payload`: validates the body of the request if it is a POST or a PUT.
+- `body`: validates the body of the request if it is a POST or a PUT.
 - `querystring`: validates the querystring. This can be a complete JSON Schema object, with the property type of object and properties object of parameters, or simply the values of what would be contained in the properties object as shown below.
 - `params`: validates the route params.
 
 Example:
 ```js
   const schema = {
-    payload: {
+    body: {
       type: 'object',
       properties: {
         someKey: { type: 'string' },

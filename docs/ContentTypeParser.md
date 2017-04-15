@@ -14,3 +14,5 @@ fastify.addContentTypeParser('application/jsoff', function (req, done) {
   })
 })
 ```
+
+You can also use the api `hasContentTypeParser` to find if a specific content-type parser already exist.

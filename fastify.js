@@ -63,6 +63,9 @@ function build (options) {
   // extended route
   fastify.route = route
 
+  // expose logger instance
+  fastify.logger = logger
+
   // hooks
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
@@ -307,11 +310,13 @@ function build (options) {
   }
 
   function addHook (name, fn) {
-    return this._hooks.add(name, fn)
+    this._hooks.add(name, fn)
+    return this
   }
 
   function addContentTypeParser (contentType, fn) {
-    return this._contentTypeParser.add(contentType, fn)
+    this._contentTypeParser.add(contentType, fn)
+    return this
   }
 
   function hasContentTypeParser (contentType, fn) {

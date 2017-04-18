@@ -13,7 +13,7 @@ fastify.route(options)
 They need to be in
   [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md) for more info.
 
-  * `payload`: validates the body of the request if it is a POST or a
+  * `body`: validates the body of the request if it is a POST or a
     PUT.
   * `querystring`: validates the querystring. This can be a complete JSON
   Schema object, with the property `type` of `object` and `properties` object of parameters, or

@@ -9,7 +9,7 @@ const symbols = require('../../lib/validation').symbols
 test('Symbols', t => {
   t.plan(4)
   t.is(typeof symbols.outputSchema, 'symbol')
-  t.is(typeof symbols.payloadSchema, 'symbol')
+  t.is(typeof symbols.bodySchema, 'symbol')
   t.is(typeof symbols.querystringSchema, 'symbol')
   t.is(typeof symbols.paramsSchema, 'symbol')
 })
@@ -48,7 +48,7 @@ test('build schema - payload schema', t => {
   t.plan(1)
   const opts = {
     schema: {
-      payload: {
+      body: {
         type: 'object',
         properties: {
           hello: { type: 'string' }
@@ -57,7 +57,7 @@ test('build schema - payload schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[symbols.payloadSchema], 'function')
+  t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
 test('build schema - querystring schema', t => {

@@ -30,7 +30,7 @@ test('handler function - invalid schema', t => {
   }
   const handle = {
     schema: {
-      payload: {
+      body: {
         type: 'object',
         properties: {
           hello: { type: 'number' }

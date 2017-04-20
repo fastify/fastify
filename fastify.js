@@ -1,7 +1,6 @@
 'use strict'
 
-const wayfarer = require('wayfarer')
-const stripUrl = require('pathname-match')
+const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
@@ -13,7 +12,7 @@ const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
-const buildNode = require('./lib/tier-node')
+const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
@@ -27,14 +26,14 @@ function build (options) {
 
   var logger
   if (options.logger && isValidLogger(options.logger)) {
-    logger = pinoHttp({logger: options.logger})
+    logger = pinoHttp({ logger: options.logger })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
     logger = pinoHttp(options.logger)
   }
 
-  const router = wayfarer('/404')
+  const router = FindMyWay({ defaultRoute: defaultRoute })
   const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
@@ -43,7 +42,6 @@ function build (options) {
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
   app.override = override
-  router.on('/404', defaultRoute)
 
   var server
   if (options.https) {
@@ -153,7 +151,7 @@ function build (options) {
       return
     }
 
-    router(stripUrl(this.req.url), this.req, this.res, this.req.method)
+    router.lookup(this.req, this.res)
   }
 
   function listen (port, address, cb) {
@@ -261,16 +259,19 @@ function build (options) {
     opts.hooks = opts.hooks || this._hooks
 
     const url = opts.url || opts.path
+
     if (map.has(url)) {
       if (map.get(url)[opts.method]) {
-        throw new Error(`${opts.method} already set for ${opts.url}`)
+        throw new Error(`${opts.method} already set for ${url}`)
       }
 
       map.get(url)[opts.method] = opts
+      router.on(opts.method, url, handleRequest, opts)
     } else {
-      const node = buildNode(url, router)
+      const node = {}
       node[opts.method] = opts
       map.set(url, node)
+      router.on(opts.method, url, handleRequest, opts)
     }
 
     // chainable api
@@ -349,7 +350,7 @@ function build (options) {
     return _Request
   }
 
-  function defaultRoute (params, req, res) {
+  function defaultRoute (req, res, params) {
     res.statusCode = 404
     res.end()
   }

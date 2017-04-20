@@ -64,8 +64,8 @@
     "fast-json-stringify": "^0.10.4",
     "fast-safe-stringify": "^1.1.13",
     "fastseries": "^1.7.2",
+    "find-my-way": "^0.2.0",
     "middie": "^0.2.0",
-    "pathname-match": "^1.2.0",
     "pino-http": "^2.4.2",
     "pump": "^1.0.2",
     "wayfarer": "^6.5.0"

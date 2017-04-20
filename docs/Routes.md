@@ -27,7 +27,7 @@ They need to be in
 
   `reply` is defined in [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md).
 
-The routing is handled by [wayfarer](https://github.com/yoshuawuyts/wayfarer), so you can refer its documentation for the url building.
+The routing is handled by [find-my-way](https://github.com/delvedor/find-my-way), so you can refer its documentation for the url building.
 
 Example:
 ```js

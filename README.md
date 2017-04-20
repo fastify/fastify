@@ -32,7 +32,7 @@ Use Fastify can increase your throughput up to 100%.
 - Restify: 6133 req/sec
 - Express: 8534 req/sec
 - Koa: 9640 req/sec
-- **Fastify: 20256 req/sec**
+- **Fastify: 21287 req/sec**
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

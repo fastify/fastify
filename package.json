@@ -61,7 +61,7 @@
   "dependencies": {
     "ajv": "^5.0.0",
     "avvio": "^0.6.1",
-    "fast-json-stringify": "^0.10.4",
+    "fast-json-stringify": "^0.11.0",
     "fast-safe-stringify": "^1.1.13",
     "fastseries": "^1.7.2",
     "find-my-way": "^0.2.0",

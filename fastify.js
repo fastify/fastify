@@ -173,8 +173,8 @@ function build (options) {
     }
 
     instance = Object.create(instance)
-    instance._Reply = buildReply(instance._Reply)
-    instance._Request = buildRequest(instance._Request)
+    instance._Reply = Reply.buildReply(instance._Reply)
+    instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
 
@@ -322,32 +322,6 @@ function build (options) {
 
   function hasContentTypeParser (contentType, fn) {
     return this._contentTypeParser.hasParser(contentType)
-  }
-
-  // TODO: find a better solution than
-  // copy paste the code of the constructor
-  function buildReply (R) {
-    function _Reply (req, res, handle) {
-      this.res = res
-      this.handle = handle
-      this._req = req
-      this.sent = false
-      this._serializer = null
-    }
-    _Reply.prototype = new R()
-    return _Reply
-  }
-
-  function buildRequest (R) {
-    function _Request (params, req, body, query, log) {
-      this.params = params
-      this.req = req
-      this.body = body
-      this.query = query
-      this.log = log
-    }
-    _Request.prototype = new R()
-    return _Request
   }
 
   function defaultRoute (req, res, params) {

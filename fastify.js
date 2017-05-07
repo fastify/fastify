@@ -7,6 +7,7 @@ const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const fastseries = require('fastseries')
+const shot = require('shot')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -42,6 +43,12 @@ function build (options) {
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
   app.override = override
+
+  // true when Fastify is ready to go
+  var started = false
+  app.on('start', () => {
+    started = true
+  })
 
   var server
   if (options.https) {
@@ -93,6 +100,9 @@ function build (options) {
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
+
+  // fake http injection (for testing purposes)
+  fastify.inject = inject
 
   return fastify
 
@@ -238,7 +248,16 @@ function build (options) {
       handler = schema
       schema = {}
     }
-    return route({ method, url, schema, handler, Reply: self._Reply, Request: self._Request, contentTypeParser: self._contentTypeParser, hooks: self._hooks })
+    return route({
+      method,
+      url,
+      schema,
+      handler,
+      Reply: self._Reply,
+      Request: self._Request,
+      contentTypeParser: self._contentTypeParser,
+      hooks: self._hooks
+    })
   }
 
   // Route management
@@ -308,6 +327,18 @@ function build (options) {
       }
     }
     return it
+  }
+
+  function inject (opts, cb) {
+    if (started) {
+      shot.inject(this, opts, cb)
+      return
+    }
+
+    this.ready(err => {
+      if (err) throw err
+      shot.inject(this, opts, cb)
+    })
   }
 
   function addHook (name, fn) {

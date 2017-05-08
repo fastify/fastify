@@ -87,3 +87,7 @@ Function to add a specific hook in the lifecycle of Fastify, check  [here](https
 <a name="logger"></a>
 #### logger
 The logger instance, check  [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).
+
+<a name="inject"></a>
+#### inject
+Fake http injection (for testing purposes)  [here](https://github.com/fastify/fastify/blob/master/docs/Testing.md#inject).

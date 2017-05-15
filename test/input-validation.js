@@ -77,12 +77,16 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body[0], {
-          keyword: 'type',
-          dataPath: '.hello',
-          schemaPath: '#/properties/hello/type',
-          params: { type: 'integer' },
-          message: 'should be integer'
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: JSON.stringify([{
+            keyword: 'type',
+            dataPath: '.hello',
+            schemaPath: '#/properties/hello/type',
+            params: { type: 'integer' },
+            message: 'should be integer'
+          }]),
+          statusCode: 400
         })
       })
     })

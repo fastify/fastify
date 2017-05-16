@@ -145,18 +145,20 @@ function build (options) {
     fn(this.req, this.res, cb)
   }
 
-  function middlewareCallback (err) {
+  function middlewareCallback (err, code) {
     if (err) {
       const reply = new Reply(this.req, this.res, null)
+      if (code[0]) reply.code(code[0])
       reply.send(err)
       return
     }
     run(this.req, this.res)
   }
 
-  function routeCallback (err) {
+  function routeCallback (err, code) {
     if (err) {
       const reply = new Reply(this.req, this.res, null)
+      if (code[0]) reply.code(code[0])
       reply.send(err)
       return
     }

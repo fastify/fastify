@@ -2,8 +2,10 @@
 
 const t = require('tap')
 const test = t.test
+const safeStringify = require('fast-safe-stringify')
 const Fastify = require('..')
 const statusCodes = require('../lib/status-codes.json')
+const boom = require('boom')
 
 const codes = Object.keys(statusCodes)
 codes.forEach(code => {
@@ -62,6 +64,28 @@ test('Hook error handling', t => {
         message: err.message,
         statusCode: 400
       },
+      JSON.parse(res.payload)
+    )
+  })
+})
+
+test('support for boom', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const boomObject = boom.create(500, 'winter is coming', { hello: 'world' })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(boomObject)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(
+      // we are doing this because Boom creates also a stack that is stripped during the stringify phase
+      JSON.parse(safeStringify(boomObject)),
       JSON.parse(res.payload)
     )
   })

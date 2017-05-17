@@ -66,7 +66,7 @@
     "fast-safe-stringify": "^1.1.13",
     "fastseries": "^1.7.2",
     "find-my-way": "^0.2.2",
-    "middie": "^0.2.0",
+    "middie": "^0.3.0",
     "pino-http": "^2.6.1",
     "pump": "^1.0.2",
     "shot": "^3.4.0",

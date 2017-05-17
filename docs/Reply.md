@@ -89,7 +89,17 @@ fastify.get('/streams', function (request, reply) {
 
 <a name="errors"></a>
 #### Errors
-If you pass to *send* an object that is an instance of *Error*, Fastify will automatically set the error code to 500 if is not setted or if the *statusCode* is lower than 500.
+If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:
+```js
+{
+  error: String        // the http error message
+  message: String      // the user error message
+  statusCode: Number   // the http status code
+}
+```
+If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).  
+
+*If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 <a name="payload-type"></a>
 #### Type of the final payload

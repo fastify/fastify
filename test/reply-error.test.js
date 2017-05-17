@@ -171,3 +171,92 @@ test('support for boom', t => {
     )
   })
 })
+
+test('extendServerError should exist', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.ok(fastify.extendServerError)
+  t.is(typeof fastify.extendServerError, 'function')
+})
+
+test('extend server error - encapsulation', t => {
+  t.plan(6)
+  const fastify = Fastify()
+  const err = new Error('error')
+  const date = new Date()
+
+  fastify.get('/', (req, reply) => {
+    t.notOk(reply._extendServerError)
+    reply.send(err)
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.extendServerError(() => {
+      return {
+        timestamp: date
+      }
+    })
+
+    instance.get('/encapsulated', (req, reply) => {
+      t.ok(reply._extendServerError)
+      reply.send(err)
+    })
+
+    next()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(
+      {
+        error: statusCodes['500'],
+        message: err.message,
+        statusCode: 500
+      },
+      JSON.parse(res.payload)
+    )
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/encapsulated'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(
+      {
+        error: statusCodes['500'],
+        message: err.message,
+        statusCode: 500,
+        timestamp: date.toISOString()
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})
+
+test('extend server error - should throw if the argument is not a function', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.extendServerError(null)
+    t.fail()
+  } catch (e) {
+    t.is(e.message, 'The server error object must be a function')
+  }
+})
+
+test('extend server error - should throw if the function does not return an object', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.extendServerError(() => null)
+    t.fail()
+  } catch (e) {
+    t.is(e.message, 'The error extender must return an object')
+  }
+})

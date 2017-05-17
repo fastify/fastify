@@ -20,6 +20,15 @@ Is pretty easy understand where each hook is executed, if you need a visual feed
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
+If you want to pass a custom error code to the user, just pass it as second parameter to `next()`:
+```js
+fastify.addHook('onRequest', (req, res, next) => {
+  // some code
+  next(new Error('some error'), 400)
+})
+```
+*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+
 The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
 <a name="on-close"></a>

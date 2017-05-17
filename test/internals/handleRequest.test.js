@@ -3,8 +3,6 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
-const http = require('http')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
@@ -44,7 +42,7 @@ test('handler function - invalid schema', t => {
     hooks: new Hooks()
   }
   buildSchema(handle)
-  internals.handler(handle, null, null, res, { hello: 'world' }, null)
+  internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
 test('handler function - reply', t => {
@@ -81,29 +79,4 @@ test('jsonBody and jsonBodyParsed should be functions', t => {
 
   t.is(typeof internals.jsonBodyParsed, 'function')
   t.is(internals.jsonBodyParsed.length, 6)
-})
-
-test('json body shoudl return 422 if the body is not correctly parsed', t => {
-  t.plan(3)
-
-  const server = http.createServer((req, res) => {
-    internals.jsonBody(req, res)
-  })
-
-  server.listen(0, err => {
-    t.error(err)
-    server.unref()
-
-    request({
-      method: 'POST',
-      uri: 'http://localhost:' + server.address().port,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: '{"hello":world"}'
-    }, (error, response, body) => {
-      t.error(error)
-      t.strictEqual(response.statusCode, 422)
-    })
-  })
 })

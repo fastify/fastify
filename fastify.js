@@ -359,8 +359,8 @@ function build (options) {
   }
 
   function defaultRoute (req, res, params) {
-    res.statusCode = 404
-    res.end()
+    const reply = new Reply(req, res, null)
+    reply.code(404).send(new Error('Not found'))
   }
 }
 

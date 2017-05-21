@@ -93,6 +93,33 @@ module.exports = function (fastify, options, next) {
 }
 ```
 
+<a name="cli"></a>
+### Run from CLI
+You can also run Fastify from the CLI thanks to [fastify-cli](https://github.com/fastify/fastify-cli), it's very easy!  
+Just add the following lines to your `package.json`
+```JSON
+{
+  "scripts": {
+    "start": "fastify server.js"
+  }
+}
+```
+And create your server file(s):
+```js
+// server.js
+'use strict'
+
+module.exports = function (fastify, opts, next) {
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+  next()
+}
+```
+Then run your server with:
+```bash
+npm start
+```
 <a name="next"></a>
 ### Next
 Do you want to know more?

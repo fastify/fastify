@@ -3,6 +3,9 @@
   "version": "0.19.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
+  "bin": {
+    "fastify": "./node_modules/.bin/fastify"
+  },
   "scripts": {
     "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
@@ -64,6 +67,7 @@
     "avvio": "^0.6.1",
     "fast-json-stringify": "^0.11.0",
     "fast-safe-stringify": "^1.1.13",
+    "fastify-cli": "^0.6.0",
     "fastseries": "^1.7.2",
     "find-my-way": "^0.2.2",
     "middie": "^0.3.0",

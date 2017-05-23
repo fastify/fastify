@@ -35,6 +35,9 @@
     "url": "https://github.com/fastify/fastify/issues"
   },
   "homepage": "https://github.com/fastify/fastify#readme",
+  "engines" : {
+    "node" : ">=4.5"
+  },
   "devDependencies": {
     "bluebird": "^3.5.0",
     "boom": "^4.3.1",

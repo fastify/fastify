@@ -15,7 +15,7 @@
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
 How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
 
-Enter Fastify. Fastify is a web framework highly focused on speed and low overhead. It is inspired from Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.  
+Enter Fastify. Fastify is a web framework highly focused on speed and low overhead. It is inspired from Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 Use Fastify can increase your throughput up to 100%.
 
 ### Core features
@@ -24,8 +24,8 @@ Use Fastify can increase your throughput up to 100%.
 - **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.
-- **Logging:** logs are extremely important but are costly; we choose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
-- **Developer friendly:** the framework is built to be very expressive and help the developer in his daily use, without sacrificing performances and security.
+- **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
+- **Developer friendly:** the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.
 
 ### Benchmarks
 - Hapi: 2200 req/sec
@@ -51,17 +51,17 @@ Use Fastify can increase your throughput up to 100%.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
 
 ## Ecosystem
-- [`point-of-view`](https://github.com/fastify/point-of-view)  
+- [`point-of-view`](https://github.com/fastify/point-of-view)
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)  
+- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)
 Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
-- [`fastify-redis`](https://github.com/fastify/fastify-redis)  
+- [`fastify-redis`](https://github.com/fastify/fastify-redis)
 Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
-- [`fastify-swagger`](https://github.com/fastify/fastify-swagger)  
+- [`fastify-swagger`](https://github.com/fastify/fastify-swagger)
 Swagger documentation generator for Fastify
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart)  
+- [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
 Multipart support for Fastify
-- [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)  
+- [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)
 Bearer auth plugin for Fastify
 - *More coming soon*
 

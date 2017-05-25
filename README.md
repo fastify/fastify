@@ -63,6 +63,10 @@ Swagger documentation generator for Fastify
 Multipart support for Fastify
 - [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)  
 Bearer auth plugin for Fastify
+- [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon)  
+Bankai assets compiler for Fastify
+- [`fastify-react`](https://github.com/fastify/fastify-react)  
+React server side rendering support for Fastify with Next
 - *More coming soon*
 
 ## Team

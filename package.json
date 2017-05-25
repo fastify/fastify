@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
-    "boom": "^4.3.1",
+    "boom": "^5.0.0",
     "cors": "^2.8.3",
     "coveralls": "^2.13.1",
     "dns-prefetch-control": "^0.1.0",

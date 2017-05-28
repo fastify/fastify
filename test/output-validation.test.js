@@ -67,7 +67,7 @@ test('empty response', t => {
   t.plan(1)
   try {
     // no checks
-    fastify.get('/empty', function (req, reply) {
+    fastify.get('/empty', schema, function (req, reply) {
       reply.code(204).send()
     })
     t.pass()

@@ -8,7 +8,7 @@ const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {
   t.plan(4)
-  t.is(typeof symbols.outputSchema, 'symbol')
+  t.is(typeof symbols.responseSchema, 'symbol')
   t.is(typeof symbols.bodySchema, 'symbol')
   t.is(typeof symbols.querystringSchema, 'symbol')
   t.is(typeof symbols.paramsSchema, 'symbol')
@@ -18,30 +18,40 @@ test('build schema - missing schema', t => {
   t.plan(1)
   const opts = {}
   validation.build(opts)
-  t.is(typeof opts[symbols.outputSchema], 'function')
+  t.is(typeof opts[symbols.responseSchema].default, 'function')
 })
 
 test('build schema - missing output schema', t => {
   t.plan(1)
   const opts = { schema: {} }
   validation.build(opts)
-  t.is(typeof opts[symbols.outputSchema], 'function')
+  t.is(typeof opts[symbols.responseSchema].default, 'function')
 })
 
 test('build schema - output schema', t => {
-  t.plan(1)
+  t.plan(3)
   const opts = {
     schema: {
-      out: {
-        type: 'object',
-        properties: {
-          hello: { type: 'string' }
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        },
+        201: {
+          type: 'object',
+          properties: {
+            hello: { type: 'number' }
+          }
         }
       }
     }
   }
   validation.build(opts)
-  t.is(typeof opts[symbols.outputSchema], 'function')
+  t.is(typeof opts[symbols.responseSchema].default, 'function')
+  t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
+  t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })
 
 test('build schema - payload schema', t => {

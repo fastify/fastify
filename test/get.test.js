@@ -7,22 +7,26 @@ const fastify = require('..')()
 const safeStringify = require('fast-safe-stringify')
 
 const schema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'string'
+  response: {
+    '2xx': {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
       }
     }
   }
 }
 
 const numberSchema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'number'
+  response: {
+    '2xx': {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'number'
+        }
       }
     }
   }

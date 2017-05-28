@@ -6,8 +6,10 @@ const request = require('request')
 const fastify = require('..')()
 
 const schema = {
-  out: {
-    type: 'null'
+  response: {
+    '2xx': {
+      type: 'null'
+    }
   }
 }
 

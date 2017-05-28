@@ -6,11 +6,13 @@ const fastify = require('..')()
 
 const noop = () => {}
 const schema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'string'
+  response: {
+    '2xx': {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
       }
     }
   }

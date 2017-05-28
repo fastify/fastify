@@ -3,11 +3,13 @@
 const fastify = require('../fastify')()
 
 const schema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'string'
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
       }
     }
   }

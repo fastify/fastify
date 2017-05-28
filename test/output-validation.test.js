@@ -7,7 +7,7 @@ const fastify = require('..')()
 
 const schema = {
   response: {
-    '200': {
+    200: {
       type: 'object',
       properties: {
         hello: {

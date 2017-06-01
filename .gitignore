@@ -50,3 +50,7 @@ profile-*
 
 # flamegraphs
 profile*
+
+# lock files
+yarn.lock
+package-lock.json

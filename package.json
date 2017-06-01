@@ -4,7 +4,7 @@
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {
-    "fastify": "./node_modules/.bin/fastify"
+    "fastify": "./lib/bin.js"
   },
   "scripts": {
     "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
@@ -35,8 +35,8 @@
     "url": "https://github.com/fastify/fastify/issues"
   },
   "homepage": "https://github.com/fastify/fastify#readme",
-  "engines" : {
-    "node" : ">=4.5"
+  "engines": {
+    "node": ">=4.5"
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
@@ -44,17 +44,17 @@
     "cors": "^2.8.3",
     "coveralls": "^2.13.1",
     "dns-prefetch-control": "^0.1.0",
-    "express": "^4.15.2",
+    "express": "^4.15.3",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^0.1.0",
     "frameguard": "^3.0.0",
-    "hapi": "^16.1.1",
-    "helmet": "^3.6.0",
+    "hapi": "^16.3.0",
+    "helmet": "^3.6.1",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
     "koa": "^2.2.0",
-    "pino": "^4.5.1",
+    "pino": "^4.5.3",
     "pre-commit": "^1.2.2",
     "request": "^2.81.0",
     "snazzy": "^7.0.0",
@@ -66,17 +66,17 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "ajv": "^5.0.1",
+    "ajv": "^5.1.5",
     "avvio": "^0.6.1",
     "fast-json-stringify": "^0.12.1",
-    "fast-safe-stringify": "^1.1.13",
-    "fastify-cli": "^0.6.0",
+    "fast-safe-stringify": "^1.2.0",
+    "fastify-cli": "^0.6.1",
     "fastseries": "^1.7.2",
-    "find-my-way": "^0.2.2",
+    "find-my-way": "^0.2.4",
     "middie": "^0.3.0",
     "pino-http": "^2.6.1",
     "pump": "^1.0.2",
-    "shot": "^3.4.0",
+    "shot": "^3.4.2",
     "xtend": "^4.0.1"
   }
 }

@@ -29,7 +29,7 @@ test('build schema - missing output schema', t => {
 })
 
 test('build schema - output schema', t => {
-  t.plan(3)
+  t.plan(2)
   const opts = {
     schema: {
       response: {
@@ -49,7 +49,6 @@ test('build schema - output schema', t => {
     }
   }
   validation.build(opts)
-  t.is(typeof opts[symbols.responseSchema].default, 'undefined')
   t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
   t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })

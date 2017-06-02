@@ -32,10 +32,12 @@ Fastify is designed to be very performant, if you want to make it even faster, y
 const fastify = require('fastify')()
 
 const schema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: { type: 'string' }
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        hello: { type: 'string' }
+      }
     }
   }
 }

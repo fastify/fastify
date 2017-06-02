@@ -19,7 +19,7 @@ They need to be in
   Schema object, with the property `type` of `object` and `properties` object of parameters, or
   simply the values of what would be contained in the `properties` object as shown below.
   * `params`: validates the params.
-  * `out`: filter and generate a schema for the response, setting a
+  * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `handler(request, reply)`: the function that will handle this request.
 
@@ -43,11 +43,13 @@ fastify.route({
         type: 'integer'
       }
     },
-    out: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }

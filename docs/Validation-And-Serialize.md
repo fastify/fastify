@@ -47,15 +47,38 @@ The first one is used if you have provided an output schema in the route options
 Example:
 ```js
   const schema = {
-    out: {
-      type: 'object',
-      properties: {
-        value: { type: 'string' },
-        otherValue: { type: 'boolean' }
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          value: { type: 'string' },
+          otherValue: { type: 'boolean' }
+        }
       }
     }
   }
 ```
+As you can see the response schema is based on the status code, if you want to use the same schema for multiple status codes you can use `'2xx'`, for example:
+```js
+  const schema = {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          value: { type: 'string' },
+          otherValue: { type: 'boolean' }
+        }
+      },
+      201: {
+        type: 'object',
+        properties: {
+          value: { type: 'string' }
+        }
+      }
+    }
+  }
+```
+
 *If you need a custom serializer in a very specific part of your code, you can always set one with `reply.serializer(...)`.*
 
 <a name="resources"></a>

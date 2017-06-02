@@ -5,11 +5,13 @@ const fastify = require('..')()
 const sleep = require('then-sleep')
 
 const schema = {
-  out: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'string'
+  response: {
+    '2xx': {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
       }
     }
   }

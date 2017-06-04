@@ -78,7 +78,3 @@ function asyncTest (t) {
 }
 
 module.exports = asyncTest
-
-if (require.main === module) {
-  asyncTest(require('tap'))
-}

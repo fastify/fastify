@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const statusCodes = require('../lib/status-codes.json')
+const statusCodes = require('http').STATUS_CODES
 const boom = require('boom')
 
 const codes = Object.keys(statusCodes)

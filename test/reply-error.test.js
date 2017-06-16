@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const net = require('net')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
 const boom = require('boom')
@@ -317,4 +318,33 @@ test('extend server error - should throw if the function does not return an obje
   } catch (e) {
     t.is(e.message, 'The error extender must return an object')
   }
+})
+
+test('Should reply 400 on client error', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  fastify.listen(0, err => {
+    t.error(err)
+
+    const client = net.connect(fastify.server.address().port)
+    client.end('oooops!')
+
+    var chunks = ''
+    client.on('data', chunk => {
+      chunks += chunk
+    })
+
+    client.once('end', () => {
+      t.strictSame(
+        JSON.parse(chunks),
+        {
+          error: 'Bad Request',
+          message: 'Client Error',
+          statusCode: 400
+        }
+      )
+      fastify.close()
+    })
+  })
 })

@@ -57,6 +57,8 @@ function build (options) {
     server = http.createServer(fastify)
   }
 
+  server.on('clientError', handleClientError)
+
   // shorthand methods
   fastify.delete = _delete
   fastify.get = _get
@@ -356,6 +358,16 @@ function build (options) {
 
   function hasContentTypeParser (contentType, fn) {
     return this._contentTypeParser.hasParser(contentType)
+  }
+
+  function handleClientError (e, socket) {
+    socket.end(
+      JSON.stringify({
+        error: http.STATUS_CODES['400'],
+        message: 'Client Error',
+        statusCode: 400
+      })
+    )
   }
 
   function defaultRoute (req, res, params) {

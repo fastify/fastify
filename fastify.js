@@ -57,6 +57,10 @@ function build (options) {
     server = http.createServer(fastify)
   }
 
+  if (Number(process.versions.node[0]) >= 6) {
+    server.on('clientError', handleClientError)
+  }
+
   // shorthand methods
   fastify.delete = _delete
   fastify.get = _get
@@ -356,6 +360,16 @@ function build (options) {
 
   function hasContentTypeParser (contentType, fn) {
     return this._contentTypeParser.hasParser(contentType)
+  }
+
+  function handleClientError (e, socket) {
+    const body = JSON.stringify({
+      error: http.STATUS_CODES['400'],
+      message: 'Client Error',
+      statusCode: 400
+    })
+    logger.logger.error(e, 'client error')
+    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 
   function defaultRoute (req, res, params) {

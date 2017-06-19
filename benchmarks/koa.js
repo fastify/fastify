@@ -1,7 +1,7 @@
 'use string'
 
-var koa = require('koa')
-var app = koa()
+var Koa = require('koa')
+var app = new Koa()
 
 app.use(function * () {
   this.body = JSON.stringify({ hello: 'world' })

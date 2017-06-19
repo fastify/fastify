@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const net = require('net')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
 const boom = require('boom')
@@ -318,3 +319,32 @@ test('extend server error - should throw if the function does not return an obje
     t.is(e.message, 'The error extender must return an object')
   }
 })
+
+if (Number(process.versions.node[0]) >= 6) {
+  test('Should reply 400 on client error', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    fastify.listen(0, err => {
+      t.error(err)
+
+      const client = net.connect(fastify.server.address().port)
+      client.end('oooops!')
+
+      var chunks = ''
+      client.on('data', chunk => {
+        chunks += chunk
+      })
+
+      client.once('end', () => {
+        const body = JSON.stringify({
+          error: 'Bad Request',
+          message: 'Client Error',
+          statusCode: 400
+        })
+        t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`, chunks)
+        fastify.close()
+      })
+    })
+  })
+}

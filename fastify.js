@@ -368,6 +368,7 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
+    logger.logger.error(e, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 

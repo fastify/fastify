@@ -71,6 +71,7 @@ function build (options) {
   fastify.options = _options
   // extended route
   fastify.route = route
+  fastify._RoutePrefix = new RoutePrefix()
 
   // expose logger instance
   fastify.logger = logger
@@ -184,7 +185,7 @@ function build (options) {
     })
   }
 
-  function override (instance, fn) {
+  function override (instance, fn, opts) {
     if (fn[Symbol.for('skip-override')]) {
       return instance
     }
@@ -194,8 +195,23 @@ function build (options) {
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
+    instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
 
     return instance
+  }
+
+  function RoutePrefix () {
+    this.prefix = ''
+  }
+
+  function buildRoutePrefix (r, opts) {
+    function _RoutePrefix () {}
+    const R = new _RoutePrefix()
+    R.prefix = r.prefix
+    if (typeof opts.prefix === 'string') {
+      R.prefix += opts.prefix
+    }
+    return R
   }
 
   function close (cb) {
@@ -263,7 +279,8 @@ function build (options) {
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,
-      hooks: self._hooks
+      hooks: self._hooks,
+      RoutePrefix: self._RoutePrefix
     })
   }
 
@@ -283,8 +300,10 @@ function build (options) {
     opts.Request = opts.Request || this._Request
     opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
     opts.hooks = opts.hooks || this._hooks
+    opts.RoutePrefix = opts.RoutePrefix || this._RoutePrefix
 
-    const url = opts.url || opts.path
+    const prefix = opts.RoutePrefix.prefix
+    const url = prefix + (opts.url || opts.path)
 
     if (map.has(url)) {
       if (map.get(url)[opts.method]) {

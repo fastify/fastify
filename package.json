@@ -67,7 +67,7 @@
   },
   "dependencies": {
     "ajv": "^5.1.5",
-    "avvio": "^0.6.1",
+    "avvio": "^1.0.0",
     "fast-json-stringify": "^0.12.1",
     "fast-safe-stringify": "^1.2.0",
     "fastify-cli": "^0.6.1",

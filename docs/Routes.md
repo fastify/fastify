@@ -70,3 +70,39 @@ The above route declaration is more *Hapi*-like, but if you prefer an *Express/R
 `fastify.delete(path, [schema], handler)`  
 `fastify.options(path, [schema], handler)`  
 `fastify.patch(path, [schema], handler)`  
+
+<a name="route-prefixing"></a>
+### Route Prefixing
+Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.  
+Fastify offers you a fast and smart way to create different version of the same api without changing all the route names by hand, *route prefixing*. Let's see how it works:
+
+```js
+// server.js
+const fastify = require('fastify')()
+
+fastify.register(require('./routes/v1/users'), { prefix: '/v1' })
+fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
+
+fastify.listen(3000)
+```
+```js
+// routes/v1/users.js
+module.exports = function (fastify, opts, next) {
+  fastify.get('/user', handler_v1)
+  next()
+}
+```
+```js
+// routes/v2/users.js
+module.exports = function (fastify, opts, next) {
+  fastify.get('/user', handler_v2)
+  next()
+}
+```
+Fastify will not complain because your are using the same name for two different routes, because at compilation time it will handle the prefix automatically *(this also means that the performances will not be affected at all!)*.
+
+Now your clients will have access to the following routes:
+- `/v1/user`
+- `/v2/user`
+
+You can to this as many time as you want, it works also for nested `register` and routes parameter are supported as well.

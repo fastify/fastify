@@ -20,6 +20,10 @@ fastify.register([
 })
 ```
 
+<a name="route-prefixing-option"></a>
+### Route Prefixing option
+If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).
+
 <a name="error-handling"></a>
 #### Error handling
 The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).  

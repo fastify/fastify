@@ -2,7 +2,7 @@
 
 const fastify = require('../fastify')()
 
-const schema = {
+const opts = {
   schema: {
     response: {
       '2xx': {
@@ -15,17 +15,17 @@ const schema = {
   }
 }
 
-fastify.register(function (instance, opts, next) {
+fastify.register(function (instance, options, next) {
   // the route will be '/english/hello'
-  instance.get('/hello', schema, (req, reply) => {
+  instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'hello' })
   })
   next()
 }, { prefix: '/english' })
 
-fastify.register(function (instance, opts, next) {
+fastify.register(function (instance, options, next) {
   // the route will be '/italian/hello'
-  instance.get('/hello', schema, (req, reply) => {
+  instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'ciao' })
   })
   next()

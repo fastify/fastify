@@ -2,10 +2,10 @@
 
 module.exports = function (fastify, opts, next) {
   fastify
-    .get('/', opts.schema, function (req, reply) {
+    .get('/', opts, function (req, reply) {
       reply.send({ hello: 'world' })
     })
-    .post('/', opts.schema, function (req, reply) {
+    .post('/', opts, function (req, reply) {
       reply.send({ hello: 'world' })
     })
   next()

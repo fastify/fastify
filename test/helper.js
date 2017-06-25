@@ -9,12 +9,14 @@ module.exports.payloadMethod = function (method, t) {
   const loMethod = method.toLowerCase()
 
   const schema = {
-    response: {
-      '2xx': {
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'string'
+    schema: {
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            hello: {
+              type: 'string'
+            }
           }
         }
       }

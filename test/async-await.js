@@ -4,13 +4,15 @@ const request = require('request')
 const fastify = require('..')()
 const sleep = require('then-sleep')
 
-const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -23,7 +25,7 @@ function asyncTest (t) {
   test('shorthand - async await get', t => {
     t.plan(1)
     try {
-      fastify.get('/', schema, async function awaitMyFunc (req, reply) {
+      fastify.get('/', opts, async function awaitMyFunc (req, reply) {
         await sleep(200)
         return { hello: 'world' }
       })
@@ -36,7 +38,7 @@ function asyncTest (t) {
   test('shorthand - async await get', t => {
     t.plan(1)
     try {
-      fastify.get('/no-await', schema, async function (req, reply) {
+      fastify.get('/no-await', opts, async function (req, reply) {
         return { hello: 'world' }
       })
       t.pass()

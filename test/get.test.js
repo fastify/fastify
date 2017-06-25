@@ -7,12 +7,14 @@ const fastify = require('..')()
 const safeStringify = require('fast-safe-stringify')
 
 const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -20,12 +22,14 @@ const schema = {
 }
 
 const numberSchema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'number'
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'number'
+          }
         }
       }
     }
@@ -33,25 +37,29 @@ const numberSchema = {
 }
 
 const querySchema = {
-  querystring: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'integer'
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'integer'
+        }
       }
     }
   }
 }
 
 const paramsSchema = {
-  params: {
-    type: 'object',
-    properties: {
-      foo: {
-        type: 'string'
-      },
-      test: {
-        type: 'integer'
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'string'
+        },
+        test: {
+          type: 'integer'
+        }
       }
     }
   }

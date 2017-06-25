@@ -6,12 +6,14 @@ const request = require('request')
 const fastify = require('..')()
 
 const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -19,25 +21,29 @@ const schema = {
 }
 
 const querySchema = {
-  querystring: {
-    type: 'object',
-    properties: {
-      hello: {
-        type: 'integer'
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'integer'
+        }
       }
     }
   }
 }
 
 const paramsSchema = {
-  params: {
-    type: 'object',
-    properties: {
-      foo: {
-        type: 'string'
-      },
-      test: {
-        type: 'integer'
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'string'
+        },
+        test: {
+          type: 'integer'
+        }
       }
     }
   }

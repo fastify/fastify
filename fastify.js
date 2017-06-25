@@ -238,44 +238,45 @@ function build (options) {
   }
 
   // Shorthand methods
-  function _delete (url, schema, handler) {
-    return _route(this, 'DELETE', url, schema, handler)
+  function _delete (url, opts, handler) {
+    return _route(this, 'DELETE', url, opts, handler)
   }
 
-  function _get (url, schema, handler) {
-    return _route(this, 'GET', url, schema, handler)
+  function _get (url, opts, handler) {
+    return _route(this, 'GET', url, opts, handler)
   }
 
-  function _head (url, schema, handler) {
-    return _route(this, 'HEAD', url, schema, handler)
+  function _head (url, opts, handler) {
+    return _route(this, 'HEAD', url, opts, handler)
   }
 
-  function _patch (url, schema, handler) {
-    return _route(this, 'PATCH', url, schema, handler)
+  function _patch (url, opts, handler) {
+    return _route(this, 'PATCH', url, opts, handler)
   }
 
-  function _post (url, schema, handler) {
-    return _route(this, 'POST', url, schema, handler)
+  function _post (url, opts, handler) {
+    return _route(this, 'POST', url, opts, handler)
   }
 
-  function _put (url, schema, handler) {
-    return _route(this, 'PUT', url, schema, handler)
+  function _put (url, opts, handler) {
+    return _route(this, 'PUT', url, opts, handler)
   }
 
-  function _options (url, schema, handler) {
-    return _route(this, 'OPTIONS', url, schema, handler)
+  function _options (url, opts, handler) {
+    return _route(this, 'OPTIONS', url, opts, handler)
   }
 
-  function _route (self, method, url, schema, handler) {
-    if (!handler && typeof schema === 'function') {
-      handler = schema
-      schema = {}
+  function _route (self, method, url, options, handler) {
+    if (!handler && typeof options === 'function') {
+      handler = options
+      options = {}
     }
     return route({
       method,
       url,
-      schema,
       handler,
+      schema: options.schema || {},
+      beforeHandler: options.beforeHandler,
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,

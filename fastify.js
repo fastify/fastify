@@ -276,7 +276,6 @@ function build (options) {
       url,
       handler,
       schema: options.schema || {},
-      beforeHandler: options.beforeHandler,
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,

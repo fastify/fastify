@@ -13,10 +13,6 @@ const opts = {
           }
         }
       }
-    },
-    beforeHandler: (req, reply, done) => {
-      console.log('before handler')
-      done()
     }
   }
 }

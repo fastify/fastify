@@ -10,7 +10,7 @@ Request is a core Fastify object containing the following fields:
 - `log` - the logger instance of the incoming request
 
 ```js
-fastify.post('/:params', schema, function (request, reply) {
+fastify.post('/:params', options, function (request, reply) {
   console.log(request.body)
   console.log(request.query)
   console.log(request.params)

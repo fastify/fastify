@@ -92,6 +92,7 @@ server.start({ port: 0 }, (err, fastify) => {
 <a name="inject"></a>
 ### Testing with http injection
 Fastify supports fake http injection thanks to [shot](https://github.com/hapijs/shot).  
+To support this method, you should list `shot` library in your package as dev dependency.  
 You just need to use the api `inject`:
 ```js
 fastify.inject({

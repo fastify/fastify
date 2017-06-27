@@ -6,13 +6,15 @@ const request = require('request')
 const Bluebird = require('bluebird')
 const fastify = require('..')()
 
-const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -22,7 +24,7 @@ const schema = {
 test('shorthand - promise es6 get', t => {
   t.plan(1)
   try {
-    fastify.get('/', schema, function (req, reply) {
+    fastify.get('/', opts, function (req, reply) {
       const promise = new Promise((resolve, reject) => {
         resolve({ hello: 'world' })
       })
@@ -37,7 +39,7 @@ test('shorthand - promise es6 get', t => {
 test('shorthand - return promise es6 get', t => {
   t.plan(1)
   try {
-    fastify.get('/return', schema, function (req, reply) {
+    fastify.get('/return', opts, function (req, reply) {
       const promise = new Promise((resolve, reject) => {
         resolve({ hello: 'world' })
       })
@@ -52,7 +54,7 @@ test('shorthand - return promise es6 get', t => {
 test('shorthand - promise es6 get error', t => {
   t.plan(1)
   try {
-    fastify.get('/error', schema, function (req, reply) {
+    fastify.get('/error', opts, function (req, reply) {
       const promise = new Promise((resolve, reject) => {
         reject(new Error('some error'))
       })
@@ -67,7 +69,7 @@ test('shorthand - promise es6 get error', t => {
 test('shorthand - promise bluebird get', t => {
   t.plan(1)
   try {
-    fastify.get('/bluebird', schema, function (req, reply) {
+    fastify.get('/bluebird', opts, function (req, reply) {
       const promise = new Bluebird((resolve, reject) => {
         resolve({ hello: 'world' })
       })
@@ -82,7 +84,7 @@ test('shorthand - promise bluebird get', t => {
 test('shorthand - promise bluebird get error', t => {
   t.plan(1)
   try {
-    fastify.get('/bluebird-error', schema, function (req, reply) {
+    fastify.get('/bluebird-error', opts, function (req, reply) {
       const promise = new Bluebird((resolve, reject) => {
         reject(new Error('some error'))
       })

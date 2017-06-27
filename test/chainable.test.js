@@ -5,13 +5,15 @@ const test = t.test
 const fastify = require('..')()
 
 const noop = () => {}
-const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -20,12 +22,12 @@ const schema = {
 
 test('chainable - get', t => {
   t.plan(1)
-  t.type(fastify.get('/', schema, noop), fastify)
+  t.type(fastify.get('/', opts, noop), fastify)
 })
 
 test('chainable - post', t => {
   t.plan(1)
-  t.type(fastify.post('/', schema, noop), fastify)
+  t.type(fastify.post('/', opts, noop), fastify)
 })
 
 test('chainable - route', t => {
@@ -33,7 +35,7 @@ test('chainable - route', t => {
   t.type(fastify.route({
     method: 'GET',
     url: '/other',
-    schema: schema,
+    schema: opts.schema,
     handler: noop
   }), fastify)
 })

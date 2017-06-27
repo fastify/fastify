@@ -15,19 +15,21 @@ The modules you'll need:
 const minimist = require('minimist')
 const fastify = require('fastify')()
 
-const schema = {
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        hello: { type: 'string' }
+const options = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
       }
     }
   }
 }
 
 function start (opts, callback) {
-  fastify.get('/', schema, function (request, reply) {
+  fastify.get('/', options, function (request, reply) {
     reply.send({ hello: 'world' })
   })
 
@@ -109,18 +111,20 @@ Example:
 const minimist = require('minimist')
 const fastify = require('fastify')()
 
-const schema = {
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        hello: { type: 'string' }
+const options = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
       }
     }
   }
 }
 
-fastify.get('/', schema, function (request, reply) {
+fastify.get('/', options, function (request, reply) {
   reply.send({ hello: 'world' })
 })
 

@@ -36,20 +36,14 @@ fastify.route({
   url: '/',
   schema: {
     querystring: {
-      name: {
-        type: 'string'
-      },
-      excitement: {
-        type: 'integer'
-      }
+      name: { type: 'string' },
+      excitement: { type: 'integer' }
     },
     response: {
       200: {
         type: 'object',
         properties: {
-          hello: {
-            type: 'string'
-          }
+          hello: { type: 'string' }
         }
       }
     }
@@ -62,14 +56,33 @@ fastify.route({
 
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
-`fastify.get(path, [schema], handler)`  
-`fastify.head(path, [schema], handler)`  
-`fastify.post(path, [schema], handler)`  
-`fastify.put(path, [schema], handler)`  
-`fastify.delete(path, [schema], handler)`  
-`fastify.options(path, [schema], handler)`  
-`fastify.patch(path, [schema], handler)`  
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
+`fastify.get(path, [options], handler)`  
+`fastify.head(path, [options], handler)`  
+`fastify.post(path, [options], handler)`  
+`fastify.put(path, [options], handler)`  
+`fastify.delete(path, [options], handler)`  
+`fastify.options(path, [options], handler)`  
+`fastify.patch(path, [options], handler)`  
+
+Example:
+```js
+const opts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  }
+}
+fastify.get('/', opts, (req, reply) => {
+  reply.send({ hello: 'world' })
+})
+```
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

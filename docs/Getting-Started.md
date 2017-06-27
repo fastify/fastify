@@ -31,19 +31,21 @@ Fastify is designed to be very performant, if you want to make it even faster, y
 ```js
 const fastify = require('fastify')()
 
-const schema = {
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        hello: { type: 'string' }
+const opts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
       }
     }
   }
 }
 
 // Declare a route with an output schema
-fastify.get('/', schema, function (request, reply) {
+fastify.get('/', opts, function (request, reply) {
   reply.send({ hello: 'world' })
 })
 

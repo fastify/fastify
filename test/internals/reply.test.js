@@ -24,7 +24,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.header, 'function')
   t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
-  t.strictEqual(reply.handle, handle)
+  t.strictEqual(reply.store, handle)
 })
 
 test('reply.header, reply.code and reply-serializer should return an instance of Reply', t => {

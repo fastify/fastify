@@ -5,21 +5,23 @@ const test = t.test
 const request = require('request')
 const fastify = require('..')()
 
-const schema = {
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
-      }
-    },
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'number'
+      },
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'number'
+          }
         }
       }
     }
@@ -29,7 +31,7 @@ const schema = {
 test('shorthand - output string', t => {
   t.plan(1)
   try {
-    fastify.get('/string', schema, function (req, reply) {
+    fastify.get('/string', opts, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
     t.pass()
@@ -41,7 +43,7 @@ test('shorthand - output string', t => {
 test('shorthand - output number', t => {
   t.plan(1)
   try {
-    fastify.get('/number', schema, function (req, reply) {
+    fastify.get('/number', opts, function (req, reply) {
       reply.code(201).send({ hello: 55 })
     })
     t.pass()
@@ -53,7 +55,7 @@ test('shorthand - output number', t => {
 test('wrong object for schema - output', t => {
   t.plan(1)
   try {
-    fastify.get('/wrong-object-for-schema', schema, function (req, reply) {
+    fastify.get('/wrong-object-for-schema', opts, function (req, reply) {
       // will send { hello: null }
       reply.code(201).send({ hello: 'world' })
     })
@@ -67,7 +69,7 @@ test('empty response', t => {
   t.plan(1)
   try {
     // no checks
-    fastify.get('/empty', schema, function (req, reply) {
+    fastify.get('/empty', opts, function (req, reply) {
       reply.code(204).send()
     })
     t.pass()

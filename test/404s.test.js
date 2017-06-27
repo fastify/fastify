@@ -5,20 +5,22 @@ const test = t.test
 const request = require('request')
 const fastify = require('..')()
 
-const schema = {
-  response: {
-    '2xx': {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
   }
 }
 
-fastify.get('/', schema, function (req, reply) {
+fastify.get('/', opts, function (req, reply) {
   reply.send({ hello: 'world' })
 })
 

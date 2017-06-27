@@ -10,7 +10,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
 
 ```js
-fastify.get('/', schema, function (request, reply) {
+fastify.get('/', options, function (request, reply) {
   // You code
   reply
     .code(200)
@@ -50,7 +50,7 @@ reply
 #### Objects
 As writed above, if you are sending JSON objects, *send* will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
 ```js
-fastify.get('/json', schema, function (request, reply) {
+fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })
 })
 ```
@@ -59,7 +59,7 @@ fastify.get('/json', schema, function (request, reply) {
 #### Promises
 *send* handle natively the *promises* and supports out of the box *async-await*.
 ```js
-fastify.get('/promises', schema, function (request, reply) {
+fastify.get('/promises', options, function (request, reply) {
   const promise = new Promise(...)
   reply
     .code(200)
@@ -67,7 +67,7 @@ fastify.get('/promises', schema, function (request, reply) {
     .send(promise)
 })
 
-fastify.get('/async-await', schema, async function (request, reply) {
+fastify.get('/async-await', options, async function (request, reply) {
   var res = await new Promise(function (resolve) {
     setTimeout(resolve, 200, { hello: 'world' })
   })

@@ -2,13 +2,15 @@
 
 const fastify = require('../fastify')()
 
-const schema = {
-  response: {
-    200: {
-      type: 'object',
-      properties: {
-        hello: {
-          type: 'string'
+const opts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
         }
       }
     }
@@ -16,17 +18,17 @@ const schema = {
 }
 
 fastify
-  .get('/', schema, function (req, reply) {
+  .get('/', opts, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
   })
-  .get('/promise', schema, function (req, reply) {
+  .get('/promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
       resolve({ hello: 'world' })
     })
     reply.header('content-type', 'application/json').code(200).send(promise)
   })
-  .get('/return-promise', schema, function (req, reply) {
+  .get('/return-promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
       resolve({ hello: 'world' })
     })
@@ -37,16 +39,16 @@ fastify
     const stream = fs.createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')
     reply.code(200).send(stream)
   })
-  .post('/', schema, function (req, reply) {
+  .post('/', opts, function (req, reply) {
     reply.send({ hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
     reply.send()
   })
-  .delete('/', schema, function (req, reply) {
+  .delete('/', opts, function (req, reply) {
     reply.send({ hello: 'world' })
   })
-  .patch('/', schema, function (req, reply) {
+  .patch('/', opts, function (req, reply) {
     reply.send({ hello: 'world' })
   })
 

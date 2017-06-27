@@ -31,7 +31,7 @@ fastify
     next()
   })
 
-fastify.get('/', opts.schema, function (req, reply) {
+fastify.get('/', opts, function (req, reply) {
   reply.send({ hello: 'world' })
 })
 

@@ -338,7 +338,7 @@ function build (options) {
   }
 
   function inject (opts, cb) {
-    if (!shot) return cb(new Error('"shot" library is not installed: install it explicitly'))
+    if (!shot) return cb(new Error('"shot" library is not installed: "npm install shot --save-dev"'))
 
     if (started) {
       shot.inject(this, opts, cb)

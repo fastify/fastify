@@ -7,7 +7,8 @@ const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const fastseries = require('fastseries')
-const shot = require('shot')
+var shot = null
+try { shot = require('shot') } catch (e) { }
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -356,6 +357,8 @@ function build (options) {
   }
 
   function inject (opts, cb) {
+    if (!shot) throw new Error('"shot" library is not installed: "npm install shot --save-dev"')
+
     if (started) {
       shot.inject(this, opts, cb)
       return

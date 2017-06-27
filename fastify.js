@@ -7,7 +7,7 @@ const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const fastseries = require('fastseries')
-let shot
+var shot = null
 try { shot = require('shot') } catch (e) { }
 
 const Reply = require('./lib/reply')

@@ -73,7 +73,7 @@
     "fast-safe-stringify": "^1.2.0",
     "fastify-cli": "^0.6.1",
     "fastseries": "^1.7.2",
-    "find-my-way": "^0.2.4",
+    "find-my-way": "^1.0.1",
     "middie": "^0.3.0",
     "pino-http": "^2.6.1",
     "pump": "^1.0.2",

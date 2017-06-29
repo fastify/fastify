@@ -280,8 +280,9 @@ function build (options) {
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,
-      hooks: self._hooks,
-      RoutePrefix: self._RoutePrefix
+      preHandler: self._hooks.preHandler,
+      RoutePrefix: self._RoutePrefix,
+      beforeHandler: options.beforeHandler
     })
   }
 
@@ -300,7 +301,7 @@ function build (options) {
     opts.Reply = opts.Reply || this._Reply
     opts.Request = opts.Request || this._Request
     opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
-    opts.hooks = opts.hooks || this._hooks
+    opts.preHandler = opts.preHandler || this._hooks.preHandler
     opts.RoutePrefix = opts.RoutePrefix || this._RoutePrefix
 
     const prefix = opts.RoutePrefix.prefix

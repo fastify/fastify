@@ -209,7 +209,7 @@ function build (options) {
     function _RoutePrefix () {}
     const R = new _RoutePrefix()
     R.prefix = r.prefix
-    if (typeof opts.prefix === 'string') {
+    if (opts && typeof opts.prefix === 'string') {
       R.prefix += opts.prefix
     }
     return R

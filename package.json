@@ -10,7 +10,7 @@
     "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
     "coveralls": "tap test/*test.js  test/*/*.test.js --cov --coverage-report=text-lcov | coveralls",
-    "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && ./node_modules/autocannon/autocannon.js -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
+    "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
   },
   "repository": {
     "type": "git",

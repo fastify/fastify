@@ -63,8 +63,11 @@ Swagger documentation generator for Fastify
 Multipart support for Fastify
 - [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)
 Bearer auth plugin for Fastify
-- [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) Bankai assets compiler for Fastify
-- [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with Next
+- [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify
+- [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
+- [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
+- [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
 - *More coming soon*
 
 ## Team

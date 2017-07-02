@@ -21,6 +21,7 @@ They need to be in
   * `params`: validates the params.
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
+* `beforeHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler) called just before the request handler, useful if you need to perform authentication at route level for example.
 * `handler(request, reply)`: the function that will handle this request.
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
@@ -47,6 +48,21 @@ fastify.route({
         }
       }
     }
+  },
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+```
+
+```js
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: { ... },
+  beforeHandler: function (request, reply, done) {
+    // your authentication logic
+    done()
   },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })

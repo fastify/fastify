@@ -10,11 +10,11 @@ Incoming Request
         │
         └─▶ onRequest Hook
               │
-        500 ◀─┴─▶ run Middlewares
+    4**/5** ◀─┴─▶ run Middlewares
                     │
-              500 ◀─┴─▶ preRouting Hook
+          4**/5** ◀─┴─▶ preRouting Hook
                           │
-                    500 ◀─┴─▶ Routing
+                4**/5** ◀─┴─▶ Routing
                                 │
                           404 ◀─┴─▶ Parsing
                                       │
@@ -22,9 +22,11 @@ Incoming Request
                                             │
                                       400 ◀─┴─▶ preHandler Hook
                                                   │
-                                            500 ◀─┴─▶ User Handler
+                                        4**/5** ◀─┴─▶ beforeHandler
                                                         │
-                                                        └─▶ Reply
+                                              4**/5** ◀─┴─▶ User Handler
                                                               │
-                                                              └─▶ Outgoing Response
+                                                              └─▶ Reply
+                                                                    │
+                                                                    └─▶ Outgoing Response
 ```

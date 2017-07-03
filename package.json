@@ -74,7 +74,7 @@
     "fastify-cli": "^0.6.1",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.0.1",
-    "middie": "^0.3.0",
+    "middie": "^1.0.0",
     "pino-http": "^2.6.1",
     "pump": "^1.0.2",
     "xtend": "^4.0.1"

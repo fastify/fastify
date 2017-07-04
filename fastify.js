@@ -19,6 +19,7 @@ const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
+const serializers = require('./lib/serializers')
 
 function build (options) {
   options = options || {}
@@ -28,10 +29,11 @@ function build (options) {
 
   var logger
   if (options.logger && isValidLogger(options.logger)) {
-    logger = pinoHttp({ logger: options.logger })
+    logger = pinoHttp({ logger: options.logger, serializers })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
+    options.logger.serializers = options.logger.serializers || serializers
     logger = pinoHttp(options.logger)
   }
 

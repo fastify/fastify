@@ -51,6 +51,20 @@ test('Reply can set code and header of a response', t => {
   }
 })
 
+test('Reply can set the type of a response', t => {
+  t.plan(1)
+  try {
+    fastify.get('/auto-type', function (req, reply) {
+      reply.code(200)
+      reply.type('text/plain')
+      reply.send('hello world!')
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('reply.serializer should set a custom serializer', t => {
   t.plan(2)
   const reply = new Reply(null, null, null)
@@ -109,6 +123,18 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), 'hello world!')
+    })
+  })
+
+  test('auto type shoud be text/plain', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/auto-type'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, 'hello world!')
     })
   })
 

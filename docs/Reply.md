@@ -29,6 +29,17 @@ If you not set a `'Content-Type'` header, Fastify assumes that you are using `'a
 
 *Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
 
+<a name="type"></a>
+### Type
+Sets the content type for the reponse.  
+This is a shortcut for `reply.header('Content-Type', 'the/type')`.
+
+Example:
+
+```
+reply.type('text/html')
+```
+
 <a name="serializer"></a>
 ### Serializer
 Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).

@@ -274,7 +274,7 @@ function build (options) {
       handler = options
       options = {}
     }
-    return route({
+    return route.call(self, {
       method,
       url,
       handler,
@@ -298,33 +298,54 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    buildSchema(opts)
+    this.ready((notHandledErr, done) => {
+      const prefix = (opts.RoutePrefix || this._RoutePrefix).prefix
+      const url = prefix + (opts.url || opts.path)
 
-    opts.Reply = opts.Reply || this._Reply
-    opts.Request = opts.Request || this._Request
-    opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
-    opts.preHandler = opts.preHandler || this._hooks.preHandler
-    opts.RoutePrefix = opts.RoutePrefix || this._RoutePrefix
+      const store = new Store(
+        opts.schema,
+        opts.handler,
+        opts.Reply || this._Reply,
+        opts.Request || this._Request,
+        opts.contentTypeParser || this._contentTypeParser,
+        []
+      )
 
-    const prefix = opts.RoutePrefix.prefix
-    const url = prefix + (opts.url || opts.path)
+      buildSchema(store)
 
-    if (map.has(url)) {
-      if (map.get(url)[opts.method]) {
-        throw new Error(`${opts.method} already set for ${url}`)
+      store.preHandler.push.apply(store.preHandler, (opts.preHandler || this._hooks.preHandler))
+      if (opts.beforeHandler) {
+        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
+        store.preHandler.push.apply(store.preHandler, opts.beforeHandler)
       }
 
-      map.get(url)[opts.method] = opts
-      router.on(opts.method, url, handleRequest, opts)
-    } else {
-      const node = {}
-      node[opts.method] = opts
-      map.set(url, node)
-      router.on(opts.method, url, handleRequest, opts)
-    }
+      if (map.has(url)) {
+        if (map.get(url)[opts.method]) {
+          return done(new Error(`${opts.method} already set for ${url}`))
+        }
+
+        map.get(url)[opts.method] = store
+        router.on(opts.method, url, handleRequest, store)
+      } else {
+        const node = {}
+        node[opts.method] = store
+        map.set(url, node)
+        router.on(opts.method, url, handleRequest, store)
+      }
+      done()
+    })
 
     // chainable api
     return fastify
+  }
+
+  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler) {
+    this.schema = schema
+    this.handler = handler
+    this.Reply = Reply
+    this.Request = Request
+    this.contentTypeParser = contentTypeParser
+    this.preHandler = preHandler
   }
 
   function iterator () {

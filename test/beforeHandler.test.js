@@ -145,3 +145,73 @@ test('beforeHandler should handle errors with custom status code', t => {
     })
   })
 })
+
+test('beforeHandler could accept an array of functions', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    beforeHandler: [
+      (req, reply, done) => {
+        req.body.beforeHandler = 'a'
+        done()
+      },
+      (req, reply, done) => {
+        req.body.beforeHandler += 'b'
+        done()
+      }
+    ]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, res => {
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { beforeHandler: 'ab', hello: 'world' })
+  })
+})
+
+test('beforeHandler does not interfere with preHandler', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    req.body.check = 'a'
+    next()
+  })
+
+  fastify.post('/', {
+    beforeHandler: (req, reply, done) => {
+      req.body.check += 'b'
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.post('/no', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'post',
+    url: '/',
+    payload: { hello: 'world' }
+  }, res => {
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { check: 'ab', hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'post',
+    url: '/no',
+    payload: { hello: 'world' }
+  }, res => {
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { check: 'a', hello: 'world' })
+  })
+})

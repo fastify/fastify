@@ -8,6 +8,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.header(name, value)` - Sets the headers.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+- `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
 
 ```js
 fastify.get('/', options, function (request, reply) {

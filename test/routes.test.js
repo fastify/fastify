@@ -14,31 +14,33 @@ test('fastify can be iterated to get all the routes', t => {
 
   t.is(typeof fastify[Symbol.iterator], 'function')
 
-  for (let route of fastify) {
-    t.ok(route['/'] || route['/test'])
+  fastify.ready(() => {
+    for (let route of fastify) {
+      t.ok(route['/'] || route['/test'])
 
-    if (route['/']) {
-      t.ok(route['/'].get)
-      t.ok(route['/'].post)
+      if (route['/']) {
+        t.ok(route['/'].get)
+        t.ok(route['/'].post)
+      }
+
+      if (route['/test']) {
+        t.ok(route['/test'].get)
+      }
     }
 
-    if (route['/test']) {
-      t.ok(route['/test'].get)
-    }
-  }
+    // double check, because we do not want
+    // to exhaust things
+    for (let route of fastify) {
+      t.ok(route['/'] || route['/test'])
 
-  // double check, because we do not want
-  // to exhaust things
-  for (let route of fastify) {
-    t.ok(route['/'] || route['/test'])
+      if (route['/']) {
+        t.ok(route['/'].get)
+        t.ok(route['/'].post)
+      }
 
-    if (route['/']) {
-      t.ok(route['/'].get)
-      t.ok(route['/'].post)
+      if (route['/test']) {
+        t.ok(route['/test'].get)
+      }
     }
-
-    if (route['/test']) {
-      t.ok(route['/test'].get)
-    }
-  }
+  })
 })

@@ -298,7 +298,7 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    this.ready((notHandledErr, done) => {
+    this.after((notHandledErr, done) => {
       const prefix = (opts.RoutePrefix || this._RoutePrefix).prefix
       const url = prefix + (opts.url || opts.path)
 

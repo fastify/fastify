@@ -47,7 +47,7 @@ Talking about scope, the hooks works in a slightly different way from the Reques
 
 <a name="before-handler"></a>
 ### beforeHandler
-Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example.)  
+Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example.), it could also be an array of functions.  
 **`beforeHandler` is executed always after the `preHandler` hook.**
 
 ```js
@@ -64,6 +64,25 @@ fastify.route({
     // your code
     done()
   },
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: { ... },
+  beforeHandler: [
+    function first (request, reply, done) {
+      // your code
+      done()
+    },
+    function second (request, reply, done) {
+      // your code
+      done()
+    }
+  ],
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }

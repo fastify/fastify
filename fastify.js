@@ -212,6 +212,9 @@ function build (options) {
     const R = new _RoutePrefix()
     R.prefix = r.prefix
     if (typeof opts.prefix === 'string') {
+      if (opts.prefix[0] !== '/') {
+        opts.prefix = '/' + opts.prefix
+      }
       R.prefix += opts.prefix
     }
     return R

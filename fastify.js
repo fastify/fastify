@@ -47,6 +47,7 @@ function build (options) {
   // Override to allow the plugin incapsulation
   app.override = override
 
+  var listening = false
   // true when Fastify is ready to go
   var started = false
   app.on('start', () => {
@@ -62,7 +63,7 @@ function build (options) {
 
   fastify.onClose((err, instance, done) => {
     if (err) throw err
-    if (instance.server.listening) {
+    if (listening) {
       instance.server.close(done)
     } else {
       done(null)
@@ -193,6 +194,7 @@ function build (options) {
       } else {
         server.listen(port, _cb)
       }
+      listening = true
     })
   }
 

@@ -61,8 +61,7 @@ function build (options) {
     server = http.createServer(fastify)
   }
 
-  fastify.onClose((err, instance, done) => {
-    if (err) throw err
+  fastify.onClose((instance, done) => {
     if (listening) {
       instance.server.close(done)
     } else {

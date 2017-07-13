@@ -5,11 +5,10 @@ const test = t.test
 const Fastify = require('..')
 
 test('close callback', t => {
-  t.plan(5)
+  t.plan(4)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
-  function onClose (err, instance, done) {
-    t.error(err)
+  function onClose (instance, done) {
     t.type(fastify, instance)
     done()
   }
@@ -25,12 +24,11 @@ test('close callback', t => {
 })
 
 test('inside register', t => {
-  t.plan(5)
+  t.plan(4)
   const fastify = Fastify()
   fastify.register(function (f, opts, next) {
     f.addHook('onClose', onClose)
-    function onClose (err, instance, done) {
-      t.error(err)
+    function onClose (instance, done) {
       t.type(fastify, instance)
       done()
     }
@@ -49,13 +47,12 @@ test('inside register', t => {
 })
 
 test('close order', t => {
-  t.plan(7)
+  t.plan(5)
   const fastify = Fastify()
   const order = [1, 2, 3]
 
   fastify.register(function (f, opts, next) {
-    f.addHook('onClose', (err, instance, done) => {
-      t.error(err)
+    f.addHook('onClose', (instance, done) => {
       t.is(order.shift(), 1)
       done()
     })
@@ -63,8 +60,7 @@ test('close order', t => {
     next()
   })
 
-  fastify.addHook('onClose', (err, instance, done) => {
-    t.error(err)
+  fastify.addHook('onClose', (instance, done) => {
     t.is(order.shift(), 2)
     done()
   })
@@ -80,11 +76,10 @@ test('close order', t => {
 })
 
 test('should not throw an error if the server is not listening', t => {
-  t.plan(3)
+  t.plan(2)
   const fastify = Fastify()
   fastify.addHook('onClose', onClose)
-  function onClose (err, instance, done) {
-    t.error(err)
+  function onClose (instance, done) {
     t.type(fastify, instance)
     done()
   }

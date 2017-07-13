@@ -95,3 +95,22 @@ test('Prefix should support parameters as well', t => {
     t.same(JSON.parse(res.payload), { id: 'param' })
   })
 })
+
+test('Prefix should support /', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1'
+  }, res => {
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})

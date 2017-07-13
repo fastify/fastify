@@ -299,8 +299,9 @@ function build (options) {
     }
 
     this.after((notHandledErr, done) => {
+      const path = opts.url || opts.path
       const prefix = (opts.RoutePrefix || this._RoutePrefix).prefix
-      const url = prefix + (opts.url || opts.path)
+      const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
       const store = new Store(
         opts.schema,

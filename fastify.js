@@ -60,6 +60,15 @@ function build (options) {
     server = http.createServer(fastify)
   }
 
+  fastify.onClose((err, instance, done) => {
+    if (err) throw err
+    if (instance.server.listening) {
+      instance.server.close(done)
+    } else {
+      done(null)
+    }
+  })
+
   if (Number(process.versions.node[0]) >= 6) {
     server.on('clientError', handleClientError)
   }
@@ -81,8 +90,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks()
-  fastify.close = close
+  fastify._hooks = new Hooks(fastify)
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -215,29 +223,6 @@ function build (options) {
       R.prefix += opts.prefix
     }
     return R
-  }
-
-  function close (cb) {
-    runHooks(
-      fastify,
-      onCloseIterator,
-      fastify._hooks.onClose,
-      onCloseCallback(cb)
-    )
-  }
-
-  function onCloseIterator (fn, cb) {
-    fn(this, cb)
-  }
-
-  function onCloseCallback (cb) {
-    return (err) => {
-      if (err) {
-        throw err
-      }
-
-      fastify.server.close(cb)
-    }
   }
 
   // Shorthand methods

@@ -44,7 +44,7 @@ The route properties are the same the developer has declared [here](https://gith
 ```js
 fastify.get('/route', opts, handler)
 
-fastify.ready(() =>
+fastify.ready(() => {
   for (var route of fastify) {
     console.log(route)
     /* will output:

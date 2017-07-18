@@ -24,14 +24,17 @@ fastify.use(require('x-xss-protection')())
 If you need to run a middleware only under certains path(s), just pass the path as first parameter to `use` and you are done!  
 
 *Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcard is not supported in multiple paths.*
+
+
 ```js
+const serveStatic = require('serve-static')
+
 // Single path
-middie.use('/public', staticFiles('/assets'))
+fastify.use('/css', serveStatic('/assets'))
 
 // Wildcard path
-middie.use('/public/*', staticFiles('/assets'))
+fastify.use('/css/*', serveStatic('/assets'))
 
 // Multiple paths
-middie.use(['/public', '/dist'], staticFiles('/assets'))
-
+fastify.use(['/css', '/js'], serveStatic('/assets'))
 ```

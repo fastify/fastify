@@ -70,6 +70,7 @@ Bearer auth plugin for Fastify
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
 - [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
+- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify. 
 - *More coming soon*
 
 ## Team

@@ -68,7 +68,8 @@ Bearer auth plugin for Fastify
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Support for multipart requests
+- [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
+- [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
 - *More coming soon*
 
 ## Team

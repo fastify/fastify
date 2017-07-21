@@ -49,6 +49,7 @@ Use Fastify can increase your throughput up to 100%.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md"><code><b>Plugins</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
 
 ## Ecosystem
 - [`point-of-view`](https://github.com/fastify/point-of-view)
@@ -70,7 +71,7 @@ Bearer auth plugin for Fastify
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
 - [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
-- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify. 
+- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify.
 - *More coming soon*
 
 ## Team

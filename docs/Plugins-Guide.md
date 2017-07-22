@@ -10,7 +10,7 @@ Fastify has been built since the beginning to be an extremely modular system, we
 - <a href="#decorators">Decorators</a>
 - <a href="#hooks">Hooks</a>
 - <a href="#middlewares">Middlewares</a>
-- <a href="#distribution">How handle encapsulation and distribution</a>
+- <a href="#distribution">How to handle encapsulation and distribution</a>
 - <a href="#start">Let's start!</a>
 
 <a name="register"></a>
@@ -32,7 +32,7 @@ Well, let's say you are creating a new disruptive startup, what do you do? You c
 Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies an huge amount of work, because of cross dependencies and the lack of separation of concerns.  
 Fastify helps you a lot in this direction, because thanks to the encapsulation model it will completely avoid cross dependencies, and will help you structure your code in cohesive blocks.
 
-*Let's return to how use correctly `register`.*  
+*Let's return to how to use correctly `register`.*  
 As you probably know, the required plugins must expose a single function with the following signature
 ```js
 module.exports = function (fastify, options, next) {}
@@ -52,7 +52,7 @@ module.exports = function (fastify, options, next) {
 }
 ```
 
-Well, know you know how to use the `register` api and how it works, but how add new functionalities to fastify and evene better, share them with other developers?
+Well, know you know how to use the `register` api and how it works, but how add new functionalities to fastify and even better, share them with other developers?
 
 <a name="decorators"></a>
 ## Decorators
@@ -109,11 +109,69 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
-*Take home messages: if you need that an utility is available in every part of your application, pay attention that is declared at the root scope of your application.*
+*Take home message: if you need that an utility is available in every part of your application, pay attention that is declared at the root scope of your application. Otherwise you can use `fastify-plugin` utility as described <a href="#distribution">here</a>.*
 
-`decorate` is not the unique api that you can use to extend the server functionalities, you can also use `decorateRequest` and `decorateReply`, what they do, is pretty obvious.
+`decorate` is not the unique api that you can use to extend the server functionalities, you can also use `decorateRequest` and `decorateReply`.
 
-We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that myst be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
+*`decorateRequest` and `decorateReply`? Why do we need them if we already have `decorate`?*  
+Good question. The answer is pretty easy, usability! Let's see an example:
+```js
+fastify.decorate('html', payload => {
+  return generateHtml(payload)
+})
+
+fastify.get('/html', (req, reply) => {
+  reply
+    .type('text/html')
+    .send(fastify.html({ hello: 'world' }))
+})
+```
+It works, but it can be way better!
+```js
+fastify.decorateReply('html', payload => {
+  this.type('text/html') // this is the 'Reply' object
+  this.send(generateHtml(payload))
+})
+
+fastify.get('/html', (req, reply) => {
+  reply.html({ hello: 'world' })
+})
+```
+
+And in the same way you can do this for the `request` object:
+```js
+fastify.decorate('getHeader', (req, header) => {
+  return req.headers[header]
+})
+
+fastify.addHook('preHandler', (req, reply, done) => {
+  req.isHappy = fastify.getHeader(req.req, 'happy')
+  done()
+})
+
+fastify.get('/happiness', (req, reply) => {
+  reply.send({ happy: req.isHappy })
+})
+```
+Again, it works, but it can be way better!
+```js
+fastify.decorateRequest('setHeader', header => {
+  this.isHappy = this.req.headers[header]
+})
+
+fastify.decorateRequest('isHappy', false) // this will be added to the Request object prototype, yay speed!
+
+fastify.addHook('preHandler', (req, reply, done) => {
+  req.setHeader('happy')
+  done()
+})
+
+fastify.get('/happiness', (req, reply) => {
+  reply.send({ happy: req.isHappy })
+})
+```
+
+We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
 
 <a name="hooks"></a>
 ## Hooks
@@ -186,19 +244,20 @@ How we can do that? Checkout our middlewares engine, [middie](https://github.com
 const yourMiddleware = require('your-middleware')
 fastify.use(yourMiddleware)
 ```
+*Note that middlewares executed [before](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) routing and the encapsulation model is not applied, this means that if you declare a middleware inside a plugin it will run for all the plugins.*
 
 <a name="distribution"></a>
-## How handle encapsulation and distribution
+## How to handle encapsulation and distribution
 Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.  
 How can you distribute your code?
 
-The easy way, is to distribute an utility and tell to your users to decorate their Fastify instance with you function. But what happen if your utility has na asynchronous bootstrapping? A database connection for example.
+The easy way, is to distribute an utility and tell to your users to decorate their Fastify instance with you function. But what happen if your utility has an asynchronous bootstrapping? A database connection for example.
 `decorate` is a synchronous api, so it cannot solve this kind of issue.  
 You already know what your are going to read, I'm pretty sure about that.
 
 Exactly, `register`!!
 
-*Wait, what? Don't you told me that `register` creates and encapsulation and what I create iside there will not be available outside?*  
+*Wait, what? Don't you told me that `register` creates and encapsulation and what I create inside there will not be available outside?*  
 Yes, I told that. But what I didn't told you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
 ```js
 const fp = require('fastify-plugin')

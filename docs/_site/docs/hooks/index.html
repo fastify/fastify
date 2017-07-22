@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hooks</title>
+  <meta name="description" content="By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use (in order of execution): &#39;onRe...">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/hooks/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Hooks</h1>
+  </header>
+
+  <div class="post-content">
+    <p>By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use <em>(in order of execution)</em>:</p>
+<ul>
+  <li><code class="highlighter-rouge">'onRequest'</code></li>
+  <li><code class="highlighter-rouge">'preRouting'</code></li>
+  <li><code class="highlighter-rouge">'preHandler'</code></li>
+  <li><code class="highlighter-rouge">'onClose'</code></li>
+</ul>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onRequest'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">next</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p>Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md">lifecycle</a> page.</p>
+
+<p>If you get an error during the execution of you hook, just pass it to <code class="highlighter-rouge">next()</code> and Fastify will automatically close the request and send the appropriate error code to the user.</p>
+
+<p>If you want to pass a custom error code to the user, just pass it as second parameter to <code class="highlighter-rouge">next()</code>:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onRequest'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">next</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'some error'</span><span class="p">),</span> <span class="mi">400</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p><em>The error will be handled by <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors"><code class="highlighter-rouge">Reply</code></a>.</em></p>
+
+<p>The function signature is always the same, <code class="highlighter-rouge">request</code>, <code class="highlighter-rouge">response</code>, <code class="highlighter-rouge">next</code>, it changes a little bit only in the <code class="highlighter-rouge">'preHandler'</code> hook, where the first two arguments are <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code class="highlighter-rouge">request</code></a> and <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code class="highlighter-rouge">reply</code></a> core Fastify objects.</p>
+
+<p><a name="on-close"></a>
+<strong>‘onClose’</strong><br />
+The unique hook that is not inside the lifecycle is <code class="highlighter-rouge">'onClose'</code>, this one is triggered when you call <code class="highlighter-rouge">fastify.close()</code> to stop the server, and it is useful if you have some <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md">plugins</a> that need a “shutdown” part, such as a connection to a database.<br />
+Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the <code class="highlighter-rouge">done</code> callback.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onClose'</span><span class="p">,</span> <span class="p">(</span><span class="nx">instance</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">done</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p><a name="scope"></a></p>
+<h3 id="scope">Scope</h3>
+<p>Talking about scope, the hooks works in a slightly different way from the Request/Reply encapsulation model. For instance, <code class="highlighter-rouge">onRequest</code>, <code class="highlighter-rouge">preRouting</code> and <code class="highlighter-rouge">onClose</code> are never encapsulated, not matter where you are declaring them, while the <code class="highlighter-rouge">preHandler</code> hook is always encapsulated if you declare it inside a <code class="highlighter-rouge">register</code>.</p>
+
+<p><a name="before-handler"></a></p>
+<h3 id="beforehandler">beforeHandler</h3>
+<p>Despite the name, <code class="highlighter-rouge">beforeHandler</code> is not a standard hook like <code class="highlighter-rouge">preHandler</code>, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (<code class="highlighter-rouge">preHandler</code> for example.), it could also be an array of functions.<br />
+<strong><code class="highlighter-rouge">beforeHandler</code> is executed always after the <code class="highlighter-rouge">preHandler</code> hook.</strong></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'preHandler'</span><span class="p">,</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// your code</span>
+  <span class="nx">done</span><span class="p">()</span>
+<span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="na">beforeHandler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// your code</span>
+    <span class="nx">done</span><span class="p">()</span>
+  <span class="p">},</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="na">beforeHandler</span><span class="p">:</span> <span class="p">[</span>
+    <span class="kd">function</span> <span class="nx">first</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// your code</span>
+      <span class="nx">done</span><span class="p">()</span>
+    <span class="p">},</span>
+    <span class="kd">function</span> <span class="nx">second</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// your code</span>
+      <span class="nx">done</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

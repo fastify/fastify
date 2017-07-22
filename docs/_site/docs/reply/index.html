@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Reply</title>
+  <meta name="description" content="The second parameter of the handler function is Reply. Reply is a core Fastify object that exposes the following functions:">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/reply/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Reply</h1>
+  </header>
+
+  <div class="post-content">
+    <p>The second parameter of the handler function is <code class="highlighter-rouge">Reply</code>.<br />
+Reply is a core Fastify object that exposes the following functions:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">.code(statusCode)</code> - Sets the status code.</li>
+  <li><code class="highlighter-rouge">.header(name, value)</code> - Sets the headers.</li>
+  <li><code class="highlighter-rouge">.serializer(function)</code> - Sets a custom serializer for the payload.</li>
+  <li><code class="highlighter-rouge">.send(payload)</code> - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.</li>
+  <li><code class="highlighter-rouge">.sent</code> - A boolean value that you can use if you need to know it <code class="highlighter-rouge">send</code> has already been called.</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// You code</span>
+  <span class="nx">reply</span>
+    <span class="p">.</span><span class="nx">code</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'application/json'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p><a name="code"></a></p>
+<h3 id="code">Code</h3>
+<p>If not setted via <code class="highlighter-rouge">reply.code</code>, the resulting <code class="highlighter-rouge">statusCode</code> will be <code class="highlighter-rouge">200</code> or <code class="highlighter-rouge">204</code> if there is not content to send.</p>
+
+<p><a name="header"></a></p>
+<h3 id="header">Header</h3>
+<p>Sets a custom header to the response.<br />
+If you not set a <code class="highlighter-rouge">'Content-Type'</code> header, Fastify assumes that you are using <code class="highlighter-rouge">'application/json'</code>, unless you are send a stream, in that cases Fastify recognize it and sets the <code class="highlighter-rouge">'Content-Type'</code> at <code class="highlighter-rouge">'application/octet-stream'</code>.</p>
+
+<p><em>Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom <code class="highlighter-rouge">'Content-Type'</code> header.</em></p>
+
+<p><a name="type"></a></p>
+<h3 id="type">Type</h3>
+<p>Sets the content type for the reponse.<br />
+This is a shortcut for <code class="highlighter-rouge">reply.header('Content-Type', 'the/type')</code>.</p>
+
+<p>Example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>reply.type('text/html')
+</code></pre>
+</div>
+
+<p><a name="serializer"></a></p>
+<h3 id="serializer">Serializer</h3>
+<p>Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the <code class="highlighter-rouge">.send()</code> function using the internal serializers, <a href="https://www.npmjs.com/package/fast-json-stringify">fast-json-stringify</a> if you setted an output schema, otherwise <a href="https://www.npmjs.com/package/fast-safe-stringify">fast-safe-stringify</a>.</p>
+
+<p>If you need to use a custom serializer, such as <a href="https://github.com/mcollina/msgpack5">msgpack5</a> or <a href="https://github.com/dcodeIO/ProtoBuf.js/">protobuf</a>, you can use the <code class="highlighter-rouge">.serializer()</code> utility. As noted above, if you are using a custom serializer that does not serialize to JSON, you must set a custom <code class="highlighter-rouge">'Content-Type'</code> header.</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">reply</span>
+  <span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'application/x-protobuf'</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">serializer</span><span class="p">(</span><span class="nx">protoBuf</span><span class="p">.</span><span class="nx">serialize</span><span class="p">)</span>
+</code></pre>
+</div>
+<p><em>Take a look <a href="https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#serialize">here</a> to understand how serialize is done.</em></p>
+
+<p><a name="send"></a></p>
+<h3 id="send">Send</h3>
+<p>As the name suggests, <code class="highlighter-rouge">.send()</code> is the function that sends the payload to the end user.</p>
+
+<p><a name="send-object"></a></p>
+<h4 id="objects">Objects</h4>
+<p>As writed above, if you are sending JSON objects, <em>send</em> will serialize the object with <a href="https://www.npmjs.com/package/fast-json-stringify">fast-json-stringify</a> if you setted an output schema, otherwise <a href="https://www.npmjs.com/package/fast-safe-stringify">fast-safe-stringify</a>.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/json'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="send-promise"></a></p>
+<h4 id="promises">Promises</h4>
+<p><em>send</em> handle natively the <em>promises</em> and supports out of the box <em>async-await</em>.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/promises'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kr">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(...)</span>
+  <span class="nx">reply</span>
+    <span class="p">.</span><span class="nx">code</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">header</span><span class="p">(</span><span class="s1">'Content-Type'</span><span class="p">,</span> <span class="s1">'application/json'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">promise</span><span class="p">)</span>
+<span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/async-await'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">async</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="nx">await</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="p">{</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">})</span>
+  <span class="c1">// note that we are returning the promise without using '.send()'</span>
+  <span class="k">return</span> <span class="nx">res</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="send-streams"></a></p>
+<h4 id="streams">Streams</h4>
+<p><em>send</em> can also handle strems out of the box, internally uses <a href="https://www.npmjs.com/package/pump">pump</a> to avoid leaks of file descriptors. If you are sending a stream and you have not setted a <code class="highlighter-rouge">'Content-Type'</code> header, <em>send</em> will set it at <code class="highlighter-rouge">'application/octet-stream'</code>.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/streams'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kr">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fs'</span><span class="p">)</span>
+  <span class="kr">const</span> <span class="nx">stream</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nx">createReadStream</span><span class="p">(</span><span class="s1">'some-file'</span><span class="p">,</span> <span class="s1">'utf8'</span><span class="p">)</span>
+  <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">stream</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="errors"></a></p>
+<h4 id="errors">Errors</h4>
+<p>If you pass to <em>send</em> an object that is an instance of <em>Error</em>, Fastify will automatically create an error structured as the following:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">error</span><span class="p">:</span> <span class="nb">String</span>        <span class="c1">// the http error message</span>
+  <span class="nl">message</span><span class="p">:</span> <span class="nb">String</span>      <span class="c1">// the user error message</span>
+  <span class="nl">statusCode</span><span class="p">:</span> <span class="nb">Number</span>   <span class="c1">// the http status code</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+<p>If you want it extend this error, check out <a href="https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error"><code class="highlighter-rouge">extendServerError</code></a>.</p>
+
+<p><em>If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.</em></p>
+
+<p><a name="payload-type"></a></p>
+<h4 id="type-of-the-final-payload">Type of the final payload</h4>
+<p>It is crucial that the sent payload is a <code class="highlighter-rouge">string</code> or a <code class="highlighter-rouge">Buffer</code>, otherwise <em>send</em> will throw at runtime.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

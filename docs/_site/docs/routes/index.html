@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Routes</title>
+  <meta name="description" content="Full declaration fastify.route(options) method: currently it supports &#39;DELETE&#39;, &#39;GET&#39;, &#39;HEAD&#39;, &#39;PATCH&#39;, &#39;POST&#39;, &#39;PUT&#39; and &#39;OPTIONS&#39;.">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/routes/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Routes</h1>
+  </header>
+
+  <div class="post-content">
+    <p><a name="full-declaration"></a></p>
+<h3 id="full-declaration">Full declaration</h3>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span>
+</code></pre>
+</div>
+<ul>
+  <li>
+    <p><code class="highlighter-rouge">method</code>: currently it supports <code class="highlighter-rouge">'DELETE'</code>, <code class="highlighter-rouge">'GET'</code>, <code class="highlighter-rouge">'HEAD'</code>, <code class="highlighter-rouge">'PATCH'</code>, <code class="highlighter-rouge">'POST'</code>, <code class="highlighter-rouge">'PUT'</code> and <code class="highlighter-rouge">'OPTIONS'</code>.</p>
+  </li>
+  <li><code class="highlighter-rouge">url</code>: the path of the url to match this route (alias: <code class="highlighter-rouge">path</code>).</li>
+  <li>
+    <p><code class="highlighter-rouge">schema</code>: an object containing the schemas for the request and response.
+They need to be in
+<a href="http://json-schema.org/">JSON Schema</a> format, check <a href="https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md">here</a> for more info.</p>
+
+    <ul>
+      <li><code class="highlighter-rouge">body</code>: validates the body of the request if it is a POST or a
+PUT.</li>
+      <li><code class="highlighter-rouge">querystring</code>: validates the querystring. This can be a complete JSON
+Schema object, with the property <code class="highlighter-rouge">type</code> of <code class="highlighter-rouge">object</code> and <code class="highlighter-rouge">properties</code> object of parameters, or
+simply the values of what would be contained in the <code class="highlighter-rouge">properties</code> object as shown below.</li>
+      <li><code class="highlighter-rouge">params</code>: validates the params.</li>
+      <li><code class="highlighter-rouge">response</code>: filter and generate a schema for the response, setting a
+schema allows us to have 10-20% more throughput.</li>
+    </ul>
+  </li>
+  <li><code class="highlighter-rouge">beforeHandler(request, reply, done)</code>: a <a href="https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler">function</a> called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.</li>
+  <li>
+    <p><code class="highlighter-rouge">handler(request, reply)</code>: the function that will handle this request.</p>
+
+    <p><code class="highlighter-rouge">request</code> is defined in <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md">Request</a>.</p>
+
+    <p><code class="highlighter-rouge">reply</code> is defined in <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md">Reply</a>.</p>
+  </li>
+</ul>
+
+<p>The routing is handled by <a href="https://github.com/delvedor/find-my-way">find-my-way</a>, so you can refer its documentation for the url building.</p>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">querystring</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+      <span class="na">excitement</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'integer'</span> <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">hello</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="na">beforeHandler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// your authentication logic</span>
+    <span class="nx">done</span><span class="p">()</span>
+  <span class="p">},</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="shorthand-declaration"></a></p>
+<h3 id="shorthand-declaration">Shorthand declaration</h3>
+<p>The above route declaration is more <em>Hapi</em>-like, but if you prefer an <em>Express/Restify</em> approach, we support it as well:<br />
+<code class="highlighter-rouge">fastify.get(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.head(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.post(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.put(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.delete(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.options(path, [options], handler)</code><br />
+<code class="highlighter-rouge">fastify.patch(path, [options], handler)</code></p>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">opts</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">hello</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="nx">opts</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="route-prefixing"></a></p>
+<h3 id="route-prefixing">Route Prefixing</h3>
+<p>Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, <code class="highlighter-rouge">/v1/user</code> for example.<br />
+Fastify offers you a fast and smart way to create different version of the same api without changing all the route names by hand, <em>route prefixing</em>. Let’s see how it works:</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// server.js</span>
+<span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify'</span><span class="p">)()</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'./routes/v1/users'</span><span class="p">),</span> <span class="p">{</span> <span class="na">prefix</span><span class="p">:</span> <span class="s1">'/v1'</span> <span class="p">})</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'./routes/v2/users'</span><span class="p">),</span> <span class="p">{</span> <span class="na">prefix</span><span class="p">:</span> <span class="s1">'/v2'</span> <span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">3000</span><span class="p">)</span>
+</code></pre>
+</div>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// routes/v1/users.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fastify</span><span class="p">,</span> <span class="nx">opts</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/user'</span><span class="p">,</span> <span class="nx">handler_v1</span><span class="p">)</span>
+  <span class="nx">next</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// routes/v2/users.js</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fastify</span><span class="p">,</span> <span class="nx">opts</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/user'</span><span class="p">,</span> <span class="nx">handler_v2</span><span class="p">)</span>
+  <span class="nx">next</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre>
+</div>
+<p>Fastify will not complain because your are using the same name for two different routes, because at compilation time it will handle the prefix automatically <em>(this also means that the performances will not be affected at all!)</em>.</p>
+
+<p>Now your clients will have access to the following routes:</p>
+<ul>
+  <li><code class="highlighter-rouge">/v1/user</code></li>
+  <li><code class="highlighter-rouge">/v2/user</code></li>
+</ul>
+
+<p>You can to this as many time as you want, it works also for nested <code class="highlighter-rouge">register</code> and routes parameter are supported as well.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

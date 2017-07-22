@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Decorators</title>
+  <meta name="description" content="If you need to add functionalities to the Fastify instance, the decorate api is what you need.">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/decorators/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Decorators</h1>
+  </header>
+
+  <div class="post-content">
+    <p>If you need to add functionalities to the Fastify instance, the <code class="highlighter-rouge">decorate</code> api is what you need.</p>
+
+<p>This api allows you to add new properties to the Fastify instance, a property value is not restricted to be a function, could also be an object or a string for example.</p>
+
+<p><a name="usage"></a></p>
+<h3 id="usage">Usage</h3>
+<p><a name="decorate"></a>
+<strong>decorate</strong><br />
+Just call the <code class="highlighter-rouge">decorate</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p>As said above, you can decorate the instance with other values and not only functions:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'conf'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">db</span><span class="p">:</span> <span class="s1">'some.db'</span><span class="p">,</span>
+  <span class="na">port</span><span class="p">:</span> <span class="mi">3000</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p>Once you decorate the instance you can access the value every time you need by using the name you passed as parameter:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">utility</span><span class="p">()</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fastify</span><span class="p">.</span><span class="nx">conf</span><span class="p">.</span><span class="nx">db</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>Decorators are not <em>overwritable</em>, if you try to declare a decorator already declared <em>(in other words, use the same name)</em>, <code class="highlighter-rouge">decorate</code> will throw an exception.</p>
+
+<p><a name="decorate-reply"></a>
+<strong>decorateReply</strong><br />
+As the name suggest, this api is needed if you want to add new methods to the <code class="highlighter-rouge">Reply</code> core object.<br />
+Just call the <code class="highlighter-rouge">decorateReply</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorateReply</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="decorate-request"></a>
+<strong>decorateRequest</strong><br />
+As above, this api is needed if you want to add new methods to the <code class="highlighter-rouge">Request</code> core object.<br />
+Just call the <code class="highlighter-rouge">decorateRequest</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorateRequest</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="extend-server-error"></a>
+<strong>extendServerError</strong><br />
+If you need to extend the standard <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors">server error</a>, this api is what you need.<br />
+You <em>must</em> pass a function that returns an object, Fastify will extend the server error with the returned object of your function.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">extendServerError</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">timestamp</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="cm">/*
+  The resulting object will be:
+  {
+    error: String
+    message: String
+    statusCode: Number
+    timestamp: Date
+  }
+*/</span>
+</code></pre>
+</div>
+
+<p><a name="sync-async"></a></p>
+<h4 id="sync-and-async">Sync and Async</h4>
+<p><code class="highlighter-rouge">decorate</code> is a <em>synchronous</em> API, if you need to add a decorator that has an <em>asynchronous</em> bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use <code class="highlighter-rouge">register</code> api in combination with <code class="highlighter-rouge">fastify-plugin</code>, to know more check out the <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md">Plugins</a> documentation as well.</p>
+
+<p><a name="dependencies"></a></p>
+<h4 id="dependencies">Dependencies</h4>
+<p>If your decorator depends on another decorator, you can also declare the dependencies of your function, it pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="p">[</span><span class="s1">'greet'</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>If a dependency is not satisfied, <code class="highlighter-rouge">decorate</code> will throw an exception, but don’t worry, the dependency check is done before the server boot up, so it will never happen at runtime.</p>
+
+<p><a name="has-decorator"></a></p>
+<h4 id="hasdecorator">hasDecorator</h4>
+<p>You can check the presence of a decorator by using the <code class="highlighter-rouge">hasDecorator</code> api:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">hasDecorator</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

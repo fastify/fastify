@@ -1,1 +1,13 @@
-theme: jekyll-theme-cayman
+theme: minima
+
+collections:
+  docs:
+    permalink: /:collection/:path/
+    output: true
+
+defaults:
+  - scope:
+      path: "_docs"
+      type: "docs"
+    values:
+      layout: "docs_page"

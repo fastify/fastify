@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Middlewares</title>
+  <meta name="description" content="Fastify provides out of the box an asynchronous middleware engine compatible with Express and Restify middlewares.">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/middlewares/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Middlewares</h1>
+  </header>
+
+  <div class="post-content">
+    <p>Fastify provides out of the box an asynchronous <a href="https://github.com/fastify/middie">middleware engine</a> compatible with <a href="https://expressjs.com/">Express</a> and <a href="http://restify.com/">Restify</a> middlewares.</p>
+
+<p><em>If you need a visual feedback to understand when the middlewares are executed take a look to the <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md">lifecycle</a> page.</em></p>
+
+<p>Fastify middlewares don’t support the full syntax <code class="highlighter-rouge">middleware(err, req, res, next)</code>, because error handling is done inside Fastify.</p>
+
+<p>Also, if you are using Middlewares that bundles different small middlewares, such as <a href="https://helmetjs.github.io/"><em>helmet</em></a>, we recommend to use the single modules to get better performances.</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'cors'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'dns-prefetch-control'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'frameguard'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'hide-powered-by'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'hsts'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'ienoopen'</span><span class="p">)())</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">require</span><span class="p">(</span><span class="s1">'x-xss-protection'</span><span class="p">)())</span>
+</code></pre>
+</div>
+
+<p>or, in the specific case of <em>helmet</em>, you can use the <a href="https://github.com/fastify/fastify-helmet"><em>fastify-helmet</em></a> <a href="Plugins.md">plugin</a>, which is an optimized helmet integration for fastify:</p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify'</span><span class="p">)()</span>
+<span class="kr">const</span> <span class="nx">helmet</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify-helmet'</span><span class="p">)</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="nx">helmet</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p><a name="restrict-usage"></a></p>
+<h4 id="restrict-middleware-execution-to-a-certain-paths">Restrict middleware execution to a certain path(s)</h4>
+<p>If you need to run a middleware only under certain path(s), just pass the path as first parameter to <code class="highlighter-rouge">use</code> and you are done!</p>
+
+<p><em>Note that this does not support routes with parameters, (eg: <code class="highlighter-rouge">/user/:id/comments</code>) and wildcard is not supported in multiple paths.</em></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">serveStatic</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'serve-static'</span><span class="p">)</span>
+
+<span class="c1">// Single path</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/css'</span><span class="p">,</span> <span class="nx">serveStatic</span><span class="p">(</span><span class="s1">'/assets'</span><span class="p">))</span>
+
+<span class="c1">// Wildcard path</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="s1">'/css/*'</span><span class="p">,</span> <span class="nx">serveStatic</span><span class="p">(</span><span class="s1">'/assets'</span><span class="p">))</span>
+
+<span class="c1">// Multiple paths</span>
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">use</span><span class="p">([</span><span class="s1">'/css'</span><span class="p">,</span> <span class="s1">'/js'</span><span class="p">],</span> <span class="nx">serveStatic</span><span class="p">(</span><span class="s1">'/assets'</span><span class="p">))</span>
+</code></pre>
+</div>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

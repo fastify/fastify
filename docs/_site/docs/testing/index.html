@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Testing</title>
+  <meta name="description" content="Testing is one of the most important part when you are developing an application. Fastify does not offer a testing framework out of the box, but we can recom...">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/testing/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Testing</h1>
+  </header>
+
+  <div class="post-content">
+    <p>Testing is one of the most important part when you are developing an application.<br />
+Fastify does not offer a testing framework out of the box, but we can recommend you an handy and nice way to build your unit testing environment.</p>
+
+<p>The modules you’ll need:</p>
+<ul>
+  <li><a href="https://www.npmjs.com/package/tap">Tap</a>: an excellent testing framework, it will give you out of the box a very good assertion library and a lot utilities.</li>
+  <li><a href="https://www.npmjs.com/package/request">Request</a>: a complete library to perform request of any kind.</li>
+  <li><a href="https://www.npmjs.com/package/minimist">Minimist</a>: a CLI parser, that you will use to run server from the command line.</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// server.js</span>
+<span class="kr">const</span> <span class="nx">minimist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'minimist'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify'</span><span class="p">)()</span>
+
+<span class="kr">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">hello</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">start</span> <span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">})</span>
+
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fastify</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// In this way you can run the server both from the CLI and as a required module.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span> <span class="o">===</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Run the server with:</span>
+  <span class="c1">// $ node server.js -p 8080</span>
+  <span class="nx">start</span><span class="p">(</span><span class="nx">minimist</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="p">{</span>
+    <span class="na">integer</span><span class="p">:</span> <span class="p">[</span><span class="s1">'port'</span><span class="p">],</span>
+    <span class="na">alias</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">port</span><span class="p">:</span> <span class="s1">'p'</span>
+    <span class="p">},</span>
+    <span class="na">default</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">port</span><span class="p">:</span> <span class="mi">3000</span>
+    <span class="p">}</span>
+  <span class="p">}),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">instance</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">server</span> <span class="nx">listening</span> <span class="nx">on</span> <span class="nx">$</span><span class="p">{</span><span class="nx">instance</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">address</span><span class="p">().</span><span class="nx">port</span><span class="p">}</span><span class="err">`</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// Here we are exposing the function that starts the server</span>
+<span class="c1">// in this way inside the test files we can require and run it.</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">start</span> <span class="p">}</span>
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// test.js</span>
+<span class="kr">const</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">test</span> <span class="o">=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">test</span>
+<span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./server'</span><span class="p">)</span>
+
+<span class="c1">// Run the server</span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">start</span><span class="p">({</span> <span class="na">port</span><span class="p">:</span> <span class="mi">0</span> <span class="p">},</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fastify</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+
+  <span class="nx">test</span><span class="p">(</span><span class="s1">'The server should start'</span><span class="p">,</span> <span class="nx">t</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">plan</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="c1">// Perform the request</span>
+    <span class="nx">request</span><span class="p">({</span>
+      <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+      <span class="na">uri</span><span class="p">:</span> <span class="err">`</span><span class="na">http</span><span class="p">:</span><span class="c1">//localhost:${fastify.server.address().port}`</span>
+    <span class="p">},</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">,</span> <span class="nx">body</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// Unit test</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">'content-length'</span><span class="p">],</span> <span class="s1">''</span> <span class="o">+</span> <span class="nx">body</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+      <span class="nx">t</span><span class="p">.</span><span class="nx">deepEqual</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">body</span><span class="p">),</span> <span class="p">{</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+      <span class="nx">fastify</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+    <span class="p">})</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="inject"></a></p>
+<h3 id="testing-with-http-injection">Testing with http injection</h3>
+<p>Fastify supports fake http injection thanks to <a href="https://github.com/hapijs/shot">shot</a>.<br />
+To support this method, you should list <code class="highlighter-rouge">shot</code> library in your package as dev dependency using</p>
+<div class="highlighter-rouge"><pre class="highlight"><code>npm install shot --save-dev
+</code></pre>
+</div>
+<p>You just need to use the api <code class="highlighter-rouge">inject</code>:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+  <span class="na">payload</span><span class="p">:</span> <span class="nb">Object</span><span class="p">,</span>
+  <span class="na">headers</span><span class="p">:</span> <span class="nb">Object</span>
+<span class="p">},</span> <span class="nx">response</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// your tests</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// server.js</span>
+<span class="kr">const</span> <span class="nx">minimist</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'minimist'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify'</span><span class="p">)()</span>
+
+<span class="kr">const</span> <span class="nx">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">hello</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+<span class="p">})</span>
+
+<span class="kd">function</span> <span class="nx">start</span> <span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">opts</span><span class="p">.</span><span class="nx">port</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">fastify</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// In this way you can run the server both from the CLI and as a required module.</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">require</span><span class="p">.</span><span class="nx">main</span> <span class="o">===</span> <span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// Run the server with:</span>
+  <span class="c1">// $ node server.js -p 8080</span>
+  <span class="nx">start</span><span class="p">(</span><span class="nx">minimist</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="p">{</span>
+    <span class="na">integer</span><span class="p">:</span> <span class="p">[</span><span class="s1">'port'</span><span class="p">],</span>
+    <span class="na">alias</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">port</span><span class="p">:</span> <span class="s1">'p'</span>
+    <span class="p">},</span>
+    <span class="na">default</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">port</span><span class="p">:</span> <span class="mi">3000</span>
+    <span class="p">}</span>
+  <span class="p">}),</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">instance</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="k">throw</span> <span class="nx">err</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="err">`</span><span class="nx">server</span> <span class="nx">listening</span> <span class="nx">on</span> <span class="nx">$</span><span class="p">{</span><span class="nx">instance</span><span class="p">.</span><span class="nx">server</span><span class="p">.</span><span class="nx">address</span><span class="p">().</span><span class="nx">port</span><span class="p">}</span><span class="err">`</span><span class="p">)</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// note that now we are also exposing the fastify instance</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">start</span><span class="p">,</span> <span class="nx">fastify</span> <span class="p">}</span>
+</code></pre>
+</div>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="c1">// test.js</span>
+<span class="kr">const</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'tap'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">test</span> <span class="o">=</span> <span class="nx">t</span><span class="p">.</span><span class="nx">test</span>
+<span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'request'</span><span class="p">)</span>
+<span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'./server'</span><span class="p">).</span><span class="nx">fastify</span>
+
+<span class="nx">test</span><span class="p">(</span><span class="s1">'GET `/` route'</span><span class="p">,</span> <span class="nx">t</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">t</span><span class="p">.</span><span class="nx">plan</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+  <span class="nx">fastify</span><span class="p">.</span><span class="nx">inject</span><span class="p">({</span>
+    <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span>
+  <span class="p">},</span> <span class="nx">res</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">statusCode</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">strictEqual</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="s1">'content-length'</span><span class="p">],</span> <span class="s1">''</span> <span class="o">+</span> <span class="nx">body</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+    <span class="nx">t</span><span class="p">.</span><span class="nx">deepEqual</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">payload</span><span class="p">),</span> <span class="p">{</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+    <span class="c1">// even if the server is not running (inject does not run the server)</span>
+    <span class="c1">// at the end of your tests is highly recommended call `.close()`,</span>
+    <span class="c1">// in this way you will close all the connections to external services</span>
+    <span class="nx">fastify</span><span class="p">.</span><span class="nx">close</span><span class="p">()</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

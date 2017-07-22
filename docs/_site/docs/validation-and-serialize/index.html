@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Validation And Serialize</title>
+  <meta name="description" content="Fastify uses a schema based approach, and even if it is not mandatory we recommend to use JSON Schema to validate you routes and serialize your outputs, inte...">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="canonical" href="http://localhost:4000/docs/validation-and-serialize/">
+  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
+
+  
+</head>
+
+
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+    <a class="site-title" href="/"></a>
+  
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Validation And Serialize</h1>
+  </header>
+
+  <div class="post-content">
+    <p>Fastify uses a schema based approach, and even if it is not mandatory we recommend to use <a href="http://json-schema.org/">JSON Schema</a> to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</p>
+
+<p><a name="validation"></a></p>
+<h3 id="validation">Validation</h3>
+<p>The route validation internally uses <a href="https://www.npmjs.com/package/ajv">Ajv</a>, which is an highly performant JSON schema validator.
+Validate the input is very easy, just add the fields that you need inside the route schema and you are done!<br />
+The supported validations are:</p>
+<ul>
+  <li><code class="highlighter-rouge">body</code>: validates the body of the request if it is a POST or a PUT.</li>
+  <li><code class="highlighter-rouge">querystring</code>: validates the querystring. This can be a complete JSON Schema object, with the property type of object and properties object of parameters, or simply the values of what would be contained in the properties object as shown below.</li>
+  <li><code class="highlighter-rouge">params</code>: validates the route params.</li>
+</ul>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">body</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+      <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">someKey</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+        <span class="na">someOtherKey</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'number'</span> <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="na">querystring</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+      <span class="na">excitement</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'integer'</span> <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+      <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">par1</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+        <span class="na">par2</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'number'</span> <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+<p><em>Note that Ajv will try to <a href="https://github.com/epoberezkin/ajv#coercing-data-types">coerce</a> the values to the types specified in your schema type keywords, both to pass the validation and to use the correctly typed data afterwards.</em></p>
+
+<p><a name="serialize"></a></p>
+<h3 id="serialize">Serialize</h3>
+<p>Usually you will send your data to the clients via JSON, and Fastify has two powerful tools to help you, <a href="https://www.npmjs.com/package/fast-json-stringify">fast-json-stringify</a> and <a href="https://www.npmjs.com/package/fast-safe-stringify">fast-safe-stringify</a>.<br />
+The first one is used if you have provided an output schema in the route options, otherwise the second one will do de job. We encourage you to use an output schema, it will increase your throughput by x1-4 depending by your payload.</p>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+          <span class="na">otherValue</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'boolean'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+<p>As you can see the response schema is based on the status code, if you want to use the same schema for multiple status codes you can use <code class="highlighter-rouge">'2xx'</code>, for example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">'2xx'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+          <span class="na">otherValue</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'boolean'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="mi">201</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+
+<p><em>If you need a custom serializer in a very specific part of your code, you can always set one with <code class="highlighter-rouge">reply.serializer(...)</code>.</em></p>
+
+<p><a name="resources"></a></p>
+<h3 id="resources">Resources</h3>
+<ul>
+  <li><a href="http://json-schema.org/">JSON Schema</a></li>
+  <li>
+    <p><a href="https://spacetelescope.github.io/understanding-json-schema/">Understanding JSON schema</a></p>
+  </li>
+  <li><a href="https://github.com/davidmarkclements/fast-safe-stringify/blob/master/readme.md">fast-safe-stringify documentation</a></li>
+  <li><a href="https://github.com/fastify/fast-json-stringify">fast-json-stringify documentation</a></li>
+  <li><a href="https://github.com/epoberezkin/ajv/blob/master/README.md">Ajv documentation</a></li>
+</ul>
+
+  </div>
+
+</article>
+
+      </div>
+    </main>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading"></h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+            
+              
+            
+            </li>
+            
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

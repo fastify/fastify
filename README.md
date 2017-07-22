@@ -23,7 +23,7 @@ Use Fastify can increase your throughput up to 100%.
 - **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.
 - **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
-- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.
+- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.
 
@@ -68,7 +68,9 @@ Bearer auth plugin for Fastify
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Support for multipart requests
+- [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
+- [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
+- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify. 
 - *More coming soon*
 
 ## Team

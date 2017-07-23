@@ -1,6 +1,5 @@
-<h1 align="center">Fastify</h1>
+# Logging
 
-## Logging
 Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!
 
 By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as the logger, with the log level set to `'fatal'`.
@@ -42,4 +41,4 @@ fastify.get('/', function (req, reply) {
 })
 ```
 
-*The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).*
+*The logger instance for the current request is available in every part of the [lifecycle](docs/Lifecycle.md).*

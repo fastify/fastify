@@ -35,20 +35,20 @@ Use Fastify can increase your throughput up to 100%.
 - **Fastify: 21287 req/sec**
 
 ## Documentation
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md"><code><b>Server Methods</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Routes.md"><code><b>Routes</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Logging.md"><code><b>Logging</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Middlewares.md"><code><b>Middlewares</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Hooks.md"><code><b>Hooks</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Decorators.md"><code><b>Decorators</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md"><code><b>Validation and Serialize</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md"><code><b>Lifecycle</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code><b>Reply</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code><b>Request</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md"><code><b>Plugins</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
+* [__`Getting Started`__](docs/Getting-Started.md)
+- [__`Server Methods`__](/docs/Server-Methods.md)
+- [__`Routes`__](/docs/Routes.md)
+- [__`Logging`__](/docs/Logging.md)
+- [__`Middlewares`__](/docs/Middlewares.md)
+- [__`Hooks`__](/docs/Hooks.md)
+- [__`Decorators`__](/docs/Decorators.md)
+- [__`Validation and Serialize`__](/docs/Validation-And-Serialize.md)
+- [__`Lifecycle`__](/docs/Lifecycle.md)
+- [__`Reply`__](/docs/Reply.md)
+- [__`Request`__](/docs/Request.md)
+- [__`ContentTypeParser`__](/docs/ContentTypeParser.md)
+- [__`Plugins`__](/docs/Plugins.md)
+- [__`Testing`__](/docs/Testing.md)
 
 ## Ecosystem
 - [`point-of-view`](https://github.com/fastify/point-of-view)

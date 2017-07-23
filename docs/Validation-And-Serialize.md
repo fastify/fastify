@@ -1,10 +1,9 @@
-<h1 align="center">Fastify</h1>
+# Validation and Serialize
 
-## Validation and Serialize
 Fastify uses a schema based approach, and even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.
 
 <a name="validation"></a>
-### Validation
+## Validation
 The route validation internally uses [Ajv](https://www.npmjs.com/package/ajv), which is an highly performant JSON schema validator.
 Validate the input is very easy, just add the fields that you need inside the route schema and you are done!  
 The supported validations are:
@@ -40,7 +39,8 @@ Example:
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema type keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
 <a name="serialize"></a>
-### Serialize
+## Serialization
+
 Usually you will send your data to the clients via JSON, and Fastify has two powerful tools to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) and [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).  
 The first one is used if you have provided an output schema in the route options, otherwise the second one will do de job. We encourage you to use an output schema, it will increase your throughput by x1-4 depending by your payload.
 
@@ -82,7 +82,7 @@ As you can see the response schema is based on the status code, if you want to u
 *If you need a custom serializer in a very specific part of your code, you can always set one with `reply.serializer(...)`.*
 
 <a name="resources"></a>
-### Resources
+## Resources
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
 

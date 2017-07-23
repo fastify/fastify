@@ -1,6 +1,5 @@
-<h1 align="center">Fastify</h1>
+# Reply
 
-## Reply
 The second parameter of the handler function is `Reply`.  
 Reply is a core Fastify object that exposes the following functions:
 

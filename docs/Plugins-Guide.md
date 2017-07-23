@@ -6,12 +6,12 @@ First of all, `DON'T PANIC`!
 Fastify has been built since the beginning to be an extremely modular system, we built a powerful api that allows you to add methods and utilities to Fastify by creating a namespace, we built a system that creates an encapsulation model that allows you to split you application in multiple microservices at any moment, without the need to refactor the entire application.
 
 **Table of contents**
-- <a href="#register">Register</a>
-- <a href="#decorators">Decorators</a>
-- <a href="#hooks">Hooks</a>
-- <a href="#middlewares">Middlewares</a>
-- <a href="#distribution">How to handle encapsulation and distribution</a>
-- <a href="#start">Let's start!</a>
+- [Register](#register)
+- [Decorators](#decorators)
+- [Hooks](#hooks)
+- [Middlewares](#middlewares)
+- [How to handle encapsulation and distribution](#distribution)
+- [Let's start!](#start)
 
 <a name="register"></a>
 ## Register
@@ -109,12 +109,12 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
-*Take home message: if you need that an utility is available in every part of your application, pay attention that is declared at the root scope of your application. Otherwise you can use `fastify-plugin` utility as described <a href="#distribution">here</a>.*
+*Take home message: if you need that an utility is available in every part of your application, pay attention that is declared at the root scope of your application. Otherwise you can use `fastify-plugin` utility as described [here](#distribution).*
 
 `decorate` is not the unique api that you can use to extend the server functionalities, you can also use `decorateRequest` and `decorateReply`.
 
 *`decorateRequest` and `decorateReply`? Why do we need them if we already have `decorate`?*  
-Good question. The answer is pretty easy, usability! Let's see an example:
+Good question, we added them to make Fastify more developer-friendly. Let's see an example:
 ```js
 fastify.decorate('html', payload => {
   return generateHtml(payload)
@@ -251,11 +251,7 @@ fastify.use(yourMiddleware)
 Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.  
 How can you distribute your code?
 
-The easy way, is to distribute an utility and tell to your users to decorate their Fastify instance with you function. But what happen if your utility has an asynchronous bootstrapping? A database connection for example.
-`decorate` is a synchronous api, so it cannot solve this kind of issue.  
-You already know what your are going to read, I'm pretty sure about that.
-
-Exactly, `register`!!
+The preferred way to distribute an utility is to wrap all your code inside a `register`, in this way your plugin can support an asynchronous bootstrap *(since `decorate` is a synchronous api)*, in the case of a database connection for example.
 
 *Wait, what? Don't you told me that `register` creates and encapsulation and what I create inside there will not be available outside?*  
 Yes, I told that. But what I didn't told you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
@@ -272,7 +268,7 @@ function dbPlugin (fastify, opts, next) {
 
 module.exports = fp(dbPlugin)
 ```
-That was easy right? And you can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
+You can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
 
 <a name="start"></a>
 ## Let's start!

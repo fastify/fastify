@@ -217,8 +217,8 @@ function build (options) {
   }
 
   function buildRoutePrefix (r, opts) {
-    function _RoutePrefix () {}
-    const R = new _RoutePrefix()
+    const _RoutePrefix = Object.create(opts)
+    const R = _RoutePrefix
     R.prefix = r.prefix
     if (typeof opts.prefix === 'string') {
       if (opts.prefix[0] !== '/') {
@@ -279,6 +279,8 @@ function build (options) {
 
   // Route management
   function route (opts) {
+    const _fastify = this
+
     if (supportedMethods.indexOf(opts.method) === -1) {
       throw new Error(`${opts.method} method is not supported!`)
     }
@@ -287,23 +289,25 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    this.after((notHandledErr, done) => {
+    _fastify._RoutePrefix = opts.RoutePrefix || _fastify._RoutePrefix
+
+    _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path
-      const prefix = (opts.RoutePrefix || this._RoutePrefix).prefix
+      const prefix = _fastify._RoutePrefix.prefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
       const store = new Store(
         opts.schema,
         opts.handler,
-        opts.Reply || this._Reply,
-        opts.Request || this._Request,
-        opts.contentTypeParser || this._contentTypeParser,
+        opts.Reply || _fastify._Reply,
+        opts.Request || _fastify._Request,
+        opts.contentTypeParser || _fastify._contentTypeParser,
         []
       )
 
       buildSchema(store)
 
-      store.preHandler.push.apply(store.preHandler, (opts.preHandler || this._hooks.preHandler))
+      store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {
         opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
         store.preHandler.push.apply(store.preHandler, opts.beforeHandler)
@@ -326,7 +330,7 @@ function build (options) {
     })
 
     // chainable api
-    return fastify
+    return _fastify
   }
 
   function Store (schema, handler, Reply, Request, contentTypeParser, preHandler) {

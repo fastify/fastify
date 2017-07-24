@@ -1,6 +1,5 @@
-<h1 align="center">Fastify</h1>
+# Testing
 
-## Testing
 Testing is one of the most important part when you are developing an application.  
 Fastify does not offer a testing framework out of the box, but we can recommend you an handy and nice way to build your unit testing environment.
 
@@ -92,7 +91,7 @@ server.start({ port: 0 }, (err, fastify) => {
 ```
 
 <a name="inject"></a>
-### Testing with http injection
+## Testing with http injection
 Fastify supports fake http injection thanks to [shot](https://github.com/hapijs/shot).  
 To support this method, you should list `shot` library in your package as dev dependency using
 ```

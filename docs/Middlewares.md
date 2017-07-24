@@ -1,10 +1,8 @@
-<h1 align="center">Fastify</h1>
-
-## Middlewares
+# Middlewares
 
 Fastify provides out of the box an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.
 
-*If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.*
+*If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](/docs/Lifecycle.md) page.*
 
 Fastify middlewares don't support the full syntax `middleware(err, req, res, next)`, because error handling is done inside Fastify.
 
@@ -20,7 +18,7 @@ fastify.use(require('ienoopen')())
 fastify.use(require('x-xss-protection')())
 ```
 
-or, in the specific case of *helmet*, you can use the [*fastify-helmet*](https://github.com/fastify/fastify-helmet) [plugin](Plugins.md), which is an optimized helmet integration for fastify:
+or, in the specific case of *helmet*, you can use the [*fastify-helmet*](https://github.com/fastify/fastify-helmet) [plugin](/docs/Plugins.md), which is an optimized helmet integration for fastify:
 
 ```js
 const fastify = require('fastify')()

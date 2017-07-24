@@ -1,13 +1,11 @@
-<h1 align="center">Fastify</h1>
-
-## Decorators
+# Decorators
 
 If you need to add functionalities to the Fastify instance, the `decorate` api is what you need.
 
 This api allows you to add new properties to the Fastify instance, a property value is not restricted to be a function, could also be an object or a string for example.
 
 <a name="usage"></a>
-### Usage
+## Usage
 <a name="decorate"></a>
 **decorate**  
 Just call the `decorate` api and pass the name of the new property and its value.
@@ -74,11 +72,11 @@ fastify.extendServerError(() => {
 ```
 
 <a name="sync-async"></a>
-#### Sync and Async
+### Sync and Async
 `decorate` is a *synchronous* API, if you need to add a decorator that has an *asynchronous* bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use `register` api in combination with `fastify-plugin`, to know more check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.
 
 <a name="dependencies"></a>
-#### Dependencies
+## Dependencies
 If your decorator depends on another decorator, you can also declare the dependencies of your function, it pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.
 ```js
 fastify.decorate('utility', fn, ['greet', 'log'])

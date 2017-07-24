@@ -1,6 +1,4 @@
-<h1 align="center">Fastify</h1>
-
-## Plugins
+# Plugins
 Fastify allows the user to extend its functionalities with plugins.
 A plugin can be a set of routes, a server [decorator](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) or whatever. The API that you will need to use one or more plugins, is `register`.  
 
@@ -30,7 +28,7 @@ The error handling is done by [avvio](https://github.com/mcollina/avvio#error-ha
 As general rule is highly recommended that you handle your errors in the `register`'s callback, otherwise the server will not start, and you will find the unhandled error in the `listen` callback.
 
 <a name="create-plugin"></a>
-### Create a plugin
+## Create a plugin
 Create a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.  
 Example:
 ```js
@@ -59,7 +57,7 @@ Sometimes, you will need to know when the server is about to close, for example 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
 <a name="handle-scope"></a>
-### Handle the scope
+## Handle the scope
 If you are using `register` only for extend a functionality of the server with  [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
 
 You have two ways to tell Fastify to avoid the creation of a new context:

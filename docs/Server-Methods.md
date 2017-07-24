@@ -1,6 +1,4 @@
-<h1 align="center">Fastify</h1>
-
-## Server Methods
+# Server Methods
 
 <a name="server"></a>
 #### server

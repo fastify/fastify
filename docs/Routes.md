@@ -1,8 +1,7 @@
-<h1 align="center">Fastify</h1>
+# Routes
 
-## Routes
 <a name="full-declaration"></a>
-### Full declaration
+## Full declaration
 ```js
 fastify.route(options)
 ```
@@ -71,7 +70,7 @@ fastify.route({
 ```
 
 <a name="shorthand-declaration"></a>
-### Shorthand declaration
+## Shorthand declaration
 The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
 `fastify.get(path, [options], handler)`  
 `fastify.head(path, [options], handler)`  
@@ -88,7 +87,7 @@ const opts = {
     response: {
       200: {
         type: 'object',
-        properties: {
+       properties: {
           hello: { type: 'string' }
         }
       }
@@ -101,7 +100,7 @@ fastify.get('/', opts, (req, reply) => {
 ```
 
 <a name="route-prefixing"></a>
-### Route Prefixing
+## Route Prefixing
 Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.  
 Fastify offers you a fast and smart way to create different version of the same api without changing all the route names by hand, *route prefixing*. Let's see how it works:
 

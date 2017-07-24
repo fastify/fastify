@@ -65,7 +65,7 @@ test('handler function - reply', t => {
     },
     Reply: Reply,
     Request: Request,
-    hooks: new Hooks()
+    preHandler: new Hooks().preHandler
   }
   buildSchema(handle)
   internals.handler(handle, null, { log: null }, res, null, null)

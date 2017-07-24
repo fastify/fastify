@@ -2,37 +2,16 @@
 
 const t = require('tap')
 const test = t.test
-const fastify = require('..')()
-
-function onClose (instance, done) {
-  t.type(fastify, instance)
-  done()
-}
-
-test('hooks - add onClose', t => {
-  t.plan(3)
-  try {
-    fastify.addHook('onClose', onClose)
-    t.ok('should not throw')
-  } catch (e) {
-    t.fail()
-  }
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    try {
-      fastify.close()
-      t.ok('Should no throw')
-    } catch (e) {
-      t.fail(e)
-    }
-  })
-})
+const Fastify = require('..')
 
 test('close callback', t => {
-  t.plan(3)
+  t.plan(4)
+  const fastify = Fastify()
   fastify.addHook('onClose', onClose)
+  function onClose (instance, done) {
+    t.type(fastify, instance)
+    done()
+  }
 
   fastify.listen(0, err => {
     t.error(err)
@@ -45,9 +24,15 @@ test('close callback', t => {
 })
 
 test('inside register', t => {
-  t.plan(3)
+  t.plan(4)
+  const fastify = Fastify()
   fastify.register(function (f, opts, next) {
     f.addHook('onClose', onClose)
+    function onClose (instance, done) {
+      t.type(fastify, instance)
+      done()
+    }
+
     next()
   })
 
@@ -58,5 +43,48 @@ test('inside register', t => {
       t.error(err)
       t.ok('close callback')
     })
+  })
+})
+
+test('close order', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  const order = [1, 2, 3]
+
+  fastify.register(function (f, opts, next) {
+    f.addHook('onClose', (instance, done) => {
+      t.is(order.shift(), 1)
+      done()
+    })
+
+    next()
+  })
+
+  fastify.addHook('onClose', (instance, done) => {
+    t.is(order.shift(), 2)
+    done()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.is(order.shift(), 3)
+    })
+  })
+})
+
+test('should not throw an error if the server is not listening', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  function onClose (instance, done) {
+    t.type(fastify, instance)
+    done()
+  }
+
+  fastify.close((err) => {
+    t.error(err)
   })
 })

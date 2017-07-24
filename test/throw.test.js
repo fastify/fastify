@@ -15,15 +15,13 @@ test('Fastify should throw on wrong options', t => {
 })
 
 test('Fastify should throw on multiple assignment to the same route', t => {
-  t.plan(2)
-  try {
-    fastify.get('/', () => {})
-    fastify.get('/', () => {})
-    t.fail()
-  } catch (e) {
-    t.is(e.message, 'GET already set for /')
-    t.pass()
-  }
+  t.plan(1)
+  fastify.get('/', () => {})
+  fastify.get('/', () => {})
+
+  fastify.ready(err => {
+    t.is(err.message, 'GET already set for /')
+  })
 })
 
 test('Should throw on unsupported method', t => {

@@ -44,23 +44,25 @@ The route properties are the same the developer has declared [here](https://gith
 ```js
 fastify.get('/route', opts, handler)
 
-for (var route of fastify) {
-  console.log(route)
-  /* will output:
-  {
-    '/route': {
-      get: {
-        method: String,
-        ulr: String,
-        schema: Object,
-        handler: Function,
-        Request: Function,
-        Reply: Function
+fastify.ready(() => {
+  for (var route of fastify) {
+    console.log(route)
+    /* will output:
+    {
+      '/route': {
+        get: {
+          method: String,
+          ulr: String,
+          schema: Object,
+          handler: Function,
+          Request: Function,
+          Reply: Function
+        }
       }
     }
+    */
   }
-  */
-}
+})
 ```
 
 <a name="close"></a>

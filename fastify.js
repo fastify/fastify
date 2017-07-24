@@ -19,6 +19,7 @@ const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
+const serializers = require('./lib/serializers')
 
 function build (options) {
   options = options || {}
@@ -28,10 +29,11 @@ function build (options) {
 
   var logger
   if (options.logger && isValidLogger(options.logger)) {
-    logger = pinoHttp({ logger: options.logger })
+    logger = pinoHttp({ logger: options.logger, serializers })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
+    options.logger.serializers = options.logger.serializers || serializers
     logger = pinoHttp(options.logger)
   }
 
@@ -45,6 +47,7 @@ function build (options) {
   // Override to allow the plugin incapsulation
   app.override = override
 
+  var listening = false
   // true when Fastify is ready to go
   var started = false
   app.on('start', () => {
@@ -57,6 +60,14 @@ function build (options) {
   } else {
     server = http.createServer(fastify)
   }
+
+  fastify.onClose((instance, done) => {
+    if (listening) {
+      instance.server.close(done)
+    } else {
+      done(null)
+    }
+  })
 
   if (Number(process.versions.node[0]) >= 6) {
     server.on('clientError', handleClientError)
@@ -79,8 +90,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks()
-  fastify.close = close
+  fastify._hooks = new Hooks(fastify)
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -183,6 +193,7 @@ function build (options) {
       } else {
         server.listen(port, _cb)
       }
+      listening = true
     })
   }
 
@@ -206,36 +217,16 @@ function build (options) {
   }
 
   function buildRoutePrefix (r, opts) {
-    function _RoutePrefix () {}
-    const R = new _RoutePrefix()
+    const _RoutePrefix = Object.create(opts)
+    const R = _RoutePrefix
     R.prefix = r.prefix
-    if (opts && typeof opts.prefix === 'string') {
+    if (typeof opts.prefix === 'string') {
+      if (opts.prefix[0] !== '/') {
+        opts.prefix = '/' + opts.prefix
+      }
       R.prefix += opts.prefix
     }
     return R
-  }
-
-  function close (cb) {
-    runHooks(
-      fastify,
-      onCloseIterator,
-      fastify._hooks.onClose,
-      onCloseCallback(cb)
-    )
-  }
-
-  function onCloseIterator (fn, cb) {
-    fn(this, cb)
-  }
-
-  function onCloseCallback (cb) {
-    return (err) => {
-      if (err) {
-        throw err
-      }
-
-      fastify.server.close(cb)
-    }
   }
 
   // Shorthand methods
@@ -272,7 +263,7 @@ function build (options) {
       handler = options
       options = {}
     }
-    return route({
+    return route.call(self, {
       method,
       url,
       handler,
@@ -280,13 +271,16 @@ function build (options) {
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,
-      hooks: self._hooks,
-      RoutePrefix: self._RoutePrefix
+      preHandler: self._hooks.preHandler,
+      RoutePrefix: self._RoutePrefix,
+      beforeHandler: options.beforeHandler
     })
   }
 
   // Route management
   function route (opts) {
+    const _fastify = this
+
     if (supportedMethods.indexOf(opts.method) === -1) {
       throw new Error(`${opts.method} method is not supported!`)
     }
@@ -295,33 +289,57 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    buildSchema(opts)
+    _fastify._RoutePrefix = opts.RoutePrefix || _fastify._RoutePrefix
 
-    opts.Reply = opts.Reply || this._Reply
-    opts.Request = opts.Request || this._Request
-    opts.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
-    opts.hooks = opts.hooks || this._hooks
-    opts.RoutePrefix = opts.RoutePrefix || this._RoutePrefix
+    _fastify.after((notHandledErr, done) => {
+      const path = opts.url || opts.path
+      const prefix = _fastify._RoutePrefix.prefix
+      const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
-    const prefix = opts.RoutePrefix.prefix
-    const url = prefix + (opts.url || opts.path)
+      const store = new Store(
+        opts.schema,
+        opts.handler,
+        opts.Reply || _fastify._Reply,
+        opts.Request || _fastify._Request,
+        opts.contentTypeParser || _fastify._contentTypeParser,
+        []
+      )
 
-    if (map.has(url)) {
-      if (map.get(url)[opts.method]) {
-        throw new Error(`${opts.method} already set for ${url}`)
+      buildSchema(store)
+
+      store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
+      if (opts.beforeHandler) {
+        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
+        store.preHandler.push.apply(store.preHandler, opts.beforeHandler)
       }
 
-      map.get(url)[opts.method] = opts
-      router.on(opts.method, url, handleRequest, opts)
-    } else {
-      const node = {}
-      node[opts.method] = opts
-      map.set(url, node)
-      router.on(opts.method, url, handleRequest, opts)
-    }
+      if (map.has(url)) {
+        if (map.get(url)[opts.method]) {
+          return done(new Error(`${opts.method} already set for ${url}`))
+        }
+
+        map.get(url)[opts.method] = store
+        router.on(opts.method, url, handleRequest, store)
+      } else {
+        const node = {}
+        node[opts.method] = store
+        map.set(url, node)
+        router.on(opts.method, url, handleRequest, store)
+      }
+      done()
+    })
 
     // chainable api
-    return fastify
+    return _fastify
+  }
+
+  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler) {
+    this.schema = schema
+    this.handler = handler
+    this.Reply = Reply
+    this.Request = Request
+    this.contentTypeParser = contentTypeParser
+    this.preHandler = preHandler
   }
 
   function iterator () {

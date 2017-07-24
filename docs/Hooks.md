@@ -44,3 +44,47 @@ fastify.addHook('onClose', (instance, done) => {
 <a name="scope"></a>
 ### Scope
 Talking about scope, the hooks works in a slightly different way from the Request/Reply encapsulation model. For instance, `onRequest`, `preRouting` and `onClose` are never encapsulated, not matter where you are declaring them, while the `preHandler` hook is always encapsulated if you declare it inside a `register`.
+
+<a name="before-handler"></a>
+### beforeHandler
+Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example.), it could also be an array of functions.  
+**`beforeHandler` is executed always after the `preHandler` hook.**
+
+```js
+fastify.addHook('preHandler', (request, reply, done) => {
+  // your code
+  done()
+})
+
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: { ... },
+  beforeHandler: function (request, reply, done) {
+    // your code
+    done()
+  },
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+
+fastify.route({
+  method: 'GET',
+  url: '/',
+  schema: { ... },
+  beforeHandler: [
+    function first (request, reply, done) {
+      // your code
+      done()
+    },
+    function second (request, reply, done) {
+      // your code
+      done()
+    }
+  ],
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+```

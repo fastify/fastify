@@ -8,6 +8,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.header(name, value)` - Sets the headers.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+- `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -28,6 +29,17 @@ Sets a custom header to the response.
 If you not set a `'Content-Type'` header, Fastify assumes that you are using `'application/json'`, unless you are send a stream, in that cases Fastify recognize it and sets the `'Content-Type'` at `'application/octet-stream'`.
 
 *Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
+
+<a name="type"></a>
+### Type
+Sets the content type for the reponse.  
+This is a shortcut for `reply.header('Content-Type', 'the/type')`.
+
+Example:
+
+```
+reply.type('text/html')
+```
 
 <a name="serializer"></a>
 ### Serializer

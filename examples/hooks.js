@@ -35,7 +35,7 @@ fastify.get('/', opts, function (req, reply) {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(8000, function (err) {
+fastify.listen(3000, function (err) {
   if (err) {
     throw err
   }

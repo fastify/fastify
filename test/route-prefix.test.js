@@ -77,6 +77,37 @@ test('Prefix options should add a prefix for all the routes inside a register / 
   })
 })
 
+test('Prefix options should add a prefix for all the chained routes inside a register / 3', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify
+      .get('/first', (req, reply) => {
+        reply.send({ route: '/v1/first' })
+      })
+      .get('/second', (req, reply) => {
+        reply.send({ route: '/v1/second' })
+      })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/first'
+  }, res => {
+    t.same(JSON.parse(res.payload), { route: '/v1/first' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/second'
+  }, res => {
+    t.same(JSON.parse(res.payload), { route: '/v1/second' })
+  })
+})
+
 test('Prefix should support parameters as well', t => {
   t.plan(1)
   const fastify = Fastify()

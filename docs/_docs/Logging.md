@@ -45,4 +45,4 @@ fastify.get('/', function (req, reply) {
 })
 ```
 
-*The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).*
+*The logger instance for the current request is available in every part of the [lifecycle]({{ "/docs/lifecycle/" | relative_url }}).*

@@ -55,7 +55,7 @@ reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
-*Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#serialize) to understand how serialize is done.*
+*Take a look [here]({{ "/docs/validation-and-serialize/" | relative_url | append: "#serialize" }}) to understand how serialize is done.*
 
 <a name="send"></a>
 ### Send
@@ -112,7 +112,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
-If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).  
+If you want it extend this error, check out [`extendServerError`]({{ "/docs/decorators/" | relative_url | append: "#extend-server-error" }}).  
 
 *If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
 

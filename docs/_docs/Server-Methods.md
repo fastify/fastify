@@ -41,13 +41,13 @@ fastify.listen(3000, '127.0.0.1', err => {
 <a name="route"></a>
 ### route
 
-Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
+Method to add routes to the server, it also have shorthands functions, check [here]({{ "/docs/routes/" | relative_url }}).
 
 <a name="routes-iterator"></a>
 ### routes iterator
 
 The Fastify instance is an Iterable object with all the registered routes.  
-The route properties are the same the developer has declared [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
+The route properties are the same the developer has declared [here]({{ "/docs/routes/" | relative_url }}).
 ```js
 fastify.get('/route', opts, handler)
 
@@ -75,35 +75,35 @@ fastify.ready(() => {
 <a name="close"></a>
 ### close
 
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`]({{ "/docs/hooks/" | relative_url | append: "#on-close" }}) hook.
 
 <a name="decorate"></a>
 ### decorate*
 
-Function useful if you need to decorate the fastify instance, Reply or Request, check [here](https://github.com/fastify/fastify/blob/master/docs/Decorators.md).
+Function useful if you need to decorate the fastify instance, Reply or Request, check [here]({{ "/docs/decorators/" | relative_url }}).
 
 <a name="register"></a>
 ### register
 
 Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server decorator or whatever, check [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
+A plugin can be a set of routes, a server decorator or whatever, check [here]({{ "/docs/plugins/" | relative_url }}).
 
 <a name="use"></a>
 ### use
 
-Function to add middlewares to Fastify, check  [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md).
+Function to add middlewares to Fastify, check  [here]({{ "/docs/middlewares/" | relative_url }}).
 
 <a name="addHook"></a>
 ### addHook
 
-Function to add a specific hook in the lifecycle of Fastify, check  [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
+Function to add a specific hook in the lifecycle of Fastify, check  [here]({{ "/docs/hooks/" | relative_url }}).
 
 <a name="logger"></a>
 ### logger
 
-The logger instance, check  [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).
+The logger instance, check  [here]({{ "/docs/logging/" | relative_url }}).
 
 <a name="inject"></a>
 ### inject
 
-Fake http injection (for testing purposes)  [here](https://github.com/fastify/fastify/blob/master/docs/Testing.md#inject).
+Fake http injection (for testing purposes)  [here]({{ "/docs/testing/" | relative_url | append: "#inject" }}).

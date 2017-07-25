@@ -250,7 +250,7 @@
 </code></pre>
 </div>
 
-<p>Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md">lifecycle</a> page.</p>
+<p>Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the <a href="/docs/lifecycle/">lifecycle</a> page.</p>
 
 <p>If you get an error during the execution of you hook, just pass it to <code class="highlighter-rouge">next()</code> and Fastify will automatically close the request and send the appropriate error code to the user.</p>
 
@@ -261,13 +261,13 @@
 <span class="p">})</span>
 </code></pre>
 </div>
-<p><em>The error will be handled by <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors"><code class="highlighter-rouge">Reply</code></a>.</em></p>
+<p><em>The error will be handled by <a href="/docs/reply/#errors"><code class="highlighter-rouge">Reply</code></a>.</em></p>
 
-<p>The function signature is always the same, <code class="highlighter-rouge">request</code>, <code class="highlighter-rouge">response</code>, <code class="highlighter-rouge">next</code>, it changes a little bit only in the <code class="highlighter-rouge">'preHandler'</code> hook, where the first two arguments are <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code class="highlighter-rouge">request</code></a> and <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code class="highlighter-rouge">reply</code></a> core Fastify objects.</p>
+<p>The function signature is always the same, <code class="highlighter-rouge">request</code>, <code class="highlighter-rouge">response</code>, <code class="highlighter-rouge">next</code>, it changes a little bit only in the <code class="highlighter-rouge">'preHandler'</code> hook, where the first two arguments are <a href="/docs/request/"><code class="highlighter-rouge">request</code></a> and <a href="/docs/reply/"><code class="highlighter-rouge">reply</code></a> core Fastify objects.</p>
 
 <p><a name="on-close"></a>
 <strong>‘onClose’</strong><br />
-The unique hook that is not inside the lifecycle is <code class="highlighter-rouge">'onClose'</code>, this one is triggered when you call <code class="highlighter-rouge">fastify.close()</code> to stop the server, and it is useful if you have some <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md">plugins</a> that need a “shutdown” part, such as a connection to a database.<br />
+The unique hook that is not inside the lifecycle is <code class="highlighter-rouge">'onClose'</code>, this one is triggered when you call <code class="highlighter-rouge">fastify.close()</code> to stop the server, and it is useful if you have some <a href="/docs/plugins/">plugins</a> that need a “shutdown” part, such as a connection to a database.<br />
 Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the <code class="highlighter-rouge">done</code> callback.</p>
 <div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onClose'</span><span class="p">,</span> <span class="p">(</span><span class="nx">instance</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="c1">// some code</span>

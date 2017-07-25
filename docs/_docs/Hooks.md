@@ -18,7 +18,7 @@ fastify.addHook('onRequest', (req, res, next) => {
 })
 ```
 
-Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
+Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle]({{ "/docs/lifecycle/" | relative_url }}) page.
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
@@ -29,13 +29,13 @@ fastify.addHook('onRequest', (req, res, next) => {
   next(new Error('some error'), 400)
 })
 ```
-*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+*The error will be handled by [`Reply`]({{ "/docs/reply/" | relative_url | append: "#errors" }}).*
 
-The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`]({{ "/docs/request/" | relative_url }}) and [`reply`]({{ "/docs/reply/" | relative_url }}) core Fastify objects.
 
 <a name="on-close"></a>
 **'onClose'**  
-The unique hook that is not inside the lifecycle is `'onClose'`, this one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) that need a "shutdown" part, such as a connection to a database.  
+The unique hook that is not inside the lifecycle is `'onClose'`, this one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins]({{ "/docs/plugins/" | relative_url }}) that need a "shutdown" part, such as a connection to a database.  
 Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {

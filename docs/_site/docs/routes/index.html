@@ -247,7 +247,7 @@
   <li>
     <p><code class="highlighter-rouge">schema</code>: an object containing the schemas for the request and response.
 They need to be in
-<a href="http://json-schema.org/">JSON Schema</a> format, check <a href="https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md">here</a> for more info.</p>
+<a href="http://json-schema.org/">JSON Schema</a> format, check <a href="/docs/validation-and-serialize/">here</a> for more info.</p>
 
     <ul>
       <li><code class="highlighter-rouge">body</code>: validates the body of the request if it is a POST or a
@@ -260,13 +260,13 @@ simply the values of what would be contained in the <code class="highlighter-rou
 schema allows us to have 10-20% more throughput.</li>
     </ul>
   </li>
-  <li><code class="highlighter-rouge">beforeHandler(request, reply, done)</code>: a <a href="https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler">function</a> called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.</li>
+  <li><code class="highlighter-rouge">beforeHandler(request, reply, done)</code>: a <a href="/docs/hooks/#before-handler">function</a> called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.</li>
   <li>
     <p><code class="highlighter-rouge">handler(request, reply)</code>: the function that will handle this request.</p>
 
-    <p><code class="highlighter-rouge">request</code> is defined in <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md">Request</a>.</p>
+    <p><code class="highlighter-rouge">request</code> is defined in <a href="/docs/request/">Request</a>.</p>
 
-    <p><code class="highlighter-rouge">reply</code> is defined in <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md">Reply</a>.</p>
+    <p><code class="highlighter-rouge">reply</code> is defined in <a href="/docs/reply/">Reply</a>.</p>
   </li>
 </ul>
 

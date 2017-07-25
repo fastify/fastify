@@ -235,11 +235,11 @@
 
         <div id="doc-content" class="content">
           <p>Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server <a href="https://github.com/fastify/fastify/blob/master/docs/Decorators.md">decorator</a> or whatever. The API that you will need to use one or more plugins, is <code class="highlighter-rouge">register</code>.</p>
+A plugin can be a set of routes, a server <a href="/docs/decorators/">decorator</a> or whatever. The API that you will need to use one or more plugins, is <code class="highlighter-rouge">register</code>.</p>
 
 <p>By default, <code class="highlighter-rouge">register</code> creates a <em>new scope</em>, this means that if you do some changes to the Fastify instance (via <code class="highlighter-rouge">decorate</code>), this change will not be reflected to the current context ancestors, but only to its sons. This feature allows us to achieve plugin <em>encapsulation</em> and <em>inheritance</em>, in this way we create a <em>direct acyclic graph</em> (DAG) and we will not have issues caused by cross dependencies.</p>
 
-<p>You already see in the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md#register">getting started</a> section how use this API, is pretty straightforward.</p>
+<p>You already see in the <a href="/docs/getting-started/#register">getting started</a> section how use this API, is pretty straightforward.</p>
 <div class="highlighter-rouge"><pre class="highlight"><code>fastify.register(plugin, [options], [callback])
 </code></pre>
 </div>
@@ -255,7 +255,7 @@ A plugin can be a set of routes, a server <a href="https://github.com/fastify/fa
 
 <p><a name="route-prefixing-option"></a></p>
 <h4 id="route-prefixing-option">Route Prefixing option</h4>
-<p>If you pass an option with the key <code class="highlighter-rouge">prefix</code> with a <code class="highlighter-rouge">string</code> value, Fastify will use it to prefix all the routes inside the register, for more info check <a href="https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing">here</a>.</p>
+<p>If you pass an option with the key <code class="highlighter-rouge">prefix</code> with a <code class="highlighter-rouge">string</code> value, Fastify will use it to prefix all the routes inside the register, for more info check <a href="/docs/routes/#route-prefixing">here</a>.</p>
 
 <p><a name="error-handling"></a></p>
 <h4 id="error-handling">Error handling</h4>
@@ -287,13 +287,13 @@ Example:</p>
 <span class="p">}</span>
 </code></pre>
 </div>
-<p>Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is gonna happen, you can use the <a href="https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close"><code class="highlighter-rouge">'onClose'</code></a> hook.</p>
+<p>Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is gonna happen, you can use the <a href="/docs/hooks/#on-close"><code class="highlighter-rouge">'onClose'</code></a> hook.</p>
 
 <p>Do not forget that <code class="highlighter-rouge">register</code> will always create a new Fastify scope, if you don’t need that, read the following section.</p>
 
 <p><a name="handle-scope"></a></p>
 <h3 id="handle-the-scope">Handle the scope</h3>
-<p>If you are using <code class="highlighter-rouge">register</code> only for extend a functionality of the server with  <a href="https://github.com/fastify/fastify/blob/master/docs/Decorators.md"><code class="highlighter-rouge">decorate</code></a>, it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.</p>
+<p>If you are using <code class="highlighter-rouge">register</code> only for extend a functionality of the server with  <a href="/docs/decorators/"><code class="highlighter-rouge">decorate</code></a>, it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.</p>
 
 <p>You have two ways to tell Fastify to avoid the creation of a new context:</p>
 <ul>

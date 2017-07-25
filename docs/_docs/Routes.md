@@ -14,7 +14,7 @@ fastify.route(options)
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
-  [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md) for more info.
+  [JSON Schema](http://json-schema.org/) format, check [here]({{ "/docs/validation-and-serialize/" | relative_url }}) for more info.
 
   * `body`: validates the body of the request if it is a POST or a
     PUT.
@@ -24,12 +24,12 @@ They need to be in
   * `params`: validates the params.
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
-* `beforeHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler) called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.
+* `beforeHandler(request, reply, done)`: a [function]({{ "/docs/hooks/" | relative_url | append: "#before-handler" }}) called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 
-  `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
+  `request` is defined in [Request]({{ "/docs/request/" | relative_url }}).
 
-  `reply` is defined in [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md).
+  `reply` is defined in [Reply]({{ "/docs/reply/" | relative_url }}).
 
 The routing is handled by [find-my-way](https://github.com/delvedor/find-my-way), so you can refer its documentation for the url building.
 

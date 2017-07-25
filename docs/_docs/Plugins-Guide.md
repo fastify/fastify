@@ -11,7 +11,7 @@ Fastify has been built since the beginning to be an extremely modular system, we
 <a name="register"></a>
 ### Register
 As in JavaScript everything is an object, in Fastify everything is a plugin.  
-Your routes, your utilities and so on are all plugins. And to add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
+Your routes, your utilities and so on are all plugins. And to add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`]({{ "/docs/plugins/" | relative_url }}).
 ```js
 fastify.register(
   require('./my-plugin'),
@@ -65,7 +65,7 @@ console.log(util('that is ', ' awesome'))
 And now you will import your utility in every file you need it. (and don't forget that probably you will need it also in your test).
 
 Fastify offers you a way nicer and elegant way to do this, *decorators*.
-Create a decorator is extremely easy, just use the [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) api:
+Create a decorator is extremely easy, just use the [`decorate`]({{ "/docs/decorators/" | relative_url }}) api:
 ```js
 fastify.decorate('util', (a, b) => a + b)
 ```
@@ -166,7 +166,7 @@ fastify.get('/happiness', (req, reply) => {
 })
 ```
 
-We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
+We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that must be executed every time that the server "[emits]({{ "/docs/lifecycle/" | relative_url }})" an event?
 
 <a name="hooks"></a>
 ### Hooks
@@ -186,7 +186,7 @@ fastify.get('/plugin2', (req, reply) => {
 ```
 I think we all agree that this is terrible. Code repeat, awful readability and it cannot scale.
 
-So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!  
+So what can you do to avoid this annoying issue? Yes, you are right, use an [hook]({{ "/docs/hooks/" | relative_url }})!  
 ```js
 fastify.decorate('util', (req, key, value) => { req.key = value })
 
@@ -233,13 +233,13 @@ Let's say that you are arriving from a framework like Express or Restify, and yo
 
 <a name="middlewares"></a>
 ### Middlewares
-Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify middlewares this means that you can just drop-in your old code and it will work! (faster, by the way)  
+Fastify [supports]({{ "/docs/middlewares/" | relative_url }}) out of the box Express/Restify middlewares this means that you can just drop-in your old code and it will work! (faster, by the way)  
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
 const yourMiddleware = require('your-middleware')
 fastify.use(yourMiddleware)
 ```
-*Note that middlewares executed [before](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) routing and the encapsulation model is not applied, this means that if you declare a middleware inside a plugin it will run for all the plugins.*
+*Note that middlewares executed [before]({{ "/docs/lifecycle/" | relative_url }}) routing and the encapsulation model is not applied, this means that if you declare a middleware inside a plugin it will run for all the plugins.*
 
 <a name="distribution"></a>
 ### How to handle encapsulation and distribution
@@ -267,7 +267,7 @@ You can also tell to `fastify-plugin` to check the installed version of Fastify,
 
 <a name="start"></a>
 ### Let's start!
-Awesome, now you know everything you need to know about Fastify and its plugin system to start built your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
+Awesome, now you know everything you need to know about Fastify and its plugin system to start built your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*]({{ "/docs/ecosystem" | relative_url  }}) section of our documentation!
 
 If you want to see some real world example, checkout:
 - [`point-of-view`](https://github.com/fastify/point-of-view)

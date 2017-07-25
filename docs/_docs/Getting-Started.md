@@ -56,7 +56,7 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
-*If you want to know more about the serialization and validation, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md)!*
+*If you want to know more about the serialization and validation, check [here]({{ "/docs/validation-and-serialize/" | relative_url}})!*
 
 <a name="register"></a>
 ### Register

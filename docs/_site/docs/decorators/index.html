@@ -285,7 +285,7 @@ Just call the <code class="highlighter-rouge">decorateRequest</code> api and pas
 
 <p><a name="extend-server-error"></a>
 <strong>extendServerError</strong><br />
-If you need to extend the standard <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors">server error</a>, this api is what you need.<br />
+If you need to extend the standard <a href="/docs/reply/#errors">server error</a>, this api is what you need.<br />
 You <em>must</em> pass a function that returns an object, Fastify will extend the server error with the returned object of your function.</p>
 <div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">extendServerError</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="k">return</span> <span class="p">{</span>
@@ -307,7 +307,7 @@ You <em>must</em> pass a function that returns an object, Fastify will extend th
 
 <p><a name="sync-async"></a></p>
 <h3 id="sync-and-async">Sync and Async</h3>
-<p><code class="highlighter-rouge">decorate</code> is a <em>synchronous</em> API, if you need to add a decorator that has an <em>asynchronous</em> bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use <code class="highlighter-rouge">register</code> api in combination with <code class="highlighter-rouge">fastify-plugin</code>, to know more check out the <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md">Plugins</a> documentation as well.</p>
+<p><code class="highlighter-rouge">decorate</code> is a <em>synchronous</em> API, if you need to add a decorator that has an <em>asynchronous</em> bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use <code class="highlighter-rouge">register</code> api in combination with <code class="highlighter-rouge">fastify-plugin</code>, to know more check out the <a href="/docs/plugins/">Plugins</a> documentation as well.</p>
 
 <p><a name="dependencies"></a></p>
 <h3 id="dependencies">Dependencies</h3>

@@ -236,7 +236,7 @@
         <div id="doc-content" class="content">
           <p>Fastify provides out of the box an asynchronous <a href="https://github.com/fastify/middie">middleware engine</a> compatible with <a href="https://expressjs.com/">Express</a> and <a href="http://restify.com/">Restify</a> middlewares.</p>
 
-<p><em>If you need a visual feedback to understand when the middlewares are executed take a look to the <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md">lifecycle</a> page.</em></p>
+<p><em>If you need a visual feedback to understand when the middlewares are executed take a look to the <a href="/docs/lifecycle/">lifecycle</a> page.</em></p>
 
 <p>Fastify middlewares don’t support the full syntax <code class="highlighter-rouge">middleware(err, req, res, next)</code>, because error handling is done inside Fastify.</p>
 
@@ -252,7 +252,7 @@
 </code></pre>
 </div>
 
-<p>or, in the specific case of <em>helmet</em>, you can use the <a href="https://github.com/fastify/fastify-helmet"><em>fastify-helmet</em></a> <a href="Plugins.md">plugin</a>, which is an optimized helmet integration for fastify:</p>
+<p>or, in the specific case of <em>helmet</em>, you can use the <a href="https://github.com/fastify/fastify-helmet"><em>fastify-helmet</em></a> <a href="/docs/plugins/">plugin</a>, which is an optimized helmet integration for fastify:</p>
 
 <div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="kr">const</span> <span class="nx">fastify</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify'</span><span class="p">)()</span>
 <span class="kr">const</span> <span class="nx">helmet</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'fastify-helmet'</span><span class="p">)</span>

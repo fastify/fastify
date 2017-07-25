@@ -5,11 +5,11 @@ github_url: https://github.com/fastify/fastify/docs/_docs/Plugins.md
 ---
 
 Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server [decorator](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) or whatever. The API that you will need to use one or more plugins, is `register`.  
+A plugin can be a set of routes, a server [decorator]({{ "/docs/decorators/" | relative_url }}) or whatever. The API that you will need to use one or more plugins, is `register`.  
 
 By default, `register` creates a *new scope*, this means that if you do some changes to the Fastify instance (via `decorate`), this change will not be reflected to the current context ancestors, but only to its sons. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
 
-You already see in the [getting started](https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md#register) section how use this API, is pretty straightforward.
+You already see in the [getting started]({{ "/docs/getting-started/" | relative_url | append: "#register" }}) section how use this API, is pretty straightforward.
 ```
 fastify.register(plugin, [options], [callback])
 ```
@@ -25,7 +25,7 @@ fastify.register([
 
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option
-If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).
+If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here]({{ "/docs/routes/" | relative_url | append: "#route-prefixing" }}).
 
 <a name="error-handling"></a>
 #### Error handling
@@ -57,13 +57,13 @@ module.exports = function (fastify, opts, next) {
   next()
 }
 ```
-Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is gonna happen, you can use the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
+Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is gonna happen, you can use the [`'onClose'`]({{ "/docs/hooks/" | relative_url | append: "#on-close" }}) hook.
 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
 <a name="handle-scope"></a>
 ### Handle the scope
-If you are using `register` only for extend a functionality of the server with  [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
+If you are using `register` only for extend a functionality of the server with  [`decorate`]({{ "/docs/decorators/" | relative_url }}), it is your responsibility tell Fastify to do not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
 
 You have two ways to tell Fastify to avoid the creation of a new context:
 - Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module

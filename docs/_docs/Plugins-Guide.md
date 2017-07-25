@@ -1,20 +1,15 @@
-<h1 align="center">Fastify</h1>
+---
+title: The hitchhiker's guide to plugins
+permalink: /docs/plugins-guide/
+github_url: https://github.com/fastify/fastify/docs/_docs/Plugins-Guide.md
+---
 
-# The hitchhiker's guide to plugins
 First of all, `DON'T PANIC`!
 
 Fastify has been built since the beginning to be an extremely modular system, we built a powerful api that allows you to add methods and utilities to Fastify by creating a namespace, we built a system that creates an encapsulation model that allows you to split you application in multiple microservices at any moment, without the need to refactor the entire application.
 
-**Table of contents**
-- [Register](#register)
-- [Decorators](#decorators)
-- [Hooks](#hooks)
-- [Middlewares](#middlewares)
-- [How to handle encapsulation and distribution](#distribution)
-- [Let's start!](#start)
-
 <a name="register"></a>
-## Register
+### Register
 As in JavaScript everything is an object, in Fastify everything is a plugin.  
 Your routes, your utilities and so on are all plugins. And to add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 ```js
@@ -55,7 +50,7 @@ module.exports = function (fastify, options, next) {
 Well, know you know how to use the `register` api and how it works, but how add new functionalities to fastify and even better, share them with other developers?
 
 <a name="decorators"></a>
-## Decorators
+### Decorators
 Okay, let's say that you wrote an utility that is so good that you decided to make it available along all your code. How would you do it? Probably something like the following:
 ```js
 // your-awesome-utility.js
@@ -174,7 +169,7 @@ fastify.get('/happiness', (req, reply) => {
 We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
 
 <a name="hooks"></a>
-## Hooks
+### Hooks
 You just built and amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
 fastify.decorate('util', (req, key, value) => { req.key = value })
@@ -237,7 +232,7 @@ As you probably noticed at this time, `request` and `reply` are not the standard
 Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that do exactly what you need, and you don't want to redo al the work.
 
 <a name="middlewares"></a>
-## Middlewares
+### Middlewares
 Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify middlewares this means that you can just drop-in your old code and it will work! (faster, by the way)  
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
@@ -247,7 +242,7 @@ fastify.use(yourMiddleware)
 *Note that middlewares executed [before](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) routing and the encapsulation model is not applied, this means that if you declare a middleware inside a plugin it will run for all the plugins.*
 
 <a name="distribution"></a>
-## How to handle encapsulation and distribution
+### How to handle encapsulation and distribution
 Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.  
 How can you distribute your code?
 
@@ -271,7 +266,7 @@ module.exports = fp(dbPlugin)
 You can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
 
 <a name="start"></a>
-## Let's start!
+### Let's start!
 Awesome, now you know everything you need to know about Fastify and its plugin system to start built your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
 If you want to see some real world example, checkout:

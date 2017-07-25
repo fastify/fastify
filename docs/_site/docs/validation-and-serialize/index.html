@@ -27,9 +27,12 @@
   <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
 
-  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css" integrity="sha256-VC9bpAao257nf22leBRLU7AqKGwS9/Ylz8hfpHmOob4=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="http://localhost:4000/assets/main.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+
   <link rel="canonical" href="http://localhost:4000/docs/validation-and-serialize/">
-  <link rel="alternate" type="application/rss+xml" title="" href="/feed.xml">
 
   
 </head>
@@ -37,51 +40,201 @@
 
   <body>
 
-    <header class="site-header" role="banner">
+    <nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="http://localhost:4000/images/fastify-logo-menu.png" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
 
-  <div class="wrapper">
-    
-    
-    <a class="site-title" href="/"></a>
-  
-    
-      <nav class="site-nav">
-        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
-        <label for="nav-trigger">
-          <span class="menu-icon">
-            <svg viewBox="0 0 18 15" width="18px" height="15px">
-              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
-              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
-              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
-            </svg>
-          </span>
-        </label>
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
 
-        <div class="trigger">
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="/">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="/docs/">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
           
-            
-            
+            <a class="navbar-item " href="/docs/getting-started">Getting Started</a>
           
-            
-            
+            <a class="navbar-item " href="/docs/server-methods">Server Methods</a>
+          
+            <a class="navbar-item " href="/docs/routes">Routes</a>
+          
+            <a class="navbar-item " href="/docs/logging">Logging</a>
+          
+            <a class="navbar-item " href="/docs/middlewares">Middlewares</a>
+          
+            <a class="navbar-item " href="/docs/hooks">Hooks</a>
+          
+            <a class="navbar-item " href="/docs/decorators">Decorators</a>
+          
+            <a class="navbar-item " href="/docs/validation-and-serialize">Validation and Serialize</a>
+          
+            <a class="navbar-item " href="/docs/lifecycle">Lifecycle</a>
+          
+            <a class="navbar-item " href="/docs/reply">Reply</a>
+          
+            <a class="navbar-item " href="/docs/request">Request</a>
+          
+            <a class="navbar-item " href="/docs/content-type-parser">Content Type Parser</a>
+          
+            <a class="navbar-item " href="/docs/plugins">Plugins</a>
+          
+            <a class="navbar-item " href="/docs/testing">Testing</a>
+          
+            <a class="navbar-item " href="/docs/plugins-guide">Plugins Guide</a>
           
         </div>
-      </nav>
-    
+      </div>
+      <a class="navbar-item " href="/ecosystem">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="/benchmarks">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
   </div>
-</header>
+</nav>
 
 
     <main class="page-content" aria-label="Content">
-      <div class="wrapper">
-        <article class="post">
+      <section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Documentation
+        </h1>
+      </div>
+  </div>
+</section>
 
-  <header class="post-header">
-    <h1 class="post-title">Validation And Serialize</h1>
-  </header>
+<div class="container">
+  <section class="section">
+    <div class="columns">
 
-  <div class="post-content">
-    <p>Fastify uses a schema based approach, and even if it is not mandatory we recommend to use <a href="http://json-schema.org/">JSON Schema</a> to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</p>
+      <div class="column is-3 is-hidden-mobile" data-sticky-container>
+        <aside class="menu sticky">
+          <p class="menu-label">
+            Table of contents
+          </p>
+          <ul class="menu-list">
+            
+              
+              <li >
+                <a  href="/docs/getting-started/">Getting Started</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/server-methods/">Server Methods</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/routes/">Routes</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/logging/">Logging</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/middlewares/">Middlewares</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/hooks/">Hooks</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/decorators/">Decorators</a>
+              </li>
+            
+              
+              <li id="doc-menu-section">
+                <a class="is-active" href="/docs/validation-and-serialize/">Validation and Serialize</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/lifecycle/">Lifecycle</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/reply/">Reply</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/request/">Request</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/content-type-parser/">Content Type Parser</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins/">Plugins</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/testing/">Testing</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins-guide/">Plugins Guide</a>
+              </li>
+            
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column">
+        <div class="content">
+          <h1 class="post-title">Validation And Serialize</h1>
+        </div>
+
+        <nav class="breadcrumb">
+          <ul>
+            <li><a href="/">Fastify</a></li>
+            <li><a href="/docs/">Documentation</a></li>
+            <li class="is-active"><a>Validation And Serialize</a></li>
+          </ul>
+        </nav>
+
+        <div id="doc-content" class="content">
+          <p>Fastify uses a schema based approach, and even if it is not mandatory we recommend to use <a href="http://json-schema.org/">JSON Schema</a> to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</p>
 
 <p><a name="validation"></a></p>
 <h3 id="validation">Validation</h3>
@@ -175,49 +328,117 @@ The first one is used if you have provided an output schema in the route options
   <li><a href="https://github.com/epoberezkin/ajv/blob/master/README.md">Ajv documentation</a></li>
 </ul>
 
-  </div>
+        </div>
 
-</article>
-
-      </div>
-    </main>
-
-    <footer class="site-footer">
-
-  <div class="wrapper">
-
-    <h2 class="footer-heading"></h2>
-
-    <div class="footer-col-wrapper">
-      <div class="footer-col footer-col-1">
-        <ul class="contact-list">
-          <li>
-            
-              
-            
-            </li>
-            
-        </ul>
-      </div>
-
-      <div class="footer-col footer-col-2">
-        <ul class="social-media-list">
+        <hr/>
+        <nav class="level">
+        
           
-
           
-        </ul>
-      </div>
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            <div class="level-left">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/decorators/" class="button prev">≪ Decorators</a>
+                
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/lifecycle/" class="button next">Lifecycle ≫</a>
+                
+              </div>
+            </div>
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+        </nav>
 
-      <div class="footer-col footer-col-3">
-        <p></p>
       </div>
     </div>
+  </section>
 
+  <script>
+    // dynamically creates a submenu for the current section based on the content headers
+    var titles = document.querySelectorAll('#doc-content h3')
+    var currentMenu = document.getElementById('doc-menu-section')
+    if (titles.length && currentMenu) {
+      var submenu = document.createElement('ul')
+      titles.forEach(el => {
+        var currentSubmenuItem = document.createElement('li')
+        var currentSubmenuLink = document.createElement('a')
+        currentSubmenuLink.href = '#' + el.id
+        currentSubmenuLink.append(document.createTextNode(el.textContent))
+        currentSubmenuItem.append(currentSubmenuLink)
+        submenu.append(currentSubmenuItem)
+      })
+      currentMenu.append(submenu)
+    }
+  </script>
+</div>
+
+    </main>
+
+    <footer class="grey is-primary footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    
+      <p><em>Found a typo or want to improve this page?</em> <a href="https://github.com/fastify/fastify/docs/_docs/Validation-And-Serialize.md">Submit a PR on GitHub</a></p>
+    
+      <p>Fastify, Copyright &copy; 2016 Matteo Collina, Licensed under <a href="https://github.com/fastify/fastify/blob/master/LICENSE" target="_blank">MIT</a></p>
+    </div>
   </div>
-
 </footer>
 
 
+    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
   </body>
 
 </html>

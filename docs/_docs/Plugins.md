@@ -1,6 +1,7 @@
 ---
 title: Plugins
 permalink: /docs/plugins/
+github_url: https://github.com/fastify/fastify/docs/_docs/Plugins.md
 ---
 
 Fastify allows the user to extend its functionalities with plugins.

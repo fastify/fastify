@@ -1,6 +1,7 @@
 ---
 title: Testing
 permalink: /docs/testing/
+github_url: https://github.com/fastify/fastify/docs/_docs/Testing.md
 ---
 
 Testing is one of the most important part when you are developing an application.  

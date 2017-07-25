@@ -1,14 +1,103 @@
 ---
 layout: default
 ---
-<article class="post">
-
-  <header class="post-header">
-    <h1 class="post-title">{{ page.title | escape }}</h1>
-  </header>
-
-  <div class="post-content">
-    {{ content }}
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Documentation
+        </h1>
+      </div>
   </div>
+</section>
 
-</article>
+<div class="container">
+  <section class="section">
+    <div class="columns">
+
+      <div class="column is-3 is-hidden-mobile" data-sticky-container>
+        <aside class="menu sticky">
+          <p class="menu-label">
+            Table of contents
+          </p>
+          <ul class="menu-list">
+            {% for post in site.data.docs %}
+              {% assign itemUrl = "/docs/" | append: post.id | append: "/" %}
+              <li {% if itemUrl == page.url %}id="doc-menu-section"{% endif %}>
+                <a {% if itemUrl == page.url %}class="is-active"{% endif %} href="{{ itemUrl | relative_url }}">{{ post.title | escape }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column">
+        <div class="content">
+          <h1 class="post-title">{{ page.title | escape }}</h1>
+        </div>
+
+        <nav class="breadcrumb">
+          <ul>
+            <li><a href="{{ "/" | relative_url }}">Fastify</a></li>
+            <li><a href="{{ "/docs/" | relative_url }}">Documentation</a></li>
+            <li class="is-active"><a>{{ page.title | escape }}</a></li>
+          </ul>
+        </nav>
+
+        <div id="doc-content" class="content">
+          {{ content }}
+        </div>
+
+        <hr/>
+        <nav class="level">
+        {% for post in site.data.docs %}
+          {% assign itemUrl = "/docs/" | append: post.id | append: "/" %}
+          {% if itemUrl == page.url %}
+            <div class="level-left">
+              <div class="level-item">
+                {% if forloop.first %}
+                  &nbsp;
+                {% else %}
+                  {% assign previous = forloop.index0 | minus: 1 %}
+                  {% assign previous_page = site.data.docs[previous].id | prepend:"/docs/" | append:"/" %}
+                  <a href="{{ previous_page }}" class="button prev">≪ {{ site.data.docs[previous].title }}</a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                {% if forloop.last %}
+                  &nbsp;
+                {% else %}
+                  {% assign next = forloop.index0 | plus: 1 %}
+                  {% assign next_page = site.data.docs[next].id | prepend:"/docs/" | append:"/" %}
+                  <a href="{{ next_page }}" class="button next">{{ site.data.docs[next].title }} ≫</a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+        </nav>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // dynamically creates a submenu for the current section based on the content headers
+    var titles = document.querySelectorAll('#doc-content h3')
+    var currentMenu = document.getElementById('doc-menu-section')
+    if (titles.length && currentMenu) {
+      var submenu = document.createElement('ul')
+      titles.forEach(el => {
+        var currentSubmenuItem = document.createElement('li')
+        var currentSubmenuLink = document.createElement('a')
+        currentSubmenuLink.href = '#' + el.id
+        currentSubmenuLink.append(document.createTextNode(el.textContent))
+        currentSubmenuItem.append(currentSubmenuLink)
+        submenu.append(currentSubmenuItem)
+      })
+      currentMenu.append(submenu)
+    }
+  </script>
+</div>

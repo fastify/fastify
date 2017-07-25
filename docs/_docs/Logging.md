@@ -1,6 +1,7 @@
 ---
 title: Logging
 permalink: /docs/logging/
+github_url: https://github.com/fastify/fastify/docs/_docs/Logging.md
 ---
 
 Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!

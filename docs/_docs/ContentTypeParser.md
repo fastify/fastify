@@ -1,6 +1,7 @@
 ---
 title: Content Type Parser
 permalink: /docs/content-type-parser/
+github_url: https://github.com/fastify/fastify/docs/_docs/ContentTypeParser.md
 ---
 
 Natively Fastify supports only `application/json` content-type. If you need to support different content types you can use the `addContentTypeParser` api.  

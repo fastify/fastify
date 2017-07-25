@@ -1,6 +1,7 @@
 ---
 title: Reply
 permalink: /docs/reply/
+github_url: https://github.com/fastify/fastify/docs/_docs/Reply.md
 ---
 
 The second parameter of the handler function is `Reply`.  

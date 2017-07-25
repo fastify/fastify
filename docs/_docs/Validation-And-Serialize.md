@@ -1,6 +1,7 @@
 ---
 title: Validation And Serialize
 permalink: /docs/validation-and-serialize/
+github_url: https://github.com/fastify/fastify/docs/_docs/Validation-And-Serialize.md
 ---
 
 Fastify uses a schema based approach, and even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.

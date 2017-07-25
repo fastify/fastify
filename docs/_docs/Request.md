@@ -1,6 +1,7 @@
 ---
 title: Request
 permalink: /docs/request/
+github_url: https://github.com/fastify/fastify/docs/_docs/Request.md
 ---
 
 The first parameter of the handler function is `Request`.  

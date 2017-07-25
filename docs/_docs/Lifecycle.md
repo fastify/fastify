@@ -1,6 +1,7 @@
 ---
 title: Lifecycle
 permalink: /docs/lifecycle/
+github_url: https://github.com/fastify/fastify/docs/_docs/Lifecycle.md
 ---
 
 Following the schema of the internal lifecycle of Fastify.  

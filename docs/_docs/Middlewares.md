@@ -1,6 +1,7 @@
 ---
 title: Middlewares
 permalink: /docs/middlewares/
+github_url: https://github.com/fastify/fastify/docs/_docs/Middlewares.md
 ---
 
 Fastify provides out of the box an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.

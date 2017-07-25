@@ -1,6 +1,7 @@
 ---
 title: Decorators
 permalink: /docs/decorators/
+github_url: https://github.com/fastify/fastify/docs/_docs/Decorators.md
 ---
 
 If you need to add functionalities to the Fastify instance, the `decorate` api is what you need.
@@ -75,11 +76,11 @@ fastify.extendServerError(() => {
 ```
 
 <a name="sync-async"></a>
-#### Sync and Async
+### Sync and Async
 `decorate` is a *synchronous* API, if you need to add a decorator that has an *asynchronous* bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use `register` api in combination with `fastify-plugin`, to know more check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.
 
 <a name="dependencies"></a>
-#### Dependencies
+### Dependencies
 If your decorator depends on another decorator, you can also declare the dependencies of your function, it pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.
 ```js
 fastify.decorate('utility', fn, ['greet', 'log'])
@@ -88,7 +89,7 @@ fastify.decorate('utility', fn, ['greet', 'log'])
 If a dependency is not satisfied, `decorate` will throw an exception, but don't worry, the dependency check is done before the server boot up, so it will never happen at runtime.
 
 <a name="has-decorator"></a>
-#### hasDecorator
+### hasDecorator
 You can check the presence of a decorator by using the `hasDecorator` api:
 ```js
 fastify.hasDecorator('utility')

@@ -1,6 +1,7 @@
 ---
 title: Hooks
 permalink: /docs/hooks/
+github_url: https://github.com/fastify/fastify/docs/_docs/Hooks.md
 ---
 
 By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use *(in order of execution)*:

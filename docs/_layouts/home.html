@@ -1,9 +1,188 @@
 ---
 layout: default
 ---
-
-<div class="home">
-
-  {{ content }}
-
+<div class="hero" style="background-image: url('{{ "/images/use_your_illusion.png" | relative_url }}')">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title"><img class="logo" src="{{ "/images/fastify-logo-inverted.png" | relative_url }}" alt="Fastify"/></h1>
+      <h2 class="subtitle">Fast and low overhead web framework, for Node.js</h2>
+      <div class="github-buttons">
+        <a class="github-button" href="https://github.com/fastify/fastify" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fastify/fastify on GitHub">Star</a>
+        <a class="github-button" href="https://github.com/fastify/fastify/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork fastify/fastify on GitHub">Fork</a>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+      </div>
+    </div>
+  </div>
 </div>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Why</h1>
+      <p>
+        An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
+        How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
+      </p>
+      <p>
+        Enter Fastify. Fastify is a web framework highly focused on speed and low overhead. It is inspired from Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
+        Use Fastify can increase your throughput up to 100%.
+      </p>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">Quick start</h1>
+
+    <p>Get fastify with NPM:</p>
+    <pre><code class="shell">npm install fastify</code></pre>
+
+    <p>Then create <code>server.js</code> and add the following content:</p>
+
+    <pre><code class="javascript">'use strict'
+
+const fastify = require('../fastify')()
+
+const schema = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
+}
+
+fastify
+  .get('/', schema, function (req, reply) {
+    reply
+      .send({ hello: 'world' })
+  })
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})</code></pre>
+
+    <p>Finally, launch the server with:</p>
+    <pre><code class="shell">node server</code></pre>
+
+
+    <p>and you can test it with:</p>
+    <pre><code class="shell">curl http://localhost:3000</code></pre>
+
+    <p>Visit the <a href="{{ "/docs/" | relative_url }}">Documentation</a> to learn more about fastify.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Core features</h1>
+
+    <p>These are the main features and principles on which fastify has been built:</p>
+
+    <ul>
+      <li><strong>100% asynchronous:</strong> all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.</li>
+      <li><strong>Highly performant:</strong> as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.</li>
+      <li><strong>Extendible:</strong> Fastify is fully extensible via its hooks, plugins and decorators.</li>
+      <li><strong>Schema based:</strong> even if it is not mandatory we recommend to use <a href="http://json-schema.org/" target="_blank">JSON Schema</a> to validate your routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</li>
+      <li><strong>Logging:</strong> logs are extremely important but are costly; we chose the best logger to almost remove this cost, <a href="https://github.com/pinojs/pino" target="_blank">Pino</a>!</li>
+      <li><strong>Developer friendly:</strong> the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">A faster web framework</h1>
+    <div class="columns">
+      <div class="column is-6">
+        <p>Leveraging our experience with Node.js performance, Fastify has been built from the ground up to be <strong>faster than the currently well-known web frameworks such as Express or Hapi</strong>. Have  a look at our <a href="{{ "/benchmarks" | relative_url }}">benchmarks section</a> to compare fastify performance to other common web frameworks.</p>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">~10 times</span><br/> faster than <strong>HAPI</strong></p>
+        </div>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">~2.5 times</span><br/> faster than <strong>Express</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <a class="button is-primary is-large is-flex-mobile" href="{{ "/benchmarks" | relative_url }}">Checkout our benchmarks</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Ecosystem</h1>
+    <div class="columns">
+      <div class="column is-9">
+        <p>
+          Fastify has an ever-growing ecosystem of plugins. Probably there is already a plugin for your favourite database or template language.
+          Have a look at the <a href="{{ "/ecosystem" | relative_url }}">Ecosystem page</a> to navigate through the currently available plugins.
+          Can't you find the plugin you are looking for? No problem, <a href="{{ "/docs/plugins" | relative_url }}">it's very easy to write one</a>!
+        </p>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">{{ site.data.ecosystem.plugins | size }}</span><br/> Plugins</p>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <a class="button is-primary is-large is-flex-mobile" href="{{ "/ecosystem" | relative_url }}">Explore plugins</a>
+    </div>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">The team</h1>
+    <div class="columns">
+      {% for member in site.data.team %}
+        <div class="column content">
+          <h2>{{ member.name }}</h2>
+          <ul>
+            {% for link in member.links %}
+              <li>
+                <a href="{{ link[1] }}" target="_blank">{{ link[0] }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Acknowlegments</h1>
+    <p>This project is kindly <strong>sponsored by</strong>:</p>
+    <ul>
+      {% for link in site.data.acknowledgements.sponsors %}
+        <li>
+          <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p>Also thanks to:</p>
+    <ul>
+      {% for link in site.data.acknowledgements.others %}
+        <li>
+          <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>{% if link.reason %} ({{ link.reason }}){% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{{ content }}

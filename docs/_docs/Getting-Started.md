@@ -1,6 +1,7 @@
 ---
 title: Getting Started
 permalink: /docs/getting-started/
+github_url: https://github.com/fastify/fastify/docs/_docs/Getting-Started.md
 ---
 
 ### Install
@@ -121,11 +122,9 @@ module.exports = function (fastify, opts, next) {
   next()
 }
 ```
+
 Then run your server with:
+
 ```bash
 npm start
 ```
-<a name="next"></a>
-### Next
-Do you want to know more?
-Check the documentation folder [here](https://github.com/fastify/fastify/blob/master/docs/)!

@@ -1,6 +1,7 @@
 ---
 title: Routes
 permalink: /docs/routes/
+github_url: https://github.com/fastify/fastify/docs/_docs/Routes.md
 ---
 
 <a name="full-declaration"></a>

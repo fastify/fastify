@@ -14,7 +14,7 @@ codes.forEach(code => {
 
 function helper (code) {
   test('Reply error handling - code: ' + code, t => {
-    t.plan(2)
+    t.plan(3)
     const fastify = Fastify()
     const err = new Error('winter is coming')
 
@@ -29,6 +29,7 @@ function helper (code) {
       url: '/'
     }, res => {
       t.strictEqual(res.statusCode, Number(code))
+      t.equal(res.headers['content-type'], 'application/json')
       t.deepEqual(
         {
           error: statusCodes[code],

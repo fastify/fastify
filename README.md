@@ -39,7 +39,7 @@ __Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the secon
 | Express            | 4.15.3                     | &#10003;     | 9,418         |
 | Restify            | 5.0.1                      | &#10003;     | 12,014        |
 | take-five          | 1.3.4                      | &#10003;     | 18,658        |
-| Koa (`koa-routre`) | 2.3.0 (`koa-router@7.2.1`) | &#10003;     | 19,650        |
+| Koa (`koa-router`) | 2.3.0 (`koa-router@7.2.1`) | &#10003;     | 19,650        |
 | Koa                | 2.3.0                      | &#10007;     | 21,349        |
 | **Fastify**        | **0.25.2**                 | **&#10003;** | **23,301**    |
 | -                  |                            |              |               |

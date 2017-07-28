@@ -1,0 +1,50 @@
+---
+layout: default
+---
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          {{ page.title }}
+        </h1>
+      </div>
+  </div>
+</section>
+<div class="container">
+  <section class="section">
+    <div class="content">
+      <p>Leveraging our experience with Node.js performance, Fastify has been built from the ground up to be <strong>faster than the currently well-known web frameworks such as Express or Hapi</strong></p>
+
+      <p>All the code used for our benchmarks is <a href="https://github.com/fastify/fastify/tree/master/benchmarks">available on GitHub</a>. Here's a brief summary on how fastify performed against the most well known Node.js web frameworks:</p>
+
+      {{ content }}
+
+      <div class="columns">
+        <div class="column is-8">
+          {% for framework in site.data.benchmarks.frameworks %}
+            <div class="box">
+              <div class="content">
+                <div class="level">
+                  <div class="level-left">
+                    <h2>{{ framework.name }}</h2>
+                  </div>
+                  <div class="level-right">
+                    <a href="{{ framework.repository }}" target="_blank"><span class="fa fa-github">&nbsp;</span></a>
+                  </div>
+                </div>
+
+                <p>{{ framework.requests_sec }} req/sec {% if framework.test %}(<a href="{{ framework.test }}" target="_blank">Check the code</a>){% endif %}</p>
+                <progress class="progress {% if framework.best %}is-primary{% else %}is-info{% endif %}"
+                          value="{{ framework.requests_sec | divided_by: site.data.benchmarks.reference | round: 3 }}" max="1">
+                  {{ framework.requests_sec | divided_by: site.data.benchmarks.reference | times: 100 | round: 3 }}%
+                </progress>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <p>Do you want to provide feedback on our benchmarks? <a href="https://github.com/fastify/fastify/issues">Open an issue on GitHub</a> and we will get back to you!</p>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,42 @@
+---
+layout: default
+---
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          {{ page.title }}
+        </h1>
+      </div>
+  </div>
+</section>
+<div class="container">
+  <section class="section">
+    <div class="content">
+      <h2>Currently, there are <strong>{{ site.data.ecosystem.plugins | size }}</strong> officially recognized plugins</h2>
+
+      <p>Can't you find the plugin you are looking for? No problem, <a href="{{ "/docs/plugins" | relative_url }}">it's very easy to write one</a>!</p>
+
+      {{ content }}
+
+      <table class="table is-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for plugin in site.data.ecosystem.plugins %}
+          <tr>
+            <td><a href="{{ plugin.url }}" target="_blank">{{ plugin.name }}</a></td>
+            <td>{{ plugin.description | markdownify }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <p>Did you create a fastify plugin and want to list it here? <a href="https://github.com/fastify/fastify/docs/_data/ecosystem.yml">Submit a PR</a> and we will check it out!</p>
+    </div>
+  </section>
+</div>

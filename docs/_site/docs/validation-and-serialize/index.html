@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Validation And Serialize</title>
+  <meta name="description" content="Fastify uses a schema based approach, and even if it is not mandatory we recommend to use JSON Schema to validate you routes and serialize your outputs, inte...">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css" integrity="sha256-VC9bpAao257nf22leBRLU7AqKGwS9/Ylz8hfpHmOob4=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="http://localhost:4000/assets/main.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+
+  <link rel="canonical" href="http://localhost:4000/docs/validation-and-serialize/">
+
+  
+</head>
+
+
+  <body>
+
+    <nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="http://localhost:4000/images/fastify-logo-menu.png" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
+
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
+
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="/">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="/docs/">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
+          
+            <a class="navbar-item " href="/docs/getting-started">Getting Started</a>
+          
+            <a class="navbar-item " href="/docs/server-methods">Server Methods</a>
+          
+            <a class="navbar-item " href="/docs/routes">Routes</a>
+          
+            <a class="navbar-item " href="/docs/logging">Logging</a>
+          
+            <a class="navbar-item " href="/docs/middlewares">Middlewares</a>
+          
+            <a class="navbar-item " href="/docs/hooks">Hooks</a>
+          
+            <a class="navbar-item " href="/docs/decorators">Decorators</a>
+          
+            <a class="navbar-item " href="/docs/validation-and-serialize">Validation and Serialize</a>
+          
+            <a class="navbar-item " href="/docs/lifecycle">Lifecycle</a>
+          
+            <a class="navbar-item " href="/docs/reply">Reply</a>
+          
+            <a class="navbar-item " href="/docs/request">Request</a>
+          
+            <a class="navbar-item " href="/docs/content-type-parser">Content Type Parser</a>
+          
+            <a class="navbar-item " href="/docs/plugins">Plugins</a>
+          
+            <a class="navbar-item " href="/docs/testing">Testing</a>
+          
+            <a class="navbar-item " href="/docs/plugins-guide">Plugins Guide</a>
+          
+        </div>
+      </div>
+      <a class="navbar-item " href="/ecosystem">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="/benchmarks">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+    <main class="page-content" aria-label="Content">
+      <section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Documentation
+        </h1>
+      </div>
+  </div>
+</section>
+
+<div class="container">
+  <section class="section">
+    <div class="columns">
+
+      <div class="column is-3 is-hidden-mobile" data-sticky-container>
+        <aside class="menu sticky">
+          <p class="menu-label">
+            Table of contents
+          </p>
+          <ul class="menu-list">
+            
+              
+              <li >
+                <a  href="/docs/getting-started/">Getting Started</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/server-methods/">Server Methods</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/routes/">Routes</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/logging/">Logging</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/middlewares/">Middlewares</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/hooks/">Hooks</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/decorators/">Decorators</a>
+              </li>
+            
+              
+              <li id="doc-menu-section">
+                <a class="is-active" href="/docs/validation-and-serialize/">Validation and Serialize</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/lifecycle/">Lifecycle</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/reply/">Reply</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/request/">Request</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/content-type-parser/">Content Type Parser</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins/">Plugins</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/testing/">Testing</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins-guide/">Plugins Guide</a>
+              </li>
+            
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column">
+        <div class="content">
+          <h1 class="post-title">Validation And Serialize</h1>
+        </div>
+
+        <nav class="breadcrumb">
+          <ul>
+            <li><a href="/">Fastify</a></li>
+            <li><a href="/docs/">Documentation</a></li>
+            <li class="is-active"><a>Validation And Serialize</a></li>
+          </ul>
+        </nav>
+
+        <div id="doc-content" class="content">
+          <p>Fastify uses a schema based approach, and even if it is not mandatory we recommend to use <a href="http://json-schema.org/">JSON Schema</a> to validate you routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</p>
+
+<p><a name="validation"></a></p>
+<h3 id="validation">Validation</h3>
+<p>The route validation internally uses <a href="https://www.npmjs.com/package/ajv">Ajv</a>, which is an highly performant JSON schema validator.
+Validate the input is very easy, just add the fields that you need inside the route schema and you are done!<br />
+The supported validations are:</p>
+<ul>
+  <li><code class="highlighter-rouge">body</code>: validates the body of the request if it is a POST or a PUT.</li>
+  <li><code class="highlighter-rouge">querystring</code>: validates the querystring. This can be a complete JSON Schema object, with the property type of object and properties object of parameters, or simply the values of what would be contained in the properties object as shown below.</li>
+  <li><code class="highlighter-rouge">params</code>: validates the route params.</li>
+</ul>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">body</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+      <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">someKey</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+        <span class="na">someOtherKey</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'number'</span> <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="na">querystring</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+      <span class="na">excitement</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'integer'</span> <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="na">params</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+      <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">par1</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+        <span class="na">par2</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'number'</span> <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+<p><em>Note that Ajv will try to <a href="https://github.com/epoberezkin/ajv#coercing-data-types">coerce</a> the values to the types specified in your schema type keywords, both to pass the validation and to use the correctly typed data afterwards.</em></p>
+
+<p><a name="serialize"></a></p>
+<h3 id="serialize">Serialize</h3>
+<p>Usually you will send your data to the clients via JSON, and Fastify has two powerful tools to help you, <a href="https://www.npmjs.com/package/fast-json-stringify">fast-json-stringify</a> and <a href="https://www.npmjs.com/package/fast-safe-stringify">fast-safe-stringify</a>.<br />
+The first one is used if you have provided an output schema in the route options, otherwise the second one will do de job. We encourage you to use an output schema, it will increase your throughput by x1-4 depending by your payload.</p>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="mi">200</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+          <span class="na">otherValue</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'boolean'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+<p>As you can see the response schema is based on the status code, if you want to use the same schema for multiple status codes you can use <code class="highlighter-rouge">'2xx'</code>, for example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code>  <span class="kr">const</span> <span class="nx">schema</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">response</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s1">'2xx'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">},</span>
+          <span class="na">otherValue</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'boolean'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="mi">201</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s1">'object'</span><span class="p">,</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">value</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="s1">'string'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+</code></pre>
+</div>
+
+<p><em>If you need a custom serializer in a very specific part of your code, you can always set one with <code class="highlighter-rouge">reply.serializer(...)</code>.</em></p>
+
+<p><a name="resources"></a></p>
+<h3 id="resources">Resources</h3>
+<ul>
+  <li><a href="http://json-schema.org/">JSON Schema</a></li>
+  <li>
+    <p><a href="https://spacetelescope.github.io/understanding-json-schema/">Understanding JSON schema</a></p>
+  </li>
+  <li><a href="https://github.com/davidmarkclements/fast-safe-stringify/blob/master/readme.md">fast-safe-stringify documentation</a></li>
+  <li><a href="https://github.com/fastify/fast-json-stringify">fast-json-stringify documentation</a></li>
+  <li><a href="https://github.com/epoberezkin/ajv/blob/master/README.md">Ajv documentation</a></li>
+</ul>
+
+        </div>
+
+        <hr/>
+        <nav class="level">
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            <div class="level-left">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/decorators/" class="button prev">≪ Decorators</a>
+                
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/lifecycle/" class="button next">Lifecycle ≫</a>
+                
+              </div>
+            </div>
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+        </nav>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // dynamically creates a submenu for the current section based on the content headers
+    var titles = document.querySelectorAll('#doc-content h3')
+    var currentMenu = document.getElementById('doc-menu-section')
+    if (titles.length && currentMenu) {
+      var submenu = document.createElement('ul')
+      titles.forEach(el => {
+        var currentSubmenuItem = document.createElement('li')
+        var currentSubmenuLink = document.createElement('a')
+        currentSubmenuLink.href = '#' + el.id
+        currentSubmenuLink.append(document.createTextNode(el.textContent))
+        currentSubmenuItem.append(currentSubmenuLink)
+        submenu.append(currentSubmenuItem)
+      })
+      currentMenu.append(submenu)
+    }
+  </script>
+</div>
+
+    </main>
+
+    <footer class="grey is-primary footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    
+      <p><em>Found a typo or want to improve this page?</em> <a href="https://github.com/fastify/fastify/docs/_docs/Validation-And-Serialize.md">Submit a PR on GitHub</a></p>
+    
+      <p>Fastify, Copyright &copy; 2016 Matteo Collina, Licensed under <a href="https://github.com/fastify/fastify/blob/master/LICENSE" target="_blank">MIT</a></p>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

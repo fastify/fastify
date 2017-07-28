@@ -1,0 +1,49 @@
+<nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="{{ "/" | relative_url }}">
+      <img src="{{ "/images/fastify-logo-menu.png" | absolute_url }}" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
+
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
+
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="{{ "/" | relative_url }}">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="{{ "/docs/" | relative_url }}">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
+          {% for post in site.data.docs %}
+            <a class="navbar-item " href="{{ "/docs/" | append: post.id | relative_url }}">{{ post.title | escape }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <a class="navbar-item " href="{{ "/ecosystem" | relative_url }}">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="{{ "/benchmarks" | relative_url }}">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
+  </div>
+</nav>

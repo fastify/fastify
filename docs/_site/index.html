@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>fastify, Fast and low overhead web framework, for Node.js</title>
+  <meta name="description" content="">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css" integrity="sha256-VC9bpAao257nf22leBRLU7AqKGwS9/Ylz8hfpHmOob4=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="http://localhost:4000/assets/main.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+
+  <link rel="canonical" href="http://localhost:4000/">
+
+  
+</head>
+
+
+  <body>
+
+    <nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="http://localhost:4000/images/fastify-logo-menu.png" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
+
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
+
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="/">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="/docs/">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
+          
+            <a class="navbar-item " href="/docs/getting-started">Getting Started</a>
+          
+            <a class="navbar-item " href="/docs/server-methods">Server Methods</a>
+          
+            <a class="navbar-item " href="/docs/routes">Routes</a>
+          
+            <a class="navbar-item " href="/docs/logging">Logging</a>
+          
+            <a class="navbar-item " href="/docs/middlewares">Middlewares</a>
+          
+            <a class="navbar-item " href="/docs/hooks">Hooks</a>
+          
+            <a class="navbar-item " href="/docs/decorators">Decorators</a>
+          
+            <a class="navbar-item " href="/docs/validation-and-serialize">Validation and Serialize</a>
+          
+            <a class="navbar-item " href="/docs/lifecycle">Lifecycle</a>
+          
+            <a class="navbar-item " href="/docs/reply">Reply</a>
+          
+            <a class="navbar-item " href="/docs/request">Request</a>
+          
+            <a class="navbar-item " href="/docs/content-type-parser">Content Type Parser</a>
+          
+            <a class="navbar-item " href="/docs/plugins">Plugins</a>
+          
+            <a class="navbar-item " href="/docs/testing">Testing</a>
+          
+            <a class="navbar-item " href="/docs/plugins-guide">Plugins Guide</a>
+          
+        </div>
+      </div>
+      <a class="navbar-item " href="/ecosystem">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="/benchmarks">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+    <main class="page-content" aria-label="Content">
+      <div class="hero" style="background-image: url('/images/use_your_illusion.png')">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title"><img class="logo" src="/images/fastify-logo-inverted.png" alt="Fastify"/></h1>
+      <h2 class="subtitle">Fast and low overhead web framework, for Node.js</h2>
+      <div class="github-buttons">
+        <a class="github-button" href="https://github.com/fastify/fastify" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star fastify/fastify on GitHub">Star</a>
+        <a class="github-button" href="https://github.com/fastify/fastify/fork" data-icon="octicon-repo-forked" data-size="large" aria-label="Fork fastify/fastify on GitHub">Fork</a>
+        <script async defer src="https://buttons.github.io/buttons.js"></script>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Why</h1>
+      <p>
+        An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
+        How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
+      </p>
+      <p>
+        Enter Fastify. Fastify is a web framework highly focused on speed and low overhead. It is inspired from Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
+        Use Fastify can increase your throughput up to 100%.
+      </p>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">Quick start</h1>
+
+    <p>Get fastify with NPM:</p>
+    <pre><code class="shell">npm install fastify</code></pre>
+
+    <p>Then create <code>server.js</code> and add the following content:</p>
+
+    <pre><code class="javascript">'use strict'
+
+const fastify = require('../fastify')()
+
+const schema = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
+}
+
+fastify
+  .get('/', schema, function (req, reply) {
+    reply
+      .send({ hello: 'world' })
+  })
+
+fastify.listen(3000, err => {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})</code></pre>
+
+    <p>Finally, launch the server with:</p>
+    <pre><code class="shell">node server</code></pre>
+
+
+    <p>and you can test it with:</p>
+    <pre><code class="shell">curl http://localhost:3000</code></pre>
+
+    <p>Visit the <a href="/docs/">Documentation</a> to learn more about fastify.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Core features</h1>
+
+    <p>These are the main features and principles on which fastify has been built:</p>
+
+    <ul>
+      <li><strong>100% asynchronous:</strong> all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.</li>
+      <li><strong>Highly performant:</strong> as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.</li>
+      <li><strong>Extendible:</strong> Fastify is fully extensible via its hooks, plugins and decorators.</li>
+      <li><strong>Schema based:</strong> even if it is not mandatory we recommend to use <a href="http://json-schema.org/" target="_blank">JSON Schema</a> to validate your routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.</li>
+      <li><strong>Logging:</strong> logs are extremely important but are costly; we chose the best logger to almost remove this cost, <a href="https://github.com/pinojs/pino" target="_blank">Pino</a>!</li>
+      <li><strong>Developer friendly:</strong> the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">A faster web framework</h1>
+    <div class="columns">
+      <div class="column is-6">
+        <p>Leveraging our experience with Node.js performance, Fastify has been built from the ground up to be <strong>faster than the currently well-known web frameworks such as Express or Hapi</strong>. Have  a look at our <a href="/benchmarks">benchmarks section</a> to compare fastify performance to other common web frameworks.</p>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">~10 times</span><br/> faster than <strong>HAPI</strong></p>
+        </div>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">~2.5 times</span><br/> faster than <strong>Express</strong></p>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <a class="button is-primary is-large is-flex-mobile" href="/benchmarks">Checkout our benchmarks</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Ecosystem</h1>
+    <div class="columns">
+      <div class="column is-9">
+        <p>
+          Fastify has an ever-growing ecosystem of plugins. Probably there is already a plugin for your favourite database or template language.
+          Have a look at the <a href="/ecosystem">Ecosystem page</a> to navigate through the currently available plugins.
+          Can't you find the plugin you are looking for? No problem, <a href="/docs/plugins">it's very easy to write one</a>!
+        </p>
+      </div>
+      <div class="column is-3">
+        <div class="box">
+          <p class="has-text-centered"><span class="content is-large">14</span><br/> Plugins</p>
+        </div>
+      </div>
+    </div>
+    <div class="block">
+      <a class="button is-primary is-large is-flex-mobile" href="/ecosystem">Explore plugins</a>
+    </div>
+  </div>
+</section>
+
+<section class="section alternate">
+  <div class="container content">
+    <h1 class="title">The team</h1>
+    <div class="columns">
+      
+        <div class="column content">
+          <h2>Matteo Collina</h2>
+          <ul>
+            
+              <li>
+                <a href="https://github.com/mcollina" target="_blank">github</a>
+              </li>
+            
+              <li>
+                <a href="https://www.npmjs.com/~matteo.collina" target="_blank">npm</a>
+              </li>
+            
+              <li>
+                <a href="https://twitter.com/matteocollina" target="_blank">twitter</a>
+              </li>
+            
+          </ul>
+        </div>
+      
+        <div class="column content">
+          <h2>Tomas Della Vedova</h2>
+          <ul>
+            
+              <li>
+                <a href="https://github.com/delvedor" target="_blank">github</a>
+              </li>
+            
+              <li>
+                <a href="https://www.npmjs.com/~delvedor" target="_blank">npm</a>
+              </li>
+            
+              <li>
+                <a href="https://twitter.com/delvedor" target="_blank">twitter</a>
+              </li>
+            
+          </ul>
+        </div>
+      
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container content">
+    <h1 class="title">Acknowlegments</h1>
+    <p>This project is kindly <strong>sponsored by</strong>:</p>
+    <ul>
+      
+        <li>
+          <a href="http://nearform.com" target="_blank">nearForm</a>
+        </li>
+      
+        <li>
+          <a href="http://www.letzdoitapp.com" target="_blank">LetzDoIt</a>
+        </li>
+      
+    </ul>
+    <p>Also thanks to:</p>
+    <ul>
+      
+        <li>
+          <a href="https://loige.co" target="_blank">Luciano Mammino</a> (Website design)
+        </li>
+      
+    </ul>
+  </div>
+</section>
+
+
+
+
+    </main>
+
+    <footer class="grey is-primary footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    
+      <p><em>Found a typo or want to improve this page?</em> <a href="https://github.com/fastify/fastify/docs/_layouts/home.html">Submit a PR on GitHub</a></p>
+    
+      <p>Fastify, Copyright &copy; 2016 Matteo Collina, Licensed under <a href="https://github.com/fastify/fastify/blob/master/LICENSE" target="_blank">MIT</a></p>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

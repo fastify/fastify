@@ -1,0 +1,28 @@
+---
+layout: default
+---
+<section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          {{ page.title }}
+        </h1>
+      </div>
+  </div>
+</section>
+<div class="container">
+  <section class="section">
+    <div class="content">
+      <h2>Table of contents</h2>
+      {{ content }}
+
+      <ul class="post-list">
+        {% for post in site.data.docs %}
+          <li>
+            <a href="{{ "/docs/" | append: post.id | relative_url }}">{{ post.title | escape }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+</div>

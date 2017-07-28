@@ -1,0 +1,32 @@
+#main-navbar {
+  border-bottom: 1px solid #ccc
+}
+
+.hero {
+  background: #000 0% 0% repeat;
+  background-size: 54px;
+}
+
+.hero .subtitle {
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 2px 1px 1px black;
+}
+
+.hero img.logo {
+  max-width: 320px
+}
+
+.section.alternate {
+  background: #fdfdfd;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.section .container p {
+  margin: .8em 0;
+}
+
+.content .hljs {
+  background: transparent
+}

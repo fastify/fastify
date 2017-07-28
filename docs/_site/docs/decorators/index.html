@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Decorators</title>
+  <meta name="description" content="If you need to add functionalities to the Fastify instance, the decorate api is what you need.">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css" integrity="sha256-VC9bpAao257nf22leBRLU7AqKGwS9/Ylz8hfpHmOob4=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="http://localhost:4000/assets/main.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+
+  <link rel="canonical" href="http://localhost:4000/docs/decorators/">
+
+  
+</head>
+
+
+  <body>
+
+    <nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="http://localhost:4000/images/fastify-logo-menu.png" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
+
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
+
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="/">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="/docs/">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
+          
+            <a class="navbar-item " href="/docs/getting-started">Getting Started</a>
+          
+            <a class="navbar-item " href="/docs/server-methods">Server Methods</a>
+          
+            <a class="navbar-item " href="/docs/routes">Routes</a>
+          
+            <a class="navbar-item " href="/docs/logging">Logging</a>
+          
+            <a class="navbar-item " href="/docs/middlewares">Middlewares</a>
+          
+            <a class="navbar-item " href="/docs/hooks">Hooks</a>
+          
+            <a class="navbar-item " href="/docs/decorators">Decorators</a>
+          
+            <a class="navbar-item " href="/docs/validation-and-serialize">Validation and Serialize</a>
+          
+            <a class="navbar-item " href="/docs/lifecycle">Lifecycle</a>
+          
+            <a class="navbar-item " href="/docs/reply">Reply</a>
+          
+            <a class="navbar-item " href="/docs/request">Request</a>
+          
+            <a class="navbar-item " href="/docs/content-type-parser">Content Type Parser</a>
+          
+            <a class="navbar-item " href="/docs/plugins">Plugins</a>
+          
+            <a class="navbar-item " href="/docs/testing">Testing</a>
+          
+            <a class="navbar-item " href="/docs/plugins-guide">Plugins Guide</a>
+          
+        </div>
+      </div>
+      <a class="navbar-item " href="/ecosystem">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="/benchmarks">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+    <main class="page-content" aria-label="Content">
+      <section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Documentation
+        </h1>
+      </div>
+  </div>
+</section>
+
+<div class="container">
+  <section class="section">
+    <div class="columns">
+
+      <div class="column is-3 is-hidden-mobile" data-sticky-container>
+        <aside class="menu sticky">
+          <p class="menu-label">
+            Table of contents
+          </p>
+          <ul class="menu-list">
+            
+              
+              <li >
+                <a  href="/docs/getting-started/">Getting Started</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/server-methods/">Server Methods</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/routes/">Routes</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/logging/">Logging</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/middlewares/">Middlewares</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/hooks/">Hooks</a>
+              </li>
+            
+              
+              <li id="doc-menu-section">
+                <a class="is-active" href="/docs/decorators/">Decorators</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/validation-and-serialize/">Validation and Serialize</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/lifecycle/">Lifecycle</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/reply/">Reply</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/request/">Request</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/content-type-parser/">Content Type Parser</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins/">Plugins</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/testing/">Testing</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins-guide/">Plugins Guide</a>
+              </li>
+            
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column">
+        <div class="content">
+          <h1 class="post-title">Decorators</h1>
+        </div>
+
+        <nav class="breadcrumb">
+          <ul>
+            <li><a href="/">Fastify</a></li>
+            <li><a href="/docs/">Documentation</a></li>
+            <li class="is-active"><a>Decorators</a></li>
+          </ul>
+        </nav>
+
+        <div id="doc-content" class="content">
+          <p>If you need to add functionalities to the Fastify instance, the <code class="highlighter-rouge">decorate</code> api is what you need.</p>
+
+<p>This api allows you to add new properties to the Fastify instance, a property value is not restricted to be a function, could also be an object or a string for example.</p>
+
+<p><a name="usage"></a></p>
+<h3 id="usage">Usage</h3>
+<p><a name="decorate"></a>
+<strong>decorate</strong><br />
+Just call the <code class="highlighter-rouge">decorate</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p>As said above, you can decorate the instance with other values and not only functions:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'conf'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">db</span><span class="p">:</span> <span class="s1">'some.db'</span><span class="p">,</span>
+  <span class="na">port</span><span class="p">:</span> <span class="mi">3000</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p>Once you decorate the instance you can access the value every time you need by using the name you passed as parameter:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">utility</span><span class="p">()</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">fastify</span><span class="p">.</span><span class="nx">conf</span><span class="p">.</span><span class="nx">db</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>Decorators are not <em>overwritable</em>, if you try to declare a decorator already declared <em>(in other words, use the same name)</em>, <code class="highlighter-rouge">decorate</code> will throw an exception.</p>
+
+<p><a name="decorate-reply"></a>
+<strong>decorateReply</strong><br />
+As the name suggest, this api is needed if you want to add new methods to the <code class="highlighter-rouge">Reply</code> core object.<br />
+Just call the <code class="highlighter-rouge">decorateReply</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorateReply</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="decorate-request"></a>
+<strong>decorateRequest</strong><br />
+As above, this api is needed if you want to add new methods to the <code class="highlighter-rouge">Request</code> core object.<br />
+Just call the <code class="highlighter-rouge">decorateRequest</code> api and pass the name of the new property and its value.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorateRequest</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// something very useful</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p><a name="extend-server-error"></a>
+<strong>extendServerError</strong><br />
+If you need to extend the standard <a href="/docs/reply/#errors">server error</a>, this api is what you need.<br />
+You <em>must</em> pass a function that returns an object, Fastify will extend the server error with the returned object of your function.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">extendServerError</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">timestamp</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">()</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="cm">/*
+  The resulting object will be:
+  {
+    error: String
+    message: String
+    statusCode: Number
+    timestamp: Date
+  }
+*/</span>
+</code></pre>
+</div>
+
+<p><a name="sync-async"></a></p>
+<h3 id="sync-and-async">Sync and Async</h3>
+<p><code class="highlighter-rouge">decorate</code> is a <em>synchronous</em> API, if you need to add a decorator that has an <em>asynchronous</em> bootstrap, could happen that Fastify boots up before that your decorator is ready. To avoid this issue you must use <code class="highlighter-rouge">register</code> api in combination with <code class="highlighter-rouge">fastify-plugin</code>, to know more check out the <a href="/docs/plugins/">Plugins</a> documentation as well.</p>
+
+<p><a name="dependencies"></a></p>
+<h3 id="dependencies">Dependencies</h3>
+<p>If your decorator depends on another decorator, you can also declare the dependencies of your function, it pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">decorate</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="p">[</span><span class="s1">'greet'</span><span class="p">,</span> <span class="s1">'log'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<p>If a dependency is not satisfied, <code class="highlighter-rouge">decorate</code> will throw an exception, but don’t worry, the dependency check is done before the server boot up, so it will never happen at runtime.</p>
+
+<p><a name="has-decorator"></a></p>
+<h3 id="hasdecorator">hasDecorator</h3>
+<p>You can check the presence of a decorator by using the <code class="highlighter-rouge">hasDecorator</code> api:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">hasDecorator</span><span class="p">(</span><span class="s1">'utility'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+        </div>
+
+        <hr/>
+        <nav class="level">
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            <div class="level-left">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/hooks/" class="button prev">≪ Hooks</a>
+                
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/validation-and-serialize/" class="button next">Validation and Serialize ≫</a>
+                
+              </div>
+            </div>
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+        </nav>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // dynamically creates a submenu for the current section based on the content headers
+    var titles = document.querySelectorAll('#doc-content h3')
+    var currentMenu = document.getElementById('doc-menu-section')
+    if (titles.length && currentMenu) {
+      var submenu = document.createElement('ul')
+      titles.forEach(el => {
+        var currentSubmenuItem = document.createElement('li')
+        var currentSubmenuLink = document.createElement('a')
+        currentSubmenuLink.href = '#' + el.id
+        currentSubmenuLink.append(document.createTextNode(el.textContent))
+        currentSubmenuItem.append(currentSubmenuLink)
+        submenu.append(currentSubmenuItem)
+      })
+      currentMenu.append(submenu)
+    }
+  </script>
+</div>
+
+    </main>
+
+    <footer class="grey is-primary footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    
+      <p><em>Found a typo or want to improve this page?</em> <a href="https://github.com/fastify/fastify/docs/_docs/Decorators.md">Submit a PR on GitHub</a></p>
+    
+      <p>Fastify, Copyright &copy; 2016 Matteo Collina, Licensed under <a href="https://github.com/fastify/fastify/blob/master/LICENSE" target="_blank">MIT</a></p>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Hooks</title>
+  <meta name="description" content="By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use (in order of execution): &#39;onRe...">
+
+  <link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.3/css/bulma.min.css" integrity="sha256-VC9bpAao257nf22leBRLU7AqKGwS9/Ylz8hfpHmOob4=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="http://localhost:4000/assets/main.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" integrity="sha256-Zd1icfZ72UBmsId/mUcagrmN7IN5Qkrvh75ICHIQVTk=" crossorigin="anonymous" />
+
+  <link rel="canonical" href="http://localhost:4000/docs/hooks/">
+
+  
+</head>
+
+
+  <body>
+
+    <nav id="main-navbar" class="navbar">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="http://localhost:4000/images/fastify-logo-menu.png" alt="Fastify: a modern CSS framework based on Flexbox" width="112" height="28">
+    </a>
+
+    <a class="navbar-item is-hidden-desktop" href="https://github.com/fastify/fastify" target="_blank">
+      <span class="icon" style="color: #333;">
+        <i class="fa fa-github"></i>
+      </span>
+    </a>
+
+    <div class="navbar-burger burger" data-target="navMenuExample">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item " href="/">
+        Home
+      </a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link  is-active" href="/docs/">
+          Docs
+        </a>
+        <div class="navbar-dropdown ">
+          
+            <a class="navbar-item " href="/docs/getting-started">Getting Started</a>
+          
+            <a class="navbar-item " href="/docs/server-methods">Server Methods</a>
+          
+            <a class="navbar-item " href="/docs/routes">Routes</a>
+          
+            <a class="navbar-item " href="/docs/logging">Logging</a>
+          
+            <a class="navbar-item " href="/docs/middlewares">Middlewares</a>
+          
+            <a class="navbar-item " href="/docs/hooks">Hooks</a>
+          
+            <a class="navbar-item " href="/docs/decorators">Decorators</a>
+          
+            <a class="navbar-item " href="/docs/validation-and-serialize">Validation and Serialize</a>
+          
+            <a class="navbar-item " href="/docs/lifecycle">Lifecycle</a>
+          
+            <a class="navbar-item " href="/docs/reply">Reply</a>
+          
+            <a class="navbar-item " href="/docs/request">Request</a>
+          
+            <a class="navbar-item " href="/docs/content-type-parser">Content Type Parser</a>
+          
+            <a class="navbar-item " href="/docs/plugins">Plugins</a>
+          
+            <a class="navbar-item " href="/docs/testing">Testing</a>
+          
+            <a class="navbar-item " href="/docs/plugins-guide">Plugins Guide</a>
+          
+        </div>
+      </div>
+      <a class="navbar-item " href="/ecosystem">
+        Ecosystem
+      </a>
+      <a class="navbar-item " href="/benchmarks">
+        Benchmarks
+      </a>
+    </div>
+
+    <div class="navbar-end">
+      <a class="navbar-item" href="https://github.com/jgthms/bulma" target="_blank">
+        <span class="fa fa-github"> </span>&nbsp;Github
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+    <main class="page-content" aria-label="Content">
+      <section class="hero is-primary">
+  <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Documentation
+        </h1>
+      </div>
+  </div>
+</section>
+
+<div class="container">
+  <section class="section">
+    <div class="columns">
+
+      <div class="column is-3 is-hidden-mobile" data-sticky-container>
+        <aside class="menu sticky">
+          <p class="menu-label">
+            Table of contents
+          </p>
+          <ul class="menu-list">
+            
+              
+              <li >
+                <a  href="/docs/getting-started/">Getting Started</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/server-methods/">Server Methods</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/routes/">Routes</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/logging/">Logging</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/middlewares/">Middlewares</a>
+              </li>
+            
+              
+              <li id="doc-menu-section">
+                <a class="is-active" href="/docs/hooks/">Hooks</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/decorators/">Decorators</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/validation-and-serialize/">Validation and Serialize</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/lifecycle/">Lifecycle</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/reply/">Reply</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/request/">Request</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/content-type-parser/">Content Type Parser</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins/">Plugins</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/testing/">Testing</a>
+              </li>
+            
+              
+              <li >
+                <a  href="/docs/plugins-guide/">Plugins Guide</a>
+              </li>
+            
+          </ul>
+        </aside>
+      </div>
+
+      <div class="column">
+        <div class="content">
+          <h1 class="post-title">Hooks</h1>
+        </div>
+
+        <nav class="breadcrumb">
+          <ul>
+            <li><a href="/">Fastify</a></li>
+            <li><a href="/docs/">Documentation</a></li>
+            <li class="is-active"><a>Hooks</a></li>
+          </ul>
+        </nav>
+
+        <div id="doc-content" class="content">
+          <p>By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use <em>(in order of execution)</em>:</p>
+<ul>
+  <li><code class="highlighter-rouge">'onRequest'</code></li>
+  <li><code class="highlighter-rouge">'preRouting'</code></li>
+  <li><code class="highlighter-rouge">'preHandler'</code></li>
+  <li><code class="highlighter-rouge">'onClose'</code></li>
+</ul>
+
+<p>Example:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onRequest'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">next</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+<p>Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the <a href="/docs/lifecycle/">lifecycle</a> page.</p>
+
+<p>If you get an error during the execution of you hook, just pass it to <code class="highlighter-rouge">next()</code> and Fastify will automatically close the request and send the appropriate error code to the user.</p>
+
+<p>If you want to pass a custom error code to the user, just pass it as second parameter to <code class="highlighter-rouge">next()</code>:</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onRequest'</span><span class="p">,</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">,</span> <span class="nx">next</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">next</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">'some error'</span><span class="p">),</span> <span class="mi">400</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p><em>The error will be handled by <a href="/docs/reply/#errors"><code class="highlighter-rouge">Reply</code></a>.</em></p>
+
+<p>The function signature is always the same, <code class="highlighter-rouge">request</code>, <code class="highlighter-rouge">response</code>, <code class="highlighter-rouge">next</code>, it changes a little bit only in the <code class="highlighter-rouge">'preHandler'</code> hook, where the first two arguments are <a href="/docs/request/"><code class="highlighter-rouge">request</code></a> and <a href="/docs/reply/"><code class="highlighter-rouge">reply</code></a> core Fastify objects.</p>
+
+<p><a name="on-close"></a>
+<strong>‘onClose’</strong><br />
+The unique hook that is not inside the lifecycle is <code class="highlighter-rouge">'onClose'</code>, this one is triggered when you call <code class="highlighter-rouge">fastify.close()</code> to stop the server, and it is useful if you have some <a href="/docs/plugins/">plugins</a> that need a “shutdown” part, such as a connection to a database.<br />
+Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the <code class="highlighter-rouge">done</code> callback.</p>
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'onClose'</span><span class="p">,</span> <span class="p">(</span><span class="nx">instance</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// some code</span>
+  <span class="nx">done</span><span class="p">()</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+<p><a name="scope"></a></p>
+<h3 id="scope">Scope</h3>
+<p>Talking about scope, the hooks works in a slightly different way from the Request/Reply encapsulation model. For instance, <code class="highlighter-rouge">onRequest</code>, <code class="highlighter-rouge">preRouting</code> and <code class="highlighter-rouge">onClose</code> are never encapsulated, not matter where you are declaring them, while the <code class="highlighter-rouge">preHandler</code> hook is always encapsulated if you declare it inside a <code class="highlighter-rouge">register</code>.</p>
+
+<p><a name="before-handler"></a></p>
+<h3 id="beforehandler">beforeHandler</h3>
+<p>Despite the name, <code class="highlighter-rouge">beforeHandler</code> is not a standard hook like <code class="highlighter-rouge">preHandler</code>, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (<code class="highlighter-rouge">preHandler</code> for example.), it could also be an array of functions.<br />
+<strong><code class="highlighter-rouge">beforeHandler</code> is executed always after the <code class="highlighter-rouge">preHandler</code> hook.</strong></p>
+
+<div class="language-js highlighter-rouge"><pre class="highlight"><code><span class="nx">fastify</span><span class="p">.</span><span class="nx">addHook</span><span class="p">(</span><span class="s1">'preHandler'</span><span class="p">,</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// your code</span>
+  <span class="nx">done</span><span class="p">()</span>
+<span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="na">beforeHandler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// your code</span>
+    <span class="nx">done</span><span class="p">()</span>
+  <span class="p">},</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">fastify</span><span class="p">.</span><span class="nx">route</span><span class="p">({</span>
+  <span class="na">method</span><span class="p">:</span> <span class="s1">'GET'</span><span class="p">,</span>
+  <span class="na">url</span><span class="p">:</span> <span class="s1">'/'</span><span class="p">,</span>
+  <span class="na">schema</span><span class="p">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>
+  <span class="na">beforeHandler</span><span class="p">:</span> <span class="p">[</span>
+    <span class="kd">function</span> <span class="nx">first</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// your code</span>
+      <span class="nx">done</span><span class="p">()</span>
+    <span class="p">},</span>
+    <span class="kd">function</span> <span class="nx">second</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">,</span> <span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// your code</span>
+      <span class="nx">done</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="na">handler</span><span class="p">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">reply</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span> <span class="na">hello</span><span class="p">:</span> <span class="s1">'world'</span> <span class="p">})</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre>
+</div>
+
+        </div>
+
+        <hr/>
+        <nav class="level">
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+            <div class="level-left">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/middlewares/" class="button prev">≪ Middlewares</a>
+                
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                
+                  
+                  
+                  <a href="/docs/decorators/" class="button next">Decorators ≫</a>
+                
+              </div>
+            </div>
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+          
+          
+        
+        </nav>
+
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // dynamically creates a submenu for the current section based on the content headers
+    var titles = document.querySelectorAll('#doc-content h3')
+    var currentMenu = document.getElementById('doc-menu-section')
+    if (titles.length && currentMenu) {
+      var submenu = document.createElement('ul')
+      titles.forEach(el => {
+        var currentSubmenuItem = document.createElement('li')
+        var currentSubmenuLink = document.createElement('a')
+        currentSubmenuLink.href = '#' + el.id
+        currentSubmenuLink.append(document.createTextNode(el.textContent))
+        currentSubmenuItem.append(currentSubmenuLink)
+        submenu.append(currentSubmenuItem)
+      })
+      currentMenu.append(submenu)
+    }
+  </script>
+</div>
+
+    </main>
+
+    <footer class="grey is-primary footer">
+  <div class="container">
+    <div class="content has-text-centered">
+    
+      <p><em>Found a typo or want to improve this page?</em> <a href="https://github.com/fastify/fastify/docs/_docs/Hooks.md">Submit a PR on GitHub</a></p>
+    
+      <p>Fastify, Copyright &copy; 2016 Matteo Collina, Licensed under <a href="https://github.com/fastify/fastify/blob/master/LICENSE" target="_blank">MIT</a></p>
+    </div>
+  </div>
+</footer>
+
+
+    <script src="/js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+
+</html>

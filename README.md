@@ -29,21 +29,21 @@ Use Fastify can increase your throughput up to 100%.
 
 ### Benchmarks
 
-__Machine:__ Intel Xeon E5-2686 v4 @ 2.30GHz (4 cores, 8 threads), 16GiB RAM
+__Machine:__ Intel Xeon E5-2686 v4 @ 2.30GHz (4 cores, 8 threads), 16GiB RAM (Amazon EC2 m4.xlarge)
 
 __Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the second average
 
-| Framework         | Version                   | Router?      |  Requests/sec |
-| :---------------- | :------------------------ | :----------: | ------------: |
-| hapi              | 16.5.0                    | &#10003;     | 3,194         |
-| Express           | 4.15.3                    | &#10003;     | 9,418         |
-| Restify           | 5.0.1                     | &#10003;     | 12,014        |
-| take-five         | 1.3.4                     | &#10003;     | 18,658        |
-| Koa (`koa-route`) | 2.3.0 (`koa-route@3.2.0`) | &#10003;     | 19,627        |
-| Koa               | 2.3.0                     | &#10007;     | 21,349        |
-| **Fastify**       | **0.25.2**                | **&#10003;** | **23,301**    |
-| -                 |                           |              |               |
-| `http.Server`     | 8.2.1                     | &#10007;     | 33,435        |
+| Framework          | Version                    | Router?      |  Requests/sec |
+| :----------------- | :------------------------- | :----------: | ------------: |
+| hapi               | 16.5.0                     | &#10003;     | 3,194         |
+| Express            | 4.15.3                     | &#10003;     | 9,418         |
+| Restify            | 5.0.1                      | &#10003;     | 12,014        |
+| take-five          | 1.3.4                      | &#10003;     | 18,658        |
+| Koa (`koa-routre`) | 2.3.0 (`koa-router@7.2.1`) | &#10003;     | 19,650        |
+| Koa                | 2.3.0                      | &#10007;     | 21,349        |
+| **Fastify**        | **0.25.2**                 | **&#10003;** | **23,301**    |
+| -                  |                            |              |               |
+| `http.Server`      | 8.2.1                      | &#10007;     | 33,435        |
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

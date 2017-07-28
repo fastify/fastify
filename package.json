@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.25.2",
+  "version": "0.25.3",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {
@@ -9,7 +9,8 @@
   "scripts": {
     "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
-    "coveralls": "tap test/*test.js  test/*/*.test.js --cov --coverage-report=text-lcov | coveralls"
+    "coveralls": "tap test/*test.js  test/*/*.test.js --cov --coverage-report=text-lcov | coveralls",
+    "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
   },
   "repository": {
     "type": "git",
@@ -39,6 +40,7 @@
     "node": ">=4.5"
   },
   "devDependencies": {
+    "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",
     "cors": "^2.8.4",

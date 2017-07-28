@@ -27,6 +27,9 @@ test('handler function - invalid schema', t => {
     t.equal(res.statusCode, 400)
     t.pass()
   }
+  res.setHeader = (key, value) => {
+    return
+  }
   const handle = {
     schema: {
       body: {

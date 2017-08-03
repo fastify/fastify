@@ -97,6 +97,30 @@ test('Reply.send should return undefined', t => {
   }
 })
 
+test('Reply can redirect request', t => {
+  t.plan(1)
+  try {
+    fastify.get('/redirect', function (req, reply) {
+      reply.redirect('/')
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('Reply can redirect request (with status code)', t => {
+  t.plan(1)
+  try {
+    fastify.get('/redirect-code', function (req, reply) {
+      reply.redirect(301, '/')
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -143,5 +167,55 @@ fastify.listen(0, err => {
     uri: 'http://localhost:' + fastify.server.address().port + '/undefined'
   }, (err, response, body) => {
     t.error(err)
+  })
+
+  test('redirect to `/` - 1', t => {
+    t.plan(2)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/redirect',
+      followRedirect: false
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 302)
+    })
+  })
+
+  test('redirect to `/` - 2', t => {
+    t.plan(2)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/redirect-code',
+      followRedirect: false
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 301)
+    })
+  })
+
+  test('redirect to `/` - 3', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/redirect'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, 'hello world!')
+    })
+  })
+
+  test('redirect to `/` - 4', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/redirect-code'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, 'hello world!')
+    })
   })
 })

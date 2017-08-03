@@ -6,6 +6,8 @@ Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
 - `.header(name, value)` - Sets the headers.
+- `.type(value)` - Sets the header `Content-Type`.
+- `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
@@ -30,14 +32,19 @@ If you not set a `'Content-Type'` header, Fastify assumes that you are using `'a
 
 *Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
 
+<a name="redirect"></a>
+### Redirect
+Redirects a request to the specified url, the status code is optional, default to `302`.  
+```js
+reply.redirect('/home')
+```
+
 <a name="type"></a>
 ### Type
 Sets the content type for the reponse.  
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 
-Example:
-
-```
+```js
 reply.type('text/html')
 ```
 

@@ -273,7 +273,8 @@ function build (options) {
       contentTypeParser: self._contentTypeParser,
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
-      beforeHandler: options.beforeHandler
+      beforeHandler: options.beforeHandler,
+      custom: options.custom
     })
   }
 
@@ -302,7 +303,8 @@ function build (options) {
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
-        []
+        [],
+        opts.custom
       )
 
       buildSchema(store)
@@ -333,13 +335,14 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler, custom) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
     this.preHandler = preHandler
+    this.custom = custom
   }
 
   function iterator () {

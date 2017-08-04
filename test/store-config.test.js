@@ -7,17 +7,17 @@ const fastify = require('..')()
 
 const schema = {
   schema: { },
-  custom: {
+  config: {
     value1: 'foo',
     value2: true
   }
 }
 
 function handler (req, reply) {
-  reply.serializer(JSON.stringify).send(reply.store.custom)
+  reply.serializer(JSON.stringify).send(reply.store.config)
 }
 
-test('custom - get', t => {
+test('config - get', t => {
   t.plan(1)
 
   fastify.get('/get', schema, handler)
@@ -25,7 +25,7 @@ test('custom - get', t => {
   t.pass()
 })
 
-test('custom - route', t => {
+test('config - route', t => {
   t.plan(1)
 
   fastify.route({
@@ -33,7 +33,7 @@ test('custom - route', t => {
     url: '/route',
     schema: schema.schema,
     handler: handler,
-    custom: schema.custom
+    config: schema.config
   })
   t.pass()
 })
@@ -42,7 +42,7 @@ fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
-  test('custom - request get', t => {
+  test('config - request get', t => {
     t.plan(3)
     request({
       method: 'GET',
@@ -51,11 +51,11 @@ fastify.listen(0, err => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEquals(response.body, schema.custom)
+      t.deepEquals(response.body, schema.config)
     })
   })
 
-  test('custom - request route', t => {
+  test('config - request route', t => {
     t.plan(3)
     request({
       method: 'GET',
@@ -64,7 +64,7 @@ fastify.listen(0, err => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEquals(body, schema.custom)
+      t.deepEquals(body, schema.config)
     })
   })
 })

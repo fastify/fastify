@@ -297,6 +297,9 @@ function build (options) {
       const prefix = _fastify._RoutePrefix.prefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
+      const config = opts.config || {}
+      config.url = url
+
       const store = new Store(
         opts.schema,
         opts.handler,
@@ -304,7 +307,7 @@ function build (options) {
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
         [],
-        opts.config
+        config
       )
 
       buildSchema(store)

@@ -273,7 +273,8 @@ function build (options) {
       contentTypeParser: self._contentTypeParser,
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
-      beforeHandler: options.beforeHandler
+      beforeHandler: options.beforeHandler,
+      config: options.config
     })
   }
 
@@ -296,13 +297,17 @@ function build (options) {
       const prefix = _fastify._RoutePrefix.prefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
+      const config = opts.config || {}
+      config.url = url
+
       const store = new Store(
         opts.schema,
         opts.handler,
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
-        []
+        [],
+        config
       )
 
       buildSchema(store)
@@ -333,13 +338,14 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler, config) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
     this.preHandler = preHandler
+    this.config = config
   }
 
   function iterator () {

@@ -52,7 +52,7 @@ module.exports = function (fastify, options, next) {
 }
 ```
 
-Well, know you know how to use the `register` api and how it works, but how add new functionalities to fastify and even better, share them with other developers?
+Well, now you know how to use the `register` api and how it works, but how add new functionalities to fastify and even better, share them with other developers?
 
 <a name="decorators"></a>
 ## Decorators
@@ -171,11 +171,11 @@ fastify.get('/happiness', (req, reply) => {
 })
 ```
 
-We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a functions that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
+We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a function that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
 
 <a name="hooks"></a>
 ## Hooks
-You just built and amazing utility, but now you need to execute that for every request, this is what you will likely do:
+You just built an amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
 fastify.decorate('util', (req, key, value) => { req.key = value })
 
@@ -238,7 +238,7 @@ Let's say that you are arriving from a framework like Express or Restify, and yo
 
 <a name="middlewares"></a>
 ## Middlewares
-Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify middlewares this means that you can just drop-in your old code and it will work! (faster, by the way)  
+Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*  
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
 const yourMiddleware = require('your-middleware')
@@ -272,7 +272,7 @@ You can also tell to `fastify-plugin` to check the installed version of Fastify,
 
 <a name="start"></a>
 ## Let's start!
-Awesome, now you know everything you need to know about Fastify and its plugin system to start built your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
+Awesome, now you know everything you need to know about Fastify and its plugin system to start build your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
 If you want to see some real world example, checkout:
 - [`point-of-view`](https://github.com/fastify/point-of-view)

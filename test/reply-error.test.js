@@ -168,13 +168,14 @@ test('support for boom', t => {
   })
 
   t.test('500', t => {
-    t.plan(2)
+    t.plan(3)
 
     fastify.inject({
       method: 'GET',
       url: '/500'
     }, res => {
       t.strictEqual(res.statusCode, 500)
+      t.strictEqual(res.headers['content-type'], 'application/json')
       t.deepEqual(
         // we are doing this because Boom creates also a stack that is stripped during the stringify phase
         JSON.parse(res.payload),
@@ -188,13 +189,14 @@ test('support for boom', t => {
   })
 
   t.test('400', t => {
-    t.plan(2)
+    t.plan(3)
 
     fastify.inject({
       method: 'GET',
       url: '/400'
     }, res => {
       t.strictEqual(res.statusCode, 400)
+      t.strictEqual(res.headers['content-type'], 'application/json')
       t.deepEqual(
         // we are doing this because Boom creates also a stack that is stripped during the stringify phase
         JSON.parse(res.payload),
@@ -208,13 +210,14 @@ test('support for boom', t => {
   })
 
   t.test('401', t => {
-    t.plan(3)
+    t.plan(4)
 
     fastify.inject({
       method: 'GET',
       url: '/401'
     }, res => {
       t.strictEqual(res.statusCode, 401)
+      t.strictEqual(res.headers['content-type'], 'application/json')
       t.deepEqual(
         // we are doing this because Boom creates also a stack that is stripped during the stringify phase
         JSON.parse(res.payload),

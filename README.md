@@ -18,6 +18,32 @@ How can you efficiently handle the resources of your server, knowing that you ar
 Enter Fastify. Fastify is a web framework highly focused on speed and low overhead. It is inspired from Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 Use Fastify can increase your throughput up to 100%.
 
+### Install
+
+```
+npm i fastify --save
+```
+
+### Example
+
+```js
+// Require the framework and instantiate it
+const fastify = require('fastify')()
+
+// Declare a route
+fastify.get('/', function (request, reply) {
+  reply.send({ hello: 'world' })
+})
+
+// Run the server!
+fastify.listen(3000, function (err) {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+```
+
+Do you want to know more? Head to the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+
 ### Core features
 
 - **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.

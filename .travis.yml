@@ -5,8 +5,13 @@ node_js:
   - "7"
   - "6"
   - "4"
-after_script:
+
+
+script:
   - npm run coveralls
+
+after_script:
+  - ./tools/website.sh
 
 notifications:
   email:

@@ -192,3 +192,36 @@ test('contentTypeParser should support encapsulation, second try', t => {
     })
   })
 })
+
+test('contentTypeParser shouldn\'t support request with undefined "Content-Type"', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/jsoff', function (req, done) {
+    jsonParser(req, function (err, body) {
+      if (err) return done(err)
+      done(body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'POST',
+      uri: 'http://localhost:' + fastify.server.address().port,
+      body: 'unknown content type!',
+      headers: {
+        // 'Content-Type': undefined
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
+      fastify.close()
+    })
+  })
+})

@@ -17,14 +17,14 @@ test('Symbols', t => {
 test('build schema - missing schema', t => {
   t.plan(1)
   const opts = {}
-  validation.build(opts)
+  validation.build(opts, {})
   t.is(typeof opts[symbols.responseSchema], 'undefined')
 })
 
 test('build schema - missing output schema', t => {
   t.plan(1)
   const opts = { schema: {} }
-  validation.build(opts)
+  validation.build(opts, {})
   t.is(typeof opts[symbols.responseSchema], 'undefined')
 })
 
@@ -48,7 +48,7 @@ test('build schema - output schema', t => {
       }
     }
   }
-  validation.build(opts)
+  validation.build(opts, {})
   t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
   t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })
@@ -65,7 +65,7 @@ test('build schema - payload schema', t => {
       }
     }
   }
-  validation.build(opts)
+  validation.build(opts, {})
   t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
@@ -81,7 +81,7 @@ test('build schema - querystring schema', t => {
       }
     }
   }
-  validation.build(opts)
+  validation.build(opts, {})
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -95,7 +95,7 @@ test('build schema - querystring schema abbreviated', t => {
       }
     }
   }
-  validation.build(opts)
+  validation.build(opts, {})
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -112,6 +112,6 @@ test('build schema - params schema', t => {
       }
     }
   }
-  validation.build(opts)
+  validation.build(opts, {})
   t.is(typeof opts[symbols.paramsSchema], 'function')
 })

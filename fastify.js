@@ -127,6 +127,9 @@ function build (options) {
   // fake http injection (for testing purposes)
   fastify.inject = inject
 
+  // Use this for caching Ajv instances with different options
+  const ajvCache = {}
+
   return fastify
 
   function fastify (req, res) {
@@ -359,7 +362,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store)
+      buildSchema(store, ajvCache)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {

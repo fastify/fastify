@@ -28,7 +28,7 @@ test('listen after Promise.resolve()', t => {
   Promise.resolve()
     .then(() => {
       f.listen(0, (err) => {
-        fastify.server.unref()
+        f.server.unref()
         t.error(err)
         t.pass()
       })

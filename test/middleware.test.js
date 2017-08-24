@@ -215,7 +215,7 @@ test('middlewares should support encapsulation / 2', t => {
 })
 
 test('middlewares should support encapsulation / 3', t => {
-  t.plan(14)
+  t.plan(15)
 
   const instance = fastify()
 
@@ -247,7 +247,8 @@ test('middlewares should support encapsulation / 3', t => {
 
   instance.get('/global', function (request, reply) {
     t.ok(request.req.global)
-    t.notOk(request.req.local)
+    t.notOk(request.req.firstLocal)
+    t.notOk(request.req.secondLocal)
     reply.send({ hello: 'world' })
   })
 
@@ -278,7 +279,7 @@ test('middlewares should support encapsulation / 3', t => {
 })
 
 test('middlewares should support encapsulation / 4', t => {
-  t.plan(21)
+  t.plan(25)
 
   const instance = fastify()
 
@@ -303,7 +304,13 @@ test('middlewares should support encapsulation / 4', t => {
         t.ok(request.req.global)
         t.ok(request.req.firstLocal)
         t.ok(request.req.secondLocal)
+        t.ok(request.req.thirdLocal)
         reply.send({ hello: 'world' })
+      })
+
+      f.use(function (req, res, next) {
+        req.thirdLocal = true
+        next()
       })
 
       d()
@@ -313,13 +320,16 @@ test('middlewares should support encapsulation / 4', t => {
       t.ok(request.req.global)
       t.ok(request.req.firstLocal)
       t.notOk(request.req.secondLocal)
+      t.notOk(request.req.thirdLocal)
       reply.send({ hello: 'world' })
     })
   })
 
   instance.get('/global', function (request, reply) {
     t.ok(request.req.global)
-    t.notOk(request.req.local)
+    t.notOk(request.req.firstLocal)
+    t.notOk(request.req.secondLocal)
+    t.notOk(request.req.thirdLocal)
     reply.send({ hello: 'world' })
   })
 

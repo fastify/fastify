@@ -6,7 +6,7 @@ const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
 const Middie = require('middie')
-const fastseries = require('fastseries')
+const runHooks = require('fastseries')()
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -41,7 +41,6 @@ function build (options) {
   const middie = Middie(_runMiddlewares)
   const run = middie.run
   const map = new Map()
-  const runHooks = fastseries()
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -125,62 +124,7 @@ function build (options) {
 
   function fastify (req, res) {
     logger(req, res)
-
-    // onRequest hook
-    setImmediate(
-      runHooks,
-      new State(req, res),
-      hookIterator,
-      fastify._hooks.onRequest,
-      middlewareCallback
-    )
-  }
-
-  function _runMiddlewares (err, req, res) {
-    if (err) {
-      const reply = new Reply(req, res, null)
-      reply.send(err)
-      return
-    }
-
-    // preRouting hook
-    setImmediate(
-      runHooks,
-      new State(req, res),
-      hookIterator,
-      fastify._hooks.preRouting,
-      routeCallback
-    )
-  }
-
-  function State (req, res) {
-    this.req = req
-    this.res = res
-  }
-
-  function hookIterator (fn, cb) {
-    fn(this.req, this.res, cb)
-  }
-
-  function middlewareCallback (err, code) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, null)
-      if (code[0]) reply.code(code[0])
-      reply.send(err)
-      return
-    }
-    run(this.req, this.res)
-  }
-
-  function routeCallback (err, code) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, null)
-      if (code[0]) reply.code(code[0])
-      reply.send(err)
-      return
-    }
-
-    router.lookup(this.req, this.res)
+    router.lookup(req, res)
   }
 
   function listen (port, address, cb) {
@@ -195,6 +139,46 @@ function build (options) {
       }
       listening = true
     })
+  }
+
+  function startHooks (req, res, params, store) {
+    setImmediate(
+      runHooks,
+      new State(req, res, params, store),
+      hookIterator,
+      store.onRequest,
+      middlewareCallback
+    )
+  }
+
+  function middlewareCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, this.store)
+      reply.send(err)
+      return
+    }
+    run(this.req, this.res, this)
+  }
+
+  function _runMiddlewares (err, req, res, ctx) {
+    if (err) {
+      const reply = new Reply(req, res, ctx.store)
+      reply.send(err)
+      return
+    }
+
+    handleRequest(req, res, ctx.params, ctx.store)
+  }
+
+  function State (req, res, params, store) {
+    this.req = req
+    this.res = res
+    this.params = params
+    this.store = store
+  }
+
+  function hookIterator (fn, cb) {
+    fn(this.req, this.res, cb)
   }
 
   function override (instance, fn, opts) {
@@ -271,6 +255,7 @@ function build (options) {
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,
+      onRequest: self._hooks.onRequest,
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
@@ -306,6 +291,7 @@ function build (options) {
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
+        opts.onRequest || _fastify._hooks.onRequest,
         [],
         config
       )
@@ -324,12 +310,12 @@ function build (options) {
         }
 
         map.get(url)[opts.method] = store
-        router.on(opts.method, url, handleRequest, store)
+        router.on(opts.method, url, startHooks, store)
       } else {
         const node = {}
         node[opts.method] = store
         map.set(url, node)
-        router.on(opts.method, url, handleRequest, store)
+        router.on(opts.method, url, startHooks, store)
       }
       done()
     })
@@ -338,12 +324,13 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler, config) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, config) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
+    this.onRequest = onRequest
     this.preHandler = preHandler
     this.config = config
   }

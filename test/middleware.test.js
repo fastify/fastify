@@ -119,3 +119,97 @@ test('use helmet and cors', t => {
     })
   })
 })
+
+test('middlewares should support encapsulation / 1', t => {
+  t.plan(9)
+
+  const instance = fastify()
+
+  instance.register((i, opts, done) => {
+    t.ok(i._middlewares.length === 0)
+    i.use(function (req, res, next) {
+      t.fail('this should not be called')
+      next()
+    })
+    t.ok(i._middlewares.length > 0)
+    done()
+  })
+
+  instance.get('/', function (request, reply) {
+    t.ok(instance._middlewares.length === 0)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.ok(instance._middlewares.length === 0)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('middlewares should support encapsulation / 2', t => {
+  t.plan(13)
+
+  const instance = fastify()
+
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+
+  instance.register((i, opts, done) => {
+    i.use(function (req, res, next) {
+      req.local = true
+      next()
+    })
+
+    i.get('/local', function (request, reply) {
+      t.ok(request.req.global)
+      t.ok(request.req.local)
+      reply.send({ hello: 'world' })
+    })
+
+    done()
+  })
+
+  instance.get('/global', function (request, reply) {
+    t.ok(request.req.global)
+    t.notOk(request.req.local)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port + '/global'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/local'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-length'], '' + body.length)
+        t.deepEqual(JSON.parse(body), { hello: 'world' })
+      })
+    })
+  })
+})

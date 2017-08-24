@@ -4,7 +4,6 @@ const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
-const pinoHttp = require('pino-http')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
 var shot = null
@@ -19,7 +18,7 @@ const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
-const serializers = require('./lib/serializers')
+const loggerUtils = require('./lib/logger')
 
 function build (options) {
   options = options || {}
@@ -29,16 +28,20 @@ function build (options) {
 
   var logger
   if (options.logger && isValidLogger(options.logger)) {
-    logger = pinoHttp({ logger: options.logger, serializers })
+    logger = loggerUtils.createLogger({ logger: options.logger, serializer: loggerUtils.serializers })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
-    options.logger.serializers = options.logger.serializers || serializers
-    logger = pinoHttp(options.logger)
+    options.logger.serializers = options.logger.serializers || loggerUtils.serializers
+    logger = loggerUtils.createLogger(options.logger)
   }
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()
+
+  // logger utils
+  const genReqId = loggerUtils.reqIdGenFactory()
+  const startTime = loggerUtils.startTime
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -123,8 +126,37 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
-    logger(req, res)
+    req.id = genReqId(req)
+    req.log = res.log = logger.child({ req: req })
+    res[startTime] = res[startTime] || Date.now()
+    if (!req.res) req.res = res
+
+    res.on('finish', onResFinished)
+    res.on('error', onResFinished)
+
     router.lookup(req, res)
+  }
+
+  function onResFinished (err) {
+    this.removeListener('finish', onResFinished)
+    this.removeListener('error', onResFinished)
+
+    var log = this.log
+    var responseTime = Date.now() - this[startTime]
+
+    if (err) {
+      log.error({
+        res: this,
+        err: err,
+        responseTime: responseTime
+      }, 'request errored')
+      return
+    }
+
+    log.info({
+      res: this,
+      responseTime: responseTime
+    }, 'request completed')
   }
 
   function listen (port, address, cb) {
@@ -417,7 +449,7 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    logger.logger.error(e, 'client error')
+    logger.error(e, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 

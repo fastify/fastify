@@ -38,8 +38,6 @@ function build (options) {
   }
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
-  const middie = Middie(_runMiddlewares)
-  const run = middie.run
   const map = new Map()
 
   const app = avvio(fastify, {})
@@ -112,7 +110,9 @@ function build (options) {
   fastify._Request = Request
 
   // middleware support
-  fastify.use = middie.use
+  fastify.use = use
+  fastify._middie = Middie(onRunMiddlewares)
+  fastify._middlewares = []
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -157,10 +157,10 @@ function build (options) {
       reply.send(err)
       return
     }
-    run(this.req, this.res, this)
+    this.store._middie.run(this.req, this.res, this)
   }
 
-  function _runMiddlewares (err, req, res, ctx) {
+  function onRunMiddlewares (err, req, res, ctx) {
     if (err) {
       const reply = new Reply(req, res, ctx.store)
       reply.send(err)
@@ -186,12 +186,19 @@ function build (options) {
       return instance
     }
 
+    const middlewares = Object.assign([], instance._middlewares)
     instance = Object.create(instance)
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
+    instance._middlewares = []
+    instance._middie = Middie(onRunMiddlewares)
+
+    for (var i = 0; i < middlewares.length; i++) {
+      instance.use.apply(instance, middlewares[i])
+    }
 
     return instance
   }
@@ -259,7 +266,8 @@ function build (options) {
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
-      config: options.config
+      config: options.config,
+      middie: self._middie
     })
   }
 
@@ -293,7 +301,8 @@ function build (options) {
         opts.contentTypeParser || _fastify._contentTypeParser,
         opts.onRequest || _fastify._hooks.onRequest,
         [],
-        config
+        config,
+        opts.middie || _fastify._middie
       )
 
       buildSchema(store)
@@ -324,7 +333,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, config) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, config, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -333,6 +342,7 @@ function build (options) {
     this.onRequest = onRequest
     this.preHandler = preHandler
     this.config = config
+    this._middie = middie
   }
 
   function iterator () {
@@ -379,6 +389,12 @@ function build (options) {
       if (err) throw err
       shot.inject(this, opts, cb)
     })
+  }
+
+  function use (url, fn) {
+    this._middlewares.push([url, fn])
+    this._middie.use(url, fn)
+    return this
   }
 
   function addHook (name, fn) {

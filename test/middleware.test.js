@@ -213,3 +213,204 @@ test('middlewares should support encapsulation / 2', t => {
     })
   })
 })
+
+test('middlewares should support encapsulation / 3', t => {
+  t.plan(14)
+
+  const instance = fastify()
+
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+
+  instance.register((i, opts, done) => {
+    i.use(function (req, res, next) {
+      req.firstLocal = true
+      next()
+    })
+
+    i.use(function (req, res, next) {
+      req.secondLocal = true
+      next()
+    })
+
+    i.get('/local', function (request, reply) {
+      t.ok(request.req.global)
+      t.ok(request.req.firstLocal)
+      t.ok(request.req.secondLocal)
+      reply.send({ hello: 'world' })
+    })
+
+    done()
+  })
+
+  instance.get('/global', function (request, reply) {
+    t.ok(request.req.global)
+    t.notOk(request.req.local)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port + '/global'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/local'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-length'], '' + body.length)
+        t.deepEqual(JSON.parse(body), { hello: 'world' })
+      })
+    })
+  })
+})
+
+test('middlewares should support encapsulation / 4', t => {
+  t.plan(21)
+
+  const instance = fastify()
+
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+
+  instance.register((i, opts, done) => {
+    i.use(function (req, res, next) {
+      req.firstLocal = true
+      next()
+    })
+
+    i.register((f, opts, d) => {
+      f.use(function (req, res, next) {
+        req.secondLocal = true
+        next()
+      })
+
+      f.get('/secondLocal', function (request, reply) {
+        t.ok(request.req.global)
+        t.ok(request.req.firstLocal)
+        t.ok(request.req.secondLocal)
+        reply.send({ hello: 'world' })
+      })
+
+      d()
+    }, done)
+
+    i.get('/firstLocal', function (request, reply) {
+      t.ok(request.req.global)
+      t.ok(request.req.firstLocal)
+      t.notOk(request.req.secondLocal)
+      reply.send({ hello: 'world' })
+    })
+  })
+
+  instance.get('/global', function (request, reply) {
+    t.ok(request.req.global)
+    t.notOk(request.req.local)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port + '/global'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/firstLocal'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-length'], '' + body.length)
+        t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+        request({
+          method: 'GET',
+          uri: 'http://localhost:' + instance.server.address().port + '/secondLocal'
+        }, (err, response, body) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 200)
+          t.strictEqual(response.headers['content-length'], '' + body.length)
+          t.deepEqual(JSON.parse(body), { hello: 'world' })
+        })
+      })
+    })
+  })
+})
+
+test('middlewares should support encapsulation / 5', t => {
+  t.plan(9)
+
+  const instance = fastify()
+
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+
+  instance.register((i, opts, done) => {
+    i.use(function (req, res, next) {
+      next(new Error('kaboom!'))
+    })
+
+    i.get('/local', function (request, reply) {
+      t.fail('this should not be called')
+    })
+
+    done()
+  })
+
+  instance.get('/global', function (request, reply) {
+    t.ok(request.req.global)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port + '/global'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/local'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 500)
+        t.deepEqual(JSON.parse(body), {
+          error: 'Internal Server Error',
+          message: 'kaboom!',
+          statusCode: 500
+        })
+      })
+    })
+  })
+})

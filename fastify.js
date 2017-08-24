@@ -5,7 +5,13 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
+<<<<<<< 0f6368788670d3b76fa3be5dc83f818e2349d095
 const runHooks = require('fastseries')()
+=======
+const fastseries = require('fastseries')
+const Ajv = require('ajv')
+const ajv = new Ajv({ coerceTypes: true })
+>>>>>>> Move out ajv. Extrapolate validatorMaker
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -100,6 +106,8 @@ function build (options) {
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
+
+  fastify.validatorMaker = validatorMaker
 
   // plugin
   fastify.register = fastify.use
@@ -318,9 +326,14 @@ function build (options) {
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
+<<<<<<< 0f6368788670d3b76fa3be5dc83f818e2349d095
       onResponse: options.onResponse,
       config: options.config,
       middie: self._middie
+=======
+      validatorMaker: options.validatorMaker,
+      config: options.config
+>>>>>>> Move out ajv. Extrapolate validatorMaker
     })
   }
 
@@ -359,7 +372,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store)
+      buildSchema(store, opts.validatorMaker || _fastify.validatorMaker)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {
@@ -483,6 +496,10 @@ function build (options) {
   function defaultRoute (req, res, params) {
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
+  }
+
+  function validatorMaker (schema) {
+    return ajv.compile(schema)
   }
 }
 

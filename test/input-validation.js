@@ -1,6 +1,7 @@
 'use strict'
 
 const request = require('request')
+const Ajv = require('ajv')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -21,10 +22,29 @@ module.exports.payloadMethod = function (method, t) {
     }
   }
 
+  const ajv = new Ajv({ coerceTypes: true, removeAdditional: true })
+  const optsWithCustomValidator = {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'integer'
+          }
+        },
+        additionalProperties: false
+      }
+    },
+    validatorMaker: schema => ajv.compile(schema)
+  }
+
   test(`${upMethod} can be created`, t => {
     t.plan(1)
     try {
       fastify[loMethod]('/', opts, function (req, reply) {
+        reply.send(req.body)
+      })
+      fastify[loMethod]('/custom', optsWithCustomValidator, function (req, reply) {
         reply.send(req.body)
       })
       t.pass()
@@ -100,6 +120,23 @@ module.exports.payloadMethod = function (method, t) {
         uri: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: '42'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 42 })
+      })
+    })
+
+    test(`${upMethod} - input-validation custom validator maker`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + fastify.server.address().port + '/custom',
+        body: {
+          hello: '42',
+          world: 55
         },
         json: true
       }, (err, response, body) => {

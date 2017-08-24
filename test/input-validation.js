@@ -21,42 +21,10 @@ module.exports.payloadMethod = function (method, t) {
     }
   }
 
-  const optsWithDefault = {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'integer'
-          },
-          world: {
-            type: 'integer',
-            default: 8
-          }
-        }
-      },
-      ajvOptions: {
-        useDefaults: true
-      }
-    }
-  }
-
   test(`${upMethod} can be created`, t => {
     t.plan(1)
     try {
       fastify[loMethod]('/', opts, function (req, reply) {
-        reply.send(req.body)
-      })
-      t.pass()
-    } catch (e) {
-      t.fail()
-    }
-  })
-
-  test(`${upMethod} can be created with useDefaults: true`, t => {
-    t.plan(1)
-    try {
-      fastify[loMethod]('/useDefaults', optsWithDefault, function (req, reply) {
         reply.send(req.body)
       })
       t.pass()
@@ -138,22 +106,6 @@ module.exports.payloadMethod = function (method, t) {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body, { hello: 42 })
-      })
-    })
-
-    test(`${upMethod} - input-validation default`, t => {
-      t.plan(3)
-      request({
-        method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/useDefaults',
-        body: {
-          hello: 7
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 7, world: 8 })
       })
     })
   })

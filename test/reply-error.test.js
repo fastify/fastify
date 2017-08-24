@@ -70,67 +70,14 @@ test('preHandler hook error handling with external code', t => {
   })
 })
 
-test('preHandler hook error handling with code inside done', t => {
+test('onRequest hook error handling with external done', t => {
   t.plan(2)
   const fastify = Fastify()
   const err = new Error('winter is coming')
 
-  fastify.addHook('preHandler', (req, reply, done) => {
-    done(err, 400)
-  })
-
-  fastify.get('/', () => {})
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, res => {
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(
-      {
-        error: statusCodes['400'],
-        message: err.message,
-        statusCode: 400
-      },
-      JSON.parse(res.payload)
-    )
-  })
-})
-
-test('preRouting hook error handling with code inside done', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  const err = new Error('winter is coming')
-
-  fastify.addHook('preRouting', (req, reply, done) => {
-    done(err, 400)
-  })
-
-  fastify.get('/', () => {})
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, res => {
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(
-      {
-        error: statusCodes['400'],
-        message: err.message,
-        statusCode: 400
-      },
-      JSON.parse(res.payload)
-    )
-  })
-})
-
-test('onRequest hook error handling with code inside done', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  const err = new Error('winter is coming')
-
-  fastify.addHook('onRequest', (req, reply, done) => {
-    done(err, 400)
+  fastify.addHook('onRequest', (req, res, done) => {
+    res.statusCode = 400
+    done(err)
   })
 
   fastify.get('/', () => {})

@@ -98,7 +98,7 @@ fastify.listen(0, err => {
   })
 })
 
-test('onRequest hook should not support encapsulation / 1', t => {
+test('onRequest hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -110,11 +110,11 @@ test('onRequest hook should not support encapsulation / 1', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 1)
+    t.is(fastify._hooks.onRequest.length, 0)
   })
 })
 
-test('onRequest hook should not support encapsulation / 2', t => {
+test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -128,11 +128,11 @@ test('onRequest hook should not support encapsulation / 2', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 2)
+    t.is(fastify._hooks.onRequest.length, 1)
   })
 })
 
-test('onRequest hook should not support encapsulation / 3', t => {
+test('onRequest hook should support encapsulation / 3', t => {
   t.plan(13)
   const fastify = Fastify()
 
@@ -143,68 +143,12 @@ test('onRequest hook should not support encapsulation / 3', t => {
 
   fastify.get('/first', (req, reply) => {
     t.ok(req.req.first)
-    t.ok(req.req.second)
+    t.notOk(req.req.second)
     reply.send({ hello: 'world' })
   })
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRequest', (req, res, next) => {
-      req.second = true
-      next()
-    })
-
-    instance.get('/second', (req, reply) => {
-      t.ok(req.req.first)
-      t.ok(req.req.second)
-      reply.send({ hello: 'world' })
-    })
-
-    next()
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    request({
-      method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/first'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-    })
-
-    request({
-      method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/second'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-    })
-  })
-})
-
-test('preRouting hook should not support encapsulation / 4', t => {
-  t.plan(13)
-  const fastify = Fastify()
-
-  fastify.addHook('preRouting', (req, res, next) => {
-    req.first = true
-    next()
-  })
-
-  fastify.get('/first', (req, reply) => {
-    t.ok(req.req.first)
-    t.ok(req.req.second)
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.register((instance, opts, next) => {
-    instance.addHook('preRouting', (req, res, next) => {
       req.second = true
       next()
     })

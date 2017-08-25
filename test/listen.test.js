@@ -43,7 +43,10 @@ test('register after listen using Promise.resolve()', t => {
   return Promise.resolve()
     .then(() => {
       f.get('/', handler)
-      f.register((f2, options) => f2.get('/plugin', handler))
+      f.register((f2, options, done) => {
+        f2.get('/plugin', handler)
+        done()
+      })
     })
     .then(() => {
       f.listen(0, '127.0.0.1', (err) => {

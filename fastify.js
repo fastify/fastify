@@ -38,10 +38,14 @@ function build (options) {
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()
+  const context = Symbol('context')
 
   // logger utils
   const genReqId = loggerUtils.reqIdGenFactory()
   const startTime = loggerUtils.startTime
+  const OnResponseState = loggerUtils.OnResponseState
+  const onResponseIterator = loggerUtils.onResponseIterator
+  const onResponseCallback = loggerUtils.onResponseCallback
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -141,22 +145,13 @@ function build (options) {
     this.removeListener('finish', onResFinished)
     this.removeListener('error', onResFinished)
 
-    var log = this.log
-    var responseTime = Date.now() - this[startTime]
-
-    if (err) {
-      log.error({
-        res: this,
-        err: err,
-        responseTime: responseTime
-      }, 'request errored')
-      return
-    }
-
-    log.info({
-      res: this,
-      responseTime: responseTime
-    }, 'request completed')
+    setImmediate(
+      runHooks,
+      new OnResponseState(err, this),
+      onResponseIterator,
+      this[context] ? this[context].onResponse : [],
+      onResponseCallback
+    )
   }
 
   function listen (port, address, cb) {
@@ -174,6 +169,7 @@ function build (options) {
   }
 
   function startHooks (req, res, params, store) {
+    res[context] = store
     setImmediate(
       runHooks,
       new State(req, res, params, store),
@@ -298,6 +294,7 @@ function build (options) {
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
+      onResponse: options.onResponse,
       config: options.config,
       middie: self._middie
     })
@@ -333,6 +330,7 @@ function build (options) {
         opts.contentTypeParser || _fastify._contentTypeParser,
         opts.onRequest || _fastify._hooks.onRequest,
         [],
+        opts.onResponse || _fastify._hooks.onResponse,
         config,
         opts.middie || _fastify._middie
       )
@@ -365,7 +363,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, config, middie) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -373,6 +371,7 @@ function build (options) {
     this.contentTypeParser = contentTypeParser
     this.onRequest = onRequest
     this.preHandler = preHandler
+    this.onResponse = onResponse
     this.config = config
     this._middie = middie
   }

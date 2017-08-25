@@ -34,3 +34,22 @@ test('listen after Promise.resolve()', t => {
       })
     })
 })
+
+test('register after listen using Promise.resolve()', t => {
+  t.plan(2)
+  const f = Fastify()
+
+  const handler = (req, res) => res.send({})
+  return Promise.resolve()
+    .then(() => {
+      f.get('/', handler)
+      f.register((f2, options) => f2.get('/plugin', handler))
+    })
+    .then(() => {
+      f.listen(0, '127.0.0.1', (err) => {
+        fastify.server.unref()
+        t.error(err)
+        t.pass()
+      })
+    })
+})

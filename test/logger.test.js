@@ -38,7 +38,6 @@ test('test log stream', t => {
       t.equal(line.msg, 'request completed', 'message is set')
       t.equal(line.req.method, 'GET', 'method is get')
       t.equal(line.res.statusCode, 200, 'statusCode is 200')
-      // t.end()
     })
   })
 })

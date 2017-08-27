@@ -40,7 +40,7 @@ test('register after listen using Promise.resolve()', t => {
   const f = Fastify()
 
   const handler = (req, res) => res.send({})
-  return Promise.resolve()
+  Promise.resolve()
     .then(() => {
       f.get('/', handler)
       f.register((f2, options, done) => {
@@ -50,9 +50,9 @@ test('register after listen using Promise.resolve()', t => {
     })
     .then(() => {
       f.listen(0, '127.0.0.1', (err) => {
-        fastify.server.unref()
         t.error(err)
         t.pass()
+        f.close()
       })
     })
 })

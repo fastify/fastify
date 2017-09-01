@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.26.1",
+  "version": "0.26.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {

@@ -27,7 +27,7 @@ function build (options) {
   }
 
   var logger
-  if (options.logger && isValidLogger(options.logger)) {
+  if (isValidLogger(options.logger)) {
     logger = loggerUtils.createLogger({ logger: options.logger, serializer: loggerUtils.serializers })
   } else {
     options.logger = options.logger || {}

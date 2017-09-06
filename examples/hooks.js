@@ -22,12 +22,12 @@ fastify
     console.log('onRequest')
     next()
   })
-  .addHook('preRouting', function (req, res, next) {
-    console.log('preRouting')
-    next()
-  })
   .addHook('preHandler', function (request, reply, next) {
     console.log('preHandler')
+    next()
+  })
+  .addHook('onResponse', function (res, next) {
+    console.log('onResponse')
     next()
   })
 

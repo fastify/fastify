@@ -181,7 +181,7 @@ function build (options) {
 
   function middlewareCallback (err) {
     if (err) {
-      const reply = new Reply(this.req, this.res, this.store)
+      const reply = new Reply(this.res, this.store)
       reply.send(err)
       return
     }
@@ -190,7 +190,7 @@ function build (options) {
 
   function onRunMiddlewares (err, req, res, ctx) {
     if (err) {
-      const reply = new Reply(req, res, ctx.store)
+      const reply = new Reply(res, ctx.store)
       reply.send(err)
       return
     }
@@ -453,7 +453,7 @@ function build (options) {
   }
 
   function defaultRoute (req, res, params) {
-    const reply = new Reply(req, res, null)
+    const reply = new Reply(res, null)
     reply.code(404).send(new Error('Not found'))
   }
 }

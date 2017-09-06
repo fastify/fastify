@@ -27,6 +27,7 @@ test('handler function - invalid schema', t => {
     t.equal(res.statusCode, 400)
     t.pass()
   }
+  res.log = { error: () => {} }
   res.setHeader = (key, value) => {
     return
   }
@@ -45,7 +46,7 @@ test('handler function - invalid schema', t => {
     hooks: new Hooks()
   }
   buildSchema(handle)
-  internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
+  internals.handler(handle, null, null, res, { hello: 'world' }, null)
 })
 
 test('handler function - reply', t => {

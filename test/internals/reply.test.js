@@ -13,22 +13,25 @@ test('Reply should be an object', t => {
 })
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(6)
+  t.plan(7)
+  const request = { req: 'req' }
   const response = { res: 'res' }
   function handle () {}
-  const reply = new Reply(response, handle)
+  const reply = new Reply(request, response, handle)
   t.is(typeof reply, 'object')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
+  t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.store, handle)
 })
 
 test('reply.header, reply.code and reply-serializer should return an instance of Reply', t => {
   t.plan(3)
+  const request = {}
   const response = { setHeader: () => {} }
-  const reply = new Reply(response, null)
+  const reply = new Reply(request, response, null)
   t.type(reply.code(1), Reply)
   t.type(reply.serializer(() => {}), Reply)
   t.type(reply.header('hello', 'world'), Reply)
@@ -64,7 +67,7 @@ test('Reply can set the type of a response', t => {
 
 test('reply.serializer should set a custom serializer', t => {
   t.plan(2)
-  const reply = new Reply(null, null)
+  const reply = new Reply(null, null, null)
   t.equal(reply._serializer, null)
   reply.serializer('serializer')
   t.equal(reply._serializer, 'serializer')

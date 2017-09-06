@@ -4,13 +4,23 @@
 
 By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
-- `'preRouting'`
 - `'preHandler'`
+- `'onResponse'`
 - `'onClose'`
 
 Example:
 ```js
 fastify.addHook('onRequest', (req, res, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('preHandler', (req, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('onResponse', (res, next) => {
   // some code
   next()
 })
@@ -20,16 +30,17 @@ Is pretty easy understand where each hook is executed, if you need a visual feed
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
-If you want to pass a custom error code to the user, just pass it as second parameter to `next()`:
+If you want to pass a custom error code to the user, just use `reply.code()`:
 ```js
 fastify.addHook('onRequest', (req, res, next) => {
   // some code
-  next(new Error('some error'), 400)
+  reply.code(400)
+  next(new Error('some error'))
 })
 ```
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
-The function signature is always the same, `request`, `response`, `next`, it changes a little bit only in the `'preHandler'` hook, where the first two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+Note that in the `'preHandler'` hook the request and rply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
 <a name="on-close"></a>
 **'onClose'**  
@@ -43,7 +54,7 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 <a name="scope"></a>
 ### Scope
-Talking about scope, the hooks works in a slightly different way from the Request/Reply encapsulation model. For instance, `onRequest`, `preRouting` and `onClose` are never encapsulated, not matter where you are declaring them, while the `preHandler` hook is always encapsulated if you declare it inside a `register`.
+Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
 
 <a name="before-handler"></a>
 ### beforeHandler

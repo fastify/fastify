@@ -423,6 +423,10 @@ function build (options) {
   }
 
   function use (url, fn) {
+    if (typeof url === 'string') {
+      const prefix = this._RoutePrefix.prefix
+      url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
+    }
     this._middlewares.push([url, fn])
     this._middie.use(url, fn)
     return this

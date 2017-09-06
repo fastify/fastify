@@ -424,3 +424,59 @@ test('middlewares should support encapsulation / 5', t => {
     })
   })
 })
+
+test('middlewares should support encapsulation with prefix', t => {
+  t.plan(9)
+
+  const instance = fastify()
+
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+
+  instance.register((i, opts, done) => {
+    i.use(function (req, res, next) {
+      next(new Error('kaboom!'))
+    })
+
+    i.get('/', function (request, reply) {
+      t.fail('this should not be called')
+    })
+
+    done()
+  }, { prefix: '/local' })
+
+  instance.get('/global', function (request, reply) {
+    t.ok(request.req.global)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + instance.server.address().port + '/global'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/local'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 500)
+        t.deepEqual(JSON.parse(body), {
+          error: 'Internal Server Error',
+          message: 'kaboom!',
+          statusCode: 500
+        })
+      })
+    })
+  })
+})

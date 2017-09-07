@@ -43,6 +43,7 @@ function build (options) {
   // logger utils
   const genReqId = loggerUtils.reqIdGenFactory()
   const startTime = loggerUtils.startTime
+  const now = loggerUtils.now
   const OnResponseState = loggerUtils.OnResponseState
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
@@ -130,10 +131,9 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
-    req.id = genReqId(req)
+    req.id = genReqId()
     req.log = res.log = logger.child({ req: req })
-    res[startTime] = res[startTime] || Date.now()
-    if (!req.res) req.res = res
+    res[startTime] = now()
 
     res.on('finish', onResFinished)
     res.on('error', onResFinished)

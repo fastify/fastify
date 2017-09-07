@@ -12,6 +12,12 @@ test('gen id factory', t => {
   t.is(typeof genReqId({}), 'number')
 })
 
+test('time resolution', t => {
+  t.plan(2)
+  t.is(typeof loggerUtils.now, 'function')
+  t.is(typeof loggerUtils.now(), 'number')
+})
+
 test('The logger should add a unique id for every request', t => {
   const ids = []
 

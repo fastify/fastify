@@ -54,6 +54,26 @@ module.exports.payloadMethod = function (method, t) {
       fastify[loMethod]('/custom', optsWithCustomValidator, function (req, reply) {
         reply.send(req.body)
       })
+
+      fastify.register(function (fastify2, opts, next) {
+        const optsWithCustomValidator2 = {
+          schema: {
+            body: {
+              type: 'object',
+              properties: { },
+              additionalProperties: false
+            }
+          },
+          schemaCompiler: function (schema) {
+            return function (body) {
+              return 'Always fail!'
+            }
+          }
+        }
+        fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) => reply.send({hello: 'never here!'}))
+
+        next()
+      })
       t.pass()
     } catch (e) {
       t.fail()
@@ -150,6 +170,24 @@ module.exports.payloadMethod = function (method, t) {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body, { hello: 42 })
+      })
+    })
+
+    test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
+        body: { },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: 'Always fail!',
+          statusCode: '400'
+        })
       })
     })
   })

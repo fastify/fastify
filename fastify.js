@@ -28,7 +28,7 @@ function build (options) {
 
   var logger
   if (isValidLogger(options.logger)) {
-    logger = loggerUtils.createLogger({ logger: options.logger, serializer: loggerUtils.serializers })
+    logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'

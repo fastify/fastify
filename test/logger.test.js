@@ -66,7 +66,7 @@ test('test error log stream', t => {
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port + '/error')
-    stream.on('data', line => {
+    stream.once('data', line => {
       t.ok(line.req, 'req is defined')
       t.ok(line.res, 'res is defined')
       t.equal(line.msg, 'kaboom', 'message is set')

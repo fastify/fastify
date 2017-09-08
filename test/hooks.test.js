@@ -42,8 +42,9 @@ test('hooks - add onRequest', t => {
   }
 })
 
-fastify.addHook('onResponse', function (req, res, next) {
+fastify.addHook('onResponse', function (res, next) {
   t.ok('onResponse called')
+  next()
 })
 
 fastify.get('/', function (req, reply) {

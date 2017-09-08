@@ -35,7 +35,7 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    validatorMaker: schema => ajv.compile(schema)
+    schemaCompiler: schema => ajv.compile(schema)
   }
 
   test(`${upMethod} can be created`, t => {
@@ -129,7 +129,7 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
-    test(`${upMethod} - input-validation custom validator maker`, t => {
+    test(`${upMethod} - input-validation custom schema compiler`, t => {
       t.plan(3)
       request({
         method: upMethod,

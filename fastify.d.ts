@@ -13,12 +13,12 @@ declare namespace fastify {
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
   
-  type BeforeRequestHandler = (req: FastifyRequest, res: FastifyResponse, done: (err: Error) => void) => void
+  type BeforeRequestHandler = (req: FastifyRequest, res: FastifyReply, done: (err: Error) => void) => void
   
-  type RequestHandler = (req: FastifyRequest, res: FastifyResponse) => void
+  type RequestHandler = (req: FastifyRequest, res: FastifyReply) => void
 
   /**
-   * fastify's wrapped version of node.js IncomingRequest
+   * fastify's wrapped version of node.js IncomingMessage
    */
   interface FastifyRequest {
     query: object,
@@ -33,13 +33,13 @@ declare namespace fastify {
   /**
    * Response object that is used to build and send a http response
    */
-  interface FastifyResponse {
-    code: (statusCode: number) => FastifyResponse
-    header: (name: string, value: any) => FastifyResponse
-    type: (contentType: string) => FastifyResponse
-    redirect: (statusCode: number, url: string) => FastifyResponse
-    serializer: (fn: Function) => FastifyResponse
-    send: (payload?: string|Array<any>|Object|Error|Promise<any>|ReadableStream) => FastifyResponse 
+  interface FastifyReply {
+    code: (statusCode: number) => FastifyReply
+    header: (name: string, value: any) => FastifyReply
+    type: (contentType: string) => FastifyReply
+    redirect: (statusCode: number, url: string) => FastifyReply
+    serializer: (fn: Function) => FastifyReply
+    send: (payload?: string|Array<any>|Object|Error|Promise<any>|ReadableStream) => FastifyReply 
     sent: boolean
   }
 

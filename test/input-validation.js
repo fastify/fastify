@@ -35,7 +35,14 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    schemaCompiler: schema => ajv.compile(schema)
+    schemaCompiler: function (schema) {
+      const validateFuncion = ajv.compile(schema)
+      return function (body) {
+        const isOk = validateFuncion(body)
+        if (isOk) return
+        return 'Invalid body'
+      }
+    }
   }
 
   test(`${upMethod} can be created`, t => {

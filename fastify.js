@@ -5,7 +5,11 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
+<<<<<<< b72b390435328e31a88387a2dfe29143428d376a
 const runHooks = require('fastseries')()
+=======
+const fastseries = require('fastseries')
+>>>>>>> Define schemaCompiler interface
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -15,6 +19,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
+const schemaCompiler = require('./lib/validation').schemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -485,10 +490,6 @@ function build (options) {
   function defaultRoute (req, res, params) {
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
-  }
-
-  function schemaCompiler (schema) {
-    return ajv.compile(schema)
   }
 }
 

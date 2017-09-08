@@ -6,6 +6,7 @@
   "bin": {
     "fastify": "./lib/bin.js"
   },
+  "typings": "fastify.d.ts",
   "scripts": {
     "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",

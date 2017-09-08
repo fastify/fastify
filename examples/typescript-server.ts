@@ -32,7 +32,7 @@ const opts: fastify.RouteShorthandOptions = {
   }
 }
 
-function getHelloHandler (req: fastify.FastifyRequest, reply: fastify.FastifyResponse) {
+function getHelloHandler (req: fastify.FastifyRequest, reply: fastify.FastifyReply) {
   reply.header('Content-Type', 'application/json').code(200)
   reply.send({ hello: 'world' })
 }

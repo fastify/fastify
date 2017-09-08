@@ -40,6 +40,7 @@
     "node": ">=4.5"
   },
   "devDependencies": {
+    "@types/node": "~8.0.27",
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",

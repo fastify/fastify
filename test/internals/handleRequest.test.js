@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-return */
 'use strict'
 
+const Ajv = require('ajv')
 const t = require('tap')
 const test = t.test
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
@@ -8,6 +9,8 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
+
+const ajv = new Ajv()
 
 test('Request object', t => {
   t.plan(6)
@@ -44,7 +47,7 @@ test('handler function - invalid schema', t => {
     Request: Request,
     hooks: new Hooks()
   }
-  buildSchema(handle)
+  buildSchema(ajv, handle)
   internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
@@ -70,7 +73,7 @@ test('handler function - reply', t => {
     Request: Request,
     preHandler: new Hooks().preHandler
   }
-  buildSchema(handle)
+  buildSchema(ajv, handle)
   internals.handler(handle, null, { log: null }, res, null, null)
 })
 

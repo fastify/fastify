@@ -2,6 +2,7 @@
 
 const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
+const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const pinoHttp = require('pino-http')
@@ -36,6 +37,14 @@ function build (options) {
     options.logger.serializers = options.logger.serializers || serializers
     logger = pinoHttp(options.logger)
   }
+
+  var schemaOptions = { coerceTypes: true }
+
+  if (options.schemaOptions) {
+    schemaOptions = options.schemaOptions
+  }
+
+  const ajv = new Ajv(schemaOptions)
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const middie = Middie(_runMiddlewares)
@@ -310,7 +319,7 @@ function build (options) {
         config
       )
 
-      buildSchema(store)
+      buildSchema(ajv, store)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {

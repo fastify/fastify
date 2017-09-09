@@ -1,7 +1,9 @@
 
 /// <reference types="node" />
+/// <reference types="pino" />
 
 import * as http from 'http';
+import * as pino from 'pino';
 
 declare function fastify(opts?: fastify.ServerOptions): fastify.FastifyInstance;
 
@@ -9,11 +11,11 @@ declare namespace fastify {
 
   type Plugin = (instance: FastifyInstance, opts: Object, callback?: (err?: Error) => void) => void
 
-  type Middleware = (req: http.IncomingMessage, res: http.OutgoingMessage, callback?: (err?: Error) => void) => void
+  type Middleware = (req: fastify.FastifyRequest, res: fastify.FastifyReply, callback?: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
   
-  type BeforeRequestHandler = (req: FastifyRequest, res: FastifyReply, done: (err: Error) => void) => void
+  type BeforeRequestHandler = (req: FastifyRequest, reply: FastifyReply, done: (err?: Error) => void) => void
   
   type RequestHandler = (req: FastifyRequest, res: FastifyReply) => void
 
@@ -25,9 +27,8 @@ declare namespace fastify {
     body: any,
     params: object,
 
-    // TODO - logger and node types
-    req: any
-    log: any
+    req: http.IncomingMessage
+    log: pino.Logger
   }
 
   /**
@@ -43,14 +44,9 @@ declare namespace fastify {
     sent: boolean
   }
 
-  interface LoggerOptions {
-    // TODO - import pino types
-    level: string
-  }
-
   interface ServerOptions {
-    logger: LoggerOptions,
-    https: boolean
+    logger?: pino.LoggerOptions,
+    https?: boolean
   }
 
   interface JSONSchema {
@@ -206,7 +202,36 @@ declare namespace fastify {
     /**
      * Registers a plugin or array of plugins on the server
      */
-    register(plugin: Plugin|Array<Plugin>, RouteOptions, callback?: (err: Error) => void): FastifyInstance
+    register(plugin: Plugin|Array<Plugin>, opts?: RouteOptions, callback?: (err: Error) => void): FastifyInstance
+
+    /**
+     * Decorate this fastify instance with new properties. Throws an execption if
+     * you attempt to add the same decorator name twice
+     */
+    decorate(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance
+
+    /**
+     * Decorate reply objects with new properties. Throws an execption if
+     * you attempt to add the same decorator name twice
+     */
+    decorateReply(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance
+
+    /**
+     * Decorate request objects with new properties. Throws an execption if
+     * you attempt to add the same decorator name twice
+     */
+    decorateResponse(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance
+
+    /**
+     * Extends the standard server error. Return an object with the properties you'd
+     * like added to the error
+     */
+    extendServerError(extendFn: () => Object): FastifyInstance
+    
+    /**
+     * Determines if the given named decorator is available
+     */
+    hasDecorator(name: string): boolean
   }
 }
 

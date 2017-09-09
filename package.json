@@ -8,7 +8,7 @@
   },
   "typings": "fastify.d.ts",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
+    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js && tsc test/types/index.ts --target es6 --module commonjs --noEmit",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
     "coveralls": "tap test/*test.js  test/*/*.test.js --cov",
     "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "~8.0.27",
+    "@types/pino": "~4.7.0",
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",

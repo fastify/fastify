@@ -56,4 +56,5 @@ yarn.lock
 package-lock.json
 
 # generated code
-examples/typescript-server.js 
+examples/typescript-server.js
+test/type/index.js 

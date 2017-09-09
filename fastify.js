@@ -170,8 +170,7 @@ function build (options) {
 
   function startHooks (req, res, params, store) {
     res[context] = store
-    setImmediate(
-      runHooks,
+    runHooks(
       new State(req, res, params, store),
       hookIterator,
       store.onRequest,

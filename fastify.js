@@ -145,13 +145,13 @@ function build (options) {
     this.removeListener('finish', onResFinished)
     this.removeListener('error', onResFinished)
 
-    setImmediate(
-      runHooks,
+    // deferring this with setImmediate will
+    // slow us by 10%
+    runHooks(
       new OnResponseState(err, this),
       onResponseIterator,
       this[context] ? this[context].onResponse : [],
-      onResponseCallback
-    )
+      onResponseCallback)
   }
 
   function listen (port, address, cb) {

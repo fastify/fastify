@@ -133,8 +133,8 @@ function build (options) {
   function fastify (req, res) {
     req.id = genReqId()
     req.log = res.log = logger.child({ req: req })
-    res[startTime] = now()
 
+    res[startTime] = now()
     res.on('finish', onResFinished)
     res.on('error', onResFinished)
 
@@ -145,13 +145,22 @@ function build (options) {
     this.removeListener('finish', onResFinished)
     this.removeListener('error', onResFinished)
 
-    // deferring this with setImmediate will
-    // slow us by 10%
-    runHooks(
-      new OnResponseState(err, this),
-      onResponseIterator,
-      this[context] ? this[context].onResponse : [],
-      onResponseCallback)
+    var ctx = this[context]
+
+    if (ctx !== undefined && ctx.onResponse.length > 0) {
+      // deferring this with setImmediate will
+      // slow us by 10%
+      runHooks(new OnResponseState(err, this),
+        onResponseIterator,
+        ctx.onResponse,
+        wrapOnResponseCallback)
+    } else {
+      onResponseCallback(err, this)
+    }
+  }
+
+  function wrapOnResponseCallback (err) {
+    onResponseCallback(this.err || err, this.res)
   }
 
   function listen (port, address, cb) {

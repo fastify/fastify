@@ -27,14 +27,16 @@ test('Once called, Reply should return an object with methods', t => {
   t.strictEqual(reply.store, handle)
 })
 
-test('reply.header, reply.code and reply-serializer should return an instance of Reply', t => {
-  t.plan(3)
+test('reply.send throw with circular JSON', t => {
+  t.plan(1)
   const request = {}
   const response = { setHeader: () => {} }
   const reply = new Reply(request, response, null)
-  t.type(reply.code(1), Reply)
-  t.type(reply.serializer(() => {}), Reply)
-  t.type(reply.header('hello', 'world'), Reply)
+  t.throws(() => {
+    var obj = {}
+    obj.obj = obj
+    reply.send(JSON.stringify(obj))
+  })
 })
 
 test('Reply can set code and header of a response', t => {

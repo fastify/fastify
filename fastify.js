@@ -4,9 +4,8 @@ const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
-const pinoHttp = require('pino-http')
 const Middie = require('middie')
-const fastseries = require('fastseries')
+const runHooks = require('fastseries')()
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -19,7 +18,7 @@ const isValidLogger = require('./lib/validation').isValidLogger
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
-const serializers = require('./lib/serializers')
+const loggerUtils = require('./lib/logger')
 
 function build (options) {
   options = options || {}
@@ -28,20 +27,26 @@ function build (options) {
   }
 
   var logger
-  if (options.logger && isValidLogger(options.logger)) {
-    logger = pinoHttp({ logger: options.logger, serializers })
+  if (isValidLogger(options.logger)) {
+    logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
-    options.logger.serializers = options.logger.serializers || serializers
-    logger = pinoHttp(options.logger)
+    options.logger.serializers = options.logger.serializers || loggerUtils.serializers
+    logger = loggerUtils.createLogger(options.logger)
   }
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
-  const middie = Middie(_runMiddlewares)
-  const run = middie.run
   const map = new Map()
-  const runHooks = fastseries()
+  const context = Symbol('context')
+
+  // logger utils
+  const genReqId = loggerUtils.reqIdGenFactory()
+  const startTime = loggerUtils.startTime
+  const now = loggerUtils.now
+  const OnResponseState = loggerUtils.OnResponseState
+  const onResponseIterator = loggerUtils.onResponseIterator
+  const onResponseCallback = loggerUtils.onResponseCallback
 
   const app = avvio(fastify, {})
   // Override to allow the plugin incapsulation
@@ -113,7 +118,9 @@ function build (options) {
   fastify._Request = Request
 
   // middleware support
-  fastify.use = middie.use
+  fastify.use = use
+  fastify._middie = Middie(onRunMiddlewares)
+  fastify._middlewares = []
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -124,63 +131,36 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
-    logger(req, res)
+    req.id = genReqId()
+    req.log = res.log = logger.child({ req: req })
 
-    // onRequest hook
-    setImmediate(
-      runHooks,
-      new State(req, res),
-      hookIterator,
-      fastify._hooks.onRequest,
-      middlewareCallback
-    )
+    res[startTime] = now()
+    res.on('finish', onResFinished)
+    res.on('error', onResFinished)
+
+    router.lookup(req, res)
   }
 
-  function _runMiddlewares (err, req, res) {
-    if (err) {
-      const reply = new Reply(req, res, null)
-      reply.send(err)
-      return
+  function onResFinished (err) {
+    this.removeListener('finish', onResFinished)
+    this.removeListener('error', onResFinished)
+
+    var ctx = this[context]
+
+    if (ctx !== undefined && ctx.onResponse.length > 0) {
+      // deferring this with setImmediate will
+      // slow us by 10%
+      runHooks(new OnResponseState(err, this),
+        onResponseIterator,
+        ctx.onResponse,
+        wrapOnResponseCallback)
+    } else {
+      onResponseCallback(err, this)
     }
-
-    // preRouting hook
-    setImmediate(
-      runHooks,
-      new State(req, res),
-      hookIterator,
-      fastify._hooks.preRouting,
-      routeCallback
-    )
   }
 
-  function State (req, res) {
-    this.req = req
-    this.res = res
-  }
-
-  function hookIterator (fn, cb) {
-    fn(this.req, this.res, cb)
-  }
-
-  function middlewareCallback (err, code) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, null)
-      if (code[0]) reply.code(code[0])
-      reply.send(err)
-      return
-    }
-    run(this.req, this.res)
-  }
-
-  function routeCallback (err, code) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, null)
-      if (code[0]) reply.code(code[0])
-      reply.send(err)
-      return
-    }
-
-    router.lookup(this.req, this.res)
+  function wrapOnResponseCallback (err) {
+    onResponseCallback(this.err || err, this.res)
   }
 
   function listen (port, address, cb) {
@@ -197,17 +177,64 @@ function build (options) {
     })
   }
 
+  function startHooks (req, res, params, store) {
+    res[context] = store
+    runHooks(
+      new State(req, res, params, store),
+      hookIterator,
+      store.onRequest,
+      middlewareCallback
+    )
+  }
+
+  function middlewareCallback (err) {
+    if (err) {
+      const reply = new Reply(this.req, this.res, this.store)
+      reply.send(err)
+      return
+    }
+    this.store._middie.run(this.req, this.res, this)
+  }
+
+  function onRunMiddlewares (err, req, res, ctx) {
+    if (err) {
+      const reply = new Reply(req, res, ctx.store)
+      reply.send(err)
+      return
+    }
+
+    handleRequest(req, res, ctx.params, ctx.store)
+  }
+
+  function State (req, res, params, store) {
+    this.req = req
+    this.res = res
+    this.params = params
+    this.store = store
+  }
+
+  function hookIterator (fn, cb) {
+    fn(this.req, this.res, cb)
+  }
+
   function override (instance, fn, opts) {
     if (fn[Symbol.for('skip-override')]) {
       return instance
     }
 
+    const middlewares = Object.assign([], instance._middlewares)
     instance = Object.create(instance)
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
+    instance._middlewares = []
+    instance._middie = Middie(onRunMiddlewares)
+
+    for (var i = 0; i < middlewares.length; i++) {
+      instance.use.apply(instance, middlewares[i])
+    }
 
     return instance
   }
@@ -271,10 +298,13 @@ function build (options) {
       Reply: self._Reply,
       Request: self._Request,
       contentTypeParser: self._contentTypeParser,
+      onRequest: self._hooks.onRequest,
       preHandler: self._hooks.preHandler,
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
-      config: options.config
+      onResponse: options.onResponse,
+      config: options.config,
+      middie: self._middie
     })
   }
 
@@ -306,8 +336,11 @@ function build (options) {
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
+        opts.onRequest || _fastify._hooks.onRequest,
         [],
-        config
+        opts.onResponse || _fastify._hooks.onResponse,
+        config,
+        opts.middie || _fastify._middie
       )
 
       buildSchema(store)
@@ -324,12 +357,12 @@ function build (options) {
         }
 
         map.get(url)[opts.method] = store
-        router.on(opts.method, url, handleRequest, store)
+        router.on(opts.method, url, startHooks, store)
       } else {
         const node = {}
         node[opts.method] = store
         map.set(url, node)
-        router.on(opts.method, url, handleRequest, store)
+        router.on(opts.method, url, startHooks, store)
       }
       done()
     })
@@ -338,14 +371,17 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, preHandler, config) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
+    this.onRequest = onRequest
     this.preHandler = preHandler
+    this.onResponse = onResponse
     this.config = config
+    this._middie = middie
   }
 
   function iterator () {
@@ -394,6 +430,16 @@ function build (options) {
     })
   }
 
+  function use (url, fn) {
+    if (typeof url === 'string') {
+      const prefix = this._RoutePrefix.prefix
+      url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
+    }
+    this._middlewares.push([url, fn])
+    this._middie.use(url, fn)
+    return this
+  }
+
   function addHook (name, fn) {
     this._hooks.add(name, fn)
     return this
@@ -414,7 +460,7 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    logger.logger.error(e, 'client error')
+    logger.error(e, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 

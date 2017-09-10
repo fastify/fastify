@@ -39,7 +39,7 @@ module.exports = function (fastify, options, next) {}
 ```
 Where `fastify` is (pretty obvious) the encapsulated Fastify instance, `options` is the options object and `next` is the function you **must** call when you plugin is ready.
 
-The Fastify's plugin model is fully reentrant and graph-based, it handles without any kind of problem asynchronous code and it guarantees the load order of the plugins, event the close order! *How?* Glad you asked, checkout [`avvio`](https://github.com/mcollina/avvio)!
+The Fastify's plugin model is fully reentrant and graph-based, it handles without any kind of problem asynchronous code and it guarantees the load order of the plugins, even the close order! *How?* Glad you asked, checkout [`avvio`](https://github.com/mcollina/avvio)!
 
 Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `next` when everything is set up!
 ```js
@@ -244,7 +244,6 @@ How we can do that? Checkout our middlewares engine, [middie](https://github.com
 const yourMiddleware = require('your-middleware')
 fastify.use(yourMiddleware)
 ```
-*Note that middlewares executed [before](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) routing and the encapsulation model is not applied, this means that if you declare a middleware inside a plugin it will run for all the plugins.*
 
 <a name="distribution"></a>
 ## How to handle encapsulation and distribution

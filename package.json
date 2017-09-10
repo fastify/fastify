@@ -48,6 +48,7 @@
     "dns-prefetch-control": "^0.1.0",
     "express": "^4.15.3",
     "fast-json-body": "^1.1.0",
+    "fast-safe-stringify": "^1.2.0",
     "fastify-plugin": "^0.1.0",
     "frameguard": "^3.0.0",
     "hapi": "^16.4.3",

@@ -38,11 +38,9 @@ function build (options) {
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()
-  const context = Symbol('context')
 
   // logger utils
   const genReqId = loggerUtils.reqIdGenFactory()
-  const startTime = loggerUtils.startTime
   const now = loggerUtils.now
   const OnResponseState = loggerUtils.OnResponseState
   const onResponseIterator = loggerUtils.onResponseIterator
@@ -134,7 +132,8 @@ function build (options) {
     req.id = genReqId()
     req.log = res.log = logger.child({ req: req })
 
-    res[startTime] = now()
+    res._startTime = now()
+    res._context = null
     res.on('finish', onResFinished)
     res.on('error', onResFinished)
 
@@ -145,9 +144,9 @@ function build (options) {
     this.removeListener('finish', onResFinished)
     this.removeListener('error', onResFinished)
 
-    var ctx = this[context]
+    var ctx = this._context
 
-    if (ctx !== undefined && ctx.onResponse.length > 0) {
+    if (ctx !== null && ctx.onResponse.length > 0) {
       // deferring this with setImmediate will
       // slow us by 10%
       runHooks(new OnResponseState(err, this),
@@ -178,7 +177,7 @@ function build (options) {
   }
 
   function startHooks (req, res, params, store) {
-    res[context] = store
+    res._context = store
     runHooks(
       new State(req, res, params, store),
       hookIterator,

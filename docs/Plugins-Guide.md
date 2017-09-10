@@ -128,7 +128,7 @@ fastify.get('/html', (req, reply) => {
 ```
 It works, but it can be way better!
 ```js
-fastify.decorateReply('html', payload => {
+fastify.decorateReply('html', function (payload) {
   this.type('text/html') // this is the 'Reply' object
   this.send(generateHtml(payload))
 })
@@ -155,7 +155,7 @@ fastify.get('/happiness', (req, reply) => {
 ```
 Again, it works, but it can be way better!
 ```js
-fastify.decorateRequest('setHeader', header => {
+fastify.decorateRequest('setHeader', function (header) {
   this.isHappy = this.req.headers[header]
 })
 

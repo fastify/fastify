@@ -36,19 +36,23 @@ Decorators are not *overwritable*, if you try to declare a decorator already dec
 As the name suggest, this api is needed if you want to add new methods to the `Reply` core object.  
 Just call the `decorateReply` api and pass the name of the new property and its value.
 ```js
-fastify.decorateReply('utility', () => {
+fastify.decorateReply('utility', function () {
   // something very useful
 })
+
+Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
 ```
 
-<a name="decorate-request"></a>
-**decorateRequest**  
+<a name="decorate-request"></a>  
+**decorateRequest**
 As above, this api is needed if you want to add new methods to the `Request` core object.  
 Just call the `decorateRequest` api and pass the name of the new property and its value.
 ```js
-fastify.decorateRequest('utility', () => {
+fastify.decorateRequest('utility', function () {
   // something very useful
 })
+
+Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 ```
 
 <a name="extend-server-error"></a>

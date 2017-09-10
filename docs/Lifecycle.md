@@ -8,25 +8,25 @@ Incoming Request
   │
   └─▶ Instance Logger
         │
-        └─▶ onRequest Hook
-              │
-    4**/5** ◀─┴─▶ run Middlewares
-                    │
-          4**/5** ◀─┴─▶ preRouting Hook
-                          │
-                4**/5** ◀─┴─▶ Routing
-                                │
-                          404 ◀─┴─▶ Parsing
-                                      │
-                                415 ◀─┴─▶ Validation
-                                            │
-                                      400 ◀─┴─▶ preHandler Hook
-                                                  │
-                                        4**/5** ◀─┴─▶ beforeHandler
-                                                        │
-                                              4**/5** ◀─┴─▶ User Handler
-                                                              │
-                                                              └─▶ Reply
-                                                                    │
-                                                                    └─▶ Outgoing Response
+        └─▶ Routing
+             │
+       404 ◀─┴─▶ onRequest Hook
+                  │
+        4**/5** ◀─┴─▶ run Middlewares
+                        │
+              4**/5** ◀─┴─▶ Parsing
+                             │
+                       415 ◀─┴─▶ Validation
+                                   │
+                             400 ◀─┴─▶ preHandler Hook
+                                         │
+                               4**/5** ◀─┴─▶ beforeHandler
+                                               │
+                                     4**/5** ◀─┴─▶ User Handler
+                                                     │
+                                                     └─▶ Reply
+                                                          │ │
+                                                          │ └─▶ Outgoing Response
+                                                          │
+                                                          └─▶ onResponse Hook
 ```

@@ -90,7 +90,7 @@ fastify.listen(8000, function (err) {
 /* route.js */
 
 module.exports = function (fastify, options, next) {
-  fastify.get('/', schema, function (req, reply) {
+  fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
   next()

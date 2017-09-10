@@ -41,8 +41,7 @@ Example:
 
 <a name="serialize"></a>
 ### Serialize
-Usually you will send your data to the clients via JSON, and Fastify has two powerful tools to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) and [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).  
-The first one is used if you have provided an output schema in the route options, otherwise the second one will do de job. We encourage you to use an output schema, it will increase your throughput by x1-4 depending by your payload.
+Usually you will send your data to the clients via JSON, and Fastify has a powerful tools to help you: [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by x1-4 depending on your payload, and it will prevent accidental disclosure of sensitive information.
 
 Example:
 ```js

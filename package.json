@@ -40,6 +40,7 @@
     "node": ">=4.5"
   },
   "devDependencies": {
+    "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",
     "cors": "^2.8.4",

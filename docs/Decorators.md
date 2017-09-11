@@ -39,9 +39,9 @@ Just call the `decorateReply` api and pass the name of the new property and its 
 fastify.decorateReply('utility', function () {
   // something very useful
 })
+```
 
 Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
-```
 
 <a name="decorate-request"></a>  
 **decorateRequest**
@@ -51,9 +51,9 @@ Just call the `decorateRequest` api and pass the name of the new property and it
 fastify.decorateRequest('utility', function () {
   // something very useful
 })
+```
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
-```
 
 <a name="extend-server-error"></a>
 **extendServerError**  

@@ -41,8 +41,6 @@
     "node": ">=4.5"
   },
   "devDependencies": {
-    "@types/node": "~8.0.27",
-    "@types/pino": "~4.7.0",
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",
@@ -74,6 +72,8 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
+    "@types/node": "~8.0.27",
+    "@types/pino": "~4.7.0",
     "ajv": "^5.2.2",
     "avvio": "^2.0.3",
     "fast-json-stringify": "^0.12.2",

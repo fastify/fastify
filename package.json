@@ -6,8 +6,9 @@
   "bin": {
     "fastify": "./lib/bin.js"
   },
+  "typings": "fastify.d.ts",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js",
+    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js && tsc test/types/index.ts --target es6 --module commonjs --noEmit",
     "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
     "coveralls": "tap test/*test.js  test/*/*.test.js --cov",
     "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
@@ -66,6 +67,8 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
+    "@types/node": "~8.0.27",
+    "@types/pino": "~4.7.0",
     "ajv": "^5.2.2",
     "avvio": "^2.0.3",
     "fast-json-stringify": "^0.12.2",

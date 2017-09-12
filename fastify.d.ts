@@ -23,9 +23,15 @@ declare namespace fastify {
    * fastify's wrapped version of node.js IncomingMessage
    */
   interface FastifyRequest {
-    query: object,
+    query: {
+      [key: string]: any
+    },
+
+    params: {
+      [key: string]: any
+    },
+
     body: any,
-    params: object,
 
     req: http.IncomingMessage
     log: pino.Logger

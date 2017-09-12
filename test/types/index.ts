@@ -102,7 +102,9 @@ server
   .delete('/', opts, function (req, reply) {
     reply.send({ hello: 'world' })
   })
-  .patch('/', opts, function (req, reply) {
+  .patch('/:id', opts, function (req, reply) {
+    req.log.info(`incoming id is ${req.params.id}`);
+
     reply.send({ hello: 'world' })
   })
 

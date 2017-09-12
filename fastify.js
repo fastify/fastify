@@ -167,13 +167,29 @@ function build (options) {
     const _cb = (hasAddress) ? cb : address
     fastify.ready(function (err) {
       if (err) return _cb(err)
+      if (listening) {
+        return _cb(new Error('Fastify is already listening'))
+      }
+
+      server.on('error', wrap)
       if (hasAddress) {
-        server.listen(port, address, _cb)
+        server.listen(port, address, wrap)
       } else {
-        server.listen(port, _cb)
+        server.listen(port, wrap)
       }
       listening = true
     })
+
+    function wrap (err) {
+      server.removeListener('error', wrap)
+      if (_cb) {
+        _cb(err)
+      } else {
+        // this will crash the process
+        // it will go to 'uncaughtException'
+        throw err
+      }
+    }
   }
 
   function startHooks (req, res, params, store) {

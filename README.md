@@ -99,6 +99,8 @@ Fastify Redis connection plugin, with this you can share the same Redis connecti
 Swagger documentation generator for Fastify
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
 Multipart support for Fastify
+- [`fastify-formbody`](https://github.com/jsumners/fastify-formbody)
+Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)
 Bearer auth plugin for Fastify
 - [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify

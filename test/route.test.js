@@ -76,14 +76,9 @@ fastify.listen(0, function (err) {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
-})
 
-test('path can be specified in place of uri', t => {
-  t.plan(3)
-
-  fastify.listen(0, function (err) {
-    if (err) t.error(err)
-    fastify.server.unref()
+  test('path can be specified in place of uri', t => {
+    t.plan(3)
 
     fastify.route({
       method: 'GET',

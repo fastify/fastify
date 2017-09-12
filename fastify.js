@@ -167,6 +167,9 @@ function build (options) {
     const _cb = (hasAddress) ? cb : address
     fastify.ready(function (err) {
       if (err) return _cb(err)
+      if (listening) {
+        return _cb(new Error('Fastify is already listening'))
+      }
       if (hasAddress) {
         server.listen(port, address, _cb)
       } else {

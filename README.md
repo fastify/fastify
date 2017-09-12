@@ -95,6 +95,7 @@ __Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the secon
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
 Bearer auth plugin for Fastify
+- [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
 Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify

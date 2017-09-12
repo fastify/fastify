@@ -12,6 +12,17 @@ test('gen id factory', t => {
   t.is(typeof genReqId({}), 'number')
 })
 
+test('gen id factory could accept a custom function', t => {
+  t.plan(2)
+  const genReqId = loggerUtils.reqIdGenFactory(customGenReqId)
+  t.is(typeof genReqId, 'function')
+  t.is(typeof genReqId({}), 'string')
+
+  function customGenReqId () {
+    return 'hello!'
+  }
+})
+
 test('time resolution', t => {
   t.plan(2)
   t.is(typeof loggerUtils.now, 'function')

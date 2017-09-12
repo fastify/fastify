@@ -11,11 +11,11 @@ declare namespace fastify {
 
   type Plugin = (instance: FastifyInstance, opts: Object, callback?: (err?: Error) => void) => void
 
-  type Middleware = (req: fastify.FastifyRequest, res: fastify.FastifyReply, callback?: (err?: Error) => void) => void
+  type Middleware = (req: http.IncomingMessage, res: http.OutgoingMessage, callback?: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
   
-  type BeforeRequestHandler = (req: FastifyRequest, reply: FastifyReply, done: (err?: Error) => void) => void
+  type FastifyMiddleware = (req: FastifyRequest, reply: FastifyReply, done: (err?: Error) => void) => void
   
   type RequestHandler = (req: FastifyRequest, res: FastifyReply) => void
 
@@ -64,7 +64,7 @@ declare namespace fastify {
    */
   interface RouteShorthandOptions {
     schema?: JSONSchema
-    beforeHandler?: BeforeRequestHandler
+    beforeHandler?: FastifyMiddleware
   }
 
   /**
@@ -232,6 +232,28 @@ declare namespace fastify {
      * Determines if the given named decorator is available
      */
     hasDecorator(name: string): boolean
+
+    /**
+     * Add a hook that is triggered when a request is initially received
+     */
+    addHook(name: 'onRequest', hook: Middleware): FastifyInstance
+
+    /**
+     * Hook that is fired before a request is processed, but after the "onRequest"
+     * hook
+     */
+    addHook(name: 'preHandler', hook: FastifyMiddleware)
+
+    /**
+     * Hook that is called when a response is about to be sent to a client
+     */
+    addHook(name: 'onResponse', hook: (res: http.OutgoingMessage, next: (err?: Error) => void) => void): FastifyInstance
+
+    /**
+     * Adds a hook that is triggered when server.close is called. Useful for closing connections
+     * and performing cleanup tasks
+     */
+    addHook(name: 'onClose', hook: (instance: FastifyInstance, done: () => void) => void): FastifyInstance
   }
 }
 

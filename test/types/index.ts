@@ -3,6 +3,7 @@
 
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
+import * as http from 'http';
 import { createReadStream, readFile } from 'fs'
 
 const server: fastify.FastifyInstance = fastify()
@@ -10,12 +11,38 @@ const server: fastify.FastifyInstance = fastify()
 // Third party middleware
 server.use(cors())
 
-// Custom middlewares
-server.use('/', (req, res, next) => {
-  const im = req.req;
-  
-  req.log.info(`${im.method} ${im.url} - body ${req.body}, query ${req.query}`);
-});
+// Custom middleware
+server.use('/', (req, res, next) => {  
+  console.log(`${req.method} ${req.url}`);
+})
+
+
+/**
+ * Test various hooks and different signatures
+ */
+server.addHook('preHandler', (req: fastify.FastifyRequest, reply: fastify.FastifyReply, next) => {
+  if (req.body.error) {
+    next(new Error('testing if middleware errors can be passed'));
+  } else {
+    reply.code(200).send('ok');
+  }
+})
+
+server.addHook('onRequest', (req: http.IncomingMessage, res: http.OutgoingMessage, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+})
+
+server.addHook('onResponse', (res, next) => {
+  setTimeout(function() {
+    console.log('response is finished after 100ms?', res.finished);
+    next();
+  }, 100);
+})
+
+server.addHook('onClose', (instance: fastify.FastifyInstance, done) => {
+  done();
+})
 
 const opts: fastify.RouteShorthandOptions = {
   schema: {

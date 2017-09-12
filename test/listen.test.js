@@ -72,3 +72,16 @@ test('double listen errors', t => {
     })
   })
 })
+
+test('listen twice on the same port', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, (err) => {
+    t.error(err)
+    const s2 = Fastify()
+    s2.listen(fastify.server.address().port, (err) => {
+      fastify.close()
+      t.ok(err)
+    })
+  })
+})

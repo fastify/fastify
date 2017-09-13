@@ -40,7 +40,8 @@ function build (options) {
   const map = new Map()
 
   // logger utils
-  const genReqId = loggerUtils.reqIdGenFactory()
+  const customGenReqId = options.logger ? options.logger.genReqId : null
+  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
   const OnResponseState = loggerUtils.OnResponseState
   const onResponseIterator = loggerUtils.onResponseIterator

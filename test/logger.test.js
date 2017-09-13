@@ -124,3 +124,32 @@ test('expose the logger', t => {
   t.ok(fastify.logger)
   t.is(typeof fastify.logger, 'object')
 })
+
+test('The logger should accept a custom genReqId function', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    logger: {
+      genReqId: function () {
+        return 'a'
+      }
+    }
+  })
+
+  fastify.get('/', (req, reply) => {
+    t.ok(req.req.id)
+    reply.send({ id: req.req.id })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, res => {
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'a')
+      fastify.close()
+    })
+  })
+})

@@ -41,7 +41,7 @@ function build (options) {
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
-  const genReqId = loggerUtils.reqIdGenFactory(customGenReqId)
+  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
   const OnResponseState = loggerUtils.OnResponseState
   const onResponseIterator = loggerUtils.onResponseIterator

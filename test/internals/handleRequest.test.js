@@ -17,7 +17,7 @@ function schemaCompiler (schema) {
   return function (body) {
     const isOk = validateFuncion(body)
     if (isOk) return
-    return 'Invalid body'
+    return { error: new Error('Invalid body') }
   }
 }
 

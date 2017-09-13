@@ -35,13 +35,8 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    schemaCompiler: function (schema) {
-      const validateFuncion = ajv.compile(schema)
-      return function (body) {
-        const isOk = validateFuncion(body)
-        if (isOk) return
-        return 'Invalid body'
-      }
+    schemaCompiler: function gg (schema) {
+      return ajv.compile(schema)
     }
   }
 
@@ -66,7 +61,7 @@ module.exports.payloadMethod = function (method, t) {
           },
           schemaCompiler: function (schema) {
             return function (body) {
-              return 'Always fail!'
+              return { error: new Error('Always fail!') }
             }
           }
         }
@@ -172,7 +167,6 @@ module.exports.payloadMethod = function (method, t) {
         t.deepEqual(body, { hello: 42 })
       })
     })
-
     test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
       t.plan(3)
       request({

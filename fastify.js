@@ -5,11 +5,7 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-<<<<<<< b72b390435328e31a88387a2dfe29143428d376a
 const runHooks = require('fastseries')()
-=======
-const fastseries = require('fastseries')
->>>>>>> Define schemaCompiler interface
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -327,7 +323,8 @@ function build (options) {
       beforeHandler: options.beforeHandler,
       onResponse: options.onResponse,
       config: options.config,
-      middie: self._middie
+      middie: self._middie,
+      schemaCompiler: options.schemaCompiler
     })
   }
 

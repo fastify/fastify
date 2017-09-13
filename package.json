@@ -55,6 +55,7 @@
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
+    "joi": "^10.6.0",
     "pino": "^4.7.0",
     "pre-commit": "^1.2.2",
     "request": "^2.81.0",

@@ -8,9 +8,9 @@
   },
   "typings": "fastify.d.ts",
   "scripts": {
-    "test": "standard | snazzy && tap test/*.test.js test/*/*.test.js && tsc test/types/index.ts --target es6 --module commonjs --noEmit",
-    "coverage": "tap --cov --coverage-report=html test/*.test.js test/*/*.test.js",
-    "coveralls": "tap test/*test.js  test/*/*.test.js --cov",
+    "test": "standard | snazzy && tap -j4 test/*.test.js test/*/*.test.js && tsc test/types/index.ts --target es6 --module commonjs --noEmit",
+    "coverage": "tap -j4 --cov --coverage-report=html test/*.test.js test/*/*.test.js",
+    "coveralls": "tap -j4 test/*test.js  test/*/*.test.js --cov",
     "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
   },
   "repository": {

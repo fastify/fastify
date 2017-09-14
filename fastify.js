@@ -15,6 +15,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
+const schemaCompiler = require('./lib/validation').schemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -100,6 +101,8 @@ function build (options) {
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
+
+  fastify.schemaCompiler = schemaCompiler
 
   // plugin
   fastify.register = fastify.use
@@ -320,7 +323,8 @@ function build (options) {
       beforeHandler: options.beforeHandler,
       onResponse: options.onResponse,
       config: options.config,
-      middie: self._middie
+      middie: self._middie,
+      schemaCompiler: options.schemaCompiler
     })
   }
 
@@ -359,7 +363,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store)
+      buildSchema(store, opts.schemaCompiler || _fastify.schemaCompiler)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {

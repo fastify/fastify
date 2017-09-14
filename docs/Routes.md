@@ -6,7 +6,7 @@
 ```js
 fastify.route(options)
 ```
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`.
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
@@ -100,6 +100,8 @@ fastify.get('/', opts, (req, reply) => {
   reply.send({ hello: 'world' })
 })
 ```
+
+`fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

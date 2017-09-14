@@ -98,6 +98,7 @@ Benchmarks taken using https://github.com/fastify/benchmarks.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
 Bearer auth plugin for Fastify
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers
+- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
 Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify

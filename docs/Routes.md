@@ -137,4 +137,5 @@ Now your clients will have access to the following routes:
 - `/v1/user`
 - `/v2/user`
 
-You can to this as many time as you want, it works also for nested `register` and routes parameter are supported as well.
+You can to this as many time as you want, it works also for nested `register` and routes parameter are supported as well.  
+Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.

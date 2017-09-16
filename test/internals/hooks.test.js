@@ -11,8 +11,8 @@ test('hooks should have 4 array with the registered hooks', t => {
   const hooks = new Hooks()
   t.is(typeof hooks, 'object')
   t.ok(Array.isArray(hooks.onRequest))
-  t.ok(Array.isArray(hooks.preRouting))
   t.ok(Array.isArray(hooks.preHandler))
+  t.ok(Array.isArray(hooks.onResponse))
 })
 
 test('hooks.add should add an hook to the given hook', t => {
@@ -22,13 +22,13 @@ test('hooks.add should add an hook to the given hook', t => {
   t.is(hooks.onRequest.length, 1)
   t.is(typeof hooks.onRequest[0], 'function')
 
-  hooks.add('preRouting', noop)
-  t.is(hooks.preRouting.length, 1)
-  t.is(typeof hooks.preRouting[0], 'function')
-
   hooks.add('preHandler', noop)
   t.is(hooks.preHandler.length, 1)
   t.is(typeof hooks.preHandler[0], 'function')
+
+  hooks.add('onResponse', noop)
+  t.is(hooks.onResponse.length, 1)
+  t.is(typeof hooks.onResponse[0], 'function')
 })
 
 test('hooks should throw on unexisting handler', t => {

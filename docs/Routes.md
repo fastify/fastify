@@ -6,7 +6,7 @@
 ```js
 fastify.route(options)
 ```
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`.
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
@@ -23,6 +23,7 @@ They need to be in
     schema allows us to have 10-20% more throughput.
 * `beforeHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler) called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.
 * `handler(request, reply)`: the function that will handle this request.
+* `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#schema-compiler)
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 
@@ -100,6 +101,8 @@ fastify.get('/', opts, (req, reply) => {
 })
 ```
 
+`fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
+
 <a name="route-prefixing"></a>
 ### Route Prefixing
 Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.  
@@ -134,4 +137,5 @@ Now your clients will have access to the following routes:
 - `/v1/user`
 - `/v2/user`
 
-You can to this as many time as you want, it works also for nested `register` and routes parameter are supported as well.
+You can to this as many time as you want, it works also for nested `register` and routes parameter are supported as well.  
+Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.

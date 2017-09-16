@@ -49,6 +49,22 @@ test('missing schema - route', t => {
   }
 })
 
+test('Multiple methods', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: ['GET', 'DELETE'],
+      url: '/multiple',
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, function (err) {
   if (err) t.error(err)
   fastify.server.unref()
@@ -76,14 +92,30 @@ fastify.listen(0, function (err) {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
-})
 
-test('path can be specified in place of uri', t => {
-  t.plan(3)
+  test('route - multiple methods', t => {
+    t.plan(6)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/multiple'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
 
-  fastify.listen(0, function (err) {
-    if (err) t.error(err)
-    fastify.server.unref()
+    request({
+      method: 'DELETE',
+      uri: 'http://localhost:' + fastify.server.address().port + '/multiple'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('path can be specified in place of uri', t => {
+    t.plan(3)
 
     fastify.route({
       method: 'GET',

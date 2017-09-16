@@ -9,6 +9,18 @@ const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
 
+const Ajv = require('ajv')
+const ajv = new Ajv({ coerceTypes: true })
+
+function schemaCompiler (schema) {
+  const validateFuncion = ajv.compile(schema)
+  return function (body) {
+    const isOk = validateFuncion(body)
+    if (isOk) return
+    return { error: new Error('Invalid body') }
+  }
+}
+
 test('Request object', t => {
   t.plan(6)
   const req = new Request('params', 'req', 'body', 'query', 'log')
@@ -44,7 +56,7 @@ test('handler function - invalid schema', t => {
     Request: Request,
     hooks: new Hooks()
   }
-  buildSchema(handle)
+  buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
@@ -70,7 +82,7 @@ test('handler function - reply', t => {
     Request: Request,
     preHandler: new Hooks().preHandler
   }
-  buildSchema(handle)
+  buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: null }, res, null, null)
 })
 

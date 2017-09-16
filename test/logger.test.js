@@ -5,28 +5,27 @@ const test = t.test
 const http = require('http')
 const split = require('split2')
 const Fastify = require('..')
-var fastify = null
-var stream = split(JSON.parse)
-
-try {
-  fastify = Fastify({
-    logger: {
-      stream: stream,
-      level: 'info'
-    }
-  })
-  t.pass()
-} catch (e) {
-  t.fail()
-}
-
-fastify.get('/', function (req, reply) {
-  t.ok(req.log)
-  reply.send({ hello: 'world' })
-})
 
 test('test log stream', t => {
-  t.plan(6)
+  t.plan(7)
+  var fastify = null
+  var stream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: stream,
+        level: 'info'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  fastify.get('/', function (req, reply) {
+    t.ok(req.log)
+    reply.send({ hello: 'world' })
+  })
+
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
@@ -38,29 +37,55 @@ test('test log stream', t => {
       t.equal(line.msg, 'request completed', 'message is set')
       t.equal(line.req.method, 'GET', 'method is get')
       t.equal(line.res.statusCode, 200, 'statusCode is 200')
-      t.end()
+    })
+  })
+})
+
+test('test error log stream', t => {
+  t.plan(7)
+  var fastify = null
+  var stream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: stream,
+        level: 'info'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('kaboom'))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', line => {
+      t.ok(line.req, 'req is defined')
+      t.ok(line.res, 'res is defined')
+      t.equal(line.msg, 'kaboom', 'message is set')
+      t.equal(line.req.method, 'GET', 'method is get')
+      t.equal(line.res.statusCode, 500, 'statusCode is 500')
     })
   })
 })
 
 test('can use external logger instance', t => {
-  t.plan(7)
+  const lines = ['log success', 'request completed']
+  t.plan(lines.length + 2)
 
-  const lines = []
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    lines.push(line)
-  })
-  splitStream.on('end', () => {
-    t.is(lines.length, 4)
-    t.is(lines[0].msg, 'log success')
-    t.is(lines[1].msg, 'log success')
-    t.is(lines[2].msg, 'log success')
-    t.is(lines[3].msg, 'request completed')
+    t.is(line.msg, lines.shift())
   })
 
   const logger = require('pino')(splitStream)
-  logger.info('log success')
 
   const localFastify = Fastify({logger: logger})
 
@@ -68,23 +93,63 @@ test('can use external logger instance', t => {
     t.ok(req.log)
     req.log.info('log success')
     reply.send({ hello: 'world' })
-    setImmediate(() => {
-      localFastify.server.close(() => {
-        splitStream.end()
-        localFastify.server.unref()
-      })
-    })
   })
 
   localFastify.listen(0, err => {
     t.error(err)
-    logger.info('log success')
-    http.get('http://localhost:' + localFastify.server.address().port + '/foo')
+    http.get('http://localhost:' + localFastify.server.address().port + '/foo', (res) => {
+      res.resume()
+      res.on('end', () => {
+        localFastify.server.close()
+      })
+    })
   })
 })
 
 test('expose the logger', t => {
   t.plan(2)
+  var fastify = null
+  var stream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: stream,
+        level: 'info'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
   t.ok(fastify.logger)
-  t.is(typeof fastify.logger, 'function')
+  t.is(typeof fastify.logger, 'object')
+})
+
+test('The logger should accept a custom genReqId function', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    logger: {
+      genReqId: function () {
+        return 'a'
+      }
+    }
+  })
+
+  fastify.get('/', (req, reply) => {
+    t.ok(req.req.id)
+    reply.send({ id: req.req.id })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, res => {
+      const payload = JSON.parse(res.payload)
+      t.equal(payload.id, 'a')
+      fastify.close()
+    })
+  })
 })

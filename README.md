@@ -61,15 +61,17 @@ __Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the secon
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| hapi               | 16.5.0                     | &#10003;     | 3,194         |
-| Express            | 4.15.3                     | &#10003;     | 9,418         |
-| Restify            | 5.0.1                      | &#10003;     | 12,014        |
-| take-five          | 1.3.4                      | &#10003;     | 18,658        |
-| Koa (`koa-router`) | 2.3.0 (`koa-router@7.2.1`) | &#10003;     | 19,650        |
-| Koa                | 2.3.0                      | &#10007;     | 21,349        |
-| **Fastify**        | **0.25.2**                 | **&#10003;** | **23,301**    |
+| hapi               | 16.5.2                     | &#10003;     | 4,226         |
+| Restify            | 5.2.0                      | &#10003;     | 16,395        |
+| Express            | 4.15.4                     | &#10003;     | 18,740        |
+| Koa (`koa-router`) | 2.3.0 (`koa-router@7.2.1`) | &#10003;     | 21,361        |
+| take-five          | 1.3.4                      | &#10003;     | 25,838        |
+| Koa                | 2.3.0                      | &#10007;     | 26,228        |
+| **Fastify**        | **0.27.0**                 | **&#10003;** | **29,340**    |
 | -                  |                            |              |               |
-| `http.Server`      | 8.2.1                      | &#10007;     | 33,435        |
+| `http.Server`      | 8.4.0                      | &#10007;     | 37,846        |
+
+Benchmarks taken using https://github.com/fastify/benchmarks.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
@@ -89,29 +91,35 @@ __Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the secon
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
 
 ## Ecosystem
-- [`point-of-view`](https://github.com/fastify/point-of-view)
-Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)
-Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
-- [`fastify-redis`](https://github.com/fastify/fastify-redis)
-Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
-- [`fastify-swagger`](https://github.com/fastify/fastify-swagger)
-Swagger documentation generator for Fastify
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
-Multipart support for Fastify
-- [`fastify-bearer-auth`](https://github.com/jsumners/fastify-bearer-auth)
-Bearer auth plugin for Fastify
-- [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify
-- [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
-- [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
-- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
-- [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
-- [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
-- [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
-- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify.
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header
-- [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify 
+- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify.
+- [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
+- [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
+Bearer auth plugin for Fastify
+- [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers
+- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration
+- [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
+Plugin to parse x-www-form-urlencoded bodies
+- [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
+- [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
+- [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
+- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)
+Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
+- [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
+Multipart support for Fastify
+- [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify
+- [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
+- [`fastify-redis`](https://github.com/fastify/fastify-redis)
+Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
+- [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify
+- [`fastify-swagger`](https://github.com/fastify/fastify-swagger)
+Swagger documentation generator for Fastify
+- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
+- [`point-of-view`](https://github.com/fastify/point-of-view)
+Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
+- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
+Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
 - *More coming soon*
 
 ## Team

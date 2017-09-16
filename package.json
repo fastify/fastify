@@ -73,7 +73,7 @@
     "@types/pino": "~4.7.0",
     "ajv": "^5.2.2",
     "avvio": "^2.0.3",
-    "fast-json-stringify": "^0.12.2",
+    "fast-json-stringify": "^0.13.0",
     "fastify-cli": "^0.6.1",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.5.0",

@@ -202,7 +202,7 @@ test('extend server error - encapsulation', t => {
 
   fastify.register((instance, opts, next) => {
     instance.extendServerError((payloadError) => {
-      t.strictEqual(payloadError instanceof Error, true)
+      t.ok(payloadError instanceof Error)
       t.strictEqual(payloadError.name, err.name)
       t.strictEqual(payloadError.message, err.message)
 

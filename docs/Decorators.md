@@ -58,7 +58,7 @@ Note: using an arrow function will break the binding of `this` to the Fastify `r
 <a name="extend-server-error"></a>
 **extendServerError**  
 If you need to extend the standard [server error](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors), this api is what you need.  
-You *must* pass a function that returns an object, Fastify will extend the server error with the returned object of your function. We pass the original error as first argument.
+You *must* pass a function that returns an object, Fastify will extend the server error with the returned object of your function. The function will receive the original error object.
 ```js
 fastify.extendServerError((err) => {
   return {

@@ -190,7 +190,7 @@ test('extendServerError should exist', t => {
 })
 
 test('extend server error - encapsulation', t => {
-  t.plan(6)
+  t.plan(9)
   const fastify = Fastify()
   const err = new Error('error')
   const date = new Date()
@@ -201,7 +201,11 @@ test('extend server error - encapsulation', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.extendServerError(() => {
+    instance.extendServerError((payloadError) => {
+      t.ok(payloadError instanceof Error)
+      t.strictEqual(payloadError.name, err.name)
+      t.strictEqual(payloadError.message, err.message)
+
       return {
         timestamp: date
       }
@@ -256,18 +260,6 @@ test('extend server error - should throw if the argument is not a function', t =
     t.fail()
   } catch (e) {
     t.is(e.message, 'The server error object must be a function')
-  }
-})
-
-test('extend server error - should throw if the function does not return an object', t => {
-  t.plan(1)
-  const fastify = Fastify()
-
-  try {
-    fastify.extendServerError(() => null)
-    t.fail()
-  } catch (e) {
-    t.is(e.message, 'The error extender must return an object')
   }
 })
 

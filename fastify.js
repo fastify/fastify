@@ -96,7 +96,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks(fastify)
+  fastify._hooks = new Hooks()
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -247,7 +247,7 @@ function build (options) {
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks, instance)
+    instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)

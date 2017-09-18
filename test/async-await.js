@@ -103,6 +103,49 @@ function asyncTest (t) {
       })
     })
   })
+
+  test('emit unhandledRejection if send is called and a value is returned', t => {
+    t.plan(5)
+
+    const server = Fastify()
+    const payload = { hello: 'world2' }
+
+    server.get('/', async function awaitMyFunc (req, reply) {
+      reply.send(payload)
+      return { hello: 'world' }
+    })
+
+    const listeners = process.listeners('unhandledRejection')
+    process.removeAllListeners('unhandledRejection')
+    process.on('unhandledRejection', waitForError)
+    process.on('rejectionHandled', noop)
+
+    function waitForError (err, p) {
+      p.catch(() => {})
+      t.ok(err)
+    }
+
+    function noop () {}
+
+    t.tearDown(function () {
+      process.removeListener('unhandledRejection', waitForError)
+      listeners.forEach((l) => process.on('unhandledRejection', l))
+      process.removeListener('rejectionHandled', noop)
+    })
+    t.tearDown(server.close.bind(server))
+
+    server.listen(0, (err) => {
+      t.error(err)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + server.server.address().port + '/'
+      }, (err, res, body) => {
+        t.error(err)
+        t.deepEqual(payload, JSON.parse(body))
+        t.strictEqual(res.statusCode, 200)
+      })
+    })
+  })
 }
 
 module.exports = asyncTest

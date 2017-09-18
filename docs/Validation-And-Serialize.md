@@ -35,7 +35,7 @@ Example:
         par1: { type: 'string' },
         par2: { type: 'number' }
       }
-    }
+    },
 
     headers: {
       type: 'object',

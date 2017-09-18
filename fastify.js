@@ -237,17 +237,17 @@ function build (options) {
     fn(this.req, this.res, cb)
   }
 
-  function override (instance, fn, opts) {
+  function override (old, fn, opts) {
     if (fn[Symbol.for('skip-override')]) {
-      return instance
+      return old
     }
 
-    const middlewares = Object.assign([], instance._middlewares)
-    instance = Object.create(instance)
+    const middlewares = Object.assign([], old._middlewares)
+    const instance = Object.create(old)
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
+    instance._hooks = Hooks.buildHooks(instance._hooks, instance)
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
@@ -486,7 +486,11 @@ function build (options) {
   }
 
   function addHook (name, fn) {
-    this._hooks.add(name, fn)
+    if (name === 'onClose') {
+      this.onClose(fn)
+    } else {
+      this._hooks.add(name, fn)
+    }
     return this
   }
 

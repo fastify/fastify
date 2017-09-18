@@ -151,7 +151,7 @@ test('inject get request - headers', t => {
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
-    reply.send(req.req.headers)
+    reply.send(req.headers)
   })
 
   fastify.inject({

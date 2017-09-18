@@ -10,11 +10,12 @@ const validation = require('../../lib/validation')
 const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {
-  t.plan(4)
+  t.plan(5)
   t.is(typeof symbols.responseSchema, 'symbol')
   t.is(typeof symbols.bodySchema, 'symbol')
   t.is(typeof symbols.querystringSchema, 'symbol')
   t.is(typeof symbols.paramsSchema, 'symbol')
+  t.is(typeof symbols.headersSchema, 'symbol')
 })
 
 test('build schema - missing schema', t => {
@@ -117,4 +118,20 @@ test('build schema - params schema', t => {
   }
   validation.build(opts, schema => ajv.compile(schema))
   t.is(typeof opts[symbols.paramsSchema], 'function')
+})
+
+test('build schema - headers schema', t => {
+  t.plan(1)
+  const opts = {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          'content-type': { type: 'string' }
+        }
+      }
+    }
+  }
+  validation.build(opts, schema => ajv.compile(schema))
+  t.is(typeof opts[symbols.headersSchema], 'function')
 })

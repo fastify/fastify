@@ -5,6 +5,7 @@ const test = t.test
 const http = require('http')
 const split = require('split2')
 const Fastify = require('..')
+const pino = require('pino')
 
 test('test log stream', t => {
   t.plan(7)
@@ -151,5 +152,35 @@ test('The logger should accept a custom genReqId function', t => {
       t.equal(payload.id, 'a')
       fastify.close()
     })
+  })
+})
+
+test('reply.send logs an error if called twice in a row', t => {
+  const lines = ['Reply already sent', 'Reply already sent', 'request completed']
+  t.plan(lines.length + 1)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, lines.shift())
+  })
+
+  const logger = pino(splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+    reply.send({ hello: 'world2' })
+    reply.send({ hello: 'world3' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
   })
 })

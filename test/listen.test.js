@@ -1,5 +1,8 @@
 'use strict'
 
+const os = require('os')
+const path = require('path')
+const fs = require('fs')
 const test = require('tap').test
 const Fastify = require('..')
 
@@ -83,5 +86,19 @@ test('listen twice on the same port', t => {
       fastify.close()
       t.ok(err)
     })
+  })
+})
+
+test('listen on socket', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const sockFile = path.join(os.tmpdir(), 'server.sock')
+  try {
+    fs.unlinkSync(sockFile)
+  } catch (e) { }
+  fastify.listen(sockFile, (err) => {
+    t.error(err)
+    t.equal(sockFile, fastify.server.address())
+    fastify.close()
   })
 })

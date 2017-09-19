@@ -162,12 +162,11 @@ fastify.listen(0, err => {
   })
 
   test('request promise double send', t => {
-    t.plan(4)
+    t.plan(3)
     fastify.get('/kaboom', function (req, reply) {
       setTimeout(function () {
-        t.throws(function () {
-          reply.send(Promise.resolve({ hello: 'world' }))
-        }, 'double send throws')
+        // this should not throw
+        reply.send(Promise.resolve({ hello: 'world' }))
       }, 20)
       return Promise.resolve({ hello: '42' })
     })

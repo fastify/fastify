@@ -4,6 +4,8 @@ const request = require('request')
 const Fastify = require('..')
 const fastify = Fastify()
 const sleep = require('then-sleep')
+const split = require('split2')
+const pino = require('pino')
 
 const opts = {
   schema: {
@@ -79,7 +81,7 @@ function asyncTest (t) {
     })
   })
 
-  test('do nothing on undefined', t => {
+  test('ignore the result of the promise if reply.send is called beforehand (undefined)', t => {
     t.plan(4)
 
     const server = Fastify()
@@ -104,8 +106,8 @@ function asyncTest (t) {
     })
   })
 
-  test('emit unhandledRejection if send is called and a value is returned', t => {
-    t.plan(5)
+  test('ignore the result of the promise if reply.send is called beforehand (object)', t => {
+    t.plan(4)
 
     const server = Fastify()
     const payload = { hello: 'world2' }
@@ -115,23 +117,6 @@ function asyncTest (t) {
       return { hello: 'world' }
     })
 
-    const listeners = process.listeners('unhandledRejection')
-    process.removeAllListeners('unhandledRejection')
-    process.on('unhandledRejection', waitForError)
-    process.on('rejectionHandled', noop)
-
-    function waitForError (err, p) {
-      p.catch(() => {})
-      t.ok(err)
-    }
-
-    function noop () {}
-
-    t.tearDown(function () {
-      process.removeListener('unhandledRejection', waitForError)
-      listeners.forEach((l) => process.on('unhandledRejection', l))
-      process.removeListener('rejectionHandled', noop)
-    })
     t.tearDown(server.close.bind(server))
 
     server.listen(0, (err) => {
@@ -144,6 +129,35 @@ function asyncTest (t) {
         t.deepEqual(payload, JSON.parse(body))
         t.strictEqual(res.statusCode, 200)
       })
+    })
+  })
+
+  test('server logs an error if reply.send is called and a value is returned via async/await', t => {
+    const lines = ['Reply already sent', 'request completed']
+    t.plan(lines.length + 1)
+
+    const splitStream = split(JSON.parse)
+    splitStream.on('data', (line) => {
+      t.is(line.msg, lines.shift())
+    })
+
+    const logger = pino(splitStream)
+
+    const fastify = Fastify({
+      logger
+    })
+
+    fastify.get('/', async (req, reply) => {
+      reply.send({ hello: 'world' })
+      return { hello: 'world2' }
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      const payload = JSON.parse(res.payload)
+      t.deepEqual(payload, { hello: 'world' })
     })
   })
 }

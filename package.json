@@ -13,7 +13,7 @@
     "typescript": "tsc test/types/index.ts --target es6 --module commonjs --noEmit",
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
-    "coveralls": "npm run unit --cov",
+    "coveralls": "npm run unit --  --cov",
     "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
   },
   "repository": {

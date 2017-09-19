@@ -66,6 +66,20 @@ module.exports.payloadMethod = function (method, t) {
       })
 
       fastify.register(function (fastify2, opts, next) {
+        fastify2.setSchemaCompiler(function schema (schema) {
+          return body => ({ error: new Error('From custom schema compiler!') })
+        })
+        const withInstanceCustomCompiler = {
+          schema: {
+            body: {
+              type: 'object',
+              properties: { },
+              additionalProperties: false
+            }
+          }
+        }
+        fastify2[loMethod]('/plugin', withInstanceCustomCompiler, (req, reply) => reply.send({hello: 'never here!'}))
+
         const optsWithCustomValidator2 = {
           schema: {
             body: {
@@ -215,6 +229,24 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: 'child "hello" fails because ["hello" must be a string]',
           statusCode: 400
+        })
+      })
+    })
+
+    test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, t => {
+      t.plan(3)
+      request({
+        method: upMethod,
+        uri: 'http://localhost:' + fastify.server.address().port + '/plugin',
+        body: { },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: 'From custom schema compiler!',
+          statusCode: '400'
         })
       })
     })

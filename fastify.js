@@ -103,6 +103,7 @@ function build (options) {
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
 
+  fastify.setSchemaCompiler = setSchemaCompiler
   fastify.schemaCompiler = schemaCompiler
 
   // plugin
@@ -516,6 +517,11 @@ function build (options) {
   function defaultRoute (req, res, params) {
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
+  }
+
+  function setSchemaCompiler (schemaCompiler) {
+    this.schemaCompiler = schemaCompiler
+    return this
   }
 }
 

@@ -104,7 +104,7 @@ function build (options) {
   fastify._contentTypeParser = new ContentTypeParser()
 
   fastify.setSchemaCompiler = setSchemaCompiler
-  fastify.schemaCompiler = schemaCompiler
+  fastify._schemaCompiler = schemaCompiler
 
   // plugin
   fastify.register = fastify.use
@@ -377,7 +377,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store, opts.schemaCompiler || _fastify.schemaCompiler)
+      buildSchema(store, opts.schemaCompiler || _fastify._schemaCompiler)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {
@@ -520,7 +520,7 @@ function build (options) {
   }
 
   function setSchemaCompiler (schemaCompiler) {
-    this.schemaCompiler = schemaCompiler
+    this._schemaCompiler = schemaCompiler
     return this
   }
 }

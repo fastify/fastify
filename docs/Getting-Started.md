@@ -23,6 +23,7 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+Do you prefer to use `async/await`? Please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="schema"></a>
 ### Schema serialization

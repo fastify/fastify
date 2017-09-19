@@ -103,6 +103,27 @@ fastify.get('/', opts, (req, reply) => {
 
 `fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
 
+<a name="async-await"></a>
+### Async Await
+Are you an `async/await` user? We have you covered!
+```js
+fastify.get('/', options, async function (request, reply) {
+  var data = await getData()
+  var processed = await processData(data)
+  return processed
+})
+```
+As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!  
+If you need it you can also send back the data to the user with `reply.send`.
+```js
+fastify.get('/', options, async function (request, reply) {
+  var data = await getData()
+  var processed = await processData(data)
+  reply.send(processed)
+})
+```
+**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted if the value is not `undefined`.
+
 <a name="route-prefixing"></a>
 ### Route Prefixing
 Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.  

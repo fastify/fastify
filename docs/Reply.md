@@ -94,6 +94,7 @@ fastify.get('/async-await', options, async function (request, reply) {
   return res
 })
 ```
+If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="send-streams"></a>
 #### Streams

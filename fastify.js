@@ -39,7 +39,7 @@ function build (options) {
     logger = loggerUtils.createLogger(options.logger)
   }
 
-  var ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
+  const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()

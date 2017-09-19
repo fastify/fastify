@@ -43,6 +43,9 @@ test('handler function - invalid schema', t => {
   res.setHeader = (key, value) => {
     return
   }
+  res.getHeader = (key) => {
+    return
+  }
   const handle = {
     schema: {
       body: {
@@ -77,7 +80,7 @@ test('handler function - reply', t => {
   const handle = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
-      reply.send(null)
+      reply.send(undefined)
     },
     Reply: Reply,
     Request: Request,

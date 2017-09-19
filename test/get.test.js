@@ -21,6 +21,16 @@ const schema = {
   }
 }
 
+const nullSchema = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'null'
+      }
+    }
+  }
+}
+
 const numberSchema = {
   schema: {
     response: {
@@ -83,6 +93,18 @@ test('shorthand - get', t => {
   try {
     fastify.get('/', schema, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - get (return null)', t => {
+  t.plan(1)
+  try {
+    fastify.get('/null', nullSchema, function (req, reply) {
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {
@@ -168,6 +190,18 @@ test('empty response', t => {
   try {
     fastify.get('/empty', function (req, reply) {
       reply.code(200).send()
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('send a falsy boolean', t => {
+  t.plan(1)
+  try {
+    fastify.get('/boolean', function (req, reply) {
+      reply.code(200).send(false)
     })
     t.pass()
   } catch (e) {
@@ -348,11 +382,34 @@ fastify.listen(0, err => {
       method: 'GET',
       uri: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
-      console.log(body)
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '0')
       t.deepEqual(body, '')
+    })
+  })
+
+  test('shorthand - send a falsy boolean', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/boolean'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, 'false')
+    })
+  })
+
+  test('shorthand - send null value', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/null'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, 'null')
     })
   })
 })

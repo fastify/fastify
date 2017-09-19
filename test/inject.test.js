@@ -88,7 +88,7 @@ test('inject get request - headers check', t => {
   }, res => {
     t.strictEqual('', res.payload)
     t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.strictEqual(res.headers['content-length'], '0')
+    t.strictEqual(res.headers['content-length'], 0)
   })
 })
 

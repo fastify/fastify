@@ -1,32 +1,34 @@
 'use strict'
 
-const Ajv = require('ajv')
 const t = require('tap')
 const test = t.test
 
+const Ajv = require('ajv')
+const ajv = new Ajv({ coerceTypes: true })
+
 const validation = require('../../lib/validation')
 const symbols = require('../../lib/validation').symbols
-const ajv = new Ajv()
 
 test('Symbols', t => {
-  t.plan(4)
+  t.plan(5)
   t.is(typeof symbols.responseSchema, 'symbol')
   t.is(typeof symbols.bodySchema, 'symbol')
   t.is(typeof symbols.querystringSchema, 'symbol')
   t.is(typeof symbols.paramsSchema, 'symbol')
+  t.is(typeof symbols.headersSchema, 'symbol')
 })
 
 test('build schema - missing schema', t => {
   t.plan(1)
   const opts = {}
-  validation.build(ajv, opts)
+  validation.build(opts)
   t.is(typeof opts[symbols.responseSchema], 'undefined')
 })
 
 test('build schema - missing output schema', t => {
   t.plan(1)
   const opts = { schema: {} }
-  validation.build(ajv, opts)
+  validation.build(opts)
   t.is(typeof opts[symbols.responseSchema], 'undefined')
 })
 
@@ -50,7 +52,7 @@ test('build schema - output schema', t => {
       }
     }
   }
-  validation.build(ajv, opts)
+  validation.build(opts, schema => ajv.compile(schema))
   t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
   t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })
@@ -67,7 +69,7 @@ test('build schema - payload schema', t => {
       }
     }
   }
-  validation.build(ajv, opts)
+  validation.build(opts, schema => ajv.compile(schema))
   t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
@@ -83,7 +85,7 @@ test('build schema - querystring schema', t => {
       }
     }
   }
-  validation.build(ajv, opts)
+  validation.build(opts, schema => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -97,7 +99,7 @@ test('build schema - querystring schema abbreviated', t => {
       }
     }
   }
-  validation.build(ajv, opts)
+  validation.build(opts, schema => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -114,6 +116,22 @@ test('build schema - params schema', t => {
       }
     }
   }
-  validation.build(ajv, opts)
+  validation.build(opts, schema => ajv.compile(schema))
   t.is(typeof opts[symbols.paramsSchema], 'function')
+})
+
+test('build schema - headers schema', t => {
+  t.plan(1)
+  const opts = {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          'content-type': { type: 'string' }
+        }
+      }
+    }
+  }
+  validation.build(opts, schema => ajv.compile(schema))
+  t.is(typeof opts[symbols.headersSchema], 'function')
 })

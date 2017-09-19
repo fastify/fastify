@@ -29,6 +29,7 @@ const helmet = require('fastify-helmet')
 fastify.register(helmet)
 ```
 
+Also remember that middlewares can be encapsulated, this means that you can decide where your middlewares should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
 
 <a name="restrict-usage"></a>
 #### Restrict middleware execution to a certain path(s)

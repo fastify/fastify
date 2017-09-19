@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-return */
 'use strict'
 
-const Ajv = require('ajv')
 const t = require('tap')
 const test = t.test
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
@@ -10,16 +9,27 @@ const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
 
-const ajv = new Ajv()
+const Ajv = require('ajv')
+const ajv = new Ajv({ coerceTypes: true })
+
+function schemaCompiler (schema) {
+  const validateFuncion = ajv.compile(schema)
+  return function (body) {
+    const isOk = validateFuncion(body)
+    if (isOk) return
+    return { error: new Error('Invalid body') }
+  }
+}
 
 test('Request object', t => {
-  t.plan(6)
-  const req = new Request('params', 'req', 'body', 'query', 'log')
+  t.plan(7)
+  const req = new Request('params', 'req', 'body', 'query', 'headers', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
   t.deepEqual(req.req, 'req')
   t.equal(req.body, 'body')
   t.equal(req.query, 'query')
+  t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')
 })
 
@@ -31,6 +41,9 @@ test('handler function - invalid schema', t => {
     t.pass()
   }
   res.setHeader = (key, value) => {
+    return
+  }
+  res.getHeader = (key) => {
     return
   }
   const handle = {
@@ -47,7 +60,7 @@ test('handler function - invalid schema', t => {
     Request: Request,
     hooks: new Hooks()
   }
-  buildSchema(ajv, handle)
+  buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
@@ -67,13 +80,13 @@ test('handler function - reply', t => {
   const handle = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
-      reply.send(null)
+      reply.send(undefined)
     },
     Reply: Reply,
     Request: Request,
     preHandler: new Hooks().preHandler
   }
-  buildSchema(ajv, handle)
+  buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: null }, res, null, null)
 })
 

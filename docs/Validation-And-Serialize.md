@@ -11,6 +11,7 @@ The supported validations are:
 - `body`: validates the body of the request if it is a POST or a PUT.
 - `querystring`: validates the querystring. This can be a complete JSON Schema object, with the property type of object and properties object of parameters, or simply the values of what would be contained in the properties object as shown below.
 - `params`: validates the route params.
+- `headers`: validates the request headers.
 
 Example:
 ```js
@@ -34,15 +35,52 @@ Example:
         par1: { type: 'string' },
         par2: { type: 'number' }
       }
+    },
+
+    headers: {
+      type: 'object',
+      properties: {
+        'x-foo': { type: 'string' }
+      },
+      required: ['x-foo']
     }
   }
 ```
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema type keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
+<a name="schema-compiler"></a>
+#### Schema Compiler
+
+The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers and the query string.
+
+The default `schemaCompiler` returns a function that implements the `ajv` validation interface.
+`fastify` use it internally to speed the validation up.
+
+But maybe you want to change the validation library. Perhaps you like `Joi`.
+In this case you can use it to validate the url parameters, the body and the querystring!
+
+```js
+const Joi = require('joi')
+
+fastify.post('/the/url', {
+  schema: {
+    body: Joi.object().keys({
+      hello: Joi.string().required()
+    }).required()
+  },
+  schemaCompiler: function (schema) {
+    return schema.validate.bind(validate)
+  }
+})
+```
+
+In that case the function retuned by schemaCompiler returns an object like:
+* `error`: filled with an instance of `Error` or a string that describes the validation error
+* `value`: the coerced value that passes the validation
+
 <a name="serialize"></a>
 ### Serialize
-Usually you will send your data to the clients via JSON, and Fastify has two powerful tools to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) and [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).  
-The first one is used if you have provided an output schema in the route options, otherwise the second one will do de job. We encourage you to use an output schema, it will increase your throughput by x1-4 depending by your payload.
+Usually you will send your data to the clients via JSON, and Fastify has a powerful tools to help you: [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by x1-4 depending on your payload, and it will prevent accidental disclosure of sensitive information.
 
 Example:
 ```js

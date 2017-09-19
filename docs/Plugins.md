@@ -22,7 +22,8 @@ fastify.register([
 
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option
-If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).
+If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).  
+Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
 
 <a name="error-handling"></a>
 #### Error handling

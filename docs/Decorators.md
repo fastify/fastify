@@ -36,27 +36,31 @@ Decorators are not *overwritable*, if you try to declare a decorator already dec
 As the name suggest, this api is needed if you want to add new methods to the `Reply` core object.  
 Just call the `decorateReply` api and pass the name of the new property and its value.
 ```js
-fastify.decorateReply('utility', () => {
+fastify.decorateReply('utility', function () {
   // something very useful
 })
 ```
 
-<a name="decorate-request"></a>
-**decorateRequest**  
+Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
+
+<a name="decorate-request"></a>  
+**decorateRequest**
 As above, this api is needed if you want to add new methods to the `Request` core object.  
 Just call the `decorateRequest` api and pass the name of the new property and its value.
 ```js
-fastify.decorateRequest('utility', () => {
+fastify.decorateRequest('utility', function () {
   // something very useful
 })
 ```
+
+Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
 <a name="extend-server-error"></a>
 **extendServerError**  
 If you need to extend the standard [server error](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors), this api is what you need.  
-You *must* pass a function that returns an object, Fastify will extend the server error with the returned object of your function.
+You *must* pass a function that returns an object, Fastify will extend the server error with the returned object of your function. The function will receive the original error object.
 ```js
-fastify.extendServerError(() => {
+fastify.extendServerError((err) => {
   return {
     timestamp: new Date()
   }

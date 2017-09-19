@@ -23,6 +23,7 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+Do you prefer to use `async/await`? Please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="schema"></a>
 ### Schema serialization
@@ -90,7 +91,7 @@ fastify.listen(8000, function (err) {
 /* route.js */
 
 module.exports = function (fastify, options, next) {
-  fastify.get('/', schema, function (req, reply) {
+  fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
   next()

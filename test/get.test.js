@@ -21,6 +21,16 @@ const schema = {
   }
 }
 
+const nullSchema = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'null'
+      }
+    }
+  }
+}
+
 const numberSchema = {
   schema: {
     response: {
@@ -65,11 +75,36 @@ const paramsSchema = {
   }
 }
 
+const headersSchema = {
+  schema: {
+    headers: {
+      type: 'object',
+      properties: {
+        'x-test': {
+          type: 'number'
+        }
+      }
+    }
+  }
+}
+
 test('shorthand - get', t => {
   t.plan(1)
   try {
     fastify.get('/', schema, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - get (return null)', t => {
+  t.plan(1)
+  try {
+    fastify.get('/null', nullSchema, function (req, reply) {
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {
@@ -94,6 +129,18 @@ test('shorthand - get, querystring schema', t => {
   try {
     fastify.get('/query', querySchema, function (req, reply) {
       reply.code(200).send(req.query)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - get, headers schema', t => {
+  t.plan(1)
+  try {
+    fastify.get('/headers', headersSchema, function (req, reply) {
+      reply.code(200).send(req.headers)
     })
     t.pass()
   } catch (e) {
@@ -150,6 +197,18 @@ test('empty response', t => {
   }
 })
 
+test('send a falsy boolean', t => {
+  t.plan(1)
+  try {
+    fastify.get('/boolean', function (req, reply) {
+      reply.code(200).send(false)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -196,6 +255,47 @@ fastify.listen(0, err => {
           schemaPath: '#/properties/test/type',
           params: { type: 'integer' },
           message: 'should be integer'
+        }]),
+        statusCode: 400
+      })
+    })
+  })
+
+  test('shorthand - request get headers schema', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      headers: {
+        'x-test': 1
+      },
+      uri: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.strictEqual(JSON.parse(body)['x-test'], 1)
+    })
+  })
+
+  test('shorthand - request get headers schema error', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      headers: {
+        'x-test': 'abc'
+      },
+      uri: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(body), {
+        error: 'Bad Request',
+        message: JSON.stringify([{
+          keyword: 'type',
+          dataPath: '[\'x-test\']',
+          schemaPath: '#/properties/x-test/type',
+          params: { type: 'number' },
+          message: 'should be number'
         }]),
         statusCode: 400
       })
@@ -282,11 +382,34 @@ fastify.listen(0, err => {
       method: 'GET',
       uri: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
-      console.log(body)
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '0')
       t.deepEqual(body, '')
+    })
+  })
+
+  test('shorthand - send a falsy boolean', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/boolean'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, 'false')
+    })
+  })
+
+  test('shorthand - send null value', t => {
+    t.plan(3)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/null'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, 'null')
     })
   })
 })

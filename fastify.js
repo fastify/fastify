@@ -2,10 +2,12 @@
 
 const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
+const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
+
 var shot = null
 try { shot = require('shot') } catch (e) { }
 
@@ -35,6 +37,14 @@ function build (options) {
     options.logger.level = options.logger.level || 'fatal'
     options.logger.serializers = options.logger.serializers || loggerUtils.serializers
     logger = loggerUtils.createLogger(options.logger)
+  }
+
+  var ajv
+  var defaultAjvOpts = { coerceTypes: true }
+  if (options.ajv) {
+    ajv = new Ajv(Object.assign(defaultAjvOpts, options.ajv))
+  } else {
+    ajv = new Ajv(defaultAjvOpts)
   }
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
@@ -103,7 +113,10 @@ function build (options) {
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
 
-  fastify.schemaCompiler = schemaCompiler
+  // expose ajv instance
+  fastify.ajv = ajv
+
+  fastify.schemaCompiler = schemaCompiler.bind({ ajv: ajv })
 
   // plugin
   fastify.register = fastify.use

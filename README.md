@@ -98,6 +98,7 @@ Benchmarks taken using https://github.com/fastify/benchmarks.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
 Bearer auth plugin for Fastify
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers
+- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
 Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
@@ -117,6 +118,8 @@ Swagger documentation generator for Fastify
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
 - [`point-of-view`](https://github.com/fastify/point-of-view)
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
+- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
+Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
 - *More coming soon*
 
 ## Team

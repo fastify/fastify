@@ -88,7 +88,7 @@ test('inject get request - headers check', t => {
   }, res => {
     t.strictEqual('', res.payload)
     t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.strictEqual(res.headers['content-length'], '0')
+    t.strictEqual(res.headers['content-length'], 0)
   })
 })
 
@@ -151,7 +151,7 @@ test('inject get request - headers', t => {
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
-    reply.send(req.req.headers)
+    reply.send(req.headers)
   })
 
   fastify.inject({

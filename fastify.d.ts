@@ -77,7 +77,7 @@ declare namespace fastify {
    * Route configuration options such as "url" and "method"
    */
   interface RouteOptions extends RouteShorthandOptions {
-    method: HTTPMethod,
+    method: HTTPMethod|HTTPMethod[],
     url: string,
     handler?: RequestHandler
   }
@@ -248,7 +248,7 @@ declare namespace fastify {
      * Hook that is fired before a request is processed, but after the "onRequest"
      * hook
      */
-    addHook(name: 'preHandler', hook: FastifyMiddleware)
+    addHook(name: 'preHandler', hook: FastifyMiddleware): FastifyInstance
 
     /**
      * Hook that is called when a response is about to be sent to a client

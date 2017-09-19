@@ -86,6 +86,7 @@ function build (options) {
   fastify.post = _post
   fastify.put = _put
   fastify.options = _options
+  fastify.all = _all
   // extended route
   fastify.route = route
   fastify._RoutePrefix = new RoutePrefix()
@@ -95,7 +96,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks(fastify)
+  fastify._hooks = new Hooks()
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -236,13 +237,13 @@ function build (options) {
     fn(this.req, this.res, cb)
   }
 
-  function override (instance, fn, opts) {
+  function override (old, fn, opts) {
     if (fn[Symbol.for('skip-override')]) {
-      return instance
+      return old
     }
 
-    const middlewares = Object.assign([], instance._middlewares)
-    instance = Object.create(instance)
+    const middlewares = Object.assign([], old._middlewares)
+    const instance = Object.create(old)
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
@@ -304,6 +305,10 @@ function build (options) {
     return _route(this, 'OPTIONS', url, opts, handler)
   }
 
+  function _all (url, opts, handler) {
+    return _route(this, supportedMethods, url, opts, handler)
+  }
+
   function _route (self, method, url, options, handler) {
     if (!handler && typeof options === 'function') {
       handler = options
@@ -332,8 +337,16 @@ function build (options) {
   function route (opts) {
     const _fastify = this
 
-    if (supportedMethods.indexOf(opts.method) === -1) {
-      throw new Error(`${opts.method} method is not supported!`)
+    if (Array.isArray(opts.method)) {
+      for (var i = 0; i < opts.method.length; i++) {
+        if (supportedMethods.indexOf(opts.method[i]) === -1) {
+          throw new Error(`${opts.method[i]} method is not supported!`)
+        }
+      }
+    } else {
+      if (supportedMethods.indexOf(opts.method) === -1) {
+        throw new Error(`${opts.method} method is not supported!`)
+      }
     }
 
     if (!opts.handler) {
@@ -376,11 +389,23 @@ function build (options) {
           return done(new Error(`${opts.method} already set for ${url}`))
         }
 
-        map.get(url)[opts.method] = store
+        if (Array.isArray(opts.method)) {
+          for (i = 0; i < opts.method.length; i++) {
+            map.get(url)[opts.method[i]] = store
+          }
+        } else {
+          map.get(url)[opts.method] = store
+        }
         router.on(opts.method, url, startHooks, store)
       } else {
         const node = {}
-        node[opts.method] = store
+        if (Array.isArray(opts.method)) {
+          for (i = 0; i < opts.method.length; i++) {
+            node[opts.method[i]] = store
+          }
+        } else {
+          node[opts.method] = store
+        }
         map.set(url, node)
         router.on(opts.method, url, startHooks, store)
       }
@@ -461,7 +486,11 @@ function build (options) {
   }
 
   function addHook (name, fn) {
-    this._hooks.add(name, fn)
+    if (name === 'onClose') {
+      this.onClose(fn)
+    } else {
+      this._hooks.add(name, fn)
+    }
     return this
   }
 

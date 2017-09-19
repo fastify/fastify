@@ -107,6 +107,10 @@ server
 
     reply.send({ hello: 'world' })
   })
+  .route({
+    method: ['GET', 'POST', 'PUT'],
+    url: '/route'
+  })
 
 
 // Using decorate requires casting so the compiler knows about new properties

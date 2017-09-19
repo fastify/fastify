@@ -11,6 +11,7 @@ The supported validations are:
 - `body`: validates the body of the request if it is a POST or a PUT.
 - `querystring`: validates the querystring. This can be a complete JSON Schema object, with the property type of object and properties object of parameters, or simply the values of what would be contained in the properties object as shown below.
 - `params`: validates the route params.
+- `headers`: validates the request headers.
 
 Example:
 ```js
@@ -34,6 +35,14 @@ Example:
         par1: { type: 'string' },
         par2: { type: 'number' }
       }
+    },
+
+    headers: {
+      type: 'object',
+      properties: {
+        'x-foo': { type: 'string' }
+      },
+      required: ['x-foo']
     }
   }
 ```
@@ -42,7 +51,7 @@ Example:
 <a name="schema-compiler"></a>
 #### Schema Compiler
 
-The `schemaCompiler` is a function that returns a function that validates the body, url parameters and the query string.
+The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers and the query string.
 
 The default `schemaCompiler` returns a function that implements the `ajv` validation interface.
 `fastify` use it internally to speed the validation up.

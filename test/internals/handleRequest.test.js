@@ -22,13 +22,14 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(6)
-  const req = new Request('params', 'req', 'body', 'query', 'log')
+  t.plan(7)
+  const req = new Request('params', 'req', 'body', 'query', 'headers', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
   t.deepEqual(req.req, 'req')
   t.equal(req.body, 'body')
   t.equal(req.query, 'query')
+  t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')
 })
 
@@ -40,6 +41,9 @@ test('handler function - invalid schema', t => {
     t.pass()
   }
   res.setHeader = (key, value) => {
+    return
+  }
+  res.getHeader = (key) => {
     return
   }
   const handle = {
@@ -76,7 +80,7 @@ test('handler function - reply', t => {
   const handle = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
-      reply.send(null)
+      reply.send(undefined)
     },
     Reply: Reply,
     Request: Request,

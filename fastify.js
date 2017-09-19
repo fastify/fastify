@@ -107,9 +107,6 @@ function build (options) {
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
 
-  // expose ajv instance
-  fastify.ajv = ajv
-
   fastify.schemaCompiler = schemaCompiler.bind({ ajv: ajv })
 
   // plugin

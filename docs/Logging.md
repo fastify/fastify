@@ -3,7 +3,7 @@
 ## Logging
 Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!
 
-By default Fastify uses [pino-http](https://github.com/pinojs/pino-http) as the logger, with the log level set to `'fatal'`.
+By default Fastify uses [pino](https://github.com/pinojs/pino) as the logger, with the log level set to `'fatal'`.
 
 If you want to pass some options to the logger, just pass the logger option to Fastify.
 You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
@@ -21,6 +21,16 @@ const fastify = require('fastify')({
 fastify.get('/', options, function (req, reply) {
   req.log.info('Some info about the current request')
   reply.send({ hello: 'world' })
+})
+```
+
+Additionally, `genReqId` option can be used for generating the request id by yourself.
+```js
+let i = 0
+const fastify = require('fastify')({
+  logger: {
+    genReqId: function () { return i++ }
+  }
 })
 ```
 

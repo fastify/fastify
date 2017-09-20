@@ -62,9 +62,9 @@ You can find all the options in the [Ajv documentation](https://github.com/epobe
 ```js
 const fastify = require('fastify')({
   ajv: {
-    removeAdditional: false,
-    useDefaults:      false,
-    coerceTypes:      false
+    removeAdditional: true,
+    useDefaults:      true,
+    coerceTypes:      true
   }
 })
 ```

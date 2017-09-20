@@ -80,6 +80,7 @@ test('handler function - reply', t => {
   const handle = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
+      reply.code(204)
       reply.send(undefined)
     },
     Reply: Reply,

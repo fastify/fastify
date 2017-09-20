@@ -51,6 +51,21 @@ test('shorthand - return promise es6 get', t => {
   }
 })
 
+test('shorthand - return promise es6 get error', t => {
+  t.plan(1)
+  try {
+    fastify.get('/return-error', opts, function (req, reply) {
+      const promise = new Promise((resolve, reject) => {
+        reject(new Error('some error'))
+      })
+      return promise
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('shorthand - promise es6 get error', t => {
   t.plan(1)
   try {
@@ -131,6 +146,17 @@ fastify.listen(0, err => {
     request({
       method: 'GET',
       uri: 'http://localhost:' + fastify.server.address().port + '/error'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+  })
+
+  test('shorthand - request promise es6 get return error', t => {
+    t.plan(2)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/return-error'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)

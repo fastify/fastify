@@ -23,7 +23,7 @@ fastify.get('/', options, function (request, reply) {
 ```
 <a name="code"></a>
 ### Code
-If not setted via `reply.code`, the resulting `statusCode` will be `200` or `204` if there is not content to send.
+If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="header"></a>
 ### Header

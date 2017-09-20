@@ -136,7 +136,7 @@ function build (options) {
   // fake http injection (for testing purposes)
   fastify.inject = inject
 
-  var notFoundStore = null
+  var fourofour = FindMyWay({ defaultRoute: fourFourFallBack })
   fastify.setNotFoundHandler = setNotFoundHandler
   setNotFoundHandler.call(fastify)
 
@@ -260,6 +260,10 @@ function build (options) {
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
+
+    if (opts.prefix) {
+      instance._404Store = null
+    }
 
     for (var i = 0; i < middlewares.length; i++) {
       instance.use.apply(instance, middlewares[i])
@@ -522,19 +526,27 @@ function build (options) {
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 
-  function defaultRoute (req, res, params) {
-    const request = new notFoundStore.Request(params, req, null, null, req.headers, req.log)
-    const reply = new notFoundStore.Reply(req, res, notFoundStore)
-    const handler = notFoundStore.handler
-
-    handler(request, reply)
+  function defaultRoute (req, res) {
+    fourofour.lookup(req, res)
   }
 
   function basic404 (req, reply) {
     reply.code(404).send(new Error('Not found'))
   }
 
+  function fourFourFallBack (req, res) {
+    // TODO if this happen, we have very bad bug
+    const reply = new Reply(req, res, null)
+    reply.code(404).send(new Error('Not found'))
+  }
+
   function setNotFoundHandler (opts, handler) {
+    this.after(() => {
+      _setNotFoundHandler.call(this, opts, handler)
+    })
+  }
+
+  function _setNotFoundHandler (opts, handler) {
     if (typeof opts === 'function') {
       handler = opts
       opts = undefined
@@ -542,18 +554,48 @@ function build (options) {
     opts = opts || {}
     handler = handler || basic404
 
-    notFoundStore = new Store(
-      opts.schema,
-      handler,
-      this._Reply,
-      this._Request,
-      opts.contentTypeParser || this._contentTypeParser,
-      this._hooks.onRequest,
-      [],
-      this._hooks.onResponse,
-      opts.config || {},
-      this._middie
-    )
+    if (!this._404Store) {
+      const store = new Store(
+        opts.schema,
+        handler,
+        this._Reply,
+        this._Request,
+        opts.contentTypeParser || this._contentTypeParser,
+        this._hooks.onRequest,
+        [],
+        this._hooks.onResponse,
+        opts.config || {},
+        this._middie
+      )
+
+      this._404Store = store
+
+      var prefix = this._RoutePrefix.prefix
+      var star = '*'
+
+      if (prefix && prefix[prefix.length - 1] !== '/') {
+        star = '/*'
+      } else {
+        fourofour.all(prefix + '/', wrapFourOFour, store)
+        fourofour.all(prefix + '/*', wrapFourOFour, store)
+      }
+
+      fourofour.all(prefix + star, wrapFourOFour, store)
+      fourofour.all(prefix, wrapFourOFour, store)
+    } else {
+      this._404Store.handler = handler
+      this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+      this._404Store.config = opts.config || {}
+    }
+  }
+
+  function wrapFourOFour (req, res, params) {
+    const store = this.store
+    const request = new store.Request(params, req, null, null, req.headers, req.log)
+    const reply = new store.Reply(req, res, store)
+    const handler = store.handler
+
+    handler(request, reply)
   }
 
   function setSchemaCompiler (schemaCompiler) {

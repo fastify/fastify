@@ -26,7 +26,7 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
       n()
     }))
 
-    t.notOk(instance.test)
+    t.ok(instance.test)
 
     instance.get('/', (req, reply) => {
       t.ok(instance.test)

@@ -136,6 +136,10 @@ function build (options) {
   // fake http injection (for testing purposes)
   fastify.inject = inject
 
+  var notFoundStore = null
+  fastify.setNotFoundHandler = setNotFoundHandler
+  setNotFoundHandler.call(fastify)
+
   return fastify
 
   function fastify (req, res) {
@@ -519,8 +523,37 @@ function build (options) {
   }
 
   function defaultRoute (req, res, params) {
-    const reply = new Reply(req, res, null)
+    const request = new notFoundStore.Request(params, req, null, null, req.headers, req.log)
+    const reply = new notFoundStore.Reply(req, res, notFoundStore)
+    const handler = notFoundStore.handler
+
+    handler(request, reply)
+  }
+
+  function basic404 (req, reply) {
     reply.code(404).send(new Error('Not found'))
+  }
+
+  function setNotFoundHandler (opts, handler) {
+    if (typeof opts === 'function') {
+      handler = opts
+      opts = undefined
+    }
+    opts = opts || {}
+    handler = handler || basic404
+
+    notFoundStore = new Store(
+      opts.schema,
+      handler,
+      this._Reply,
+      this._Request,
+      opts.contentTypeParser || this._contentTypeParser,
+      this._hooks.onRequest,
+      [],
+      this._hooks.onResponse,
+      opts.config || {},
+      this._middie
+    )
   }
 
   function setSchemaCompiler (schemaCompiler) {

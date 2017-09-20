@@ -205,3 +205,155 @@ test('encapsulated 404', t => {
     })
   })
 })
+
+test('run hooks on default 404', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    t.pass('onRequest called')
+    next()
+  })
+
+  fastify.addHook('onResponse', function (res, next) {
+    t.pass('onResponse called')
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'PUT',
+      uri: 'http://localhost:' + fastify.server.address().port,
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})
+
+test('run hooks with encapsulated 404', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    t.pass('onRequest called')
+    next()
+  })
+
+  fastify.addHook('onResponse', function (res, next) {
+    t.pass('onResponse called')
+    next()
+  })
+
+  fastify.register(function (f, opts, next) {
+    f.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found 2')
+    })
+
+    f.addHook('onRequest', function (req, res, next) {
+      t.pass('onRequest 2 called')
+      next()
+    })
+
+    f.addHook('onResponse', function (req, res) {
+      t.pass('onResponse 2 called')
+    })
+
+    next()
+  }, { prefix: '/test' })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'PUT',
+      uri: 'http://localhost:' + fastify.server.address().port + '/test',
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})
+
+test('run middlewares on default 404', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.use(function (req, res, next) {
+    t.pass('middleware called')
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'PUT',
+      uri: 'http://localhost:' + fastify.server.address().port,
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})
+
+test('run middlewares with encapsulated 404', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.use(function (req, res, next) {
+    t.pass('middleware called')
+    next()
+  })
+
+  fastify.register(function (f, opts, next) {
+    f.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found 2')
+    })
+
+    f.use(function (req, res, next) {
+      t.pass('middleware 2 called')
+      next()
+    })
+
+    next()
+  }, { prefix: '/test' })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'PUT',
+      uri: 'http://localhost:' + fastify.server.address().port + '/test',
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})

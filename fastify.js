@@ -535,7 +535,7 @@ function build (options) {
   }
 
   function fourFourFallBack (req, res) {
-    // TODO if this happen, we have very bad bug
+    // TODO if this happen, we have a very bad bug
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
   }
@@ -555,6 +555,7 @@ function build (options) {
     handler = handler || basic404
 
     if (!this._404Store) {
+      // TODO verify this is instantiated correctly
       const store = new Store(
         opts.schema,
         handler,
@@ -573,29 +574,22 @@ function build (options) {
       var prefix = this._RoutePrefix.prefix
       var star = '*'
 
+      // TODO verify why we need to specify all those entries
+      // in find-my-way
       if (prefix && prefix[prefix.length - 1] !== '/') {
         star = '/*'
       } else {
-        fourofour.all(prefix + '/', wrapFourOFour, store)
-        fourofour.all(prefix + '/*', wrapFourOFour, store)
+        fourofour.all(prefix + '/', startHooks, store)
+        fourofour.all(prefix + '/*', startHooks, store)
       }
 
-      fourofour.all(prefix + star, wrapFourOFour, store)
-      fourofour.all(prefix, wrapFourOFour, store)
+      fourofour.all(prefix + star, startHooks, store)
+      fourofour.all(prefix, startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
       this._404Store.config = opts.config || {}
     }
-  }
-
-  function wrapFourOFour (req, res, params) {
-    const store = this.store
-    const request = new store.Request(params, req, null, null, req.headers, req.log)
-    const reply = new store.Reply(req, res, store)
-    const handler = store.handler
-
-    handler(request, reply)
   }
 
   function setSchemaCompiler (schemaCompiler) {

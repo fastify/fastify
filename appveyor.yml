@@ -1,0 +1,14 @@
+environment:
+    - nodejs_version: 6.0.0
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 8.0.0
+      platform: x64
+      msvs_toolset: 12
+
+os: Visual Studio 2015
+
+skip_tags: true
+build: OFF
+test: OFF
+deploy: OFF

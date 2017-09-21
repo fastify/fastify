@@ -194,7 +194,7 @@ function build (options) {
       server.removeListener('error', wrap)
       if (_cb) {
         _cb(err)
-      } else {
+      } else if (err) {
         // this will crash the process
         // it will go to 'uncaughtException'
         throw err

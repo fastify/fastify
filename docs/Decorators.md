@@ -83,7 +83,7 @@ fastify.extendServerError((err) => {
 
 <a name="dependencies"></a>
 #### Dependencies
-If your decorator depends on another decorator, you can also declare the dependencies of your function, it pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.
+If your decorator depends on another decorator, you can also declare the dependencies of your function, it’s pretty easy. You just need to add an array of strings (representing the names of the decorators you are depending on) as third parameter.
 ```js
 fastify.decorate('utility', fn, ['greet', 'log'])
 ```

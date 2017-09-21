@@ -93,3 +93,7 @@ The logger instance, check  [here](https://github.com/fastify/fastify/blob/maste
 <a name="inject"></a>
 #### inject
 Fake http injection (for testing purposes)  [here](https://github.com/fastify/fastify/blob/master/docs/Testing.md#inject).
+
+<a name="set-schema-compiler"></a>
+#### setSchemaCompiler
+Set the schema compiler for all routes  [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#schema-compiler).

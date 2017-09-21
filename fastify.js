@@ -107,7 +107,8 @@ function build (options) {
   fastify.hasContentTypeParser = hasContentTypeParser
   fastify._contentTypeParser = new ContentTypeParser()
 
-  fastify.schemaCompiler = schemaCompiler.bind({ ajv: ajv })
+  fastify.setSchemaCompiler = setSchemaCompiler
+  fastify._schemaCompiler = schemaCompiler.bind({ ajv: ajv })
 
   // plugin
   fastify.register = fastify.use
@@ -380,7 +381,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store, opts.schemaCompiler || _fastify.schemaCompiler)
+      buildSchema(store, opts.schemaCompiler || _fastify._schemaCompiler)
 
       store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {
@@ -520,6 +521,11 @@ function build (options) {
   function defaultRoute (req, res, params) {
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
+  }
+
+  function setSchemaCompiler (schemaCompiler) {
+    this._schemaCompiler = schemaCompiler
+    return this
   }
 }
 

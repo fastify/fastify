@@ -32,5 +32,4 @@ os: Visual Studio 2015
 
 skip_tags: true
 build: OFF
-test: OFF
 deploy: OFF

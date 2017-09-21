@@ -1,0 +1,33 @@
+environment:
+  matrix:
+    - nodejs_version: 4
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 6
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 7
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 8
+      platform: x64
+      msvs_toolset: 12
+
+# Install scripts. (runs after repo cloning)
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+  # install modules
+  - npm install
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  - npm --version
+  # run tests
+  - npm test
+
+os: Visual Studio 2015
+
+build: OFF

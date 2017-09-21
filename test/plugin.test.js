@@ -297,3 +297,50 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
     t.is(err.message, 'err')
   })
 })
+
+test('add hooks after route declaration', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  function plugin (instance, opts, next) {
+    instance.decorateRequest('check', {})
+    setImmediate(next)
+  }
+  fastify.register(fp(plugin))
+
+  fastify.register((instance, options, next) => {
+    instance.addHook('preHandler', function b (req, res, next) {
+      req.check.hook2 = true
+      next()
+    })
+
+    instance.get('/', (req, reply) => {
+      reply.send(req.check)
+    })
+
+    instance.addHook('preHandler', function c (req, res, next) {
+      req.check.hook3 = true
+      next()
+    })
+
+    next()
+  })
+
+  fastify.addHook('preHandler', function a (req, res, next) {
+    req.check.hook1 = true
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
+      fastify.close()
+    })
+  })
+})

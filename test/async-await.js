@@ -236,6 +236,23 @@ function asyncTest (t) {
       t.deepEqual(payload, { hello: 'world' })
     })
   })
+
+  test('support 204', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204)
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.equal(res.statusCode, 204)
+    })
+  })
 }
 
 module.exports = asyncTest

@@ -21,7 +21,7 @@ install:
   - npm install
 
 # Post-install test scripts.
-test:
+test_script:
   # Output useful info for debugging.
   - node --version
   - npm --version
@@ -30,6 +30,4 @@ test:
 
 os: Visual Studio 2015
 
-skip_tags: true
 build: OFF
-deploy: OFF

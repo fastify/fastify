@@ -160,6 +160,82 @@ function asyncTest (t) {
       t.deepEqual(payload, { hello: 'world' })
     })
   })
+
+  test('ignore the result of the promise if reply.send is called beforehand (undefined)', t => {
+    t.plan(4)
+
+    const server = Fastify()
+    const payload = { hello: 'world' }
+
+    server.get('/', async function awaitMyFunc (req, reply) {
+      reply.send(payload)
+    })
+
+    t.tearDown(server.close.bind(server))
+
+    server.listen(0, (err) => {
+      t.error(err)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + server.server.address().port + '/'
+      }, (err, res, body) => {
+        t.error(err)
+        t.deepEqual(payload, JSON.parse(body))
+        t.strictEqual(res.statusCode, 200)
+      })
+    })
+  })
+
+  test('ignore the result of the promise if reply.send is called beforehand (object)', t => {
+    t.plan(4)
+
+    const server = Fastify()
+    const payload = { hello: 'world2' }
+
+    server.get('/', async function awaitMyFunc (req, reply) {
+      reply.send(payload)
+      return { hello: 'world' }
+    })
+
+    t.tearDown(server.close.bind(server))
+
+    server.listen(0, (err) => {
+      t.error(err)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + server.server.address().port + '/'
+      }, (err, res, body) => {
+        t.error(err)
+        t.deepEqual(payload, JSON.parse(body))
+        t.strictEqual(res.statusCode, 200)
+      })
+    })
+  })
+
+  test('support reply decorators with await', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.decorateReply('wow', function () {
+      setImmediate(() => {
+        this.send({ hello: 'world' })
+      })
+    })
+
+    fastify.get('/', async (req, reply) => {
+      await sleep(1)
+      reply.wow()
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      const payload = JSON.parse(res.payload)
+      t.deepEqual(payload, { hello: 'world' })
+    })
+  })
 }
 
 module.exports = asyncTest

@@ -105,3 +105,10 @@ if (os.platform() !== 'win32') {
     })
   })
 }
+
+test('listen without callback', t => {
+  const fastify = Fastify()
+  fastify.listen(0)
+  fastify.server.on('listening', function () { this.close() })
+  t.end()
+})

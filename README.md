@@ -49,7 +49,7 @@ Do you want to know more? Head to the <a href="https://github.com/fastify/fastif
 - **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.
 - **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 20000 request per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
-- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in an highly performant function.
+- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.
 

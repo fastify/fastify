@@ -74,7 +74,7 @@
     "@types/node": "~8.0.27",
     "@types/pino": "~4.7.0",
     "ajv": "^5.2.2",
-    "avvio": "^2.1.1",
+    "avvio": "^2.2.0",
     "fast-json-stringify": "^0.13.0",
     "fastify-cli": "^0.6.1",
     "fastseries": "^1.7.2",

@@ -76,7 +76,7 @@
     "ajv": "^5.2.2",
     "avvio": "^2.2.0",
     "fast-json-stringify": "^0.13.1",
-    "fastify-cli": "^0.6.1",
+    "fastify-cli": "^0.7.0",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.5.0",
     "flatstr": "^1.0.5",

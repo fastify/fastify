@@ -140,6 +140,8 @@ function build (options) {
   fastify.setNotFoundHandler = setNotFoundHandler
   setNotFoundHandler.call(fastify)
 
+  fastify.setErrorHandler = setErrorHandler
+
   return fastify
 
   function fastify (req, res) {
@@ -342,6 +344,7 @@ function build (options) {
       onResponse: options.onResponse,
       config: options.config,
       middie: self._middie,
+      errorHander: self._errorHandler,
       schemaCompiler: options.schemaCompiler
     })
   }
@@ -386,6 +389,7 @@ function build (options) {
         [],
         opts.onResponse || _fastify._hooks.onResponse,
         config,
+        opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 
@@ -429,7 +433,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, middie) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -439,6 +443,7 @@ function build (options) {
     this.preHandler = preHandler
     this.onResponse = onResponse
     this.config = config
+    this.errorHandler = errorHandler
     this._middie = middie
   }
 
@@ -566,6 +571,7 @@ function build (options) {
         [],
         this._hooks.onResponse,
         opts.config || {},
+        this._errorHandler,
         this._middie
       )
 
@@ -594,6 +600,11 @@ function build (options) {
 
   function setSchemaCompiler (schemaCompiler) {
     this._schemaCompiler = schemaCompiler
+    return this
+  }
+
+  function setErrorHandler (func) {
+    this._errorHandler = func
     return this
   }
 }

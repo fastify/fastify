@@ -113,6 +113,7 @@ Multipart support for Fastify
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
 - [`fastify-redis`](https://github.com/fastify/fastify-redis)
 Fastify Redis connection plugin, with this you can share the same Redis connection in every part of your server.
+- [`fastify-register-timeout`](https://github.com/fastify/fastify-register-timeout) Register plugin with a timeout
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger)
 Swagger documentation generator for Fastify

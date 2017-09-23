@@ -491,12 +491,14 @@ function build (options) {
       return
     }
 
-    return new Promise((resolve, reject) => {
+    const waitingForReadyEvent = new Promise((resolve, reject) => {
       this.ready(err => {
-        if (err) throw err
+        if (err) return reject(err)
         resolve()
       })
     })
+
+    return waitingForReadyEvent
       .then(() => _inject(this, opts, cb))
   }
 

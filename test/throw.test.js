@@ -112,3 +112,33 @@ test('Should throw on duplicate decorator encapsulation', t => {
     next()
   })
 })
+
+test('Should throw on duplicate request decorator', t => {
+  t.plan(1)
+
+  const fooObj = {}
+
+  fastify.decorateRequest('foo', fooObj)
+  try {
+    fastify.decorateRequest('foo', fooObj)
+    // TODO: this should be t.fail()!
+    t.pass()
+  } catch (e) {
+    t.pass()
+  }
+})
+
+test('Should throw on duplicate reply decorator', t => {
+  t.plan(1)
+
+  const fooObj = {}
+
+  fastify.decorateReply('foo', fooObj)
+  try {
+    fastify.decorateReply('foo', fooObj)
+    // TODO: this should be t.fail()!
+    t.pass()
+  } catch (e) {
+    t.pass()
+  }
+})

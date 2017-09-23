@@ -66,3 +66,17 @@ test('Should throw if one method is unsupported', t => {
     t.pass()
   }
 })
+
+test('Should throw on duplicate content type parser', t => {
+  t.plan(1)
+
+  function customParser (req, done) { done(null, '') }
+
+  fastify.addContentTypeParser('application/qq', customParser)
+  try {
+    fastify.addContentTypeParser('application/qq', customParser)
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+})

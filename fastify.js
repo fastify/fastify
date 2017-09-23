@@ -140,7 +140,9 @@ function build (options) {
 
   function fastify (req, res) {
     req.id = genReqId()
-    req.log = res.log = logger.child({ req: req })
+    req.log = res.log = logger.child({ reqId: req.id })
+
+    req.log.info({ req }, 'incoming request')
 
     res._startTime = now()
     res._context = null

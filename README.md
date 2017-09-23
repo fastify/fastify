@@ -103,6 +103,7 @@ Bearer auth plugin for Fastify
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
 Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
+- [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/)
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
 - [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)
@@ -122,8 +123,6 @@ Swagger documentation generator for Fastify
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
 Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
-- [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera)
-Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/)
 - *More coming soon*
 
 ## Team

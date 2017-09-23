@@ -1,11 +1,11 @@
 <h1 align="center">Fastify</h1>
 
 ## Testing
-Testing is one of the most important part when you are developing an application.  
+Testing is one of the most important part when you are developing an application.
 Fastify does not offer a testing framework out of the box, but we can recommend you an handy and nice way to build your unit testing environment.
 
 The modules you'll need:
-- [Tap](https://www.npmjs.com/package/tap): an excellent testing framework, it will give you out of the box a very good assertion library and a lot utilities.  
+- [Tap](https://www.npmjs.com/package/tap): an excellent testing framework, it will give you out of the box a very good assertion library and a lot utilities.
 - [Request](https://www.npmjs.com/package/request): a complete library to perform request of any kind.
 - [Minimist](https://www.npmjs.com/package/minimist): a CLI parser, that you will use to run server from the command line.
 
@@ -93,11 +93,11 @@ server.start({ port: 0 }, (err, fastify) => {
 
 <a name="inject"></a>
 ### Testing with http injection
-Fastify supports fake http injection thanks to [shot](https://github.com/hapijs/shot).  
+Fastify supports fake http injection thanks to [shot](https://github.com/hapijs/shot).
 To support this method, you should list `shot` library in your package as dev dependency using
 ```
-npm install shot --save-dev
-```  
+npm install shot@3 --save-dev
+```
 You just need to use the api `inject`:
 ```js
 fastify.inject({

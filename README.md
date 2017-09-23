@@ -122,6 +122,8 @@ Swagger documentation generator for Fastify
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
 Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
+- [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera)
+Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/)
 - *More coming soon*
 
 ## Team

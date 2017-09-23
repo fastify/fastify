@@ -137,7 +137,7 @@ module.exports.payloadMethod = function (method, t) {
         method: upMethod,
         uri: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: 'hello world',
-        timeout: 200
+        timeout: 500
       }, (err, response, body) => {
         t.error(err)
         if (upMethod === 'OPTIONS') {
@@ -158,7 +158,7 @@ module.exports.payloadMethod = function (method, t) {
           headers: {
             'Content-Type': 'text/plain'
           },
-          timeout: 200
+          timeout: 500
         }, (err, response, body) => {
           t.error(err)
           t.strictEqual(response.statusCode, 415)
@@ -175,7 +175,7 @@ module.exports.payloadMethod = function (method, t) {
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 200
+        timeout: 500
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 422)

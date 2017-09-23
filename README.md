@@ -126,22 +126,20 @@ Fastify OrientDB connection plugin, with this you can share the orientdb connect
 
 ## Team
 
-### Matteo Collina
+_Fastify_ is the result of the work of a great community.
+Team members are listed in alphabetical order.
 
-<https://github.com/mcollina>
+### Lead Maintainers
 
-<https://www.npmjs.com/~matteo.collina>
+* [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 
-<https://twitter.com/matteocollina>
+### Collaborators
 
-
-### Tomas Della Vedova
-
-<https://github.com/delvedor>
-
-<https://www.npmjs.com/~delvedor>
-
-<https://twitter.com/delvedor>
+* [__Evan Shortiss__](https://github.com/evanshortiss), <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
+* [__James Sumners__](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+* [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__Tommaso Allevi__](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
 
 ## Acknowledgements
 

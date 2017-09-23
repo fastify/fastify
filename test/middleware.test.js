@@ -501,19 +501,121 @@ test('use serve-static', t => {
   })
 })
 
-test('use serve-static with prefix', t => {
-  t.plan(1)
+test('middlewares with prefix', t => {
+  t.plan(5)
 
   const instance = fastify()
 
-  instance.use('/js', serveStatic(__dirname))
+  instance.use(function (req, res, next) {
+    req.global = true
+    next()
+  })
+  instance.use('', function (req, res, next) {
+    req.global2 = true
+    next()
+  })
+  instance.use('/', function (req, res, next) {
+    req.root = true
+    next()
+  })
+  instance.use('/prefix', function (req, res, next) {
+    req.prefixed = true
+    next()
+  })
+  instance.use('/prefix/', function (req, res, next) {
+    req.slashed = true
+    next()
+  })
 
-  const basename = path.basename(__filename)
+  function handler (request, reply) {
+    reply.send({
+      prefixed: request.req.prefixed,
+      slashed: request.req.slashed,
+      global: request.req.global
+    })
+  }
 
-  instance.inject({
-    method: 'GET',
-    url: '/js/' + basename
-  }, (res) => {
-    t.deepEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+  instance.get('/', handler)
+  instance.get('/prefix', handler)
+  instance.get('/prefix/', handler)
+  instance.get('/prefix/inner', handler)
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    t.test('/', t => {
+      t.plan(2)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/',
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.deepEqual(body, {
+          global: true
+          // TODO: this may be a bug!
+          // global2: true,
+          // root: true
+        })
+      })
+    })
+
+    t.test('/prefix', t => {
+      t.plan(2)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/prefix',
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.deepEqual(body, {
+          prefixed: true,
+          global: true
+          // TODO: this may be a bug!
+          // global2: true,
+          // root: true
+        })
+      })
+    })
+
+    t.test('/prefix/', t => {
+      t.plan(2)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/prefix/',
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.deepEqual(body, {
+          prefixed: true,
+          slashed: true,
+          global: true
+          // TODO: this may be a bug!
+          // global2: true,
+          // root: true
+        })
+      })
+    })
+
+    t.test('/prefix/inner', t => {
+      t.plan(2)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + instance.server.address().port + '/prefix/inner',
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.deepEqual(body, {
+          prefixed: true,
+          // TODO: this may be a bug!
+          // slashed: true,
+          global: true
+          // TODO: this may be a bug!
+          // global2: true,
+          // root: true
+        })
+      })
+    })
   })
 })

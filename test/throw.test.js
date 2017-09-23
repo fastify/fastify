@@ -94,3 +94,21 @@ test('Should throw on duplicate decorator', t => {
     t.pass()
   }
 })
+
+test('Should throw on duplicate decorator encapsulation', t => {
+  t.plan(1)
+
+  const foo2Obj = {}
+
+  fastify.decorate('foo2', foo2Obj)
+
+  fastify.register(function (fastify, opts, next) {
+    try {
+      fastify.decorate('foo2', foo2Obj)
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+    next()
+  })
+})

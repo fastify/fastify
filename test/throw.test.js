@@ -51,3 +51,18 @@ test('Should throw on missing handler', t => {
     t.pass()
   }
 })
+
+test('Should throw if one method is unsupported', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: ['GET', 'TROLL'],
+      url: '/',
+      schema: {},
+      handler: function (req, reply) {}
+    })
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+})

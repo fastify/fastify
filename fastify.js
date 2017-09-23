@@ -136,7 +136,7 @@ function build (options) {
   // fake http injection (for testing purposes)
   fastify.inject = inject
 
-  var fourofour = FindMyWay({ defaultRoute: fourFourFallBack })
+  var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
   fastify.setNotFoundHandler = setNotFoundHandler
   setNotFoundHandler.call(fastify)
 
@@ -532,15 +532,20 @@ function build (options) {
   }
 
   function defaultRoute (req, res) {
-    fourofour.lookup(req, res)
+    fourOhFour.lookup(req, res)
   }
 
   function basic404 (req, reply) {
     reply.code(404).send(new Error('Not found'))
   }
 
-  function fourFourFallBack (req, res) {
-    // TODO if this happen, we have a very bad bug
+  function fourOhFourFallBack (req, res) {
+    // if this happen, we have a very bad bug
+    // we might want to do some hard debugging
+    // here, let's print out as much info as
+    // we can
+    req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    req.log.warn(fourOhFour.prettyPrint())
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
   }
@@ -560,7 +565,6 @@ function build (options) {
     handler = handler || basic404
 
     if (!this._404Store) {
-      // TODO verify this is instantiated correctly
       const store = new Store(
         opts.schema,
         handler,
@@ -580,17 +584,18 @@ function build (options) {
       var prefix = this._RoutePrefix.prefix
       var star = '*'
 
-      // TODO verify why we need to specify all those entries
-      // in find-my-way
+      // TODO this would need to be refactored once
+      // https://github.com/delvedor/find-my-way/issues/28
+      // is solved
       if (prefix && prefix[prefix.length - 1] !== '/') {
         star = '/*'
       } else {
-        fourofour.all(prefix + '/', startHooks, store)
-        fourofour.all(prefix + '/*', startHooks, store)
+        fourOhFour.all(prefix + '/', startHooks, store)
+        fourOhFour.all(prefix + '/*', startHooks, store)
       }
 
-      fourofour.all(prefix + star, startHooks, store)
-      fourofour.all(prefix, startHooks, store)
+      fourOhFour.all(prefix + star, startHooks, store)
+      fourOhFour.all(prefix, startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser

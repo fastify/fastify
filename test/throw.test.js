@@ -80,3 +80,17 @@ test('Should throw on duplicate content type parser', t => {
     t.pass()
   }
 })
+
+test('Should throw on duplicate decorator', t => {
+  t.plan(1)
+
+  const fooObj = {}
+
+  fastify.decorate('foo', fooObj)
+  try {
+    fastify.decorate('foo', fooObj)
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+})

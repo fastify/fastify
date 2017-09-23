@@ -222,6 +222,72 @@ test('inject get request - reply stream', t => {
   })
 })
 
+test('inject promisify - waiting for ready event', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+    .then(res => {
+      t.strictEqual(res.statusCode, 200)
+    })
+})
+
+test('inject promisify - after the ready event', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    })
+      .then(res => {
+        t.strictEqual(res.statusCode, 200)
+      })
+  })
+})
+
+test('inject promisify - when the server is up', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    // setTimeout because the ready event don't set "started" flag
+    // in this iteration of the 'event loop'
+    setTimeout(() => {
+      fastify.inject({
+        method: 'GET',
+        url: '/'
+      })
+        .then(res => {
+          t.strictEqual(res.statusCode, 200)
+        })
+    }, 10)
+  })
+})
+
 // https://github.com/hapijs/shot/blob/master/test/index.js#L836
 function getStream () {
   const Read = function () {

@@ -466,18 +466,38 @@ function build (options) {
     return it
   }
 
+  function _inject (server, opts, cb) {
+    if (cb) {
+      shot.inject(server, opts, cb)
+      return
+    }
+    return new Promise(resolve => {
+      shot.inject(server, opts, resolve)
+    })
+  }
+
   function inject (opts, cb) {
     if (!shot) throw new Error('"shot" library is not installed: "npm install shot@3 --save-dev"')
 
     if (started) {
-      shot.inject(this, opts, cb)
+      return _inject(this, opts, cb)
+    }
+
+    if (cb) {
+      this.ready(err => {
+        if (err) throw err
+        return _inject(this, opts, cb)
+      })
       return
     }
 
-    this.ready(err => {
-      if (err) throw err
-      shot.inject(this, opts, cb)
+    return new Promise((resolve, reject) => {
+      this.ready(err => {
+        if (err) throw err
+        resolve()
+      })
     })
+      .then(() => _inject(this, opts, cb))
   }
 
   function use (url, fn) {

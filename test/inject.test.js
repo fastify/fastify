@@ -231,10 +231,11 @@ test('inject promisify - waiting for ready event', t => {
     reply.send(payload)
   })
 
-  fastify.inject({
+  const injectParams = {
     method: 'GET',
     url: '/'
-  })
+  }
+  fastify.inject(injectParams)
     .then(res => {
       t.strictEqual(res.statusCode, 200)
     })
@@ -252,10 +253,11 @@ test('inject promisify - after the ready event', t => {
   fastify.ready(err => {
     t.error(err)
 
-    fastify.inject({
+    const injectParams = {
       method: 'GET',
       url: '/'
-    })
+    }
+    fastify.inject(injectParams)
       .then(res => {
         t.strictEqual(res.statusCode, 200)
       })
@@ -277,10 +279,11 @@ test('inject promisify - when the server is up', t => {
     // setTimeout because the ready event don't set "started" flag
     // in this iteration of the 'event loop'
     setTimeout(() => {
-      fastify.inject({
+      const injectParams = {
         method: 'GET',
         url: '/'
-      })
+      }
+      fastify.inject(injectParams)
         .then(res => {
           t.strictEqual(res.statusCode, 200)
         })

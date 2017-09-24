@@ -486,7 +486,7 @@ function build (options) {
     if (cb) {
       this.ready(err => {
         if (err) throw err
-        return _inject(this, opts, cb)
+        shot.inject(this, opts, cb)
       })
       return
     }

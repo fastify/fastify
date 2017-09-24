@@ -466,40 +466,20 @@ function build (options) {
     return it
   }
 
-  function _inject (server, opts, cb) {
-    if (cb) {
-      shot.inject(server, opts, cb)
-      return
-    }
-    return new Promise(resolve => {
-      shot.inject(server, opts, resolve)
-    })
-  }
-
   function inject (opts, cb) {
     if (!shot) throw new Error('"shot" library is not installed: "npm install shot@3 --save-dev"')
 
-    if (started) {
-      return _inject(this, opts, cb)
-    }
+    const waitingForReadyEvent = started
+      ? Promise.resolve()
+      : new Promise((resolve, reject) => this.ready(err => (err ? reject : resolve)(err)))
+    const injectPromise = waitingForReadyEvent
+      .then(() => new Promise(resolve => shot.inject(this, opts, resolve)))
 
     if (cb) {
-      this.ready(err => {
-        if (err) throw err
-        shot.inject(this, opts, cb)
-      })
+      injectPromise.then(cb, cb)
       return
     }
-
-    const waitingForReadyEvent = new Promise((resolve, reject) => {
-      this.ready(err => {
-        if (err) return reject(err)
-        resolve()
-      })
-    })
-
-    return waitingForReadyEvent
-      .then(() => _inject(this, opts, cb))
+    return injectPromise
   }
 
   function use (url, fn) {

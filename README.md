@@ -94,7 +94,7 @@ Benchmarks taken using https://github.com/fastify/benchmarks.
 ## Ecosystem
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header
-- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify.
+- [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) with Fastify. (GraphQL)
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth)
 Bearer auth plugin for Fastify

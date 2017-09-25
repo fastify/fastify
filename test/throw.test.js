@@ -123,7 +123,20 @@ test('Should throw on duplicate request decorator', t => {
     fastify.decorateRequest('foo', fooObj)
     t.fail()
   } catch (e) {
-    t.pass()
+    t.ok(/has been already added/.test(e.message))
+  }
+})
+
+test('Should throw if request decorator dependencies are not met', t => {
+  t.plan(1)
+
+  const fooObj = {}
+
+  try {
+    fastify.decorateRequest('bar', fooObj, ['world'])
+    t.fail()
+  } catch (e) {
+    t.ok(/missing dependency/.test(e.message))
   }
 })
 
@@ -137,6 +150,19 @@ test('Should throw on duplicate reply decorator', t => {
     fastify.decorateReply('foo', fooObj)
     t.fail()
   } catch (e) {
-    t.pass()
+    t.ok(/has been already added/.test(e.message))
+  }
+})
+
+test('Should throw if reply decorator dependencies are not met', t => {
+  t.plan(1)
+
+  const fooObj = {}
+
+  try {
+    fastify.decorateReply('bar', fooObj, ['world'])
+    t.fail()
+  } catch (e) {
+    t.ok(/missing dependency/.test(e.message))
   }
 })

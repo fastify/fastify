@@ -33,6 +33,23 @@
     {
       "name": "Tomas Della Vedova",
       "url": "http://delved.org"
+    },
+    {
+      "name": "Tommaso Allevi",
+      "email": "tomallevi@gmail.com"
+    },
+    {
+      "name": "James Sumners",
+      "url": "https://james.sumners.info"
+    },
+    {
+      "name": "Evan Shortiss",
+      "email": "evanshortiss@gmail.com"
+    },
+    {
+      "name": "Dustin Deus",
+      "url": "http://starptech.de",
+      "email": "deusdustin@gmail.com"
     }
   ],
   "license": "MIT",

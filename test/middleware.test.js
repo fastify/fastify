@@ -553,10 +553,9 @@ test('middlewares with prefix', t => {
       }, (err, response, body) => {
         t.error(err)
         t.deepEqual(body, {
-          global: true
-          // TODO: this may be a bug!
-          // global2: true,
-          // root: true
+          global: true,
+          global2: true,
+          root: true
         })
       })
     })
@@ -571,10 +570,9 @@ test('middlewares with prefix', t => {
         t.error(err)
         t.deepEqual(body, {
           prefixed: true,
-          global: true
-          // TODO: this may be a bug!
-          // global2: true,
-          // root: true
+          global: true,
+          global2: true,
+          root: true
         })
       })
     })
@@ -590,10 +588,9 @@ test('middlewares with prefix', t => {
         t.deepEqual(body, {
           prefixed: true,
           slashed: true,
-          global: true
-          // TODO: this may be a bug!
-          // global2: true,
-          // root: true
+          global: true,
+          global2: true,
+          root: true
         })
       })
     })
@@ -608,12 +605,10 @@ test('middlewares with prefix', t => {
         t.error(err)
         t.deepEqual(body, {
           prefixed: true,
-          // TODO: this may be a bug!
-          // slashed: true,
-          global: true
-          // TODO: this may be a bug!
-          // global2: true,
-          // root: true
+          slashed: true,
+          global: true,
+          global2: true,
+          root: true
         })
       })
     })

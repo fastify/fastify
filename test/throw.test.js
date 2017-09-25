@@ -121,8 +121,7 @@ test('Should throw on duplicate request decorator', t => {
   fastify.decorateRequest('foo', fooObj)
   try {
     fastify.decorateRequest('foo', fooObj)
-    // TODO: this should be t.fail()!
-    t.pass()
+    t.fail()
   } catch (e) {
     t.pass()
   }
@@ -136,8 +135,7 @@ test('Should throw on duplicate reply decorator', t => {
   fastify.decorateReply('foo', fooObj)
   try {
     fastify.decorateReply('foo', fooObj)
-    // TODO: this should be t.fail()!
-    t.pass()
+    t.fail()
   } catch (e) {
     t.pass()
   }

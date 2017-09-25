@@ -5,13 +5,6 @@ const test = t.test
 const Fastify = require('../..')
 const loggerUtils = require('../../lib/logger')
 
-test('gen id factory', t => {
-  t.plan(2)
-  const genReqId = loggerUtils.reqIdGenFactory()
-  t.is(typeof genReqId, 'function')
-  t.is(typeof genReqId({}), 'number')
-})
-
 test('time resolution', t => {
   t.plan(2)
   t.is(typeof loggerUtils.now, 'function')

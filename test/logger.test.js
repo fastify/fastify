@@ -8,7 +8,7 @@ const Fastify = require('..')
 const pino = require('pino')
 
 test('test log stream', t => {
-  t.plan(7)
+  t.plan(11)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -32,18 +32,26 @@ test('test log stream', t => {
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port)
-    stream.on('data', line => {
+    stream.once('data', line => {
+      const id = line.reqId
+      t.ok(line.reqId, 'reqId is defined')
       t.ok(line.req, 'req is defined')
-      t.ok(line.res, 'res is defined')
-      t.equal(line.msg, 'request completed', 'message is set')
+      t.equal(line.msg, 'incoming request', 'message is set')
       t.equal(line.req.method, 'GET', 'method is get')
-      t.equal(line.res.statusCode, 200, 'statusCode is 200')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, id)
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'request completed', 'message is set')
+        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+      })
     })
   })
 })
 
 test('test error log stream', t => {
-  t.plan(7)
+  t.plan(10)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -68,17 +76,23 @@ test('test error log stream', t => {
 
     http.get('http://localhost:' + fastify.server.address().port + '/error')
     stream.once('data', line => {
+      t.ok(line.reqId, 'reqId is defined')
       t.ok(line.req, 'req is defined')
-      t.ok(line.res, 'res is defined')
-      t.equal(line.msg, 'kaboom', 'message is set')
+      t.equal(line.msg, 'incoming request', 'message is set')
       t.equal(line.req.method, 'GET', 'method is get')
-      t.equal(line.res.statusCode, 500, 'statusCode is 500')
+
+      stream.once('data', line => {
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'kaboom', 'message is set')
+        t.equal(line.res.statusCode, 500, 'statusCode is 500')
+      })
     })
   })
 })
 
 test('can use external logger instance', t => {
-  const lines = ['log success', 'request completed']
+  const lines = ['incoming request', 'log success', 'request completed']
   t.plan(lines.length + 2)
 
   const splitStream = split(JSON.parse)
@@ -156,7 +170,7 @@ test('The logger should accept a custom genReqId function', t => {
 })
 
 test('reply.send logs an error if called twice in a row', t => {
-  const lines = ['Reply already sent', 'Reply already sent', 'request completed']
+  const lines = ['incoming request', 'Reply already sent', 'Reply already sent', 'request completed']
   t.plan(lines.length + 1)
 
   const splitStream = split(JSON.parse)

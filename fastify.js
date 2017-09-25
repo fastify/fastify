@@ -469,15 +469,17 @@ function build (options) {
   function inject (opts, cb) {
     if (!shot) throw new Error('"shot" library is not installed: "npm install shot@3 --save-dev"')
 
-    if (started) {
-      shot.inject(this, opts, cb)
+    const waitingForReadyEvent = started
+      ? Promise.resolve()
+      : new Promise((resolve, reject) => this.ready(err => (err ? reject : resolve)(err)))
+    const injectPromise = waitingForReadyEvent
+      .then(() => new Promise(resolve => shot.inject(this, opts, resolve)))
+
+    if (cb) {
+      injectPromise.then(cb, cb)
       return
     }
-
-    this.ready(err => {
-      if (err) throw err
-      shot.inject(this, opts, cb)
-    })
+    return injectPromise
   }
 
   function use (url, fn) {

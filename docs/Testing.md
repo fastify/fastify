@@ -109,6 +109,22 @@ fastify.inject({
   // your tests
 })
 ```
+
+or in the promisified version
+
+```js
+const injectOption = {
+  method: String,
+  url: String,
+  payload: Object,
+  headers: Object
+}
+fastify.inject(injectOption)
+  .then(response => {
+    // your tests
+  })
+```
+
 Example:
 ```js
 // server.js

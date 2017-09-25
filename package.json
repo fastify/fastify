@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.28.2",
+  "version": "0.29.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {
@@ -75,13 +75,13 @@
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
-    "joi": "^11.0.3",
+    "joi": "^11.1.1",
     "pre-commit": "^1.2.2",
     "request": "^2.82.0",
     "serve-static": "^1.12.5",
     "shot": "^3.4.2",
     "snazzy": "^7.0.0",
-    "split2": "^2.1.1",
+    "split2": "^2.2.0",
     "standard": "^10.0.2",
     "tap": "^10.7.0",
     "then-sleep": "^1.0.1",
@@ -89,7 +89,7 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "~8.0.27",
+    "@types/node": "^8.0.30",
     "@types/pino": "~4.7.0",
     "ajv": "^5.2.2",
     "avvio": "^2.2.0",

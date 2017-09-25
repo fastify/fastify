@@ -100,7 +100,7 @@ Benchmarks taken using https://github.com/fastify/benchmarks.
 Bearer auth plugin for Fastify
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration
-- [`fastify-formbody`](https://github.com/fastify/fastify-formbody)
+- [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify graceful asynchronously
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)

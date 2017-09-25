@@ -97,3 +97,18 @@ Fake http injection (for testing purposes)  [here](https://github.com/fastify/fa
 <a name="set-schema-compiler"></a>
 #### setSchemaCompiler
 Set the schema compiler for all routes  [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#schema-compiler).
+
+<a name="set-not-found-handler"></a>
+#### setNotFoundHandler
+
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler.
+This call is fully encapsulated, so different plugins can set different
+not found handlers.
+
+<a name="set-error-handler"></a>
+#### setErrorHandler
+
+`fastify.setErrorHandler(handler(error, reply))`: set a function that
+will be called whenever an error happens. The handler is fully
+encapsulated, so different plugins can set different
+error handlers.

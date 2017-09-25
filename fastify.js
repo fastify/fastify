@@ -136,6 +136,12 @@ function build (options) {
   // fake http injection (for testing purposes)
   fastify.inject = inject
 
+  var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
+  fastify.setNotFoundHandler = setNotFoundHandler
+  setNotFoundHandler.call(fastify)
+
+  fastify.setErrorHandler = setErrorHandler
+
   return fastify
 
   function fastify (req, res) {
@@ -257,6 +263,10 @@ function build (options) {
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
 
+    if (opts.prefix) {
+      instance._404Store = null
+    }
+
     for (var i = 0; i < middlewares.length; i++) {
       instance.use.apply(instance, middlewares[i])
     }
@@ -334,6 +344,7 @@ function build (options) {
       onResponse: options.onResponse,
       config: options.config,
       middie: self._middie,
+      errorHander: self._errorHandler,
       schemaCompiler: options.schemaCompiler
     })
   }
@@ -378,6 +389,7 @@ function build (options) {
         [],
         opts.onResponse || _fastify._hooks.onResponse,
         config,
+        opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 
@@ -421,7 +433,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, middie) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -431,6 +443,7 @@ function build (options) {
     this.preHandler = preHandler
     this.onResponse = onResponse
     this.config = config
+    this.errorHandler = errorHandler
     this._middie = middie
   }
 
@@ -520,13 +533,85 @@ function build (options) {
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 
-  function defaultRoute (req, res, params) {
+  function defaultRoute (req, res) {
+    fourOhFour.lookup(req, res)
+  }
+
+  function basic404 (req, reply) {
+    reply.code(404).send(new Error('Not found'))
+  }
+
+  function fourOhFourFallBack (req, res) {
+    // if this happen, we have a very bad bug
+    // we might want to do some hard debugging
+    // here, let's print out as much info as
+    // we can
+    req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    req.log.warn(fourOhFour.prettyPrint())
     const reply = new Reply(req, res, null)
     reply.code(404).send(new Error('Not found'))
   }
 
+  function setNotFoundHandler (opts, handler) {
+    this.after(() => {
+      _setNotFoundHandler.call(this, opts, handler)
+    })
+  }
+
+  function _setNotFoundHandler (opts, handler) {
+    if (typeof opts === 'function') {
+      handler = opts
+      opts = undefined
+    }
+    opts = opts || {}
+    handler = handler || basic404
+
+    if (!this._404Store) {
+      const store = new Store(
+        opts.schema,
+        handler,
+        this._Reply,
+        this._Request,
+        opts.contentTypeParser || this._contentTypeParser,
+        this._hooks.onRequest,
+        [],
+        this._hooks.onResponse,
+        opts.config || {},
+        this._errorHandler,
+        this._middie
+      )
+
+      this._404Store = store
+
+      var prefix = this._RoutePrefix.prefix
+      var star = '*'
+
+      // TODO this would need to be refactored once
+      // https://github.com/delvedor/find-my-way/issues/28
+      // is solved
+      if (prefix && prefix[prefix.length - 1] !== '/') {
+        star = '/*'
+      } else {
+        fourOhFour.all(prefix + '/', startHooks, store)
+        fourOhFour.all(prefix + '/*', startHooks, store)
+      }
+
+      fourOhFour.all(prefix + star, startHooks, store)
+      fourOhFour.all(prefix, startHooks, store)
+    } else {
+      this._404Store.handler = handler
+      this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+      this._404Store.config = opts.config || {}
+    }
+  }
+
   function setSchemaCompiler (schemaCompiler) {
     this._schemaCompiler = schemaCompiler
+    return this
+  }
+
+  function setErrorHandler (func) {
+    this._errorHandler = func
     return this
   }
 }

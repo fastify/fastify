@@ -6,6 +6,9 @@ const request = require('request')
 const fastify = require('..')
 const cors = require('cors')
 const helmet = require('helmet')
+const serveStatic = require('serve-static')
+const fs = require('fs')
+const path = require('path')
 
 test('use a middleware', t => {
   t.plan(7)
@@ -478,5 +481,39 @@ test('middlewares should support encapsulation with prefix', t => {
         })
       })
     })
+  })
+})
+
+test('use serve-static', t => {
+  t.plan(1)
+
+  const instance = fastify()
+
+  instance.use(serveStatic(__dirname))
+
+  const basename = path.basename(__filename)
+
+  instance.inject({
+    method: 'GET',
+    url: '/' + basename
+  }, (res) => {
+    t.deepEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+  })
+})
+
+test('use serve-static with prefix', t => {
+  t.plan(1)
+
+  const instance = fastify()
+
+  instance.use('/js', serveStatic(__dirname))
+
+  const basename = path.basename(__filename)
+
+  instance.inject({
+    method: 'GET',
+    url: '/js/' + basename
+  }, (res) => {
+    t.deepEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
   })
 })

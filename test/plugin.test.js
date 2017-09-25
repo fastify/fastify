@@ -16,7 +16,7 @@ test('require a plugin', t => {
 })
 
 test('fastify.register with fastify-plugin should not incapsulate his code', t => {
-  t.plan(9)
+  t.plan(10)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
@@ -27,6 +27,11 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
     }))
 
     t.notOk(instance.test)
+
+    // the decoration is added at the end
+    instance.after(() => {
+      t.ok(instance.test)
+    })
 
     instance.get('/', (req, reply) => {
       t.ok(instance.test)

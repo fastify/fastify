@@ -63,7 +63,7 @@
   "devDependencies": {
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.0",
-    "boom": "^5.1.0",
+    "boom": "^6.0.0",
     "cors": "^2.8.4",
     "coveralls": "^2.13.1",
     "dns-prefetch-control": "^0.1.0",

@@ -125,6 +125,15 @@ Then run your server with:
 ```bash
 npm start
 ```
+<a name="slides"></a>
+### Slides and Videos
+- Slides
+  - [Take your http server to ludicrous speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed) by [@mcollina](https://github.com/mcollina)
+  - [What if I told you that HTTP can be fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast) by [@delvedor](https://github.com/delvedor)
+
+- Videos
+  - [Take your http server to ludicrous speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by [@mcollina](https://github.com/mcollina)
+
 <a name="next"></a>
 ### Next
 Do you want to know more?

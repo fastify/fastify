@@ -226,7 +226,7 @@ declare namespace fastify {
      * Decorate request objects with new properties. Throws an execption if
      * you attempt to add the same decorator name twice
      */
-    decorateResponse(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance
+    decorateRequest(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance
 
     /**
      * Extends the standard server error. Return an object with the properties you'd

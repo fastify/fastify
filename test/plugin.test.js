@@ -375,10 +375,10 @@ test('prefix', t => {
 })
 
 test('prefix with fastify-plugin', t => {
-  t.plan(1)
+  t.plan(6)
   const fastify = Fastify()
 
-  const handler = req => Promise.resolve({ url: req.url })
+  const handler = req => Promise.resolve({ url: req.req.url })
 
   function plugin (instance, opts, next) {
     instance.get('/', handler)
@@ -391,9 +391,27 @@ test('prefix with fastify-plugin', t => {
     next()
   }, { prefix: '/' })
 
+  // this is not prefixed!
+  fastify.get('/foo', handler)
+
   const injectOptions = { url: '/', method: 'GET' }
   fastify.inject(injectOptions)
     .then(response => {
       t.equal(response.statusCode, 200)
+      t.deepEqual(JSON.parse(response.payload), {url: '/'})
+
+      const injectOptions = { url: '/foo', method: 'GET' }
+      fastify.inject(injectOptions)
+        .then(response => {
+          t.equal(response.statusCode, 200)
+          t.deepEqual(JSON.parse(response.payload), {url: '/foo'})
+
+          const injectOptions = { url: '/api', method: 'GET' }
+          fastify.inject(injectOptions)
+            .then(response => {
+              t.equal(response.statusCode, 200)
+              t.deepEqual(JSON.parse(response.payload), {url: '/api'})
+            })
+        })
     })
 })

@@ -7,9 +7,7 @@ const http = require('http')
 const https = require('https')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
-
-var shot = null
-try { shot = require('shot') } catch (e) { }
+const Inject = require('light-my-request')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -482,19 +480,23 @@ function build (options) {
   }
 
   function inject (opts, cb) {
-    if (!shot) throw new Error('"shot" library is not installed: "npm install shot@3 --save-dev"')
-
-    const waitingForReadyEvent = started
-      ? Promise.resolve()
-      : new Promise((resolve, reject) => this.ready(err => (err ? reject : resolve)(err)))
-    const injectPromise = waitingForReadyEvent
-      .then(() => new Promise(resolve => shot.inject(this, opts, resolve)))
+    if (started) {
+      return Inject(this, opts, cb)
+    }
 
     if (cb) {
-      injectPromise.then(cb, cb)
-      return
+      this.ready(err => {
+        if (err) throw err
+        return Inject(this, opts, cb)
+      })
+    } else {
+      return new Promise((resolve, reject) => {
+        this.ready(err => {
+          if (err) return reject(err)
+          resolve(Inject(this, opts))
+        })
+      })
     }
-    return injectPromise
   }
 
   function use (url, fn) {

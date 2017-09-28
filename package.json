@@ -65,7 +65,7 @@
     "bluebird": "^3.5.0",
     "boom": "^5.1.0",
     "cors": "^2.8.4",
-    "coveralls": "^2.13.1",
+    "coveralls": "^3.0.0",
     "dns-prefetch-control": "^0.1.0",
     "fast-json-body": "^1.1.0",
     "fast-safe-stringify": "^1.2.0",

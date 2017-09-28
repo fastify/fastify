@@ -349,3 +349,51 @@ test('add hooks after route declaration', t => {
     })
   })
 })
+
+test('prefix', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const handler = req => Promise.resolve({ url: req.url })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }
+  fastify.register(plugin, { prefix: '/api' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }, { prefix: '/' })
+
+  const injectOptions = { url: '/', method: 'GET' }
+  fastify.inject(injectOptions)
+    .then(response => {
+      t.equal(response.statusCode, 200)
+    })
+})
+
+test('prefix with fastify-plugin', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const handler = req => Promise.resolve({ url: req.url })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }
+  fastify.register(fp(plugin), { prefix: '/api' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }, { prefix: '/' })
+
+  const injectOptions = { url: '/', method: 'GET' }
+  fastify.inject(injectOptions)
+    .then(response => {
+      t.equal(response.statusCode, 200)
+    })
+})

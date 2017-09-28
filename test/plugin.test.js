@@ -349,3 +349,69 @@ test('add hooks after route declaration', t => {
     })
   })
 })
+
+test('prefix', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const handler = req => Promise.resolve({ url: req.url })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }
+  fastify.register(plugin, { prefix: '/api' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }, { prefix: '/' })
+
+  const injectOptions = { url: '/', method: 'GET' }
+  fastify.inject(injectOptions)
+    .then(response => {
+      t.equal(response.statusCode, 200)
+    })
+})
+
+test('prefix with fastify-plugin', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  const handler = req => Promise.resolve({ url: req.req.url })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }
+  fastify.register(fp(plugin), { prefix: '/api' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', handler)
+    next()
+  }, { prefix: '/' })
+
+  // this is not prefixed!
+  fastify.get('/foo', handler)
+
+  const injectOptions = { url: '/', method: 'GET' }
+  fastify.inject(injectOptions)
+    .then(response => {
+      t.equal(response.statusCode, 200)
+      t.deepEqual(JSON.parse(response.payload), {url: '/'})
+
+      const injectOptions = { url: '/foo', method: 'GET' }
+      fastify.inject(injectOptions)
+        .then(response => {
+          t.equal(response.statusCode, 200)
+          t.deepEqual(JSON.parse(response.payload), {url: '/foo'})
+
+          const injectOptions = { url: '/api', method: 'GET' }
+          fastify.inject(injectOptions)
+            .then(response => {
+              t.equal(response.statusCode, 200)
+              t.deepEqual(JSON.parse(response.payload), {url: '/api'})
+            })
+        })
+    })
+})

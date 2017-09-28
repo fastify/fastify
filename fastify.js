@@ -251,8 +251,16 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
+    const prefix = opts.prefix
     if (fn[Symbol.for('skip-override')]) {
-      return old
+      if (!prefix) {
+        return old
+      }
+
+      const instance = Object.create(old)
+      instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
+
+      return instance
     }
 
     const middlewares = Object.assign([], old._middlewares)

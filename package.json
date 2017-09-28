@@ -79,7 +79,7 @@
     "pre-commit": "^1.2.2",
     "request": "^2.82.0",
     "serve-static": "^1.12.5",
-    "shot": "^3.4.2",
+    "shot": "^4.0.1",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.2",

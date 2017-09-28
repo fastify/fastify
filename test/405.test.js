@@ -2,11 +2,10 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
 const Fastify = require('..')
 
 test('405', t => {
-  t.plan(2)
+  t.plan(1)
 
   const fastify = Fastify()
 
@@ -14,21 +13,13 @@ test('405', t => {
     reply.send({ hello: 'world' })
   })
 
-  t.tearDown(fastify.close.bind(fastify))
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    t.test('unsupported method', t => {
-      t.plan(2)
-      request({
-        method: 'TRACE',
-        uri: 'http://localhost:' + fastify.server.address().port,
-        json: {}
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 405)
-      })
+  const injectOptions = {
+    method: 'TRACE',
+    url: '/',
+    payload: '{}'
+  }
+  fastify.inject(injectOptions)
+    .then(response => {
+      t.strictEqual(response.statusCode, 405)
     })
-  })
 })

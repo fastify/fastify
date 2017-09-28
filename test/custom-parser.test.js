@@ -225,3 +225,142 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
     })
   })
 })
+
+test('the content type should be a string', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.addContentTypeParser(null, () => {})
+    t.fail()
+  } catch (err) {
+    t.is(err.message, 'The content type should be a string')
+  }
+})
+
+test('the content type cannot be an empty string', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.addContentTypeParser('', () => {})
+    t.fail()
+  } catch (err) {
+    t.is(err.message, 'The content type cannot be an empty string')
+  }
+})
+
+test('the content type handler should be a function', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.addContentTypeParser('aaa', null)
+    t.fail()
+  } catch (err) {
+    t.is(err.message, 'The content type handler should be a function')
+  }
+})
+
+test('catch all content type parser', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    var data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => {
+      done(data)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'POST',
+      uri: 'http://localhost:' + fastify.server.address().port,
+      body: 'hello',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, '"hello"')
+
+      request({
+        method: 'POST',
+        uri: 'http://localhost:' + fastify.server.address().port,
+        body: 'hello',
+        headers: {
+          'Content-Type': 'very-weird-content-type'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, '"hello"')
+        fastify.close()
+      })
+    })
+  })
+})
+
+test('catch all content type parser should not interfere with other conte type parsers', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    var data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => {
+      done(data)
+    })
+  })
+
+  fastify.addContentTypeParser('application/jsoff', function (req, done) {
+    jsonParser(req, function (err, body) {
+      if (err) return done(err)
+      done(body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'POST',
+      uri: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+
+      request({
+        method: 'POST',
+        uri: 'http://localhost:' + fastify.server.address().port,
+        body: 'hello',
+        headers: {
+          'Content-Type': 'very-weird-content-type'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, '"hello"')
+        fastify.close()
+      })
+    })
+  })
+})

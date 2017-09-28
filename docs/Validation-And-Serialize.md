@@ -81,9 +81,7 @@ fastify.post('/the/url', {
       hello: Joi.string().required()
     }).required()
   },
-  schemaCompiler: function (schema) {
-    return schema.validate.bind(validate)
-  }
+  schemaCompiler: schema => data => Joi.validate(data, schema)
 })
 ```
 

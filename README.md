@@ -110,6 +110,7 @@ Bearer auth plugin for Fastify
 Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
 Multipart support for Fastify
+- [`fastify-onheader`](https://github.com/lolo32/fastify-onheader) Execute a listener when a response is about to write headers
 - [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
 - [`fastify-redis`](https://github.com/fastify/fastify-redis)

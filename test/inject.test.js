@@ -161,7 +161,7 @@ test('inject get request - headers', t => {
   }, res => {
     t.strictEqual('world', JSON.parse(res.payload).hello)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 59)
+    t.strictEqual(res.headers['content-length'], 69)
   })
 })
 

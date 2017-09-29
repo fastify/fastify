@@ -7,7 +7,7 @@ const http = require('http')
 const https = require('https')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
-const Inject = require('light-my-request')
+const lightMyRequest = require('light-my-request')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -481,21 +481,21 @@ function build (options) {
 
   function inject (opts, cb) {
     if (started) {
-      return Inject(this, opts, cb)
+      return lightMyRequest(this, opts, cb)
     }
 
     if (cb) {
       this.ready(err => {
         if (err) throw err
-        return Inject(this, opts, cb)
+        return lightMyRequest(this, opts, cb)
       })
     } else {
       return new Promise((resolve, reject) => {
         this.ready(err => {
           if (err) return reject(err)
-          resolve(Inject(this, opts))
+          resolve()
         })
-      })
+      }).then(() => lightMyRequest(this, opts))
     }
   }
 

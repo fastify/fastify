@@ -586,14 +586,10 @@ function build (options) {
       this._404Store = store
 
       var prefix = this._RoutePrefix.prefix
-      var star = '*'
-
-      if (prefix && prefix[prefix.length - 1] !== '/') {
-        star = '/*'
-      }
+      var star = '/*'
 
       fourOhFour.all(prefix + star, startHooks, store)
-      if (prefix.length > 0) fourOhFour.all(prefix, startHooks, store)
+      fourOhFour.all(prefix, startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser

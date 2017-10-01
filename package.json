@@ -79,7 +79,6 @@
     "pre-commit": "^1.2.2",
     "request": "^2.83.0",
     "serve-static": "^1.13.0",
-    "shot": "^3.4.2",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.2",
@@ -98,6 +97,7 @@
     "fastseries": "^1.7.2",
     "find-my-way": "^1.6.2",
     "flatstr": "^1.0.5",
+    "light-my-request": "^1.0.0",
     "middie": "^2.0.0",
     "pino": "^4.7.2",
     "pump": "^1.0.2"

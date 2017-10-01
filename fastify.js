@@ -346,6 +346,7 @@ function build (options) {
       RoutePrefix: self._RoutePrefix,
       beforeHandler: options.beforeHandler,
       onResponse: options.onResponse,
+      onSend: options.onSend,
       config: options.config,
       middie: self._middie,
       errorHander: self._errorHandler,
@@ -392,6 +393,7 @@ function build (options) {
         opts.onRequest || _fastify._hooks.onRequest,
         [],
         opts.onResponse || _fastify._hooks.onResponse,
+        opts.onSend || _fastify._hooks.onSend,
         config,
         opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
@@ -437,13 +439,14 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, errorHandler, middie) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
     this.onRequest = onRequest
+    this.onSend = onSend
     this.preHandler = preHandler
     this.onResponse = onResponse
     this.config = config
@@ -556,7 +559,7 @@ function build (options) {
     // we can
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
-    const reply = new Reply(req, res, null)
+    const reply = new Reply(req, res, { onSend: [] })
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -584,6 +587,7 @@ function build (options) {
         this._hooks.onRequest,
         [],
         this._hooks.onResponse,
+        this._hooks.onSend,
         opts.config || {},
         this._errorHandler,
         this._middie

@@ -357,3 +357,57 @@ test('run middlewares with encapsulated 404', t => {
     })
   })
 })
+
+test('hooks check 404', t => {
+  t.plan(9)
+
+  const test = t.test
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.addHook('onSend', (req, res, next) => {
+    t.ok('called', 'onSend')
+    next()
+  })
+  fastify.addHook('onRequest', (req, res, next) => {
+    t.ok('called', 'onRequest')
+    next()
+  })
+  fastify.addHook('onResponse', (res, next) => {
+    t.ok('called', 'onResponse')
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    test('unsupported method', t => {
+      t.plan(2)
+      request({
+        method: 'PUT',
+        uri: 'http://localhost:' + fastify.server.address().port,
+        json: {}
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+      })
+    })
+
+    test('unsupported route', t => {
+      t.plan(2)
+      request({
+        method: 'GET',
+        uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
+        json: {}
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+      })
+    })
+  })
+})

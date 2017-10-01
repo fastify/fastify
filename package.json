@@ -90,6 +90,7 @@
   "dependencies": {
     "@types/node": "^8.0.31",
     "@types/pino": "~4.7.0",
+    "abstract-logging": "^1.0.0",
     "ajv": "^5.2.3",
     "avvio": "^2.2.0",
     "fast-json-stringify": "^0.13.1",

@@ -110,6 +110,10 @@ Bearer auth plugin for Fastify
 Fastify MongoDB connection plugin, with this you can share the same MongoDb connection pool in every part of your server.
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart)
 Multipart support for Fastify
+- [`fastify-nats`](https://github.com/mahmed8003/fastify-nats)
+Plugin to share [NATS](http://nats.io) client across Fastify.
+- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
+Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
 - [`fastify-pigeon`](https://github.com/fastify/fastify-pigeon) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/)
 - [`fastify-redis`](https://github.com/fastify/fastify-redis)
@@ -121,8 +125,6 @@ Swagger documentation generator for Fastify
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream)
 - [`point-of-view`](https://github.com/fastify/point-of-view)
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
-Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
 - *More coming soon*
 
 ## Team

@@ -26,6 +26,10 @@ fastify
     console.log('preHandler')
     next()
   })
+  .addHook('onSend', function (req, res, next) {
+    console.log('onSend')
+    next()
+  })
   .addHook('onResponse', function (res, next) {
     console.log('onResponse')
     next()

@@ -589,7 +589,7 @@ function build (options) {
       var star = '/*'
 
       fourOhFour.all(prefix + star, startHooks, store)
-      fourOhFour.all(prefix, startHooks, store)
+      fourOhFour.all(prefix || '/', startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser

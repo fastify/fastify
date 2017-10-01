@@ -588,20 +588,10 @@ function build (options) {
       this._404Store = store
 
       var prefix = this._RoutePrefix.prefix
-      var star = '*'
-
-      // TODO this would need to be refactored once
-      // https://github.com/delvedor/find-my-way/issues/28
-      // is solved
-      if (prefix && prefix[prefix.length - 1] !== '/') {
-        star = '/*'
-      } else {
-        fourOhFour.all(prefix + '/', startHooks, store)
-        fourOhFour.all(prefix + '/*', startHooks, store)
-      }
+      var star = '/*'
 
       fourOhFour.all(prefix + star, startHooks, store)
-      fourOhFour.all(prefix, startHooks, store)
+      fourOhFour.all(prefix || '/', startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser

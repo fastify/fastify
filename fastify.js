@@ -8,6 +8,7 @@ const https = require('https')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
 const lightMyRequest = require('light-my-request')
+const abstractLogging = require('abstract-logging')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -30,6 +31,9 @@ function build (options) {
   var logger
   if (isValidLogger(options.logger)) {
     logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
+  } else if (options.logger === false) {
+    logger = abstractLogging
+    logger.child = () => logger
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'

@@ -5,6 +5,7 @@
 By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preHandler'`
+- `'onSend'`
 - `'onResponse'`
 - `'onClose'`
 
@@ -16,6 +17,11 @@ fastify.addHook('onRequest', (req, res, next) => {
 })
 
 fastify.addHook('preHandler', (req, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('onSend', (req, reply, next) => {
   // some code
   next()
 })
@@ -53,7 +59,7 @@ fastify.addHook('preHandler', (req, reply, next) => {
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
-Note that in the `'preHandler'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
 <a name="on-close"></a>
 **'onClose'**  

@@ -93,3 +93,39 @@ test('encapsulated 500', t => {
     })
   })
 })
+
+test('custom 500 with hooks', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(new Error('kaboom'))
+  })
+
+  fastify.setErrorHandler(function (err, reply) {
+    reply.type('text/plain').send('an error happened: ' + err.message)
+  })
+
+  fastify.addHook('onSend', (req, res, next) => {
+    t.ok('called', 'onSend')
+    next()
+  })
+  fastify.addHook('onRequest', (req, res, next) => {
+    t.ok('called', 'onRequest')
+    next()
+  })
+  fastify.addHook('onResponse', (res, next) => {
+    t.ok('called', 'onResponse')
+    next()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (res) => {
+    t.strictEqual(res.statusCode, 500)
+    t.strictEqual(res.headers['content-type'], 'text/plain')
+    t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+  })
+})

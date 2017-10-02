@@ -47,6 +47,11 @@ fastify.addHook('onResponse', function (res, next) {
   next()
 })
 
+fastify.addHook('onSend', function (req, res, next) {
+  t.ok('onSend called')
+  next()
+})
+
 fastify.get('/', function (req, reply) {
   t.is(req.req.raw, 'the request is coming')
   t.is(reply.res.raw, 'the reply has come')

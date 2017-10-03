@@ -31,7 +31,7 @@ fastify.register(helmet)
 
 Remember that middlewares can be encapsulated, this means that you can decide where your middlewares should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
 
-Fastify middlewares also do not expose the `send` method or other methods specific to the Fastify [Reply]('./Reply.md' "Reply") instance. This is because Fastify wraps the incoming `req` and `res` NodeJS instances using the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") classes internally, but this is done after the middlewares phase. If you need to create a middleware you have to use the NodeJS `req` and `res` instances. Otherwise, you can use the `preHandler` hook that has the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") Fastify instances. For more information, see [Hooks](./Hooks.md "Hooks").
+Fastify middlewares also do not expose the `send` method or other methods specific to the Fastify [Reply]('./Reply.md' "Reply") instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") objects internally, but this is done after the middlewares phase. If you need to create a middleware you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook that has the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") Fastify instances. For more information, see [Hooks](./Hooks.md "Hooks").
 
 <a name="restrict-usage"></a>
 #### Restrict middleware execution to a certain path(s)

@@ -12,7 +12,7 @@ const server: fastify.FastifyInstance = fastify()
 server.use(cors())
 
 // Custom middleware
-server.use('/', (req, res, next) => {  
+server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
 })
 
@@ -111,6 +111,32 @@ server
     method: ['GET', 'POST', 'PUT'],
     url: '/route'
   })
+  .register(function (instance, options, done) {
+    instance.get('/route', opts, function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+  },
+  {prefix: 'v1', hello: 'world'},
+  function (err) {
+    if (err) throw err
+  })
+  .register([
+    function (instance, options, done) {
+      instance.get('/first', opts, function (req, reply) {
+        reply.send({ hello: 'world' })
+      })
+    },
+    function (instance, options, done) {
+      instance.get('/second', opts, function (req, reply) {
+        reply.send({ hello: 'world' })
+      })
+    }
+  ],
+  {prefix: 'v1', hello: 'world'},
+  function (err) {
+    if (err) throw err
+  })
+
 
 
 // Using decorate requires casting so the compiler knows about new properties

@@ -200,7 +200,7 @@ test('reply.send logs an error if called twice in a row', t => {
 })
 
 test('logger can be silented', t => {
-  t.plan(9)
+  t.plan(17)
   const fastify = Fastify({
     logger: false
   })

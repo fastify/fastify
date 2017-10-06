@@ -291,6 +291,24 @@ test('inject promisify - when the server is up', t => {
   })
 })
 
+test('should reject in error case', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const error = new Error('DOOM!')
+  fastify.register((instance, opts, next) => {
+    setTimeout(next, 500, error)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+    .catch(e => {
+      t.strictEqual(e, error)
+    })
+})
+
 // https://github.com/hapijs/shot/blob/master/test/index.js#L836
 function getStream () {
   const Read = function () {

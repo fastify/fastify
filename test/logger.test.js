@@ -198,3 +198,30 @@ test('reply.send logs an error if called twice in a row', t => {
     t.deepEqual(payload, { hello: 'world' })
   })
 })
+
+test('logger can be silented', t => {
+  t.plan(9)
+  const fastify = Fastify({
+    logger: false
+  })
+  t.ok(fastify.logger)
+  t.is(typeof fastify.logger, 'object')
+  t.is(typeof fastify.logger.fatal, 'function')
+  t.is(typeof fastify.logger.error, 'function')
+  t.is(typeof fastify.logger.warn, 'function')
+  t.is(typeof fastify.logger.info, 'function')
+  t.is(typeof fastify.logger.debug, 'function')
+  t.is(typeof fastify.logger.trace, 'function')
+  t.is(typeof fastify.logger.child, 'function')
+
+  const childLogger = fastify.logger.child()
+
+  t.is(typeof childLogger, 'object')
+  t.is(typeof childLogger.fatal, 'function')
+  t.is(typeof childLogger.error, 'function')
+  t.is(typeof childLogger.warn, 'function')
+  t.is(typeof childLogger.info, 'function')
+  t.is(typeof childLogger.debug, 'function')
+  t.is(typeof childLogger.trace, 'function')
+  t.is(typeof childLogger.child, 'function')
+})

@@ -109,12 +109,16 @@ server
   })
   .route({
     method: ['GET', 'POST', 'PUT'],
-    url: '/route'
+    url: '/multi-route',
+    handler: function (req, reply) {
+      reply.send({ hello: 'world' })
+    }
   })
   .register(function (instance, options, done) {
     instance.get('/route', opts, function (req, reply) {
       reply.send({ hello: 'world' })
     })
+    done()
   },
   {prefix: 'v1', hello: 'world'},
   function (err) {
@@ -125,11 +129,13 @@ server
       instance.get('/first', opts, function (req, reply) {
         reply.send({ hello: 'world' })
       })
+      done()
     },
     function (instance, options, done) {
       instance.get('/second', opts, function (req, reply) {
         reply.send({ hello: 'world' })
       })
+      done()
     }
   ],
   {prefix: 'v1', hello: 'world'},

@@ -79,7 +79,7 @@ declare namespace fastify {
   interface RouteOptions extends RouteShorthandOptions {
     method: HTTPMethod|HTTPMethod[],
     url: string,
-    handler?: RequestHandler
+    handler: RequestHandler
   }
 
   /**

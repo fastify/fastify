@@ -531,7 +531,9 @@ test('middlewares with prefix', t => {
     reply.send({
       prefixed: request.req.prefixed,
       slashed: request.req.slashed,
-      global: request.req.global
+      global: request.req.global,
+      global2: request.req.global2,
+      root: request.req.root
     })
   }
 
@@ -572,7 +574,8 @@ test('middlewares with prefix', t => {
           prefixed: true,
           global: true,
           global2: true,
-          root: true
+          root: true,
+          slashed: true
         })
       })
     })

@@ -65,6 +65,25 @@ test('Multiple methods', t => {
   }
 })
 
+test('Add multiple methods', t => {
+  t.plan(1)
+  try {
+    fastify.get('/add-multiple', function (req, reply) {
+      reply.send({hello: 'Bob!'})
+    })
+    fastify.route({
+      method: ['PUT', 'DELETE'],
+      url: '/add-multiple',
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, function (err) {
   if (err) t.error(err)
   fastify.server.unref()

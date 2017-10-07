@@ -146,6 +146,33 @@ test('beforeHandler should handle errors with custom status code', t => {
   })
 })
 
+test('beforeHandler should handle errors with custom status code in shorthand form', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    beforeHandler: (req, reply, done) => {
+      done(new Error('go away'), 401)
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, res => {
+    var payload = JSON.parse(res.payload)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(payload, {
+      message: 'go away',
+      error: 'Unauthorized',
+      statusCode: 401
+    })
+  })
+})
+
 test('beforeHandler could accept an array of functions', t => {
   t.plan(1)
   const fastify = Fastify()

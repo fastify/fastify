@@ -22,7 +22,9 @@ test('Prefix options should add a prefix for all the routes inside a register / 
         reply.send({ route: '/v1/v2/first' })
       })
       next()
-    }, { prefix: '/v2' }, next)
+    }, { prefix: '/v2' })
+
+    next()
   }, { prefix: '/v1' })
 
   fastify.inject({

@@ -349,3 +349,49 @@ test('add hooks after route declaration', t => {
     })
   })
 })
+
+test('nested plugins', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.register((fastify, opts, next) => {
+      fastify.get('/', function (req, reply) {
+        reply.send('I am child 1')
+      })
+      next()
+    }, { prefix: '/child1' })
+
+    fastify.register((fastify, opts, next) => {
+      fastify.get('/', function (req, reply) {
+        reply.send('I am child 2')
+      })
+      next()
+    }, { prefix: '/child2' })
+
+    next()
+  }, { prefix: '/parent' })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(body), 'I am child 1')
+    })
+
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(body), 'I am child 2')
+    })
+  })
+})

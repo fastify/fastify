@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "autocannon": "^0.16.5",
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.5.1",
     "boom": "^5.1.0",
     "cors": "^2.8.4",
     "coveralls": "^3.0.0",
@@ -75,10 +75,10 @@
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
-    "joi": "^11.1.1",
+    "joi": "^11.3.3",
     "pre-commit": "^1.2.2",
     "request": "^2.83.0",
-    "serve-static": "^1.13.0",
+    "serve-static": "^1.13.1",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.2",
@@ -88,18 +88,18 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "^8.0.31",
+    "@types/node": "^8.0.33",
     "@types/pino": "~4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^5.2.3",
-    "avvio": "^2.2.0",
+    "avvio": "^3.0.0",
     "fast-json-stringify": "^0.13.1",
     "fastify-cli": "^0.8.0",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.6.2",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.0.0",
-    "middie": "^2.0.0",
+    "middie": "^2.1.0",
     "pino": "^4.7.2",
     "pump": "^1.0.2"
   }

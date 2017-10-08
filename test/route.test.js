@@ -132,26 +132,26 @@ fastify.listen(0, function (err) {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
+})
 
-  test('path can be specified in place of uri', t => {
-    t.plan(3)
+test('path can be specified in place of uri', t => {
+  t.plan(2)
 
-    fastify.route({
-      method: 'GET',
-      path: '/path',
-      handler: function (req, reply) {
-        reply.send({ hello: 'world' })
-      }
-    })
-
-    const reqOpts = {
-      method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/path'
+  fastify.route({
+    method: 'GET',
+    path: '/path',
+    handler: function (req, reply) {
+      reply.send({ hello: 'world' })
     }
-    request(reqOpts, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-    })
+  })
+
+  const reqOpts = {
+    method: 'GET',
+    url: '/path'
+  }
+
+  fastify.inject(reqOpts, (res) => {
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })

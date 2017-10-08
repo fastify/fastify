@@ -21,94 +21,54 @@ const opts = {
   }
 }
 
-test('shorthand - promise es6 get', t => {
-  t.plan(1)
-  try {
-    fastify.get('/', opts, function (req, reply) {
-      const promise = new Promise((resolve, reject) => {
-        resolve({ hello: 'world' })
-      })
-      reply.header('content-type', 'application/json').code(200).send(promise)
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/', opts, function (req, reply) {
+  const promise = new Promise((resolve, reject) => {
+    resolve({ hello: 'world' })
+  })
+  reply.header('content-type', 'application/json').code(200).send(promise)
 })
 
-test('shorthand - return promise es6 get', t => {
-  t.plan(1)
-  try {
-    fastify.get('/return', opts, function (req, reply) {
-      const promise = new Promise((resolve, reject) => {
-        resolve({ hello: 'world' })
-      })
-      return promise
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/return', opts, function (req, reply) {
+  const promise = new Promise((resolve, reject) => {
+    resolve({ hello: 'world' })
+  })
+  return promise
 })
 
-test('shorthand - return promise es6 get error', t => {
-  t.plan(1)
-  try {
-    fastify.get('/return-error', opts, function (req, reply) {
-      const promise = new Promise((resolve, reject) => {
-        reject(new Error('some error'))
-      })
-      return promise
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/return-error', opts, function (req, reply) {
+  const promise = new Promise((resolve, reject) => {
+    reject(new Error('some error'))
+  })
+  return promise
 })
 
-test('shorthand - promise es6 get error', t => {
-  t.plan(1)
-  try {
-    fastify.get('/error', opts, function (req, reply) {
-      const promise = new Promise((resolve, reject) => {
-        reject(new Error('some error'))
-      })
-      reply.send(promise)
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/error', opts, function (req, reply) {
+  const promise = new Promise((resolve, reject) => {
+    reject(new Error('some error'))
+  })
+  reply.send(promise)
 })
 
-test('shorthand - promise bluebird get', t => {
-  t.plan(1)
-  try {
-    fastify.get('/bluebird', opts, function (req, reply) {
-      const promise = new Bluebird((resolve, reject) => {
-        resolve({ hello: 'world' })
-      })
-      reply.header('content-type', 'application/json').code(200).send(promise)
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/bluebird', opts, function (req, reply) {
+  const promise = new Bluebird((resolve, reject) => {
+    resolve({ hello: 'world' })
+  })
+  reply.header('content-type', 'application/json').code(200).send(promise)
 })
 
-test('shorthand - promise bluebird get error', t => {
-  t.plan(1)
-  try {
-    fastify.get('/bluebird-error', opts, function (req, reply) {
-      const promise = new Bluebird((resolve, reject) => {
-        reject(new Error('some error'))
-      })
-      reply.send(promise)
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+fastify.get('/bluebird-error', opts, function (req, reply) {
+  const promise = new Bluebird((resolve, reject) => {
+    reject(new Error('some error'))
+  })
+  reply.send(promise)
+})
+
+fastify.get('/kaboom', function (req, reply) {
+  setTimeout(function () {
+    // this should not throw
+    reply.send(Promise.resolve({ hello: 'world' }))
+  }, 20)
+  return Promise.resolve({ hello: '42' })
 })
 
 fastify.listen(0, err => {
@@ -189,13 +149,6 @@ fastify.listen(0, err => {
 
   test('request promise double send', t => {
     t.plan(3)
-    fastify.get('/kaboom', function (req, reply) {
-      setTimeout(function () {
-        // this should not throw
-        reply.send(Promise.resolve({ hello: 'world' }))
-      }, 20)
-      return Promise.resolve({ hello: '42' })
-    })
 
     request({
       method: 'GET',

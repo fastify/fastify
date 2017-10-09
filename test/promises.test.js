@@ -25,7 +25,7 @@ fastify.get('/', opts, function (req, reply) {
   const promise = new Promise((resolve, reject) => {
     resolve({ hello: 'world' })
   })
-  reply.header('content-type', 'application/json').code(200).send(promise)
+  reply.type('application/json').code(200).send(promise)
 })
 
 fastify.get('/return', opts, function (req, reply) {

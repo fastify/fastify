@@ -8,16 +8,15 @@ By default, `register` creates a *new scope*, this means that if you do some cha
 
 You already see in the [getting started](https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md#register) section how use this API, is pretty straightforward.
 ```
-fastify.register(plugin, [options], [callback])
+fastify.register(plugin, [options])
 ```
+
 Example:
 ```js
 fastify.register([
   require('./another-route'),
   require('./yet-another-route')
-], opts, function (err) {
-  if (err) throw err
-})
+], opts)
 ```
 
 <a name="route-prefixing-option"></a>

@@ -61,7 +61,8 @@ declare namespace fastify {
     querystring?: Object
     params?: Object
     response?: {
-      [code: number]: Object
+      [code: number]: Object,
+      [code: string]: Object
     }
   }
 

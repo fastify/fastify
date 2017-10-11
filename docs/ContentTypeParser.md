@@ -28,5 +28,5 @@ fastify.addContentTypeParser('*', function (req, done) {
   })
 })
 ```
-In this way all the request that haven't a corresponding content type parser will be handled by the above function.  
+In this way all of the requests that do not have a corresponding content type parser will be handled by the specified function.
 *Remember that `'application/json'` is always handled by Fastify.*

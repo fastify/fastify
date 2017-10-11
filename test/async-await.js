@@ -253,6 +253,37 @@ function asyncTest (t) {
       t.equal(res.statusCode, 204)
     })
   })
+
+  test('inject async await', async t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    const res = await fastify.inject({ method: 'GET', url: '/' })
+    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+  })
+
+  test('inject async await - when the server is up', async t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    const res = await fastify.inject({ method: 'GET', url: '/' })
+    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+
+    await sleep(200)
+
+    const res2 = await fastify.inject({ method: 'GET', url: '/' })
+    t.deepEqual({ hello: 'world' }, JSON.parse(res2.payload))
+  })
 }
 
 module.exports = asyncTest

@@ -9,14 +9,14 @@ declare function fastify(opts?: fastify.ServerOptions): fastify.FastifyInstance;
 
 declare namespace fastify {
 
-  type Plugin = (instance: FastifyInstance, opts: Object, callback?: (err?: Error) => void) => void
+  type Plugin<T> = (instance: FastifyInstance, opts: T, callback?: (err?: Error) => void) => void
 
   type Middleware = (req: http.IncomingMessage, res: http.OutgoingMessage, callback?: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
-  
+
   type FastifyMiddleware = (req: FastifyRequest, reply: FastifyReply, done: (err?: Error) => void) => void
-  
+
   type RequestHandler = (req: FastifyRequest, res: FastifyReply) => void
 
   /**
@@ -46,7 +46,7 @@ declare namespace fastify {
     type: (contentType: string) => FastifyReply
     redirect: (statusCode: number, url: string) => FastifyReply
     serializer: (fn: Function) => FastifyReply
-    send: (payload?: string|Array<any>|Object|Error|Promise<any>|ReadableStream) => FastifyReply 
+    send: (payload?: string|Array<any>|Object|Error|Promise<any>|NodeJS.ReadableStream) => FastifyReply
     sent: boolean
   }
 
@@ -61,7 +61,8 @@ declare namespace fastify {
     querystring?: Object
     params?: Object
     response?: {
-      [code: number]: Object
+      [code: number]: Object,
+      [code: string]: Object
     }
   }
 
@@ -79,9 +80,17 @@ declare namespace fastify {
   interface RouteOptions extends RouteShorthandOptions {
     method: HTTPMethod|HTTPMethod[],
     url: string,
-    handler?: RequestHandler
+    handler: RequestHandler
   }
-  
+
+  /**
+   * Register options
+   */
+  interface RegisterOptions extends RouteShorthandOptions {
+    [key: string]: any,
+    prefix?: string,
+  }
+
   /**
    * Represents the fastify instance created by the factory function the module exports.
    */
@@ -208,7 +217,7 @@ declare namespace fastify {
     /**
      * Registers a plugin or array of plugins on the server
      */
-    register(plugin: Plugin|Array<Plugin>, opts?: RouteOptions, callback?: (err: Error) => void): FastifyInstance
+    register<T extends RegisterOptions>(plugin: Plugin<T>|Array<Plugin<T>>, opts?: T, callback?: (err: Error) => void): FastifyInstance
 
     /**
      * Decorate this fastify instance with new properties. Throws an execption if
@@ -233,7 +242,7 @@ declare namespace fastify {
      * like added to the error
      */
     extendServerError(extendFn: () => Object): FastifyInstance
-    
+
     /**
      * Determines if the given named decorator is available
      */

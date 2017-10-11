@@ -13,10 +13,14 @@ test('contentTypeParser method should exist', t => {
 })
 
 test('contentTypeParser should add a custom parser', t => {
-  t.plan(4)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.options('/', (req, reply) => {
     reply.send(req.body)
   })
 
@@ -30,18 +34,40 @@ test('contentTypeParser should add a custom parser', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
-      method: 'POST',
-      uri: 'http://localhost:' + fastify.server.address().port,
-      body: '{"hello":"world"}',
-      headers: {
-        'Content-Type': 'application/jsoff'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body, JSON.stringify({ hello: 'world' }))
-      fastify.close()
+    t.tearDown(() => fastify.close())
+
+    t.test('in POST', t => {
+      t.plan(3)
+
+      request({
+        method: 'POST',
+        uri: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/jsoff'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+      })
+    })
+
+    t.test('in OPTIONS', t => {
+      t.plan(3)
+
+      request({
+        method: 'OPTIONS',
+        uri: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/jsoff'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+      })
     })
   })
 })

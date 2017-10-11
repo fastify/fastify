@@ -78,6 +78,18 @@ test('empty response', t => {
   }
 })
 
+test('unlisted response code', t => {
+  t.plan(1)
+  try {
+    fastify.get('/400', opts, function (req, reply) {
+      reply.code(400).send({ hello: 'DOOM' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -118,6 +130,30 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 201)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: null })
+    })
+  })
+
+  test('shorthand - empty', t => {
+    t.plan(2)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/empty'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 204)
+    })
+  })
+
+  test('shorthand - 400', t => {
+    t.plan(4)
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/400'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'DOOM' })
     })
   })
 })

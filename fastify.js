@@ -7,9 +7,8 @@ const http = require('http')
 const https = require('https')
 const Middie = require('middie')
 const runHooks = require('fastseries')()
-
-var shot = null
-try { shot = require('shot') } catch (e) { }
+const lightMyRequest = require('light-my-request')
+const abstractLogging = require('abstract-logging')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -32,6 +31,9 @@ function build (options) {
   var logger
   if (isValidLogger(options.logger)) {
     logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
+  } else if (options.logger === false) {
+    logger = abstractLogging
+    logger.child = () => logger
   } else {
     options.logger = options.logger || {}
     options.logger.level = options.logger.level || 'fatal'
@@ -482,19 +484,23 @@ function build (options) {
   }
 
   function inject (opts, cb) {
-    if (!shot) throw new Error('"shot" library is not installed: "npm install shot@3 --save-dev"')
-
-    const waitingForReadyEvent = started
-      ? Promise.resolve()
-      : new Promise((resolve, reject) => this.ready(err => (err ? reject : resolve)(err)))
-    const injectPromise = waitingForReadyEvent
-      .then(() => new Promise(resolve => shot.inject(this, opts, resolve)))
+    if (started) {
+      return lightMyRequest(this, opts, cb)
+    }
 
     if (cb) {
-      injectPromise.then(cb, cb)
-      return
+      this.ready(err => {
+        if (err) throw err
+        return lightMyRequest(this, opts, cb)
+      })
+    } else {
+      return new Promise((resolve, reject) => {
+        this.ready(err => {
+          if (err) return reject(err)
+          resolve()
+        })
+      }).then(() => lightMyRequest(this, opts))
     }
-    return injectPromise
   }
 
   function use (url, fn) {
@@ -586,20 +592,10 @@ function build (options) {
       this._404Store = store
 
       var prefix = this._RoutePrefix.prefix
-      var star = '*'
-
-      // TODO this would need to be refactored once
-      // https://github.com/delvedor/find-my-way/issues/28
-      // is solved
-      if (prefix && prefix[prefix.length - 1] !== '/') {
-        star = '/*'
-      } else {
-        fourOhFour.all(prefix + '/', startHooks, store)
-        fourOhFour.all(prefix + '/*', startHooks, store)
-      }
+      var star = '/*'
 
       fourOhFour.all(prefix + star, startHooks, store)
-      fourOhFour.all(prefix, startHooks, store)
+      fourOhFour.all(prefix || '/', startHooks, store)
     } else {
       this._404Store.handler = handler
       this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser

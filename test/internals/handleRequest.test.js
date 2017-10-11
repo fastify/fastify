@@ -100,3 +100,14 @@ test('jsonBody and jsonBodyParsed should be functions', t => {
   t.is(typeof internals.jsonBodyParsed, 'function')
   t.is(internals.jsonBodyParsed.length, 6)
 })
+
+test('jsonBody error handler', t => {
+  t.plan(1)
+
+  try {
+    internals.jsonBody({ on: 'error' }, {})
+    t.fail('jsonBody error')
+  } catch (e) {
+    t.pass('jsonBody error')
+  }
+})

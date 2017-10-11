@@ -47,7 +47,15 @@ server.addHook('onClose', (instance: fastify.FastifyInstance, done) => {
 const opts: fastify.RouteShorthandOptions = {
   schema: {
     response: {
-      '200': {
+      200: {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
+        }
+      },
+      '2xx': {
         type: 'object',
         properties: {
           hello: {

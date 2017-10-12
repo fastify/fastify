@@ -96,7 +96,7 @@
     "fast-json-stringify": "^0.14.0",
     "fastify-cli": "^0.8.0",
     "fastseries": "^1.7.2",
-    "find-my-way": "^1.6.2",
+    "find-my-way": "^1.7.0",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.0.0",
     "middie": "^2.1.0",

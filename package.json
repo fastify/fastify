@@ -31,25 +31,25 @@
   "author": "Matteo Collina <hello@matteocollina.com>",
   "contributors": [
     {
-      "name": "Tomas Della Vedova",
-      "url": "http://delved.org"
-    },
-    {
       "name": "Tommaso Allevi",
       "email": "tomallevi@gmail.com"
     },
     {
-      "name": "James Sumners",
-      "url": "https://james.sumners.info"
+      "name": "Tomas Della Vedova",
+      "url": "http://delved.org"
+    },
+    {
+      "name": "Dustin Deus",
+      "url": "http://starptech.de",
+      "email": "deusdustin@gmail.com"
     },
     {
       "name": "Evan Shortiss",
       "email": "evanshortiss@gmail.com"
     },
     {
-      "name": "Dustin Deus",
-      "url": "http://starptech.de",
-      "email": "deusdustin@gmail.com"
+      "name": "James Sumners",
+      "url": "https://james.sumners.info"
     }
   ],
   "license": "MIT",

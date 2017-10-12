@@ -93,7 +93,7 @@
     "abstract-logging": "^1.0.0",
     "ajv": "^5.2.3",
     "avvio": "^3.0.0",
-    "fast-json-stringify": "^0.13.1",
+    "fast-json-stringify": "^0.14.0",
     "fastify-cli": "^0.8.0",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.6.2",

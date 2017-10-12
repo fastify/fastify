@@ -35,8 +35,8 @@ function build (options) {
     logger = Object.create(abstractLogging)
     logger.child = () => logger
   } else {
-    options.logger = options.logger || {}
-    options.logger.level = options.logger.level || 'fatal'
+    options.logger = typeof options.logger === 'object' ? options.logger : {}
+    options.logger.level = options.logger.level || 'info'
     options.logger.serializers = options.logger.serializers || loggerUtils.serializers
     logger = loggerUtils.createLogger(options.logger)
   }

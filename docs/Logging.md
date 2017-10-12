@@ -1,12 +1,32 @@
 <h1 align="center">Fastify</h1>
 
 ## Logging
-Since Fastify is really focused on performances, we choose the best logger to achieve the goal. **[Pino](https://github.com/pinojs/pino)**!
 
-By default Fastify uses [pino](https://github.com/pinojs/pino) as the logger, with the log level set to `'fatal'`.
+Logging is disabled by default, and you can enable it by passing
+`{ logger: true }` or `{ logger: { level: 'info' } }` when you create
+the fastify instance. Note that if the logger is disabled, it is impossible to
+enable it at runtime. We use
+[abstract-logging](https://www.npmjs.com/package/abstract-logging) for
+this purpose.
+
+Since Fastify is really focused on performances, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level when enabled set to `'info'`.
+
+Enabling the logger is extremely easy:
+
+```js
+const fastify = require('fastify')({
+  logger: true
+})
+
+fastify.get('/', options, function (req, reply) {
+  req.log.info('Some info about the current request')
+  reply.send({ hello: 'world' })
+})
+```
 
 If you want to pass some options to the logger, just pass the logger option to Fastify.
 You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+
 ```js
 const split = require('split2')
 const stream = split(JSON.parse)

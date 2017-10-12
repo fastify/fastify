@@ -6,6 +6,8 @@ const request = require('request')
 const Fastify = require('..')
 const fastify = require('..')()
 
+const payload = { hello: 'world' }
+
 test('hooks - add preHandler', t => {
   t.plan(1)
   try {
@@ -47,7 +49,7 @@ fastify.addHook('onResponse', function (res, next) {
   next()
 })
 
-fastify.addHook('onSend', function (req, res, next) {
+fastify.addHook('onSend', function (thePayload, reply, next) {
   t.ok('onSend called')
   next()
 })
@@ -57,15 +59,15 @@ fastify.get('/', function (req, reply) {
   t.is(reply.res.raw, 'the reply has come')
   t.is(req.test, 'the request is coming')
   t.is(reply.test, 'the reply has come')
-  reply.code(200).send({ hello: 'world' })
+  reply.code(200).send(payload)
 })
 
 fastify.head('/', function (req, reply) {
-  reply.code(200).send({ hello: 'world' })
+  reply.code(200).send(payload)
 })
 
 fastify.delete('/', function (req, reply) {
-  reply.code(200).send({ hello: 'world' })
+  reply.code(200).send(payload)
 })
 
 fastify.listen(0, err => {
@@ -337,5 +339,30 @@ test('onResponse hook should support encapsulation / 3', t => {
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
+  })
+})
+
+test('verify payload', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.addHook('onSend', function (thePayload, reply, next) {
+    t.ok('onSend called')
+    t.deepEqual(thePayload, payload)
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.deepEqual(payload, JSON.parse(res.payload))
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-length'], 17)
   })
 })

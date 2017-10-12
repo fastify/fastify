@@ -9,7 +9,7 @@ enable it at runtime. We use
 [abstract-logging](https://www.npmjs.com/package/abstract-logging) for
 this purpose.
 
-Since Fastify is really focused on performances, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level when enabled set to `'info'`.
+Since Fastify is really focused on performances, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
 
 Enabling the logger is extremely easy:
 

@@ -31,12 +31,12 @@ function build (options) {
   var logger
   if (isValidLogger(options.logger)) {
     logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
-  } else if (options.logger === false) {
-    logger = abstractLogging
+  } else if (!options.logger) {
+    logger = Object.create(abstractLogging)
     logger.child = () => logger
   } else {
-    options.logger = options.logger || {}
-    options.logger.level = options.logger.level || 'fatal'
+    options.logger = typeof options.logger === 'object' ? options.logger : {}
+    options.logger.level = options.logger.level || 'info'
     options.logger.serializers = options.logger.serializers || loggerUtils.serializers
     logger = loggerUtils.createLogger(options.logger)
   }

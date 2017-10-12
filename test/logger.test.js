@@ -7,6 +7,48 @@ const split = require('split2')
 const Fastify = require('..')
 const pino = require('pino')
 
+test('defaults to info level', t => {
+  t.plan(11)
+  var fastify = null
+  var stream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: stream
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  fastify.get('/', function (req, reply) {
+    t.ok(req.log)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port)
+    stream.once('data', line => {
+      const id = line.reqId
+      t.ok(line.reqId, 'reqId is defined')
+      t.ok(line.req, 'req is defined')
+      t.equal(line.msg, 'incoming request', 'message is set')
+      t.equal(line.req.method, 'GET', 'method is get')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, id)
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'request completed', 'message is set')
+        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+      })
+    })
+  })
+})
+
 test('test log stream', t => {
   t.plan(11)
   var fastify = null
@@ -145,6 +187,7 @@ test('The logger should accept a custom genReqId function', t => {
 
   const fastify = Fastify({
     logger: {
+      level: 'fatal',
       genReqId: function () {
         return 'a'
       }

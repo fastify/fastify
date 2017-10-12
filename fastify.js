@@ -31,8 +31,8 @@ function build (options) {
   var logger
   if (isValidLogger(options.logger)) {
     logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
-  } else if (options.logger === false) {
-    logger = abstractLogging
+  } else if (!options.logger) {
+    logger = Object.create(abstractLogging)
     logger.child = () => logger
   } else {
     options.logger = options.logger || {}

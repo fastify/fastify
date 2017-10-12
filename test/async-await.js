@@ -284,6 +284,23 @@ function asyncTest (t) {
     const res2 = await fastify.inject({ method: 'GET', url: '/' })
     t.deepEqual({ hello: 'world' }, JSON.parse(res2.payload))
   })
+
+  test('async await plugin', async t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.register(async (fastify, opts) => {
+      fastify.get('/', (req, reply) => {
+        reply.send({ hello: 'world' })
+      })
+
+      await sleep(200)
+    })
+
+    const res = await fastify.inject({ method: 'GET', url: '/' })
+    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+  })
 }
 
 module.exports = asyncTest

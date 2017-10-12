@@ -67,9 +67,7 @@ Obviously register all the routes in the same file is not a good idea, Fastify o
 
 const fastify = require('fastify')()
 
-fastify.register(require('./route'), function (err) {
-  if (err) throw err
-})
+fastify.register(require('./route'))
 
 const opts = {
   hello: 'world',
@@ -95,6 +93,18 @@ module.exports = function (fastify, options, next) {
     reply.send({ hello: 'world' })
   })
   next()
+}
+```
+
+or with async/await:
+
+```js
+/* route.js */
+
+module.exports = async function (fastify, options) {
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
 }
 ```
 

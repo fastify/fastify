@@ -317,7 +317,7 @@ test('middlewares should support encapsulation / 4', t => {
       })
 
       d()
-    }, done)
+    })
 
     i.get('/firstLocal', function (request, reply) {
       t.ok(request.req.global)
@@ -326,6 +326,8 @@ test('middlewares should support encapsulation / 4', t => {
       t.notOk(request.req.thirdLocal)
       reply.send({ hello: 'world' })
     })
+
+    done()
   })
 
   instance.get('/global', function (request, reply) {

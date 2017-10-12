@@ -100,7 +100,9 @@ fastify.register((instance, opts, next) => {
   fastify.register((instance, opts, next) => {
     console.log(instance.util('that is ', ' awesome')) // this will not throw an error
     next()
-  }, next)
+  })
+
+  next()
 })
 
 fastify.register((instance, opts, next) => {

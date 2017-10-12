@@ -8,7 +8,7 @@
 
 <a name="ready"></a>
 #### ready
-Function called when all the plugins has been loaded.  
+Function called when all the plugins has been loaded.
 It takes an error parameter if something went wrong.
 ```js
 fastify.ready(err => {
@@ -39,7 +39,7 @@ Method to add routes to the server, it also have shorthands functions, check [he
 
 <a name="routes-iterator"></a>
 #### routes iterator
-The Fastify instance is an Iterable object with all the registered routes.  
+The Fastify instance is an Iterable object with all the registered routes.
 The route properties are the same the developer has declared [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 ```js
 fastify.get('/route', opts, handler)

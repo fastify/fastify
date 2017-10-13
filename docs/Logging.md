@@ -44,7 +44,8 @@ fastify.get('/', options, function (req, reply) {
 })
 ```
 
-Additionally, `genReqId` option can be used for generating the request id by yourself.
+By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated.
+Additionally, `genReqId` option can be used for generating the request id by yourself. It will received the incoming request as a parameter.
 ```js
 let i = 0
 const fastify = require('fastify')({

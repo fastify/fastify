@@ -49,7 +49,7 @@ Additionally, `genReqId` option can be used for generating the request id by you
 let i = 0
 const fastify = require('fastify')({
   logger: {
-    genReqId: function () { return i++ }
+    genReqId: function (req) { return i++ }
   }
 })
 ```

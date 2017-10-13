@@ -147,7 +147,7 @@ function build (options) {
   return fastify
 
   function fastify (req, res) {
-    req.id = genReqId()
+    req.id = genReqId(req)
     req.log = res.log = logger.child({ reqId: req.id })
 
     req.log.info({ req }, 'incoming request')

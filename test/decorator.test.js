@@ -345,11 +345,18 @@ test('decorateRequest as plugin (outside .after)', t => {
 
 test('decorateReply should be instance separated', t => {
   t.plan(1)
+
   const fastify1 = Fastify()
   const fastify2 = Fastify()
 
+  fastify1.decorate('test', 'foo')
+  fastify2.decorate('test', 'foo')
+
   fastify1.decorateRequest('test', 'foo')
   fastify2.decorateRequest('test', 'foo')
+
+  fastify1.decorateReply('test', 'foo')
+  fastify2.decorateReply('test', 'foo')
 
   t.pass()
 })

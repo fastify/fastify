@@ -124,8 +124,8 @@ function build (options) {
   fastify.decorateRequest = decorator.decorateRequest
   fastify.extendServerError = decorator.extendServerError
 
-  fastify._Reply = Reply
-  fastify._Request = Request
+  fastify._Reply = Reply.buildReply(Reply)
+  fastify._Request = Request.buildRequest(Request)
 
   // middleware support
   fastify.use = use

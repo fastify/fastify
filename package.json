@@ -102,5 +102,11 @@
     "middie": "^2.1.1",
     "pino": "^4.7.2",
     "pump": "^1.0.2"
+  },
+  "greenkeeper": {
+    "ignore": [
+      "boom",
+      "joi"
+    ]
   }
 }

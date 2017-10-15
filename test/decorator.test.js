@@ -343,7 +343,7 @@ test('decorateRequest as plugin (outside .after)', t => {
   })
 })
 
-test('decorateReply should be instance separated', t => {
+test('decorators should be instance separated', t => {
   t.plan(1)
 
   const fastify1 = Fastify()

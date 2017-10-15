@@ -75,7 +75,7 @@
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
-    "joi": "^11.3.4",
+    "joi": "^12.0.0",
     "pre-commit": "^1.2.2",
     "request": "^2.83.0",
     "serve-static": "^1.13.1",

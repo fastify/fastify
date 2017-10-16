@@ -107,7 +107,7 @@ test('custom 500 with hooks', t => {
     reply.type('text/plain').send('an error happened: ' + err.message)
   })
 
-  fastify.addHook('onSend', (req, res, next) => {
+  fastify.addHook('onSend', (req, res, payload, next) => {
     t.ok('called', 'onSend')
     next()
   })

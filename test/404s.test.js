@@ -359,18 +359,16 @@ test('run middlewares with encapsulated 404', t => {
 })
 
 test('hooks check 404', t => {
-  t.plan(9)
+  t.plan(13)
 
-  const test = t.test
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  t.tearDown(fastify.close.bind(fastify))
-
-  fastify.addHook('onSend', (req, res, next) => {
+  fastify.addHook('onSend', (req, res, payload, next) => {
+    t.deepEqual(req.query, { foo: 'asd' })
     t.ok('called', 'onSend')
     next()
   })
@@ -386,28 +384,24 @@ test('hooks check 404', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    test('unsupported method', t => {
-      t.plan(2)
-      request({
-        method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port,
-        json: {}
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 404)
-      })
+    request({
+      method: 'PUT',
+      uri: 'http://localhost:' + fastify.server.address().port + '?foo=asd',
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
     })
 
-    test('unsupported route', t => {
-      t.plan(2)
-      request({
-        method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        json: {}
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 404)
-      })
+    request({
+      method: 'GET',
+      uri: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd',
+      json: {}
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
     })
   })
+
+  t.tearDown(fastify.close.bind(fastify))
 })

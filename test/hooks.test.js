@@ -49,7 +49,7 @@ fastify.addHook('onResponse', function (res, next) {
   next()
 })
 
-fastify.addHook('onSend', function (thePayload, reply, next) {
+fastify.addHook('onSend', function (req, reply, thePayload, next) {
   t.ok('onSend called')
   next()
 })
@@ -343,13 +343,22 @@ test('onResponse hook should support encapsulation / 3', t => {
 })
 
 test('verify payload', t => {
-  t.plan(5)
+  t.plan(7)
   const fastify = Fastify()
   const payload = { hello: 'world' }
+  const modifiedPayload = { hello: 'modified' }
 
-  fastify.addHook('onSend', function (thePayload, reply, next) {
+  fastify.addHook('onSend', function (request, reply, thePayload, next) {
     t.ok('onSend called')
     t.deepEqual(thePayload, payload)
+    // onSend allows only to modify Object keys and not the full object's reference
+    thePayload.hello = 'modified'
+    next()
+  })
+
+  fastify.addHook('onSend', function (request, reply, thePayload, next) {
+    t.ok('onSend called')
+    t.deepEqual(thePayload, modifiedPayload)
     next()
   })
 
@@ -361,8 +370,8 @@ test('verify payload', t => {
     method: 'GET',
     url: '/'
   }, res => {
-    t.deepEqual(payload, JSON.parse(res.payload))
+    t.deepEqual(modifiedPayload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], 20)
   })
 })

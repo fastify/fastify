@@ -28,9 +28,9 @@ fastify.addHook('onResponse', (res, next) => {
 
 | Parameter   |  Description  |
 |-------------|:-------------:|
-| req |  Node.js raw [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
-| reply | Fastify [reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
-| res | Node.js raw [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
+| req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
+| reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
+| res | Node.js [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
 | next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
 
 Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.

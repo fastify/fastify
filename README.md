@@ -52,7 +52,7 @@ Do you want to know more? Head to the <a href="https://github.com/fastify/fastif
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
-- **Developer friendly:** the framework is built to be very expressive and help the developer in his daily use, without sacrificing performance and security.
+- **Developer friendly:** the framework is built to be very expressive and help the developer in thier daily use, without sacrificing performance and security.
 
 ### Benchmarks
 

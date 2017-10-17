@@ -16,7 +16,7 @@
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
 How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
 
-Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
+Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
 ### Install
 
@@ -63,7 +63,7 @@ Do you want to know more? Head to the <a href="https://github.com/fastify/fastif
 ### Core features
 
 - **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.
-- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 34000 request per second.
+- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 34000 requests per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!

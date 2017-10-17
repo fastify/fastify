@@ -26,18 +26,31 @@ fastify.addHook('onResponse', (res, next) => {
 })
 ```
 
+| Parameter   |  Description  |
+|-------------|:-------------:|
+| req |  Node.js raw [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
+| reply | Fastify [reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
+| res | Node.js raw [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
+| next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
+
 Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
-If you want to pass a custom error code to the user, just use `reply.code()`:
 ```js
 fastify.addHook('onRequest', (req, res, next) => {
-  // some code
-  reply.code(400)
   next(new Error('some error'))
 })
 ```
+
+If you want to pass a custom error code to the user, just use `reply.code()`:
+```js
+fastify.addHook('preHandler', (req, reply, next) => {
+  reply.code(500)
+  next(new Error('some error'))
+})
+```
+
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
 Note that in the `'preHandler'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.

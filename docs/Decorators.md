@@ -2,14 +2,14 @@
 
 ## Decorators
 
-If you need to add functionalities to the Fastify instance, the `decorate` API is what you need.
+If you need to add functionality to the Fastify instance, the `decorate` API is what you need.
 
-This API allows you to add new properties to the Fastify instance. A value is not restricted to a function and could also be an object or a string, for example.
+The API allows you to add new properties to the Fastify instance. A value is not restricted to a function and could also be an object or a string, for example.
 
 <a name="usage"></a>
 ### Usage
 <a name="decorate"></a>
-**decorate**  
+**decorate**
 Just call the `decorate` API and pass the name of the new property and its value.
 ```js
 fastify.decorate('utility', () => {
@@ -35,8 +35,8 @@ console.log(fastify.conf.db)
 Decorators are not *overwritable*. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
 
 <a name="decorate-reply"></a>
-**decorateReply**  
-As the name suggest, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
+**decorateReply**
+As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
 ```js
 fastify.decorateReply('utility', function () {
   // something very useful
@@ -45,7 +45,7 @@ fastify.decorateReply('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
 
-<a name="decorate-request"></a>  
+<a name="decorate-request"></a>
 **decorateRequest**
 As above, this API is needed if you want to add new methods to the `Request` core object. Just call the `decorateRequest` API and pass the name of the new property and its value:
 ```js
@@ -57,7 +57,7 @@ fastify.decorateRequest('utility', function () {
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
 <a name="extend-server-error"></a>
-**extendServerError**  
+**extendServerError**
 If you need to extend the standard [server error](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors), this API is what you need. You *must* pass a function that returns an object, and Fastify will extend the server error with the object returned by your function. The function will receive the original error object:
 ```js
 fastify.extendServerError((err) => {

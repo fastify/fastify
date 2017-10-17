@@ -50,7 +50,7 @@ const fastify = require('fastify')()
 
 // Declare a route
 fastify.get('/', async (request, reply) => {
-  reply.header('Content-Type', 'application/json').code(200)
+  reply.type('application/json').code(200)
   return { hello: 'world' }
 })
 

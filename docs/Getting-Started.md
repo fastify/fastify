@@ -23,12 +23,12 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
 Do you prefer to use `async/await`? Please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="schema"></a>
 ### Schema serialization
-How get better performances?  
-Fastify is designed to be very performant, if you want to make it even faster, you can use JSON schema to speed up the serialization of your output.
+Fastify is designed for performance. To truly turbocharge our server, we can serialize responses according to the [JSON Schema](http://json-schema.org/) standard:
 ```js
 const fastify = require('fastify')()
 
@@ -55,13 +55,12 @@ fastify.listen(3000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
-*If you want to know more about the serialization and validation, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md)!*
+
+*To learn more about using serialization and validation, see [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md)!*
 
 <a name="register"></a>
 ### Register
-As you can see use Fastify is very easy and handy.
-Obviously register all the routes in the same file is not a good idea, Fastify offers an utility to solve this problem, `register`.
-
+As you can see, using Fastify is very easy and handy. Obviously, registering all of your routes in the same file is not a good idea, so Fastify offers a utility to solve this problem, `register`:
 ```js
 /* server.js */
 
@@ -73,6 +72,7 @@ const opts = {
   hello: 'world',
   something: true
 }
+
 fastify.register([
   require('./another-route'),
   require('./yet-another-route')
@@ -85,6 +85,7 @@ fastify.listen(8000, function (err) {
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
+
 ```js
 /* route.js */
 
@@ -96,8 +97,7 @@ module.exports = function (fastify, options, next) {
 }
 ```
 
-or with async/await:
-
+or with `async/await`:
 ```js
 /* route.js */
 
@@ -110,15 +110,15 @@ module.exports = async function (fastify, options) {
 
 <a name="cli"></a>
 ### Run from CLI
-You can also run Fastify from the CLI thanks to [fastify-cli](https://github.com/fastify/fastify-cli), it's very easy!  
-Just add the following lines to your `package.json`
-```JSON
+You can also run Fastify from the CLI thanks to [fastify-cli](https://github.com/fastify/fastify-cli). It's very easy! Simply add the following lines to your `package.json`:
+```json
 {
   "scripts": {
     "start": "fastify server.js"
   }
 }
 ```
+
 And create your server file(s):
 ```js
 // server.js
@@ -131,20 +131,21 @@ module.exports = function (fastify, opts, next) {
   next()
 }
 ```
+
 Then run your server with:
 ```bash
 npm start
 ```
+
 <a name="slides"></a>
 ### Slides and Videos
 - Slides
-  - [Take your http server to ludicrous speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed) by [@mcollina](https://github.com/mcollina)
+  - [Take your HTTP server to ludicrous speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed) by [@mcollina](https://github.com/mcollina)
   - [What if I told you that HTTP can be fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast) by [@delvedor](https://github.com/delvedor)
 
 - Videos
-  - [Take your http server to ludicrous speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by [@mcollina](https://github.com/mcollina)
+  - [Take your HTTP server to ludicrous speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by [@mcollina](https://github.com/mcollina)
 
 <a name="next"></a>
 ### Next
-Do you want to know more?
-Check the documentation folder [here](https://github.com/fastify/fastify/blob/master/docs/)!
+Do you want to learn more? Check out the documentation folder located [here](https://github.com/fastify/fastify/blob/master/docs/)!

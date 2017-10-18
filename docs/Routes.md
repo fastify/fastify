@@ -11,7 +11,7 @@ fastify.route(options)
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
-  [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md) for more info.
+  [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST or a
     PUT.
@@ -23,7 +23,7 @@ They need to be in
     schema allows us to have 10-20% more throughput.
 * `beforeHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler) called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.
 * `handler(request, reply)`: the function that will handle this request.
-* `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#schema-compiler)
+* `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 
@@ -73,14 +73,14 @@ fastify.route({
 
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
-`fastify.get(path, [options], handler)`  
-`fastify.head(path, [options], handler)`  
-`fastify.post(path, [options], handler)`  
-`fastify.put(path, [options], handler)`  
-`fastify.delete(path, [options], handler)`  
-`fastify.options(path, [options], handler)`  
-`fastify.patch(path, [options], handler)`  
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
+`fastify.get(path, [options], handler)`
+`fastify.head(path, [options], handler)`
+`fastify.post(path, [options], handler)`
+`fastify.put(path, [options], handler)`
+`fastify.delete(path, [options], handler)`
+`fastify.options(path, [options], handler)`
+`fastify.patch(path, [options], handler)`
 
 Example:
 ```js
@@ -126,7 +126,7 @@ fastify.get('/', options, async function (request, reply) {
 
 <a name="route-prefixing"></a>
 ### Route Prefixing
-Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.  
+Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.
 Fastify offers you a fast and smart way to create different version of the same api without changing all the route names by hand, *route prefixing*. Let's see how it works:
 
 ```js
@@ -158,5 +158,5 @@ Now your clients will have access to the following routes:
 - `/v1/user`
 - `/v2/user`
 
-You can do this as many times as you want, it works also for nested `register` and routes parameter are supported as well.  
+You can do this as many times as you want, it works also for nested `register` and routes parameter are supported as well.
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.

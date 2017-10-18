@@ -80,35 +80,30 @@ A plugin can be a set of routes, a server decorator or whatever, check [here](ht
 
 <a name="use"></a>
 #### use
-Function to add middlewares to Fastify, check  [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md).
+Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md).
 
 <a name="addHook"></a>
 #### addHook
-Function to add a specific hook in the lifecycle of Fastify, check  [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
+Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
 
 <a name="logger"></a>
 #### logger
-The logger instance, check  [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).
+The logger instance, check [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).
 
 <a name="inject"></a>
 #### inject
-Fake http injection (for testing purposes)  [here](https://github.com/fastify/fastify/blob/master/docs/Testing.md#inject).
+Fake http injection (for testing purposes) [here](https://github.com/fastify/fastify/blob/master/docs/Testing.md#inject).
 
 <a name="set-schema-compiler"></a>
 #### setSchemaCompiler
-Set the schema compiler for all routes  [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#schema-compiler).
+Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
-`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler.
-This call is fully encapsulated, so different plugins can set different
-not found handlers.
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is fully encapsulated, so different plugins can set different not found handlers.
 
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, reply))`: set a function that
-will be called whenever an error happens. The handler is fully
-encapsulated, so different plugins can set different
-error handlers.
+`fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers.

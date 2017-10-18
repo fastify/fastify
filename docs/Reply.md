@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Reply
-The second parameter of the handler function is `Reply`.  
+The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
@@ -27,21 +27,21 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="header"></a>
 ### Header
-Sets a custom header to the response.  
+Sets a custom header to the response.
 If you not set a `'Content-Type'` header, Fastify assumes that you are using `'application/json'`, unless you are send a stream, in that cases Fastify recognize it and sets the `'Content-Type'` at `'application/octet-stream'`.
 
 *Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
 
 <a name="redirect"></a>
 ### Redirect
-Redirects a request to the specified url, the status code is optional, default to `302`.  
+Redirects a request to the specified url, the status code is optional, default to `302`.
 ```js
 reply.redirect('/home')
 ```
 
 <a name="type"></a>
 ### Type
-Sets the content type for the response.  
+Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 
 ```js
@@ -52,14 +52,14 @@ reply.type('text/html')
 ### Serializer
 Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
 
-If you need to use a custom serializer, such as [msgpack5](https://github.com/mcollina/msgpack5) or [protobuf](https://github.com/dcodeIO/ProtoBuf.js/), you can use the `.serializer()` utility. As noted above, if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.  
+If you need to use a custom serializer, such as [msgpack5](https://github.com/mcollina/msgpack5) or [protobuf](https://github.com/dcodeIO/ProtoBuf.js/), you can use the `.serializer()` utility. As noted above, if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.
 
 ```js
 reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
-*Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md#serialize) to understand how serialize is done.*
+*Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
 
 <a name="send"></a>
 ### Send
@@ -117,7 +117,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
-If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).  
+If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).
 
 *If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
 

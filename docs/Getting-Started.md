@@ -56,7 +56,7 @@ fastify.listen(3000, function (err) {
 })
 ```
 
-*To learn more about using serialization and validation, see [Validation and Serialize](https://github.com/fastify/fastify/blob/master/docs/Validation-And-Serialize.md)!*
+*To learn more about using serialization and validation, see [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md)!*
 
 <a name="register"></a>
 ### Register

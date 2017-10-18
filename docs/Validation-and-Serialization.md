@@ -1,6 +1,6 @@
 <h1 align="center">Fastify</h1>
 
-## Validation and Serialize
+## Validation and Serialization
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 <a name="validation"></a>
@@ -82,8 +82,8 @@ In that case the function returned by `schemaCompiler` returns an object like:
 * `error`: filled with an instance of `Error` or a string that describes the validation error
 * `value`: the coerced value that passed the validation
 
-<a name="serialize"></a>
-### Serialize
+<a name="serialization"></a>
+### Serialization
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.
 
 Example:

@@ -52,7 +52,7 @@ fastify.ready(() => {
       '/route': {
         get: {
           method: String,
-          ulr: String,
+          url: String,
           schema: Object,
           handler: Function,
           Request: Function,

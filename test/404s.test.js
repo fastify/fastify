@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('default 404', t => {
@@ -22,10 +22,11 @@ test('default 404', t => {
 
     test('unsupported method', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port,
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -34,10 +35,11 @@ test('default 404', t => {
 
     test('unsupported route', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -67,10 +69,11 @@ test('customized 404', t => {
 
     test('unsupported method', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port,
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -80,10 +83,11 @@ test('customized 404', t => {
 
     test('unsupported route', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -128,10 +132,11 @@ test('encapsulated 404', t => {
 
     test('root unsupported method', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port,
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -141,10 +146,11 @@ test('encapsulated 404', t => {
 
     test('root insupported route', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -154,10 +160,11 @@ test('encapsulated 404', t => {
 
     test('unsupported method', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port + '/test',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/test',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -167,10 +174,11 @@ test('encapsulated 404', t => {
 
     test('unsupported route', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/test/notSupported',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/test/notSupported',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -180,10 +188,11 @@ test('encapsulated 404', t => {
 
     test('unsupported method bis', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'PUT',
-        uri: 'http://localhost:' + fastify.server.address().port + '/test2',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/test2',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -193,10 +202,11 @@ test('encapsulated 404', t => {
 
     test('unsupported route bis', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/test2/notSupported',
-        json: {}
+        url: 'http://localhost:' + fastify.server.address().port + '/test2/notSupported',
+        body: {},
+        json: true
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -230,10 +240,11 @@ test('run hooks on default 404', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'PUT',
-      uri: 'http://localhost:' + fastify.server.address().port,
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -278,10 +289,11 @@ test('run hooks with encapsulated 404', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'PUT',
-      uri: 'http://localhost:' + fastify.server.address().port + '/test',
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port + '/test',
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -308,10 +320,11 @@ test('run middlewares on default 404', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'PUT',
-      uri: 'http://localhost:' + fastify.server.address().port,
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -347,10 +360,11 @@ test('run middlewares with encapsulated 404', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'PUT',
-      uri: 'http://localhost:' + fastify.server.address().port + '/test',
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port + '/test',
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)

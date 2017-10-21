@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const fp = require('fastify-plugin')
-const request = require('request')
+const sget = require('simple-get').concat
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -82,9 +82,9 @@ test('decorateReply inside register', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -92,9 +92,9 @@ test('decorateReply inside register', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -130,9 +130,9 @@ test('decorateReply as plugin (inside .after)', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -140,9 +140,9 @@ test('decorateReply as plugin (inside .after)', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -178,9 +178,9 @@ test('decorateReply as plugin (outside .after)', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -188,9 +188,9 @@ test('decorateReply as plugin (outside .after)', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -225,9 +225,9 @@ test('decorateRequest inside register', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -235,9 +235,9 @@ test('decorateRequest inside register', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -273,9 +273,9 @@ test('decorateRequest as plugin (inside .after)', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -283,9 +283,9 @@ test('decorateRequest as plugin (inside .after)', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -321,9 +321,9 @@ test('decorateRequest as plugin (outside .after)', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/yes'
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -331,9 +331,9 @@ test('decorateRequest as plugin (outside .after)', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no'
+      url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

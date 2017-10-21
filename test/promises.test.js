@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const Bluebird = require('bluebird')
 const fastify = require('..')()
 
@@ -75,11 +75,11 @@ fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
-  test('shorthand - request promise es6 get', t => {
+  test('shorthand - sget promise es6 get', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -88,11 +88,11 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - request return promise es6 get', t => {
+  test('shorthand - sget return promise es6 get', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/return'
+      url: 'http://localhost:' + fastify.server.address().port + '/return'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -101,33 +101,33 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - request promise es6 get error', t => {
+  test('shorthand - sget promise es6 get error', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/error'
+      url: 'http://localhost:' + fastify.server.address().port + '/error'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
     })
   })
 
-  test('shorthand - request promise es6 get return error', t => {
+  test('shorthand - sget promise es6 get return error', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/return-error'
+      url: 'http://localhost:' + fastify.server.address().port + '/return-error'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
     })
   })
 
-  test('shorthand - request promise bluebird get', t => {
+  test('shorthand - sget promise bluebird get', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/bluebird'
+      url: 'http://localhost:' + fastify.server.address().port + '/bluebird'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -136,23 +136,23 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - request promise bluebird get error', t => {
+  test('shorthand - sget promise bluebird get error', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/bluebird-error'
+      url: 'http://localhost:' + fastify.server.address().port + '/bluebird-error'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
     })
   })
 
-  test('request promise double send', t => {
+  test('sget promise double send', t => {
     t.plan(3)
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/kaboom'
+      url: 'http://localhost:' + fastify.server.address().port + '/kaboom'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

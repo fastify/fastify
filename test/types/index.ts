@@ -182,3 +182,16 @@ server.listen(3000, err => {
   if (err) throw err
   console.log(`server listening on ${server.server.address().port}`)
 })
+
+// http injections
+server.inject({ url: "/test" }, (err: Error, res: fastify.HTTPInjectResponse) => {
+  if (err) {
+    console.error(err);
+  }
+
+  console.log(res.payload);
+});
+
+server.inject({ url: "/testAgain" })
+  .then((res: fastify.HTTPInjectResponse) => console.log(res.payload))
+  .catch((err: Error) => console.error(err));

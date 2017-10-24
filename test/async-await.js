@@ -1,6 +1,6 @@
 'use strict'
 
-const request = require('request')
+const sget = require('simple-get').concat
 const Fastify = require('..')
 const fastify = Fastify()
 const sleep = require('then-sleep')
@@ -56,9 +56,9 @@ function asyncTest (t) {
 
     test('shorthand - request async await test', t => {
       t.plan(4)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port
+        url: 'http://localhost:' + fastify.server.address().port
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -69,9 +69,9 @@ function asyncTest (t) {
 
     test('shorthand - request async test', t => {
       t.plan(4)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/no-await'
+        url: 'http://localhost:' + fastify.server.address().port + '/no-await'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -95,9 +95,9 @@ function asyncTest (t) {
 
     server.listen(0, (err) => {
       t.error(err)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + server.server.address().port + '/'
+        url: 'http://localhost:' + server.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.deepEqual(payload, JSON.parse(body))
@@ -121,9 +121,9 @@ function asyncTest (t) {
 
     server.listen(0, (err) => {
       t.error(err)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + server.server.address().port + '/'
+        url: 'http://localhost:' + server.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.deepEqual(payload, JSON.parse(body))
@@ -175,9 +175,9 @@ function asyncTest (t) {
 
     server.listen(0, (err) => {
       t.error(err)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + server.server.address().port + '/'
+        url: 'http://localhost:' + server.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.deepEqual(payload, JSON.parse(body))
@@ -201,9 +201,9 @@ function asyncTest (t) {
 
     server.listen(0, (err) => {
       t.error(err)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + server.server.address().port + '/'
+        url: 'http://localhost:' + server.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.deepEqual(payload, JSON.parse(body))

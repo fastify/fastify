@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 test('fastify.register', t => {
@@ -87,11 +87,11 @@ fastify.listen(0, err => {
 })
 
 function makeRequest (path) {
-  test('fastify.register - request get', t => {
+  test('fastify.register - sget get', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/' + path
+      url: 'http://localhost:' + fastify.server.address().port + '/' + path
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

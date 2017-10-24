@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 const schema = {
@@ -128,9 +128,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -141,9 +141,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete params schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -154,9 +154,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete params schema error', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -176,12 +176,12 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete headers schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'DELETE',
       headers: {
         'x-test': 1
       },
-      uri: 'http://localhost:' + fastify.server.address().port + '/headers'
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -192,12 +192,12 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete headers schema error', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'DELETE',
       headers: {
         'x-test': 'abc'
       },
-      uri: 'http://localhost:' + fastify.server.address().port + '/headers'
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -217,9 +217,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete querystring schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -230,9 +230,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete querystring schema error', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -252,9 +252,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request delete missing schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

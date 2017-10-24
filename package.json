@@ -77,7 +77,6 @@
     "ienoopen": "^1.0.0",
     "joi": "^11.3.4",
     "pre-commit": "^1.2.2",
-    "request": "^2.83.0",
     "serve-static": "^1.13.1",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
@@ -101,7 +100,8 @@
     "light-my-request": "^1.0.0",
     "middie": "^2.1.1",
     "pino": "^4.7.2",
-    "pump": "^1.0.2"
+    "pump": "^1.0.2",
+    "simple-get": "^2.7.0"
   },
   "greenkeeper": {
     "ignore": [

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fs = require('fs')
 const fastify = require('..')()
 
@@ -38,31 +38,26 @@ fastify.listen(0, err => {
 
   test('should get a stream response', t => {
     t.plan(3)
-    request(`http://localhost:${fastify.server.address().port}`)
-      .on('response', response => {
-        t.strictEqual(response.headers['content-type'], 'application/octet-stream')
-        t.strictEqual(response.statusCode, 200)
-      })
-      .on('error', err => {
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.strictEqual(response.statusCode, 200)
+
+      response.on('error', err => {
         t.error(err)
       })
-      .on('end', () => {
+      response.on('end', () => {
         t.pass('Correctly close the stream')
       })
+    })
   })
 
   test('should get an errored stream response', t => {
-    t.plan(2)
-    request(`http://localhost:${fastify.server.address().port}/error`)
-      .on('response', response => {
-        t.fail()
-      })
-      .on('error', err => {
-        t.type(err, Error)
-        t.pass('Correctly close the stream')
-      })
-      .on('end', () => {
-        t.fail()
-      })
+    t.plan(3)
+    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+      t.type(err, Error)
+      t.equal(err.code, 'ECONNRESET')
+      t.pass('Correctly close the stream')
+    })
   })
 })

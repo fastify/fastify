@@ -178,6 +178,12 @@ server.get('/test-decorated-inputs', (req, reply) => {
   (reply as DecoratedReply).utility();
 });
 
+server.setNotFoundHandler((req, reply) => {
+})
+
+server.setErrorHandler((err, reply) => {
+})
+
 server.listen(3000, err => {
   if (err) throw err
   console.log(`server listening on ${server.server.address().port}`)

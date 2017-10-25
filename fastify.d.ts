@@ -269,6 +269,16 @@ declare namespace fastify {
      * and performing cleanup tasks
      */
     addHook(name: 'onClose', hook: (instance: FastifyInstance, done: () => void) => void): FastifyInstance
+
+    /**
+     * Set the 404 handler
+     */
+    setNotFoundHandler(handler: (request: FastifyRequest, reply: FastifyReply) => void): void
+
+    /**
+     * Set a function that will be called whenever an error happens
+     */
+    setErrorHandler(handler: (error: Error, reply: FastifyReply) => void): void
   }
 }
 

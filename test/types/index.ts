@@ -4,9 +4,15 @@
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
 import * as http from 'http';
+import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
 
-const server: fastify.FastifyInstance = fastify()
+const server: fastify.FastifyInstance = fastify({
+  https: {
+    cert: readFileSync('path/to/cert.pem'),
+    key: readFileSync('path/to/key.pem')
+  }
+})
 
 // Third party middleware
 server.use(cors())

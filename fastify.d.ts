@@ -52,7 +52,10 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
-    https?: boolean
+    https?: {
+      key: Buffer,
+      cert: Buffer
+    }
   }
 
   interface JSONSchema {

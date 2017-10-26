@@ -430,7 +430,7 @@ function build (options) {
         map.set(url, node)
         router.on(opts.method, url, startHooks, store)
       }
-      done()
+      done(notHandledErr)
     })
 
     // chainable api

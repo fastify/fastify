@@ -119,8 +119,8 @@ they perform very closely on this benchmarks.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
 
 ## Ecosystem
-- [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#Core) - Core plugins maintained by fastify.
-- [Community](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#Community) - Community supported plugins.
+- [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#core) - Core plugins maintained by fastify.
+- [Community](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#community) - Community supported plugins.
 
 ## Team
 

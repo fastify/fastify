@@ -184,14 +184,9 @@ server.listen(3000, err => {
 })
 
 // http injections
-server.inject({ url: "/test" }, (err: Error, res: fastify.HTTPInjectResponse) => {
-  if (err) {
-    console.error(err);
-  }
-
+server.inject({ url: "/test" }, (res: fastify.HTTPInjectResponse) => {
   console.log(res.payload);
 });
 
 server.inject({ url: "/testAgain" })
-  .then((res: fastify.HTTPInjectResponse) => console.log(res.payload))
-  .catch((err: Error) => console.error(err));
+  .then((res: fastify.HTTPInjectResponse) => console.log(res.payload));

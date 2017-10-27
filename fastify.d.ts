@@ -95,6 +95,41 @@ declare namespace fastify {
   }
 
   /**
+   * Fake http inject options
+   */
+  interface HTTPInjectOptions {
+    url: string,
+    method?: HTTPMethod,
+    authority?: string,
+    headers?: object,
+    remoteAddress?: string,
+    payload?: string | object | Buffer | NodeJS.ReadableStream
+    simulate?: {
+      end?: boolean,
+      split?: boolean,
+      error?: boolean,
+      close?: boolean
+    },
+    validate?: boolean
+  }
+
+  /**
+   * Fake http inject response
+   */
+  interface HTTPInjectResponse {
+    raw: {
+      req: NodeJS.ReadableStream,
+      res: http.ServerResponse
+    },
+    headers: object,
+    statusCode: number,
+    statusMessage: string,
+    payload: string,
+    rawPayload: Buffer,
+    trailers: object
+  }
+
+  /**
    * Represents the fastify instance created by the factory function the module exports.
    */
   interface FastifyInstance {
@@ -272,6 +307,16 @@ declare namespace fastify {
      * and performing cleanup tasks
      */
     addHook(name: 'onClose', hook: (instance: FastifyInstance, done: () => void) => void): FastifyInstance
+
+    /**
+     * Useful for testing http requests without running a sever
+     */
+    inject(opts: HTTPInjectOptions, clb: (res: HTTPInjectResponse) => void): void
+
+    /**
+     * Useful for testing http requests without running a sever
+     */
+    inject(opts: HTTPInjectOptions): Promise<HTTPInjectResponse>
 
     /**
      * Set the 404 handler

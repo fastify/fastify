@@ -38,4 +38,5 @@ Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb)
 Fastify OrientDB connection plugin, with this you can share the orientdb connection in every part of your server.
+- [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify

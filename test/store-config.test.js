@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 const schema = {
@@ -59,40 +59,40 @@ fastify.listen(0, err => {
 
   test('config - request get', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/get',
+      url: 'http://localhost:' + fastify.server.address().port + '/get',
       json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEquals(response.body, Object.assign({url: '/get'}, schema.config))
+      t.deepEquals(body, Object.assign({url: '/get'}, schema.config))
     })
   })
 
   test('config - request route', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/route',
+      url: 'http://localhost:' + fastify.server.address().port + '/route',
       json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEquals(response.body, Object.assign({url: '/route'}, schema.config))
+      t.deepEquals(body, Object.assign({url: '/route'}, schema.config))
     })
   })
 
   test('config - request no-config', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/no-config',
+      url: 'http://localhost:' + fastify.server.address().port + '/no-config',
       json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEquals(response.body, {url: '/no-config'})
+      t.deepEquals(body, {url: '/no-config'})
     })
   })
 })

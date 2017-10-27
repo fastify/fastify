@@ -1,6 +1,6 @@
 'use strict'
 
-const request = require('request')
+const sget = require('simple-get').concat
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -69,9 +69,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: 'world'
         },
@@ -85,9 +85,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - correctly replies if the content type has the charset`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: JSON.stringify({ hello: 'world' }),
         headers: {
           'content-type': 'application/json;charset=utf-8'
@@ -95,15 +95,15 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
     test(`${upMethod} without schema - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: {
           hello: 'world'
         },
@@ -117,9 +117,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} with body and querystring - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
+        url: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
         body: {
           hello: 'world'
         },
@@ -133,9 +133,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} returns 415 - incorrect media type if body is not json`, t => {
       t.plan(2)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: 'hello world',
         timeout: 500
       }, (err, response, body) => {
@@ -151,9 +151,9 @@ module.exports.payloadMethod = function (method, t) {
     if (loMethod === 'options') {
       test(`OPTIONS returns 415 - should return 415 if Content-Type is not json`, t => {
         t.plan(2)
-        request({
+        sget({
           method: upMethod,
-          uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+          url: 'http://localhost:' + fastify.server.address().port + '/missing',
           body: 'hello world',
           headers: {
             'Content-Type': 'text/plain'
@@ -168,9 +168,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
       t.plan(2)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: 'hello world',
         headers: {
           'Content-Type': 'application/json'

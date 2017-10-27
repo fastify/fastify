@@ -52,7 +52,10 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
-    https?: boolean
+    https?: {
+      key: Buffer,
+      cert: Buffer
+    }
   }
 
   interface JSONSchema {
@@ -314,6 +317,16 @@ declare namespace fastify {
      * Useful for testing http requests without running a sever
      */
     inject(opts: HTTPInjectOptions): Promise<HTTPInjectResponse>
+
+    /**
+     * Set the 404 handler
+     */
+    setNotFoundHandler(handler: (request: FastifyRequest, reply: FastifyReply) => void): void
+
+    /**
+     * Set a function that will be called whenever an error happens
+     */
+    setErrorHandler(handler: (error: Error, reply: FastifyReply) => void): void
   }
 }
 

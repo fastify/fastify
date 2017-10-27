@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fs = require('fs')
 const path = require('path')
 const Fastify = require('../..')
@@ -37,9 +37,9 @@ fastify.listen(0, err => {
 
   test('https get request', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'https://localhost:' + fastify.server.address().port,
+      url: 'https://localhost:' + fastify.server.address().port,
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)

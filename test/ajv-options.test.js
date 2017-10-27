@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const Fastify = require('..')
 
 const schemaWithFilter = {
@@ -45,16 +45,14 @@ test('ajv - removeAdditional', t => {
 
     fastify.post('/', schemaWithFilter, function (req, reply) {
       t.deepEqual(req.body, { a: 1 })
-      reply.code(200).send()
+      reply.code(200).send({})
     })
 
-    request({
+    sget({
       method: 'POST',
-      uri: 'http://localhost:' + fastify.server.address().port,
-      body: '{"a": 1, "b": 2}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: { a: 1, b: 2 },
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -76,16 +74,14 @@ test('ajv - useDefaults', t => {
 
     fastify.post('/', schemaWithDefaults, function (req, reply) {
       t.deepEqual(req.body, { a: 100 })
-      reply.code(200).send()
+      reply.code(200).send({})
     })
 
-    request({
+    sget({
       method: 'POST',
-      uri: 'http://localhost:' + fastify.server.address().port,
-      body: '{}',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

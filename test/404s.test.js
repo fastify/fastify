@@ -381,7 +381,7 @@ test('hooks check 404', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.addHook('onSend', (req, res, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, next) => {
     t.deepEqual(req.query, { foo: 'asd' })
     t.ok('called', 'onSend')
     next()
@@ -395,27 +395,29 @@ test('hooks check 404', t => {
     next()
   })
 
+  t.tearDown(fastify.close.bind(fastify))
+
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'PUT',
-      uri: 'http://localhost:' + fastify.server.address().port + '?foo=asd',
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port + '?foo=asd',
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd',
-      json: {}
+      url: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd',
+      body: {},
+      json: true
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
     })
   })
-
-  t.tearDown(fastify.close.bind(fastify))
 })

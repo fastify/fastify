@@ -16,7 +16,7 @@ test('hooks should have 4 array with the registered hooks', t => {
   t.ok(Array.isArray(hooks.onResponse))
 })
 
-test('hooks.add should add an hook to the given hook', t => {
+test('hooks.add should add a hook to the given hook', t => {
   t.plan(8)
   const hooks = new Hooks()
   hooks.add('onRequest', noop)

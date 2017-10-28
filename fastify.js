@@ -67,7 +67,13 @@ function build (options) {
 
   var server
   if (options.https) {
-    server = https.createServer(options.https, fastify)
+    if (options.http2) {
+      server = http2().createSecureServer(options.https, fastify)
+    } else {
+      server = https.createServer(options.https, fastify)
+    }
+  } else if (options.http2) {
+    server = http2().createServer(fastify)
   } else {
     server = http.createServer(fastify)
   }
@@ -611,6 +617,14 @@ function build (options) {
   function setErrorHandler (func) {
     this._errorHandler = func
     return this
+  }
+}
+
+function http2 () {
+  try {
+    return require('http2')
+  } catch (err) {
+    console.error('http2 is available only from node >= 8.8.1')
   }
 }
 

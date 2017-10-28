@@ -77,6 +77,7 @@
     "ienoopen": "^1.0.0",
     "joi": "^11.3.4",
     "pre-commit": "^1.2.2",
+    "semver": "^5.4.1",
     "serve-static": "^1.13.1",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",

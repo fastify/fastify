@@ -57,4 +57,4 @@ package-lock.json
 
 # generated code
 examples/typescript-server.js
-test/type/index.js 
+test/types/index.js 

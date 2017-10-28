@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const Fastify = require('..')
 const fastify = require('..')()
 
@@ -76,9 +76,9 @@ fastify.listen(0, err => {
 
   test('hooks - success', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -89,9 +89,9 @@ fastify.listen(0, err => {
 
   test('hooks - throw preHandler', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
@@ -100,9 +100,9 @@ fastify.listen(0, err => {
 
   test('hooks - throw onRequest', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
@@ -178,9 +178,9 @@ test('onRequest hook should support encapsulation / 3', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -188,9 +188,9 @@ test('onRequest hook should support encapsulation / 3', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -234,9 +234,9 @@ test('preHandler hook should support encapsulation / 5', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -244,9 +244,9 @@ test('preHandler hook should support encapsulation / 5', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -320,9 +320,9 @@ test('onResponse hook should support encapsulation / 3', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -330,9 +330,9 @@ test('onResponse hook should support encapsulation / 3', t => {
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 test('route - get', t => {
@@ -90,9 +90,9 @@ fastify.listen(0, function (err) {
 
   test('route - get', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -102,9 +102,9 @@ fastify.listen(0, function (err) {
 
   test('route - missing schema', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -114,18 +114,18 @@ fastify.listen(0, function (err) {
 
   test('route - multiple methods', t => {
     t.plan(6)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/multiple'
+      url: 'http://localhost:' + fastify.server.address().port + '/multiple'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
 
-    request({
+    sget({
       method: 'DELETE',
-      uri: 'http://localhost:' + fastify.server.address().port + '/multiple'
+      url: 'http://localhost:' + fastify.server.address().port + '/multiple'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')
 const cors = require('cors')
 const helmet = require('helmet')
@@ -31,9 +31,9 @@ test('use a middleware', t => {
 
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port
+      url: 'http://localhost:' + instance.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -59,9 +59,9 @@ test('use cors', t => {
 
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port
+      url: 'http://localhost:' + instance.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.headers['access-control-allow-origin'], '*')
@@ -85,9 +85,9 @@ test('use helmet', t => {
 
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port
+      url: 'http://localhost:' + instance.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.ok(response.headers['x-xss-protection'])
@@ -112,9 +112,9 @@ test('use helmet and cors', t => {
 
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port
+      url: 'http://localhost:' + instance.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.ok(response.headers['x-xss-protection'])
@@ -148,9 +148,9 @@ test('middlewares should support encapsulation / 1', t => {
     t.ok(instance._middlewares.length === 0)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port
+      url: 'http://localhost:' + instance.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -195,18 +195,18 @@ test('middlewares should support encapsulation / 2', t => {
     t.error(err)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port + '/global'
+      url: 'http://localhost:' + instance.server.address().port + '/global'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/local'
+        url: 'http://localhost:' + instance.server.address().port + '/local'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -259,18 +259,18 @@ test('middlewares should support encapsulation / 3', t => {
     t.error(err)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port + '/global'
+      url: 'http://localhost:' + instance.server.address().port + '/global'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/local'
+        url: 'http://localhost:' + instance.server.address().port + '/local'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -342,27 +342,27 @@ test('middlewares should support encapsulation / 4', t => {
     t.error(err)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port + '/global'
+      url: 'http://localhost:' + instance.server.address().port + '/global'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/firstLocal'
+        url: 'http://localhost:' + instance.server.address().port + '/firstLocal'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.strictEqual(response.headers['content-length'], '' + body.length)
         t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-        request({
+        sget({
           method: 'GET',
-          uri: 'http://localhost:' + instance.server.address().port + '/secondLocal'
+          url: 'http://localhost:' + instance.server.address().port + '/secondLocal'
         }, (err, response, body) => {
           t.error(err)
           t.strictEqual(response.statusCode, 200)
@@ -405,18 +405,18 @@ test('middlewares should support encapsulation / 5', t => {
     t.error(err)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port + '/global'
+      url: 'http://localhost:' + instance.server.address().port + '/global'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/local'
+        url: 'http://localhost:' + instance.server.address().port + '/local'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 500)
@@ -461,18 +461,18 @@ test('middlewares should support encapsulation with prefix', t => {
     t.error(err)
     t.tearDown(instance.server.close.bind(instance.server))
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + instance.server.address().port + '/global'
+      url: 'http://localhost:' + instance.server.address().port + '/global'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
 
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/local'
+        url: 'http://localhost:' + instance.server.address().port + '/local'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 500)
@@ -550,9 +550,9 @@ test('middlewares with prefix', t => {
 
     t.test('/', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/',
+        url: 'http://localhost:' + instance.server.address().port + '/',
         json: true
       }, (err, response, body) => {
         t.error(err)
@@ -566,9 +566,9 @@ test('middlewares with prefix', t => {
 
     t.test('/prefix', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/prefix',
+        url: 'http://localhost:' + instance.server.address().port + '/prefix',
         json: true
       }, (err, response, body) => {
         t.error(err)
@@ -584,9 +584,9 @@ test('middlewares with prefix', t => {
 
     t.test('/prefix/', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/prefix/',
+        url: 'http://localhost:' + instance.server.address().port + '/prefix/',
         json: true
       }, (err, response, body) => {
         t.error(err)
@@ -602,9 +602,9 @@ test('middlewares with prefix', t => {
 
     t.test('/prefix/inner', t => {
       t.plan(2)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + instance.server.address().port + '/prefix/inner',
+        url: 'http://localhost:' + instance.server.address().port + '/prefix/inner',
         json: true
       }, (err, response, body) => {
         t.error(err)

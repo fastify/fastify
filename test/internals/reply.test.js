@@ -2,7 +2,8 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
+const http = require('http')
 
 const Reply = require('../../lib/reply')
 
@@ -84,34 +85,34 @@ test('within an instance', t => {
 
     test('custom serializer should be used', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
+        url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body, 'hello=world!')
+        t.deepEqual(body.toString(), 'hello=world!')
       })
     })
 
     test('status code and content-type should be correct', t => {
       t.plan(4)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port
+        url: 'http://localhost:' + fastify.server.address().port
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body, 'hello world!')
+        t.deepEqual(body.toString(), 'hello world!')
       })
     })
 
     test('auto status code shoud be 200', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/auto-status-code'
+        url: 'http://localhost:' + fastify.server.address().port + '/auto-status-code'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -121,63 +122,55 @@ test('within an instance', t => {
 
     test('auto type shoud be text/plain', t => {
       t.plan(3)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/auto-type'
+        url: 'http://localhost:' + fastify.server.address().port + '/auto-type'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body, 'hello world!')
+        t.deepEqual(body.toString(), 'hello world!')
       })
     })
 
     test('redirect to `/` - 1', t => {
-      t.plan(2)
-      request({
-        method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/redirect',
-        followRedirect: false
-      }, (err, response, body) => {
-        t.error(err)
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect', function (response) {
         t.strictEqual(response.statusCode, 302)
       })
     })
 
     test('redirect to `/` - 2', t => {
-      t.plan(2)
-      request({
-        method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/redirect-code',
-        followRedirect: false
-      }, (err, response, body) => {
-        t.error(err)
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-code', function (response) {
         t.strictEqual(response.statusCode, 301)
       })
     })
 
     test('redirect to `/` - 3', t => {
       t.plan(4)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/redirect'
+        url: 'http://localhost:' + fastify.server.address().port + '/redirect'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body, 'hello world!')
+        t.deepEqual(body.toString(), 'hello world!')
       })
     })
 
     test('redirect to `/` - 4', t => {
       t.plan(4)
-      request({
+      sget({
         method: 'GET',
-        uri: 'http://localhost:' + fastify.server.address().port + '/redirect-code'
+        url: 'http://localhost:' + fastify.server.address().port + '/redirect-code'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body, 'hello world!')
+        t.deepEqual(body.toString(), 'hello world!')
       })
     })
 

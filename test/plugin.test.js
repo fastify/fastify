@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const request = require('request')
+const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
 
 test('require a plugin', t => {
@@ -49,9 +49,9 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -104,9 +104,9 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -114,9 +114,9 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
       t.deepEqual(JSON.parse(body), { test: 'first' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/test2'
+      url: 'http://localhost:' + fastify.server.address().port + '/test2'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -166,9 +166,9 @@ test('check dependencies - should not throw', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -217,9 +217,9 @@ test('check dependencies - should throw', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -267,9 +267,9 @@ test('plugin incapsulation', t => {
     t.error(err)
     fastify.server.unref()
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/first'
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -277,9 +277,9 @@ test('plugin incapsulation', t => {
       t.deepEqual(JSON.parse(body), { plugin: 'first' })
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/second'
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -339,9 +339,9 @@ test('add hooks after route declaration', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.deepEqual(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
@@ -378,17 +378,17 @@ test('nested plugins', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
       t.error(err)
       t.deepEqual(JSON.parse(body), 'I am child 1')
     })
 
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
       t.error(err)
       t.deepEqual(JSON.parse(body), 'I am child 2')

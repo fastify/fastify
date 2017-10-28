@@ -52,7 +52,10 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
-    https?: boolean
+    https?: {
+      key: Buffer,
+      cert: Buffer
+    }
   }
 
   interface JSONSchema {
@@ -89,6 +92,41 @@ declare namespace fastify {
   interface RegisterOptions extends RouteShorthandOptions {
     [key: string]: any,
     prefix?: string,
+  }
+
+  /**
+   * Fake http inject options
+   */
+  interface HTTPInjectOptions {
+    url: string,
+    method?: HTTPMethod,
+    authority?: string,
+    headers?: object,
+    remoteAddress?: string,
+    payload?: string | object | Buffer | NodeJS.ReadableStream
+    simulate?: {
+      end?: boolean,
+      split?: boolean,
+      error?: boolean,
+      close?: boolean
+    },
+    validate?: boolean
+  }
+
+  /**
+   * Fake http inject response
+   */
+  interface HTTPInjectResponse {
+    raw: {
+      req: NodeJS.ReadableStream,
+      res: http.ServerResponse
+    },
+    headers: object,
+    statusCode: number,
+    statusMessage: string,
+    payload: string,
+    rawPayload: Buffer,
+    trailers: object
   }
 
   /**
@@ -269,6 +307,26 @@ declare namespace fastify {
      * and performing cleanup tasks
      */
     addHook(name: 'onClose', hook: (instance: FastifyInstance, done: () => void) => void): FastifyInstance
+
+    /**
+     * Useful for testing http requests without running a sever
+     */
+    inject(opts: HTTPInjectOptions, clb: (res: HTTPInjectResponse) => void): void
+
+    /**
+     * Useful for testing http requests without running a sever
+     */
+    inject(opts: HTTPInjectOptions): Promise<HTTPInjectResponse>
+
+    /**
+     * Set the 404 handler
+     */
+    setNotFoundHandler(handler: (request: FastifyRequest, reply: FastifyReply) => void): void
+
+    /**
+     * Set a function that will be called whenever an error happens
+     */
+    setErrorHandler(handler: (error: Error, reply: FastifyReply) => void): void
   }
 }
 

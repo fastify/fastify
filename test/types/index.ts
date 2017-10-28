@@ -4,9 +4,15 @@
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
 import * as http from 'http';
+import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
 
-const server: fastify.FastifyInstance = fastify()
+const server: fastify.FastifyInstance = fastify({
+  https: {
+    cert: readFileSync('path/to/cert.pem'),
+    key: readFileSync('path/to/key.pem')
+  }
+})
 
 // Third party middleware
 server.use(cors())
@@ -178,7 +184,21 @@ server.get('/test-decorated-inputs', (req, reply) => {
   (reply as DecoratedReply).utility();
 });
 
+server.setNotFoundHandler((req, reply) => {
+})
+
+server.setErrorHandler((err, reply) => {
+})
+
 server.listen(3000, err => {
   if (err) throw err
   console.log(`server listening on ${server.server.address().port}`)
 })
+
+// http injections
+server.inject({ url: "/test" }, (res: fastify.HTTPInjectResponse) => {
+  console.log(res.payload);
+});
+
+server.inject({ url: "/testAgain" })
+  .then((res: fastify.HTTPInjectResponse) => console.log(res.payload));

@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.30.2",
+  "version": "0.30.3",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {
@@ -77,7 +77,6 @@
     "ienoopen": "^1.0.0",
     "joi": "^11.3.4",
     "pre-commit": "^1.2.2",
-    "request": "^2.83.0",
     "serve-static": "^1.13.1",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
@@ -91,17 +90,18 @@
     "@types/node": "^8.0.45",
     "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
-    "ajv": "^5.2.3",
+    "ajv": "^5.3.0",
     "avvio": "^3.0.0",
     "fast-json-stringify": "^0.14.0",
-    "fastify-cli": "^0.9.0",
+    "fastify-cli": "^0.11.0",
     "fastseries": "^1.7.2",
-    "find-my-way": "^1.7.0",
+    "find-my-way": "^1.7.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.0.0",
     "middie": "^2.1.1",
-    "pino": "^4.7.3",
-    "pump": "^1.0.2"
+    "pino": "^4.8.1",
+    "pump": "^1.0.2",
+    "simple-get": "^2.7.0"
   },
   "greenkeeper": {
     "ignore": [

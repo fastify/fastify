@@ -1,6 +1,6 @@
 'use strict'
 
-const request = require('request')
+const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const Joi = require('joi')
 
@@ -114,18 +114,18 @@ module.exports.payloadMethod = function (method, t) {
     test(`${upMethod} - correctly replies`, t => {
       if (upMethod === 'HEAD') {
         t.plan(2)
-        request({
+        sget({
           method: upMethod,
-          uri: 'http://localhost:' + fastify.server.address().port
+          url: 'http://localhost:' + fastify.server.address().port
         }, (err, response) => {
           t.error(err)
           t.strictEqual(response.statusCode, 200)
         })
       } else {
         t.plan(3)
-        request({
+        sget({
           method: upMethod,
-          uri: 'http://localhost:' + fastify.server.address().port,
+          url: 'http://localhost:' + fastify.server.address().port,
           body: {
             hello: 42
           },
@@ -140,9 +140,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - 400 on bad parameters`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: 'world'
         },
@@ -166,9 +166,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation coerce`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: '42'
         },
@@ -182,9 +182,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation custom schema compiler`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/custom',
+        url: 'http://localhost:' + fastify.server.address().port + '/custom',
         body: {
           hello: '42',
           world: 55
@@ -199,9 +199,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation joi schema compiler ok`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/joi',
+        url: 'http://localhost:' + fastify.server.address().port + '/joi',
         body: {
           hello: '42'
         },
@@ -215,9 +215,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation joi schema compiler ko`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/joi',
+        url: 'http://localhost:' + fastify.server.address().port + '/joi',
         body: {
           hello: 44
         },
@@ -235,9 +235,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation instance custom schema compiler encapsulated`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/plugin',
+        url: 'http://localhost:' + fastify.server.address().port + '/plugin',
         body: { },
         json: true
       }, (err, response, body) => {
@@ -253,9 +253,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} - input-validation custom schema compiler encapsulated`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
+        url: 'http://localhost:' + fastify.server.address().port + '/plugin/custom',
         body: { },
         json: true
       }, (err, response, body) => {

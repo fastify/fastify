@@ -371,3 +371,53 @@ test('run middlewares with encapsulated 404', t => {
     })
   })
 })
+
+test('hooks check 404', t => {
+  t.plan(13)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.addHook('onSend', (req, reply, payload, next) => {
+    t.deepEqual(req.query, { foo: 'asd' })
+    t.ok('called', 'onSend')
+    next()
+  })
+  fastify.addHook('onRequest', (req, res, next) => {
+    t.ok('called', 'onRequest')
+    next()
+  })
+  fastify.addHook('onResponse', (res, next) => {
+    t.ok('called', 'onResponse')
+    next()
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'PUT',
+      url: 'http://localhost:' + fastify.server.address().port + '?foo=asd',
+      body: {},
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd',
+      body: {},
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})

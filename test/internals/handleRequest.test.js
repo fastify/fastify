@@ -58,7 +58,8 @@ test('handler function - invalid schema', t => {
     handler: () => {},
     Reply: Reply,
     Request: Request,
-    hooks: new Hooks()
+    preHandler: new Hooks().preHandler,
+    onSend: new Hooks().onSend
   }
   buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
@@ -85,7 +86,8 @@ test('handler function - reply', t => {
     },
     Reply: Reply,
     Request: Request,
-    preHandler: new Hooks().preHandler
+    preHandler: new Hooks().preHandler,
+    onSend: new Hooks().onSend
   }
   buildSchema(handle, schemaCompiler)
   internals.handler(handle, null, { log: null }, res, null, null)

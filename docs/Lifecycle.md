@@ -25,8 +25,10 @@ Incoming Request
                                      4**/5** ◀─┴─▶ User Handler
                                                      │
                                                      └─▶ Reply
-                                                          │ │
-                                                          │ └─▶ Outgoing Response
-                                                          │
-                                                          └─▶ onResponse Hook
+                                                           │
+                                                           └─▶ onSend Hook
+                                                                  │
+                                                        4**/5** ◀─┴─▶ Outgoing Response
+                                                                        │
+                                                                        └─▶ onResponse Hook
 ```

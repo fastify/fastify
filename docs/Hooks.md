@@ -5,6 +5,7 @@
 By using the hooks you can interact directly inside the lifecycle of Fastify, there are three different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preHandler'`
+- `'onSend'`
 - `'onResponse'`
 - `'onClose'`
 
@@ -20,6 +21,11 @@ fastify.addHook('preHandler', (request, reply, next) => {
   next()
 })
 
+fastify.addHook('onSend', (request, reply, payload, next) => {
+  // some code
+  next()
+})
+
 fastify.addHook('onResponse', (res, next) => {
   // some code
   next()
@@ -27,7 +33,7 @@ fastify.addHook('onResponse', (res, next) => {
 ```
 
 | Parameter   |  Description  |
-|-------------|:-------------:|
+|-------------|-------------|
 | req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
 | res | Node.js [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
 | request | Fastify [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) interface |
@@ -54,7 +60,22 @@ fastify.addHook('preHandler', (request, reply, next) => {
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
-Note that in the `'preHandler'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+
+If you are using the `onSend` hook you can update the payload, but not overwrite it, for example:
+```js
+// this is valid
+fastify.addHook('onSend', (request, reply, payload, next) => {
+  payload.hello = 'world'
+  next()
+})
+
+// this is not valid
+fastify.addHook('onSend', (request, reply, payload, next) => {
+  payload = { hello: 'world' }
+  next()
+})
+```
 
 <a name="on-close"></a>
 **'onClose'**  

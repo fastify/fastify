@@ -87,8 +87,8 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "^8.0.34",
-    "@types/pino": "~4.7.0",
+    "@types/node": "^8.0.45",
+    "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^5.3.0",
     "avvio": "^3.0.0",

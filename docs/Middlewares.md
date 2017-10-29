@@ -40,15 +40,15 @@ If you need to run a middleware only under certain path(s), just pass the path a
 *Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcard is not supported in multiple paths.*
 
 ```js
-const path = require("path")
+const path = require('path')
 const serveStatic = require('serve-static')
 
 // Single path
-fastify.use('/css', serveStatic(path.join(__dirname, "/static")))
+fastify.use('/css', serveStatic(path.join(__dirname, '/static')))
 
 // Wildcard path
-fastify.use('/css/*', serveStatic(path.join(__dirname, "/static")))
+fastify.use('/css/*', serveStatic(path.join(__dirname, '/static')))
 
 // Multiple paths
-fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, "/static")))
+fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/static')))
 ```

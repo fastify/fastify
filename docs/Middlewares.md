@@ -7,6 +7,7 @@ Fastify provides out of the box an asynchronous [middleware engine](https://gith
 *If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.*
 
 Fastify middlewares don't support the full syntax `middleware(err, req, res, next)`, because error handling is done inside Fastify.
+Furthermore methods added by Express and Restify to the enhanced versions of `req` and `res` are not supported in Fastify middlewares.
 
 Also, if you are using a middleware that bundles different, smaller middlewares, such as [*helmet*](https://helmetjs.github.io/), we recommend to use the single modules to get better performances.
 

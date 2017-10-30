@@ -249,7 +249,7 @@ function build (options) {
   }
 
   function hookIterator (fn, cb) {
-    fn(this.req, this.res, cb)
+    fn.call(this.store.fastify, this.req, this.res, cb)
   }
 
   function override (old, fn, opts) {
@@ -396,7 +396,8 @@ function build (options) {
         opts.onSend || _fastify._hooks.onSend,
         config,
         opts.errorHander || _fastify._errorHandler,
-        opts.middie || _fastify._middie
+        opts.middie || _fastify._middie,
+        _fastify
       )
 
       buildSchema(store, opts.schemaCompiler || _fastify._schemaCompiler)
@@ -439,7 +440,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -452,6 +453,7 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
+    this.fastify = fastify
   }
 
   function iterator () {
@@ -590,7 +592,8 @@ function build (options) {
         this._hooks.onSend,
         opts.config || {},
         this._errorHandler,
-        this._middie
+        this._middie,
+        this
       )
 
       this._404Store = store

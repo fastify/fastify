@@ -169,7 +169,7 @@ function build (options) {
     if (ctx !== null && ctx.onResponse.length > 0) {
       // deferring this with setImmediate will
       // slow us by 10%
-      runHooks(new OnResponseState(err, this),
+      runHooks(new OnResponseState(err, this, fastify),
         onResponseIterator,
         ctx.onResponse,
         wrapOnResponseCallback)

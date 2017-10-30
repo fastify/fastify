@@ -6,6 +6,7 @@ const fastify = Fastify()
 const sleep = require('then-sleep')
 const split = require('split2')
 const pino = require('pino')
+const statusCodes = require('http').STATUS_CODES
 
 const opts = {
   schema: {
@@ -300,6 +301,34 @@ function asyncTest (t) {
 
     const res = await fastify.inject({ method: 'GET', url: '/' })
     t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+  })
+
+  test('Thrown Error instance sets HTTP status code', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    const err = new Error('winter is coming')
+    err.statusCode = 418
+
+    fastify.get('/', async (req, reply) => {
+      throw err
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.strictEqual(res.statusCode, 418)
+      t.deepEqual(
+        {
+          error: statusCodes['418'],
+          message: err.message,
+          statusCode: 418
+        },
+        JSON.parse(res.payload)
+      )
+    })
   })
 }
 

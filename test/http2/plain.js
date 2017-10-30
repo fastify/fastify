@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const http2 = require('http2')
+const h2url = require('h2url')
 const msg = { hello: 'world' }
 
 var fastify
@@ -24,25 +24,15 @@ fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
-  test('http get request', t => {
+  test('http get request', async (t) => {
     t.plan(3)
 
-    const client = http2.connect(`http://localhost:${fastify.server.address().port}`)
+    const url = `http://localhost:${fastify.server.address().port}`
+    const res = await h2url.concat({ url })
 
-    const req = client.request({ ':path': '/' })
+    t.strictEqual(res.headers[':status'], 200)
+    t.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
 
-    req.on('response', (headers) => {
-      t.strictEqual(headers[':status'], 200)
-      t.strictEqual(headers['content-length'], '' + JSON.stringify(msg).length)
-    })
-
-    let data = ''
-    req.setEncoding('utf8')
-    req.on('data', (d) => { data += d })
-    req.on('end', () => {
-      t.deepEqual(JSON.parse(data), msg)
-      client.destroy()
-    })
-    req.end()
+    t.deepEqual(JSON.parse(res.body), msg)
   })
 })

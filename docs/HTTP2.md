@@ -58,6 +58,12 @@ fastify.get('/', function (req, reply) {
 fastify.listen(3000)
 ```
 
+You can test your new server with:
+
+```
+$ npx h2url https://localhost:3000
+```
+
 ### Plain or insecure
 
 If you are building microservices, you can connect to HTTP2 in plain
@@ -76,3 +82,10 @@ fastify.get('/', function (req, reply) {
 
 fastify.listen(3000)
 ```
+
+You can test your new server with:
+
+```
+$ npx h2url http://localhost:3000
+```
+

@@ -215,16 +215,7 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, hostname: string, backlog: number, callback?: (err: Error) => void): http.Server
-    listen(path: string, hostname: string, backlog: number, callback?: (err: Error) => void): http.Server
-
-    /**
-     * Starts the server on the given port after all the plugins are loaded,
-     * internally waits for the .ready() event. The callback is the same as the
-     * Node core.
-     */
     listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
-    listen(path: string, hostname: string, callback?: (err: Error) => void): http.Server
 
     /**
      * Starts the server on the given port after all the plugins are loaded,

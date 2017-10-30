@@ -317,3 +317,29 @@ test('Error instance sets HTTP status code', t => {
     )
   })
 })
+
+test('Error status code below 400 defaults to 500', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const err = new Error('winter is coming')
+  err.statusCode = 399
+
+  fastify.get('/', () => {
+    return Promise.reject(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(
+      {
+        error: statusCodes['500'],
+        message: err.message,
+        statusCode: 500
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})

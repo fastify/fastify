@@ -291,3 +291,29 @@ if (Number(process.versions.node[0]) >= 6) {
     })
   })
 }
+
+test('Error instance sets HTTP status code', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const err = new Error('winter is coming')
+  err.statusCode = 418
+
+  fastify.get('/', () => {
+    return Promise.reject(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(
+      {
+        error: statusCodes['418'],
+        message: err.message,
+        statusCode: 418
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})

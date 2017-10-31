@@ -31,6 +31,48 @@ fastify.addHook('onResponse', (res, next) => {
   next()
 })
 ```
+Or `async/await`
+```js
+fastify.addHook('onRequest', async (req, res) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('preHandler', async (request, reply) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('onSend', async (request, reply, payload) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('onResponse', async (res) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+```
 
 | Parameter   |  Description  |
 |-------------|-------------|

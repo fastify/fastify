@@ -175,7 +175,7 @@ function build (options) {
     if (ctx !== null && ctx.onResponse.length > 0) {
       // deferring this with setImmediate will
       // slow us by 10%
-      runHooks(new OnResponseState(err, this, ctx.fastify),
+      runHooks(new OnResponseState(err, this),
         onResponseIterator,
         ctx.onResponse,
         wrapOnResponseCallback)
@@ -255,7 +255,7 @@ function build (options) {
   }
 
   function hookIterator (fn, cb) {
-    var ret = fn.call(this.store.fastify, this.req, this.res, cb)
+    var ret = fn(this.req, this.res, cb)
     if (ret && typeof ret.then === 'function') {
       ret.then(cb).catch(cb)
     }
@@ -342,7 +342,6 @@ function build (options) {
       handler = options
       options = {}
     }
-
     return route.call(self, {
       method,
       url,
@@ -406,8 +405,7 @@ function build (options) {
         opts.onSend || _fastify._hooks.onSend,
         config,
         opts.errorHander || _fastify._errorHandler,
-        opts.middie || _fastify._middie,
-        _fastify
+        opts.middie || _fastify._middie
       )
 
       buildSchema(store, opts.schemaCompiler || _fastify._schemaCompiler)
@@ -450,7 +448,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie, fastify) {
+  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -463,7 +461,6 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
-    this.fastify = fastify
   }
 
   function iterator () {
@@ -532,7 +529,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else {
-      this._hooks.add(name, fn)
+      this._hooks.add(name, fn.bind(this))
     }
     return this
   }
@@ -602,8 +599,7 @@ function build (options) {
         this._hooks.onSend,
         opts.config || {},
         this._errorHandler,
-        this._middie,
-        this
+        this._middie
       )
 
       this._404Store = store

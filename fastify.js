@@ -255,7 +255,10 @@ function build (options) {
   }
 
   function hookIterator (fn, cb) {
-    fn(this.req, this.res, cb)
+    var ret = fn(this.req, this.res, cb)
+    if (ret && typeof ret.then === 'function') {
+      ret.then(cb).catch(cb)
+    }
   }
 
   function override (old, fn, opts) {

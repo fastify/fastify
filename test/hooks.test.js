@@ -416,3 +416,10 @@ test('onSend hook throws', t => {
     })
   })
 })
+
+if (Number(process.versions.node[0]) >= 8) {
+  require('./hooks-async')(t)
+} else {
+  t.pass('Skip because Node version < 8')
+  t.end()
+}

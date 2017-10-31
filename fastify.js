@@ -218,40 +218,40 @@ function build (options) {
     }
   }
 
-  function startHooks (req, res, params, store) {
-    res._context = store
+  function startHooks (req, res, params, context) {
+    res._context = context
     runHooks(
-      new State(req, res, params, store),
+      new State(req, res, params, context),
       hookIterator,
-      store.onRequest,
+      context.onRequest,
       middlewareCallback
     )
   }
 
   function middlewareCallback (err) {
     if (err) {
-      const reply = new Reply(this.req, this.res, this.store)
+      const reply = new Reply(this.req, this.res, this.context)
       reply.send(err)
       return
     }
-    this.store._middie.run(this.req, this.res, this)
+    this.context._middie.run(this.req, this.res, this)
   }
 
   function onRunMiddlewares (err, req, res, ctx) {
     if (err) {
-      const reply = new Reply(req, res, ctx.store)
+      const reply = new Reply(req, res, ctx.context)
       reply.send(err)
       return
     }
 
-    handleRequest(req, res, ctx.params, ctx.store)
+    handleRequest(req, res, ctx.params, ctx.context)
   }
 
-  function State (req, res, params, store) {
+  function State (req, res, params, context) {
     this.req = req
     this.res = res
     this.params = params
-    this.store = store
+    this.context = context
   }
 
   function hookIterator (fn, cb) {
@@ -277,7 +277,7 @@ function build (options) {
     instance._middie = Middie(onRunMiddlewares)
 
     if (opts.prefix) {
-      instance._404Store = null
+      instance._404Context = null
     }
 
     for (var i = 0; i < middlewares.length; i++) {
@@ -393,7 +393,7 @@ function build (options) {
       const config = opts.config || {}
       config.url = url
 
-      const store = new Store(
+      const context = new Context(
         opts.schema,
         opts.handler,
         opts.Reply || _fastify._Reply,
@@ -408,12 +408,12 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(store, opts.schemaCompiler || _fastify._schemaCompiler)
+      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
 
-      store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
+      context.preHandler.push.apply(context.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
       if (opts.beforeHandler) {
         opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        store.preHandler.push.apply(store.preHandler, opts.beforeHandler)
+        context.preHandler.push.apply(context.preHandler, opts.beforeHandler)
       }
 
       if (map.has(url)) {
@@ -423,23 +423,23 @@ function build (options) {
 
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = store
+            map.get(url)[opts.method[i]] = context
           }
         } else {
-          map.get(url)[opts.method] = store
+          map.get(url)[opts.method] = context
         }
-        router.on(opts.method, url, startHooks, store)
+        router.on(opts.method, url, startHooks, context)
       } else {
         const node = {}
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = store
+            node[opts.method[i]] = context
           }
         } else {
-          node[opts.method] = store
+          node[opts.method] = context
         }
         map.set(url, node)
-        router.on(opts.method, url, startHooks, store)
+        router.on(opts.method, url, startHooks, context)
       }
       done(notHandledErr)
     })
@@ -448,7 +448,7 @@ function build (options) {
     return _fastify
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -586,8 +586,8 @@ function build (options) {
     opts = opts || {}
     handler = handler || basic404
 
-    if (!this._404Store) {
-      const store = new Store(
+    if (!this._404Context) {
+      const context = new Context(
         opts.schema,
         handler,
         this._Reply,
@@ -602,17 +602,17 @@ function build (options) {
         this._middie
       )
 
-      this._404Store = store
+      this._404Context = context
 
       var prefix = this._RoutePrefix.prefix
       var star = '/*'
 
-      fourOhFour.all(prefix + star, startHooks, store)
-      fourOhFour.all(prefix || '/', startHooks, store)
+      fourOhFour.all(prefix + star, startHooks, context)
+      fourOhFour.all(prefix || '/', startHooks, context)
     } else {
-      this._404Store.handler = handler
-      this._404Store.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
-      this._404Store.config = opts.config || {}
+      this._404Context.handler = handler
+      this._404Context.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+      this._404Context.config = opts.config || {}
     }
   }
 

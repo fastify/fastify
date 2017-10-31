@@ -23,6 +23,7 @@ Plugins maintainted by the fastify team are listed under [Core](#core) while plu
 - [`fastify-register-timeout`](https://github.com/fastify/fastify-register-timeout) Register plugin with a timeout.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
+- [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 
 #### [Community](#community)

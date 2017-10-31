@@ -145,10 +145,12 @@ test('onRequest hook should support encapsulation / 2', t => {
 })
 
 test('onRequest hook should support encapsulation / 3', t => {
-  t.plan(13)
+  t.plan(17)
   const fastify = Fastify()
+  fastify.decorate('hello', 'world')
 
-  fastify.addHook('onRequest', (req, res, next) => {
+  fastify.addHook('onRequest', function (req, res, next) {
+    t.ok(this.hello)
     req.first = true
     next()
   })
@@ -160,7 +162,10 @@ test('onRequest hook should support encapsulation / 3', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRequest', (req, res, next) => {
+    instance.decorate('hello2', 'world')
+    instance.addHook('onRequest', function (req, res, next) {
+      t.ok(this.hello)
+      t.ok(this.hello2)
       req.second = true
       next()
     })
@@ -201,10 +206,12 @@ test('onRequest hook should support encapsulation / 3', t => {
 })
 
 test('preHandler hook should support encapsulation / 5', t => {
-  t.plan(13)
+  t.plan(17)
   const fastify = Fastify()
+  fastify.decorate('hello', 'world')
 
-  fastify.addHook('preHandler', (req, res, next) => {
+  fastify.addHook('preHandler', function (req, res, next) {
+    t.ok(this.hello)
     req.first = true
     next()
   })
@@ -216,7 +223,10 @@ test('preHandler hook should support encapsulation / 5', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('preHandler', (req, res, next) => {
+    instance.decorate('hello2', 'world')
+    instance.addHook('preHandler', function (req, res, next) {
+      t.ok(this.hello)
+      t.ok(this.hello2)
       req.second = true
       next()
     })
@@ -291,10 +301,12 @@ test('onResponse hook should support encapsulation / 2', t => {
 })
 
 test('onResponse hook should support encapsulation / 3', t => {
-  t.plan(12)
+  t.plan(16)
   const fastify = Fastify()
+  fastify.decorate('hello', 'world')
 
-  fastify.addHook('onResponse', (res, next) => {
+  fastify.addHook('onResponse', function (res, next) {
+    t.ok(this.hello)
     t.ok('onResponse called')
     next()
   })
@@ -304,8 +316,86 @@ test('onResponse hook should support encapsulation / 3', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onResponse', (res, next) => {
+    instance.decorate('hello2', 'world')
+    instance.addHook('onResponse', function (res, next) {
+      t.ok(this.hello)
+      t.ok(this.hello2)
       t.ok('onResponse called')
+      next()
+    })
+
+    instance.get('/second', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('onSend hook should support encapsulation / 1', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onSend', () => {})
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onSend', () => {})
+    t.is(instance._hooks.onSend.length, 2)
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify._hooks.onSend.length, 1)
+  })
+})
+
+test('onSend hook should support encapsulation / 2', t => {
+  t.plan(16)
+  const fastify = Fastify()
+  fastify.decorate('hello', 'world')
+
+  fastify.addHook('onSend', function (request, reply, thePayload, next) {
+    t.ok(this.hello)
+    t.ok('onSend called')
+    next()
+  })
+
+  fastify.get('/first', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.decorate('hello2', 'world')
+    instance.addHook('onSend', function (request, reply, thePayload, next) {
+      t.ok(this.hello)
+      t.ok(this.hello2)
+      t.ok('onSend called')
       next()
     })
 

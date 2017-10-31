@@ -375,3 +375,44 @@ test('verify payload', t => {
     t.strictEqual(res.headers['content-length'], 20)
   })
 })
+
+test('onSend hook throws', t => {
+  t.plan(7)
+  const fastify = Fastify()
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    if (request.req.method === 'DELETE') {
+      next(new Error('some error'))
+      return
+    }
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({hello: 'world'})
+  })
+
+  fastify.delete('/', (req, reply) => {
+    reply.send({hello: 'world'})
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+    sget({
+      method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+  })
+})

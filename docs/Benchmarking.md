@@ -19,7 +19,7 @@ npm i -g branch-comparer
 npm run benchmark
 ```
 
-### To compare multiple branches
+### Compare multiple branches
 ```sh
 branchcmp
 ```

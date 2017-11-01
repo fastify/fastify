@@ -131,7 +131,15 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 <a name="scope"></a>
 ### Scope
-Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
+Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bind to the right fastify context and from there you have full access to the fastify api.
+
+```js
+fastify.addHook('onRequest', (req, res, next) => {
+  const self = this // fastify context
+  next()
+})
+```
+Note: using an arrow function will break the binding of this to the Fastify reply instance.
 
 <a name="before-handler"></a>
 ### beforeHandler

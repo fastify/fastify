@@ -139,7 +139,7 @@ fastify.addHook('onRequest', (req, res, next) => {
   next()
 })
 ```
-Note: using an arrow function will break the binding of this to the Fastify reply instance.
+Note: using an arrow function will break the binding of this to the Fastify instance.
 
 <a name="before-handler"></a>
 ### beforeHandler

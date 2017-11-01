@@ -529,7 +529,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else {
-      this._hooks.add(name, fn)
+      this._hooks.add(name, fn.bind(this))
     }
     return this
   }

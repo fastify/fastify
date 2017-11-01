@@ -134,7 +134,7 @@ fastify.addHook('onClose', (instance, done) => {
 Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify api.
 
 ```js
-fastify.addHook('onRequest', (req, res, next) => {
+fastify.addHook('onRequest', function (req, res, next) {
   const self = this // Fastify context
   next()
 })

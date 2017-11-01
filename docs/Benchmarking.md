@@ -24,3 +24,10 @@ npm run benchmark
 branchcmp
 ```
 _Answer the second question with `npm run benchmark`._ 
+
+### Run different examples
+
+```sh
+branchcmp
+```
+_Answer the second question with `node ./node_modules/concurrently -k -s first \"node ./examples/asyncawait.js\" \"node ./node_modules/autocannon -c 100 -d 10 -p 10 localhost:3000/\"`._ 

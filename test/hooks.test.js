@@ -145,15 +145,18 @@ test('onRequest hook should support encapsulation / 2', t => {
 })
 
 test('onRequest hook should support encapsulation / 3', t => {
-  t.plan(17)
+  t.plan(20)
   const fastify = Fastify()
   fastify.decorate('hello', 'world')
 
   fastify.addHook('onRequest', function (req, res, next) {
     t.ok(this.hello)
+    t.ok(this.hello2)
     req.first = true
     next()
   })
+
+  fastify.decorate('hello2', 'world')
 
   fastify.get('/first', (req, reply) => {
     t.ok(req.req.first)
@@ -162,10 +165,11 @@ test('onRequest hook should support encapsulation / 3', t => {
   })
 
   fastify.register((instance, opts, next) => {
-    instance.decorate('hello2', 'world')
+    instance.decorate('hello3', 'world')
     instance.addHook('onRequest', function (req, res, next) {
       t.ok(this.hello)
       t.ok(this.hello2)
+      t.ok(this.hello3)
       req.second = true
       next()
     })

@@ -19,7 +19,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.header, 'function')
   t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
-  t.strictEqual(reply.store, handle)
+  t.strictEqual(reply.context, handle)
 })
 
 test('reply.send throw with circular JSON', t => {

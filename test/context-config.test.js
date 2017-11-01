@@ -14,7 +14,7 @@ const schema = {
 }
 
 function handler (req, reply) {
-  reply.serializer(JSON.stringify).send(reply.store.config)
+  reply.serializer(JSON.stringify).send(reply.context.config)
 }
 
 test('config - get', t => {

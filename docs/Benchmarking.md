@@ -5,7 +5,7 @@ Benchmarking is important if you want to measure how a change impact your applic
 
 The modules we'll use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.
-- [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout multiple git repositorys, execute scripts and log the results.
+- [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout multiple git branches, execute scripts and log the results.
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands concurrently.
 
 ## Installation

@@ -110,8 +110,6 @@ function build (options) {
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
 
-  fastify._decorations = new Set()
-
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
@@ -397,7 +395,7 @@ function build (options) {
 
       const context = new Context(
         opts.schema,
-        opts.handler,
+        opts.handler.bind(_fastify),
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
@@ -409,10 +407,6 @@ function build (options) {
         opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
-
-      for (var decoration of _fastify._decorations) {
-        context[decoration] = _fastify[decoration]
-      }
 
       buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
 

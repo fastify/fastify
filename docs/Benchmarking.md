@@ -9,12 +9,6 @@ The modules we'll use:
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands concurrently.
 - [Npx](https://github.com/zkat/npx) NPM package runner - We using it to run scripts against different Node.js Versions and execute local binaries. Shipped with npm@5.2.0.
 
-## Installation
-
-```sh
-npm i -g branch-comparer
-```
-
 ## Simple
 
 ### Run the test in the current branch

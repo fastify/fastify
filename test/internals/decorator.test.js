@@ -8,6 +8,7 @@ test('decorate should add the given method to its instance', t => {
   t.plan(1)
   function build () {
     server.add = decorator.add
+    server._decorations = new Set()
     return server
     function server () {}
   }
@@ -21,6 +22,7 @@ test('decorate is chainable', t => {
   t.plan(3)
   function build () {
     server.add = decorator.add
+    server._decorations = new Set()
     return server
     function server () {}
   }
@@ -47,6 +49,7 @@ test('checkExistence should find the instance if not given', t => {
   function build () {
     server.add = decorator.add
     server.check = decorator.exist
+    server._decorations = new Set()
     return server
     function server () {}
   }

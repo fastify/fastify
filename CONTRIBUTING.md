@@ -13,6 +13,9 @@ There are a few basic ground-rules for contributors:
 1. **External API changes and significant modifications** ought to be subject to an **internal pull-request** to solicit feedback from other contributors.
 1. Internal pull-requests to solicit feedback are *encouraged* for any other non-trivial contribution but left to the discretion of the contributor.
 1. Contributors should attempt to adhere to the prevailing code-style.
+1. At least two contributors, or one core member, must approve pull-requests prior to merging.
+1. All integrated CI services must be green, unless an agreement has been reached in the conversation about the exception, before a pull-request can be merged.
+1. Breaking changes or significant new feaures should be merged by a core member. Small pull-requests, e.g. documentation typo corrections, may be merged by any member with commit access.
 
 ## Releases
 

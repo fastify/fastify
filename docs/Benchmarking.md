@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Benchmarking
-Benchmarking is important if you want to measure how a change impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor.
+Benchmarking is important if you want to measure how a change impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches on different Node.js versions.
 
 The modules we'll use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.
@@ -15,18 +15,27 @@ The modules we'll use:
 npm i -g branch-comparer
 ```
 
-### Simple
+## Simple
+
+### Run the test in the current branch
 ```sh
 npm run benchmark
 ```
 
-### Compare multiple branches
+### Run the test against different Node.js versions
+```sh
+npx -p node@6 -- npm run benchmark
+```
+
+## Advanced
+
+### Run the test in different branches
 ```sh
 branchcmp --rounds 2
 ```
 _Answer the second question with `npm run benchmark`_
 
-### Test against different Node.js versions ✨
+### Run the test in different branches against different Node.js versions ✨
 ```sh
 branchcmp --rounds 2
 ```
@@ -36,6 +45,6 @@ _Answer the second question with `npx -p node@6 -- npm run benchmark`_
 ### Run different examples
 
 ```sh
-branchcmp
+branchcmp --rounds 2
 ```
 _Answer the second question with `node ./node_modules/concurrently -k -s first "node ./examples/asyncawait.js" "node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/"`_ 

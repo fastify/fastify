@@ -395,7 +395,7 @@ function build (options) {
 
       const context = new Context(
         opts.schema,
-        opts.handler,
+        opts.handler.bind(_fastify),
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,

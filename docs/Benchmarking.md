@@ -25,20 +25,18 @@ npx -p node@6 -- npm run benchmark
 
 ### Run the test in different branches
 ```sh
-branchcmp --rounds 2
+branchcmp --rounds 2 --script "npm run benchmark"
 ```
-_Answer the second question with `npm run benchmark`_
 
 ### Run the test in different branches against different Node.js versions ✨
 ```sh
-branchcmp --rounds 2
+branchcmp --rounds 2 --script "npm run benchmark"
 ```
-_Answer the second question with `npx -p node@6 -- npm run benchmark`_
 
 
 ### Run different examples
 
 ```sh
-branchcmp --rounds 2
+branchcmp --rounds 2 -s "node ./node_modules/concurrently -k -s first \"node ./examples/asyncawait.js\" \"node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/\""
 ```
 _Answer the second question with `node ./node_modules/concurrently -k -s first "node ./examples/asyncawait.js" "node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/"`_ 

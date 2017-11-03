@@ -64,7 +64,7 @@
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.1",
     "boom": "^5.1.0",
-    "branch-comparer": "^0.2.0",
+    "branch-comparer": "^0.3.0",
     "concurrently": "^3.5.0",
     "cors": "^2.8.4",
     "coveralls": "^3.0.0",

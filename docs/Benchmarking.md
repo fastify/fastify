@@ -7,6 +7,7 @@ The modules we'll use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.
 - [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout multiple git branches, execute scripts and log the results.
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands concurrently.
+- [Npx](https://github.com/zkat/npx) NPM package runner - We using it to run scripts against different Node.js Versions and execute local binaries. Shipped with npm@5.2.0.
 
 ## Installation
 
@@ -23,11 +24,18 @@ npm run benchmark
 ```sh
 branchcmp --rounds 2
 ```
-_Answer the second question with `npm run benchmark`._ 
+_Answer the second question with `npm run benchmark`_
+
+### Test against different Node.js versions ✨
+```sh
+branchcmp --rounds 2
+```
+_Answer the second question with `npx -p node@6 -- npm run benchmark`_
+
 
 ### Run different examples
 
 ```sh
 branchcmp
 ```
-_Answer the second question with `node ./node_modules/concurrently -k -s first "node ./examples/asyncawait.js" "node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/"`._ 
+_Answer the second question with `node ./node_modules/concurrently -k -s first "node ./examples/asyncawait.js" "node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/"`_ 

@@ -14,7 +14,7 @@
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit --  --cov",
-    "benchmark": "node ./node_modules/concurrently -k -s first \"node ./examples/simple.js\" \"node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/\""
+    "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
   },
   "repository": {
     "type": "git",

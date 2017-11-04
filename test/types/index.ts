@@ -82,7 +82,7 @@ server
       reply.send({ hello: 'route' })
     },
     beforeHandler: (req, reply, done) => {
-      req.log.info(`before handler for "${req.req.url}"`);
+      req.logger.info(`before handler for "${req.req.url}"`);
       done();
     }
   })
@@ -117,7 +117,7 @@ server
     reply.send({ hello: 'world' })
   })
   .patch('/:id', opts, function (req, reply) {
-    req.log.info(`incoming id is ${req.params.id}`);
+    req.logger.info(`incoming id is ${req.params.id}`);
 
     reply.send({ hello: 'world' })
   })

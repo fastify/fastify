@@ -14,6 +14,7 @@
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit --  --cov",
+    "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
   },
   "repository": {
@@ -64,7 +65,7 @@
     "autocannon": "^0.16.5",
     "bluebird": "^3.5.1",
     "boom": "^5.1.0",
-    "branch-comparer": "^0.3.0",
+    "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.0",
     "cors": "^2.8.4",
     "coveralls": "^3.0.0",

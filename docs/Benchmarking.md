@@ -16,7 +16,7 @@ The modules we'll use:
 npm run benchmark
 ```
 
-### Run the test against different Node.js versions
+### Run the test against different Node.js versions ✨
 ```sh
 npx -p node@6 -- npm run benchmark
 ```
@@ -33,6 +33,14 @@ branchcmp --rounds 2 --script "npm run benchmark"
 branchcmp --rounds 2 --script "npm run benchmark"
 ```
 
+### Compare current branch with master (Gitflow)
+```sh
+branchcmp --rounds 2 --gitflow --script "npm run benchmark"
+```
+or
+```sh
+npm run bench
+```
 
 ### Run different examples
 

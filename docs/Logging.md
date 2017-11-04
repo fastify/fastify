@@ -19,7 +19,7 @@ const fastify = require('fastify')({
 })
 
 fastify.get('/', options, function (req, reply) {
-  req.log.info('Some info about the current request')
+  req.logger.info('Some info about the current request')
   reply.send({ hello: 'world' })
 })
 ```
@@ -39,7 +39,7 @@ const fastify = require('fastify')({
 })
 
 fastify.get('/', options, function (req, reply) {
-  req.log.info('Some info about the current request')
+  req.logger.info('Some info about the current request')
   reply.send({ hello: 'world' })
 })
 ```
@@ -68,7 +68,7 @@ const fastify = require('fastify')({ logger: log })
 log.info('does not have request information')
 
 fastify.get('/', function (req, reply) {
-  req.log.info('includes request information, but is the same logger instance as `log`')
+  req.logger.info('includes request information, but is the same logger instance as `logger`')
   reply.send({ hello: 'world' })
 })
 ```

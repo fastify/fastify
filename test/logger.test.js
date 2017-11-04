@@ -22,7 +22,7 @@ test('defaults to info level', t => {
   }
 
   fastify.get('/', function (req, reply) {
-    t.ok(req.log)
+    t.ok(req.logger)
     reply.send({ hello: 'world' })
   })
 
@@ -65,7 +65,7 @@ test('test log stream', t => {
   }
 
   fastify.get('/', function (req, reply) {
-    t.ok(req.log)
+    t.ok(req.logger)
     reply.send({ hello: 'world' })
   })
 
@@ -108,7 +108,7 @@ test('test error log stream', t => {
   }
 
   fastify.get('/error', function (req, reply) {
-    t.ok(req.log)
+    t.ok(req.logger)
     reply.send(new Error('kaboom'))
   })
 
@@ -147,8 +147,8 @@ test('can use external logger instance', t => {
   const localFastify = Fastify({logger: logger})
 
   localFastify.get('/foo', function (req, reply) {
-    t.ok(req.log)
-    req.log.info('log success')
+    t.ok(req.logger)
+    req.logger.info('log success')
     reply.send({ hello: 'world' })
   })
 

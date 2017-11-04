@@ -23,14 +23,14 @@ function schemaCompiler (schema) {
 
 test('Request object', t => {
   t.plan(7)
-  const req = new Request('params', 'req', 'body', 'query', 'headers', 'log')
+  const req = new Request('params', 'req', 'body', 'query', 'headers', 'logger')
   t.type(req, Request)
   t.equal(req.params, 'params')
   t.deepEqual(req.req, 'req')
   t.equal(req.body, 'body')
   t.equal(req.query, 'query')
   t.equal(req.headers, 'headers')
-  t.equal(req.log, 'log')
+  t.equal(req.logger, 'logger')
 })
 
 test('handler function - invalid schema', t => {
@@ -62,7 +62,7 @@ test('handler function - invalid schema', t => {
     onSend: new Hooks().onSend
   }
   buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
+  internals.handler(handle, null, { logger: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
 test('handler function - reply', t => {
@@ -90,7 +90,7 @@ test('handler function - reply', t => {
     onSend: new Hooks().onSend
   }
   buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: null }, res, null, null)
+  internals.handler(handle, null, { logger: null }, res, null, null)
 })
 
 test('jsonBody and jsonBodyParsed should be functions', t => {

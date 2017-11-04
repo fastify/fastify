@@ -13,6 +13,15 @@ environment:
       platform: x64
       msvs_toolset: 12
 
+skip_commits:
+  files:
+    - docs/*
+    - Dockerfile
+    - travis.yml
+    - '**/*.html'
+    - examples/*
+    - '*.md'
+
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js

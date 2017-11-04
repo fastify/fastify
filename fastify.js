@@ -154,9 +154,9 @@ function build (options) {
 
   function fastify (req, res) {
     req.id = genReqId(req)
-    req.log = res.log = logger.child({ reqId: req.id })
+    req.logger = res.logger = logger.child({ reqId: req.id })
 
-    req.log.info({ req }, 'incoming request')
+    req.logger.info({ req }, 'incoming request')
 
     res._startTime = now()
     res._context = null
@@ -566,8 +566,8 @@ function build (options) {
     // we might want to do some hard debugging
     // here, let's print out as much info as
     // we can
-    req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
-    req.log.warn(fourOhFour.prettyPrint())
+    req.logger.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    req.logger.warn(fourOhFour.prettyPrint())
     const reply = new Reply(req, res, { onSend: [] })
     reply.code(404).send(new Error('Not found'))
   }

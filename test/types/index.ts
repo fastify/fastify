@@ -22,7 +22,6 @@ server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
 })
 
-
 /**
  * Test various hooks and different signatures
  */
@@ -192,12 +191,12 @@ server.setErrorHandler((err, reply) => {
 
 server.listen(3000, err => {
   if (err) throw err
-  console.log(`server listening on ${server.server.address().port}`)
+  server.log.info(`server listening on ${server.server.address().port}`)
 })
 
 // http injections
 server.inject({ url: "/test" }, (res: fastify.HTTPInjectResponse) => {
-  console.log(res.payload);
+  server.log.debug(res.payload);
 });
 
 server.inject({ url: "/testAgain" })

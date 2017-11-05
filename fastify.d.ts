@@ -135,6 +135,8 @@ declare namespace fastify {
   interface FastifyInstance {
     server: http.Server
 
+    log: pino.Logger
+
     /**
      * Adds a route to the server
      */

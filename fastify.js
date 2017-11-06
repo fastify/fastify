@@ -28,17 +28,17 @@ function build (options) {
     throw new TypeError('Options must be an object')
   }
 
-  var logger
+  var log
   if (isValidLogger(options.logger)) {
-    logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
+    log = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
   } else if (!options.logger) {
-    logger = Object.create(abstractLogging)
-    logger.child = () => logger
+    log = Object.create(abstractLogging)
+    log.child = () => log
   } else {
     options.logger = typeof options.logger === 'object' ? options.logger : {}
     options.logger.level = options.logger.level || 'info'
     options.logger.serializers = options.logger.serializers || loggerUtils.serializers
-    logger = loggerUtils.createLogger(options.logger)
+    log = loggerUtils.createLogger(options.logger)
   }
 
   const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
@@ -104,7 +104,7 @@ function build (options) {
   fastify._RoutePrefix = new RoutePrefix()
 
   // expose logger instance
-  fastify.logger = logger
+  fastify.log = log
 
   // hooks
   fastify.addHook = addHook
@@ -154,7 +154,7 @@ function build (options) {
 
   function fastify (req, res) {
     req.id = genReqId(req)
-    req.log = res.log = logger.child({ reqId: req.id })
+    req.log = res.log = log.child({ reqId: req.id })
 
     req.log.info({ req }, 'incoming request')
 
@@ -549,7 +549,7 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    logger.error(e, 'client error')
+    log.error(e, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
   }
 

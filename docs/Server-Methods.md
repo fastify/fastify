@@ -86,8 +86,8 @@ Function to add middlewares to Fastify, check [here](https://github.com/fastify/
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
 
-<a name="logger"></a>
-#### logger
+<a name="log"></a>
+#### log
 The logger instance, check [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).
 
 <a name="inject"></a>

@@ -4,12 +4,13 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('..')
-const fastify = require('..')()
 
 const payload = { hello: 'world' }
 
-test('hooks - add preHandler', t => {
-  t.plan(1)
+test('hooks', t => {
+  t.plan(21)
+  const fastify = Fastify()
+
   try {
     fastify.addHook('preHandler', function (request, reply, next) {
       request.test = 'the request is coming'
@@ -24,10 +25,7 @@ test('hooks - add preHandler', t => {
   } catch (e) {
     t.fail()
   }
-})
 
-test('hooks - add onRequest', t => {
-  t.plan(1)
   try {
     fastify.addHook('onRequest', function (req, res, next) {
       req.raw = 'the request is coming'
@@ -42,40 +40,37 @@ test('hooks - add onRequest', t => {
   } catch (e) {
     t.fail()
   }
-})
 
-fastify.addHook('onResponse', function (res, next) {
-  t.ok('onResponse called')
-  next()
-})
+  fastify.addHook('onResponse', function (res, next) {
+    t.ok('onResponse called')
+    next()
+  })
 
-fastify.addHook('onSend', function (req, reply, thePayload, next) {
-  t.ok('onSend called')
-  next()
-})
+  fastify.addHook('onSend', function (req, reply, thePayload, next) {
+    t.ok('onSend called')
+    next()
+  })
 
-fastify.get('/', function (req, reply) {
-  t.is(req.req.raw, 'the request is coming')
-  t.is(reply.res.raw, 'the reply has come')
-  t.is(req.test, 'the request is coming')
-  t.is(reply.test, 'the reply has come')
-  reply.code(200).send(payload)
-})
+  fastify.get('/', function (req, reply) {
+    t.is(req.req.raw, 'the request is coming')
+    t.is(reply.res.raw, 'the reply has come')
+    t.is(req.test, 'the request is coming')
+    t.is(reply.test, 'the reply has come')
+    reply.code(200).send(payload)
+  })
 
-fastify.head('/', function (req, reply) {
-  reply.code(200).send(payload)
-})
+  fastify.head('/', function (req, reply) {
+    reply.code(200).send(payload)
+  })
 
-fastify.delete('/', function (req, reply) {
-  reply.code(200).send(payload)
-})
+  fastify.delete('/', function (req, reply) {
+    reply.code(200).send(payload)
+  })
 
-fastify.listen(0, err => {
-  t.error(err)
-  fastify.server.unref()
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
 
-  test('hooks - success', t => {
-    t.plan(4)
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
@@ -85,10 +80,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
-  })
 
-  test('hooks - throw preHandler', t => {
-    t.plan(2)
     sget({
       method: 'HEAD',
       url: 'http://localhost:' + fastify.server.address().port
@@ -96,10 +88,7 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
     })
-  })
 
-  test('hooks - throw onRequest', t => {
-    t.plan(2)
     sget({
       method: 'DELETE',
       url: 'http://localhost:' + fastify.server.address().port

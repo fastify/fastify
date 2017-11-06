@@ -2,7 +2,6 @@
 
 const sget = require('simple-get').concat
 const Fastify = require('..')
-const fastify = Fastify()
 const sleep = require('then-sleep')
 const split = require('split2')
 const pino = require('pino')
@@ -26,8 +25,9 @@ const opts = {
 function asyncTest (t) {
   const test = t.test
 
-  test('shorthand - async await get', t => {
-    t.plan(1)
+  test('async await', t => {
+    t.plan(11)
+    const fastify = Fastify()
     try {
       fastify.get('/', opts, async function awaitMyFunc (req, reply) {
         await sleep(200)
@@ -37,10 +37,7 @@ function asyncTest (t) {
     } catch (e) {
       t.fail()
     }
-  })
 
-  test('shorthand - async await get', t => {
-    t.plan(1)
     try {
       fastify.get('/no-await', opts, async function (req, reply) {
         return { hello: 'world' }
@@ -49,14 +46,11 @@ function asyncTest (t) {
     } catch (e) {
       t.fail()
     }
-  })
 
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
+    fastify.listen(0, err => {
+      t.error(err)
+      fastify.server.unref()
 
-    test('shorthand - request async await test', t => {
-      t.plan(4)
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port
@@ -66,10 +60,7 @@ function asyncTest (t) {
         t.strictEqual(response.headers['content-length'], '' + body.length)
         t.deepEqual(JSON.parse(body), { hello: 'world' })
       })
-    })
 
-    test('shorthand - request async test', t => {
-      t.plan(4)
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port + '/no-await'

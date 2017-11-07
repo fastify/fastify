@@ -8,7 +8,7 @@ const http = require('http')
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(7)
+  t.plan(8)
   const request = { req: 'req' }
   const response = { res: 'res' }
   function handle () {}
@@ -17,6 +17,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
+  t.is(typeof reply.serialize, 'function')
   t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.context, handle)

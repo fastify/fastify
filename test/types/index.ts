@@ -3,12 +3,33 @@
 
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
-import * as http from 'http';
 import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
 
-const server: fastify.FastifyInstance = fastify({
+{
+  // http
+  const h1Server = fastify();
+  // https
+  const h1SecureServer = fastify({
+    https: {
+      cert: readFileSync('path/to/cert.pem'),
+      key: readFileSync('path/to/key.pem')
+    }
+  });
+  // http2
+  const h2Server = fastify({http2: true});
+  // secure http2
+  const h2SecureServer = fastify({
+    http2: true,
+    https: {
+      cert: readFileSync('path/to/cert.pem'),
+      key: readFileSync('path/to/key.pem')
+    }
+  });
+}
+
+const server = fastify({
   https: {
     cert: readFileSync('path/to/cert.pem'),
     key: readFileSync('path/to/key.pem')
@@ -24,35 +45,21 @@ server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
 })
 
-function isHttp2Request(req: http.IncomingMessage|http2.Http2ServerRequest):
-    req is http2.Http2ServerRequest {
-  return !!(req as http2.Http2ServerRequest).stream;
-}
-
-function isHttp2Response(req: http.ServerResponse|http2.Http2ServerResponse):
-    req is http2.Http2ServerResponse {
-  return !!(req as http2.Http2ServerResponse).stream;
-}
-
 /**
  * Test various hooks and different signatures
  */
-server.addHook('preHandler', (req: fastify.FastifyRequest, reply: fastify.FastifyReply, next) => {
+server.addHook('preHandler', (req, reply, next) => {
   if (req.body.error) {
     next(new Error('testing if middleware errors can be passed'));
   } else {
-    const rawReq = req.req;
-    if (isHttp2Request(rawReq)) console.log('http2 request');
-    else console.log('http1 request');
-
-    const rawRes = reply.res;
-    if (isHttp2Response(rawRes)) console.log('http2 response');
-    else console.log('http1 response');
+    // `stream` can be accessed correctly because `server` is an http2 server.
+    console.log('req stream', req.req.stream);
+    console.log('res stream', reply.res.stream);
     reply.code(200).send('ok');
   }
 })
 
-server.addHook('onRequest', (req: http.IncomingMessage, res: http.OutgoingMessage, next) => {
+server.addHook('onRequest', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 })
@@ -64,11 +71,11 @@ server.addHook('onResponse', (res, next) => {
   }, 100);
 })
 
-server.addHook('onClose', (instance: fastify.FastifyInstance, done) => {
+server.addHook('onClose', (instance, done) => {
   done();
 })
 
-const opts: fastify.RouteShorthandOptions = {
+const opts = {
   schema: {
     response: {
       200: {
@@ -181,7 +188,7 @@ server
 server.decorate('utility', () => {})
 
 // Define a decorated instance
-interface DecoratedInstance extends fastify.FastifyInstance {
+interface DecoratedInstance extends fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> {
   utility: () => void
 }
 
@@ -189,11 +196,11 @@ interface DecoratedInstance extends fastify.FastifyInstance {
 (server as DecoratedInstance).utility();
 
 // Decorating a request or reply works in much the same way as decorate
-interface DecoratedRequest extends fastify.FastifyRequest {
+interface DecoratedRequest extends fastify.FastifyRequest<http2.Http2ServerRequest> {
   utility: () => void
 }
 
-interface DecoratedReply extends fastify.FastifyReply {
+interface DecoratedReply extends fastify.FastifyReply<http2.Http2ServerResponse> {
   utility: () => void
 }
 

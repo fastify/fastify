@@ -3,6 +3,7 @@
 /// <reference types="pino" />
 
 import * as http from 'http';
+import * as http2 from 'http2';
 import * as pino from 'pino';
 
 declare function fastify(opts?: fastify.ServerOptions): fastify.FastifyInstance;
@@ -33,7 +34,7 @@ declare namespace fastify {
 
     body: any,
 
-    req: http.IncomingMessage
+    req: http.IncomingMessage | http2.Http2ServerRequest,
     log: pino.Logger
   }
 
@@ -48,6 +49,7 @@ declare namespace fastify {
     serializer: (fn: Function) => FastifyReply
     send: (payload?: string|Array<any>|Object|Error|Promise<any>|NodeJS.ReadableStream) => FastifyReply
     sent: boolean
+    res: http.ServerResponse | http2.Http2ServerResponse
   }
 
   interface ServerOptions {
@@ -55,7 +57,8 @@ declare namespace fastify {
     https?: {
       key: Buffer,
       cert: Buffer
-    }
+    },
+    http2?: boolean
   }
 
   interface JSONSchema {

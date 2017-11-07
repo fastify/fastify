@@ -9,6 +9,7 @@ Plugins maintainted by the fastify team are listed under [Core](#core) while plu
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
 - [`fastify-bankai`](https://github.com/fastify/fastify-bankai) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.
+- [`fastify-caching`](https://github.com/fastify/fastify-caching) General server-side cache and etag support.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.

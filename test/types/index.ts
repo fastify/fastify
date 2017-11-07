@@ -4,6 +4,7 @@
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
 import * as http from 'http';
+import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
 
@@ -11,7 +12,8 @@ const server: fastify.FastifyInstance = fastify({
   https: {
     cert: readFileSync('path/to/cert.pem'),
     key: readFileSync('path/to/key.pem')
-  }
+  },
+  http2: true,
 })
 
 // Third party middleware
@@ -22,6 +24,16 @@ server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);
 })
 
+function isHttp2Request(req: http.IncomingMessage|http2.Http2ServerRequest):
+    req is http2.Http2ServerRequest {
+  return !!(req as http2.Http2ServerRequest).stream;
+}
+
+function isHttp2Response(req: http.ServerResponse|http2.Http2ServerResponse):
+    req is http2.Http2ServerResponse {
+  return !!(req as http2.Http2ServerResponse).stream;
+}
+
 /**
  * Test various hooks and different signatures
  */
@@ -29,6 +41,13 @@ server.addHook('preHandler', (req: fastify.FastifyRequest, reply: fastify.Fastif
   if (req.body.error) {
     next(new Error('testing if middleware errors can be passed'));
   } else {
+    const rawReq = req.req;
+    if (isHttp2Request(rawReq)) console.log('http2 request');
+    else console.log('http1 request');
+
+    const rawRes = reply.res;
+    if (isHttp2Response(rawRes)) console.log('http2 response');
+    else console.log('http1 response');
     reply.code(200).send('ok');
   }
 })

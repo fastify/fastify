@@ -369,3 +369,20 @@ test('Error.status property support', t => {
     )
   })
 })
+
+test('Support rejection with values that are not Error instances', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const nonErr = {}
+
+  fastify.get('/', () => {
+    return Promise.reject(nonErr)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+  })
+})

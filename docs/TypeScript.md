@@ -12,7 +12,8 @@ import * as fastify from 'fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 
 // Create a http server. We pass the relevant typings for our http version used.
-// By passing these get correctly typed access to the underlying http objects in routes.
+// By passing types we get correctly typed access to the underlying http objects in routes.
+// If using http we'd pass <http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
 const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({})
 
 const opts: fastify.RouteShorthandOptions = {
@@ -44,15 +45,14 @@ TypeScript related changes can be considered to fall into one of two categories:
 
 Make sure to read our `CONTRIBUTING.md` file before getting started to make sure things go smoothly!
 
-## Core Types
+### Core Types
 When updating core types you should make a PR to this repository. Ensure you:
 
 1. Update `examples/typescript-server.ts` to reflect the changes (if necessary)
 2. Update `test/types/index.ts` to validate changes work as expected
 
-## Plugin Types
+### Plugin Types
 
-### Installation
 Typings for plugins are hosted in DefinitelyTyped. This means when using plugins you should install like so:
 
 ```
@@ -61,7 +61,7 @@ npm install fastify-url-data @types/fastify-url-data
 
 After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
 
-### Authouring
+### Authouring Plugin Types
 Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
 
 This code demonstrates adding types for `fastify-url-data` to your application.

@@ -371,18 +371,46 @@ test('Error.status property support', t => {
 })
 
 test('Support rejection with values that are not Error instances', t => {
-  t.plan(1)
-  const fastify = Fastify()
-  const nonErr = {}
+  const objs = [
+    {},
+    null,
+    undefined,
+    123,
+    'abc',
+  ]
+  for (const nonErr of objs) {
+    t.test('Type: ' + typeof nonErr, t => {
+      t.plan(2)
+      const fastify = Fastify()
+  
+      fastify.get('/', () => {
+        return Promise.reject(nonErr)
+      })
 
-  fastify.get('/', () => {
-    return Promise.reject(nonErr)
-  })
+      // TODO(sebdeckers) Find out how to do parallel async tests in tap.
+      // t.test('error handler', t => {
+      //   t.plan(1)
+      //   fastify.setErrorHandler((err, reply) => {
+      //     t.strictEqual(err, nonErr)
+      //   })
+      // })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, res => {
-    t.strictEqual(res.statusCode, 500)
-  })
+      fastify.inject({
+        method: 'GET',
+        url: '/'
+      }, res => {
+        t.strictEqual(res.statusCode, 500)
+        t.deepEqual(
+          JSON.parse(res.payload),
+          {
+            error: statusCodes['500'],
+            // TODO(sebdeckers) What is the expected message for each type?
+            message: '',
+            statusCode: 500
+          }
+        )
+      })
+    })
+  }
+  t.end()
 })

@@ -89,6 +89,7 @@
     "tap": "^10.7.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.5.3",
+    "simple-get": "^2.7.0",
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
@@ -105,8 +106,7 @@
     "light-my-request": "^1.0.0",
     "middie": "^2.1.1",
     "pino": "^4.9.0",
-    "pump": "^1.0.2",
-    "simple-get": "^2.7.0"
+    "pump": "^1.0.2"
   },
   "greenkeeper": {
     "ignore": [

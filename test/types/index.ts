@@ -3,6 +3,7 @@
 
 import * as fastify from '../../fastify'
 import * as cors from 'cors'
+import * as http from 'http';
 import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
@@ -27,6 +28,12 @@ import { createReadStream, readFile } from 'fs'
       key: readFileSync('path/to/key.pem')
     }
   });
+
+  // custom types
+  interface CustomIncomingMessage extends http.IncomingMessage {
+    getDeviceType: () => string;
+  }
+  const customServer: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.ServerResponse> = fastify();
 }
 
 const server = fastify({

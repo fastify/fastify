@@ -28,7 +28,7 @@ function asyncHookTest (t) {
       }
     })
 
-    fastify.addHook('onSend', async function (request, reply, payload, next) {
+    fastify.addHook('onSend', async function (request, reply, ctx, next) {
       await sleep(1)
       t.ok('onSend called')
       next()

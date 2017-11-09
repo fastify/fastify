@@ -8,6 +8,7 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
+const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
@@ -112,4 +113,91 @@ test('jsonBody error handler', t => {
   } catch (e) {
     t.pass('jsonBody error')
   }
+})
+
+test('request should be defined in onSend Hook on post request with content type application/json', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    if (!request) {
+      reply.code(500)
+    }
+    done()
+  })
+  fastify.post('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 422)
+    })
+  })
+})
+
+test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    if (!request) {
+      reply.code(500)
+    }
+    done()
+  })
+  fastify.post('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
+    })
+  })
+})
+
+test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    if (!request) {
+      reply.code(500)
+    }
+    done()
+  })
+  fastify.options('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'OPTIONS',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 415)
+    })
+  })
 })

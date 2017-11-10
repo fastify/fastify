@@ -401,6 +401,7 @@ test('Support rejection with values that are not Error instances', t => {
           JSON.parse(res.payload),
           {
             error: statusCodes['500'],
+            message: '',
             statusCode: 500
           }
         )

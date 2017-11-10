@@ -211,7 +211,7 @@ fastify.get('/plugin2', (req, reply) => {
 })
 ```
 Now for every request you will run your utility, it is obvious that you can register as many hooks as you need.  
-It can happen that you want that a hook must be executed just for a subset of routes, how can you do that?  Yep, encapsulation!
+It can happen that you want a hook that must be executed just for a subset of routes, how can you do that?  Yep, encapsulation!
 
 ```js
 fastify.register((instance, opts, next) => {
@@ -236,7 +236,7 @@ fastify.get('/plugin2', (req, reply) => {
 Now your hook will run just for the first route!
 
 As you probably noticed at this time, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.  
-Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that do exactly what you need, and you don't want to redo al the work.
+Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that do exactly what you need, and you don't want to redo all the work.
 
 <a name="middlewares"></a>
 ## Middlewares
@@ -273,7 +273,7 @@ You can also tell to `fastify-plugin` to check the installed version of Fastify,
 
 <a name="start"></a>
 ## Let's start!
-Awesome, now you know everything you need to know about Fastify and its plugin system to start build your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
+Awesome, now you know everything you need to know about Fastify and its plugin system to start building your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
 If you want to see some real world example, checkout:
 - [`point-of-view`](https://github.com/fastify/point-of-view)

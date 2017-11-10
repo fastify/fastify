@@ -291,7 +291,7 @@ declare namespace fastify {
      * Extends the standard server error. Return an object with the properties you'd
      * like added to the error
      */
-    extendServerError(extendFn: () => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    extendServerError(extendFn: (error: Error) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Determines if the given named decorator is available

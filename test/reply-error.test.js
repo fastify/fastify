@@ -372,6 +372,9 @@ test('Error.status property support', t => {
 
 test('Support rejection with values that are not Error instances', t => {
   const objs = [
+    0,
+    '',
+    [],
     {},
     null,
     undefined,

@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Benchmarking
-Benchmarking is important if you want to measure how a change impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches on different Node.js versions.
+Benchmarking is important if you want to measure how a change can impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches on different Node.js versions.
 
 The modules we'll use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.

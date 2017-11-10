@@ -82,7 +82,7 @@ fastify.addHook('onResponse', async (res) => {
 | reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
 | next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
 
-Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
+It is pretty easy to understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 

@@ -186,7 +186,7 @@ test('use reply.serialize in onSend hook', t => {
   const fastify = require('../..')()
   fastify.addHook('onSend', (request, reply, payload, next) => {
     function _serialize () {
-      const _payload = reply.serialize(reply, payload)
+      const _payload = reply.serialize(payload)
       return zlib.gzipSync(_payload)
     }
     reply.serializer(_serialize)

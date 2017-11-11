@@ -421,3 +421,25 @@ test('hooks check 404', t => {
     })
   })
 })
+
+test('setNotFoundHandler should not suppress duplicated routes checking', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.setNotFoundHandler(function (req, reply) {
+    reply.code(404).send('this was not found')
+  })
+
+  fastify.listen(0, err => {
+    t.ok(err)
+  })
+})

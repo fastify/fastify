@@ -573,8 +573,9 @@ function build (options) {
   }
 
   function setNotFoundHandler (opts, handler) {
-    this.after(() => {
+    this.after((notHandledErr, done) => {
       _setNotFoundHandler.call(this, opts, handler)
+      done(notHandledErr)
     })
   }
 

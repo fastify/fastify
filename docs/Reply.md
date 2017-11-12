@@ -74,23 +74,22 @@ fastify.get('/json', options, function (request, reply) {
 })
 ```
 
-<a name="send-promise"></a>
-#### Promises
-*send* handle natively the *promises* and supports out of the box *async-await*.
+<a name="async-await-promise"></a>
+#### Async-Await and Promises
+Fastify natively handles promies and supports async-await.  
+*Note that in the following examples we are not using reply.send.*
 ```js
 fastify.get('/promises', options, function (request, reply) {
-  const promise = new Promise(...)
-  reply
-    .code(200)
-    .header('Content-Type', 'application/json')
-    .send(promise)
+  const promise = new Promise(function (resolve) {
+    setTimeout(resolve, 200, { hello: 'world' })
+  })
+  return promise
 })
 
 fastify.get('/async-await', options, async function (request, reply) {
   var res = await new Promise(function (resolve) {
     setTimeout(resolve, 200, { hello: 'world' })
   })
-  // note that we are returning the promise without using '.send()'
   return res
 })
 ```

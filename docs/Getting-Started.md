@@ -24,6 +24,23 @@ fastify.listen(3000, function (err) {
 })
 ```
 
+or with Typescript: 
+```ts
+import * as fastify from 'fastify'
+const fastifyServer = fastify()
+
+// Declare a route
+fastifyServer.get('/', function (request, reply) {
+  reply.send({ hello: 'world' })
+})
+
+// Run the server!
+fastifyServer.listen(3000, function (err) {
+  if (err) throw err
+  console.log(`server listening on ${fastify.server.address().port}`)
+})
+```
+
 Do you prefer to use `async/await`? Please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="schema"></a>

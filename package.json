@@ -63,7 +63,6 @@
   },
   "devDependencies": {
     "autocannon": "^0.16.5",
-    "bluebird": "^3.5.1",
     "boom": "^5.1.0",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.0",
@@ -83,13 +82,13 @@
     "pre-commit": "^1.2.2",
     "semver": "^5.4.1",
     "serve-static": "^1.13.1",
+    "simple-get": "^2.7.0",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.2",
     "tap": "^10.7.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.5.3",
-    "simple-get": "^2.7.0",
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {

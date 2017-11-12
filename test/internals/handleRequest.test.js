@@ -120,7 +120,7 @@ test('request should be defined in onSend Hook on post request with content type
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request) {
+    if (!request || !request.req || !request.params || !request.query) {
       reply.code(500)
     }
     done()
@@ -149,7 +149,7 @@ test('request should be defined in onSend Hook on post request with content type
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request) {
+    if (!request || !request.req || !request.params || !request.query) {
       reply.code(500)
     }
     done()
@@ -178,7 +178,7 @@ test('request should be defined in onSend Hook on options request with content t
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request) {
+    if (!request || !request.req || !request.params || !request.query) {
       reply.code(500)
     }
     done()

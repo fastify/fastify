@@ -15,6 +15,7 @@ test('Once called, Reply should return an object with methods', t => {
   function handle () {}
   const reply = new Reply(request, response, handle)
   t.is(typeof reply, 'object')
+  t.is(typeof reply[Reply.isError], 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')

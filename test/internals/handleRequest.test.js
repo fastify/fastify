@@ -116,13 +116,14 @@ test('jsonBody error handler', t => {
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {
-  t.plan(3)
+  t.plan(7)
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request || !request.req || !request.params || !request.query) {
-      reply.code(500)
-    }
+    t.ok(request)
+    t.ok(request.req)
+    t.ok(request.params)
+    t.ok(request.query)
     done()
   })
   fastify.post('/', (request, reply) => {
@@ -139,19 +140,21 @@ test('request should be defined in onSend Hook on post request with content type
       }
     }, (err, response, body) => {
       t.error(err)
+      // a 422 error is expected because of no body
       t.strictEqual(response.statusCode, 422)
     })
   })
 })
 
 test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', t => {
-  t.plan(3)
+  t.plan(7)
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request || !request.req || !request.params || !request.query) {
-      reply.code(500)
-    }
+    t.ok(request)
+    t.ok(request.req)
+    t.ok(request.params)
+    t.ok(request.query)
     done()
   })
   fastify.post('/', (request, reply) => {
@@ -168,19 +171,21 @@ test('request should be defined in onSend Hook on post request with content type
       }
     }, (err, response, body) => {
       t.error(err)
+      // a 415 error is expected because of missing content type parser
       t.strictEqual(response.statusCode, 415)
     })
   })
 })
 
 test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', t => {
-  t.plan(3)
+  t.plan(7)
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
-    if (!request || !request.req || !request.params || !request.query) {
-      reply.code(500)
-    }
+    t.ok(request)
+    t.ok(request.req)
+    t.ok(request.params)
+    t.ok(request.query)
     done()
   })
   fastify.options('/', (request, reply) => {
@@ -197,6 +202,7 @@ test('request should be defined in onSend Hook on options request with content t
       }
     }, (err, response, body) => {
       t.error(err)
+      // a 415 error is expected because of missing content type parser
       t.strictEqual(response.statusCode, 415)
     })
   })

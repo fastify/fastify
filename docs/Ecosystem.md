@@ -41,4 +41,5 @@ Plugins maintainted by the fastify team are listed under [Core](#core) while plu
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
+- [`fastify-vuejs`](https://github.com/lolo32/fastify-vuejs) a Vue.js starting template, from original [Vue.js webpack template](https://github.com/vuejs-templates/webpack), ported to fastify, with all tests activated.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).

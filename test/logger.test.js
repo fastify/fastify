@@ -178,8 +178,8 @@ test('expose the logger', t => {
     t.fail()
   }
 
-  t.ok(fastify.logger)
-  t.is(typeof fastify.logger, 'object')
+  t.ok(fastify.log)
+  t.is(typeof fastify.log, 'object')
 })
 
 test('The logger should accept a custom genReqId function', t => {
@@ -247,24 +247,24 @@ test('logger can be silented', t => {
   const fastify = Fastify({
     logger: false
   })
-  t.ok(fastify.logger)
-  t.is(typeof fastify.logger, 'object')
-  t.is(typeof fastify.logger.fatal, 'function')
-  t.is(typeof fastify.logger.error, 'function')
-  t.is(typeof fastify.logger.warn, 'function')
-  t.is(typeof fastify.logger.info, 'function')
-  t.is(typeof fastify.logger.debug, 'function')
-  t.is(typeof fastify.logger.trace, 'function')
-  t.is(typeof fastify.logger.child, 'function')
+  t.ok(fastify.log)
+  t.is(typeof fastify.log, 'object')
+  t.is(typeof fastify.log.fatal, 'function')
+  t.is(typeof fastify.log.error, 'function')
+  t.is(typeof fastify.log.warn, 'function')
+  t.is(typeof fastify.log.info, 'function')
+  t.is(typeof fastify.log.debug, 'function')
+  t.is(typeof fastify.log.trace, 'function')
+  t.is(typeof fastify.log.child, 'function')
 
-  const childLogger = fastify.logger.child()
+  const childLog = fastify.log.child()
 
-  t.is(typeof childLogger, 'object')
-  t.is(typeof childLogger.fatal, 'function')
-  t.is(typeof childLogger.error, 'function')
-  t.is(typeof childLogger.warn, 'function')
-  t.is(typeof childLogger.info, 'function')
-  t.is(typeof childLogger.debug, 'function')
-  t.is(typeof childLogger.trace, 'function')
-  t.is(typeof childLogger.child, 'function')
+  t.is(typeof childLog, 'object')
+  t.is(typeof childLog.fatal, 'function')
+  t.is(typeof childLog.error, 'function')
+  t.is(typeof childLog.warn, 'function')
+  t.is(typeof childLog.info, 'function')
+  t.is(typeof childLog.debug, 'function')
+  t.is(typeof childLog.trace, 'function')
+  t.is(typeof childLog.child, 'function')
 })

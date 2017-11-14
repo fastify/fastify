@@ -2,10 +2,10 @@
 /**
  * Most type annotations in this file are not strictly necessary but are
  * included for this example.
- * 
+ *
  * To run this example exectute the following commands to install typescript,
  * transpile the code, and start the server:
- * 
+ *
  * npm i -g typescript
  * tsc examples/typescript-server.ts --target es6 --module commonjs
  * node examples/typescript-server.js
@@ -14,10 +14,11 @@
 import * as fastify from '../fastify'
 import * as cors from 'cors'
 import { createReadStream } from 'fs'
+import * as http from 'http'
 
-const server: fastify.FastifyInstance = fastify()
+const server = fastify()
 
-const opts: fastify.RouteShorthandOptions = {
+const opts = {
   schema: {
     response: {
       200: {
@@ -32,7 +33,8 @@ const opts: fastify.RouteShorthandOptions = {
   }
 }
 
-function getHelloHandler (req: fastify.FastifyRequest, reply: fastify.FastifyReply) {
+function getHelloHandler (req: fastify.FastifyRequest<http.IncomingMessage>,
+    reply: fastify.FastifyReply<http.ServerResponse>) {
   reply.header('Content-Type', 'application/json').code(200)
   reply.send({ hello: 'world' })
 }

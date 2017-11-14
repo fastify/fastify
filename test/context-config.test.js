@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const fastify = require('..')()
+const Fastify = require('..')
 
 const schema = {
   schema: { },
@@ -14,22 +14,17 @@ const schema = {
 }
 
 function handler (req, reply) {
-  reply.serializer(JSON.stringify).send(reply.store.config)
+  reply.serializer(JSON.stringify).send(reply.context.config)
 }
 
-test('config - get', t => {
-  t.plan(1)
+test('config', t => {
+  t.plan(10)
+  const fastify = Fastify()
 
   fastify.get('/get', {
     schema: schema.schema,
     config: Object.assign({}, schema.config)
   }, handler)
-
-  t.pass()
-})
-
-test('config - route', t => {
-  t.plan(1)
 
   fastify.route({
     method: 'GET',
@@ -38,11 +33,6 @@ test('config - route', t => {
     handler: handler,
     config: Object.assign({}, schema.config)
   })
-  t.pass()
-})
-
-test('config - no config', t => {
-  t.plan(1)
 
   fastify.route({
     method: 'GET',
@@ -50,15 +40,11 @@ test('config - no config', t => {
     schema: schema.schema,
     handler: handler
   })
-  t.pass()
-})
 
-fastify.listen(0, err => {
-  t.error(err)
-  fastify.server.unref()
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
 
-  test('config - request get', t => {
-    t.plan(3)
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/get',
@@ -68,10 +54,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.deepEquals(body, Object.assign({url: '/get'}, schema.config))
     })
-  })
 
-  test('config - request route', t => {
-    t.plan(3)
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/route',
@@ -81,10 +64,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.deepEquals(body, Object.assign({url: '/route'}, schema.config))
     })
-  })
 
-  test('config - request no-config', t => {
-    t.plan(3)
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/no-config',

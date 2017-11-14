@@ -31,6 +31,48 @@ fastify.addHook('onResponse', (res, next) => {
   next()
 })
 ```
+Or `async/await`
+```js
+fastify.addHook('onRequest', async (req, res) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('preHandler', async (request, reply) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('onSend', async (request, reply, payload) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('onResponse', async (res) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+```
 
 | Parameter   |  Description  |
 |-------------|-------------|
@@ -40,7 +82,7 @@ fastify.addHook('onResponse', (res, next) => {
 | reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
 | next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
 
-Is pretty easy understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
+It is pretty easy to understand where each hook is executed, if you need a visual feedback take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.
 
 If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
@@ -89,7 +131,15 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 <a name="scope"></a>
 ### Scope
-Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
+Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify api.
+
+```js
+fastify.addHook('onRequest', function (req, res, next) {
+  const self = this // Fastify context
+  next()
+})
+```
+Note: using an arrow function will break the binding of this to the Fastify instance.
 
 <a name="before-handler"></a>
 ### beforeHandler

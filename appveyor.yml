@@ -6,12 +6,21 @@ environment:
     - nodejs_version: 6
       platform: x64
       msvs_toolset: 12
-    - nodejs_version: 7
-      platform: x64
-      msvs_toolset: 12
     - nodejs_version: 8
       platform: x64
       msvs_toolset: 12
+    - nodejs_version: 9
+      platform: x64
+      msvs_toolset: 12
+
+skip_commits:
+  files:
+    - docs/*
+    - Dockerfile
+    - travis.yml
+    - '**/*.html'
+    - examples/*
+    - '*.md'
 
 # Install scripts. (runs after repo cloning)
 install:

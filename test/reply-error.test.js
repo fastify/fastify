@@ -343,3 +343,29 @@ test('Error status code below 400 defaults to 500', t => {
     )
   })
 })
+
+test('Error.status property support', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const err = new Error('winter is coming')
+  err.status = 418
+
+  fastify.get('/', () => {
+    return Promise.reject(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(
+      {
+        error: statusCodes['418'],
+        message: err.message,
+        statusCode: 418
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})

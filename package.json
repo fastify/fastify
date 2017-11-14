@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.30.3",
+  "version": "0.33.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "bin": {
@@ -14,7 +14,8 @@
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit --  --cov",
-    "benchmark": "node ./examples/$npm_config_usingfile & pid=$! && autocannon -c 100 -d 5 -p 10 localhost:3000/ && kill -9 $pid"
+    "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
+    "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
   },
   "repository": {
     "type": "git",
@@ -62,22 +63,26 @@
   },
   "devDependencies": {
     "autocannon": "^0.16.5",
-    "bluebird": "^3.5.1",
     "boom": "^5.1.0",
+    "branch-comparer": "^0.4.0",
+    "concurrently": "^3.5.0",
     "cors": "^2.8.4",
     "coveralls": "^3.0.0",
     "dns-prefetch-control": "^0.1.0",
     "fast-json-body": "^1.1.0",
-    "fast-safe-stringify": "^1.2.0",
+    "fast-safe-stringify": "^1.2.1",
     "fastify-plugin": "^0.1.1",
     "frameguard": "^3.0.0",
+    "h2url": "^0.1.0",
     "helmet": "^3.8.2",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.0.0",
     "ienoopen": "^1.0.0",
     "joi": "^11.3.4",
     "pre-commit": "^1.2.2",
+    "semver": "^5.4.1",
     "serve-static": "^1.13.1",
+    "simple-get": "^2.7.0",
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.2",
@@ -92,16 +97,15 @@
     "abstract-logging": "^1.0.0",
     "ajv": "^5.3.0",
     "avvio": "^3.0.0",
-    "fast-json-stringify": "^0.14.0",
+    "fast-json-stringify": "^0.15.1",
     "fastify-cli": "^0.11.0",
     "fastseries": "^1.7.2",
     "find-my-way": "^1.7.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.0.0",
     "middie": "^2.1.1",
-    "pino": "^4.8.1",
-    "pump": "^1.0.2",
-    "simple-get": "^2.7.0"
+    "pino": "^4.9.0",
+    "pump": "^1.0.2"
   },
   "greenkeeper": {
     "ignore": [

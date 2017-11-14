@@ -48,6 +48,9 @@ profile-*
 # webstorm
 .idea
 
+# vscode
+.vscode
+
 # flamegraphs
 profile*
 
@@ -57,4 +60,4 @@ package-lock.json
 
 # generated code
 examples/typescript-server.js
-test/types/index.js 
+test/types/index.js

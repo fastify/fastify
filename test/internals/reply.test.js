@@ -4,11 +4,12 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const http = require('http')
+const zlib = require('zlib')
 
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(7)
+  t.plan(8)
   const request = { req: 'req' }
   const response = { res: 'res' }
   function handle () {}
@@ -17,9 +18,10 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
+  t.is(typeof reply.serialize, 'function')
   t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
-  t.strictEqual(reply.store, handle)
+  t.strictEqual(reply.context, handle)
 })
 
 test('reply.send throw with circular JSON', t => {
@@ -175,5 +177,35 @@ test('within an instance', t => {
     })
 
     t.end()
+  })
+})
+
+test('use reply.serialize in onSend hook', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+  fastify.addHook('onSend', (request, reply, payload, next) => {
+    function _serialize () {
+      const _payload = reply.serialize(payload)
+      return zlib.gzipSync(_payload)
+    }
+    reply.serializer(_serialize)
+    reply.header('Content-Encoding', 'gzip')
+    next()
+  })
+  fastify.get('/', (request, reply) => {
+    reply.send('hello world!')
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(JSON.parse(body), 'hello world!')
+    })
   })
 })

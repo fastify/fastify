@@ -21,6 +21,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
+const pluginUtils = require('./lib/pluginUtils')
 
 function build (options) {
   options = options || {}
@@ -262,7 +263,8 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
-    if (fn[Symbol.for('skip-override')]) {
+    pluginUtils.checkDependencies.call(old, fn)
+    if (pluginUtils.shouldSkipOverride(fn)) {
       return old
     }
 

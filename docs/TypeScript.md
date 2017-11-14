@@ -38,6 +38,31 @@ server.get('/ping', opts, (req, reply) => {
 })
 ```
 
+<a id="http-prototypes"></a>
+## HTTP Prototypes
+By default, fastify will determine which version of http is being used based on the options you pass to it. If for any
+reason you need to override this you can do so as shown below:
+
+```ts
+interface CustomIncomingMessage extends http.IncomingMessage {
+  getClientDeviceType: () => string
+}
+
+// Passing overrides for the http prototypes to fastify
+const server: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.ServerResponse> = fastify()
+
+server.get('/ping', (req, reply) => {
+  // Access our custom method on the http prototype
+  const clientDeviceType = req.req.getClientDeviceType()
+
+  reply.send({ clientDeviceType: `you called this endpoint from a ${clientDeviceType}` })
+})
+```
+
+In this example we pass a modified `http.IncomingMessage` interface since it has been extended elsewhere in our
+application.
+
+
 <a id="contributing"></a>
 ## Contributing
 TypeScript related changes can be considered to fall into one of two categories:

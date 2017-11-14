@@ -9,7 +9,7 @@ const zlib = require('zlib')
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(8)
+  t.plan(9)
   const request = { req: 'req' }
   const response = { res: 'res' }
   function handle () {}

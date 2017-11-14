@@ -384,12 +384,18 @@ test('Support rejection with values that are not Error instances', t => {
     new Date(),
     new Uint8Array()
   ]
+  t.plan(objs.length)
   for (const nonErr of objs) {
     t.test('Type: ' + typeof nonErr, t => {
       const fastify = Fastify()
 
       fastify.get('/', () => {
         return Promise.reject(nonErr)
+      })
+
+      fastify.setErrorHandler((err, reply) => {
+        t.strictEqual(err, nonErr)
+        t.end()
       })
 
       fastify.inject({
@@ -406,12 +412,6 @@ test('Support rejection with values that are not Error instances', t => {
           }
         )
       })
-
-      fastify.setErrorHandler((err, reply) => {
-        t.strictEqual(err, nonErr)
-        t.end()
-      })
     })
   }
-  t.end()
 })

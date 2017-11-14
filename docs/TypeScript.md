@@ -1,11 +1,12 @@
 <h1 align="center">Fastify</h1>
 
+<a id="typescript"></a>
 ## TypeScript
-Fastify is shipped with the a typings file so it should "just work" when your used in a TypeScript application.
+Fastify is shipped with the a typings file so it should "just work" when used in a TypeScript application.
 
-If you're using plugins be sure to read the sections below.
+Plugins may or may not include typings. See [Plugin Types](#plugin-types) for more information.
 
-Here's a TypeScript example app. It closely aligns with the JavaScript examples:
+This example TypeScript app closely aligns with the JavaScript examples:
 
 ```ts
 import * as fastify from 'fastify'
@@ -37,6 +38,7 @@ server.get('/ping', opts, (req, reply) => {
 })
 ```
 
+<a id="contributing"></a>
 ## Contributing
 TypeScript related changes can be considered to fall into one of two categories:
 
@@ -45,12 +47,14 @@ TypeScript related changes can be considered to fall into one of two categories:
 
 Make sure to read our `CONTRIBUTING.md` file before getting started to make sure things go smoothly!
 
+<a id="core-types"></a>
 ### Core Types
 When updating core types you should make a PR to this repository. Ensure you:
 
 1. Update `examples/typescript-server.ts` to reflect the changes (if necessary)
 2. Update `test/types/index.ts` to validate changes work as expected
 
+<a id="plugin-types"></a>
 ### Plugin Types
 
 Typings for plugins are hosted in DefinitelyTyped. This means when using plugins you should install like so:
@@ -61,6 +65,7 @@ npm install fastify-url-data @types/fastify-url-data
 
 After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
 
+<a id="authoring-plugin-types"></a>
 ### Authouring Plugin Types
 Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
 

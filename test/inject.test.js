@@ -32,7 +32,7 @@ test('should wait for the ready event', t => {
   }, res => {
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -51,7 +51,7 @@ test('inject get request', t => {
   }, res => {
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -70,7 +70,7 @@ test('inject get request - code check', t => {
   }, res => {
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 201)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -88,7 +88,7 @@ test('inject get request - headers check', t => {
   }, res => {
     t.strictEqual('', res.payload)
     t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.strictEqual(res.headers['content-length'], 0)
+    t.strictEqual(res.headers['content-length'], '0')
   })
 })
 
@@ -106,7 +106,7 @@ test('inject get request - querystring', t => {
   }, res => {
     t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -124,7 +124,7 @@ test('inject get request - params', t => {
   }, res => {
     t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -142,7 +142,7 @@ test('inject get request - wildcard', t => {
   }, res => {
     t.deepEqual({ '*': 'wildcard' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 16)
+    t.strictEqual(res.headers['content-length'], '16')
   })
 })
 
@@ -161,7 +161,7 @@ test('inject get request - headers', t => {
   }, res => {
     t.strictEqual('world', JSON.parse(res.payload).hello)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 69)
+    t.strictEqual(res.headers['content-length'], '69')
   })
 })
 
@@ -181,7 +181,7 @@ test('inject post request', t => {
   }, res => {
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
@@ -201,7 +201,7 @@ test('inject post request - send stream', t => {
   }, res => {
     t.deepEqual('{"hello":"world"}', res.payload)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 

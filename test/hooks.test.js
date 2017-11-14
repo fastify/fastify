@@ -455,7 +455,7 @@ test('verify payload', t => {
   }, res => {
     t.deepEqual(modifiedPayload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 20)
+    t.strictEqual(res.headers['content-length'], '20')
   })
 })
 

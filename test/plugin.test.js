@@ -395,3 +395,32 @@ test('nested plugins', t => {
     })
   })
 })
+
+test('plugin metadata', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.decorate('plugin1', true)
+  fastify.decorateReply('plugin1', true)
+  fastify.decorateRequest('plugin1', true)
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    dependencies: {
+      fastify: ['plugin1'],
+      reply: ['plugin1'],
+      request: ['plugin1']
+    }
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.ok(fastify.plugin)
+  })
+
+  function plugin (instance, opts, next) {
+    instance.decorate('plugin', true)
+    next()
+  }
+})

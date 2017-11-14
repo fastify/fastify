@@ -124,14 +124,14 @@ async function routes (fastify, options) {
   })
 
   fastify.get('/search/:id', async (request, reply) => {
-    return await collection.findOne({ id: req.params.id })
+    return await collection.findOne({ id: request.params.id })
   })
 }
 
 module.exports = routes
 ```
 
-Wow, that was fast!
+Wow, that was fast!  
 Let's recap what we have done here since we've introduced some new concepts.  
 As you can see, we used `register` both for the database connector and the routes registration.
 This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way we can register the database connector in the first plugin and use it in the second.
@@ -139,7 +139,7 @@ This is one of the best features of Fastify, it will load your plugins in the sa
 We have used the `decorate` api API. Let's take a moment to understand what it is and how it works. A scenario is to use the same code/library in different parts of an application. A solution is to require the code/library that it is needed. it This works, but is annoying because of duplicated code repeated and, if needed, long refactors.  
 To solve this Fastify offers the `decorate` API, which adds custom objects to the Fastify namespace, so that they can be used everywhere.
 
-To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
+To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
 
 <a name="validate-data"></a>
 ### Validate your data

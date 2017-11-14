@@ -11,6 +11,7 @@ Fastify has been built since the beginning to be an extremely modular system, we
 - [Hooks](#hooks)
 - [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
+- [Handle errors](#handle-errors)
 - [Let's start!](#start)
 
 <a name="register"></a>

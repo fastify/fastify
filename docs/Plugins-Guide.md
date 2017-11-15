@@ -11,6 +11,7 @@ Fastify has been built since the beginning to be an extremely modular system, we
 - [Hooks](#hooks)
 - [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
+- [Handle errors](#handle-errors)
 - [Let's start!](#start)
 
 <a name="register"></a>
@@ -20,8 +21,7 @@ Your routes, your utilities and so on are all plugins. And to add a new plugin, 
 ```js
 fastify.register(
   require('./my-plugin'),
-  { options },
-  callback
+  { options }
 )
 ```
 `register` creates for you a new Fastify context, this means that if you do any change to the Fastify instance, that change(s) will not be reflected into the context's ancestors. In other words, encapsulation!
@@ -270,6 +270,26 @@ function dbPlugin (fastify, opts, next) {
 module.exports = fp(dbPlugin)
 ```
 You can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
+
+<a name="handle-errors"></a>
+## Handle errors
+It can happen that one of your plugins could fail during the startup. Maybe you expect it and you have a custom logic that will be triggered in that case. How can you do this?
+The `after` api is what you need. `after` simply register a callback that will be executed just after a register, and it can take up to three parameters.  
+The callback changes basing on the parameters your are giving:
+
+1. If no parameter is given to the callback and there is an error, that error will be passed to the next error handler.
+1. If one parameter is given to the callback, that parameter will be the error object.
+1. If two parameters are given to the callback, the first will be the error object, the second will be the done callback.
+1. If three parameters are given to the callback, the first will be the error object, the second will be the top level context unless you have specified both server and override, in that case the context will be what the override returns, and the third the done callback.
+
+Let's see how use it:
+```js
+fastify
+  .register(require('./database-connector'))
+  .after(err => {
+    if (err) throw err
+  })
+```
 
 <a name="start"></a>
 ## Let's start!

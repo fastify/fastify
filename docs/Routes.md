@@ -1,6 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Routes
+You have two ways to declare a route with Fastify, the shorthand method and the full declaration. Let's start with the second one:
 <a name="full-declaration"></a>
 ### Full declaration
 ```js
@@ -29,7 +30,6 @@ They need to be in
 
   `reply` is defined in [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md).
 
-The routing is handled by [find-my-way](https://github.com/delvedor/find-my-way), so you can refer its documentation for the url building.
 
 Example:
 ```js
@@ -56,30 +56,15 @@ fastify.route({
 })
 ```
 
-```js
-fastify.route({
-  method: 'GET',
-  url: '/',
-  schema: { ... },
-  beforeHandler: function (request, reply, done) {
-    // your authentication logic
-    done()
-  },
-  handler: function (request, reply) {
-    reply.send({ hello: 'world' })
-  }
-})
-```
-
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
-`fastify.get(path, [options], handler)`
-`fastify.head(path, [options], handler)`
-`fastify.post(path, [options], handler)`
-`fastify.put(path, [options], handler)`
-`fastify.delete(path, [options], handler)`
-`fastify.options(path, [options], handler)`
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
+`fastify.get(path, [options], handler)`  
+`fastify.head(path, [options], handler)`  
+`fastify.post(path, [options], handler)`  
+`fastify.put(path, [options], handler)`  
+`fastify.delete(path, [options], handler)`  
+`fastify.options(path, [options], handler)`  
 `fastify.patch(path, [options], handler)`
 
 Example:
@@ -102,6 +87,42 @@ fastify.get('/', opts, (req, reply) => {
 ```
 
 `fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
+
+<a name="url-building"></a>
+### Url building
+Fastify supports both static and dynamic urls.  
+To register a **parametric** path, use the *colon* before the parameter name. For **wildcard** use the *star*.
+*Remember that static routes are always checked before parametric and wildcard.*
+
+```js
+// parametric
+fastify.get('/example/:userId', (req, reply) => {}))
+fastify.get('/example/:userId/:secretToken', (req, reply) => {}))
+
+// wildcard
+fastify.get('/example/*', (req, reply) => {}))
+```
+
+Regular expression routes are supported as well, but pay attention, RegExp are very expensive in term of performance!
+```js
+// parametric with regexp
+fastify.get('/example/:file(^\\d+).png', (req, reply) => {}))
+```
+
+It's possible to define more than one parameter within the same couple of slash ("/"). Such as:
+```js
+fastify.get('/example/near/:lat-:lng/radius/:r', (req, reply) => {}))
+```
+*Remember in this case to use the dash ("-") as parameters separator.*
+
+Finally it's possible to have multiple parameters with RegExp.
+```js
+fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (req, reply) => {}))
+```
+In this case as parameter separator it's possible to use whatever character is not matched by the regular expression.
+
+Having a route with multiple parameters may affect negatively the performance, so prefer single parameter approach whenever possible, especially on routes which are on the hot path of your application.
+If you are interested in how we handle the routing, checkout [find-my-way](https://github.com/delvedor/find-my-way).
 
 <a name="async-await"></a>
 ### Async Await

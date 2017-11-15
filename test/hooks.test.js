@@ -46,7 +46,7 @@ test('hooks', t => {
     next()
   })
 
-  fastify.addHook('onSend', function (req, reply, thePayload, next) {
+  fastify.addHook('onSend', function (req, reply, ctx, next) {
     t.ok('onSend called')
     next()
   })
@@ -373,7 +373,7 @@ test('onSend hook should support encapsulation / 2', t => {
   const fastify = Fastify()
   fastify.decorate('hello', 'world')
 
-  fastify.addHook('onSend', function (request, reply, thePayload, next) {
+  fastify.addHook('onSend', function (request, reply, ctx, next) {
     t.ok(this.hello)
     t.ok('onSend called')
     next()
@@ -385,7 +385,7 @@ test('onSend hook should support encapsulation / 2', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorate('hello2', 'world')
-    instance.addHook('onSend', function (request, reply, thePayload, next) {
+    instance.addHook('onSend', function (request, reply, ctx, next) {
       t.ok(this.hello)
       t.ok(this.hello2)
       t.ok('onSend called')
@@ -425,23 +425,23 @@ test('onSend hook should support encapsulation / 2', t => {
   })
 })
 
-test('verify payload', t => {
+test('modify payload', t => {
   t.plan(7)
   const fastify = Fastify()
   const payload = { hello: 'world' }
-  const modifiedPayload = { hello: 'modified' }
+  const modifiedPayload = { winter: 'is coming' }
 
-  fastify.addHook('onSend', function (request, reply, thePayload, next) {
+  fastify.addHook('onSend', function (request, reply, ctx, next) {
     t.ok('onSend called')
-    t.deepEqual(thePayload, payload)
+    t.deepEqual(ctx.payload, payload)
     // onSend allows only to modify Object keys and not the full object's reference
-    thePayload.hello = 'modified'
+    ctx.payload = modifiedPayload
     next()
   })
 
-  fastify.addHook('onSend', function (request, reply, thePayload, next) {
+  fastify.addHook('onSend', function (request, reply, ctx, next) {
     t.ok('onSend called')
-    t.deepEqual(thePayload, modifiedPayload)
+    t.deepEqual(ctx.payload, modifiedPayload)
     next()
   })
 
@@ -455,7 +455,7 @@ test('verify payload', t => {
   }, res => {
     t.deepEqual(modifiedPayload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 20)
+    t.strictEqual(res.headers['content-length'], 22)
   })
 })
 

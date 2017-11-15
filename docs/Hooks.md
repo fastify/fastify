@@ -21,7 +21,7 @@ fastify.addHook('preHandler', (request, reply, next) => {
   next()
 })
 
-fastify.addHook('onSend', (request, reply, payload, next) => {
+fastify.addHook('onSend', (request, reply, ctx, next) => {
   // some code
   next()
 })
@@ -53,7 +53,7 @@ fastify.addHook('preHandler', async (request, reply) => {
   return
 })
 
-fastify.addHook('onSend', async (request, reply, payload) => {
+fastify.addHook('onSend', async (request, reply, ctx) => {
   // some code
   await asyncMethod()
   // error occurred
@@ -104,17 +104,16 @@ fastify.addHook('preHandler', (request, reply, next) => {
 
 Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
-If you are using the `onSend` hook you can update the payload, but not overwrite it, for example:
+If you are using the `onSend` hook you can update or overwrite the payload:
+The next hook in the order of execution will get the updated/overwritten payload.
 ```js
-// this is valid
-fastify.addHook('onSend', (request, reply, payload, next) => {
-  payload.hello = 'world'
+fastify.addHook('onSend', (request, reply, ctx, next) => {
+  ctx.payload = { winter: 'is coming' }
   next()
 })
 
-// this is not valid
-fastify.addHook('onSend', (request, reply, payload, next) => {
-  payload = { hello: 'world' }
+fastify.addHook('onSend', (request, reply, ctx, next) => {
+  ctx.payload.winter = 'has come'
   next()
 })
 ```

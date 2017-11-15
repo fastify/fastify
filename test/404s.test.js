@@ -381,7 +381,7 @@ test('hooks check 404', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, ctx, next) => {
     t.deepEqual(req.query, { foo: 'asd' })
     t.ok('called', 'onSend')
     next()

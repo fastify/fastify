@@ -8,6 +8,7 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
+const runHooks = require('fast-iterator')
 const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
@@ -47,7 +48,7 @@ test('handler function - invalid schema', t => {
   res.getHeader = (key) => {
     return
   }
-  const handle = {
+  const context = {
     schema: {
       body: {
         type: 'object',
@@ -59,11 +60,11 @@ test('handler function - invalid schema', t => {
     handler: () => {},
     Reply: Reply,
     Request: Request,
-    preHandler: new Hooks().preHandler,
-    onSend: new Hooks().onSend
+    preHandler: runHooks(new Hooks().preHandler, {}),
+    onSend: runHooks(new Hooks().onSend, {})
   }
-  buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
+  buildSchema(context, schemaCompiler)
+  internals.handler(context, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
 })
 
 test('handler function - reply', t => {
@@ -79,7 +80,7 @@ test('handler function - reply', t => {
   res.setHeader = (key, value) => {
     return
   }
-  const handle = {
+  const context = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
       reply.code(204)
@@ -87,11 +88,11 @@ test('handler function - reply', t => {
     },
     Reply: Reply,
     Request: Request,
-    preHandler: new Hooks().preHandler,
-    onSend: new Hooks().onSend
+    preHandler: runHooks(new Hooks().preHandler, {}),
+    onSend: runHooks(new Hooks().onSend, {})
   }
-  buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: null }, res, null, null)
+  buildSchema(context, schemaCompiler)
+  internals.handler(context, null, { log: null }, res, null, null)
 })
 
 test('jsonBody and jsonBodyParsed should be functions', t => {

@@ -28,10 +28,9 @@ function asyncHookTest (t) {
       }
     })
 
-    fastify.addHook('onSend', async function (request, reply, payload, next) {
+    fastify.addHook('onSend', async function (request, reply, payload) {
       await sleep(1)
       t.ok('onSend called')
-      next()
     })
 
     fastify.addHook('onResponse', async function (res) {
@@ -84,6 +83,46 @@ function asyncHookTest (t) {
         t.error(err)
         t.strictEqual(response.statusCode, 500)
       })
+    })
+  })
+
+  test('modify payload', t => {
+    t.plan(9)
+    const fastify = Fastify()
+    const payload = { hello: 'world' }
+    const modifiedPayload = { hello: 'modified' }
+    const anotherPayload = { winter: 'is coming' }
+
+    fastify.addHook('onSend', async function (request, reply, thePayload) {
+      t.ok('onSend called')
+      t.deepEqual(thePayload, payload)
+      // onSend allows only to modify Object keys and not the full object's reference
+      thePayload.hello = 'modified'
+      return thePayload
+    })
+
+    fastify.addHook('onSend', async function (request, reply, thePayload) {
+      t.ok('onSend called')
+      t.deepEqual(thePayload, modifiedPayload)
+      return anotherPayload
+    })
+
+    fastify.addHook('onSend', async function (request, reply, thePayload) {
+      t.ok('onSend called')
+      t.deepEqual(thePayload, anotherPayload)
+    })
+
+    fastify.get('/', (req, reply) => {
+      reply.send(payload)
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.deepEqual(anotherPayload, JSON.parse(res.payload))
+      t.strictEqual(res.statusCode, 200)
+      t.strictEqual(res.headers['content-length'], '22')
     })
   })
 }

@@ -395,10 +395,6 @@ function build (options) {
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
-        null,
-        null,
-        null,
-        null,
         config,
         opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
@@ -453,16 +449,16 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
-    this.onRequest = onRequest
-    this.onSend = onSend
-    this.preHandler = preHandler
-    this.onResponse = onResponse
+    this.onRequest = null
+    this.onSend = null
+    this.preHandler = null
+    this.onResponse = null
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
@@ -599,10 +595,6 @@ function build (options) {
         this._Reply,
         this._Request,
         opts.contentTypeParser || this._contentTypeParser,
-        null,
-        null,
-        null,
-        null,
         opts.config || {},
         this._errorHandler,
         this._middie

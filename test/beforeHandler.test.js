@@ -152,7 +152,8 @@ test('beforeHandler should handle errors with custom status code in shorthand fo
 
   fastify.post('/', {
     beforeHandler: (req, reply, done) => {
-      done(new Error('go away'), 401)
+      reply.code(401)
+      done(new Error('go away'))
     }
   }, (req, reply) => {
     reply.send(req.body)

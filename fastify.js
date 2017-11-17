@@ -6,7 +6,7 @@ const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const runHooks = require('fastseries')()
+const runHooks = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -50,7 +50,6 @@ function build (options) {
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
-  const OnResponseState = loggerUtils.OnResponseState
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
 
@@ -172,20 +171,17 @@ function build (options) {
 
     var ctx = this._context
 
-    if (ctx !== null && ctx.onResponse.length > 0) {
+    if (ctx.onResponse !== null) {
       // deferring this with setImmediate will
       // slow us by 10%
-      runHooks(new OnResponseState(err, this),
+      ctx.onResponse(
         onResponseIterator,
-        ctx.onResponse,
-        wrapOnResponseCallback)
+        this,
+        onResponseCallback
+      )
     } else {
       onResponseCallback(err, this)
     }
-  }
-
-  function wrapOnResponseCallback (err) {
-    onResponseCallback(this.err || err, this.res)
   }
 
   function listen (port, address, cb) {
@@ -220,31 +216,15 @@ function build (options) {
 
   function startHooks (req, res, params, context) {
     res._context = context
-    runHooks(
-      new State(req, res, params, context),
-      hookIterator,
-      context.onRequest,
-      middlewareCallback
-    )
-  }
-
-  function middlewareCallback (err) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, this.context)
-      reply.send(err)
-      return
+    if (context.onRequest !== null) {
+      context.onRequest(
+        hookIterator,
+        new State(req, res, params, context),
+        middlewareCallback
+      )
+    } else {
+      middlewareCallback(null, new State(req, res, params, context))
     }
-    this.context._middie.run(this.req, this.res, this)
-  }
-
-  function onRunMiddlewares (err, req, res, ctx) {
-    if (err) {
-      const reply = new Reply(req, res, ctx.context)
-      reply.send(err)
-      return
-    }
-
-    handleRequest(req, res, ctx.params, ctx.context)
   }
 
   function State (req, res, params, context) {
@@ -254,11 +234,27 @@ function build (options) {
     this.context = context
   }
 
-  function hookIterator (fn, cb) {
-    var ret = fn(this.req, this.res, cb)
-    if (ret && typeof ret.then === 'function') {
-      ret.then(cb).catch(cb)
+  function hookIterator (fn, state, next) {
+    return fn(state.req, state.res, next)
+  }
+
+  function middlewareCallback (err, state) {
+    if (err) {
+      const reply = new Reply(state.res, state.context, null)
+      reply.send(err)
+      return
     }
+    state.context._middie.run(state.req, state.res, state)
+  }
+
+  function onRunMiddlewares (err, req, res, state) {
+    if (err) {
+      const reply = new Reply(res, state.context, null)
+      reply.send(err)
+      return
+    }
+
+    handleRequest(req, res, state.params, state.context)
   }
 
   function override (old, fn, opts) {
@@ -399,10 +395,6 @@ function build (options) {
         opts.Reply || _fastify._Reply,
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
-        opts.onRequest || _fastify._hooks.onRequest,
-        [],
-        opts.onResponse || _fastify._hooks.onResponse,
-        opts.onSend || _fastify._hooks.onSend,
         config,
         opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
@@ -410,11 +402,20 @@ function build (options) {
 
       buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
 
-      context.preHandler.push.apply(context.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
+      const onRequest = opts.onRequest || _fastify._hooks.onRequest
+      const onResponse = opts.onResponse || _fastify._hooks.onResponse
+      const onSend = opts.onSend || _fastify._hooks.onSend
+      const preHandler = []
+      preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
       if (opts.beforeHandler) {
         opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        context.preHandler.push.apply(context.preHandler, opts.beforeHandler)
+        preHandler.push.apply(preHandler, opts.beforeHandler)
       }
+
+      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
+      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
+      context.onSend = onSend.length ? runHooks(onSend, context) : null
+      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -448,16 +449,16 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, onSend, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
-    this.onRequest = onRequest
-    this.onSend = onSend
-    this.preHandler = preHandler
-    this.onResponse = onResponse
+    this.onRequest = null
+    this.onSend = null
+    this.preHandler = null
+    this.onResponse = null
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
@@ -568,7 +569,7 @@ function build (options) {
     // we can
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
-    const reply = new Reply(req, res, { onSend: [] })
+    const reply = new Reply(res, { onSend: runHooks([], null) }, null)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -594,14 +595,18 @@ function build (options) {
         this._Reply,
         this._Request,
         opts.contentTypeParser || this._contentTypeParser,
-        this._hooks.onRequest,
-        [],
-        this._hooks.onResponse,
-        this._hooks.onSend,
         opts.config || {},
         this._errorHandler,
         this._middie
       )
+
+      const onRequest = this._hooks.onRequest
+      const onResponse = this._hooks.onResponse
+      const onSend = this._hooks.onSend
+
+      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
+      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
+      context.onSend = onSend.length ? runHooks(onSend, context) : null
 
       this._404Context = context
 

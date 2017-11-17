@@ -10,19 +10,19 @@ const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(9)
-  const request = { req: 'req' }
   const response = { res: 'res' }
-  function handle () {}
-  const reply = new Reply(request, response, handle)
+  function context () {}
+  function request () {}
+  const reply = new Reply(response, context, request)
   t.is(typeof reply, 'object')
   t.is(typeof reply[Reply.isError], 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
-  t.strictEqual(reply._req, request)
   t.strictEqual(reply.res, response)
-  t.strictEqual(reply.context, handle)
+  t.strictEqual(reply.context, context)
+  t.strictEqual(reply.request, request)
 })
 
 test('reply.send throw with circular JSON', t => {

@@ -48,6 +48,9 @@ profile-*
 # webstorm
 .idea
 
+# vscode
+.vscode
+
 # flamegraphs
 profile*
 

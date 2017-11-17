@@ -31,12 +31,13 @@
   "author": "Matteo Collina <hello@matteocollina.com>",
   "contributors": [
     {
-      "name": "Tommaso Allevi",
-      "email": "tomallevi@gmail.com"
+      "name": "Tomas Della Vedova",
+      "url": "http://delved.org",
+      "author": true
     },
     {
-      "name": "Tomas Della Vedova",
-      "url": "http://delved.org"
+      "name": "Tommaso Allevi",
+      "email": "tomallevi@gmail.com"
     },
     {
       "name": "Dustin Deus",

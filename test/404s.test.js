@@ -443,3 +443,47 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
     t.ok(err)
   })
 })
+
+test('log debug for 404', t => {
+  t.plan(1)
+
+  const Writable = require('stream').Writable
+  class LogWritable extends Writable {
+    constructor (options) {
+      super(options)
+      this.logs = []
+    }
+    _write (chunk, encoding, callback) {
+      this.logs.push(chunk.toString())
+      callback()
+    }
+  }
+  const logStream = new LogWritable()
+
+  const fastify = Fastify({
+    logger: {
+      level: 'trace',
+      stream: logStream
+    }
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  t.test('log debug', t => {
+    t.plan(4)
+    fastify.inject({
+      method: 'GET',
+      url: '/not-found'
+    }, (response) => {
+      t.strictEqual(response.statusCode, 404)
+
+      t.strictEqual(JSON.parse(logStream.logs[0]).msg, 'incoming request')
+      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'request completed')
+      t.strictEqual(logStream.logs.length, 2)
+    })
+  })
+})

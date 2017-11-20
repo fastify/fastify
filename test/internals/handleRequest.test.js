@@ -48,7 +48,7 @@ test('handler function - invalid schema', t => {
   res.getHeader = (key) => {
     return
   }
-  res.log = { error: () => {} }
+  res.log = { error: () => {}, info: () => {} }
   const context = {
     schema: {
       body: {

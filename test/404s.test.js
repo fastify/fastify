@@ -448,17 +448,13 @@ test('log debug for 404', t => {
   t.plan(1)
 
   const Writable = require('stream').Writable
-  class LogWritable extends Writable {
-    constructor (options) {
-      super(options)
-      this.logs = []
-    }
-    _write (chunk, encoding, callback) {
-      this.logs.push(chunk.toString())
-      callback()
-    }
+
+  const logStream = new Writable()
+  logStream.logs = []
+  logStream._write = function (chunk, encoding, callback) {
+    this.logs.push(chunk.toString())
+    callback()
   }
-  const logStream = new LogWritable()
 
   const fastify = Fastify({
     logger: {
@@ -474,16 +470,19 @@ test('log debug for 404', t => {
   t.tearDown(fastify.close.bind(fastify))
 
   t.test('log debug', t => {
-    t.plan(4)
+    t.plan(6)
     fastify.inject({
       method: 'GET',
       url: '/not-found'
     }, (response) => {
       t.strictEqual(response.statusCode, 404)
 
+      const INFO_LEVEL = 30
       t.strictEqual(JSON.parse(logStream.logs[0]).msg, 'incoming request')
-      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'request completed')
-      t.strictEqual(logStream.logs.length, 2)
+      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not found')
+      t.strictEqual(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
+      t.strictEqual(JSON.parse(logStream.logs[2]).msg, 'request completed')
+      t.strictEqual(logStream.logs.length, 3)
     })
   })
 })

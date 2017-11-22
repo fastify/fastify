@@ -44,3 +44,5 @@ Plugins maintainted by the fastify team are listed under [Core](#core) while plu
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
+- [`fastify-swagger-ui`](https://github.com/chapuletta/fastify-swagger-ui) Swagger UI plugin for Fastify documentation. Built upon [fastify-swagger](https://github.com/fastify/fastify-swagger).
+- [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify plugin for support KnexJS Query Builder.

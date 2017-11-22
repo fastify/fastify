@@ -15,7 +15,7 @@ const opts = {
   }
 }
 
-fastify.register(function (instance, options, next) {
+fastify.register((instance, options, next) => {
   // the route will be '/english/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'hello' })
@@ -23,7 +23,7 @@ fastify.register(function (instance, options, next) {
   next()
 }, { prefix: '/english' })
 
-fastify.register(function (instance, options, next) {
+fastify.register((instance, options, next) => {
   // the route will be '/italian/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'ciao' })
@@ -31,9 +31,7 @@ fastify.register(function (instance, options, next) {
   next()
 }, { prefix: '/italian' })
 
-fastify.listen(8000, function (err) {
-  if (err) {
-    throw err
-  }
+fastify.listen(8000, err => {
+  if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })

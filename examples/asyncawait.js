@@ -17,16 +17,14 @@ const schema = {
   }
 }
 
-function result () {
-  return Promise.resolve({ hello: 'world' })
-}
+const result = async () => ({ hello: 'world' })
 
 fastify
-  .get('/await', schema, async function (req, reply) {
+  .get('/await', schema, async (req, reply) => {
     reply.header('Content-Type', 'application/json').code(200)
     return result()
   })
-  .get('/', schema, async function (req, reply) {
+  .get('/', schema, async (req, reply) => {
     reply.header('Content-Type', 'application/json').code(200)
     return { hello: 'world' }
   })

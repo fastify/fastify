@@ -14,13 +14,11 @@ const opts = {
     }
   }
 }
-fastify.register(require('./plugin'), opts, function (err) {
+fastify.register(require('./plugin'), opts, err => {
   if (err) throw err
 })
 
-fastify.listen(3000, function (err) {
-  if (err) {
-    throw err
-  }
+fastify.listen(3000, err => {
+  if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })

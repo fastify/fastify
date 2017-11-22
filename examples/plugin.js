@@ -1,11 +1,11 @@
 'use strict'
 
-module.exports = function (fastify, opts, next) {
+module.exports = (fastify, opts, next) => {
   fastify
-    .get('/', opts, function (req, reply) {
+    .get('/', opts, (req, reply) => {
       reply.send({ hello: 'world' })
     })
-    .post('/', opts, function (req, reply) {
+    .post('/', opts, (req, reply) => {
       reply.send({ hello: 'world' })
     })
   next()

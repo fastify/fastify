@@ -62,6 +62,29 @@ const headersSchema = {
   }
 }
 
+const bodySchema = {
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
+        }
+      }
+    },
+    response: {
+      '2xx': {
+        type: 'object',
+        properties: {
+          hello: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
+}
+
 test('shorthand - delete', t => {
   t.plan(1)
   try {
@@ -115,6 +138,18 @@ test('missing schema - delete', t => {
   try {
     fastify.delete('/missing', function (req, reply) {
       reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('body - delete', t => {
+  t.plan(1)
+  try {
+    fastify.delete('/body', bodySchema, function (req, reply) {
+      reply.send(req.body)
     })
     t.pass()
   } catch (e) {
@@ -260,6 +295,22 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('shorthand - delete with body', t => {
+    t.plan(3)
+    sget({
+      method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port + '/body',
+      body: {
+        hello: 'world'
+      },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body, { hello: 'world' })
     })
   })
 })

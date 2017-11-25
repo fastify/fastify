@@ -123,6 +123,7 @@ function build (options) {
   fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
+  fastify[pluginUtils.registeredPlugins] = []
 
   // extend server methods
   fastify.decorate = decorator.add
@@ -263,7 +264,9 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
+    pluginUtils.registerPlugin.call(old, fn)
     pluginUtils.checkDependencies.call(old, fn)
+    pluginUtils.checkDecorators.call(old, fn)
     if (pluginUtils.shouldSkipOverride(fn)) {
       return old
     }
@@ -277,6 +280,7 @@ function build (options) {
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
+    instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
       instance._404Context = null

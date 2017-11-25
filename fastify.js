@@ -264,10 +264,8 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
-    pluginUtils.registerPlugin.call(old, fn)
-    pluginUtils.checkDependencies.call(old, fn)
-    pluginUtils.checkDecorators.call(old, fn)
-    if (pluginUtils.shouldSkipOverride(fn)) {
+    const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+    if (shouldSkipOverride) {
       return old
     }
 

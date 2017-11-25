@@ -33,24 +33,29 @@
   "contributors": [
     {
       "name": "Tomas Della Vedova",
-      "url": "http://delved.org"
+      "url": "http://delved.org",
+      "author": true
     },
     {
       "name": "Tommaso Allevi",
       "email": "tomallevi@gmail.com"
     },
     {
-      "name": "James Sumners",
-      "url": "https://james.sumners.info"
+      "name": "Dustin Deus",
+      "url": "http://starptech.de",
+      "email": "deusdustin@gmail.com"
+    },
+    {
+      "name": "Luciano Mammino",
+      "url": "https://loige.co"
     },
     {
       "name": "Evan Shortiss",
       "email": "evanshortiss@gmail.com"
     },
     {
-      "name": "Dustin Deus",
-      "url": "http://starptech.de",
-      "email": "deusdustin@gmail.com"
+      "name": "James Sumners",
+      "url": "https://james.sumners.info"
     }
   ],
   "license": "MIT",

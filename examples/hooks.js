@@ -18,30 +18,28 @@ const opts = {
 }
 
 fastify
-  .addHook('onRequest', function (req, res, next) {
+  .addHook('onRequest', (req, res, next) => {
     console.log('onRequest')
     next()
   })
-  .addHook('preHandler', function (request, reply, next) {
+  .addHook('preHandler', (request, reply, next) => {
     console.log('preHandler')
     next()
   })
-  .addHook('onSend', function (request, reply, payload, next) {
+  .addHook('onSend', (request, reply, payload, next) => {
     console.log('onSend')
     next()
   })
-  .addHook('onResponse', function (res, next) {
+  .addHook('onResponse', (res, next) => {
     console.log('onResponse')
     next()
   })
 
-fastify.get('/', opts, function (req, reply) {
+fastify.get('/', opts, (req, reply) => {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(3000, function (err) {
-  if (err) {
-    throw err
-  }
+fastify.listen(3000, err => {
+  if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })

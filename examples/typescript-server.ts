@@ -33,13 +33,13 @@ const opts = {
   }
 }
 
-function getHelloHandler (req: fastify.FastifyRequest<http.IncomingMessage>,
-    reply: fastify.FastifyReply<http.ServerResponse>) {
+const getHelloHandler = (req: fastify.FastifyRequest<http.IncomingMessage>,
+    reply: fastify.FastifyReply<http.ServerResponse>) => {
   reply.header('Content-Type', 'application/json').code(200)
   reply.send({ hello: 'world' })
 }
 
-function getStreamHandler (req, reply) {
+const getStreamHandler = (req, reply) => {
   const stream = createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')
   reply.code(200).send(stream)
 }

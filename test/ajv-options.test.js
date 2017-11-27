@@ -32,6 +32,20 @@ const schemaWithDefaults = {
   }
 }
 
+const schemaWithCustomFormat = {
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string',
+          format: 'upper-case'
+        }
+      }
+    }
+  }
+}
+
 test('ajv - removeAdditional', t => {
   t.plan(5)
   const fastify = Fastify({
@@ -85,6 +99,35 @@ test('ajv - useDefaults', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
+      t.pass()
+    })
+  })
+})
+
+test('ajv - custom format', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ajv: (Ajv, defaultOptions) => {
+      return new Ajv(defaultOptions)
+        .addFormat('upper-case', value => value.toUpperCase() === value)
+    }
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    fastify.post('/', schemaWithCustomFormat, function (req, reply) {
+      reply.code(200).send({})
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: { a: 'lower-case' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
       t.pass()
     })
   })

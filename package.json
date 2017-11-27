@@ -91,7 +91,7 @@
     "snazzy": "^7.0.0",
     "split2": "^2.2.0",
     "standard": "^10.0.3",
-    "tap": "^10.7.3",
+    "tap": "^11.0.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.6.1",
     "x-xss-protection": "^1.0.0"

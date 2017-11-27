@@ -182,7 +182,6 @@ module.exports = { start, fastify }
 // test.js
 const t = require('tap')
 const test = t.test
-const request = require('request')
 const fastify = require('./server').fastify
 
 test('GET `/` route', t => {

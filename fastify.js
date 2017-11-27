@@ -21,6 +21,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
+const defaultAjvOptions = { coerceTypes: true }
 
 function build (options) {
   options = options || {}
@@ -41,7 +42,9 @@ function build (options) {
     log = loggerUtils.createLogger(options.logger)
   }
 
-  const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
+  const ajv = typeof options.ajv === 'function'
+    ? options.ajv(Ajv, Object.assign({}, defaultAjvOptions))
+    : new Ajv(Object.assign({}, defaultAjvOptions, options.ajv))
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()

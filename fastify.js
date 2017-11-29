@@ -22,6 +22,73 @@ const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
 
+const ffs = require('fast-fast-series')
+const urlUtil = require('url')
+
+const validation = require('./lib/validation')
+const validateSchema = validation.validate
+
+function onRequestHandling (obj, callback) {
+  this.onRequest(obj.req, obj.res, function (err) {
+    callback(err, obj)
+  })
+}
+
+function parsingGet (obj, callback) {
+  var req = obj.req
+  obj.request = new this.Request(
+    req.params,
+    req,
+    null,
+    urlUtil.parse(req.url, true).query,
+    req.headers,
+    req.log
+  )
+  callback(null, obj)
+}
+
+function validate (obj, callback) {
+  var valid = validateSchema(this.compiledSchema, obj.request)
+  if (valid !== true) {
+    throw new Error('GGG')
+  }
+  obj.reply = new this.Reply(
+    obj.res,
+    this.compiledSchema,
+    obj.request
+  )
+  callback(null, obj)
+}
+
+function handleUserHandler (obj, callback) {
+  var reply = obj.reply
+  var result = this.userHandler(obj.request, reply)
+  if (result && typeof result.then === 'function') {
+    result.then((payload) => {
+      // this is for async functions that
+      // are using reply.send directly
+      if (payload !== undefined || reply.res.statusCode === 204) {
+        reply.send(payload)
+      }
+    }).catch((err) => {
+      reply['isError'] = true
+      reply.send(err)
+    })
+  }
+}
+
+function startSeries (req, res, params, context) {
+  req.params = params
+  const requestContext = {
+    req: req,
+    res: res,
+    reply: null,
+    request: null
+  }
+  res._requestContext = requestContext
+  context.steps(requestContext)
+}
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
@@ -50,7 +117,6 @@ function build (options) {
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
-  const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
 
   const app = avvio(fastify, {})
@@ -159,29 +225,19 @@ function build (options) {
 
     res._startTime = now()
     res._context = null
-    res.on('finish', onResFinished)
     res.on('error', onResFinished)
 
     router.lookup(req, res)
   }
 
   function onResFinished (err) {
-    this.removeListener('finish', onResFinished)
-    this.removeListener('error', onResFinished)
+    if (!this._requestContext) return
+    _onResFinished(this._requestContext, err)
+  }
 
-    var ctx = this._context
-
-    if (ctx && ctx.onResponse !== null) {
-      // deferring this with setImmediate will
-      // slow us by 10%
-      ctx.onResponse(
-        onResponseIterator,
-        this,
-        onResponseCallback
-      )
-    } else {
-      onResponseCallback(err, this)
-    }
+  function _onResFinished (requestContext, err) {
+    requestContext.res.removeListener('error', onResFinished)
+    onResponseCallback(err, requestContext.res)
   }
 
   function listen (port, address, cb) {
@@ -389,33 +445,36 @@ function build (options) {
       const config = opts.config || {}
       config.url = url
 
+      const compiledSchema = { schema: opts.schema }
+      buildSchema(compiledSchema, opts.schemaCompiler || _fastify._schemaCompiler)
+
+      const contentTypeParser = opts.contentTypeParser || _fastify._contentTypeParser
+      const errorHandler = opts.errorHander || _fastify._errorHandler
       const context = new Context(
-        opts.schema,
-        opts.handler.bind(_fastify),
-        opts.Reply || _fastify._Reply,
-        opts.Request || _fastify._Request,
-        opts.contentTypeParser || _fastify._contentTypeParser,
         config,
-        opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 
-      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
-
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
-      const onResponse = opts.onResponse || _fastify._hooks.onResponse
-      const onSend = opts.onSend || _fastify._hooks.onSend
-      const preHandler = []
-      preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
-      if (opts.beforeHandler) {
-        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        preHandler.push.apply(preHandler, opts.beforeHandler)
-      }
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
-      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
+      const functions = []
+      for (let i = 0; i < onRequest.length; i++) {
+        functions.push(onRequestHandling.bind({ onRequest: onRequest[i], contentTypeParser: contentTypeParser }))
+      }
+      if (opts.method === 'GET' || opts.method === 'HEAD') {
+        functions.push(parsingGet.bind({ Request: opts.Request || _fastify._Request }))
+      } else {
+        throw new Error('Implement me!')
+      }
+      functions.push(validate.bind({ Reply: opts.Reply || _fastify._Reply, compiledSchema: compiledSchema }))
+      // TODO: prehandler
+      // TODO: beforeHandler
+      functions.push(handleUserHandler.bind({ userHandler: opts.handler.bind(_fastify) }))
+      // TODO: onSend
+      functions.push(_onResFinished)
+
+      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : null)
+      context.steps = steps
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -424,23 +483,23 @@ function build (options) {
 
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = context
+            map.get(url)[opts.method[i]] = steps
           }
         } else {
-          map.get(url)[opts.method] = context
+          map.get(url)[opts.method] = steps
         }
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, startSeries, context)
       } else {
         const node = {}
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = context
+            node[opts.method[i]] = steps
           }
         } else {
-          node[opts.method] = context
+          node[opts.method] = steps
         }
         map.set(url, node)
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, startSeries, context)
       }
       done(notHandledErr)
     })
@@ -449,18 +508,8 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
-    this.schema = schema
-    this.handler = handler
-    this.Reply = Reply
-    this.Request = Request
-    this.contentTypeParser = contentTypeParser
-    this.onRequest = null
-    this.onSend = null
-    this.preHandler = null
-    this.onResponse = null
+  function Context (config, middie) {
     this.config = config
-    this.errorHandler = errorHandler
     this._middie = middie
   }
 

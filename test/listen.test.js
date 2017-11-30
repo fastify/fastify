@@ -105,6 +105,48 @@ if (os.platform() !== 'win32') {
 test('listen without callback', t => {
   const fastify = Fastify()
   fastify.listen(0)
-  fastify.server.on('listening', function () { this.close() })
-  t.end()
+    .then(() => {
+      fastify.close()
+      t.end()
+    })
+})
+
+test('double listen without callback rejects', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(0)
+    .then(() => {
+      fastify.listen(0)
+        .then(() => {
+          t.error(new Error('second call to fastify.listen resolved'))
+          fastify.close()
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('listen twice on the same port without callback rejects', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.listen(0)
+    .then(() => {
+      const s2 = Fastify()
+      s2.listen(fastify.server.address().port)
+        .then(() => {
+          t.error(new Error('listen on port already in use resolved'))
+          fastify.close()
+          s2.close()
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+          s2.close()
+        })
+    })
+    .catch(err => t.error(err))
 })

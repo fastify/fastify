@@ -189,15 +189,12 @@ test('within an instance', t => {
     })
 
     test('redirect to `/` - 5', t => {
-      t.plan(4)
-      sget({
-        method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/redirect-onsend'
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+      t.plan(3)
+      const url = 'http://localhost:' + fastify.server.address().port + '/redirect-onsend'
+      http.get(url, (response) => {
+        t.strictEqual(response.headers['x-onsend'], 'yes')
+        t.strictEqual(response.headers['content-length'], '0')
+        t.strictEqual(response.headers['location'], '/')
       })
     })
 

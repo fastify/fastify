@@ -171,7 +171,7 @@ function build (options) {
 
     var ctx = this._context
 
-    if (ctx.onResponse !== null) {
+    if (ctx && ctx.onResponse !== null) {
       // deferring this with setImmediate will
       // slow us by 10%
       ctx.onResponse(

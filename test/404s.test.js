@@ -486,3 +486,34 @@ test('log debug for 404', t => {
     })
   })
 })
+
+test('Unsupported method', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'PROPFIND',
+      url: '/'
+    }, res => {
+      t.strictEqual(res.statusCode, 404)
+
+      sget({
+        method: 'PROPFIND',
+        url: 'http://localhost:' + fastify.server.address().port
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+      })
+    })
+  })
+})

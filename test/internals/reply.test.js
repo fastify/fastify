@@ -82,6 +82,17 @@ test('within an instance', t => {
     reply.send({hello: 'world!'})
   })
 
+  fastify.register(function (instance, options, next) {
+    fastify.addHook('onSend', function (req, reply, payload, next) {
+      reply.header('x-onsend', 'yes')
+      next()
+    })
+    fastify.get('/redirect-onsend', function (req, reply) {
+      reply.redirect('/')
+    })
+    next()
+  })
+
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
@@ -174,6 +185,16 @@ test('within an instance', t => {
         t.strictEqual(response.statusCode, 200)
         t.strictEqual(response.headers['content-type'], 'text/plain')
         t.deepEqual(body.toString(), 'hello world!')
+      })
+    })
+
+    test('redirect to `/` - 5', t => {
+      t.plan(3)
+      const url = 'http://localhost:' + fastify.server.address().port + '/redirect-onsend'
+      http.get(url, (response) => {
+        t.strictEqual(response.headers['x-onsend'], 'yes')
+        t.strictEqual(response.headers['content-length'], '0')
+        t.strictEqual(response.headers['location'], '/')
       })
     })
 

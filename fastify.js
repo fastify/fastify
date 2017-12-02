@@ -49,14 +49,18 @@ function parsingGet (obj, callback) {
 
 function validate (obj, callback) {
   var valid = validateSchema(this.compiledSchema, obj.request)
-  if (valid !== true) {
-    throw new Error('GGG')
-  }
+
   obj.reply = new this.Reply(
     obj.res,
     this.compiledSchema,
     obj.request
   )
+
+  if (valid !== true) {
+    obj.reply.code(400)
+    callback(valid, obj)
+    return
+  }
   callback(null, obj)
 }
 
@@ -74,6 +78,14 @@ function handleUserHandler (obj, callback) {
       reply['isError'] = true
       reply.send(err)
     })
+  }
+}
+
+function defaultErrorHandler (err, requestContext) {
+  if (err instanceof Error) {
+    requestContext.reply.sendError(err)
+  } else {
+    requestContext.reply.sendError(new Error(err || ''))
   }
 }
 
@@ -473,7 +485,7 @@ function build (options) {
       // TODO: onSend
       functions.push(_onResFinished)
 
-      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : null)
+      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : defaultErrorHandler.bind(context))
       context.steps = steps
 
       if (map.has(url)) {

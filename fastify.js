@@ -28,15 +28,15 @@ const urlUtil = require('url')
 const validation = require('./lib/validation')
 const validateSchema = validation.validate
 
-function onRequestHandling (obj, callback) {
-  this.onRequest(obj.req, obj.res, function (err) {
-    callback(err, obj)
+function onRequestHandling (requestContext, callback) {
+  this.onRequest(requestContext.req, requestContext.res, function (err) {
+    callback(err, requestContext)
   })
 }
 
-function parsingGet (obj, callback) {
-  var req = obj.req
-  obj.request = new this.Request(
+function parsingGet (requestContext, callback) {
+  var req = requestContext.req
+  requestContext.request = new this.Request(
     req.params,
     req,
     null,
@@ -44,29 +44,115 @@ function parsingGet (obj, callback) {
     req.headers,
     req.log
   )
-  callback(null, obj)
+  callback(null, requestContext)
 }
 
-function validate (obj, callback) {
-  var valid = validateSchema(this.compiledSchema, obj.request)
+const APPLICATION_JSON_CONTENT_TYPE = 'application/json'
+function parsingPost (requestContext, callback) {
+  var req = requestContext.req
+  var contentType = req.headers['content-type']
+  if (contentType && (contentType === APPLICATION_JSON_CONTENT_TYPE || contentType.indexOf(APPLICATION_JSON_CONTENT_TYPE) > -1)) {
+    jsonBody(requestContext, this.Request, callback)
+    return
+  }
 
-  obj.reply = new this.Reply(
-    obj.res,
+  // custom parser for a given content type
+  if (this.contentTypeParser.fastHasHeader(contentType)) {
+    this.contentTypeParser.run(contentType, requestContext, callback)
+    return
+  }
+
+  requestContext.res.statusCode = 415
+  callback(new Error(), requestContext)
+}
+
+function parsingDelete (requestContext, callback) {
+  var req = requestContext.req
+  var contentType = req.headers['content-type']
+  if (contentType) {
+    // application/json content type
+    if (contentType === APPLICATION_JSON_CONTENT_TYPE || contentType.indexOf(APPLICATION_JSON_CONTENT_TYPE) > -1) {
+      jsonBody(requestContext, this.Request, callback)
+      return
+      // custom parser for a given content type
+    } else if (this.contentTypeParser.fastHasHeader(contentType)) {
+      this.contentTypeParser.run(contentType, requestContext, callback)
+      return
+    }
+
+    requestContext.res.statusCode = 415
+    callback(new Error(), requestContext)
+    return
+  }
+  requestContext.request = new this.Request(
+    req.params,
+    req,
+    null,
+    urlUtil.parse(req.url, true).query,
+    req.headers,
+    req.log
+  )
+  callback(null, requestContext)
+}
+
+function jsonBody (requestContext, Request, callback) {
+  var body = ''
+  requestContext.req.on('error', onError)
+    .on('data', onData)
+    .on('end', onEnd)
+  function onError (err) {
+    requestContext.res.statusCode = 422
+    parse(requestContext, err, null, callback)
+  }
+  function onData (chunk) {
+    body += chunk
+  }
+  function onEnd () {
+    parse(requestContext, null, body, callback)
+  }
+  function parse (requestContext, err, body, callback) {
+    if (err) {
+      callback(err, requestContext)
+      return
+    }
+    try {
+      var req = requestContext.req
+      requestContext.request = new Request(
+        req.params,
+        req,
+        JSON.parse(body),
+        urlUtil.parse(req.url, true).query,
+        req.headers,
+        req.log
+      )
+      callback(null, requestContext)
+    } catch (e) {
+      requestContext.res.statusCode = 422
+      callback(e, requestContext)
+    }
+  }
+}
+
+function validate (requestContext, callback) {
+  var valid = validateSchema(this.compiledSchema, requestContext.request)
+
+  requestContext.reply = new this.Reply(
+    requestContext.res,
     this.compiledSchema,
-    obj.request
+    requestContext.request
   )
 
   if (valid !== true) {
-    obj.reply.code(400)
-    callback(valid, obj)
+    requestContext.reply.code(400)
+    callback(valid, requestContext)
     return
   }
-  callback(null, obj)
+  callback(null, requestContext)
 }
 
-function handleUserHandler (obj, callback) {
-  var reply = obj.reply
-  var result = this.userHandler(obj.request, reply)
+function handleUserHandler (requestContext, callback) {
+  var reply = requestContext.reply
+  var result = this.userHandler(requestContext.request, reply)
   if (result && typeof result.then === 'function') {
     result.then((payload) => {
       // this is for async functions that
@@ -82,6 +168,13 @@ function handleUserHandler (obj, callback) {
 }
 
 function defaultErrorHandler (err, requestContext) {
+  if (!requestContext.reply) {
+    requestContext.reply = new this.Reply(
+      requestContext.res,
+      this.compiledSchema,
+      requestContext.request
+    )
+  }
   if (err instanceof Error) {
     requestContext.reply.sendError(err)
   } else {
@@ -471,12 +564,14 @@ function build (options) {
 
       const functions = []
       for (let i = 0; i < onRequest.length; i++) {
-        functions.push(onRequestHandling.bind({ onRequest: onRequest[i], contentTypeParser: contentTypeParser }))
+        functions.push(onRequestHandling.bind({ onRequest: onRequest[i] }))
       }
       if (opts.method === 'GET' || opts.method === 'HEAD') {
         functions.push(parsingGet.bind({ Request: opts.Request || _fastify._Request }))
-      } else {
-        throw new Error('Implement me!')
+      } else if (opts.method === 'POST' || opts.method === 'PUT' || opts.method === 'PATCH') {
+        functions.push(parsingPost.bind({ Request: opts.Request || _fastify._Request, contentTypeParser: contentTypeParser }))
+      } else if (opts.method === 'OPTIONS' || opts.method === 'DELETE') {
+        functions.push(parsingDelete.bind({ Request: opts.Request || _fastify._Request, contentTypeParser: contentTypeParser }))
       }
       functions.push(validate.bind({ Reply: opts.Reply || _fastify._Reply, compiledSchema: compiledSchema }))
       // TODO: prehandler
@@ -485,7 +580,7 @@ function build (options) {
       // TODO: onSend
       functions.push(_onResFinished)
 
-      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : defaultErrorHandler.bind(context))
+      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : defaultErrorHandler.bind({ compiledSchema: compiledSchema, Reply: Reply }))
       context.steps = steps
 
       if (map.has(url)) {

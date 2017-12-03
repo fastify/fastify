@@ -13,7 +13,7 @@ The modules you'll need:
 ```js
 // server.js
 const minimist = require('minimist')
-const fastify = require('fastify')()
+const Fastify = require('fastify')
 
 const options = {
   schema: {
@@ -29,6 +29,8 @@ const options = {
 }
 
 function start (opts, callback) {
+  const fastify = Fastify()
+
   fastify.get('/', options, function (request, reply) {
     reply.send({ hello: 'world' })
   })

@@ -22,6 +22,178 @@ const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
 
+const ffs = require('fast-fast-series')
+const urlUtil = require('url')
+
+const validation = require('./lib/validation')
+const validateSchema = validation.validate
+
+function onRequestHandling (requestContext, callback) {
+  this.onRequest(requestContext.req, requestContext.res, function (err) {
+    callback(err, requestContext)
+  })
+}
+
+function parsingGet (requestContext, callback) {
+  var req = requestContext.req
+  requestContext.request = new this.Request(
+    req.params,
+    req,
+    null,
+    urlUtil.parse(req.url, true).query,
+    req.headers,
+    req.log
+  )
+  callback(null, requestContext)
+}
+
+const APPLICATION_JSON_CONTENT_TYPE = 'application/json'
+function parsingPost (requestContext, callback) {
+  var req = requestContext.req
+  var contentType = req.headers['content-type']
+  if (contentType && (contentType === APPLICATION_JSON_CONTENT_TYPE || contentType.indexOf(APPLICATION_JSON_CONTENT_TYPE) > -1)) {
+    jsonBody(requestContext, this.Request, callback)
+    return
+  }
+
+  // custom parser for a given content type
+  if (this.contentTypeParser.fastHasHeader(contentType)) {
+    this.contentTypeParser.run(contentType, requestContext, callback)
+    return
+  }
+
+  requestContext.res.statusCode = 415
+  callback(new Error(), requestContext)
+}
+
+function parsingDelete (requestContext, callback) {
+  var req = requestContext.req
+  var contentType = req.headers['content-type']
+  if (contentType) {
+    // application/json content type
+    if (contentType === APPLICATION_JSON_CONTENT_TYPE || contentType.indexOf(APPLICATION_JSON_CONTENT_TYPE) > -1) {
+      jsonBody(requestContext, this.Request, callback)
+      return
+      // custom parser for a given content type
+    } else if (this.contentTypeParser.fastHasHeader(contentType)) {
+      this.contentTypeParser.run(contentType, requestContext, callback)
+      return
+    }
+
+    requestContext.res.statusCode = 415
+    callback(new Error(), requestContext)
+    return
+  }
+  requestContext.request = new this.Request(
+    req.params,
+    req,
+    null,
+    urlUtil.parse(req.url, true).query,
+    req.headers,
+    req.log
+  )
+  callback(null, requestContext)
+}
+
+function jsonBody (requestContext, Request, callback) {
+  var body = ''
+  requestContext.req.on('error', onError)
+    .on('data', onData)
+    .on('end', onEnd)
+  function onError (err) {
+    requestContext.res.statusCode = 422
+    parse(requestContext, err, null, callback)
+  }
+  function onData (chunk) {
+    body += chunk
+  }
+  function onEnd () {
+    parse(requestContext, null, body, callback)
+  }
+  function parse (requestContext, err, body, callback) {
+    if (err) {
+      callback(err, requestContext)
+      return
+    }
+    try {
+      var req = requestContext.req
+      requestContext.request = new Request(
+        req.params,
+        req,
+        JSON.parse(body),
+        urlUtil.parse(req.url, true).query,
+        req.headers,
+        req.log
+      )
+      callback(null, requestContext)
+    } catch (e) {
+      requestContext.res.statusCode = 422
+      callback(e, requestContext)
+    }
+  }
+}
+
+function validate (requestContext, callback) {
+  var valid = validateSchema(this.compiledSchema, requestContext.request)
+
+  requestContext.reply = new this.Reply(
+    requestContext.res,
+    this.compiledSchema,
+    requestContext.request
+  )
+
+  if (valid !== true) {
+    requestContext.reply.code(400)
+    callback(valid, requestContext)
+    return
+  }
+  callback(null, requestContext)
+}
+
+function handleUserHandler (requestContext, callback) {
+  var reply = requestContext.reply
+  var result = this.userHandler(requestContext.request, reply)
+  if (result && typeof result.then === 'function') {
+    result.then((payload) => {
+      // this is for async functions that
+      // are using reply.send directly
+      if (payload !== undefined || reply.res.statusCode === 204) {
+        reply.send(payload)
+      }
+    }).catch((err) => {
+      reply['isError'] = true
+      reply.send(err)
+    })
+  }
+}
+
+function defaultErrorHandler (err, requestContext) {
+  if (!requestContext.reply) {
+    requestContext.reply = new this.Reply(
+      requestContext.res,
+      this.compiledSchema,
+      requestContext.request
+    )
+  }
+  if (err instanceof Error) {
+    requestContext.reply.sendError(err)
+  } else {
+    requestContext.reply.sendError(new Error(err || ''))
+  }
+}
+
+function startSeries (req, res, params, context) {
+  req.params = params
+  const requestContext = {
+    req: req,
+    res: res,
+    reply: null,
+    request: null
+  }
+  res._requestContext = requestContext
+  context.steps(requestContext)
+}
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
@@ -50,7 +222,6 @@ function build (options) {
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
-  const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
 
   const app = avvio(fastify, {})
@@ -159,29 +330,19 @@ function build (options) {
 
     res._startTime = now()
     res._context = null
-    res.on('finish', onResFinished)
     res.on('error', onResFinished)
 
     router.lookup(req, res)
   }
 
   function onResFinished (err) {
-    this.removeListener('finish', onResFinished)
-    this.removeListener('error', onResFinished)
+    if (!this._requestContext) return
+    _onResFinished(this._requestContext, err)
+  }
 
-    var ctx = this._context
-
-    if (ctx && ctx.onResponse !== null) {
-      // deferring this with setImmediate will
-      // slow us by 10%
-      ctx.onResponse(
-        onResponseIterator,
-        this,
-        onResponseCallback
-      )
-    } else {
-      onResponseCallback(err, this)
-    }
+  function _onResFinished (requestContext, err) {
+    requestContext.res.removeListener('error', onResFinished)
+    onResponseCallback(err, requestContext.res)
   }
 
   function listen (port, address, cb) {
@@ -389,33 +550,38 @@ function build (options) {
       const config = opts.config || {}
       config.url = url
 
+      const compiledSchema = { schema: opts.schema }
+      buildSchema(compiledSchema, opts.schemaCompiler || _fastify._schemaCompiler)
+
+      const contentTypeParser = opts.contentTypeParser || _fastify._contentTypeParser
+      const errorHandler = opts.errorHander || _fastify._errorHandler
       const context = new Context(
-        opts.schema,
-        opts.handler.bind(_fastify),
-        opts.Reply || _fastify._Reply,
-        opts.Request || _fastify._Request,
-        opts.contentTypeParser || _fastify._contentTypeParser,
         config,
-        opts.errorHander || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 
-      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
-
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
-      const onResponse = opts.onResponse || _fastify._hooks.onResponse
-      const onSend = opts.onSend || _fastify._hooks.onSend
-      const preHandler = []
-      preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
-      if (opts.beforeHandler) {
-        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        preHandler.push.apply(preHandler, opts.beforeHandler)
-      }
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
-      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
+      const functions = []
+      for (let i = 0; i < onRequest.length; i++) {
+        functions.push(onRequestHandling.bind({ onRequest: onRequest[i] }))
+      }
+      if (opts.method === 'GET' || opts.method === 'HEAD') {
+        functions.push(parsingGet.bind({ Request: opts.Request || _fastify._Request }))
+      } else if (opts.method === 'POST' || opts.method === 'PUT' || opts.method === 'PATCH') {
+        functions.push(parsingPost.bind({ Request: opts.Request || _fastify._Request, contentTypeParser: contentTypeParser }))
+      } else if (opts.method === 'OPTIONS' || opts.method === 'DELETE') {
+        functions.push(parsingDelete.bind({ Request: opts.Request || _fastify._Request, contentTypeParser: contentTypeParser }))
+      }
+      functions.push(validate.bind({ Reply: opts.Reply || _fastify._Reply, compiledSchema: compiledSchema }))
+      // TODO: prehandler
+      // TODO: beforeHandler
+      functions.push(handleUserHandler.bind({ userHandler: opts.handler.bind(_fastify) }))
+      // TODO: onSend
+      functions.push(_onResFinished)
+
+      const steps = ffs(functions, errorHandler ? errorHandler.bind(context) : defaultErrorHandler.bind({ compiledSchema: compiledSchema, Reply: Reply }))
+      context.steps = steps
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -424,23 +590,23 @@ function build (options) {
 
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = context
+            map.get(url)[opts.method[i]] = steps
           }
         } else {
-          map.get(url)[opts.method] = context
+          map.get(url)[opts.method] = steps
         }
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, startSeries, context)
       } else {
         const node = {}
         if (Array.isArray(opts.method)) {
           for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = context
+            node[opts.method[i]] = steps
           }
         } else {
-          node[opts.method] = context
+          node[opts.method] = steps
         }
         map.set(url, node)
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, startSeries, context)
       }
       done(notHandledErr)
     })
@@ -449,18 +615,8 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
-    this.schema = schema
-    this.handler = handler
-    this.Reply = Reply
-    this.Request = Request
-    this.contentTypeParser = contentTypeParser
-    this.onRequest = null
-    this.onSend = null
-    this.preHandler = null
-    this.onResponse = null
+  function Context (config, middie) {
     this.config = config
-    this.errorHandler = errorHandler
     this._middie = middie
   }
 

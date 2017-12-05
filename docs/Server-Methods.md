@@ -33,6 +33,28 @@ fastify.listen(3000, '127.0.0.1', err => {
 })
 ```
 
+If no callback is provided a Promise is returned:
+
+```js
+fastify.listen(3000)
+  .then(() => console.log('Listening'))
+  .catch(err => {
+    console.log('Error starting server:', err)
+    process.exit(1)
+  })
+```
+
+Specifying an address without a callback is also supported:
+
+```js
+fastify.listen(3000, '127.0.0.1')
+  .then(() => console.log('Listening'))
+  .catch(err => {
+    console.log('Error starting server:', err)
+    process.exit(1)
+  })
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).

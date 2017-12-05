@@ -57,12 +57,15 @@ test('onSend hook stream', t => {
   })
 
   fastify.addHook('onSend', (req, reply, payload, next) => {
+    const gzStream = zlib.createGzip()
+
     reply.header('Content-Encoding', 'gzip')
-    next(null, pump(
+    pump(
       fs.createReadStream(resolve(process.cwd() + '/test/stream.test.js'), 'utf8'),
-      zlib.createGzip(),
+      gzStream,
       t.error
-    ))
+    )
+    next(null, gzStream)
   })
 
   fastify.inject({

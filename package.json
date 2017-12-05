@@ -110,7 +110,7 @@
     "light-my-request": "^1.1.1",
     "middie": "^2.1.1",
     "pino": "^4.10.1",
-    "pump": "^1.0.3"
+    "pump": "^2.0.0"
   },
   "greenkeeper": {
     "ignore": [

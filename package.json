@@ -3,9 +3,6 @@
   "version": "0.35.7",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
-  "bin": {
-    "fastify": "./lib/bin.js"
-  },
   "typings": "fastify.d.ts",
   "scripts": {
     "lint": "standard | snazzy",
@@ -104,7 +101,6 @@
     "avvio": "^3.2.0",
     "fast-iterator": "^0.2.1",
     "fast-json-stringify": "^0.15.1",
-    "fastify-cli": "^0.11.0",
     "find-my-way": "^1.8.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.1.1",

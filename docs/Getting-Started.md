@@ -100,6 +100,7 @@ fastify.listen(3000, function (err) {
 
 ```js
 // our-db-connector.js
+const fp = require('fastify-plugin')
 const MongoClient = require('mongodb').MongoClient
 
 async function db (fastify, options) {
@@ -110,7 +111,7 @@ async function db (fastify, options) {
   fastify.decorate('mongo', db)
 }
 
-module.exports = db
+module.exports = fp(db)
 ```
 
 ```js
@@ -134,7 +135,7 @@ module.exports = routes
 Wow, that was fast!  
 Let's recap what we have done here since we've introduced some new concepts.  
 As you can see, we used `register` both for the database connector and the routes registration.
-This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way we can register the database connector in the first plugin and use it in the second.
+This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way we can register the database connector in the first plugin and use it in the second *(read [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 
 We have used the `decorate` api API. Let's take a moment to understand what it is and how it works. A scenario is to use the same code/library in different parts of an application. A solution is to require the code/library that it is needed. it This works, but is annoying because of duplicated code repeated and, if needed, long refactors.  
 To solve this Fastify offers the `decorate` API, which adds custom objects to the Fastify namespace, so that they can be used everywhere.

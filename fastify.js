@@ -185,12 +185,30 @@ function build (options) {
   }
 
   function listen (port, address, cb) {
-    const hasAddress = arguments.length === 3
-    const _cb = (hasAddress) ? cb : address
+    /* Deal with listen (port, cb) */
+    if (typeof address === 'function') {
+      cb = address
+      address = undefined
+    }
+
+    if (cb === undefined) {
+      return new Promise((resolve, reject) => {
+        fastify.listen(port, address, err => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve()
+          }
+        })
+      })
+    }
+
+    const hasAddress = address !== undefined
+
     fastify.ready(function (err) {
-      if (err) return _cb(err)
+      if (err) return cb(err)
       if (listening) {
-        return _cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'))
       }
 
       server.on('error', wrap)
@@ -204,13 +222,7 @@ function build (options) {
 
     function wrap (err) {
       server.removeListener('error', wrap)
-      if (_cb) {
-        _cb(err)
-      } else if (err) {
-        // this will crash the process
-        // it will go to 'uncaughtException'
-        throw err
-      }
+      cb(err)
     }
   }
 

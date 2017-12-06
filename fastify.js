@@ -9,6 +9,7 @@ const Middie = require('middie')
 const runHooks = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
+const fastJson = require('fast-json-stringify')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -42,6 +43,11 @@ function build (options) {
   }
 
   const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
+
+  const cachedStringifiers = new Map()
+
+  // Dictionary of all schemas - not a map for interop with ajv
+  const allSchemas = {}
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()
@@ -136,6 +142,13 @@ function build (options) {
   fastify.use = use
   fastify._middie = Middie(onRunMiddlewares)
   fastify._middlewares = []
+
+  // schema methods
+  fastify.addSchema = addSchema
+  fastify.getSchema = getSchema
+  fastify.validate = validate
+  fastify.getStringify = getStringify
+  fastify.stringify = stringify
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -642,6 +655,43 @@ function build (options) {
   function setErrorHandler (func) {
     this._errorHandler = func
     return this
+  }
+
+  function addSchema (schema, id) {
+    ajv.addSchema(schema, id)
+    allSchemas[id || schema.id] = schema
+  }
+
+  function getSchema (keyRef) {
+    return ajv.getSchema(keyRef)
+  }
+
+  function validate (keyRef, payload) {
+    return getSchema(keyRef)(payload)
+  }
+
+  function getStringify (keyRef) {
+    // If serializer doesn't exist, create it
+    if (!cachedStringifiers.has(keyRef)) {
+      const validate = ajv.getSchema(keyRef)
+
+      // Construct the external schema set to pass to fast json
+      const schema = Object.assign(
+        {
+          [validate.root.schema.id]: validate.root.schema
+        },
+        allSchemas
+      )
+
+      const stringify = fastJson(validate.schema, { schema })
+      cachedStringifiers.set(keyRef, stringify)
+    }
+
+    return cachedStringifiers.get(keyRef)
+  }
+
+  function stringify (keyRef, payload) {
+    return getStringify(keyRef)(payload)
   }
 }
 

@@ -29,7 +29,7 @@ const opts = {
 }
 
 fastify.addSchema({
-  $id: 'defs.json',
+  $id: 'defs',
   definitions: {
     error: {
       type: 'object',
@@ -46,13 +46,13 @@ fastify.addSchema({
     '4xx': {
       type: 'object',
       properties: {
-        err: { $ref: 'defs.json#/definitions/error' }
+        err: { $ref: 'defs#/definitions/error' }
       }
     },
     '5xx': {
       type: 'object',
       properties: {
-        err: { $ref: 'defs.json#/definitions/error' },
+        err: { $ref: 'defs#/definitions/error' },
         stack: { type: 'string' }
       }
     }
@@ -62,9 +62,9 @@ fastify.addSchema({
 const referenceOpts = {
   schema: {
     response: {
-      200: 'defs.json#/definitions/200',
-      '4xx': 'defs.json#/definitions/4xx',
-      '5xx': 'defs.json#/definitions/5xx'
+      200: 'defs#/definitions/200',
+      '4xx': 'defs#/definitions/4xx',
+      '5xx': 'defs#/definitions/5xx'
     }
   }
 }

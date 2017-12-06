@@ -52,6 +52,22 @@ module.exports.payloadMethod = function (method, t) {
     }
   }
 
+  const optsWithReference = {
+    schema: {
+      body: 'body#'
+    }
+  }
+
+  fastify.addSchema({
+    $id: 'body',
+    type: 'object',
+    properties: {
+      num: {
+        type: 'integer'
+      }
+    }
+  })
+
   test(`${upMethod} can be created`, t => {
     t.plan(1)
     try {
@@ -62,6 +78,9 @@ module.exports.payloadMethod = function (method, t) {
         reply.send(req.body)
       })
       fastify[loMethod]('/joi', optsWithJoiValidator, function (req, reply) {
+        reply.send(req.body)
+      })
+      fastify[loMethod]('/reference', optsWithReference, function (req, reply) {
         reply.send(req.body)
       })
 
@@ -265,6 +284,48 @@ module.exports.payloadMethod = function (method, t) {
           error: 'Bad Request',
           message: 'Always fail!',
           statusCode: '400'
+        })
+      })
+    })
+
+    test(`${upMethod} - reference schema valid`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/reference',
+        body: {
+          num: 1234
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { num: 1234 })
+      })
+    })
+
+    test(`${upMethod} - reference schema errors`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/reference',
+        body: {
+          num: 'alphanumeric'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: JSON.stringify([{
+            keyword: 'type',
+            dataPath: '.num',
+            schemaPath: '#/properties/num/type',
+            params: { type: 'integer' },
+            message: 'should be integer'
+          }]),
+          statusCode: 400
         })
       })
     })

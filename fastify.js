@@ -423,7 +423,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, getSchema)
+      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
 
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
       const onResponse = opts.onResponse || _fastify._hooks.onResponse

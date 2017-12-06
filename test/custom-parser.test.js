@@ -1,5 +1,6 @@
 'use strict'
 
+const fs = require('fs')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
@@ -387,6 +388,42 @@ test('catch all content type parser should not interfere with other conte type p
         t.deepEqual(body.toString(), '"hello"')
         fastify.close()
       })
+    })
+  })
+})
+
+// Issue 492 https://github.com/fastify/fastify/issues/492
+test('\'*\' catch undefined Content-Type requests', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    var data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => {
+      done(data)
+    })
+  })
+
+  fastify.post('/', (req, res) => {
+    res.send(req.body)
+  })
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    const fileStream = fs.createReadStream(__filename)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/',
+      body: fileStream
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
     })
   })
 })

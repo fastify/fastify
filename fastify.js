@@ -9,7 +9,6 @@ const Middie = require('middie')
 const runHooks = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
-const fastJson = require('fast-json-stringify')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -18,6 +17,8 @@ const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const schemaCompiler = require('./lib/validation').schemaCompiler
+const getSchemaStringify = require('./lib/validation').getStringify
+const addSchema = require('./lib/validation').addSchema
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -43,11 +44,6 @@ function build (options) {
   }
 
   const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
-
-  const cachedStringifiers = new Map()
-
-  // Dictionary of all schemas - not a map for interop with ajv
-  const allSchemas = {}
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
   const map = new Map()
@@ -95,6 +91,8 @@ function build (options) {
     server.on('clientError', handleClientError)
   }
 
+  const ajvContext = { ajv }
+
   // shorthand methods
   fastify.delete = _delete
   fastify.get = _get
@@ -121,7 +119,7 @@ function build (options) {
   fastify._contentTypeParser = new ContentTypeParser()
 
   fastify.setSchemaCompiler = setSchemaCompiler
-  fastify._schemaCompiler = schemaCompiler.bind({ ajv: ajv })
+  fastify._schemaCompiler = schemaCompiler.bind(ajvContext)
 
   // plugin
   fastify.register = fastify.use
@@ -144,7 +142,7 @@ function build (options) {
   fastify._middlewares = []
 
   // schema methods
-  fastify.addSchema = addSchema
+  fastify.addSchema = addSchema.bind(ajvContext)
   fastify.getSchema = getSchema
   fastify.validate = validate
   fastify.getStringify = getStringify
@@ -425,7 +423,7 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
+      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, getSchema)
 
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
       const onResponse = opts.onResponse || _fastify._hooks.onResponse
@@ -657,11 +655,6 @@ function build (options) {
     return this
   }
 
-  function addSchema (schema, id) {
-    ajv.addSchema(schema, id)
-    allSchemas[id || schema.id] = schema
-  }
-
   function getSchema (keyRef) {
     return ajv.getSchema(keyRef)
   }
@@ -671,23 +664,9 @@ function build (options) {
   }
 
   function getStringify (keyRef) {
-    // If serializer doesn't exist, create it
-    if (!cachedStringifiers.has(keyRef)) {
-      const validate = ajv.getSchema(keyRef)
+    const { schema, root } = ajv.getSchema(keyRef)
 
-      // Construct the external schema set to pass to fast json
-      const schema = Object.assign(
-        {
-          [validate.root.schema.id]: validate.root.schema
-        },
-        allSchemas
-      )
-
-      const stringify = fastJson(validate.schema, { schema })
-      cachedStringifiers.set(keyRef, stringify)
-    }
-
-    return cachedStringifiers.get(keyRef)
+    return getSchemaStringify(schema, root, keyRef)
   }
 
   function stringify (keyRef, payload) {

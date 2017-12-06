@@ -28,6 +28,47 @@ const opts = {
   }
 }
 
+fastify.addSchema({
+  $id: 'defs.json',
+  definitions: {
+    error: {
+      type: 'object',
+      properties: {
+        msg: { type: 'string' }
+      }
+    },
+    200: {
+      type: 'object',
+      properties: {
+        str: { type: 'string' }
+      }
+    },
+    '4xx': {
+      type: 'object',
+      properties: {
+        err: { $ref: 'defs.json#/definitions/error' }
+      }
+    },
+    '5xx': {
+      type: 'object',
+      properties: {
+        err: { $ref: 'defs.json#/definitions/error' },
+        stack: { type: 'string' }
+      }
+    }
+  }
+})
+
+const referenceOpts = {
+  schema: {
+    response: {
+      200: 'defs.json#/definitions/200',
+      '4xx': 'defs.json#/definitions/4xx',
+      '5xx': 'defs.json#/definitions/5xx'
+    }
+  }
+}
+
 test('shorthand - output string', t => {
   t.plan(1)
   try {
@@ -83,6 +124,42 @@ test('unlisted response code', t => {
   try {
     fastify.get('/400', opts, function (req, reply) {
       reply.code(400).send({ hello: 'DOOM' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('reference - 200', t => {
+  t.plan(1)
+  try {
+    fastify.get('/reference/200', referenceOpts, function (req, reply) {
+      reply.code(200).send({ str: 'TEST' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('reference - 400', t => {
+  t.plan(1)
+  try {
+    fastify.get('/reference/400', referenceOpts, function (req, reply) {
+      reply.code(400).send({ err: { msg: 'Bad Request' } })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('reference - 500', t => {
+  t.plan(1)
+  try {
+    fastify.get('/reference/500', referenceOpts, function (req, reply) {
+      reply.code(500).send({ err: { msg: 'Internal Server Error' }, stack: '<test stack trace>' })
     })
     t.pass()
   } catch (e) {
@@ -154,6 +231,42 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 400)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'DOOM' })
+    })
+  })
+
+  test('reference shorthand - 200', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/reference/200'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { str: 'TEST' })
+    })
+  })
+
+  test('reference shorthand - 400', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/reference/400'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(body), { err: { msg: 'Bad Request' } })
+    })
+  })
+
+  test('reference shorthand - 500', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/reference/500'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+      t.deepEqual(JSON.parse(body), { err: { msg: 'Internal Server Error' }, stack: '<test stack trace>' })
     })
   })
 })

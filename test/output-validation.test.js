@@ -69,6 +69,19 @@ const referenceOpts = {
   }
 }
 
+const deepReferenceOpts = {
+  schema: {
+    response: {
+      200: {
+        type: 'object',
+        properties: {
+          obj: { $ref: 'defs#/definitions/200' }
+        }
+      }
+    }
+  }
+}
+
 test('shorthand - output string', t => {
   t.plan(1)
   try {
@@ -136,6 +149,18 @@ test('reference - 200', t => {
   try {
     fastify.get('/reference/200', referenceOpts, function (req, reply) {
       reply.code(200).send({ str: 'TEST' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('deep reference - 200', t => {
+  t.plan(1)
+  try {
+    fastify.get('/reference/deep', deepReferenceOpts, function (req, reply) {
+      reply.code(200).send({ obj: { str: 'TEST' } })
     })
     t.pass()
   } catch (e) {
@@ -243,6 +268,18 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), { str: 'TEST' })
+    })
+  })
+
+  test('deep reference shorthand - 200', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/reference/deep'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { obj: { str: 'TEST' } })
     })
   })
 

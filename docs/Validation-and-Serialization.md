@@ -126,7 +126,7 @@ const schema = {
 
 
 <a name="sharing-schemas-cached-validation-serialization"></a>
-#### Sharing Schemas + Cached Validation/Serialization
+#### Sharing Schemas and Cached Validation/Serialization
 If you are re-using the same schemas in multiple places, or want to take advantage of JSON Schema's ability to reference external documents, you can alternatively add your schemas in one step and then reference them in your route options.
 
 For example, this:

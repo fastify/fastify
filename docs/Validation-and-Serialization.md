@@ -124,6 +124,68 @@ const schema = {
 
 *If you need a custom serializer in a very specific part of your code, you can always set one with `reply.serializer(...)`.*
 
+
+<a name="sharing-schemas-cached-validation-serialization"></a>
+#### Sharing Schemas + Cached Validation/Serialization
+If you are re-using the same schemas in multiple places, or want to take advantage of JSON Schema's ability to reference external documents, you can alternatively add your schemas in one step and then reference them in your route options.
+
+For example, this:
+```js
+const schema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        otherValue: { type: 'boolean' }
+      }
+    },
+    '4xx': {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        code: { type: 'string' }
+      }
+    },
+    '5xx': {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        code: { type: 'string' }
+      }
+    }
+  }
+}
+```
+
+Becomes:
+```js
+fastify.addSchema({
+  $id: 'error',
+  type: 'object',
+  properties: {
+    message: { type: 'string' },
+    code: { type: 'string' }
+  }
+})
+
+const schema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        otherValue: { type: 'boolean' }
+      }
+    },
+    '4xx': 'error#',
+    '5xx': 'error#'
+  }
+}
+```
+
+Additional examples are available [here](../examples/shared-schemas.js)
+
 <a name="resources"></a>
 ### Resources
 - [JSON Schema](http://json-schema.org/)

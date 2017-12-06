@@ -1,11 +1,13 @@
 
 /// <reference types="node" />
 /// <reference types="pino" />
+/// <reference types="ajv" />
 
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as https from 'https';
 import * as pino from 'pino';
+import * as Ajv from 'ajv';
 
 declare function fastify<HttpServer, HttpRequest, HttpResponse>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
@@ -60,6 +62,7 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
+    ajv?: Ajv.Options
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: {
@@ -76,14 +79,16 @@ declare namespace fastify {
   }
   interface ServerOptionsAsSecureHttp2 extends ServerOptionsAsHttp2, ServerOptionsAsSecure {}
 
+  // TODO - define/import JSONSchema types
+  type JSONSchemaInstance = Object
+
   interface JSONSchema {
-    // TODO - define/import JSONSchema types
-    body?: Object
-    querystring?: Object
-    params?: Object
+    body?: JSONSchemaInstance
+    querystring?: JSONSchemaInstance
+    params?: JSONSchemaInstance
     response?: {
-      [code: number]: Object,
-      [code: string]: Object
+      [code: number]: JSONSchemaInstance,
+      [code: string]: JSONSchemaInstance
     }
   }
 
@@ -340,6 +345,31 @@ declare namespace fastify {
      * Set a function that will be called whenever an error happens
      */
     setErrorHandler(handler: (error: Error, reply: FastifyReply<HttpResponse>) => void): void
+
+    /**
+     * Adds a schema
+     */
+    addSchema(schema: JSONSchemaInstance, keyRef?: string): void
+
+    /**
+     * Gets a function to validate using a saved schema
+     */
+    getSchema(keyRef: string): Ajv.ValidateFunction
+
+    /**
+     * Validates an object using a saved schema - errors are inaccessible
+     */
+    validate(keyRef: string, payload: Object): boolean
+
+    /**
+     * Gets a function to stringify an object using a saved schema
+     */
+    getStringify(keyRef: string): (payload: Object) => string
+
+    /**
+     * Stringifies an object using a saved schema
+     */
+    stringify(keyRef: string, payload: Object): string
   }
 }
 

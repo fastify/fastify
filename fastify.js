@@ -17,7 +17,7 @@ const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const schemaCompiler = require('./lib/validation').schemaCompiler
-const getSchemaStringify = require('./lib/validation').getStringify
+const getSchemaStringify = require('./lib/validation').getCachedStringify
 const addSchema = require('./lib/validation').addSchema
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
@@ -666,7 +666,7 @@ function build (options) {
   function getStringify (keyRef) {
     const { schema, root } = ajv.getSchema(keyRef)
 
-    return getSchemaStringify(schema, root, keyRef)
+    return getSchemaStringify(keyRef, schema, root)
   }
 
   function stringify (keyRef, payload) {

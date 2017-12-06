@@ -394,7 +394,7 @@ test('catch all content type parser should not interfere with other conte type p
 
 // Issue 492 https://github.com/fastify/fastify/issues/492
 test('\'*\' catch undefined Content-Type requests', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -409,7 +409,8 @@ test('\'*\' catch undefined Content-Type requests', t => {
   })
 
   fastify.post('/', (req, res) => {
-    res.send(req.body)
+    // Needed to avoid json stringify
+    res.type('text/plain').send(req.body)
   })
 
   fastify.listen(0, function (err) {
@@ -424,6 +425,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body + '', fs.readFileSync(__filename).toString())
     })
   })
 })

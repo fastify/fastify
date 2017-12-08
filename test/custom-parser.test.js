@@ -429,3 +429,41 @@ test('\'*\' catch undefined Content-Type requests', t => {
     })
   })
 })
+
+// Issue 492 https://github.com/fastify/fastify/issues/492
+test('\'*\' catch undefined Content-Type requests via inject', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    var data = ''
+    req.on('data', chunk => { data += chunk })
+    req.on('end', () => {
+      done(data)
+    })
+  })
+
+  fastify.post('/', (req, res) => {
+    // Needed to avoid json stringify
+    res.type('text/plain').send(req.body)
+  })
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    const fileStream = fs.createReadStream(__filename)
+
+    fastify.inject({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/',
+      payload: fileStream
+    }, (response) => {
+      const body = response.payload
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body + '', fs.readFileSync(__filename).toString())
+    })
+  })
+})

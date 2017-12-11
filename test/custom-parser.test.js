@@ -3,10 +3,13 @@
 const fs = require('fs')
 const t = require('tap')
 const test = t.test
+const semver = require('semver')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const jsonParser = require('fast-json-body')
-
+if (semver.gt(process.versions.node, '8.0.0')) {
+  require('./custom-parser-async')
+}
 test('contentTypeParser method should exist', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -27,8 +30,7 @@ test('contentTypeParser should add a custom parser', t => {
 
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
     jsonParser(req, function (err, body) {
-      if (err) return done(err)
-      done(body)
+      done(err, body)
     })
   })
 
@@ -87,8 +89,7 @@ test('contentTypeParser should handle multiple custom parsers', t => {
 
   function customParser (req, done) {
     jsonParser(req, function (err, body) {
-      if (err) return done(err)
-      done(body)
+      done(err, body)
     })
   }
 
@@ -136,7 +137,7 @@ test('contentTypeParser should handle errors', t => {
   })
 
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    done(new Error('kaboom!'))
+    done(new Error('kaboom!'), {})
   })
 
   fastify.listen(0, err => {
@@ -193,8 +194,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
 
     instance.addContentTypeParser('application/jsoff', function (req, done) {
       jsonParser(req, function (err, body) {
-        if (err) return done(err)
-        done(body)
+        done(err, body)
       })
     })
 
@@ -230,8 +230,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
 
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
     jsonParser(req, function (err, body) {
-      if (err) return done(err)
-      done(body)
+      done(err, body)
     })
   })
 
@@ -301,7 +300,7 @@ test('catch all content type parser', t => {
     var data = ''
     req.on('data', chunk => { data += chunk })
     req.on('end', () => {
-      done(data)
+      done(null, data)
     })
   })
 
@@ -349,14 +348,13 @@ test('catch all content type parser should not interfere with other conte type p
     var data = ''
     req.on('data', chunk => { data += chunk })
     req.on('end', () => {
-      done(data)
+      done(null, data)
     })
   })
 
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
     jsonParser(req, function (err, body) {
-      if (err) return done(err)
-      done(body)
+      done(err, body)
     })
   })
 
@@ -404,7 +402,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
     var data = ''
     req.on('data', chunk => { data += chunk })
     req.on('end', () => {
-      done(data)
+      done(null, data)
     })
   })
 

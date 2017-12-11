@@ -664,9 +664,9 @@ function build (options) {
   }
 
   function getStringify (keyRef) {
-    const { schema, root } = ajv.getSchema(keyRef)
+    const schema = ajv.getSchema(keyRef)
 
-    return getSchemaStringify(keyRef, schema, root)
+    return getSchemaStringify(keyRef, schema.schema, schema.root)
   }
 
   function stringify (keyRef, payload) {

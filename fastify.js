@@ -18,7 +18,7 @@ const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const schemaCompiler = require('./lib/validation').schemaCompiler
 const getSchemaStringify = require('./lib/validation').getCachedStringify
-const addSchema = require('./lib/validation').addSchema
+const createMapCache = require('./lib/mapCache')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -91,7 +91,9 @@ function build (options) {
     server.on('clientError', handleClientError)
   }
 
+  const allSchemas = {}
   const ajvContext = { ajv }
+  const defaultSchemaResolver = schemaCompiler.bind(ajvContext, null)
 
   // shorthand methods
   fastify.delete = _delete
@@ -120,6 +122,8 @@ function build (options) {
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify._schemaCompiler = schemaCompiler.bind(ajvContext)
+  fastify.setSchemaResolver = setSchemaResolver
+  fastify._schemaResolver = defaultSchemaResolver
 
   // plugin
   fastify.register = fastify.use
@@ -142,8 +146,8 @@ function build (options) {
   fastify._middlewares = []
 
   // schema methods
-  fastify.addSchema = addSchema.bind(ajvContext)
-  fastify.getSchema = getSchema
+  fastify.addSchema = addSchema
+  fastify.getSchema = createMapCache(getSchema)
   fastify.validate = validate
   fastify.getStringify = getStringify
   fastify.stringify = stringify
@@ -423,7 +427,13 @@ function build (options) {
         opts.middie || _fastify._middie
       )
 
-      buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
+      buildSchema(
+        context,
+        opts.schemaCompiler || _fastify._schemaCompiler,
+        // using the getSchema to re-use the cache created for that
+        opts.schemaResolver || _fastify.getSchema,
+        allSchemas
+      )
 
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
       const onResponse = opts.onResponse || _fastify._hooks.onResponse
@@ -645,8 +655,21 @@ function build (options) {
     }
   }
 
+  function addSchema (schema, keyRef) {
+    if (this._schemaResolver === defaultSchemaResolver) {
+      ajv.addSchema(schema, keyRef)
+    }
+    allSchemas[keyRef || schema.$id || schema.id] = schema
+    return this
+  }
+
   function setSchemaCompiler (schemaCompiler) {
     this._schemaCompiler = schemaCompiler
+    return this
+  }
+
+  function setSchemaResolver (schemaResolver) {
+    this._schemaResolver = schemaResolver
     return this
   }
 
@@ -656,21 +679,21 @@ function build (options) {
   }
 
   function getSchema (keyRef) {
-    return ajv.getSchema(keyRef)
+    return fastify._schemaResolver(keyRef, allSchemas)
   }
 
   function validate (keyRef, payload) {
-    return getSchema(keyRef)(payload)
+    return this.getSchema(keyRef)(payload)
   }
 
   function getStringify (keyRef) {
-    const schema = ajv.getSchema(keyRef)
+    const schema = this.getSchema(keyRef)
 
     return getSchemaStringify(keyRef, schema.schema, schema.root)
   }
 
   function stringify (keyRef, payload) {
-    return getStringify(keyRef)(payload)
+    return this.getStringify(keyRef)(payload)
   }
 }
 

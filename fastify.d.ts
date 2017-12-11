@@ -1,13 +1,11 @@
 
 /// <reference types="node" />
 /// <reference types="pino" />
-/// <reference types="ajv" />
 
 import * as http from 'http';
 import * as http2 from 'http2';
 import * as https from 'https';
 import * as pino from 'pino';
-import * as Ajv from 'ajv';
 
 declare function fastify<HttpServer, HttpRequest, HttpResponse>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
@@ -26,6 +24,10 @@ declare namespace fastify {
   type FastifyMiddleware<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
   type RequestHandler<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, res: FastifyReply<HttpResponse>) => void
+
+  type ValidateFunction = (data: Object) => boolean
+
+  type SchemaResolver = (keyRef: string, allSchemas: { [key: string]: Object }) => ValidateFunction | Object
 
   /**
    * fastify's wrapped version of node.js IncomingMessage
@@ -62,7 +64,7 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
-    ajv?: Ajv.Options
+    ajv?: Object
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: {
@@ -347,6 +349,11 @@ declare namespace fastify {
     setErrorHandler(handler: (error: Error, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
+     * Sets a resolver to use when trying to resolve schemas
+     */
+    setSchemaResolver(resolver: SchemaResolver): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
      * Adds a schema
      */
     addSchema(schema: JSONSchemaInstance, keyRef?: string): void
@@ -354,7 +361,7 @@ declare namespace fastify {
     /**
      * Gets a function to validate using a saved schema
      */
-    getSchema(keyRef: string): Ajv.ValidateFunction
+    getSchema(keyRef: string): ValidateFunction
 
     /**
      * Validates an object using a saved schema - errors are inaccessible

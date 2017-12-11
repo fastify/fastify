@@ -71,3 +71,24 @@ test('fastify schema shorthand uses correct schema', t => {
   t.ok(valid)
   t.is(payload, '{"str":"test"}')
 })
+
+test('fastify uses custom schemaResolver with cached results', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  const validator = function () {
+    return true
+  }
+
+  fastify.setSchemaResolver(function (keyRef, allSchemas) {
+    t.is(keyRef, 'reference')
+    t.deepEqual(allSchemas, { 'reference': { test: 'abcdef' } })
+    return validator
+  })
+
+  fastify.addSchema({ test: 'abcdef' }, 'reference')
+
+  const validate = fastify.getSchema('reference')
+  t.is(validate, validator)
+  t.is(validate, fastify.getSchema('reference'))
+})

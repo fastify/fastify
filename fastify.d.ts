@@ -311,6 +311,12 @@ declare namespace fastify {
     addHook(name: 'preHandler', hook: FastifyMiddleware<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Hook that is fired after a request is processed, but before the "onResponse"
+     * hook
+     */
+     addHook(name: 'onSend', hook: (req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    
+     /**
      * Hook that is called when a response is about to be sent to a client
      */
     addHook(name: 'onResponse', hook: (res: http.OutgoingMessage, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

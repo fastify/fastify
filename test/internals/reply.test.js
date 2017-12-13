@@ -130,7 +130,7 @@ test('within an instance', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.deepEqual(JSON.parse(body), 'hello world!')
+        t.deepEqual(body.toString(), 'hello world!')
       })
     })
 
@@ -216,7 +216,7 @@ test('use reply.serialize in onSend hook', t => {
     next()
   })
   fastify.get('/', (request, reply) => {
-    reply.send('hello world!')
+    reply.send({ hello: 'world' })
   })
   fastify.listen(0, err => {
     t.error(err)
@@ -227,7 +227,55 @@ test('use reply.serialize in onSend hook', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(JSON.parse(body), 'hello world!')
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('plain string without content type shouls send a text/plain', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body.toString(), 'hello world!')
+    })
+  })
+})
+
+test('plain string with content type application/json should be serialized as json', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('application/json').send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(body.toString(), '"hello world!"')
     })
   })
 })

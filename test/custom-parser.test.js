@@ -318,7 +318,7 @@ test('catch all content type parser', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), '"hello"')
+      t.deepEqual(body.toString(), 'hello')
 
       sget({
         method: 'POST',
@@ -330,7 +330,7 @@ test('catch all content type parser', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), '"hello"')
+        t.deepEqual(body.toString(), 'hello')
         fastify.close()
       })
     })
@@ -385,7 +385,7 @@ test('catch all content type parser should not interfere with other conte type p
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), '"hello"')
+        t.deepEqual(body.toString(), 'hello')
         fastify.close()
       })
     })

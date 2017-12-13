@@ -72,12 +72,12 @@ test('customized 404', t => {
       sget({
         method: 'PUT',
         url: 'http://localhost:' + fastify.server.address().port,
-        body: {},
-        json: true
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found')
+        t.strictEqual(body.toString(), 'this was not found')
       })
     })
 
@@ -85,13 +85,11 @@ test('customized 404', t => {
       t.plan(3)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        body: {},
-        json: true
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found')
+        t.strictEqual(body.toString(), 'this was not found')
       })
     })
   })
@@ -135,12 +133,12 @@ test('encapsulated 404', t => {
       sget({
         method: 'PUT',
         url: 'http://localhost:' + fastify.server.address().port,
-        body: {},
-        json: true
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found')
+        t.strictEqual(body.toString(), 'this was not found')
       })
     })
 
@@ -148,13 +146,11 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
-        body: {},
-        json: true
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found')
+        t.strictEqual(body.toString(), 'this was not found')
       })
     })
 
@@ -163,12 +159,12 @@ test('encapsulated 404', t => {
       sget({
         method: 'PUT',
         url: 'http://localhost:' + fastify.server.address().port + '/test',
-        body: {},
-        json: true
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found 2')
+        t.strictEqual(body.toString(), 'this was not found 2')
       })
     })
 
@@ -176,13 +172,11 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/test/notSupported',
-        body: {},
-        json: true
+        url: 'http://localhost:' + fastify.server.address().port + '/test/notSupported'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found 2')
+        t.strictEqual(body.toString(), 'this was not found 2')
       })
     })
 
@@ -191,12 +185,12 @@ test('encapsulated 404', t => {
       sget({
         method: 'PUT',
         url: 'http://localhost:' + fastify.server.address().port + '/test2',
-        body: {},
-        json: true
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found 3')
+        t.strictEqual(body.toString(), 'this was not found 3')
       })
     })
 
@@ -204,13 +198,11 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/test2/notSupported',
-        body: {},
-        json: true
+        url: 'http://localhost:' + fastify.server.address().port + '/test2/notSupported'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body, 'this was not found 3')
+        t.strictEqual(body.toString(), 'this was not found 3')
       })
     })
   })
@@ -243,8 +235,8 @@ test('run hooks on default 404', t => {
     sget({
       method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port,
-      body: {},
-      json: true
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -292,8 +284,8 @@ test('run hooks with encapsulated 404', t => {
     sget({
       method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port + '/test',
-      body: {},
-      json: true
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -323,8 +315,8 @@ test('run middlewares on default 404', t => {
     sget({
       method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port,
-      body: {},
-      json: true
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -363,8 +355,8 @@ test('run middlewares with encapsulated 404', t => {
     sget({
       method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port + '/test',
-      body: {},
-      json: true
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -403,8 +395,8 @@ test('hooks check 404', t => {
     sget({
       method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port + '?foo=asd',
-      body: {},
-      json: true
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
@@ -412,9 +404,7 @@ test('hooks check 404', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd',
-      body: {},
-      json: true
+      url: 'http://localhost:' + fastify.server.address().port + '/notSupported?foo=asd'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)

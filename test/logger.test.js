@@ -213,7 +213,7 @@ test('The logger should accept a custom genReqId function', t => {
 })
 
 test('reply.send logs an error if called twice in a row', t => {
-  const lines = ['incoming request', 'Reply already sent', 'Reply already sent', 'request completed']
+  const lines = ['incoming request', 'request completed', 'Reply already sent', 'Reply already sent']
   t.plan(lines.length + 1)
 
   const splitStream = split(JSON.parse)

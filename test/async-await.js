@@ -125,7 +125,7 @@ function asyncTest (t) {
   })
 
   test('server logs an error if reply.send is called and a value is returned via async/await', t => {
-    const lines = ['incoming request', 'Reply already sent', 'request completed']
+    const lines = ['incoming request', 'request completed', 'Reply already sent']
     t.plan(lines.length + 1)
 
     const splitStream = split(JSON.parse)

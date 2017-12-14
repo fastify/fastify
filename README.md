@@ -62,8 +62,7 @@ Do you want to know more? Head to the <a href="https://github.com/fastify/fastif
 
 ### Core features
 
-- **100% asynchronous:** all the core is implemented with asynchronous code, in this way not even a millisecond is wasted.
-- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 34000 requests per second.
+- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 30 thousands requests per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
@@ -77,29 +76,26 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| hapi               | 17.0.1                     | &#10003;     | 20,816        |
-| Express            | 4.16.1                     | &#10003;     | 22,006        |
-| total.js           | 2.9.0                      | &#10003;     | 22,870        |
-| Koa (`koa-router`) | 2.4.1 (`koa-router@7.3.0`) | &#10003;     | 23,511        |
-| Restify            | 6.3.2                      | &#10003;     | 23,848        |
-| Koa                | 2.4.1                      | &#10007;     | 26,425        |
-| take-five          | 1.3.4                      | &#10003;     | 27,797        |
-| micro (`micro-router`) | 9.0.0 (`micro-router@2.2.3` ) | &#10003; | 28,564     |
-| micro              | 9.0.1                      | &#10007;     | 33,727        |
-| connect (`router`) | 3.6.5 (`router@1.3.2`)     | &#10003;     | 34,009        |
-| **Fastify**        | **0.35.0**                 | **&#10003;** | **34,389**    |
-| connect            | 3.6.5                      | &#10007;     | 38,616        |
+| hapi               | 17.1.1                     | &#10003;     | 19,824        |
+| Express            | 4.16.2                     | &#10003;     | 20,690        |
+| total.js           | 2.9.1                      | &#10003;     | 21,949        |
+| Restify            | 6.3.4                      | &#10003;     | 22,989        |
+| Koa (`koa-router`) | 2.4.1 (`koa-router@7.3.0`) | &#10003;     | 25,017        |
+| take-five          | 1.3.4                      | &#10003;     | 24,540        |
+| Koa                | 2.4.1                      | &#10007;     | 25,017        |
+| micro (`micro-router`) | 9.0.2 (`microrouter@3.0.0` ) | &#10003; | 27,892      |
+| connect (`router`) | 3.6.5 (`router@1.3.2`)     | &#10003;     | 29,527        |
+| **Fastify**        | **0.35.6**                 | **&#10003;** | **31,319**    |
+| micro              | 9.0.1                      | &#10007;     | 33,406        |
+| connect            | 3.6.5                      | &#10007;     | 35,803        |
 | -                  |                            |              |               |
-| `http.Server`      | 8.9.1                      | &#10007;     | 38,929        |
+| `http.Server`      | 8.9.1                      | &#10007;     | 36,278        |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
 overhead. The overhead that each framework has on your application
 depends on your application, you should __always__ benchmark if performance
 matters to you.
-
-The relative overhead of micro, connect and fastify is too small to measure, and
-they perform very closely on this benchmarks.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

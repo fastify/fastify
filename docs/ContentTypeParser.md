@@ -9,8 +9,13 @@ As with the other APIs, `addContentTypeParser` is encapsulated in the scope in w
 ```js
 fastify.addContentTypeParser('application/jsoff', function (req, done) {
   jsoffParser(req, function (err, body) {
-    done(err || body)
+    done(err, body)
   })
+})
+// async also supported in Node versions >= 8.0.0
+fastify.addContentTypeParser('application/jsoff', async function (req) {
+  var res = await new Promise((resolve, reject) => resolve(req))
+  return res
 })
 ```
 
@@ -23,7 +28,7 @@ fastify.addContentTypeParser('*', function (req, done) {
   var data = ''
   req.on('data', chunk => { data += chunk })
   req.on('end', () => {
-    done(data)
+    done(null, data)
   })
 })
 ```

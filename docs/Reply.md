@@ -51,7 +51,7 @@ reply.type('text/html')
 
 <a name="serializer"></a>
 ### Serializer
-Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
+Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers: [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise `JSON.stringify()`.
 
 If you need to use a custom serializer, such as [msgpack5](https://github.com/mcollina/msgpack5) or [protobuf](https://github.com/dcodeIO/ProtoBuf.js/), you can use the `.serializer()` utility. As noted above, if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.
 
@@ -68,7 +68,7 @@ reply
 
 <a name="send-object"></a>
 #### Objects
-As writed above, if you are sending JSON objects, *send* will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you setted an output schema, otherwise [fast-safe-stringify](https://www.npmjs.com/package/fast-safe-stringify).
+As noted above, if you are sending JSON objects, `send` will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise `JSON.stringify()` will be used.
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })

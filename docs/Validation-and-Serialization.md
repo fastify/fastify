@@ -128,6 +128,5 @@ const schema = {
 ### Resources
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
-- [fast-safe-stringify documentation](https://github.com/davidmarkclements/fast-safe-stringify/blob/master/readme.md)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

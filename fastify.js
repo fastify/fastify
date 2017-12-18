@@ -17,7 +17,7 @@ const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const schemaCompiler = require('./lib/validation').schemaCompiler
-const getSchemaStringify = require('./lib/validation').getCachedStringify
+const createStringifier = require('./lib/validation').createStringifier
 const createMapCache = require('./lib/mapCache')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
@@ -150,9 +150,7 @@ function build (options) {
   // schema methods
   fastify.addSchema = addSchema
   fastify.getSchema = createMapCache(getSchema)
-  fastify.validate = validate
-  fastify.getStringify = getStringify
-  fastify.stringify = stringify
+  fastify.resolveStringifier = createMapCache(createStringifier)
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -438,6 +436,7 @@ function build (options) {
         opts.schemaCompiler || _fastify._schemaCompiler,
         // using the getSchema to re-use the cache created for that
         opts.schemaResolver || _fastify.getSchema,
+        _fastify.resolveStringify,
         allSchemas
       )
 
@@ -687,20 +686,6 @@ function build (options) {
 
   function getSchema (keyRef) {
     return fastify._schemaResolver(keyRef, allSchemas)
-  }
-
-  function validate (keyRef, payload) {
-    return this.getSchema(keyRef)(payload)
-  }
-
-  function getStringify (keyRef) {
-    const schema = this.getSchema(keyRef)
-
-    return getSchemaStringify(keyRef, schema.schema, schema.root)
-  }
-
-  function stringify (keyRef, payload) {
-    return this.getStringify(keyRef)(payload)
   }
 }
 

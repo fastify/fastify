@@ -21,6 +21,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
+const pluginUtils = require('./lib/pluginUtils')
 
 function build (options) {
   options = options || {}
@@ -121,6 +122,7 @@ function build (options) {
   fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
+  fastify[pluginUtils.registeredPlugins] = []
 
   // extend server methods
   fastify.decorate = decorator.add
@@ -272,7 +274,8 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
-    if (fn[Symbol.for('skip-override')]) {
+    const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+    if (shouldSkipOverride) {
       return old
     }
 
@@ -285,6 +288,7 @@ function build (options) {
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
+    instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
       instance._404Context = null

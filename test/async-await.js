@@ -246,6 +246,26 @@ function asyncTest (t) {
     })
   })
 
+  test('does not call reply.send() twice if 204 reponse is already sent', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204).send()
+      reply.send = () => {
+        throw new Error('reply.send() was called twice')
+      }
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.equal(res.statusCode, 204)
+    })
+  })
+
   test('inject async await', async t => {
     t.plan(1)
 

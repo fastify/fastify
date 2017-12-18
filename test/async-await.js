@@ -125,7 +125,7 @@ function asyncTest (t) {
   })
 
   test('server logs an error if reply.send is called and a value is returned via async/await', t => {
-    const lines = ['incoming request', 'Reply already sent', 'request completed']
+    const lines = ['incoming request', 'request completed', 'Reply already sent']
     t.plan(lines.length + 1)
 
     const splitStream = split(JSON.parse)
@@ -236,6 +236,26 @@ function asyncTest (t) {
 
     fastify.get('/', async (req, reply) => {
       reply.code(204)
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.equal(res.statusCode, 204)
+    })
+  })
+
+  test('does not call reply.send() twice if 204 reponse is already sent', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204).send()
+      reply.send = () => {
+        throw new Error('reply.send() was called twice')
+      }
     })
 
     fastify.inject({

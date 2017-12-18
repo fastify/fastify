@@ -383,7 +383,7 @@ test('nested plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), 'I am child 1')
+      t.deepEqual(body.toString(), 'I am child 1')
     })
 
     sget({
@@ -391,7 +391,101 @@ test('nested plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), 'I am child 2')
+      t.deepEqual(body.toString(), 'I am child 2')
     })
   })
+})
+
+test('plugin metadata - decorators', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.decorate('plugin1', true)
+  fastify.decorateReply('plugin1', true)
+  fastify.decorateRequest('plugin1', true)
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    decorators: {
+      fastify: ['plugin1'],
+      reply: ['plugin1'],
+      request: ['plugin1']
+    }
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.ok(fastify.plugin)
+  })
+
+  function plugin (instance, opts, next) {
+    instance.decorate('plugin', true)
+    next()
+  }
+})
+
+test('plugin metadata - dependencies', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  dependency[Symbol.for('skip-override')] = true
+  dependency[Symbol.for('plugin-meta')] = {
+    name: 'plugin'
+  }
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    dependencies: ['plugin']
+  }
+
+  fastify.register(dependency)
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.pass('everything right')
+  })
+
+  function dependency (instance, opts, next) {
+    next()
+  }
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})
+
+test('plugin metadata - dependencies (nested)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  dependency[Symbol.for('skip-override')] = true
+  dependency[Symbol.for('plugin-meta')] = {
+    name: 'plugin'
+  }
+
+  nested[Symbol.for('skip-override')] = true
+  nested[Symbol.for('plugin-meta')] = {
+    dependencies: ['plugin']
+  }
+
+  fastify.register(dependency)
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.pass('everything right')
+  })
+
+  function dependency (instance, opts, next) {
+    next()
+  }
+
+  function plugin (instance, opts, next) {
+    instance.register(nested)
+    next()
+  }
+
+  function nested (instance, opts, next) {
+    next()
+  }
 })

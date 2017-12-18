@@ -16,11 +16,13 @@ const ajv = new Ajv({ coerceTypes: true })
 
 function schemaCompiler (schema) {
   const validateFuncion = ajv.compile(schema)
-  return function (body) {
+  var fn = function (body) {
     const isOk = validateFuncion(body)
     if (isOk) return
-    return { error: new Error('Invalid body') }
+    return false
   }
+  fn.errors = []
+  return fn
 }
 
 test('Request object', t => {
@@ -63,6 +65,43 @@ test('handler function - invalid schema', t => {
     Request: Request,
     preHandler: runHooks(new Hooks().preHandler, {}),
     onSend: runHooks(new Hooks().onSend, {})
+  }
+  buildSchema(context, schemaCompiler)
+  internals.handler(context, null, {}, res, { hello: 'world' }, null)
+})
+
+test('handler function - invalid schema - ajv', t => {
+  t.plan(1)
+  const res = {}
+  res.end = () => {
+    Reply.prototype._extendServerError = null
+    return
+  }
+  res.setHeader = (key, value) => {
+    return
+  }
+  res.getHeader = (key) => {
+    return
+  }
+  res.log = { error: () => {}, info: () => {} }
+  const context = {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          hello: { type: 'number' }
+        }
+      }
+    },
+    handler: () => {},
+    Reply: Reply,
+    Request: Request,
+    preHandler: runHooks(new Hooks().preHandler, {}),
+    onSend: runHooks(new Hooks().onSend, {})
+  }
+  Reply.prototype._extendServerError = (err) => {
+    t.ok(Array.isArray(err.validation))
+    return
   }
   buildSchema(context, schemaCompiler)
   internals.handler(context, null, {}, res, { hello: 'world' }, null)

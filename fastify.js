@@ -23,6 +23,7 @@ const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
+const pluginUtils = require('./lib/pluginUtils')
 
 function build (options) {
   options = options || {}
@@ -129,6 +130,7 @@ function build (options) {
   fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
+  fastify[pluginUtils.registeredPlugins] = []
 
   // extend server methods
   fastify.decorate = decorator.add
@@ -267,7 +269,8 @@ function build (options) {
 
   function middlewareCallback (err, state) {
     if (err) {
-      const reply = new Reply(state.res, state.context, null)
+      const request = new Request(state.params, state.req, null, null, state.req.headers, state.req.log)
+      const reply = new Reply(state.res, state.context, request)
       reply.send(err)
       return
     }
@@ -276,7 +279,8 @@ function build (options) {
 
   function onRunMiddlewares (err, req, res, state) {
     if (err) {
-      const reply = new Reply(res, state.context, null)
+      const request = new Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new Reply(res, state.context, request)
       reply.send(err)
       return
     }
@@ -285,7 +289,8 @@ function build (options) {
   }
 
   function override (old, fn, opts) {
-    if (fn[Symbol.for('skip-override')]) {
+    const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+    if (shouldSkipOverride) {
       return old
     }
 
@@ -298,6 +303,7 @@ function build (options) {
     instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
+    instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
       instance._404Context = null
@@ -602,7 +608,8 @@ function build (options) {
     // we can
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
-    const reply = new Reply(res, { onSend: runHooks([], null) }, null)
+    const request = new Request(null, req, null, null, req.headers, req.log)
+    const reply = new Reply(res, { onSend: runHooks([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 

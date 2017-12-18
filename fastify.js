@@ -252,7 +252,8 @@ function build (options) {
 
   function middlewareCallback (err, state) {
     if (err) {
-      const reply = new Reply(state.res, state.context, null)
+      const request = new Request(state.params, state.req, null, null, state.req.headers, state.req.log)
+      const reply = new Reply(state.res, state.context, request)
       reply.send(err)
       return
     }
@@ -261,7 +262,8 @@ function build (options) {
 
   function onRunMiddlewares (err, req, res, state) {
     if (err) {
-      const reply = new Reply(res, state.context, null)
+      const request = new Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new Reply(res, state.context, request)
       reply.send(err)
       return
     }
@@ -581,7 +583,8 @@ function build (options) {
     // we can
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
-    const reply = new Reply(res, { onSend: runHooks([], null) }, null)
+    const request = new Request(null, req, null, null, req.headers, req.log)
+    const reply = new Reply(res, { onSend: runHooks([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 

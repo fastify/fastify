@@ -507,6 +507,82 @@ test('onSend hook throws', t => {
   })
 })
 
+test('onSend hook should receive a valid request object if onRequest hook fails', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    next(new Error('onRequest hook failed'))
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.type(request, 'object')
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+  })
+})
+
+test('onSend hook should receive a valid request object if middleware fails', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.use(function (req, res, next) {
+    next(new Error('middlware failed'))
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.type(request, 'object')
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+  })
+})
+
+test('onSend hook should receive a valid request object if a custom content type parser fails', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    done(new Error('content type parser failed'))
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.type(request, 'object')
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: 'body'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+  })
+})
+
 if (Number(process.versions.node[0]) >= 8) {
   require('./hooks-async')(t)
 } else {

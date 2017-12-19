@@ -68,7 +68,6 @@
   },
   "devDependencies": {
     "autocannon": "^0.16.5",
-    "boom": "~5.1.0",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.1",
     "cors": "^2.8.4",

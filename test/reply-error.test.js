@@ -5,7 +5,6 @@ const test = t.test
 const net = require('net')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
-const boom = require('boom')
 
 const codes = Object.keys(statusCodes)
 codes.forEach(code => {
@@ -96,171 +95,6 @@ test('onRequest hook error handling with external done', t => {
       JSON.parse(res.payload)
     )
   })
-})
-
-test('support for boom', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.get('/500', (req, reply) => {
-    reply.send(boom.create(500, 'winter is coming', { hello: 'world' }))
-  })
-
-  fastify.get('/400', (req, reply) => {
-    reply.send(boom.create(400, 'winter is coming', { hello: 'world' }))
-  })
-
-  fastify.get('/401', (req, reply) => {
-    reply.send(boom.unauthorized('invalid password', 'sample'))
-  })
-
-  t.test('500', t => {
-    t.plan(3)
-
-    fastify.inject({
-      method: 'GET',
-      url: '/500'
-    }, res => {
-      t.strictEqual(res.statusCode, 500)
-      t.strictEqual(res.headers['content-type'], 'application/json')
-      t.deepEqual(
-        // we are doing this because Boom creates also a stack that is stripped during the stringify phase
-        JSON.parse(res.payload),
-        {
-          statusCode: 500,
-          error: 'Internal Server Error',
-          message: 'An internal server error occurred'
-        }
-      )
-    })
-  })
-
-  t.test('400', t => {
-    t.plan(3)
-
-    fastify.inject({
-      method: 'GET',
-      url: '/400'
-    }, res => {
-      t.strictEqual(res.statusCode, 400)
-      t.strictEqual(res.headers['content-type'], 'application/json')
-      t.deepEqual(
-        // we are doing this because Boom creates also a stack that is stripped during the stringify phase
-        JSON.parse(res.payload),
-        {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: 'winter is coming'
-        }
-      )
-    })
-  })
-
-  t.test('401', t => {
-    t.plan(4)
-
-    fastify.inject({
-      method: 'GET',
-      url: '/401'
-    }, res => {
-      t.strictEqual(res.statusCode, 401)
-      t.strictEqual(res.headers['content-type'], 'application/json')
-      t.deepEqual(
-        // we are doing this because Boom creates also a stack that is stripped during the stringify phase
-        JSON.parse(res.payload),
-        {
-          statusCode: 401,
-          error: 'Unauthorized',
-          message: 'invalid password',
-          attributes: {
-            error: 'invalid password'
-          }
-        }
-      )
-      t.deepEqual(res.headers['www-authenticate'], 'sample error="invalid password"')
-    })
-  })
-})
-
-test('extendServerError should exist', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  t.ok(fastify.extendServerError)
-  t.is(typeof fastify.extendServerError, 'function')
-})
-
-test('extend server error - encapsulation', t => {
-  t.plan(9)
-  const fastify = Fastify()
-  const err = new Error('error')
-  const date = new Date()
-
-  fastify.get('/', (req, reply) => {
-    t.notOk(reply._extendServerError)
-    reply.send(err)
-  })
-
-  fastify.register((instance, opts, next) => {
-    instance.extendServerError((payloadError) => {
-      t.ok(payloadError instanceof Error)
-      t.strictEqual(payloadError.name, err.name)
-      t.strictEqual(payloadError.message, err.message)
-
-      return {
-        timestamp: date
-      }
-    })
-
-    instance.get('/encapsulated', (req, reply) => {
-      t.ok(reply._extendServerError)
-      reply.send(err)
-    })
-
-    next()
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, res => {
-    t.strictEqual(res.statusCode, 500)
-    t.deepEqual(
-      {
-        error: statusCodes['500'],
-        message: err.message,
-        statusCode: 500
-      },
-      JSON.parse(res.payload)
-    )
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/encapsulated'
-  }, res => {
-    t.strictEqual(res.statusCode, 500)
-    t.deepEqual(
-      {
-        error: statusCodes['500'],
-        message: err.message,
-        statusCode: 500,
-        timestamp: date.toISOString()
-      },
-      JSON.parse(res.payload)
-    )
-  })
-})
-
-test('extend server error - should throw if the argument is not a function', t => {
-  t.plan(1)
-  const fastify = Fastify()
-
-  try {
-    fastify.extendServerError(null)
-    t.fail()
-  } catch (e) {
-    t.is(e.message, 'The server error object must be a function')
-  }
 })
 
 if (Number(process.versions.node[0]) >= 6) {
@@ -387,6 +221,7 @@ test('Support rejection with values that are not Error instances', t => {
   t.plan(objs.length)
   for (const nonErr of objs) {
     t.test('Type: ' + typeof nonErr, t => {
+      t.plan(3)
       const fastify = Fastify()
 
       fastify.get('/', () => {
@@ -394,8 +229,12 @@ test('Support rejection with values that are not Error instances', t => {
       })
 
       fastify.setErrorHandler((err, reply) => {
-        t.strictEqual(err, nonErr)
-        t.end()
+        if (typeof err === 'object') {
+          t.deepEqual(err, nonErr)
+        } else {
+          t.strictEqual(err, nonErr)
+        }
+        reply.send('error')
       })
 
       fastify.inject({
@@ -403,15 +242,97 @@ test('Support rejection with values that are not Error instances', t => {
         url: '/'
       }, res => {
         t.strictEqual(res.statusCode, 500)
-        t.deepEqual(
-          JSON.parse(res.payload),
-          {
-            error: statusCodes['500'],
-            message: '',
-            statusCode: 500
-          }
-        )
+        t.strictEqual(res.payload, 'error')
       })
     })
   }
+})
+
+test('invalid schema - ajv', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' }
+        }
+      }
+    }
+  }, (req, reply) => {
+    t.fail('we should not be here')
+  })
+
+  fastify.setErrorHandler((err, reply) => {
+    t.ok(Array.isArray(err.validation))
+    reply.send('error')
+  })
+
+  fastify.inject({
+    url: '/?id=abc',
+    method: 'GET'
+  }, res => {
+    t.strictEqual(res.statusCode, 400)
+    t.strictEqual(res.payload, 'error')
+  })
+})
+
+test('should set the status code and the headers from the error object (from route handler)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    const error = new Error('kaboom')
+    error.headers = { hello: 'world' }
+    error.statusCode = 400
+    reply.send(error)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, res => {
+    t.strictEqual(res.statusCode, 400)
+    t.strictEqual(res.headers.hello, 'world')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'kaboom',
+      statusCode: 400
+    })
+  })
+})
+
+test('should set the status code and the headers from the error object (from custom error handler)', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    const error = new Error('ouch')
+    error.statusCode = 401
+    reply.send(error)
+  })
+
+  fastify.setErrorHandler((err, reply) => {
+    t.is(err.message, 'ouch')
+    t.is(reply.res.statusCode, 401)
+    const error = new Error('kaboom')
+    error.headers = { hello: 'world' }
+    error.statusCode = 400
+    reply.send(error)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, res => {
+    t.strictEqual(res.statusCode, 400)
+    t.strictEqual(res.headers.hello, 'world')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'kaboom',
+      statusCode: 400
+    })
+  })
 })

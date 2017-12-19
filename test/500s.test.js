@@ -37,7 +37,10 @@ test('custom 500', t => {
   })
 
   fastify.setErrorHandler(function (err, reply) {
-    reply.type('text/plain').send('an error happened: ' + err.message)
+    reply
+      .code(500)
+      .type('text/plain')
+      .send('an error happened: ' + err.message)
   })
 
   fastify.inject({
@@ -65,7 +68,10 @@ test('encapsulated 500', t => {
     })
 
     f.setErrorHandler(function (err, reply) {
-      reply.type('text/plain').send('an error happened: ' + err.message)
+      reply
+        .code(500)
+        .type('text/plain')
+        .send('an error happened: ' + err.message)
     })
 
     next()
@@ -104,7 +110,10 @@ test('custom 500 with hooks', t => {
   })
 
   fastify.setErrorHandler(function (err, reply) {
-    reply.type('text/plain').send('an error happened: ' + err.message)
+    reply
+      .code(500)
+      .type('text/plain')
+      .send('an error happened: ' + err.message)
   })
 
   fastify.addHook('onSend', (req, res, payload, next) => {

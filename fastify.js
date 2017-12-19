@@ -156,6 +156,7 @@ function build (options) {
   function fastify (req, res) {
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id })
+    req.originalUrl = req.url
 
     req.log.info({ req }, 'incoming request')
 

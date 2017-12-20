@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tap').test
-const fastify = require('..')()
+const Fastify = require('..')
 
 test('Fastify should throw on wrong options', t => {
   t.plan(2)
@@ -16,6 +16,7 @@ test('Fastify should throw on wrong options', t => {
 
 test('Fastify should throw on multiple assignment to the same route', t => {
   t.plan(1)
+  const fastify = Fastify()
   fastify.get('/', () => {})
   fastify.get('/', () => {})
 
@@ -26,6 +27,7 @@ test('Fastify should throw on multiple assignment to the same route', t => {
 
 test('Should throw on unsupported method', t => {
   t.plan(1)
+  const fastify = Fastify()
   try {
     fastify.route({
       method: 'TROLL',
@@ -41,6 +43,7 @@ test('Should throw on unsupported method', t => {
 
 test('Should throw on missing handler', t => {
   t.plan(1)
+  const fastify = Fastify()
   try {
     fastify.route({
       method: 'GET',
@@ -53,6 +56,7 @@ test('Should throw on missing handler', t => {
 })
 
 test('Should throw if one method is unsupported', t => {
+  const fastify = Fastify()
   t.plan(1)
   try {
     fastify.route({
@@ -70,6 +74,7 @@ test('Should throw if one method is unsupported', t => {
 test('Should throw on duplicate content type parser', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   function customParser (req, done) { done(null, '') }
 
   fastify.addContentTypeParser('application/qq', customParser)
@@ -84,6 +89,7 @@ test('Should throw on duplicate content type parser', t => {
 test('Should throw on duplicate decorator', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   const fooObj = {}
 
   fastify.decorate('foo', fooObj)
@@ -98,6 +104,7 @@ test('Should throw on duplicate decorator', t => {
 test('Should throw on duplicate decorator encapsulation', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   const foo2Obj = {}
 
   fastify.decorate('foo2', foo2Obj)
@@ -111,12 +118,15 @@ test('Should throw on duplicate decorator encapsulation', t => {
     }
     next()
   })
+
+  fastify.ready()
 })
 
 test('Should throw on duplicate request decorator', t => {
   t.plan(1)
 
   const fooObj = {}
+  const fastify = Fastify()
 
   fastify.decorateRequest('foo', fooObj)
   try {
@@ -130,6 +140,7 @@ test('Should throw on duplicate request decorator', t => {
 test('Should throw if request decorator dependencies are not met', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   const fooObj = {}
 
   try {
@@ -143,6 +154,7 @@ test('Should throw if request decorator dependencies are not met', t => {
 test('Should throw on duplicate reply decorator', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   const fooObj = {}
 
   fastify.decorateReply('foo', fooObj)
@@ -157,6 +169,7 @@ test('Should throw on duplicate reply decorator', t => {
 test('Should throw if reply decorator dependencies are not met', t => {
   t.plan(1)
 
+  const fastify = Fastify()
   const fooObj = {}
 
   try {

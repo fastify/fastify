@@ -54,10 +54,10 @@ test('register after listen using Promise.resolve()', t => {
         f2.get('/plugin', handler)
         done()
       })
+      return f.ready()
     })
-    .catch((e) => {
-      t.ok(e)
-    })
+    .catch(t.error)
+    .then(() => t.pass('resolved'))
 })
 
 test('double listen errors', t => {

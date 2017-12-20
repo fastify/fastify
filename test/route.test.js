@@ -49,6 +49,29 @@ test('missing schema - route', t => {
   }
 })
 
+test('invalid schema - route', t => {
+  t.plan(1)
+  try {
+    fastify.route({
+      method: 'GET',
+      url: '/invalid',
+      schema: {
+        querystring: {
+          id: 'string'
+        }
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+    fastify.after(err => {
+      t.ok(err instanceof Error)
+    })
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('Multiple methods', t => {
   t.plan(1)
   try {

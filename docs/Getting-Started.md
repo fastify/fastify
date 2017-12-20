@@ -123,9 +123,14 @@ async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })
-
+  
   fastify.get('/search/:id', async (request, reply) => {
-    return collection.findOne({ id: request.params.id })
+    try {
+      return await collection.findOne({ id: request.params.id })
+    } catch (err) {
+      reg.log.error(err)
+      return new Error('Something went wrong')
+    }
   })
 }
 

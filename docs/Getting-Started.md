@@ -125,7 +125,7 @@ async function routes (fastify, options) {
   })
 
   fastify.get('/search/:id', async (request, reply) => {
-    return await collection.findOne({ id: request.params.id })
+    return collection.findOne({ id: request.params.id })
   })
 }
 

@@ -70,43 +70,6 @@ test('handler function - invalid schema', t => {
   internals.handler(context, null, {}, res, { hello: 'world' }, null)
 })
 
-test('handler function - invalid schema - ajv', t => {
-  t.plan(1)
-  const res = {}
-  res.end = () => {
-    Reply.prototype._extendServerError = null
-    return
-  }
-  res.setHeader = (key, value) => {
-    return
-  }
-  res.getHeader = (key) => {
-    return
-  }
-  res.log = { error: () => {}, info: () => {} }
-  const context = {
-    schema: {
-      body: {
-        type: 'object',
-        properties: {
-          hello: { type: 'number' }
-        }
-      }
-    },
-    handler: () => {},
-    Reply: Reply,
-    Request: Request,
-    preHandler: runHooks(new Hooks().preHandler, {}),
-    onSend: runHooks(new Hooks().onSend, {})
-  }
-  Reply.prototype._extendServerError = (err) => {
-    t.ok(Array.isArray(err.validation))
-    return
-  }
-  buildSchema(context, schemaCompiler)
-  internals.handler(context, null, {}, res, { hello: 'world' }, null)
-})
-
 test('handler function - reply', t => {
   t.plan(3)
   const res = {}

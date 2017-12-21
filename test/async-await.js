@@ -341,6 +341,40 @@ function asyncTest (t) {
       )
     })
   })
+
+  test('customErrorHandler support', t => {
+    t.plan(3)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      const error = new Error('ouch')
+      error.statusCode = 400
+      throw error
+    })
+
+    fastify.setErrorHandler(async err => {
+      t.is(err.message, 'ouch')
+      const error = new Error('kaboom')
+      error.statusCode = 401
+      throw error
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.strictEqual(res.statusCode, 401)
+      t.deepEqual(
+        {
+          error: statusCodes['401'],
+          message: 'kaboom',
+          statusCode: 401
+        },
+        JSON.parse(res.payload)
+      )
+    })
+  })
 }
 
 module.exports = asyncTest

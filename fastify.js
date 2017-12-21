@@ -129,7 +129,6 @@ function build (options) {
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
   fastify.decorateRequest = decorator.decorateRequest
-  fastify.extendServerError = decorator.extendServerError
 
   fastify._Reply = Reply.buildReply(Reply)
   fastify._Request = Request.buildRequest(Request)
@@ -375,7 +374,7 @@ function build (options) {
       onSend: options.onSend,
       config: options.config,
       middie: self._middie,
-      errorHander: self._errorHandler,
+      errorHandler: self._errorHandler,
       schemaCompiler: options.schemaCompiler
     })
   }
@@ -417,7 +416,7 @@ function build (options) {
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
         config,
-        opts.errorHander || _fastify._errorHandler,
+        opts.errorHandler || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 

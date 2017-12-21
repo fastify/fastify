@@ -35,3 +35,24 @@ test('handlers receive correct `this` context', (t) => {
     http.get(address, () => {}).on('error', t.threw)
   })
 })
+
+test('handlers have access to the internal context', (t) => {
+  t.plan(5)
+
+  const instance = fastify()
+  instance.get('/', {config: {foo: 'bar'}}, function (req, reply) {
+    t.ok(reply.context)
+    t.ok(reply.context.config)
+    t.type(reply.context.config, Object)
+    t.ok(reply.context.config.foo)
+    t.is(reply.context.config.foo, 'bar')
+    reply.send()
+  })
+
+  instance.listen(0, (err) => {
+    instance.server.unref()
+    if (err) t.threw(err)
+    const address = `http://127.0.0.1:${instance.server.address().port}/`
+    http.get(address, () => {}).on('error', t.threw)
+  })
+})

@@ -15,13 +15,22 @@ Reply is a core Fastify object that exposes the following functions:
 
 ```js
 fastify.get('/', options, function (request, reply) {
-  // You code
+  // Your code
   reply
     .code(200)
     .header('Content-Type', 'application/json')
     .send({ hello: 'world' })
 })
 ```
+
+Additionally, `Reply` provides access to the context of the request:
+
+```js
+fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
+  reply.send('handler config.foo = ' + reply.context.config.foo)
+})
+```
+
 <a name="code"></a>
 ### Code
 If not set via `reply.code`, the resulting `statusCode` will be `200`.

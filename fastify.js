@@ -255,18 +255,20 @@ function build (options) {
 
   function middlewareCallback (err, state) {
     if (err) {
-      const request = new Request(state.params, state.req, null, null, state.req.headers, state.req.log)
-      const reply = new Reply(state.res, state.context, request)
+      const req = state.req
+      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new state.context.Reply(state.res, state.context, request)
       reply.send(err)
       return
     }
+
     state.context._middie.run(state.req, state.res, state)
   }
 
   function onRunMiddlewares (err, req, res, state) {
     if (err) {
-      const request = new Request(state.params, req, null, null, req.headers, req.log)
-      const reply = new Reply(res, state.context, request)
+      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new state.context.Reply(res, state.context, request)
       reply.send(err)
       return
     }

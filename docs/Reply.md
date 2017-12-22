@@ -142,6 +142,14 @@ If you want it extend this error, check out [`extendServerError`](https://github
 
 *If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
+Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module to generate errors:
+
+```js
+fastify.get('/', function (request, reply) {
+  reply.send(httpErrors.Gone())
+})
+```
+
 <a name="payload-type"></a>
 #### Type of the final payload
 It is crucial that the sent payload is a `string` or a `Buffer`, otherwise *send* will throw at runtime.

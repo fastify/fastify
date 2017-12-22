@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Request
-The first parameter of the handler function is `Request`.  
+The first parameter of the handler function is `Request`.<br>
 Request is a core Fastify object containing the following fields:
 - `query` - the parsed querystring
 - `body` - the body

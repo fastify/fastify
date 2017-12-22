@@ -58,13 +58,13 @@ fastify.route({
 
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:  
-`fastify.get(path, [options], handler)`  
-`fastify.head(path, [options], handler)`  
-`fastify.post(path, [options], handler)`  
-`fastify.put(path, [options], handler)`  
-`fastify.delete(path, [options], handler)`  
-`fastify.options(path, [options], handler)`  
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:<br>
+`fastify.get(path, [options], handler)`<br>
+`fastify.head(path, [options], handler)`<br>
+`fastify.post(path, [options], handler)`<br>
+`fastify.put(path, [options], handler)`<br>
+`fastify.delete(path, [options], handler)`<br>
+`fastify.options(path, [options], handler)`<br>
 `fastify.patch(path, [options], handler)`
 
 Example:
@@ -90,7 +90,7 @@ fastify.get('/', opts, (req, reply) => {
 
 <a name="url-building"></a>
 ### Url building
-Fastify supports both static and dynamic urls.  
+Fastify supports both static and dynamic urls.<br>
 To register a **parametric** path, use the *colon* before the parameter name. For **wildcard** use the *star*.
 *Remember that static routes are always checked before parametric and wildcard.*
 

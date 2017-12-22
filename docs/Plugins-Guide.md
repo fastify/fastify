@@ -16,7 +16,7 @@ Fastify has been built since the beginning to be an extremely modular system, we
 
 <a name="register"></a>
 ## Register
-As in JavaScript everything is an object, in Fastify everything is a plugin.  
+As in JavaScript everything is an object, in Fastify everything is a plugin.<br>
 Your routes, your utilities and so on are all plugins. And to add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 ```js
 fastify.register(
@@ -27,12 +27,12 @@ fastify.register(
 `register` creates for you a new Fastify context, this means that if you do any change to the Fastify instance, that change(s) will not be reflected into the context's ancestors. In other words, encapsulation!
 
 
-*Why encapsulation is important?*  
-Well, let's say you are creating a new disruptive startup, what do you do? You create an api server with all your stuff, everything in the same place, a monolith!  
-Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies an huge amount of work, because of cross dependencies and the lack of separation of concerns.  
+*Why encapsulation is important?*<br>
+Well, let's say you are creating a new disruptive startup, what do you do? You create an api server with all your stuff, everything in the same place, a monolith!<br>
+Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies an huge amount of work, because of cross dependencies and the lack of separation of concerns.<br>
 Fastify helps you a lot in this direction, because thanks to the encapsulation model it will completely avoid cross dependencies, and will help you structure your code in cohesive blocks.
 
-*Let's return to how to use correctly `register`.*  
+*Let's return to how to use correctly `register`.*<br>
 As you probably know, the required plugins must expose a single function with the following signature
 ```js
 module.exports = function (fastify, options, next) {}
@@ -74,7 +74,7 @@ Create a decorator is extremely easy, just use the [`decorate`](https://github.c
 ```js
 fastify.decorate('util', (a, b) => a + b)
 ```
-Now you can access your utility just by doing `fastify.util` whenever you need it, even inside your test.  
+Now you can access your utility just by doing `fastify.util` whenever you need it, even inside your test.<br>
 And here's starts the magic; do you remember that few lines above we talked about encapsulation? Well, use `register` and `decorate` in conjunction enable exactly that, let me show you an example to clarify this:
 ```js
 fastify.register((instance, opts, next) => {
@@ -90,7 +90,7 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
-Inside the second register call `instance.util` will throw an error, because `util` exist only inside the first register context.  
+Inside the second register call `instance.util` will throw an error, because `util` exist only inside the first register context.<br>
 Let's step back for a moment and get deepen on this: when using the `register` api you will create a new context every time and this avoid situations like the one mentioned few line above. But pay attention, the encapsulation works only for the ancestors and the brothers, but not for the sons.
 ```js
 fastify.register((instance, opts, next) => {
@@ -115,7 +115,7 @@ fastify.register((instance, opts, next) => {
 
 `decorate` is not the unique api that you can use to extend the server functionalities, you can also use `decorateRequest` and `decorateReply`.
 
-*`decorateRequest` and `decorateReply`? Why do we need them if we already have `decorate`?*  
+*`decorateRequest` and `decorateReply`? Why do we need them if we already have `decorate`?*<br>
 Good question, we added them to make Fastify more developer-friendly. Let's see an example:
 ```js
 fastify.decorate('html', payload => {
@@ -193,7 +193,7 @@ fastify.get('/plugin2', (req, reply) => {
 ```
 I think we all agree that this is terrible. Code repeat, awful readability and it cannot scale.
 
-So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!  
+So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!<br>
 ```js
 fastify.decorate('util', (req, key, value) => { req.key = value })
 
@@ -210,7 +210,7 @@ fastify.get('/plugin2', (req, reply) => {
   reply.send(req)
 })
 ```
-Now for every request you will run your utility, it is obvious that you can register as many hooks as you need.  
+Now for every request you will run your utility, it is obvious that you can register as many hooks as you need.<br>
 It can happen that you want a hook that must be executed just for a subset of routes, how can you do that?  Yep, encapsulation!
 
 ```js
@@ -235,12 +235,12 @@ fastify.get('/plugin2', (req, reply) => {
 ```
 Now your hook will run just for the first route!
 
-As you probably noticed at this time, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.  
+As you probably noticed at this time, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.<br>
 Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that do exactly what you need, and you don't want to redo all the work.
 
 <a name="middlewares"></a>
 ## Middlewares
-Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*  
+Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*<br>
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
 const yourMiddleware = require('your-middleware')
@@ -249,12 +249,12 @@ fastify.use(yourMiddleware)
 
 <a name="distribution"></a>
 ## How to handle encapsulation and distribution
-Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.  
+Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.<br>
 How can you distribute your code?
 
 The preferred way to distribute an utility is to wrap all your code inside a `register`, in this way your plugin can support an asynchronous bootstrap *(since `decorate` is a synchronous api)*, in the case of a database connection for example.
 
-*Wait, what? Don't you told me that `register` creates and encapsulation and what I create inside there will not be available outside?*  
+*Wait, what? Don't you told me that `register` creates and encapsulation and what I create inside there will not be available outside?*<br>
 Yes, I told that. But what I didn't told you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
 ```js
 const fp = require('fastify-plugin')
@@ -274,7 +274,7 @@ You can also tell to `fastify-plugin` to check the installed version of Fastify,
 <a name="handle-errors"></a>
 ## Handle errors
 It can happen that one of your plugins could fail during the startup. Maybe you expect it and you have a custom logic that will be triggered in that case. How can you do this?
-The `after` api is what you need. `after` simply register a callback that will be executed just after a register, and it can take up to three parameters.  
+The `after` api is what you need. `after` simply register a callback that will be executed just after a register, and it can take up to three parameters.<br>
 The callback changes basing on the parameters your are giving:
 
 1. If no parameter is given to the callback and there is an error, that error will be passed to the next error handler.

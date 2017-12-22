@@ -39,7 +39,7 @@ module.exports = function (fastify, options, next) {}
 ```
 Where `fastify` is (pretty obvious) the encapsulated Fastify instance, `options` is the options object and `next` is the function you **must** call when you plugin is ready.
 
-The Fastify's plugin model is fully reentrant and graph-based, it handles without any kind of problem asynchronous code and it guarantees the load order of the plugins, even the close order! *How?* Glad you asked, checkout [`avvio`](https://github.com/mcollina/avvio)!
+Fastify's plugin model is fully reentrant and graph-based, it handles without any kind of problem asynchronous code and it guarantees the load order of the plugins, even the close order! *How?* Glad you asked, checkout [`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin __after__ `.listen()`, `.inject()` or .ready()` are called.
 
 Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `next` when everything is set up!
 ```js

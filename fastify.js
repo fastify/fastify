@@ -54,7 +54,9 @@ function build (options) {
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
 
-  const app = avvio(fastify, {})
+  const app = avvio(fastify, {
+    autostart: false
+  })
   // Override to allow the plugin incapsulation
   app.override = override
 

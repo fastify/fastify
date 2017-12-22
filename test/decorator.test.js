@@ -43,8 +43,8 @@ test('hasServerMethod should check if the given method already exist', t => {
   })
 })
 
-test('addServerMethod should throw if a declared dependency is not present', t => {
-  t.plan(1)
+test('decorate should throw if a declared dependency is not present', t => {
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
@@ -54,7 +54,10 @@ test('addServerMethod should throw if a declared dependency is not present', t =
     } catch (e) {
       t.is(e.message, 'Fastify decorator: missing dependency: \'dependency\'.')
     }
+    next()
   })
+
+  fastify.ready(() => t.pass())
 })
 
 test('decorateReply inside register', t => {

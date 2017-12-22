@@ -138,9 +138,8 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
-If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).
-
-*If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
+You can add some custom property to the Error object, such as `code` and `headers`, that will be used to enhance the http response.<br>
+*Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module to generate errors:
 
@@ -149,6 +148,8 @@ fastify.get('/', function (request, reply) {
   reply.send(httpErrors.Gone())
 })
 ```
+
+If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#seterrorhandler) API.
 
 <a name="payload-type"></a>
 #### Type of the final payload

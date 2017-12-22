@@ -469,7 +469,7 @@ test('log debug for 404', t => {
 
       const INFO_LEVEL = 30
       t.strictEqual(JSON.parse(logStream.logs[0]).msg, 'incoming request')
-      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not found')
+      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not Found')
       t.strictEqual(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
       t.strictEqual(JSON.parse(logStream.logs[2]).msg, 'request completed')
       t.strictEqual(logStream.logs.length, 3)

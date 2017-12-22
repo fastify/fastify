@@ -209,8 +209,18 @@ Read the [testing](https://github.com/fastify/fastify/blob/master/docs/Testing.m
 
 <a name="cli"></a>
 ### Run your server from CLI
-Fastify also has CLI integration thanks to [fastify-cli](https://github.com/fastify/fastify-cli). It's very easy!  
-Simply add the following lines to `package.json`:
+Fastify also has CLI integration thanks to
+[fastify-cli](https://github.com/fastify/fastify-cli).
+
+First, install `fastify-cli`:
+
+```
+npm i fastify-cli
+```
+
+You can also install it globally with `-g`.
+
+Then, add the following lines to `package.json`:
 ```json
 {
   "scripts": {

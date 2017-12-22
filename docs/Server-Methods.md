@@ -15,6 +15,15 @@ fastify.ready(err => {
   if (err) throw err
 })
 ```
+If it is called without any arguments, it will return a `Promise`:
+
+```js
+fastify.ready().then(() => {
+  console.log('successfully booted!')
+}, (err) => {
+  console.log('an error happened', err)
+})
+```
 
 <a name="listen"></a>
 #### listen

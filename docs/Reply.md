@@ -86,7 +86,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="async-await-promise"></a>
 #### Async-Await and Promises
-Fastify natively handles promies and supports async-await.  
+Fastify natively handles promies and supports async-await.<br>
 *Note that in the following examples we are not using reply.send.*
 ```js
 fastify.get('/promises', options, function (request, reply) {

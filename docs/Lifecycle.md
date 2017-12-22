@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Lifecycle
-Following the schema of the internal lifecycle of Fastify.  
+Following the schema of the internal lifecycle of Fastify.<br>
 On the right branch of every section there is the next phase of the lifecycle, on the left branch there is the corresponding error code that will be generated if the parent throws an error *(note that all the errors are automatically handled by Fastify)*.
 ```
 Incoming Request

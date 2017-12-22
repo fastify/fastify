@@ -56,27 +56,6 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
-<a name="extend-server-error"></a>
-**extendServerError**
-If you need to extend the standard [server error](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors), this API is what you need. You *must* pass a function that returns an object, and Fastify will extend the server error with the object returned by your function. The function will receive the original error object:
-```js
-fastify.extendServerError((err) => {
-  return {
-    timestamp: new Date()
-  }
-})
-
-/*
-  The resulting object will be:
-  {
-    error: String
-    message: String
-    statusCode: Number
-    timestamp: Date
-  }
-*/
-```
-
 <a name="sync-async"></a>
 #### Sync and Async
 `decorate` is a *synchronous* API. If you need to add a decorator that has an *asynchronous* bootstrap, Fastify could boot up before your decorator is ready. To avoid this issue, you must use the `register` API in combination with `fastify-plugin`. To learn more, check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.

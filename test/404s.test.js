@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 
@@ -469,7 +470,7 @@ test('log debug for 404', t => {
 
       const INFO_LEVEL = 30
       t.strictEqual(JSON.parse(logStream.logs[0]).msg, 'incoming request')
-      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not Found')
+      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not found')
       t.strictEqual(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
       t.strictEqual(JSON.parse(logStream.logs[2]).msg, 'request completed')
       t.strictEqual(logStream.logs.length, 3)
@@ -503,6 +504,40 @@ test('Unsupported method', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
+      })
+    })
+  })
+})
+
+test('recognizes errors from the http-errors module', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(httpErrors.NotFound())
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, res => {
+      t.strictEqual(res.statusCode, 404)
+
+      sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {
+        console.log(body.toString())
+        t.error(err)
+        const obj = JSON.parse(body.toString())
+        t.strictDeepEqual(obj, {
+          error: 'Not Found',
+          message: 'Not Found',
+          statusCode: 404
+        })
       })
     })
   })

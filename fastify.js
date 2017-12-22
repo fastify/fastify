@@ -9,7 +9,6 @@ const Middie = require('middie')
 const runHooks = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
-const httpError = require('http-errors')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -585,7 +584,7 @@ function build (options) {
   }
 
   function basic404 (req, reply) {
-    reply.code(404).send(httpError.NotFound())
+    reply.code(404).send(new Error('Not found'))
   }
 
   function fourOhFourFallBack (req, res) {
@@ -597,7 +596,7 @@ function build (options) {
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, null, req.headers, req.log)
     const reply = new Reply(res, { onSend: runHooks([], null) }, request)
-    reply.code(404).send(httpError.NotFound())
+    reply.code(404).send(new Error('Not found'))
   }
 
   function setNotFoundHandler (opts, handler) {

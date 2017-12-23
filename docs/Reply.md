@@ -86,7 +86,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="async-await-promise"></a>
 #### Async-Await and Promises
-Fastify natively handles promies and supports async-await.<br>
+Fastify natively handles promises and supports async-await.<br>
 *Note that in the following examples we are not using reply.send.*
 ```js
 fastify.get('/promises', options, function (request, reply) {
@@ -119,7 +119,7 @@ If you want to know more please review [Routes#async-await](https://github.com/f
 
 <a name="send-streams"></a>
 #### Streams
-*send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not setted a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
+*send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('fs')

@@ -27,14 +27,14 @@ function schemaCompiler (schema) {
 
 test('Request object', t => {
   t.plan(7)
-  const req = new Request('params', 'req', 'body', 'query', 'headers', 'log')
+  const req = new Request('params', 'req', 'query', 'headers', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
   t.deepEqual(req.req, 'req')
-  t.equal(req.body, 'body')
   t.equal(req.query, 'query')
   t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')
+  t.equal(req.body, null)
 })
 
 test('handler function - invalid schema', t => {
@@ -67,7 +67,10 @@ test('handler function - invalid schema', t => {
     onSend: runHooks(new Hooks().onSend, {})
   }
   buildSchema(context, schemaCompiler)
-  internals.handler(context, null, {}, res, { hello: 'world' }, null)
+  const request = {
+    body: { hello: 'world' }
+  }
+  internals.handler(new Reply(res, context, request))
 })
 
 test('handler function - reply', t => {
@@ -95,28 +98,14 @@ test('handler function - reply', t => {
     onSend: runHooks(new Hooks().onSend, {})
   }
   buildSchema(context, schemaCompiler)
-  internals.handler(context, null, { log: null }, res, null, null)
+  internals.handler(new Reply(res, context, {}))
 })
 
-test('jsonBody and jsonBodyParsed should be functions', t => {
-  t.plan(4)
+test('jsonBody should be a function', t => {
+  t.plan(2)
 
   t.is(typeof internals.jsonBody, 'function')
-  t.is(internals.jsonBody.length, 4)
-
-  t.is(typeof internals.jsonBodyParsed, 'function')
-  t.is(internals.jsonBodyParsed.length, 6)
-})
-
-test('jsonBody error handler', t => {
-  t.plan(1)
-
-  try {
-    internals.jsonBody({ on: 'error' }, {})
-    t.fail('jsonBody error')
-  } catch (e) {
-    t.pass('jsonBody error')
-  }
+  t.is(internals.jsonBody.length, 2)
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

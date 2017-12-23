@@ -67,7 +67,7 @@ $ npx h2url https://localhost:3000
 ### Plain or insecure
 
 If you are building microservices, you can connect to HTTP2 in plain
-text, however this is not supported by the browers.
+text, however this is not supported by browsers.
 
 ```js
 'use strict'

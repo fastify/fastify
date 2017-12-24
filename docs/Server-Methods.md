@@ -15,6 +15,15 @@ fastify.ready(err => {
   if (err) throw err
 })
 ```
+If it is called without any arguments, it will return a `Promise`:
+
+```js
+fastify.ready().then(() => {
+  console.log('successfully booted!')
+}, (err) => {
+  console.log('an error happened', err)
+})
+```
 
 <a name="listen"></a>
 #### listen
@@ -128,4 +137,4 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers.
+`fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers, *async await* is supported as well.

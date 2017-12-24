@@ -1,11 +1,8 @@
 {
   "name": "fastify",
-  "version": "0.36.0",
+  "version": "0.37.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
-  "bin": {
-    "fastify": "./lib/bin.js"
-  },
   "typings": "fastify.d.ts",
   "scripts": {
     "lint": "standard | snazzy",
@@ -68,7 +65,6 @@
   },
   "devDependencies": {
     "autocannon": "^0.16.5",
-    "boom": "~5.1.0",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.1",
     "cors": "^2.8.4",
@@ -76,12 +72,13 @@
     "dns-prefetch-control": "^0.1.0",
     "fast-json-body": "^1.1.0",
     "fast-safe-stringify": "^1.2.1",
-    "fastify-plugin": "^0.1.1",
+    "fastify-plugin": "^0.2.1",
     "frameguard": "^3.0.0",
-    "h2url": "^0.1.1",
+    "h2url": "^0.1.2",
     "helmet": "^3.9.0",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.1.0",
+    "http-errors": "^1.6.2",
     "ienoopen": "^1.0.0",
     "joi": "~11.3.4",
     "pre-commit": "^1.2.2",
@@ -97,18 +94,17 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "^8.0.54",
+    "@types/node": "^8.5.2",
     "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
-    "ajv": "^5.5.1",
-    "avvio": "^3.2.0",
+    "ajv": "^5.5.2",
+    "avvio": "^4.0.1",
     "fast-iterator": "^0.2.1",
-    "fast-json-stringify": "^0.15.1",
-    "fastify-cli": "^0.11.0",
+    "fast-json-stringify": "^0.16.0",
     "find-my-way": "^1.8.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^1.1.1",
-    "middie": "^2.1.1",
+    "middie": "^3.0.0",
     "pino": "^4.10.2",
     "pump": "^2.0.0"
   },

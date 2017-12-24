@@ -91,7 +91,7 @@ npm install fastify-url-data @types/fastify-url-data
 After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
 
 <a id="authoring-plugin-types"></a>
-### Authouring Plugin Types
+### Authoring Plugin Types
 Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
 
 This code demonstrates adding types for `fastify-url-data` to your application.

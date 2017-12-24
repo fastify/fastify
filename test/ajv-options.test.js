@@ -39,14 +39,15 @@ test('ajv - removeAdditional', t => {
       removeAdditional: true
     }
   })
+
+  fastify.post('/', schemaWithFilter, function (req, reply) {
+    t.deepEqual(req.body, { a: 1 })
+    reply.code(200).send({})
+  })
+
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
-
-    fastify.post('/', schemaWithFilter, function (req, reply) {
-      t.deepEqual(req.body, { a: 1 })
-      reply.code(200).send({})
-    })
 
     sget({
       method: 'POST',
@@ -68,14 +69,15 @@ test('ajv - useDefaults', t => {
       useDefaults: true
     }
   })
+
+  fastify.post('/', schemaWithDefaults, function (req, reply) {
+    t.deepEqual(req.body, { a: 100 })
+    reply.code(200).send({})
+  })
+
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
-
-    fastify.post('/', schemaWithDefaults, function (req, reply) {
-      t.deepEqual(req.body, { a: 100 })
-      reply.code(200).send({})
-    })
 
     sget({
       method: 'POST',

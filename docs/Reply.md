@@ -15,13 +15,22 @@ Reply is a core Fastify object that exposes the following functions:
 
 ```js
 fastify.get('/', options, function (request, reply) {
-  // You code
+  // Your code
   reply
     .code(200)
     .header('Content-Type', 'application/json')
     .send({ hello: 'world' })
 })
 ```
+
+Additionally, `Reply` provides access to the context of the request:
+
+```js
+fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
+  reply.send('handler config.foo = ' + reply.context.config.foo)
+})
+```
+
 <a name="code"></a>
 ### Code
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
@@ -77,7 +86,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="async-await-promise"></a>
 #### Async-Await and Promises
-Fastify natively handles promies and supports async-await.  
+Fastify natively handles promises and supports async-await.<br>
 *Note that in the following examples we are not using reply.send.*
 ```js
 fastify.get('/promises', options, function (request, reply) {
@@ -110,7 +119,7 @@ If you want to know more please review [Routes#async-await](https://github.com/f
 
 <a name="send-streams"></a>
 #### Streams
-*send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not setted a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
+*send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('fs')
@@ -129,9 +138,18 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
-If you want it extend this error, check out [`extendServerError`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md#extend-server-error).
+You can add some custom property to the Error object, such as `code` and `headers`, that will be used to enhance the http response.<br>
+*Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
-*If you are passing an error to send and the statusCode is less than 400, Fastify will automatically set it at 500.*
+Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module to generate errors:
+
+```js
+fastify.get('/', function (request, reply) {
+  reply.send(httpErrors.Gone())
+})
+```
+
+If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#seterrorhandler) API.
 
 <a name="payload-type"></a>
 #### Type of the final payload

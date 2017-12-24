@@ -9,13 +9,14 @@ const zlib = require('zlib')
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(9)
+  t.plan(10)
   const response = { res: 'res' }
   function context () {}
   function request () {}
   const reply = new Reply(response, context, request)
   t.is(typeof reply, 'object')
-  t.is(typeof reply[Reply.isError], 'boolean')
+  t.is(typeof reply._isError, 'boolean')
+  t.is(typeof reply._customError, 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')

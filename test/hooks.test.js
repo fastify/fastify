@@ -507,16 +507,20 @@ test('onSend hook throws', t => {
   })
 })
 
-test('onSend hook should receive a valid request object if onRequest hook fails', t => {
-  t.plan(2)
+test('onSend hook should receive valid request and reply objects if onRequest hook fails', t => {
+  t.plan(3)
   const fastify = Fastify()
+
+  fastify.decorateRequest('testDecorator', 'testDecoratorVal')
+  fastify.decorateReply('testDecorator', 'testDecoratorVal')
 
   fastify.addHook('onRequest', function (req, res, next) {
     next(new Error('onRequest hook failed'))
   })
 
   fastify.addHook('onSend', function (request, reply, payload, next) {
-    t.type(request, 'object')
+    t.strictEqual(request.testDecorator, 'testDecoratorVal')
+    t.strictEqual(reply.testDecorator, 'testDecoratorVal')
     next()
   })
 
@@ -532,16 +536,20 @@ test('onSend hook should receive a valid request object if onRequest hook fails'
   })
 })
 
-test('onSend hook should receive a valid request object if middleware fails', t => {
-  t.plan(2)
+test('onSend hook should receive valid request and reply objects if middleware fails', t => {
+  t.plan(3)
   const fastify = Fastify()
+
+  fastify.decorateRequest('testDecorator', 'testDecoratorVal')
+  fastify.decorateReply('testDecorator', 'testDecoratorVal')
 
   fastify.use(function (req, res, next) {
     next(new Error('middlware failed'))
   })
 
   fastify.addHook('onSend', function (request, reply, payload, next) {
-    t.type(request, 'object')
+    t.strictEqual(request.testDecorator, 'testDecoratorVal')
+    t.strictEqual(reply.testDecorator, 'testDecoratorVal')
     next()
   })
 
@@ -557,16 +565,20 @@ test('onSend hook should receive a valid request object if middleware fails', t 
   })
 })
 
-test('onSend hook should receive a valid request object if a custom content type parser fails', t => {
-  t.plan(2)
+test('onSend hook should receive valid request and reply objects if a custom content type parser fails', t => {
+  t.plan(3)
   const fastify = Fastify()
+
+  fastify.decorateRequest('testDecorator', 'testDecoratorVal')
+  fastify.decorateReply('testDecorator', 'testDecoratorVal')
 
   fastify.addContentTypeParser('*', function (req, done) {
     done(new Error('content type parser failed'))
   })
 
   fastify.addHook('onSend', function (request, reply, payload, next) {
-    t.type(request, 'object')
+    t.strictEqual(request.testDecorator, 'testDecoratorVal')
+    t.strictEqual(reply.testDecorator, 'testDecoratorVal')
     next()
   })
 

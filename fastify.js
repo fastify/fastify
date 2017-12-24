@@ -56,7 +56,9 @@ function build (options) {
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = loggerUtils.onResponseCallback
 
-  const app = avvio(fastify, {})
+  const app = avvio(fastify, {
+    autostart: false
+  })
   // Override to allow the plugin incapsulation
   app.override = override
 
@@ -138,7 +140,6 @@ function build (options) {
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
   fastify.decorateRequest = decorator.decorateRequest
-  fastify.extendServerError = decorator.extendServerError
 
   fastify._Reply = Reply.buildReply(Reply)
   fastify._Request = Request.buildRequest(Request)
@@ -169,6 +170,7 @@ function build (options) {
   function fastify (req, res) {
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id })
+    req.originalUrl = req.url
 
     req.log.info({ req }, 'incoming request')
 
@@ -267,18 +269,20 @@ function build (options) {
 
   function middlewareCallback (err, state) {
     if (err) {
-      const request = new Request(state.params, state.req, null, null, state.req.headers, state.req.log)
-      const reply = new Reply(state.res, state.context, request)
+      const req = state.req
+      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new state.context.Reply(state.res, state.context, request)
       reply.send(err)
       return
     }
+
     state.context._middie.run(state.req, state.res, state)
   }
 
   function onRunMiddlewares (err, req, res, state) {
     if (err) {
-      const request = new Request(state.params, req, null, null, req.headers, req.log)
-      const reply = new Reply(res, state.context, request)
+      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const reply = new state.context.Reply(res, state.context, request)
       reply.send(err)
       return
     }
@@ -385,7 +389,7 @@ function build (options) {
       onSend: options.onSend,
       config: options.config,
       middie: self._middie,
-      errorHander: self._errorHandler,
+      errorHandler: self._errorHandler,
       schemaCompiler: options.schemaCompiler
     })
   }
@@ -427,18 +431,23 @@ function build (options) {
         opts.Request || _fastify._Request,
         opts.contentTypeParser || _fastify._contentTypeParser,
         config,
-        opts.errorHander || _fastify._errorHandler,
+        opts.errorHandler || _fastify._errorHandler,
         opts.middie || _fastify._middie
       )
 
-      buildSchema(
-        context,
-        opts.schemaCompiler || _fastify._schemaCompiler,
-        // using the getSchema to re-use the cache created for that
-        opts.schemaResolver || _fastify.getSchema,
-        resolveStringifier,
-        allSchemas
-      )
+      try {
+        buildSchema(
+          context,
+          opts.schemaCompiler || _fastify._schemaCompiler,
+          // using the getSchema to re-use the cache created for that
+          opts.schemaResolver || _fastify.getSchema,
+          resolveStringifier,
+          allSchemas
+        )
+      } catch (error) {
+        done(error)
+        return
+      }
 
       const onRequest = opts.onRequest || _fastify._hooks.onRequest
       const onResponse = opts.onResponse || _fastify._hooks.onResponse

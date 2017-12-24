@@ -81,16 +81,14 @@ declare namespace fastify {
   }
   interface ServerOptionsAsSecureHttp2 extends ServerOptionsAsHttp2, ServerOptionsAsSecure {}
 
-  // TODO - define/import JSONSchema types
-  type JSONSchemaInstance = Object
-
   interface JSONSchema {
-    body?: JSONSchemaInstance
-    querystring?: JSONSchemaInstance
-    params?: JSONSchemaInstance
+    // TODO - define/import JSONSchema types
+    body?: Object
+    querystring?: Object
+    params?: Object
     response?: {
-      [code: number]: JSONSchemaInstance,
-      [code: string]: JSONSchemaInstance
+      [code: number]: Object,
+      [code: string]: Object
     }
   }
 
@@ -362,27 +360,12 @@ declare namespace fastify {
     /**
      * Adds a schema
      */
-    addSchema(schema: JSONSchemaInstance, keyRef?: string): void
+    addSchema(schema: Object, keyRef?: string): void
 
     /**
      * Gets a function to validate using a saved schema
      */
     getSchema(keyRef: string): ValidateFunction
-
-    /**
-     * Validates an object using a saved schema - errors are inaccessible
-     */
-    validate(keyRef: string, payload: Object): boolean
-
-    /**
-     * Gets a function to stringify an object using a saved schema
-     */
-    getStringify(keyRef: string): (payload: Object) => string
-
-    /**
-     * Stringifies an object using a saved schema
-     */
-    stringify(keyRef: string, payload: Object): string
   }
 }
 

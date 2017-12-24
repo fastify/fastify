@@ -95,6 +95,7 @@ function build (options) {
   const allSchemas = {}
   const ajvContext = { ajv }
   const defaultSchemaResolver = schemaCompiler.bind(ajvContext, null)
+  const resolveStringifier = createMapCache(createStringifier)
 
   // shorthand methods
   fastify.delete = _delete
@@ -150,7 +151,6 @@ function build (options) {
   // schema methods
   fastify.addSchema = addSchema
   fastify.getSchema = createMapCache(getSchema)
-  fastify.resolveStringifier = createMapCache(createStringifier)
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -436,7 +436,7 @@ function build (options) {
         opts.schemaCompiler || _fastify._schemaCompiler,
         // using the getSchema to re-use the cache created for that
         opts.schemaResolver || _fastify.getSchema,
-        _fastify.resolveStringify,
+        resolveStringifier,
         allSchemas
       )
 

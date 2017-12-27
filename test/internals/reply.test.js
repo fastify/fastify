@@ -280,3 +280,85 @@ test('plain string with content type application/json should be serialized as js
     })
   })
 })
+
+test('reply.notFound() should invoke the 404 handler', t => {
+  t.plan(9)
+
+  const fastify = require('../..')()
+
+  fastify.get('/not-found', function (req, reply) {
+    reply.notFound()
+  })
+
+  fastify.register(function (instance, options, next) {
+    instance.get('/not-found', function (req, reply) {
+      reply.notFound()
+    })
+
+    instance.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('Custom not found response')
+    })
+
+    next()
+  }, {prefix: '/prefixed'})
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(body.toString(), '{"error":"Not Found","message":"Not found","statusCode":404}')
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/prefixed/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body.toString(), 'Custom not found response')
+    })
+  })
+})
+
+test('reply.notFound() should log a warning and send a basic response if called inside a 404 handler', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+
+  fastify.get('/not-found', function (req, reply) {
+    reply.notFound()
+  })
+
+  fastify.setNotFoundHandler(function (req, reply) {
+    reply.res.log.warn = function mockWarn (message) {
+      t.type(message, 'string')
+    }
+
+    reply.notFound()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body.toString(), '404 Not Found')
+    })
+  })
+})

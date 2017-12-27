@@ -419,7 +419,8 @@ function build (options) {
         opts.contentTypeParser || _fastify._contentTypeParser,
         config,
         opts.errorHandler || _fastify._errorHandler,
-        opts.middie || _fastify._middie
+        opts.middie || _fastify._middie,
+        _fastify
       )
 
       try {
@@ -476,7 +477,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -489,6 +490,7 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
+    this._fastify = fastify
   }
 
   function iterator () {
@@ -625,7 +627,8 @@ function build (options) {
         opts.contentTypeParser || this._contentTypeParser,
         opts.config || {},
         this._errorHandler,
-        this._middie
+        this._middie,
+        null
       )
 
       const onRequest = this._hooks.onRequest

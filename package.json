@@ -91,11 +91,11 @@
     "tap": "^11.0.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.6.2",
+    "@types/node": "^8.5.2",
+    "@types/pino": "^4.7.0",
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "^8.5.2",
-    "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^5.5.2",
     "avvio": "^4.0.1",

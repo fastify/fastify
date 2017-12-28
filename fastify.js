@@ -436,6 +436,9 @@ function build (options) {
       preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
       if (opts.beforeHandler) {
         opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
+        for (var i = 0; i < opts.beforeHandler.length; i++) {
+          opts.beforeHandler[i] = opts.beforeHandler[i].bind(_fastify)
+        }
         preHandler.push.apply(preHandler, opts.beforeHandler)
       }
 

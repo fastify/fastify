@@ -252,8 +252,9 @@ test('beforeHandler should keep the context', t => {
 
   fastify.post('/', {
     beforeHandler: function (req, reply, done) {
-      req.body.beforeHandler = true
       t.strictEqual(this.foo, 42)
+      this.foo += 1
+      req.body.foo = this.foo
       done()
     }
   }, (req, reply) => {
@@ -266,6 +267,6 @@ test('beforeHandler should keep the context', t => {
     payload: { hello: 'world' }
   }, res => {
     var payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { beforeHandler: true, hello: 'world' })
+    t.deepEqual(payload, { foo: 43, hello: 'world' })
   })
 })

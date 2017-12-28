@@ -243,3 +243,29 @@ test('beforeHandler does not interfere with preHandler', t => {
     t.deepEqual(payload, { check: 'a', hello: 'world' })
   })
 })
+
+test('beforeHandler should keep the context', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    beforeHandler: function (req, reply, done) {
+      req.body.beforeHandler = true
+      t.strictEqual(this.foo, 42)
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, res => {
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { beforeHandler: true, hello: 'world' })
+  })
+})

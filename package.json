@@ -64,8 +64,6 @@
     "node": ">=4.5"
   },
   "devDependencies": {
-    "@types/node": "^8.5.2",
-    "@types/pino": "^4.7.0",
     "autocannon": "^0.16.5",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.1",
@@ -96,6 +94,8 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
+    "@types/node": "^8.5.2",
+    "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^5.5.2",
     "avvio": "^4.0.1",

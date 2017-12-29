@@ -20,7 +20,7 @@ fastify.get('/', opts, (req, reply) => {
 })
 ```
 
-When a `system` error is thrown or a `catch` handler was missed you should declare a [`process.on(unhandledRejection)`](https://nodejs.org/api/process.html#process_event_unhandledrejection) listener and exit the process otherwise your will get an error log like this `Unhandled promise rejection (rejection id: 1): ReferenceError: meow is not defined`. In order to simplify this you can use [make-promises-safe](https://github.com/mcollina/make-promises-safe).
+When a `system` error is thrown or a `catch` handler was missed you should declare a [`process.on('unhandledRejection')`](https://nodejs.org/api/process.html#process_event_unhandledrejection) listener and exit the process otherwise your will get an error log like this `Unhandled promise rejection (rejection id: 1): ReferenceError: meow is not defined`. In order to simplify this you can use [make-promises-safe](https://github.com/mcollina/make-promises-safe).
 
 Example:
 ```js

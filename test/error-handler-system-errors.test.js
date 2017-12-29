@@ -16,6 +16,8 @@ const systemErrors = {
   AssertionError: Assert.AssertionError
 }
 
+const requestTimeout = 200
+
 fastify.get('/systemError', function (req, reply) {
   reply.code(500)
   reply.send(new systemErrors[req.query.name]())
@@ -48,7 +50,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=EvalError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -64,7 +66,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=RangeError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -80,7 +82,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=ReferenceError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -96,7 +98,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=SyntaxError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -112,7 +114,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=TypeError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -128,7 +130,7 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/assertError',
-      timeout: 100
+      timeout: requestTimeout
     }, (err, res) => {
       t.type(err, Error)
     })

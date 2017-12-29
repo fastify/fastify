@@ -17,6 +17,8 @@ const systemErrors = {
   AssertionError: Assert.AssertionError
 }
 
+const requestTimeout = 200
+
 fastify.addContentTypeParser('application/systemError', function (req) {
   const query = querystring.parse(req.url.replace(/^.*\?/, ''))
   return Promise.reject(new systemErrors[query.name]())
@@ -51,7 +53,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=EvalError',
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -71,7 +73,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=RangeError',
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -91,7 +93,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=ReferenceError',
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -111,7 +113,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=SyntaxError',
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -131,7 +133,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=TypeError',
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -151,7 +153,7 @@ fastify.listen(0, err => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
-      timeout: 100,
+      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/assertError'

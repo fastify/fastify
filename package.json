@@ -64,6 +64,8 @@
     "node": ">=4.5"
   },
   "devDependencies": {
+    "@types/node": "^8.5.2",
+    "@types/pino": "^4.7.0",
     "autocannon": "^0.16.5",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.1",
@@ -91,8 +93,6 @@
     "tap": "^11.0.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.6.2",
-    "@types/node": "^8.5.2",
-    "@types/pino": "^4.7.0",
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {

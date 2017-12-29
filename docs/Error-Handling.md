@@ -1,6 +1,6 @@
 <h1 align="center">Fastify</h1>
 
-## System errors
+## Error classification in Promises & Async/Await
 
 Fastify classified errors in two different groups.
 

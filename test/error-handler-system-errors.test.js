@@ -16,8 +16,6 @@ const systemErrors = {
   AssertionError: Assert.AssertionError
 }
 
-const requestTimeout = 200
-
 fastify.get('/systemError', function (req, reply) {
   reply.code(500)
   reply.send(new systemErrors[req.query.name]())
@@ -44,13 +42,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.EvalError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=EvalError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=EvalError'
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -60,13 +58,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.RangeError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=RangeError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=RangeError'
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -76,13 +74,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.ReferenceError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=ReferenceError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=ReferenceError'
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -92,13 +90,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.SyntaxError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=SyntaxError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=SyntaxError'
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -108,13 +106,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.TypeError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=TypeError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/systemError?name=TypeError'
     }, (err, res) => {
       t.type(err, Error)
     })
@@ -124,13 +122,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.AssertionError)
     })
 
-    sget({
+    let req = sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/assertError',
-      timeout: requestTimeout
+      url: 'http://localhost:' + fastify.server.address().port + '/assertError'
     }, (err, res) => {
       t.type(err, Error)
     })

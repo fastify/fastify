@@ -17,8 +17,6 @@ const systemErrors = {
   AssertionError: Assert.AssertionError
 }
 
-const requestTimeout = 200
-
 fastify.addContentTypeParser('application/systemError', function (req) {
   const query = querystring.parse(req.url.replace(/^.*\?/, ''))
   return Promise.reject(new systemErrors[query.name]())
@@ -47,13 +45,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.EvalError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=EvalError',
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -67,13 +65,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.RangeError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=RangeError',
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -87,13 +85,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.ReferenceError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=ReferenceError',
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -107,13 +105,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.SyntaxError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=SyntaxError',
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -127,13 +125,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.TypeError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/?name=TypeError',
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/systemError'
@@ -147,13 +145,13 @@ fastify.listen(0, err => {
     t.plan(2)
 
     process.once('unhandledRejection', (err) => {
+      req.abort()
       t.type(err, systemErrors.AssertionError)
     })
 
-    sget({
+    let req = sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
-      timeout: requestTimeout,
       body: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/assertError'

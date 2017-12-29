@@ -37,7 +37,7 @@ fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
-  // Tap patched this event and we have no change to listen on it.
+  // Tap patched this event and we have no chance to listen on it.
   // Since any test runs in a seperate process we don't have to restore it
   process.removeAllListeners('unhandledRejection')
 

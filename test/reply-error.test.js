@@ -336,3 +336,26 @@ test('should set the status code and the headers from the error object (from cus
     })
   })
 })
+
+// Issue 595 https://github.com/fastify/fastify/issues/595
+test('\'*\' should respond with 500 code due to serializer can not handle the payload type', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.type('text/html')
+    reply.send({})
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, res => {
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: "Serializer for Content-Type 'text/html' can not handle payload of type 'object'"
+    })
+  })
+})

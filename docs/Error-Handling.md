@@ -2,7 +2,7 @@
 
 ## Error classification in Promises & Async/Await
 
-Fastify classified errors into two different groups.
+Fastify classifies errors into two different groups.
 
 - System: any instance of type `EvalError`, `RangeError`, `ReferenceError`, `SyntaxError`, `TypeError`, `URIError` or `AssertionError`
 - Business: any instance of type `Error`

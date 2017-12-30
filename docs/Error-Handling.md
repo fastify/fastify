@@ -23,7 +23,7 @@ fastify.get('/', opts, (req, reply) => {
 ```
 
 ### Unhandled rejections
-When a _System_ error is thrown or a `.catch()` handler was missed, you should declare a [`process.on('unhandledRejection')`](https://nodejs.org/api/process.html#process_event_unhandledrejection) listener and exit the process with the error. Otherwise, your will get an error log like: `Unhandled promise rejection (rejection id: 1): ReferenceError: meow is not defined`. In order to simplify this you can use [make-promises-safe](https://github.com/mcollina/make-promises-safe). The "soft" behaviour of unhandled rejections is already deprecated [DEP0018](https://nodejs.org/dist/latest-v8.x/docs/api/deprecations.html#deprecations_dep0018_unhandled_promise_rejections) and will exit the process in future Node.js versions.
+When a _System_ error is thrown or a `.catch()` handler was missed, you should declare a [`process.on('unhandledRejection')`](https://nodejs.org/api/process.html#process_event_unhandledrejection) listener and exit the process with the error. Otherwise, you will get an error log like: `Unhandled promise rejection (rejection id: 1): ReferenceError: meow is not defined`. In order to simplify this you can use [make-promises-safe](https://github.com/mcollina/make-promises-safe). The "soft" behaviour of unhandled rejections is already deprecated [DEP0018](https://nodejs.org/dist/latest-v8.x/docs/api/deprecations.html#deprecations_dep0018_unhandled_promise_rejections) and will exit the process in future Node.js versions.
 
 Example:
 ```js

@@ -12,7 +12,7 @@ The main difference between these errors are that _System_ errors are handled by
 ### Background
 
 With the use of `promises` and `async/await` we are able to catch **any** synchronous error and return it back to the callee doesn't matter whether it's correct behavior or a syntax error. This is an anti-pattern because any unpredictable application state should exit your server so that it can come back in a clear state. This is useful for debugging and can prevent memory-leaks.
-In Node.js it's very common to derive from the `Error` type to build your own error hierachy. If you are looking for a solution to work with http status codes we recommend [http-errors](https://github.com/jshttp/http-errors).
+In Node.js it's very common to derive from the `Error` type to build your own error hierarchy. If you are looking for a solution to work with http status codes we recommend [http-errors](https://github.com/jshttp/http-errors).
 
 Example:
 ```js

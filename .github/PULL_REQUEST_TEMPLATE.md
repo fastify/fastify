@@ -1,10 +1,17 @@
-**Before submitting a pull request,** please make sure the following is done:
+<!--
+Thank you for your pull request. Please provide a description above and review
+the requirements below.
 
-1. Fork [the repository](https://github.com/fastify/fastify) and create your branch from `master`.
-2. Run `npm install` in the repository root.
-3. If you've fixed a bug or added code that should be tested, add tests!
-4. Ensure the test suite passes (`npm run test`).
-5. Run `npm run benchmark` to test the performance impact of your changes. Tip: `npm run bench` to compare branches interactively.
-6. If you haven't already, complete the CLA.
+Bug fixes and new features should include tests and possibly benchmarks.
 
-**Learn more about contributing:** https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md
+Tip: `npm run bench` to compare branches interactively.
+
+Contributors guide: https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md
+-->
+
+#### Checklist
+
+- [ ] run `npm run test` and `npm run benchmark`
+- [ ] tests and/or benchmarks are included
+- [ ] documentation is changed or added
+- [ ] commit message and code follows [Code of conduct](https://github.com/fastify/fastify/blob/master/CODE_OF_CONDUCT.md)

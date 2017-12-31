@@ -338,7 +338,7 @@ test('should set the status code and the headers from the error object (from cus
 })
 
 // Issue 595 https://github.com/fastify/fastify/issues/595
-test('\'*\' should respond with 500 code due to serializer can not handle the payload type', t => {
+test('\'*\' should throw an error due to serializer can not handle the payload type', t => {
   t.plan(2)
   const fastify = Fastify()
 

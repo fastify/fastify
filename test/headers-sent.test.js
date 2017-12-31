@@ -4,12 +4,12 @@ const tap = require('tap')
 
 const code = `
 const Fastify = require('./')
-const fs = require('fs')
 const fastify = Fastify()
 const sget = require('simple-get')
+const stream = require('stream')
 
 fastify.get('/', (req, reply) => {
-  const endlessStream = fs.createReadStream('/dev/random')
+  const endlessStream = new stream.Readable()
   reply.send(endlessStream)
 })
 

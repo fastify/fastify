@@ -7,6 +7,7 @@ const fs = require('fs')
 const resolve = require('path').resolve
 const zlib = require('zlib')
 const pump = require('pump')
+const stream = require('stream')
 const Fastify = require('..')
 
 test('should respond with a stream', t => {
@@ -125,5 +126,23 @@ test('onSend hook stream', t => {
     const payload = zlib.gunzipSync(res.rawPayload)
     t.strictEqual(payload.toString('utf-8'), file)
     fastify.close()
+  })
+})
+
+test('disconnecting from a stream response should not crash the server', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.send(new stream.Readable())
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    const req = sget(`http://localhost:${fastify.server.address().port}`, (_, response) => {
+      req.abort()
+    })
   })
 })

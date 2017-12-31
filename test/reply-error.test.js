@@ -344,18 +344,18 @@ test('\'*\' should respond with 500 code due to serializer can not handle the pa
 
   fastify.get('/', (req, reply) => {
     reply.type('text/html')
-    reply.send({})
+    try {
+      reply.send({})
+    } catch (err) {
+      t.type(err, Error)
+      t.strictEqual(err.message, "Serializer for Content-Type 'text/html' can not handle payload of type 'object'")
+    }
   })
 
   fastify.inject({
     url: '/',
     method: 'GET'
   }, res => {
-    t.strictEqual(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), {
-      statusCode: 500,
-      error: 'Internal Server Error',
-      message: "Serializer for Content-Type 'text/html' can not handle payload of type 'object'"
-    })
+    t.fail('should not be called')
   })
 })

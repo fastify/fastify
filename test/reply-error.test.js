@@ -347,7 +347,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
     try {
       reply.send({})
     } catch (err) {
-      t.type(err, Error)
+      t.type(err, TypeError)
       t.strictEqual(err.message, "Attempted to send payload of invalid type 'object' without serialization. Expected a string or Buffer.")
     }
   })
@@ -371,7 +371,7 @@ test('should throw an error due to custom serializer can not handle the payload 
       .serializer(payload => payload)
       .send({})
     } catch (err) {
-      t.type(err, Error)
+      t.type(err, TypeError)
       t.strictEqual(err.message, "Serializer for Content-Type 'text/html' returned invalid payload of type 'object'. Expected a string or Buffer.")
     }
   })

@@ -35,3 +35,22 @@ fastify.get('/', async (req, reply) => {
   await meow
 })
 ```
+
+## Use Error objects
+
+If you want to reject a promise with an error or send it as response payload, you have to use [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) objects (or subclasses). Any other value will throw an exception.
+
+Example:
+```js
+// Good
+fastify.get('/', opts, async (req, reply) => {
+  throw new Error('foo')
+})
+fastify.get('/', opts, async (req, reply) => {
+  reply.send(new Error('foo'))
+})
+// Bad
+fastify.get('/', async (req, reply) => {
+  throw 'foo'
+})
+```

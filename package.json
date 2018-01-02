@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "standard | snazzy",
     "unit": "tap -j4 test/*.test.js test/*/*.test.js",
-    "typescript": "tsc test/types/index.ts --target es6 --module commonjs --noEmit",
+    "typescript": "tsc test/types/index.ts --target es6 --module commonjs --noEmit --noImplicitThis",
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit --  --cov",

@@ -209,6 +209,67 @@ test('encapsulated 404', t => {
   })
 })
 
+test('custom 404 hook and handler context', t => {
+  t.plan(16)
+
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    t.strictEqual(this.foo, 42)
+    next()
+  })
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.strictEqual(this.foo, 42)
+    next()
+  })
+  fastify.addHook('onResponse', function (res, next) {
+    t.strictEqual(this.foo, 42)
+    next()
+  })
+
+  fastify.setNotFoundHandler(function (req, reply) {
+    t.strictEqual(this.foo, 42)
+    reply.code(404).send('this was not found')
+  })
+
+  fastify.register(function (f, opts, next) {
+    f.decorate('bar', 84)
+
+    fastify.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    fastify.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    fastify.addHook('onResponse', function (res, next) {
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+
+    f.setNotFoundHandler(function (req, reply) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      reply.code(404).send('encapsulated was not found')
+    })
+
+    next()
+  }, { prefix: '/encapsulated' })
+
+  fastify.inject('/not-found', res => {
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'this was not found')
+  })
+
+  fastify.inject('/encapsulated/not-found', res => {
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'encapsulated was not found')
+  })
+})
+
 test('run hooks on default 404', t => {
   t.plan(5)
 

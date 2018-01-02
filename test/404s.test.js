@@ -530,7 +530,6 @@ test('recognizes errors from the http-errors module', t => {
       t.strictEqual(res.statusCode, 404)
 
       sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {
-        console.log(body.toString())
         t.error(err)
         const obj = JSON.parse(body.toString())
         t.strictDeepEqual(obj, {

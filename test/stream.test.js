@@ -2,12 +2,13 @@
 
 const t = require('tap')
 const test = t.test
-const sget = require('simple-get').concat
+const sget = require('simple-get')
 const fs = require('fs')
 const resolve = require('path').resolve
 const zlib = require('zlib')
 const pump = require('pump')
 const stream = require('stream')
+const crypto = require('crypto')
 const Fastify = require('..')
 
 test('should respond with a stream', t => {
@@ -28,7 +29,7 @@ test('should respond with a stream', t => {
     t.error(err)
     fastify.server.unref()
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
+    sget.concat(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/octet-stream')
       t.strictEqual(response.statusCode, 200)
@@ -41,7 +42,7 @@ test('should respond with a stream', t => {
       })
     })
 
-    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+    sget.concat(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.type(err, Error)
       t.equal(err.code, 'ECONNRESET')
       t.pass('Correctly close the stream')
@@ -90,7 +91,7 @@ test('should trigger the onSend hook only once if pumping the stream fails', t =
 
     fastify.server.unref()
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
+    sget.concat(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.type(err, Error)
       t.equal(err.code, 'ECONNRESET')
     })
@@ -130,19 +131,26 @@ test('onSend hook stream', t => {
 })
 
 test('disconnecting from a stream response should not crash the server', t => {
-  t.plan(1)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
-    reply.send(new stream.Readable())
+    const endlessStream = new stream.Readable({
+      read (size) {
+        this.push(crypto.randomBytes(size))
+      }
+    })
+    reply.send(endlessStream)
   })
 
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
 
-    const req = sget(`http://localhost:${fastify.server.address().port}`, (_, response) => {
+    const req = sget(`http://localhost:${fastify.server.address().port}`, (err, res) => {
+      t.error(err)
       req.abort()
+      t.ok(res)
     })
   })
 })

@@ -301,7 +301,7 @@ test('Should throw when non-error value is used to reject a promise', t => {
 
   process.once('unhandledRejection', (err) => {
     t.type(err, TypeError)
-    t.strictEqual(err.message, 'Attempted to reject a promise with a non-error value from type \'string\'')
+    t.strictEqual(err.message, "Attempted to reject a promise with a non-error value from type 'string'")
   })
 
   const fastify = Fastify()

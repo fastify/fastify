@@ -10,6 +10,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
+- `.notFound()` - Invokes the 404 handler.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
 
@@ -70,6 +71,22 @@ reply
   .serializer(protoBuf.serialize)
 ```
 *Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
+
+<a name="notfound"></a>
+### NotFound
+Invokes the 404 handler. This is useful inside handlers for routes with a wildcard `*` where you may want to forward the request to the 404 handler if some condition is not met.
+
+A custom 404 handler can be set with [`fastify.setNotFoundHandler()`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler).
+
+```js
+fastify.get('/*', options, function (request, reply) {
+  if (!someCondition) {
+    reply.notFound()
+    return
+  }
+  // Handle the request
+})
+```
 
 <a name="send"></a>
 ### Send

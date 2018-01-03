@@ -294,7 +294,7 @@ test('should set the status code and the headers from the error object (from cus
 })
 
 test('Should throw when non-error value is used to reject a promise', t => {
-  t.plan(2)
+  t.plan(3)
 
   // Tap patched this event and we have no chance to listen on it.
   process.removeAllListeners('unhandledRejection')
@@ -302,6 +302,7 @@ test('Should throw when non-error value is used to reject a promise', t => {
   process.prependOnceListener('unhandledRejection', (err) => {
     t.type(err, TypeError)
     t.strictEqual(err.message, "Attempted to reject a promise with a non-error value from type 'string'")
+    t.strictEqual(err.cause, 'string')
   })
 
   const fastify = Fastify()

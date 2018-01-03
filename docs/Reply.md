@@ -170,4 +170,4 @@ If you want to completely customize the error response, checkout [`setErrorHandl
 
 <a name="payload-type"></a>
 #### Type of the final payload
-It is crucial that the sent payload is a `string` or a `Buffer`, otherwise *send* will throw at runtime.
+It is crucial that the sent payload (if not `undefined`) is a `string` or a `Buffer`, otherwise *send* will throw at runtime.

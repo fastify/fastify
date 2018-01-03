@@ -12,7 +12,7 @@ The main difference between these errors are that _System_ errors are handled by
 ### Background
 
 With the use of `promises` and `async/await` we are able to catch **any** synchronous error and return it back to the callee doesn't matter whether it's correct behavior or a syntax error. This is an anti-pattern because any unpredictable application state should exit your server so that it can come back in a clear state. This is useful for debugging and can prevent memory-leaks.
-In Node.js it's very common to derive from the `Error` type to build your own error hierarchy. If you are looking for a solution to work with http status codes we recommend [http-errors](https://github.com/jshttp/http-errors).
+In Node.js it's very common to derive from the [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) type to build your own error hierarchy. If you are looking for a solution to work with http status codes we recommend [http-errors](https://github.com/jshttp/http-errors).
 
 Example:
 ```js
@@ -33,5 +33,24 @@ fastify.get('/', opts, async (req, reply) => {
 })
 fastify.get('/', async (req, reply) => {
   await meow
+})
+```
+
+## Use Error objects
+
+If you want to reject a promise with an error or send it as response payload, you have to use [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) objects (or subclasses). Any other value will throw an exception.
+
+Example:
+```js
+// Good
+fastify.get('/', opts, async (req, reply) => {
+  throw new Error('foo')
+})
+fastify.get('/', opts, async (req, reply) => {
+  reply.send(new Error('foo'))
+})
+// Bad
+fastify.get('/', async (req, reply) => {
+  throw 'foo'
 })
 ```

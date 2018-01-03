@@ -204,50 +204,6 @@ test('Error.status property support', t => {
   })
 })
 
-test('Support rejection with values that are not Error instances', t => {
-  const objs = [
-    0,
-    '',
-    [],
-    {},
-    null,
-    undefined,
-    123,
-    'abc',
-    new RegExp(),
-    new Date(),
-    new Uint8Array()
-  ]
-  t.plan(objs.length)
-  for (const nonErr of objs) {
-    t.test('Type: ' + typeof nonErr, t => {
-      t.plan(3)
-      const fastify = Fastify()
-
-      fastify.get('/', () => {
-        return Promise.reject(nonErr)
-      })
-
-      fastify.setErrorHandler((err, reply) => {
-        if (typeof err === 'object') {
-          t.deepEqual(err, nonErr)
-        } else {
-          t.strictEqual(err, nonErr)
-        }
-        reply.send('error')
-      })
-
-      fastify.inject({
-        method: 'GET',
-        url: '/'
-      }, res => {
-        t.strictEqual(res.statusCode, 500)
-        t.strictEqual(res.payload, 'error')
-      })
-    })
-  }
-})
-
 test('invalid schema - ajv', t => {
   t.plan(3)
 
@@ -334,5 +290,34 @@ test('should set the status code and the headers from the error object (from cus
       message: 'kaboom',
       statusCode: 400
     })
+  })
+})
+
+test('Should throw when non-error value is used to reject a promise', t => {
+  t.plan(3)
+
+  // Tap patched this event and we have no chance to listen on it.
+  const listeners = process.listeners('unhandledRejection')
+  process.removeAllListeners('unhandledRejection')
+
+  process.once('unhandledRejection', (err) => {
+    t.type(err, TypeError)
+    t.strictEqual(err.message, "Attempted to reject a promise with a non-error value from type 'string'")
+    t.strictEqual(err.cause, 'string')
+    process.addListener.apply(process, ['unhandledRejection'].concat(listeners))
+  })
+
+  const fastify = Fastify()
+
+  const noneError = 'string'
+  fastify.get('/', () => {
+    return Promise.reject(noneError)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, res => {
+    t.fail('should not be called')
   })
 })

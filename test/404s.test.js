@@ -234,23 +234,23 @@ test('custom 404 hook and handler context', t => {
     reply.code(404).send('this was not found')
   })
 
-  fastify.register(function (f, opts, next) {
-    f.decorate('bar', 84)
+  fastify.register(function (instance, opts, next) {
+    instance.decorate('bar', 84)
 
-    fastify.addHook('onRequest', function (req, res, next) {
+    instance.addHook('onRequest', function (req, res, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
-    fastify.addHook('onSend', function (request, reply, payload, next) {
+    instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
-    fastify.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (res, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
 
-    f.setNotFoundHandler(function (req, reply) {
+    instance.setNotFoundHandler(function (req, reply) {
       t.strictEqual(this.foo, 42)
       t.strictEqual(this.bar, 84)
       reply.code(404).send('encapsulated was not found')

@@ -6,7 +6,7 @@ const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const runHooks = require('fast-iterator')
+const fastIterator = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -165,8 +165,16 @@ function build (options) {
     res._context = null
     res.on('finish', onResFinished)
     res.on('error', onResFinished)
+    res.on('close', onConnectionClosed)
 
     router.lookup(req, res)
+  }
+
+  function onConnectionClosed () {
+    this.log.error({
+      res: this,
+      responseTime: now() - this._startTime
+    }, 'client connection was terminated')
   }
 
   function onResFinished (err) {
@@ -419,7 +427,8 @@ function build (options) {
         opts.contentTypeParser || _fastify._contentTypeParser,
         config,
         opts.errorHandler || _fastify._errorHandler,
-        opts.middie || _fastify._middie
+        opts.middie || _fastify._middie,
+        _fastify
       )
 
       try {
@@ -439,10 +448,10 @@ function build (options) {
         preHandler.push.apply(preHandler, opts.beforeHandler)
       }
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
-      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, _fastify) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, _fastify) : null
+      context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
+      context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -476,7 +485,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -489,6 +498,7 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
+    this._fastify = fastify
   }
 
   function iterator () {
@@ -557,7 +567,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else {
-      this._hooks.add(name, fn.bind(this))
+      this._hooks.add(name, fn)
     }
     return this
   }
@@ -597,7 +607,7 @@ function build (options) {
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: runHooks([], null) }, request)
+    const reply = new Reply(res, { onSend: fastIterator([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -614,7 +624,7 @@ function build (options) {
       opts = undefined
     }
     opts = opts || {}
-    handler = handler || basic404
+    handler = handler ? handler.bind(this) : basic404
 
     if (!this._404Context) {
       const context = new Context(
@@ -625,16 +635,17 @@ function build (options) {
         opts.contentTypeParser || this._contentTypeParser,
         opts.config || {},
         this._errorHandler,
-        this._middie
+        this._middie,
+        null
       )
 
       const onRequest = this._hooks.onRequest
       const onResponse = this._hooks.onResponse
       const onSend = this._hooks.onSend
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
+      context.onSend = onSend.length ? fastIterator(onSend, this) : null
 
       this._404Context = context
 

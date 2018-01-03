@@ -50,6 +50,7 @@ profile-*
 
 # vscode
 .vscode
+*code-workspace
 
 # flamegraphs
 profile*

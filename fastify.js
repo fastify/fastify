@@ -6,7 +6,7 @@ const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const runHooks = require('fast-iterator')
+const fastIterator = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -437,16 +437,13 @@ function build (options) {
       preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
       if (opts.beforeHandler) {
         opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        for (var i = 0; i < opts.beforeHandler.length; i++) {
-          opts.beforeHandler[i] = opts.beforeHandler[i].bind(_fastify)
-        }
         preHandler.push.apply(preHandler, opts.beforeHandler)
       }
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
-      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, _fastify) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, _fastify) : null
+      context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
+      context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -562,7 +559,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else {
-      this._hooks.add(name, fn.bind(this))
+      this._hooks.add(name, fn)
     }
     return this
   }
@@ -602,7 +599,7 @@ function build (options) {
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: runHooks([], null) }, request)
+    const reply = new Reply(res, { onSend: fastIterator([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -619,7 +616,7 @@ function build (options) {
       opts = undefined
     }
     opts = opts || {}
-    handler = handler || basic404
+    handler = handler ? handler.bind(this) : basic404
 
     if (!this._404Context) {
       const context = new Context(
@@ -638,9 +635,9 @@ function build (options) {
       const onResponse = this._hooks.onResponse
       const onSend = this._hooks.onSend
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
+      context.onSend = onSend.length ? fastIterator(onSend, this) : null
 
       this._404Context = context
 

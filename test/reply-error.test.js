@@ -299,7 +299,7 @@ test('Should throw when non-error value is used to reject a promise', t => {
   // Tap patched this event and we have no chance to listen on it.
   process.removeAllListeners('unhandledRejection')
 
-  process.once('unhandledRejection', (err) => {
+  process.prependOnceListener('unhandledRejection', (err) => {
     t.type(err, TypeError)
     t.strictEqual(err.message, "Attempted to reject a promise with a non-error value from type 'string'")
   })

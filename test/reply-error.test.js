@@ -321,3 +321,50 @@ test('Should throw when non-error value is used to reject a promise', t => {
     t.fail('should not be called')
   })
 })
+
+// Issue 595 https://github.com/fastify/fastify/issues/595
+test('\'*\' should throw an error due to serializer can not handle the payload type', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply.type('text/html')
+    try {
+      reply.send({})
+    } catch (err) {
+      t.type(err, TypeError)
+      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object' without serialization. Expected a string or Buffer.")
+    }
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, res => {
+    t.fail('should not be called')
+  })
+})
+
+test('should throw an error due to custom serializer can not handle the payload type', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    try {
+      reply
+      .type('text/html')
+      .serializer(payload => payload)
+      .send({})
+    } catch (err) {
+      t.type(err, TypeError)
+      t.strictEqual(err.message, "Serializer for Content-Type 'text/html' returned invalid payload of type 'object'. Expected a string or Buffer.")
+    }
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, res => {
+    t.fail('should not be called')
+  })
+})

@@ -11,7 +11,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.notFound()` - Invokes the 404 handler.
-- `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+- `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
 
 ```js
@@ -70,6 +70,9 @@ reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
+
+Note that if a string or buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
+
 *Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
 
 <a name="notfound"></a>

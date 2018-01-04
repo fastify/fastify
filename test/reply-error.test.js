@@ -293,35 +293,6 @@ test('should set the status code and the headers from the error object (from cus
   })
 })
 
-test('Should throw when non-error value is used to reject a promise', t => {
-  t.plan(3)
-
-  // Tap patched this event and we have no chance to listen on it.
-  const listeners = process.listeners('unhandledRejection')
-  process.removeAllListeners('unhandledRejection')
-
-  process.once('unhandledRejection', (err) => {
-    t.type(err, TypeError)
-    t.strictEqual(err.message, "Attempted to reject a promise with a non-error value from type 'string'")
-    t.strictEqual(err.cause, 'string')
-    process.addListener.apply(process, ['unhandledRejection'].concat(listeners))
-  })
-
-  const fastify = Fastify()
-
-  const noneError = 'string'
-  fastify.get('/', () => {
-    return Promise.reject(noneError)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, res => {
-    t.fail('should not be called')
-  })
-})
-
 // Issue 595 https://github.com/fastify/fastify/issues/595
 test('\'*\' should throw an error due to serializer can not handle the payload type', t => {
   t.plan(2)

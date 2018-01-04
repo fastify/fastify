@@ -70,6 +70,9 @@ reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
+
+Note that if a string or buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
+
 *Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
 
 <a name="notfound"></a>

@@ -233,7 +233,7 @@ test('use reply.serialize in onSend hook', t => {
   })
 })
 
-test('plain string without content type shouls send a text/plain', t => {
+test('plain string without content type should send a text/plain', t => {
   t.plan(4)
 
   const fastify = require('../..')()
@@ -277,6 +277,36 @@ test('plain string with content type application/json should be serialized as js
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.deepEqual(body.toString(), '"hello world!"')
+    })
+  })
+})
+
+test('undefined payload should be sent as-is', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.strictEqual(payload, undefined)
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.code(204).send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: `http://localhost:${fastify.server.address().port}`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], undefined)
+      t.strictEqual(response.headers['content-length'], undefined)
+      t.strictEqual(body.length, 0)
     })
   })
 })

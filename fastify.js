@@ -625,12 +625,14 @@ function build (options) {
       )
 
       const onRequest = this._hooks.onRequest
-      const onResponse = this._hooks.onResponse
+      const preHandler = this._hooks.preHandler
       const onSend = this._hooks.onSend
+      const onResponse = this._hooks.onResponse
 
       context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
-      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
+      context.preHandler = preHandler.length ? fastIterator(preHandler, this) : null
       context.onSend = onSend.length ? fastIterator(onSend, this) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
 
       this._404Context = context
 

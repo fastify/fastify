@@ -210,13 +210,17 @@ test('encapsulated 404', t => {
 })
 
 test('custom 404 hook and handler context', t => {
-  t.plan(16)
+  t.plan(19)
 
   const fastify = Fastify()
 
   fastify.decorate('foo', 42)
 
   fastify.addHook('onRequest', function (req, res, next) {
+    t.strictEqual(this.foo, 42)
+    next()
+  })
+  fastify.addHook('preHandler', function (request, reply, next) {
     t.strictEqual(this.foo, 42)
     next()
   })
@@ -238,6 +242,10 @@ test('custom 404 hook and handler context', t => {
     instance.decorate('bar', 84)
 
     instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    instance.addHook('preHandler', function (request, reply, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
@@ -270,13 +278,28 @@ test('custom 404 hook and handler context', t => {
   })
 })
 
-test('run hooks on default 404', t => {
-  t.plan(5)
+test('run hooks and middleware on default 404', t => {
+  t.plan(8)
 
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, res, next) {
     t.pass('onRequest called')
+    next()
+  })
+
+  fastify.use(function (req, res, next) {
+    t.pass('middleware called')
+    next()
+  })
+
+  fastify.addHook('preHandler', function (request, reply, next) {
+    t.pass('preHandler called')
+    next()
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.pass('onSend called')
     next()
   })
 
@@ -306,13 +329,28 @@ test('run hooks on default 404', t => {
   })
 })
 
-test('run hooks with encapsulated 404', t => {
-  t.plan(7)
+test('run hooks and middleware with encapsulated 404', t => {
+  t.plan(13)
 
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, res, next) {
     t.pass('onRequest called')
+    next()
+  })
+
+  fastify.use(function (req, res, next) {
+    t.pass('middleware called')
+    next()
+  })
+
+  fastify.addHook('preHandler', function (request, reply, next) {
+    t.pass('preHandler called')
+    next()
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.pass('onSend called')
     next()
   })
 
@@ -331,8 +369,24 @@ test('run hooks with encapsulated 404', t => {
       next()
     })
 
-    f.addHook('onResponse', function (req, res) {
+    f.use(function (req, res, next) {
+      t.pass('middleware 2 called')
+      next()
+    })
+
+    f.addHook('preHandler', function (request, reply, next) {
+      t.pass('preHandler 2 called')
+      next()
+    })
+
+    f.addHook('onSend', function (request, reply, payload, next) {
+      t.pass('onSend 2 called')
+      next()
+    })
+
+    f.addHook('onResponse', function (res, next) {
       t.pass('onResponse 2 called')
+      next()
     })
 
     next()

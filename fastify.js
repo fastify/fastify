@@ -103,7 +103,7 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify._RoutePrefix = new RoutePrefix()
+  fastify._routePrefix = ''
 
   // expose logger instance
   fastify.log = log
@@ -297,7 +297,7 @@ function build (options) {
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
-    instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
+    instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
@@ -313,21 +313,15 @@ function build (options) {
     return instance
   }
 
-  function RoutePrefix () {
-    this.prefix = ''
-  }
-
-  function buildRoutePrefix (r, opts) {
-    const _RoutePrefix = Object.create(opts)
-    const R = _RoutePrefix
-    R.prefix = r.prefix
-    if (typeof opts.prefix === 'string') {
-      if (opts.prefix[0] !== '/') {
-        opts.prefix = '/' + opts.prefix
-      }
-      R.prefix += opts.prefix
+  function buildRoutePrefix (instancePrefix, pluginPrefix) {
+    if (!pluginPrefix) {
+      return instancePrefix
     }
-    return R
+
+    if (pluginPrefix[0] !== '/') {
+      pluginPrefix = '/' + pluginPrefix
+    }
+    return instancePrefix + pluginPrefix
   }
 
   // Shorthand methods
@@ -399,11 +393,9 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    _fastify._RoutePrefix = _fastify._RoutePrefix
-
     _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path
-      const prefix = _fastify._RoutePrefix.prefix
+      const prefix = _fastify._routePrefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
       const config = opts.config || {}
@@ -540,7 +532,7 @@ function build (options) {
 
   function use (url, fn) {
     if (typeof url === 'string') {
-      const prefix = this._RoutePrefix.prefix
+      const prefix = this._routePrefix
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     this._middlewares.push([url, fn])
@@ -636,10 +628,9 @@ function build (options) {
 
       this._404Context = context
 
-      var prefix = this._RoutePrefix.prefix
-      var star = '/*'
+      const prefix = this._routePrefix
 
-      fourOhFour.all(prefix + star, startHooks, context)
+      fourOhFour.all(prefix + '/*', startHooks, context)
       fourOhFour.all(prefix || '/', startHooks, context)
     } else {
       this._404Context.handler = handler

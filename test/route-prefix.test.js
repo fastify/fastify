@@ -166,3 +166,31 @@ test('Prefix without /', t => {
     t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
+
+test('Prefix works multiple levels deep', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.register(function (fastify, opts, next) {
+      fastify.register(function (fastify, opts, next) {
+        fastify.register(function (fastify, opts, next) {
+          fastify.get('/', (req, reply) => {
+            reply.send({ hello: 'world' })
+          })
+          next()
+        }, { prefix: '/v3' })
+        next()
+      }) // No prefix on this level
+      next()
+    }, { prefix: 'v2' })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/v2/v3'
+  }, res => {
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})

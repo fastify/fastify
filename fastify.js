@@ -363,28 +363,18 @@ function build (options) {
     return _route(this, supportedMethods, url, opts, handler)
   }
 
-  function _route (self, method, url, options, handler) {
+  function _route (_fastify, method, url, options, handler) {
     if (!handler && typeof options === 'function') {
       handler = options
       options = {}
     }
-    return route.call(self, {
+    return _fastify.route({
       method,
       url,
       handler,
-      schema: options.schema || {},
-      Reply: self._Reply,
-      Request: self._Request,
-      contentTypeParser: self._contentTypeParser,
-      onRequest: self._hooks.onRequest,
-      preHandler: self._hooks.preHandler,
-      RoutePrefix: self._RoutePrefix,
+      schema: options.schema,
       beforeHandler: options.beforeHandler,
-      onResponse: options.onResponse,
-      onSend: options.onSend,
       config: options.config,
-      middie: self._middie,
-      errorHandler: self._errorHandler,
       schemaCompiler: options.schemaCompiler
     })
   }
@@ -409,7 +399,7 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    _fastify._RoutePrefix = opts.RoutePrefix || _fastify._RoutePrefix
+    _fastify._RoutePrefix = _fastify._RoutePrefix
 
     _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path
@@ -422,12 +412,12 @@ function build (options) {
       const context = new Context(
         opts.schema,
         opts.handler.bind(_fastify),
-        opts.Reply || _fastify._Reply,
-        opts.Request || _fastify._Request,
-        opts.contentTypeParser || _fastify._contentTypeParser,
+        _fastify._Reply,
+        _fastify._Request,
+        _fastify._contentTypeParser,
         config,
-        opts.errorHandler || _fastify._errorHandler,
-        opts.middie || _fastify._middie,
+        _fastify._errorHandler,
+        _fastify._middie,
         _fastify
       )
 
@@ -438,15 +428,10 @@ function build (options) {
         return
       }
 
-      const onRequest = opts.onRequest || _fastify._hooks.onRequest
-      const onResponse = opts.onResponse || _fastify._hooks.onResponse
-      const onSend = opts.onSend || _fastify._hooks.onSend
-      const preHandler = []
-      preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
-      if (opts.beforeHandler) {
-        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        preHandler.push.apply(preHandler, opts.beforeHandler)
-      }
+      const onRequest = _fastify._hooks.onRequest
+      const onResponse = _fastify._hooks.onResponse
+      const onSend = _fastify._hooks.onSend
+      const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
 
       context.onRequest = onRequest.length ? fastIterator(onRequest, _fastify) : null
       context.onResponse = onResponse.length ? fastIterator(onResponse, _fastify) : null
@@ -632,7 +617,7 @@ function build (options) {
         handler,
         this._Reply,
         this._Request,
-        opts.contentTypeParser || this._contentTypeParser,
+        this._contentTypeParser,
         opts.config || {},
         this._errorHandler,
         this._middie,
@@ -656,7 +641,7 @@ function build (options) {
       fourOhFour.all(prefix || '/', startHooks, context)
     } else {
       this._404Context.handler = handler
-      this._404Context.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+      this._404Context.contentTypeParser = this._contentTypeParser
       this._404Context.config = opts.config || {}
     }
   }

@@ -233,7 +233,56 @@ test('use reply.serialize in onSend hook', t => {
   })
 })
 
-test('plain string without content type should send a text/plain', t => {
+test('buffer without content type should send a application/octet-stream and raw buffer', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Buffer.alloc(1024))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.deepEqual(body, Buffer.alloc(1024))
+    })
+  })
+})
+
+test('buffer with content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.header('Content-Type', 'text/plain')
+    reply.send(Buffer.alloc(1024))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, Buffer.alloc(1024))
+    })
+  })
+})
+
+test('plain string without content type shouls send a text/plain', t => {
   t.plan(4)
 
   const fastify = require('../..')()

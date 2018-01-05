@@ -7,7 +7,7 @@ Fastify classifies errors into two different groups:
 - System: any instance of type `EvalError`, `RangeError`, `ReferenceError`, `SyntaxError`, `TypeError`, `URIError` or `AssertionError`
 - Business: any instance of type `Error`
 
-The main difference between these errors are that _System_ errors are handled by Fastify and result in an [`unhandled rejection`](#unhandled-rejections).
+The main difference between these errors are that _System_ errors are handled by Fastify and result in an `uncaughtException` and abort the client connection without a response.
 
 ### Background
 
@@ -38,7 +38,7 @@ fastify.get('/', async (req, reply) => {
 
 ## Use Error objects
 
-If you want to reject a promise with an error or send it as response payload, you have to use [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) objects (or subclasses). Any other value will throw an exception.
+If you want to reject a promise with an error or send it as response payload, you have to use [`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) objects (or subclasses). Any other value will throw an `uncaughtException` and abort the client connection without a response.
 
 Example:
 ```js

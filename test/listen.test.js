@@ -150,3 +150,20 @@ test('listen twice on the same port without callback rejects', t => {
     })
     .catch(err => t.error(err))
 })
+
+test('listen logs the port as info', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  t.teardown(() => fastify.close())
+
+  const msgs = []
+  fastify.log.info = function (msg) {
+    msgs.push(msg)
+  }
+
+  fastify.listen(0)
+    .then(() => {
+      t.ok(/http:\/\//.test(msgs[0]))
+    })
+})

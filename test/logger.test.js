@@ -8,7 +8,7 @@ const Fastify = require('..')
 const pino = require('pino')
 
 test('defaults to info level', t => {
-  t.plan(11)
+  t.plan(12)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -31,26 +31,30 @@ test('defaults to info level', t => {
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port)
-    stream.once('data', line => {
-      const id = line.reqId
-      t.ok(line.reqId, 'reqId is defined')
-      t.ok(line.req, 'req is defined')
-      t.equal(line.msg, 'incoming request', 'message is set')
-      t.equal(line.req.method, 'GET', 'method is get')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
 
       stream.once('data', line => {
-        t.equal(line.reqId, id)
+        const id = line.reqId
         t.ok(line.reqId, 'reqId is defined')
-        t.ok(line.res, 'res is defined')
-        t.equal(line.msg, 'request completed', 'message is set')
-        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        t.ok(line.req, 'req is defined')
+        t.equal(line.msg, 'incoming request', 'message is set')
+        t.equal(line.req.method, 'GET', 'method is get')
+
+        stream.once('data', line => {
+          t.equal(line.reqId, id)
+          t.ok(line.reqId, 'reqId is defined')
+          t.ok(line.res, 'res is defined')
+          t.equal(line.msg, 'request completed', 'message is set')
+          t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        })
       })
     })
   })
 })
 
 test('test log stream', t => {
-  t.plan(11)
+  t.plan(12)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -74,26 +78,30 @@ test('test log stream', t => {
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port)
-    stream.once('data', line => {
-      const id = line.reqId
-      t.ok(line.reqId, 'reqId is defined')
-      t.ok(line.req, 'req is defined')
-      t.equal(line.msg, 'incoming request', 'message is set')
-      t.equal(line.req.method, 'GET', 'method is get')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
 
       stream.once('data', line => {
-        t.equal(line.reqId, id)
+        const id = line.reqId
         t.ok(line.reqId, 'reqId is defined')
-        t.ok(line.res, 'res is defined')
-        t.equal(line.msg, 'request completed', 'message is set')
-        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        t.ok(line.req, 'req is defined')
+        t.equal(line.msg, 'incoming request', 'message is set')
+        t.equal(line.req.method, 'GET', 'method is get')
+
+        stream.once('data', line => {
+          t.equal(line.reqId, id)
+          t.ok(line.reqId, 'reqId is defined')
+          t.ok(line.res, 'res is defined')
+          t.equal(line.msg, 'request completed', 'message is set')
+          t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        })
       })
     })
   })
 })
 
 test('test error log stream', t => {
-  t.plan(10)
+  t.plan(11)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -117,29 +125,34 @@ test('test error log stream', t => {
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port + '/error')
-    stream.once('data', line => {
-      t.ok(line.reqId, 'reqId is defined')
-      t.ok(line.req, 'req is defined')
-      t.equal(line.msg, 'incoming request', 'message is set')
-      t.equal(line.req.method, 'GET', 'method is get')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
 
       stream.once('data', line => {
         t.ok(line.reqId, 'reqId is defined')
-        t.ok(line.res, 'res is defined')
-        t.equal(line.msg, 'kaboom', 'message is set')
-        t.equal(line.res.statusCode, 500, 'statusCode is 500')
+        t.ok(line.req, 'req is defined')
+        t.equal(line.msg, 'incoming request', 'message is set')
+        t.equal(line.req.method, 'GET', 'method is get')
+
+        stream.once('data', line => {
+          t.ok(line.reqId, 'reqId is defined')
+          t.ok(line.res, 'res is defined')
+          t.equal(line.msg, 'kaboom', 'message is set')
+          t.equal(line.res.statusCode, 500, 'statusCode is 500')
+        })
       })
     })
   })
 })
 
 test('can use external logger instance', t => {
-  const lines = ['incoming request', 'log success', 'request completed']
+  const lines = [/^Server listening at /, /^incoming request$/, /^log success$/, /^request completed$/]
   t.plan(lines.length + 2)
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, lines.shift())
+    const regex = lines.shift()
+    t.ok(regex.test(line.msg), '"' + line.msg + '" dont match "' + regex + '"')
   })
 
   const logger = require('pino')(splitStream)

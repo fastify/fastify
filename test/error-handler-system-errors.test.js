@@ -36,12 +36,12 @@ fastify.listen(0, err => {
 
   // Tap patched this event and we have no chance to listen on it.
   // Since any test runs in a seperate process we don't have to restore it
-  process.removeAllListeners('unhandledRejection')
+  process.removeAllListeners('uncaughtException')
 
   test('Should exit due to EvalError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.EvalError)
     })
@@ -57,7 +57,7 @@ fastify.listen(0, err => {
   test('Should exit due to RangeError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.RangeError)
     })
@@ -73,7 +73,7 @@ fastify.listen(0, err => {
   test('Should exit due to ReferenceError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.ReferenceError)
     })
@@ -89,7 +89,7 @@ fastify.listen(0, err => {
   test('Should exit due to SyntaxError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.SyntaxError)
     })
@@ -105,7 +105,7 @@ fastify.listen(0, err => {
   test('Should exit due to TypeError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.TypeError)
     })
@@ -121,7 +121,7 @@ fastify.listen(0, err => {
   test('Should exit due to AssertionError', t => {
     t.plan(2)
 
-    process.once('unhandledRejection', (err) => {
+    process.once('uncaughtException', (err) => {
       req.abort()
       t.type(err, systemErrors.AssertionError)
     })

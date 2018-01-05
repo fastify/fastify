@@ -127,3 +127,44 @@ test('onSend hook stream', t => {
     fastify.close()
   })
 })
+
+test('Destroying streams prematurely', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  const stream = require('stream')
+  const http = require('http')
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    var sent = false
+    var reallyLongStream = new stream.Readable({
+      read: function () {
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
+      }
+    })
+
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    var port = fastify.server.address().port
+
+    http.get(`http://localhost:${port}`, function (response) {
+      t.strictEqual(response.statusCode, 200)
+      response.on('readable', function () {
+        response.destroy()
+      })
+      response.on('close', function () {
+        t.pass('Response closed')
+      })
+    })
+  })
+})

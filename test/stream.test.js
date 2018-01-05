@@ -138,9 +138,13 @@ test('Destroying streams prematurely', t => {
   fastify.get('/', function (request, reply) {
     t.pass('Received request')
 
+    var sent = false
     var reallyLongStream = new stream.Readable({
       read: function () {
-        this.push(Buffer.from('hello\n'))
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
       }
     })
 

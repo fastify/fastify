@@ -233,6 +233,15 @@ function build (options) {
     })
 
     function wrap (err) {
+      if (!err) {
+        let address = server.address()
+        if (typeof address === 'object') {
+          address = address.address + ':' + address.port
+        }
+        address = 'http' + (options.https ? 's' : '') + '://' + address
+        fastify.log.info('Server listening at ' + address)
+      }
+
       server.removeListener('error', wrap)
       cb(err)
     }

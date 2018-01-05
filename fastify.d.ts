@@ -17,11 +17,11 @@ declare namespace fastify {
 
   type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback?: (err?: Error) => void) => void
 
-  type Middleware<HttpRequest, HttpResponse> = (req: HttpRequest, res: HttpResponse, callback?: (err?: Error) => void) => void
+  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback?: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
 
-  type FastifyMiddleware<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
+  type FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
   type RequestHandler<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, res: FastifyReply<HttpResponse>) => void
 
@@ -90,15 +90,15 @@ declare namespace fastify {
   /**
    * Optional configuration parameters for the route being created
    */
-  interface RouteShorthandOptions<HttpRequest, HttpResponse> {
+  interface RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
     schema?: JSONSchema
-    beforeHandler?: FastifyMiddleware<HttpRequest, HttpResponse>
+    beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>
   }
 
   /**
    * Route configuration options such as "url" and "method"
    */
-  interface RouteOptions<HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpRequest, HttpResponse> {
+  interface RouteOptions<HttpServer, HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
     method: HTTPMethod|HTTPMethod[],
     url: string,
     handler: RequestHandler<HttpRequest, HttpResponse>
@@ -107,7 +107,7 @@ declare namespace fastify {
   /**
    * Register options
    */
-  interface RegisterOptions<HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpRequest, HttpResponse> {
+  interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
     [key: string]: any,
     prefix?: string,
   }
@@ -157,12 +157,12 @@ declare namespace fastify {
     /**
      * Adds a route to the server
      */
-    route(opts: RouteOptions<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    route(opts: RouteOptions<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a GET route with the given mount path, options, and handler
      */
-    get(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    get(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a GET route with the given mount path and handler
@@ -172,7 +172,7 @@ declare namespace fastify {
     /**
      * Defines a PUT route with the given mount path, options, and handler
      */
-    put(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    put(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PUT route with the given mount path and handler
@@ -182,7 +182,7 @@ declare namespace fastify {
     /**
      * Defines a PATCH route with the given mount path, options, and handler
      */
-    patch(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    patch(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PATCH route with the given mount path and handler
@@ -192,7 +192,7 @@ declare namespace fastify {
     /**
      * Defines a POST route with the given mount path, options, and handler
      */
-    post(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    post(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a POST route with the given mount path and handler
@@ -202,7 +202,7 @@ declare namespace fastify {
     /**
      * Defines a HEAD route with the given mount path, options, and handler
      */
-    head(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    head(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a HEAD route with the given mount path and handler
@@ -212,7 +212,7 @@ declare namespace fastify {
     /**
      * Defines a DELETE route with the given mount path, options, and handler
      */
-    delete(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    delete(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a DELETE route with the given mount path and handler
@@ -222,7 +222,7 @@ declare namespace fastify {
     /**
      * Defines a OPTIONS route with the given mount path, options, and handler
      */
-    options(url: string, opts: RouteShorthandOptions<HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    options(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a OPTIONS route with the given mount path and handler
@@ -258,17 +258,17 @@ declare namespace fastify {
     /**
      * Apply the given middleware to all incoming requests
      */
-    use(middleware: Middleware<HttpRequest, HttpResponse>): void
+    use(middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
 
     /**
      * Apply the given middleware to routes matching the given path
      */
-    use(path: string, middleware: Middleware<HttpRequest, HttpResponse>): void
+    use(path: string, middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
 
     /**
      * Registers a plugin or array of plugins on the server
      */
-    register<T extends RegisterOptions<HttpRequest, HttpResponse>>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, T>|Array<Plugin<HttpServer, HttpRequest, HttpResponse, T>>, opts?: T, callback?: (err: Error) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    register<T extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, T>|Array<Plugin<HttpServer, HttpRequest, HttpResponse, T>>, opts?: T, callback?: (err: Error) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Decorate this fastify instance with new properties. Throws an execption if
@@ -302,24 +302,24 @@ declare namespace fastify {
     /**
      * Add a hook that is triggered when a request is initially received
      */
-    addHook(name: 'onRequest', hook: Middleware<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRequest', hook: Middleware<HttpServer,HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired before a request is processed, but after the "onRequest"
      * hook
      */
-    addHook(name: 'preHandler', hook: FastifyMiddleware<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'preHandler', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired after a request is processed, but before the "onResponse"
      * hook
      */
-     addHook(name: 'onSend', hook: (req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-    
+     addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
      /**
      * Hook that is called when a response is about to be sent to a client
      */
-    addHook(name: 'onResponse', hook: (res: http.OutgoingMessage, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.OutgoingMessage, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Adds a hook that is triggered when server.close is called. Useful for closing connections

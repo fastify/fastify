@@ -55,7 +55,8 @@ server.use('/', (req, res, next) => {
 /**
  * Test various hooks and different signatures
  */
-server.addHook('preHandler', (req, reply, next) => {
+server.addHook('preHandler', function(req, reply, next) {
+  this.log.debug("`this` is not `any`");
   if (req.body.error) {
     next(new Error('testing if middleware errors can be passed'));
   } else {
@@ -66,16 +67,24 @@ server.addHook('preHandler', (req, reply, next) => {
   }
 })
 
-server.addHook('onRequest', (req, res, next) => {
+server.addHook('onRequest', function(req, res, next) {
+  this.log.debug("`this` is not `any`");
   console.log(`${req.method} ${req.url}`);
   next();
 })
 
-server.addHook('onResponse', (res, next) => {
+server.addHook('onResponse', function (res, next) {
+  this.log.debug("`this` is not `any`");
   setTimeout(function() {
     console.log('response is finished after 100ms?', res.finished);
     next();
   }, 100);
+})
+
+server.addHook('onSend', function(req, reply, payload, next) {
+  this.log.debug("`this` is not `any`");
+  console.log(`${req.req.method} ${req.req.url}`);
+  next();
 })
 
 server.addHook('onClose', (instance, done) => {

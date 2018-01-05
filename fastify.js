@@ -165,16 +165,8 @@ function build (options) {
     res._context = null
     res.on('finish', onResFinished)
     res.on('error', onResFinished)
-    res.on('close', onConnectionClosed)
 
     router.lookup(req, res)
-  }
-
-  function onConnectionClosed () {
-    this.log.error({
-      res: this,
-      responseTime: now() - this._startTime
-    }, 'client connection was terminated')
   }
 
   function onResFinished (err) {

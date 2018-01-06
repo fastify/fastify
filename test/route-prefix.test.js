@@ -194,3 +194,46 @@ test('Prefix works multiple levels deep', t => {
     t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
+
+test('Different register - encapsulation check', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/first', (req, reply) => {
+    reply.send({ route: '/first' })
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.register(function (f, opts, next) {
+      f.get('/', (req, reply) => {
+        reply.send({ route: '/v1/v2' })
+      })
+      next()
+    }, { prefix: '/v2' })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.register(function (f, opts, next) {
+      f.get('/', (req, reply) => {
+        reply.send({ route: '/v3/v4' })
+      })
+      next()
+    }, { prefix: '/v4' })
+    next()
+  }, { prefix: '/v3' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/v2'
+  }, res => {
+    t.same(JSON.parse(res.payload), { route: '/v1/v2' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v3/v4'
+  }, res => {
+    t.same(JSON.parse(res.payload), { route: '/v3/v4' })
+  })
+})

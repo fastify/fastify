@@ -5,7 +5,7 @@ const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test
 
-test('jsonBodyLimit option', t => {
+test('jsonBodyLimit', t => {
   t.plan(5)
 
   try {

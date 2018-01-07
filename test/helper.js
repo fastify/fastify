@@ -224,43 +224,40 @@ module.exports.payloadMethod = function (method, t) {
     })
 
     test(`${upMethod} returns 413 - Payload Too Large`, t => {
-      t.plan(6)
+      t.plan(upMethod === 'OPTIONS' ? 4 : 6)
 
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': '1000001'
+          'Content-Length': 1024 * 1024 + 1
         }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 413)
       })
 
-      var chunk = Buffer.allocUnsafe(1000 * 1000 + 1)
-      const largeStream = new stream.Readable({
-        read () {
-          this.push(chunk)
-          chunk = null
-        }
-      })
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port,
-        headers: { 'Content-Type': 'application/json' },
-        body: largeStream,
-        timeout: 500
-      }, (err, response, body) => {
-        t.error(err)
-        if (upMethod === 'OPTIONS') {
-          // Node errors with a 400 Bad Request for OPTIONS requests
-          // with a stream body and no Content-Length header
-          t.strictEqual(response.statusCode, 400)
-        } else {
+      // Node errors for OPTIONS requests with a stream body and no Content-Length header
+      if (upMethod !== 'OPTIONS') {
+        var chunk = Buffer.allocUnsafe(1024 * 1024 + 1)
+        const largeStream = new stream.Readable({
+          read () {
+            this.push(chunk)
+            chunk = null
+          }
+        })
+        sget({
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port,
+          headers: { 'Content-Type': 'application/json' },
+          body: largeStream,
+          timeout: 500
+        }, (err, response, body) => {
+          t.error(err)
           t.strictEqual(response.statusCode, 413)
-        }
-      })
+        })
+      }
 
       sget({
         method: upMethod,

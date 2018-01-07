@@ -23,6 +23,15 @@ const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 
+const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
+
+function validateBodyLimitOption (jsonBodyLimit) {
+  if (jsonBodyLimit === undefined) return
+  if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
+    throw new TypeError(`'jsonBodyLimit' option must be an integer > 0. Got '${jsonBodyLimit}'`)
+  }
+}
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
@@ -93,14 +102,8 @@ function build (options) {
   }
 
   // JSON body limit option
-  if (options.jsonBodyLimit !== undefined) {
-    if (!Number.isInteger(options.jsonBodyLimit)) {
-      throw new TypeError(`'jsonBodyLimit' option must be an integer. Got: '${options.jsonBodyLimit}'`)
-    }
-    fastify._jsonBodyLimit = options.jsonBodyLimit
-  } else {
-    fastify._jsonBodyLimit = 1000 * 1000 // 1 MB
-  }
+  validateBodyLimitOption(options.jsonBodyLimit)
+  fastify._jsonBodyLimit = options.jsonBodyLimit || DEFAULT_JSON_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -405,13 +408,8 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    var jsonBodyLimit = _fastify._jsonBodyLimit
-    if (opts.jsonBodyLimit !== undefined) {
-      if (!Number.isInteger(opts.jsonBodyLimit)) {
-        throw new TypeError(`'jsonBodyLimit' option must be an integer. Got: '${opts.jsonBodyLimit}'`)
-      }
-      jsonBodyLimit = opts.jsonBodyLimit
-    }
+    validateBodyLimitOption(opts.jsonBodyLimit)
+    var jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
 
     _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path

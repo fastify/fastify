@@ -87,7 +87,7 @@ function asyncHookTest (t) {
   })
 
   test('modify payload', t => {
-    t.plan(9)
+    t.plan(10)
     const fastify = Fastify()
     const payload = { hello: 'world' }
     const modifiedPayload = { hello: 'modified' }
@@ -119,7 +119,8 @@ function asyncHookTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.deepEqual(anotherPayload, JSON.parse(res.payload))
       t.strictEqual(res.statusCode, 200)
       t.strictEqual(res.headers['content-length'], '22')

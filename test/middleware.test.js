@@ -487,7 +487,7 @@ test('middlewares should support encapsulation with prefix', t => {
 })
 
 test('use serve-static', t => {
-  t.plan(1)
+  t.plan(2)
 
   const instance = fastify()
 
@@ -498,7 +498,8 @@ test('use serve-static', t => {
   instance.inject({
     method: 'GET',
     url: '/' + basename
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
   })
 })

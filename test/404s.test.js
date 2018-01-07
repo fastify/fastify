@@ -210,7 +210,7 @@ test('encapsulated 404', t => {
 })
 
 test('custom 404 hook and handler context', t => {
-  t.plan(19)
+  t.plan(21)
 
   const fastify = Fastify()
 
@@ -267,12 +267,14 @@ test('custom 404 hook and handler context', t => {
     next()
   }, { prefix: '/encapsulated' })
 
-  fastify.inject('/not-found', res => {
+  fastify.inject('/not-found', (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 404)
     t.strictEqual(res.payload, 'this was not found')
   })
 
-  fastify.inject('/encapsulated/not-found', res => {
+  fastify.inject('/encapsulated/not-found', (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 404)
     t.strictEqual(res.payload, 'encapsulated was not found')
   })
@@ -576,11 +578,12 @@ test('log debug for 404', t => {
   t.tearDown(fastify.close.bind(fastify))
 
   t.test('log debug', t => {
-    t.plan(6)
+    t.plan(7)
     fastify.inject({
       method: 'GET',
       url: '/not-found'
-    }, (response) => {
+    }, (err, response) => {
+      t.error(err)
       t.strictEqual(response.statusCode, 404)
 
       const INFO_LEVEL = 30
@@ -594,7 +597,7 @@ test('log debug for 404', t => {
 })
 
 test('Unsupported method', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -610,7 +613,8 @@ test('Unsupported method', t => {
     fastify.inject({
       method: 'PROPFIND',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.strictEqual(res.statusCode, 404)
 
       sget({
@@ -625,7 +629,7 @@ test('Unsupported method', t => {
 })
 
 test('recognizes errors from the http-errors module', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -641,7 +645,8 @@ test('recognizes errors from the http-errors module', t => {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.strictEqual(res.statusCode, 404)
 
       sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {

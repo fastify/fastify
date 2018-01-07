@@ -13,7 +13,7 @@ codes.forEach(code => {
 
 function helper (code) {
   test('Reply error handling - code: ' + code, t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify()
     const err = new Error('winter is coming')
 
@@ -26,7 +26,8 @@ function helper (code) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (error, res) => {
+      t.error(error)
       t.strictEqual(res.statusCode, Number(code))
       t.equal(res.headers['content-type'], 'application/json')
       t.deepEqual(
@@ -42,7 +43,7 @@ function helper (code) {
 }
 
 test('preHandler hook error handling with external code', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const err = new Error('winter is coming')
 
@@ -56,7 +57,8 @@ test('preHandler hook error handling with external code', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (error, res) => {
+    t.error(error)
     t.strictEqual(res.statusCode, 400)
     t.deepEqual(
       {
@@ -70,7 +72,7 @@ test('preHandler hook error handling with external code', t => {
 })
 
 test('onRequest hook error handling with external done', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const err = new Error('winter is coming')
 
@@ -84,7 +86,8 @@ test('onRequest hook error handling with external done', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (error, res) => {
+    t.error(error)
     t.strictEqual(res.statusCode, 400)
     t.deepEqual(
       {
@@ -127,7 +130,7 @@ if (Number(process.versions.node[0]) >= 6) {
 }
 
 test('Error instance sets HTTP status code', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const err = new Error('winter is coming')
   err.statusCode = 418
@@ -139,7 +142,8 @@ test('Error instance sets HTTP status code', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (error, res) => {
+    t.error(error)
     t.strictEqual(res.statusCode, 418)
     t.deepEqual(
       {
@@ -153,7 +157,7 @@ test('Error instance sets HTTP status code', t => {
 })
 
 test('Error status code below 400 defaults to 500', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const err = new Error('winter is coming')
   err.statusCode = 399
@@ -165,7 +169,8 @@ test('Error status code below 400 defaults to 500', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (error, res) => {
+    t.error(error)
     t.strictEqual(res.statusCode, 500)
     t.deepEqual(
       {
@@ -179,7 +184,7 @@ test('Error status code below 400 defaults to 500', t => {
 })
 
 test('Error.status property support', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const err = new Error('winter is coming')
   err.status = 418
@@ -191,7 +196,8 @@ test('Error.status property support', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (error, res) => {
+    t.error(error)
     t.strictEqual(res.statusCode, 418)
     t.deepEqual(
       {
@@ -221,7 +227,7 @@ test('Support rejection with values that are not Error instances', t => {
   t.plan(objs.length)
   for (const nonErr of objs) {
     t.test('Type: ' + typeof nonErr, t => {
-      t.plan(3)
+      t.plan(4)
       const fastify = Fastify()
 
       fastify.get('/', () => {
@@ -240,7 +246,8 @@ test('Support rejection with values that are not Error instances', t => {
       fastify.inject({
         method: 'GET',
         url: '/'
-      }, res => {
+      }, (error, res) => {
+        t.error(error)
         t.strictEqual(res.statusCode, 500)
         t.strictEqual(res.payload, 'error')
       })
@@ -249,7 +256,7 @@ test('Support rejection with values that are not Error instances', t => {
 })
 
 test('invalid schema - ajv', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify()
   fastify.get('/', {
@@ -273,14 +280,15 @@ test('invalid schema - ajv', t => {
   fastify.inject({
     url: '/?id=abc',
     method: 'GET'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 400)
     t.strictEqual(res.payload, 'error')
   })
 })
 
 test('should set the status code and the headers from the error object (from route handler)', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -293,7 +301,8 @@ test('should set the status code and the headers from the error object (from rou
   fastify.inject({
     url: '/',
     method: 'GET'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 400)
     t.strictEqual(res.headers.hello, 'world')
     t.deepEqual(JSON.parse(res.payload), {
@@ -305,7 +314,7 @@ test('should set the status code and the headers from the error object (from rou
 })
 
 test('should set the status code and the headers from the error object (from custom error handler)', t => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -326,7 +335,8 @@ test('should set the status code and the headers from the error object (from cus
   fastify.inject({
     url: '/',
     method: 'GET'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 400)
     t.strictEqual(res.headers.hello, 'world')
     t.deepEqual(JSON.parse(res.payload), {
@@ -355,7 +365,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
   fastify.inject({
     url: '/',
     method: 'GET'
-  }, res => {
+  }, (e, res) => {
     t.fail('should not be called')
   })
 })
@@ -379,7 +389,7 @@ test('should throw an error due to custom serializer can not handle the payload 
   fastify.inject({
     url: '/',
     method: 'GET'
-  }, res => {
+  }, (e, res) => {
     t.fail('should not be called')
   })
 })

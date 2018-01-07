@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('..')
 
 test('beforeHandler', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -21,14 +21,15 @@ test('beforeHandler', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { beforeHandler: true, hello: 'world' })
   })
 })
 
 test('beforeHandler should be called after preHandler hook', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.addHook('preHandler', (req, reply, next) => {
@@ -49,14 +50,15 @@ test('beforeHandler should be called after preHandler hook', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { check: 'ab', hello: 'world' })
   })
 })
 
 test('beforeHandler should be unique per route', t => {
-  t.plan(2)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -76,7 +78,8 @@ test('beforeHandler should be unique per route', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'earth' })
   })
@@ -85,14 +88,15 @@ test('beforeHandler should be unique per route', t => {
     method: 'POST',
     url: '/no',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })
 
 test('beforeHandler should handle errors', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -107,7 +111,8 @@ test('beforeHandler should handle errors', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.equal(res.statusCode, 500)
     t.deepEqual(payload, {
@@ -119,7 +124,7 @@ test('beforeHandler should handle errors', t => {
 })
 
 test('beforeHandler should handle errors with custom status code', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -135,7 +140,8 @@ test('beforeHandler should handle errors with custom status code', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.equal(res.statusCode, 401)
     t.deepEqual(payload, {
@@ -147,7 +153,7 @@ test('beforeHandler should handle errors with custom status code', t => {
 })
 
 test('beforeHandler should handle errors with custom status code in shorthand form', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -163,7 +169,8 @@ test('beforeHandler should handle errors with custom status code in shorthand fo
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.equal(res.statusCode, 401)
     t.deepEqual(payload, {
@@ -175,7 +182,7 @@ test('beforeHandler should handle errors with custom status code in shorthand fo
 })
 
 test('beforeHandler could accept an array of functions', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.post('/', {
@@ -197,14 +204,15 @@ test('beforeHandler could accept an array of functions', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { beforeHandler: 'ab', hello: 'world' })
   })
 })
 
 test('beforeHandler does not interfere with preHandler', t => {
-  t.plan(2)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.addHook('preHandler', (req, reply, next) => {
@@ -229,7 +237,8 @@ test('beforeHandler does not interfere with preHandler', t => {
     method: 'post',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { check: 'ab', hello: 'world' })
   })
@@ -238,14 +247,15 @@ test('beforeHandler does not interfere with preHandler', t => {
     method: 'post',
     url: '/no',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { check: 'a', hello: 'world' })
   })
 })
 
 test('beforeHandler should keep the context', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.decorate('foo', 42)
@@ -265,7 +275,8 @@ test('beforeHandler should keep the context', t => {
     method: 'POST',
     url: '/',
     payload: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { foo: 43, hello: 'world' })
   })

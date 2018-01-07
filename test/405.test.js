@@ -22,4 +22,5 @@ test('405', t => {
     .then(response => {
       t.strictEqual(response.statusCode, 405)
     })
+    .catch(t.fail)
 })

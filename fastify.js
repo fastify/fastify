@@ -494,7 +494,9 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
-    this._jsonBodyLimit = jsonBodyLimit
+    this._jsonParserOptions = {
+      limit: jsonBodyLimit
+    }
     this._fastify = fastify
   }
 

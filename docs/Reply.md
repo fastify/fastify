@@ -71,7 +71,7 @@ reply
   .serializer(protoBuf.serialize)
 ```
 
-Note that if a string or buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
+Note that if a buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
 
 *Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
 
@@ -101,6 +101,15 @@ As noted above, if you are sending JSON objects, `send` will serialize the objec
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })
+})
+```
+
+<a name="send-string"></a>
+#### Strings
+If you pass a string to `send` without a `Content-Type`, it will be sent as plain text. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json`, in which case it will be JSON-serialized like an object — see the section above).
+```js
+fastify.get('/json', options, function (request, reply) {
+  reply.send('plain string')
 })
 ```
 

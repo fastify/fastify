@@ -282,7 +282,7 @@ test('buffer with content type should not send application/octet-stream', t => {
   })
 })
 
-test('plain string without content type shouls send a text/plain', t => {
+test('plain string without content type should send a text/plain', t => {
   t.plan(4)
 
   const fastify = require('../..')()
@@ -302,6 +302,57 @@ test('plain string without content type shouls send a text/plain', t => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'text/plain')
       t.deepEqual(body.toString(), 'hello world!')
+    })
+  })
+})
+
+test('plain string with content type should be sent unmodified', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('text/css').send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/css')
+      t.deepEqual(body.toString(), 'hello world!')
+    })
+  })
+})
+
+test('plain string with content type and custom serializer should be serialized', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply
+      .serializer(() => 'serialized')
+      .type('text/css')
+      .send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/css')
+      t.deepEqual(body.toString(), 'serialized')
     })
   })
 })

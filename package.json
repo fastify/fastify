@@ -97,7 +97,7 @@
     "@types/node": "^8.5.2",
     "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
-    "ajv": "^5.5.2",
+    "ajv": "^6.0.0",
     "avvio": "^4.0.1",
     "fast-iterator": "^0.2.1",
     "fast-json-stringify": "^0.16.0",

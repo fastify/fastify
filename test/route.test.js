@@ -178,3 +178,25 @@ test('path can be specified in place of uri', t => {
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })
+
+test('invalid jsonBodyLimit option - route', t => {
+  t.plan(2)
+
+  try {
+    fastify.route({
+      jsonBodyLimit: false,
+      method: 'PUT',
+      handler: () => null
+    })
+    t.fail('jsonBodyLimit must be an integer')
+  } catch (err) {
+    t.ok(err)
+  }
+
+  try {
+    fastify.post('/url', { jsonBodyLimit: 10000.1 }, () => null)
+    t.fail('jsonBodyLimit must be an integer')
+  } catch (err) {
+    t.ok(err)
+  }
+})

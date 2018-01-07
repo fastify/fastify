@@ -104,7 +104,7 @@ fastify.inject({
   url: String,
   payload: Object,
   headers: Object
-}, response => {
+}, (error, response) => {
   // your tests
 })
 ```
@@ -122,11 +122,19 @@ fastify
   .then(response => {
     // your tests
   })
+  .catch(err => {
+    // handle error
+  })
 ```
 
 Async await is supported as well!
 ```js
-const res = await fastify.inject({ method: String, url: String, payload: Object, headers: Object })
+try {
+  const res = await fastify.inject({ method: String, url: String, payload: Object, headers: Object })
+  // your tests
+} catch (err) {
+  // handle error
+}
 ```
 Example:
 ```js
@@ -192,7 +200,8 @@ test('GET `/` route', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 200)
     t.strictEqual(res.headers['content-length'], '' + res.payload.length)
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })

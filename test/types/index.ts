@@ -237,7 +237,8 @@ server.listen(3000, err => {
 })
 
 // http injections
-server.inject({ url: "/test" }, (res: fastify.HTTPInjectResponse) => {
+server.inject({ url: "/test" }, (err: Error, res: fastify.HTTPInjectResponse) => {
+  server.log.debug(err);
   server.log.debug(res.payload);
 });
 

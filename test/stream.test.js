@@ -49,7 +49,7 @@ test('should respond with a stream', t => {
 })
 
 test('should trigger the onSend hook', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -64,7 +64,8 @@ test('should trigger the onSend hook', t => {
 
   fastify.inject({
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.headers['content-type'], 'application/javascript')
     t.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
     fastify.close()
@@ -97,7 +98,7 @@ test('should trigger the onSend hook only once if pumping the stream fails', t =
 })
 
 test('onSend hook stream', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -119,7 +120,8 @@ test('onSend hook stream', t => {
   fastify.inject({
     url: '/',
     method: 'GET'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.headers['content-encoding'], 'gzip')
     const file = fs.readFileSync(resolve(process.cwd() + '/test/stream.test.js'), 'utf8')
     const payload = zlib.gunzipSync(res.rawPayload)

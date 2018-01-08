@@ -426,7 +426,7 @@ test('onSend hook should support encapsulation / 2', t => {
 })
 
 test('modify payload', t => {
-  t.plan(9)
+  t.plan(10)
   const fastify = Fastify()
   const payload = { hello: 'world' }
   const modifiedPayload = { hello: 'modified' }
@@ -459,7 +459,8 @@ test('modify payload', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(anotherPayload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
     t.strictEqual(res.headers['content-length'], '22')
@@ -508,7 +509,7 @@ test('onSend hook throws', t => {
 })
 
 test('onSend hook should receive valid request and reply objects if onRequest hook fails', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.decorateRequest('testDecorator', 'testDecoratorVal')
@@ -531,13 +532,14 @@ test('onSend hook should receive valid request and reply objects if onRequest ho
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
   })
 })
 
 test('onSend hook should receive valid request and reply objects if middleware fails', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.decorateRequest('testDecorator', 'testDecoratorVal')
@@ -560,13 +562,14 @@ test('onSend hook should receive valid request and reply objects if middleware f
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
   })
 })
 
 test('onSend hook should receive valid request and reply objects if a custom content type parser fails', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.decorateRequest('testDecorator', 'testDecoratorVal')
@@ -590,7 +593,8 @@ test('onSend hook should receive valid request and reply objects if a custom con
     method: 'POST',
     url: '/',
     payload: 'body'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
   })
 })

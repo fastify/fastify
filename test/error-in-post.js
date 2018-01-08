@@ -27,7 +27,7 @@ process.on('uncaughtException', (err) => {
   t.equal(err.message, 'kaboom')
 })
 
-fastify.inject(reqOpts, (res) => {
+fastify.inject(reqOpts, (e, res) => {
   t.fail('should not be called')
 })
 

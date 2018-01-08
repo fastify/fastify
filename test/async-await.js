@@ -126,7 +126,7 @@ function asyncTest (t) {
 
   test('server logs an error if reply.send is called and a value is returned via async/await', t => {
     const lines = ['incoming request', 'request completed', 'Reply already sent']
-    t.plan(lines.length + 1)
+    t.plan(lines.length + 2)
 
     const splitStream = split(JSON.parse)
     splitStream.on('data', (line) => {
@@ -147,7 +147,8 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'world' })
     })
@@ -205,7 +206,7 @@ function asyncTest (t) {
   })
 
   test('support reply decorators with await', t => {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = Fastify()
 
@@ -223,14 +224,15 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'world' })
     })
   })
 
   test('support 204', t => {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = Fastify()
 
@@ -241,13 +243,14 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.equal(res.statusCode, 204)
     })
   })
 
   test('does not call reply.send() twice if 204 reponse is already sent', t => {
-    t.plan(1)
+    t.plan(2)
 
     const fastify = Fastify()
 
@@ -261,7 +264,8 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.equal(res.statusCode, 204)
     })
   })
@@ -275,8 +279,12 @@ function asyncTest (t) {
       reply.send({ hello: 'world' })
     })
 
-    const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    try {
+      const res = await fastify.inject({ method: 'GET', url: '/' })
+      t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    } catch (err) {
+      t.fail(err)
+    }
   })
 
   test('inject async await - when the server is up', async t => {
@@ -288,13 +296,21 @@ function asyncTest (t) {
       reply.send({ hello: 'world' })
     })
 
-    const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    try {
+      const res = await fastify.inject({ method: 'GET', url: '/' })
+      t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    } catch (err) {
+      t.fail(err)
+    }
 
     await sleep(200)
 
-    const res2 = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res2.payload))
+    try {
+      const res2 = await fastify.inject({ method: 'GET', url: '/' })
+      t.deepEqual({ hello: 'world' }, JSON.parse(res2.payload))
+    } catch (err) {
+      t.fail(err)
+    }
   })
 
   test('async await plugin', async t => {
@@ -310,12 +326,16 @@ function asyncTest (t) {
       await sleep(200)
     })
 
-    const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    try {
+      const res = await fastify.inject({ method: 'GET', url: '/' })
+      t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    } catch (err) {
+      t.fail(err)
+    }
   })
 
   test('Thrown Error instance sets HTTP status code', t => {
-    t.plan(2)
+    t.plan(3)
 
     const fastify = Fastify()
 
@@ -329,7 +349,8 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (error, res) => {
+      t.error(error)
       t.strictEqual(res.statusCode, 418)
       t.deepEqual(
         {
@@ -343,7 +364,7 @@ function asyncTest (t) {
   })
 
   test('customErrorHandler support', t => {
-    t.plan(3)
+    t.plan(4)
 
     const fastify = Fastify()
 
@@ -363,7 +384,8 @@ function asyncTest (t) {
     fastify.inject({
       method: 'GET',
       url: '/'
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       t.strictEqual(res.statusCode, 401)
       t.deepEqual(
         {

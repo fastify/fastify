@@ -196,7 +196,7 @@ test('expose the logger', t => {
 })
 
 test('The logger should accept a custom genReqId function', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify({
     logger: {
@@ -217,7 +217,8 @@ test('The logger should accept a custom genReqId function', t => {
     fastify.inject({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.equal(payload.id, 'a')
       fastify.close()
@@ -227,7 +228,7 @@ test('The logger should accept a custom genReqId function', t => {
 
 test('reply.send logs an error if called twice in a row', t => {
   const lines = ['incoming request', 'request completed', 'Reply already sent', 'Reply already sent']
-  t.plan(lines.length + 1)
+  t.plan(lines.length + 2)
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
@@ -249,7 +250,8 @@ test('reply.send logs an error if called twice in a row', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })

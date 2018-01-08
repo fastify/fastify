@@ -30,9 +30,9 @@ They need to be in
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 
   `reply` is defined in [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md).
-* `schemaResolver(key, allSchemas)`: passes in a custom schema resolver. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#sharing-schemas-cached-validation-serialization)
+* `schemaResolver(keyRef, allSchemas)`: passes in a custom schema resolver. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#sharing-schemas-cached-validation-serialization)
 
-  `key` is a string key referencing a schema.
+  `keyRef` is a string key referencing a schema.
 
   `allSchemas` is a dictionary of the schemas that have been added through `addSchema`.
 

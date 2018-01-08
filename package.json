@@ -1,13 +1,13 @@
 {
   "name": "fastify",
-  "version": "0.37.0",
+  "version": "0.38.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
   "scripts": {
     "lint": "standard | snazzy",
     "unit": "tap -j4 test/*.test.js test/*/*.test.js",
-    "typescript": "tsc test/types/index.ts --target es6 --module commonjs --noEmit",
+    "typescript": "tsc test/types/index.ts --target es6 --module commonjs --noEmit --noImplicitThis",
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit --  --cov",
@@ -103,7 +103,7 @@
     "fast-json-stringify": "^0.16.0",
     "find-my-way": "^1.8.1",
     "flatstr": "^1.0.5",
-    "light-my-request": "^1.1.1",
+    "light-my-request": "^2.0.0",
     "middie": "^3.0.0",
     "pino": "^4.10.2",
     "pump": "^2.0.0"

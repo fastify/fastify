@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('..')
 
 test('default 500', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -16,7 +16,8 @@ test('default 500', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
     t.strictEqual(res.headers['content-type'], 'application/json')
     t.deepEqual(JSON.parse(res.payload), {
@@ -28,7 +29,7 @@ test('default 500', t => {
 })
 
 test('custom 500', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -46,7 +47,8 @@ test('custom 500', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
     t.strictEqual(res.headers['content-type'], 'text/plain')
     t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
@@ -54,7 +56,7 @@ test('custom 500', t => {
 })
 
 test('encapsulated 500', t => {
-  t.plan(6)
+  t.plan(8)
 
   const fastify = Fastify()
 
@@ -80,7 +82,8 @@ test('encapsulated 500', t => {
   fastify.inject({
     method: 'GET',
     url: '/test'
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
     t.strictEqual(res.headers['content-type'], 'text/plain')
     t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
@@ -89,7 +92,8 @@ test('encapsulated 500', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
     t.strictEqual(res.headers['content-type'], 'application/json')
     t.deepEqual(JSON.parse(res.payload), {
@@ -101,7 +105,7 @@ test('encapsulated 500', t => {
 })
 
 test('custom 500 with hooks', t => {
-  t.plan(6)
+  t.plan(7)
 
   const fastify = Fastify()
 
@@ -132,7 +136,8 @@ test('custom 500 with hooks', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (res) => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 500)
     t.strictEqual(res.headers['content-type'], 'text/plain')
     t.deepEqual(res.payload.toString(), 'an error happened: kaboom')

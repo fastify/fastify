@@ -132,7 +132,7 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
-`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is fully encapsulated, so different plugins can set different not found handlers.
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is fully encapsulated, so different plugins can set different not found handlers. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md#lifecycle).
 
 <a name="set-error-handler"></a>
 #### setErrorHandler

@@ -6,7 +6,7 @@ const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const runHooks = require('fast-iterator')
+const fastIterator = require('fast-iterator')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -24,6 +24,15 @@ const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
+
+const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
+
+function validateBodyLimitOption (jsonBodyLimit) {
+  if (jsonBodyLimit === undefined) return
+  if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
+    throw new TypeError(`'jsonBodyLimit' option must be an integer > 0. Got '${jsonBodyLimit}'`)
+  }
+}
 
 function build (options) {
   options = options || {}
@@ -98,6 +107,9 @@ function build (options) {
   const ajvContext = { ajv }
   const defaultSchemaResolver = schemaCompiler.bind(ajvContext, null)
   const resolveStringifier = createMapCache(createStringifier)
+  // JSON body limit option
+  validateBodyLimitOption(options.jsonBodyLimit)
+  fastify._jsonBodyLimit = options.jsonBodyLimit || DEFAULT_JSON_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -110,7 +122,7 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify._RoutePrefix = new RoutePrefix()
+  fastify._routePrefix = ''
 
   // expose logger instance
   fastify.log = log
@@ -238,6 +250,15 @@ function build (options) {
     })
 
     function wrap (err) {
+      if (!err) {
+        let address = server.address()
+        if (typeof address === 'object') {
+          address = address.address + ':' + address.port
+        }
+        address = 'http' + (options.https ? 's' : '') + '://' + address
+        fastify.log.info('Server listening at ' + address)
+      }
+
       server.removeListener('error', wrap)
       cb(err)
     }
@@ -270,7 +291,7 @@ function build (options) {
   function middlewareCallback (err, state) {
     if (err) {
       const req = state.req
-      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
       const reply = new state.context.Reply(state.res, state.context, request)
       reply.send(err)
       return
@@ -281,7 +302,7 @@ function build (options) {
 
   function onRunMiddlewares (err, req, res, state) {
     if (err) {
-      const request = new state.context.Request(state.params, req, null, null, req.headers, req.log)
+      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
       const reply = new state.context.Reply(res, state.context, request)
       reply.send(err)
       return
@@ -302,7 +323,7 @@ function build (options) {
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
-    instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
+    instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
@@ -318,21 +339,15 @@ function build (options) {
     return instance
   }
 
-  function RoutePrefix () {
-    this.prefix = ''
-  }
-
-  function buildRoutePrefix (r, opts) {
-    const _RoutePrefix = Object.create(opts)
-    const R = _RoutePrefix
-    R.prefix = r.prefix
-    if (typeof opts.prefix === 'string') {
-      if (opts.prefix[0] !== '/') {
-        opts.prefix = '/' + opts.prefix
-      }
-      R.prefix += opts.prefix
+  function buildRoutePrefix (instancePrefix, pluginPrefix) {
+    if (!pluginPrefix) {
+      return instancePrefix
     }
-    return R
+
+    if (pluginPrefix[0] !== '/') {
+      pluginPrefix = '/' + pluginPrefix
+    }
+    return instancePrefix + pluginPrefix
   }
 
   // Shorthand methods
@@ -368,30 +383,21 @@ function build (options) {
     return _route(this, supportedMethods, url, opts, handler)
   }
 
-  function _route (self, method, url, options, handler) {
+  function _route (_fastify, method, url, options, handler) {
     if (!handler && typeof options === 'function') {
       handler = options
       options = {}
     }
-    return route.call(self, {
+    return _fastify.route({
       method,
       url,
       handler,
-      schema: options.schema || {},
-      Reply: self._Reply,
-      Request: self._Request,
-      contentTypeParser: self._contentTypeParser,
-      onRequest: self._hooks.onRequest,
-      preHandler: self._hooks.preHandler,
-      RoutePrefix: self._RoutePrefix,
+      schema: options.schema,
       beforeHandler: options.beforeHandler,
-      onResponse: options.onResponse,
-      onSend: options.onSend,
       config: options.config,
-      middie: self._middie,
-      errorHandler: self._errorHandler,
       schemaCompiler: options.schemaCompiler,
-      schemaResolver: options.schemaResolver
+      schemaResolver: options.schemaResolver,
+      jsonBodyLimit: options.jsonBodyLimit
     })
   }
 
@@ -415,11 +421,12 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    _fastify._RoutePrefix = opts.RoutePrefix || _fastify._RoutePrefix
+    validateBodyLimitOption(opts.jsonBodyLimit)
+    var jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
 
     _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path
-      const prefix = _fastify._RoutePrefix.prefix
+      const prefix = _fastify._routePrefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
       const config = opts.config || {}
@@ -428,12 +435,14 @@ function build (options) {
       const context = new Context(
         opts.schema,
         opts.handler.bind(_fastify),
-        opts.Reply || _fastify._Reply,
-        opts.Request || _fastify._Request,
-        opts.contentTypeParser || _fastify._contentTypeParser,
+        _fastify._Reply,
+        _fastify._Request,
+        _fastify._contentTypeParser,
         config,
-        opts.errorHandler || _fastify._errorHandler,
-        opts.middie || _fastify._middie
+        _fastify._errorHandler,
+        _fastify._middie,
+        jsonBodyLimit,
+        _fastify
       )
 
       try {
@@ -450,20 +459,15 @@ function build (options) {
         return
       }
 
-      const onRequest = opts.onRequest || _fastify._hooks.onRequest
-      const onResponse = opts.onResponse || _fastify._hooks.onResponse
-      const onSend = opts.onSend || _fastify._hooks.onSend
-      const preHandler = []
-      preHandler.push.apply(preHandler, opts.preHandler || _fastify._hooks.preHandler)
-      if (opts.beforeHandler) {
-        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        preHandler.push.apply(preHandler, opts.beforeHandler)
-      }
+      const onRequest = _fastify._hooks.onRequest
+      const onResponse = _fastify._hooks.onResponse
+      const onSend = _fastify._hooks.onSend
+      const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
-      context.preHandler = preHandler.length ? runHooks(preHandler, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, _fastify) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, _fastify) : null
+      context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
+      context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
       if (map.has(url)) {
         if (map.get(url)[opts.method]) {
@@ -497,7 +501,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, jsonBodyLimit, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -510,6 +514,10 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
+    this._jsonParserOptions = {
+      limit: jsonBodyLimit
+    }
+    this._fastify = fastify
   }
 
   function iterator () {
@@ -566,7 +574,7 @@ function build (options) {
 
   function use (url, fn) {
     if (typeof url === 'string') {
-      const prefix = this._RoutePrefix.prefix
+      const prefix = this._routePrefix
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     this._middlewares.push([url, fn])
@@ -578,7 +586,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else {
-      this._hooks.add(name, fn.bind(this))
+      this._hooks.add(name, fn)
     }
     return this
   }
@@ -617,8 +625,8 @@ function build (options) {
     // we can
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
-    const request = new Request(null, req, null, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: runHooks([], null) }, request)
+    const request = new Request(null, req, null, req.headers, req.log)
+    const reply = new Reply(res, { onSend: fastIterator([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -635,7 +643,7 @@ function build (options) {
       opts = undefined
     }
     opts = opts || {}
-    handler = handler || basic404
+    handler = handler ? handler.bind(this) : basic404
 
     if (!this._404Context) {
       const context = new Context(
@@ -643,30 +651,33 @@ function build (options) {
         handler,
         this._Reply,
         this._Request,
-        opts.contentTypeParser || this._contentTypeParser,
+        this._contentTypeParser,
         opts.config || {},
         this._errorHandler,
-        this._middie
+        this._middie,
+        this._jsonBodyLimit,
+        null
       )
 
       const onRequest = this._hooks.onRequest
-      const onResponse = this._hooks.onResponse
+      const preHandler = this._hooks.preHandler
       const onSend = this._hooks.onSend
+      const onResponse = this._hooks.onResponse
 
-      context.onRequest = onRequest.length ? runHooks(onRequest, context) : null
-      context.onResponse = onResponse.length ? runHooks(onResponse, context) : null
-      context.onSend = onSend.length ? runHooks(onSend, context) : null
+      context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
+      context.preHandler = preHandler.length ? fastIterator(preHandler, this) : null
+      context.onSend = onSend.length ? fastIterator(onSend, this) : null
+      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
 
       this._404Context = context
 
-      var prefix = this._RoutePrefix.prefix
-      var star = '/*'
+      const prefix = this._routePrefix
 
-      fourOhFour.all(prefix + star, startHooks, context)
+      fourOhFour.all(prefix + '/*', startHooks, context)
       fourOhFour.all(prefix || '/', startHooks, context)
     } else {
       this._404Context.handler = handler
-      this._404Context.contentTypeParser = opts.contentTypeParser || this._contentTypeParser
+      this._404Context.contentTypeParser = this._contentTypeParser
       this._404Context.config = opts.config || {}
     }
   }

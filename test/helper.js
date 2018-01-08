@@ -1,6 +1,7 @@
 'use strict'
 
 const sget = require('simple-get').concat
+const stream = require('stream')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -60,6 +61,18 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
+  test(`${upMethod} with jsonBodyLimit option`, t => {
+    t.plan(1)
+    try {
+      fastify[loMethod]('/with-limit', { jsonBodyLimit: 1 }, function (req, reply) {
+        reply.send(req.body)
+      })
+      t.pass()
+    } catch (e) {
+      t.fail()
+    }
+  })
+
   fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
@@ -80,6 +93,22 @@ module.exports.payloadMethod = function (method, t) {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body, { hello: 'world' })
+      })
+    })
+
+    test(`${upMethod} - correctly replies with very large body`, t => {
+      t.plan(3)
+
+      const largeString = 'world'.repeat(13200)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: { hello: largeString },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: largeString })
       })
     })
 
@@ -167,7 +196,8 @@ module.exports.payloadMethod = function (method, t) {
     }
 
     test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
-      t.plan(2)
+      t.plan(4)
+
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
@@ -179,6 +209,65 @@ module.exports.payloadMethod = function (method, t) {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 422)
+      })
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: '',
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 500
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 422)
+      })
+    })
+
+    test(`${upMethod} returns 413 - Payload Too Large`, t => {
+      t.plan(upMethod === 'OPTIONS' ? 4 : 6)
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': 1024 * 1024 + 1
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 413)
+      })
+
+      // Node errors for OPTIONS requests with a stream body and no Content-Length header
+      if (upMethod !== 'OPTIONS') {
+        var chunk = Buffer.allocUnsafe(1024 * 1024 + 1)
+        const largeStream = new stream.Readable({
+          read () {
+            this.push(chunk)
+            chunk = null
+          }
+        })
+        sget({
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port,
+          headers: { 'Content-Type': 'application/json' },
+          body: largeStream,
+          timeout: 500
+        }, (err, response, body) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 413)
+        })
+      }
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}/with-limit`,
+        headers: { 'Content-Type': 'application/json' },
+        body: {},
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 413)
       })
     })
   })

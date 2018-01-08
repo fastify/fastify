@@ -36,7 +36,8 @@ test('The logger should add a unique id for every request', t => {
     fastify.inject({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
       ids.push(payload.id)
@@ -61,7 +62,8 @@ test('The logger should reuse request id header for req.id', t => {
       headers: {
         'Request-Id': 'request-id-1'
       }
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
       fastify.close()

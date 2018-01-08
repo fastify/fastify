@@ -6,7 +6,7 @@ const Fastify = require('../..')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 
 test('fastify.all should add all the methods to the same url', t => {
-  t.plan(supportedMethods.length)
+  t.plan(supportedMethods.length * 2)
 
   const fastify = Fastify()
 
@@ -26,7 +26,8 @@ test('fastify.all should add all the methods to the same url', t => {
       options.payload = { hello: 'world' }
     }
 
-    fastify.inject(options, res => {
+    fastify.inject(options, (err, res) => {
+      t.error(err)
       var payload = JSON.parse(res.payload)
       t.deepEqual(payload, { method: method })
     })

@@ -233,7 +233,56 @@ test('use reply.serialize in onSend hook', t => {
   })
 })
 
-test('plain string without content type shouls send a text/plain', t => {
+test('buffer without content type should send a application/octet-stream and raw buffer', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.send(Buffer.alloc(1024))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.deepEqual(body, Buffer.alloc(1024))
+    })
+  })
+})
+
+test('buffer with content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.header('Content-Type', 'text/plain')
+    reply.send(Buffer.alloc(1024))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, Buffer.alloc(1024))
+    })
+  })
+})
+
+test('plain string without content type should send a text/plain', t => {
   t.plan(4)
 
   const fastify = require('../..')()
@@ -253,6 +302,57 @@ test('plain string without content type shouls send a text/plain', t => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'text/plain')
       t.deepEqual(body.toString(), 'hello world!')
+    })
+  })
+})
+
+test('plain string with content type should be sent unmodified', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('text/css').send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/css')
+      t.deepEqual(body.toString(), 'hello world!')
+    })
+  })
+})
+
+test('plain string with content type and custom serializer should be serialized', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply
+      .serializer(() => 'serialized')
+      .type('text/css')
+      .send('hello world!')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/css')
+      t.deepEqual(body.toString(), 'serialized')
     })
   })
 })
@@ -277,6 +377,118 @@ test('plain string with content type application/json should be serialized as js
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.deepEqual(body.toString(), '"hello world!"')
+    })
+  })
+})
+
+test('undefined payload should be sent as-is', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.strictEqual(payload, undefined)
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.code(204).send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: `http://localhost:${fastify.server.address().port}`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], undefined)
+      t.strictEqual(response.headers['content-length'], undefined)
+      t.strictEqual(body.length, 0)
+    })
+  })
+})
+
+test('reply.notFound() should invoke the 404 handler', t => {
+  t.plan(9)
+
+  const fastify = require('../..')()
+
+  fastify.get('/not-found', function (req, reply) {
+    reply.notFound()
+  })
+
+  fastify.register(function (instance, options, next) {
+    instance.get('/not-found', function (req, reply) {
+      reply.notFound()
+    })
+
+    instance.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('Custom not found response')
+    })
+
+    next()
+  }, {prefix: '/prefixed'})
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(body.toString(), '{"error":"Not Found","message":"Not found","statusCode":404}')
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/prefixed/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body.toString(), 'Custom not found response')
+    })
+  })
+})
+
+test('reply.notFound() should log a warning and send a basic response if called inside a 404 handler', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+
+  fastify.get('/not-found', function (req, reply) {
+    reply.notFound()
+  })
+
+  fastify.setNotFoundHandler(function (req, reply) {
+    reply.res.log.warn = function mockWarn (message) {
+      t.type(message, 'string')
+    }
+
+    reply.notFound()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body.toString(), '404 Not Found')
     })
   })
 })

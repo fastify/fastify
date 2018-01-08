@@ -10,7 +10,8 @@ Reply is a core Fastify object that exposes the following functions:
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
-- `.send(payload)` - Sends the payload to the user, could be a plain text, JSON, stream, or an Error object.
+- `.notFound()` - Invokes the 404 handler.
+- `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
 
 ```js
@@ -69,7 +70,26 @@ reply
   .header('Content-Type', 'application/x-protobuf')
   .serializer(protoBuf.serialize)
 ```
+
+Note that if a buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
+
 *Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
+
+<a name="notfound"></a>
+### NotFound
+Invokes the 404 handler. This is useful inside handlers for routes with a wildcard `*` where you may want to forward the request to the 404 handler if some condition is not met.
+
+A custom 404 handler can be set with [`fastify.setNotFoundHandler()`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler).
+
+```js
+fastify.get('/*', options, function (request, reply) {
+  if (!someCondition) {
+    reply.notFound()
+    return
+  }
+  // Handle the request
+})
+```
 
 <a name="send"></a>
 ### Send
@@ -81,6 +101,15 @@ As noted above, if you are sending JSON objects, `send` will serialize the objec
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })
+})
+```
+
+<a name="send-string"></a>
+#### Strings
+If you pass a string to `send` without a `Content-Type`, it will be sent as plain text. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json`, in which case it will be JSON-serialized like an object — see the section above).
+```js
+fastify.get('/json', options, function (request, reply) {
+  reply.send('plain string')
 })
 ```
 
@@ -153,4 +182,4 @@ If you want to completely customize the error response, checkout [`setErrorHandl
 
 <a name="payload-type"></a>
 #### Type of the final payload
-It is crucial that the sent payload is a `string` or a `Buffer`, otherwise *send* will throw at runtime.
+It is crucial that the sent payload (if not `undefined`) is a `string` or a `Buffer`, otherwise *send* will throw at runtime.

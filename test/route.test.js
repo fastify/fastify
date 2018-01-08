@@ -213,7 +213,7 @@ fastify.listen(0, function (err) {
 })
 
 test('path can be specified in place of uri', t => {
-  t.plan(2)
+  t.plan(3)
 
   fastify.route({
     method: 'GET',
@@ -228,8 +228,31 @@ test('path can be specified in place of uri', t => {
     url: '/path'
   }
 
-  fastify.inject(reqOpts, (res) => {
+  fastify.inject(reqOpts, (err, res) => {
+    t.error(err)
     t.strictEqual(res.statusCode, 200)
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
+})
+
+test('invalid jsonBodyLimit option - route', t => {
+  t.plan(2)
+
+  try {
+    fastify.route({
+      jsonBodyLimit: false,
+      method: 'PUT',
+      handler: () => null
+    })
+    t.fail('jsonBodyLimit must be an integer')
+  } catch (err) {
+    t.ok(err)
+  }
+
+  try {
+    fastify.post('/url', { jsonBodyLimit: 10000.1 }, () => null)
+    t.fail('jsonBodyLimit must be an integer')
+  } catch (err) {
+    t.ok(err)
+  }
 })

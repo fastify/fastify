@@ -172,7 +172,7 @@ test('Destroying streams prematurely', t => {
 })
 
 test('Destroying streams prematurely with custom error handler set', t => {
-  t.plan(6)
+  t.plan(7)
 
   const fastify = Fastify()
   const stream = require('stream')
@@ -180,17 +180,18 @@ test('Destroying streams prematurely with custom error handler set', t => {
 
   fastify.setErrorHandler(function (err, reply) {
     t.type(err, Error)
+    t.strictEqual(reply.sent, true)
 
     try {
       reply.send('error message')
-      t.pass('sending a response after headers are sent should do nothing')
+      t.pass('sending a response after headers are sent should not error')
     } catch (error) {
       t.fail(error)
     }
 
     try {
       reply.send(new Error('error message'))
-      t.pass('sending an error response after headers are sent should do nothing')
+      t.pass('sending an error response after headers are sent should not error')
     } catch (error) {
       t.fail(error)
     }

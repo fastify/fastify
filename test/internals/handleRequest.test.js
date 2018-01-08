@@ -105,7 +105,7 @@ test('jsonBody should be a function', t => {
   t.plan(2)
 
   t.is(typeof internals.jsonBody, 'function')
-  t.is(internals.jsonBody.length, 2)
+  t.is(internals.jsonBody.length, 3)
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

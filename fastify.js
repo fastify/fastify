@@ -23,6 +23,15 @@ const Hooks = require('./lib/hooks')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 
+const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
+
+function validateBodyLimitOption (jsonBodyLimit) {
+  if (jsonBodyLimit === undefined) return
+  if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
+    throw new TypeError(`'jsonBodyLimit' option must be an integer > 0. Got '${jsonBodyLimit}'`)
+  }
+}
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
@@ -91,6 +100,10 @@ function build (options) {
   if (Number(process.versions.node[0]) >= 6) {
     server.on('clientError', handleClientError)
   }
+
+  // JSON body limit option
+  validateBodyLimitOption(options.jsonBodyLimit)
+  fastify._jsonBodyLimit = options.jsonBodyLimit || DEFAULT_JSON_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -370,7 +383,8 @@ function build (options) {
       schema: options.schema,
       beforeHandler: options.beforeHandler,
       config: options.config,
-      schemaCompiler: options.schemaCompiler
+      schemaCompiler: options.schemaCompiler,
+      jsonBodyLimit: options.jsonBodyLimit
     })
   }
 
@@ -394,6 +408,9 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
+    validateBodyLimitOption(opts.jsonBodyLimit)
+    var jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
+
     _fastify.after((notHandledErr, done) => {
       const path = opts.url || opts.path
       const prefix = _fastify._routePrefix
@@ -411,6 +428,7 @@ function build (options) {
         config,
         _fastify._errorHandler,
         _fastify._middie,
+        jsonBodyLimit,
         _fastify
       )
 
@@ -463,7 +481,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, fastify) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, jsonBodyLimit, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -476,6 +494,9 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = middie
+    this._jsonParserOptions = {
+      limit: jsonBodyLimit
+    }
     this._fastify = fastify
   }
 
@@ -614,6 +635,7 @@ function build (options) {
         opts.config || {},
         this._errorHandler,
         this._middie,
+        this._jsonBodyLimit,
         null
       )
 

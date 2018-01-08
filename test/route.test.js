@@ -107,6 +107,45 @@ test('Add multiple methods', t => {
   }
 })
 
+test('Custom schema resolver', t => {
+  t.plan(4)
+  try {
+    const schema = {}
+    const schema2 = {}
+    fastify.addSchema(schema, '#test')
+
+    fastify.route({
+      method: ['PUT'],
+      url: '/schema-resolver',
+      // this is equivalent to using setSchemaResolver
+      schemaResolver: (key, allSchemas) => {
+        // this checks all schemas has the one we added earlier
+        t.strictEqual(allSchemas['#test'], schema)
+        // but we return one that hasn't been added - useful if we have our own dictionary or fetching method
+        t.strictEqual(key, '#test2')
+        return schema2
+      },
+      schemaCompiler: (schemaToCompile) => {
+        t.strictEqual(schemaToCompile, schema2)
+        // noop validator
+        return () => {
+          return true
+        }
+      },
+      schema: {
+        body: '#test2'
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, function (err) {
   if (err) t.error(err)
   fastify.server.unref()
@@ -153,6 +192,22 @@ fastify.listen(0, function (err) {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('route - custom schema resolver', t => {
+    t.plan(2)
+
+    sget({
+      method: 'PUT',
+      url: 'http://localhost:' + fastify.server.address().port + '/schema-resolver',
+      body: {
+        okay: true
+      },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
     })
   })
 })

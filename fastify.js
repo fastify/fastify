@@ -390,7 +390,8 @@ function build (options) {
       config: options.config,
       middie: self._middie,
       errorHandler: self._errorHandler,
-      schemaCompiler: options.schemaCompiler
+      schemaCompiler: options.schemaCompiler,
+      schemaResolver: options.schemaResolver
     })
   }
 

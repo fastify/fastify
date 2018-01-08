@@ -50,7 +50,6 @@ test('handler function - invalid schema', t => {
   res.getHeader = (key) => {
     return
   }
-  res.log = { error: () => {}, info: () => {} }
   const context = {
     schema: {
       body: {
@@ -68,6 +67,7 @@ test('handler function - invalid schema', t => {
   }
   buildSchema(context, schemaCompiler)
   const request = {
+    log: { error: () => {}, info: () => {} },
     body: { hello: 'world' }
   }
   internals.handler(new Reply(res, context, request))

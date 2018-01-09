@@ -543,3 +543,28 @@ test('Should set a custom log level for a specific route', t => {
     t.deepEqual(payload, { hello: 'world' })
   })
 })
+
+test('The default 404 handler logs the incoming request', t => {
+  t.plan(5)
+
+  const expectedMessages = ['incoming request', 'Not found', 'request completed']
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, expectedMessages.shift())
+  })
+
+  const logger = pino({ level: 'trace' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-found'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})

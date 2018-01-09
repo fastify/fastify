@@ -138,3 +138,14 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 #### setErrorHandler
 
 `fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers, *async await* is supported as well.
+
+This handler can be called if an error occurs after headers are already sent. If this happens you will not be able to set any headers or send a response. You can avoid any logic that sets headers or sends a response by checking the `reply.sent` property.
+
+```js
+fastify.setErrorHandler(function (error, reply) {
+  if (reply.sent) {
+    return
+  }
+  ... // Send an error response
+})
+```

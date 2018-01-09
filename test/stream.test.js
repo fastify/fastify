@@ -170,3 +170,63 @@ test('Destroying streams prematurely', t => {
     })
   })
 })
+
+test('Destroying streams prematurely with custom error handler set', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+  const stream = require('stream')
+  const http = require('http')
+
+  fastify.setErrorHandler(function (err, reply) {
+    t.type(err, Error)
+    t.strictEqual(reply.sent, true)
+
+    try {
+      reply.send('error message')
+      t.pass('sending a response after headers are sent should not error')
+    } catch (error) {
+      t.fail(error)
+    }
+
+    try {
+      reply.send(new Error('error message'))
+      t.pass('sending an error response after headers are sent should not error')
+    } catch (error) {
+      t.fail(error)
+    }
+  })
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    var sent = false
+    var reallyLongStream = new stream.Readable({
+      read: function () {
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
+      }
+    })
+
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    var port = fastify.server.address().port
+
+    http.get(`http://localhost:${port}`, function (response) {
+      t.strictEqual(response.statusCode, 200)
+      response.on('readable', function () {
+        response.destroy()
+      })
+      response.on('close', function () {
+        t.pass('Response closed')
+      })
+    })
+  })
+})

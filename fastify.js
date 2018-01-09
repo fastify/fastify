@@ -77,16 +77,17 @@ function build (options) {
   })
 
   var server
+  const httpHandler = router.lookup.bind(router)
   if (options.https) {
     if (options.http2) {
-      server = http2().createSecureServer(options.https, fastify)
+      server = http2().createSecureServer(options.https, httpHandler)
     } else {
-      server = https.createServer(options.https, fastify)
+      server = https.createServer(options.https, httpHandler)
     }
   } else if (options.http2) {
-    server = http2().createServer(fastify)
+    server = http2().createServer(httpHandler)
   } else {
-    server = http.createServer(fastify)
+    server = http.createServer(httpHandler)
   }
 
   fastify.onClose((instance, done) => {
@@ -117,6 +118,7 @@ function build (options) {
   // extended route
   fastify.route = route
   fastify._routePrefix = ''
+  fastify._logLevel = ''
 
   // expose logger instance
   fastify.log = log
@@ -167,19 +169,27 @@ function build (options) {
 
   return fastify
 
-  function fastify (req, res) {
+  function fastify (req, res, params, context) {
+    res._context = context
     req.id = genReqId(req)
-    req.log = res.log = log.child({ reqId: req.id })
+    req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 
     req.log.info({ req }, 'incoming request')
 
     res._startTime = now()
-    res._context = null
     res.on('finish', onResFinished)
     res.on('error', onResFinished)
 
-    router.lookup(req, res)
+    if (context.onRequest !== null) {
+      context.onRequest(
+        hookIterator,
+        new State(req, res, params, context),
+        middlewareCallback
+      )
+    } else {
+      middlewareCallback(null, new State(req, res, params, context))
+    }
   }
 
   function onResFinished (err) {
@@ -252,19 +262,6 @@ function build (options) {
     }
   }
 
-  function startHooks (req, res, params, context) {
-    res._context = context
-    if (context.onRequest !== null) {
-      context.onRequest(
-        hookIterator,
-        new State(req, res, params, context),
-        middlewareCallback
-      )
-    } else {
-      middlewareCallback(null, new State(req, res, params, context))
-    }
-  }
-
   function State (req, res, params, context) {
     this.req = req
     this.res = res
@@ -312,6 +309,7 @@ function build (options) {
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
+    instance._logLevel = opts.logLevel || instance._logLevel
     instance._middlewares = []
     instance._middie = Middie(onRunMiddlewares)
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
@@ -384,7 +382,8 @@ function build (options) {
       beforeHandler: options.beforeHandler,
       config: options.config,
       schemaCompiler: options.schemaCompiler,
-      jsonBodyLimit: options.jsonBodyLimit
+      jsonBodyLimit: options.jsonBodyLimit,
+      logLevel: options.logLevel
     })
   }
 
@@ -429,6 +428,7 @@ function build (options) {
         _fastify._errorHandler,
         _fastify._middie,
         jsonBodyLimit,
+        opts.logLevel || _fastify._logLevel,
         _fastify
       )
 
@@ -461,7 +461,7 @@ function build (options) {
         } else {
           map.get(url)[opts.method] = context
         }
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, fastify, context)
       } else {
         const node = {}
         if (Array.isArray(opts.method)) {
@@ -472,7 +472,7 @@ function build (options) {
           node[opts.method] = context
         }
         map.set(url, node)
-        router.on(opts.method, url, startHooks, context)
+        router.on(opts.method, url, fastify, context)
       }
       done(notHandledErr)
     })
@@ -481,7 +481,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, jsonBodyLimit, fastify) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, jsonBodyLimit, logLevel, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -498,6 +498,7 @@ function build (options) {
       limit: jsonBodyLimit
     }
     this._fastify = fastify
+    this.logLevel = logLevel
   }
 
   function iterator () {
@@ -534,13 +535,13 @@ function build (options) {
 
   function inject (opts, cb) {
     if (started) {
-      return lightMyRequest(this, opts, cb)
+      return lightMyRequest(httpHandler, opts, cb)
     }
 
     if (cb) {
       this.ready(err => {
         if (err) throw err
-        return lightMyRequest(this, opts, cb)
+        return lightMyRequest(httpHandler, opts, cb)
       })
     } else {
       return new Promise((resolve, reject) => {
@@ -548,7 +549,7 @@ function build (options) {
           if (err) return reject(err)
           resolve()
         })
-      }).then(() => lightMyRequest(this, opts))
+      }).then(() => lightMyRequest(httpHandler, opts))
     }
   }
 
@@ -603,6 +604,16 @@ function build (options) {
     // we might want to do some hard debugging
     // here, let's print out as much info as
     // we can
+    req.id = genReqId(req)
+    req.log = res.log = log.child({ reqId: req.id })
+    req.originalUrl = req.url
+
+    req.log.info({ req }, 'incoming request')
+
+    res._startTime = now()
+    res.on('finish', onResFinished)
+    res.on('error', onResFinished)
+
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
@@ -636,6 +647,7 @@ function build (options) {
         this._errorHandler,
         this._middie,
         this._jsonBodyLimit,
+        this._logLevel,
         null
       )
 
@@ -653,8 +665,8 @@ function build (options) {
 
       const prefix = this._routePrefix
 
-      fourOhFour.all(prefix + '/*', startHooks, context)
-      fourOhFour.all(prefix || '/', startHooks, context)
+      fourOhFour.all(prefix + '/*', fastify, context)
+      fourOhFour.all(prefix || '/', fastify, context)
     } else {
       this._404Context.handler = handler
       this._404Context.contentTypeParser = this._contentTypeParser

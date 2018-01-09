@@ -158,7 +158,7 @@ fastify.get('/happiness', (req, reply) => {
 Again, it works, but it can be way better!
 ```js
 fastify.decorateRequest('setHeader', function (header) {
-  this.isHappy = this.req.headers[header]
+  this.isHappy = this.headers[header]
 })
 
 fastify.decorateRequest('isHappy', false) // this will be added to the Request object prototype, yay speed!

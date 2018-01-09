@@ -163,7 +163,9 @@ function build (options) {
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
   fastify.setNotFoundHandler = setNotFoundHandler
-  setNotFoundHandler.call(fastify)
+  fastify._notFoundHandler = null
+  fastify._404Context = null
+  fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
 
@@ -315,6 +317,7 @@ function build (options) {
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
+      instance._notFoundHandler = null
       instance._404Context = null
     }
 
@@ -622,13 +625,10 @@ function build (options) {
   }
 
   function setNotFoundHandler (opts, handler) {
-    this.after((notHandledErr, done) => {
-      _setNotFoundHandler.call(this, opts, handler)
-      done(notHandledErr)
-    })
-  }
+    if (this._notFoundHandler !== null && this._notFoundHandler !== basic404) {
+      throw new Error(`Not found handler already set for Fastify instance with prefix: '${this._routePrefix || '/'}'`)
+    }
 
-  function _setNotFoundHandler (opts, handler) {
     if (typeof opts === 'function') {
       handler = opts
       opts = undefined
@@ -636,42 +636,50 @@ function build (options) {
     opts = opts || {}
     handler = handler ? handler.bind(this) : basic404
 
-    if (!this._404Context) {
-      const context = new Context(
-        opts.schema,
-        handler,
-        this._Reply,
-        this._Request,
-        this._contentTypeParser,
-        opts.config || {},
-        this._errorHandler,
-        this._middie,
-        this._jsonBodyLimit,
-        this._logLevel,
-        null
-      )
+    this._notFoundHandler = handler
 
-      const onRequest = this._hooks.onRequest
-      const preHandler = this._hooks.preHandler
-      const onSend = this._hooks.onSend
-      const onResponse = this._hooks.onResponse
+    this.after((notHandledErr, done) => {
+      _setNotFoundHandler.call(this, opts, handler)
+      done(notHandledErr)
+    })
+  }
 
-      context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
-      context.preHandler = preHandler.length ? fastIterator(preHandler, this) : null
-      context.onSend = onSend.length ? fastIterator(onSend, this) : null
-      context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
+  function _setNotFoundHandler (opts, handler) {
+    const context = new Context(
+      opts.schema,
+      handler,
+      this._Reply,
+      this._Request,
+      this._contentTypeParser,
+      opts.config || {},
+      this._errorHandler,
+      this._middie,
+      this._jsonBodyLimit,
+      this._logLevel,
+      null
+    )
 
-      this._404Context = context
+    const onRequest = this._hooks.onRequest
+    const preHandler = this._hooks.preHandler
+    const onSend = this._hooks.onSend
+    const onResponse = this._hooks.onResponse
 
-      const prefix = this._routePrefix
+    context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
+    context.preHandler = preHandler.length ? fastIterator(preHandler, this) : null
+    context.onSend = onSend.length ? fastIterator(onSend, this) : null
+    context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
 
-      fourOhFour.all(prefix + '/*', fastify, context)
-      fourOhFour.all(prefix || '/', fastify, context)
-    } else {
-      this._404Context.handler = handler
-      this._404Context.contentTypeParser = this._contentTypeParser
-      this._404Context.config = opts.config || {}
+    if (this._404Context !== null) {
+      Object.assign(this._404Context, context) // Replace the default 404 handler
+      return
     }
+
+    this._404Context = context
+
+    const prefix = this._routePrefix
+
+    fourOhFour.all(prefix + '/*', fastify, context)
+    fourOhFour.all(prefix || '/', fastify, context)
   }
 
   function setSchemaCompiler (schemaCompiler) {

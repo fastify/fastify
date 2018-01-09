@@ -25,6 +25,10 @@ declare namespace fastify {
 
   type RequestHandler<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, res: FastifyReply<HttpResponse>) => void
 
+  type ValidateFunction = (data: Object) => boolean
+
+  type SchemaResolver = (keyRef: string, allSchemas: { [key: string]: Object }) => ValidateFunction | Object
+
   /**
    * fastify's wrapped version of node.js IncomingMessage
    */
@@ -60,6 +64,7 @@ declare namespace fastify {
 
   interface ServerOptions {
     logger?: pino.LoggerOptions,
+    ajv?: Object
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: {
@@ -346,6 +351,21 @@ declare namespace fastify {
      * Set a function that will be called whenever an error happens
      */
     setErrorHandler(handler: (error: Error, reply: FastifyReply<HttpResponse>) => void): void
+
+    /**
+     * Sets a resolver to use when trying to resolve schemas
+     */
+    setSchemaResolver(resolver: SchemaResolver): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Adds a schema
+     */
+    addSchema(schema: Object, keyRef?: string): void
+
+    /**
+     * Gets a function to validate using a saved schema
+     */
+    getSchema(keyRef: string): ValidateFunction
   }
 }
 

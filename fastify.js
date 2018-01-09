@@ -17,6 +17,8 @@ const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const isValidLogger = require('./lib/validation').isValidLogger
 const schemaCompiler = require('./lib/validation').schemaCompiler
+const createStringifier = require('./lib/validation').createStringifier
+const createMapCache = require('./lib/mapCache')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -101,6 +103,10 @@ function build (options) {
     server.on('clientError', handleClientError)
   }
 
+  const allSchemas = {}
+  const ajvContext = { ajv }
+  const defaultSchemaResolver = schemaCompiler.bind(ajvContext, null)
+  const resolveStringifier = createMapCache(createStringifier)
   // JSON body limit option
   validateBodyLimitOption(options.jsonBodyLimit)
   fastify._jsonBodyLimit = options.jsonBodyLimit || DEFAULT_JSON_BODY_LIMIT
@@ -131,7 +137,9 @@ function build (options) {
   fastify._contentTypeParser = new ContentTypeParser()
 
   fastify.setSchemaCompiler = setSchemaCompiler
-  fastify._schemaCompiler = schemaCompiler.bind({ ajv: ajv })
+  fastify._schemaCompiler = schemaCompiler.bind(ajvContext)
+  fastify.setSchemaResolver = setSchemaResolver
+  fastify._schemaResolver = defaultSchemaResolver
 
   // plugin
   fastify.register = fastify.use
@@ -152,6 +160,10 @@ function build (options) {
   fastify.use = use
   fastify._middie = Middie(onRunMiddlewares)
   fastify._middlewares = []
+
+  // schema methods
+  fastify.addSchema = addSchema
+  fastify.getSchema = createMapCache(getSchema)
 
   // exposes the routes map
   fastify[Symbol.iterator] = iterator
@@ -384,6 +396,7 @@ function build (options) {
       beforeHandler: options.beforeHandler,
       config: options.config,
       schemaCompiler: options.schemaCompiler,
+      schemaResolver: options.schemaResolver,
       jsonBodyLimit: options.jsonBodyLimit
     })
   }
@@ -433,7 +446,14 @@ function build (options) {
       )
 
       try {
-        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
+        buildSchema(
+          context,
+          opts.schemaCompiler || _fastify._schemaCompiler,
+          // using the getSchema to re-use the cache created for that
+          opts.schemaResolver || _fastify.getSchema,
+          resolveStringifier,
+          allSchemas
+        )
       } catch (error) {
         done(error)
         return
@@ -662,14 +682,31 @@ function build (options) {
     }
   }
 
+  function addSchema (schema, keyRef) {
+    if (this._schemaResolver === defaultSchemaResolver) {
+      ajv.addSchema(schema, keyRef)
+    }
+    allSchemas[keyRef || schema.$id || schema.id] = schema
+    return this
+  }
+
   function setSchemaCompiler (schemaCompiler) {
     this._schemaCompiler = schemaCompiler
+    return this
+  }
+
+  function setSchemaResolver (schemaResolver) {
+    this._schemaResolver = schemaResolver
     return this
   }
 
   function setErrorHandler (func) {
     this._errorHandler = func
     return this
+  }
+
+  function getSchema (keyRef) {
+    return fastify._schemaResolver(keyRef, allSchemas)
   }
 }
 

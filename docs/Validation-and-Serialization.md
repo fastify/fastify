@@ -82,6 +82,8 @@ In that case the function returned by `schemaCompiler` returns an object like:
 * `error`: filled with an instance of `Error` or a string that describes the validation error
 * `value`: the coerced value that passed the validation
 
+If you are using the same `schemaCompiler` for all endpoints, you can call `fastify.setSchemaCompiler` to set the default schema compiler.
+
 <a name="serialization"></a>
 ### Serialization
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.
@@ -123,6 +125,81 @@ const schema = {
 ```
 
 *If you need a custom serializer in a very specific part of your code, you can always set one with `reply.serializer(...)`.*
+
+
+<a name="sharing-schemas-cached-validation-serialization"></a>
+#### Sharing Schemas and Cached Validation/Serialization
+If you are re-using the same schemas in multiple places, or want to take advantage of JSON Schema's ability to reference external documents, you can alternatively add your schemas in one step and then reference them in your route options.
+
+For example, this:
+```js
+const schema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        otherValue: { type: 'boolean' }
+      }
+    },
+    '4xx': {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        code: { type: 'string' }
+      }
+    },
+    '5xx': {
+      type: 'object',
+      properties: {
+        message: { type: 'string' },
+        code: { type: 'string' }
+      }
+    }
+  }
+}
+```
+
+Becomes:
+```js
+fastify.addSchema({
+  $id: 'error',
+  type: 'object',
+  properties: {
+    message: { type: 'string' },
+    code: { type: 'string' }
+  }
+})
+
+const schema = {
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        value: { type: 'string' },
+        otherValue: { type: 'boolean' }
+      }
+    },
+    '4xx': 'error#',
+    '5xx': 'error#'
+  }
+}
+```
+
+Shared schemas are referenced by an id. This id comes from (in order of prefence):
+- an optional second argument passed into `addSchema`
+- the `$id` field on the schema, which is consistent with JSON Schema draft 6
+- the `id` field on the schema, which is consistent with JSON Schema draft 4
+
+When trying to resolve a reference, fastify will call `schemaResolver` with two arguments:
+- `keyRef`: the reference to the schema
+- `allSchemas`: the dictionary of all schemas added to the library
+
+This is expected to return the same output as a `schemaCompiler` would. If you want to use your own `schemaResolver` function, you can pass it in either on route options or through `setSchemaResolver`.
+
+Note that calls to `schemaResolver` are cached, so if two APIs ask for the same schema it is not going to be called twice.
+
+Additional examples are available [here](../examples/shared-schemas.js) and [here](../examples/shared-custom-schemas.js)
 
 <a name="resources"></a>
 ### Resources

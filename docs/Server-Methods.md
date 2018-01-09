@@ -129,6 +129,18 @@ Fake http injection (for testing purposes) [here](https://github.com/fastify/fas
 #### setSchemaCompiler
 Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
 
+<a name="set-schema-resolver"></a>
+#### setSchemaResolver
+Set the schema resolver for all routes. See documentation on referenced schemas [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#sharing-schemas-cached-validation-serialization).
+
+<a name="add-schema"></a>
+#### addSchema
+Adds a schema that can be referenced. See full documentation [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#sharing-schemas-cached-validation-serialization).
+
+<a name="get-schema"></a>
+#### getSchema
+Gets a cached validation function, resolving schemas as needed. See full documentation [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#sharing-schemas-cached-validation-serialization).
+
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 

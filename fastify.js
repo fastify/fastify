@@ -20,7 +20,6 @@ const schemaCompiler = require('./lib/validation').schemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
-const GlobalHooks = require('./lib/globalHooks')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 
@@ -128,8 +127,7 @@ function build (options) {
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
 
-  // hooks without encapsulation
-  fastify._globalHooks = new GlobalHooks()
+  fastify._onRouteHooks = []
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -391,13 +389,6 @@ function build (options) {
     })
   }
 
-  function onRouteIterator (fn, arg, done) {
-    const result = fn(arg, done)
-    if (result && typeof result.then === 'function') {
-      result.then(result => done(null)).catch(done)
-    }
-  }
-
   // Route management
   function route (opts) {
     const _fastify = this
@@ -420,10 +411,9 @@ function build (options) {
 
     validateBodyLimitOption(opts.jsonBodyLimit)
 
-    const onRoute = fastIterator(_fastify._globalHooks.onRoute, _fastify)
-    onRoute(onRouteIterator, opts, (err) => {
-      if (err) throw err
-      _fastify.after(afterRouteAdded)
+    _fastify.after((notHandledErr, done) => {
+      _fastify._onRouteHooks.forEach(h => h.call(_fastify, opts))
+      afterRouteAdded(notHandledErr, done)
     })
 
     function afterRouteAdded (notHandledErr, done) {
@@ -584,7 +574,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else if (name === 'onRoute') {
-      this._globalHooks.add(name, fn)
+      this._onRouteHooks.push(fn)
     } else {
       this._hooks.add(name, fn)
     }

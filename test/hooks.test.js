@@ -265,13 +265,13 @@ test('onRoute hook should not support encapsulation / 1', t => {
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRoute', () => {})
-    t.is(instance._globalHooks.onRoute.length, 1)
+    t.is(instance._onRouteHooks.length, 1)
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._globalHooks.onRoute.length, 1)
+    t.is(fastify._onRouteHooks.length, 1)
   })
 })
 
@@ -283,13 +283,13 @@ test('onRoute hook should not support encapsulation / 2', t => {
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRoute', () => {})
-    t.is(instance._globalHooks.onRoute.length, 2)
+    t.is(instance._onRouteHooks.length, 2)
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._globalHooks.onRoute.length, 2)
+    t.is(fastify._onRouteHooks.length, 2)
   })
 })
 

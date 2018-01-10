@@ -34,9 +34,8 @@ fastify
     console.log('onResponse')
     next()
   })
-  .addHook('onRoute', function (route, next) {
+  .addHook('onRoute', function (route) {
     console.log('onRoute')
-    next()
   })
 
 fastify.get('/', opts, function (req, reply) {

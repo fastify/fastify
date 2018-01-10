@@ -259,6 +259,40 @@ test('preHandler hook should support encapsulation / 5', t => {
   })
 })
 
+test('onRoute hook should not support encapsulation / 1', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {})
+    t.is(instance._globalHooks.onRoute.length, 1)
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify._globalHooks.onRoute.length, 1)
+  })
+})
+
+test('onResponse hook should not support encapsulation / 2', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onRoute', () => {})
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {})
+    t.is(instance._globalHooks.onRoute.length, 2)
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify._globalHooks.onRoute.length, 2)
+  })
+})
+
 test('onResponse hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()

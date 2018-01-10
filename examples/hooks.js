@@ -34,6 +34,10 @@ fastify
     console.log('onResponse')
     next()
   })
+  .addHook('onRoute', function (route, next) {
+    console.log('onRoute')
+    next()
+  })
 
 fastify.get('/', opts, function (req, reply) {
   reply.send({ hello: 'world' })

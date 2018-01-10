@@ -20,6 +20,7 @@ const schemaCompiler = require('./lib/validation').schemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
+const GlobalHooks = require('./lib/globalHooks')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 
@@ -126,6 +127,9 @@ function build (options) {
   // hooks
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
+
+  // hooks without encapsulation
+  fastify._globalHooks = new GlobalHooks()
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -387,6 +391,13 @@ function build (options) {
     })
   }
 
+  function onRouteIterator (fn, arg, done) {
+    const result = fn(arg, done)
+    if (result && typeof result.then === 'function') {
+      result.then(result => done(null)).catch(done)
+    }
+  }
+
   // Route management
   function route (opts) {
     const _fastify = this
@@ -408,9 +419,15 @@ function build (options) {
     }
 
     validateBodyLimitOption(opts.jsonBodyLimit)
-    var jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
 
-    _fastify.after((notHandledErr, done) => {
+    const onRoute = fastIterator(_fastify._globalHooks.onRoute, _fastify)
+    onRoute(onRouteIterator, opts, (err) => {
+      if (err) throw err
+      _fastify.after(afterRouteAdded)
+    })
+
+    function afterRouteAdded (notHandledErr, done) {
+      const jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
       const path = opts.url || opts.path
       const prefix = _fastify._routePrefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
@@ -475,7 +492,7 @@ function build (options) {
         router.on(opts.method, url, fastify, context)
       }
       done(notHandledErr)
-    })
+    }
 
     // chainable api
     return _fastify
@@ -566,6 +583,8 @@ function build (options) {
   function addHook (name, fn) {
     if (name === 'onClose') {
       this.onClose(fn)
+    } else if (name === 'onRoute') {
+      this._globalHooks.add(name, fn)
     } else {
       this._hooks.add(name, fn)
     }

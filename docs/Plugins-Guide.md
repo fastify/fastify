@@ -147,7 +147,7 @@ fastify.decorate('getHeader', (req, header) => {
 })
 
 fastify.addHook('preHandler', (req, reply, done) => {
-  req.isHappy = fastify.getHeader(req.req, 'happy')
+  req.isHappy = fastify.getHeader(req.raw, 'happy')
   done()
 })
 

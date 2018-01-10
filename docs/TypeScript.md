@@ -53,7 +53,7 @@ const server: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.S
 
 server.get('/ping', (req, reply) => {
   // Access our custom method on the http prototype
-  const clientDeviceType = req.req.getClientDeviceType()
+  const clientDeviceType = req.raw.getClientDeviceType()
 
   reply.send({ clientDeviceType: `you called this endpoint from a ${clientDeviceType}` })
 })

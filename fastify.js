@@ -414,7 +414,9 @@ function build (options) {
     _fastify.after(afterRouteAdded)
 
     function afterRouteAdded (notHandledErr, done) {
-      onRouteHooks.forEach(h => h.call(_fastify, opts))
+      for (var h of onRouteHooks) {
+        h.call(_fastify, opts)
+      }
 
       const jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
       const path = opts.url || opts.path

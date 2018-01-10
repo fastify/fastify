@@ -300,6 +300,33 @@ test('onRoute hook should be called / 2', t => {
   })
 })
 
+test('onRoute should keep the context', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  fastify.register(plugin)
+
+  function plugin (instance, opts, next) {
+    instance.decorate('test', true)
+    instance.addHook('onRoute', onRoute)
+    t.ok(instance.prototype === fastify.prototype)
+
+    function onRoute (route) {
+      t.ok(this.test)
+      t.strictEqual(this, instance)
+    }
+
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
+
+    next()
+  }
+
+  fastify.close((err) => {
+    t.error(err)
+  })
+})
+
 test('onRoute hook should pass correct route', t => {
   t.plan(5)
   const fastify = Fastify()

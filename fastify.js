@@ -572,6 +572,7 @@ function build (options) {
 
   function addHook (name, fn) {
     if (name === 'onClose') {
+      this._hooks.validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onRoute') {
       this._hooks.validate(name, fn)

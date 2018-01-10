@@ -15,7 +15,7 @@ test('hooks', t => {
     fastify.addHook('preHandler', function (request, reply, next) {
       request.test = 'the request is coming'
       reply.test = 'the reply has come'
-      if (request.req.method === 'HEAD') {
+      if (request.raw.method === 'HEAD') {
         next(new Error('some error'))
       } else {
         next()
@@ -52,7 +52,7 @@ test('hooks', t => {
   })
 
   fastify.get('/', function (req, reply) {
-    t.is(req.req.raw, 'the request is coming')
+    t.is(req.raw.raw, 'the request is coming')
     t.is(reply.res.raw, 'the reply has come')
     t.is(req.test, 'the request is coming')
     t.is(reply.test, 'the reply has come')
@@ -148,8 +148,8 @@ test('onRequest hook should support encapsulation / 3', t => {
   fastify.decorate('hello2', 'world')
 
   fastify.get('/first', (req, reply) => {
-    t.ok(req.req.first)
-    t.notOk(req.req.second)
+    t.ok(req.raw.first)
+    t.notOk(req.raw.second)
     reply.send({ hello: 'world' })
   })
 
@@ -164,8 +164,8 @@ test('onRequest hook should support encapsulation / 3', t => {
     })
 
     instance.get('/second', (req, reply) => {
-      t.ok(req.req.first)
-      t.ok(req.req.second)
+      t.ok(req.raw.first)
+      t.ok(req.raw.second)
       reply.send({ hello: 'world' })
     })
 
@@ -471,7 +471,7 @@ test('onSend hook throws', t => {
   t.plan(7)
   const fastify = Fastify()
   fastify.addHook('onSend', function (request, reply, payload, next) {
-    if (request.req.method === 'DELETE') {
+    if (request.raw.method === 'DELETE') {
       next(new Error('some error'))
       return
     }

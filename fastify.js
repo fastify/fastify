@@ -574,6 +574,7 @@ function build (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else if (name === 'onRoute') {
+      this._hooks.validate(name, fn)
       this._onRouteHooks.push(fn)
     } else {
       this._hooks.add(name, fn)

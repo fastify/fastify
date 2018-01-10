@@ -6,9 +6,9 @@ On the right branch of every section there is the next phase of the lifecycle, o
 ```
 Incoming Request
   │
-  └─▶ Instance Logger
+  └─▶ Routing
         │
-        └─▶ Routing
+        └─▶ Instance Logger
              │
        404 ◀─┴─▶ onRequest Hook
                   │

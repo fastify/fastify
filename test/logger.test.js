@@ -283,3 +283,288 @@ test('logger can be silented', t => {
   t.is(typeof childLog.trace, 'function')
   t.is(typeof childLog.child, 'function')
 })
+
+test('Should set a custom logLevel for a plugin', t => {
+  const lines = ['incoming request', 'Hello', 'request completed']
+  t.plan(7)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, lines.shift())
+  })
+
+  const logger = pino({ level: 'error' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', (req, reply) => {
+    req.log.info('Hello') // we should not see this log
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/plugin', (req, reply) => {
+      req.log.info('Hello') // we should see this log
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logLevel: 'info' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/plugin'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should set a custom logLevel for every plugin', t => {
+  const lines = ['incoming request', 'request completed', 'info', 'debug']
+  t.plan(18)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.ok(line.level === 30 || line.level === 20)
+    t.ok(lines.indexOf(line.msg) > -1)
+  })
+
+  const logger = pino({ level: 'error' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', (req, reply) => {
+    req.log.warn('Hello') // we should not see this log
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/info', (req, reply) => {
+      req.log.info('info') // we should see this log
+      req.log.debug('hidden log')
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logLevel: 'info' })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/debug', (req, reply) => {
+      req.log.debug('debug') // we should see this log
+      req.log.trace('hidden log')
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logLevel: 'debug' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/info'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/debug'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should increase the log level for a specific plugin', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, 'Hello')
+    t.ok(line.level === 50)
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', (req, reply) => {
+      req.log.error('Hello') // we should see this log
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logLevel: 'error' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should set the log level for the customized 404 handler', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, 'Hello')
+    t.ok(line.level === 50)
+  })
+
+  const logger = pino({ level: 'warn' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.setNotFoundHandler(function (req, reply) {
+      req.log.error('Hello')
+      reply.code(404).send()
+    })
+    next()
+  }, { logLevel: 'error' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('Should set the log level for the customized 500 handler', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, 'Hello')
+    t.ok(line.level === 60)
+  })
+
+  const logger = pino({ level: 'warn' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', (req, reply) => {
+      req.log.error('kaboom')
+      reply.send(new Error('kaboom'))
+    })
+
+    instance.setErrorHandler(function (e, reply) {
+      reply.res.log.fatal('Hello')
+      reply.code(500).send()
+    })
+    next()
+  }, { logLevel: 'fatal' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+  })
+})
+
+test('Should set a custom log level for a specific route', t => {
+  const lines = ['incoming request', 'Hello', 'request completed']
+  t.plan(7)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, lines.shift())
+  })
+
+  const logger = pino({ level: 'error' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/log', { logLevel: 'info' }, (req, reply) => {
+    req.log.info('Hello')
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/no-log', (req, reply) => {
+    req.log.info('Hello')
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/log'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/no-log'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('The default 404 handler logs the incoming request', t => {
+  t.plan(5)
+
+  const expectedMessages = ['incoming request', 'Not found', 'request completed']
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, expectedMessages.shift())
+  })
+
+  const logger = pino({ level: 'trace' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-found'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})

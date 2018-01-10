@@ -275,7 +275,7 @@ test('onRoute hook should not support encapsulation / 1', t => {
   })
 })
 
-test('onResponse hook should not support encapsulation / 2', t => {
+test('onRoute hook should not support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
 

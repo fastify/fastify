@@ -411,12 +411,11 @@ function build (options) {
 
     validateBodyLimitOption(opts.jsonBodyLimit)
 
-    _fastify.after((notHandledErr, done) => {
-      _fastify._onRouteHooks.forEach(h => h.call(_fastify, opts))
-      afterRouteAdded(notHandledErr, done)
-    })
+    _fastify.after(afterRouteAdded)
 
     function afterRouteAdded (notHandledErr, done) {
+      _fastify._onRouteHooks.forEach(h => h.call(_fastify, opts))
+
       const jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
       const path = opts.url || opts.path
       const prefix = _fastify._routePrefix

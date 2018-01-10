@@ -259,37 +259,68 @@ test('preHandler hook should support encapsulation / 5', t => {
   })
 })
 
-test('onRoute hook should not support encapsulation / 1', t => {
-  t.plan(3)
+test('onRoute hook should be called / 1', t => {
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRoute', () => {})
-    t.is(instance._onRouteHooks.length, 1)
+    instance.addHook('onRoute', () => {
+      t.pass()
+    })
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._onRouteHooks.length, 1)
   })
 })
 
-test('onRoute hook should not support encapsulation / 2', t => {
+test('onRoute hook should be called / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-
-  fastify.addHook('onRoute', () => {})
+  fastify.addHook('onRoute', (route) => {
+    t.pass()
+  })
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRoute', () => {})
-    t.is(instance._onRouteHooks.length, 2)
+    instance.addHook('onRoute', (route) => {
+      t.pass()
+    })
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._onRouteHooks.length, 2)
+  })
+})
+
+test('onRoute hook should pass correct route', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.addHook('onRoute', (route) => {
+    t.strictEqual(route.method, 'GET')
+    t.strictEqual(route.url, '/')
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (route) => {
+      t.strictEqual(route.method, 'GET')
+      t.strictEqual(route.url, '/')
+    })
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
   })
 })
 

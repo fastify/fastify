@@ -127,7 +127,7 @@ function build (options) {
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
 
-  fastify._onRouteHooks = []
+  const onRouteHooks = []
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
@@ -414,7 +414,7 @@ function build (options) {
     _fastify.after(afterRouteAdded)
 
     function afterRouteAdded (notHandledErr, done) {
-      _fastify._onRouteHooks.forEach(h => h.call(_fastify, opts))
+      onRouteHooks.forEach(h => h.call(_fastify, opts))
 
       const jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
       const path = opts.url || opts.path
@@ -575,7 +575,7 @@ function build (options) {
       this.onClose(fn)
     } else if (name === 'onRoute') {
       this._hooks.validate(name, fn)
-      this._onRouteHooks.push(fn)
+      onRouteHooks.push(fn)
     } else {
       this._hooks.add(name, fn)
     }

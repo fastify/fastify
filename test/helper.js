@@ -220,7 +220,7 @@ module.exports.payloadMethod = function (method, t) {
       })
     }
 
-    test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
+    test(`${upMethod} returns 400 - Bad Request`, t => {
       t.plan(4)
 
       sget({
@@ -233,7 +233,7 @@ module.exports.payloadMethod = function (method, t) {
         timeout: 500
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 422)
+        t.strictEqual(response.statusCode, 400)
       })
 
       sget({
@@ -244,7 +244,7 @@ module.exports.payloadMethod = function (method, t) {
         timeout: 500
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 422)
+        t.strictEqual(response.statusCode, 400)
       })
     })
 

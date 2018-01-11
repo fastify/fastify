@@ -134,8 +134,8 @@ test('request should be defined in onSend Hook on post request with content type
       }
     }, (err, response, body) => {
       t.error(err)
-      // a 422 error is expected because of no body
-      t.strictEqual(response.statusCode, 422)
+      // a 400 error is expected because of no body
+      t.strictEqual(response.statusCode, 400)
     })
   })
 })

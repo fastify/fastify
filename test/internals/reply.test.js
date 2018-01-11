@@ -382,7 +382,7 @@ test('plain string with content type application/json should be serialized as js
 })
 
 test('error object with a content type that is not application/json should work', t => {
-  t.plan(4)
+  t.plan(6)
 
   const fastify = require('../..')()
 
@@ -402,6 +402,7 @@ test('error object with a content type that is not application/json should work'
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
+    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
   })
 
   fastify.inject({
@@ -410,6 +411,7 @@ test('error object with a content type that is not application/json should work'
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
+    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
   })
 })
 

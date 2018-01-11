@@ -202,7 +202,7 @@ test('request should be defined in onSend Hook on options request with content t
 })
 
 test('request should respond with an error if an unserialized payload is sent inside an an async handler', t => {
-  t.plan(2)
+  t.plan(3)
 
   const fastify = require('../..')()
 
@@ -217,5 +217,10 @@ test('request should respond with an error if an unserialized payload is sent in
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      message: 'Attempted to send payload of invalid type \'object\' without serialization. Expected a string or Buffer.',
+      statusCode: 500
+    })
   })
 })

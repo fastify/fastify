@@ -411,9 +411,7 @@ function build (options) {
 
     validateBodyLimitOption(opts.jsonBodyLimit)
 
-    _fastify.after(afterRouteAdded)
-
-    function afterRouteAdded (notHandledErr, done) {
+    _fastify.after(function afterRouteAdded (notHandledErr, done) {
       for (var h of onRouteHooks) {
         h.call(_fastify, opts)
       }
@@ -483,7 +481,7 @@ function build (options) {
         router.on(opts.method, url, fastify, context)
       }
       done(notHandledErr)
-    }
+    })
 
     // chainable api
     return _fastify

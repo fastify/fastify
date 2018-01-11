@@ -303,9 +303,7 @@ test('onRoute hook should be called / 2', t => {
 test('onRoute should keep the context', t => {
   t.plan(4)
   const fastify = Fastify()
-  fastify.register(plugin)
-
-  function plugin (instance, opts, next) {
+  fastify.register((instance, opts, next) => {
     instance.decorate('test', true)
     instance.addHook('onRoute', onRoute)
     t.ok(instance.prototype === fastify.prototype)
@@ -320,7 +318,7 @@ test('onRoute should keep the context', t => {
     })
 
     next()
-  }
+  })
 
   fastify.close((err) => {
     t.error(err)

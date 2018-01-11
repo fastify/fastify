@@ -381,6 +381,40 @@ test('plain string with content type application/json should be serialized as js
   })
 })
 
+test('error object with a content type that is not application/json should work', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+
+  fastify.get('/text', function (req, reply) {
+    reply.type('text/plain')
+    reply.send(new Error('some application error'))
+  })
+
+  fastify.get('/html', function (req, reply) {
+    reply.type('text/html')
+    reply.send(new Error('some application error'))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/text'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/html'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
+  })
+})
+
 test('undefined payload should be sent as-is', t => {
   t.plan(6)
 

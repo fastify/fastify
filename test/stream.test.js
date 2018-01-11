@@ -8,6 +8,7 @@ const resolve = require('path').resolve
 const zlib = require('zlib')
 const pump = require('pump')
 const Fastify = require('..')
+const JSONStream = require('jsonstream')
 
 test('should respond with a stream', t => {
   t.plan(7)
@@ -167,6 +168,30 @@ test('Destroying streams prematurely', t => {
       response.on('close', function () {
         t.pass('Response closed')
       })
+    })
+  })
+})
+
+test('should respond with a stream1', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    const stream = JSONStream.stringify()
+    reply.code(200).type('application/json').send(stream)
+    stream.write({ hello: 'world' })
+    stream.end({ a: 42 })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), [{ hello: 'world' }, { a: 42 }])
     })
   })
 })

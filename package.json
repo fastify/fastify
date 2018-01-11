@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.39.0",
+  "version": "0.39.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
@@ -101,7 +101,7 @@
     "ajv": "^6.0.0",
     "avvio": "^4.0.1",
     "fast-iterator": "^0.2.1",
-    "fast-json-stringify": "^0.16.0",
+    "fast-json-stringify": "^0.17.0",
     "find-my-way": "^1.8.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.0",

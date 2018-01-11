@@ -71,7 +71,7 @@
     "coveralls": "^3.0.0",
     "dns-prefetch-control": "^0.1.0",
     "fast-json-body": "^1.1.0",
-    "fast-safe-stringify": "^1.2.1",
+    "fast-safe-stringify": "^1.2.2",
     "fastify-plugin": "^0.2.1",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
@@ -95,7 +95,7 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
-    "@types/node": "^8.5.2",
+    "@types/node": "^8.5.8",
     "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^6.0.0",

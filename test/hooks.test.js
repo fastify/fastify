@@ -357,6 +357,53 @@ test('onRoute hook should pass correct route', t => {
   })
 })
 
+test('onRoute hook should pass correct route with custom prefix', t => {
+  t.plan(7)
+  const fastify = Fastify()
+  fastify.addHook('onRoute', function (route) {
+    t.strictEqual(route.method, 'GET')
+    t.strictEqual(route.url, '/v1/foo')
+    t.strictEqual(route.prefix, '/v1')
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.method, 'GET')
+      t.strictEqual(route.url, '/v1/foo')
+      t.strictEqual(route.prefix, '/v1')
+    })
+    instance.get('/foo', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should pass correct route with custom options', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.method, 'GET')
+      t.strictEqual(route.url, '/foo')
+      t.strictEqual(route.logLevel, 'info')
+      t.strictEqual(route.jsonBodyLimit, 100)
+    })
+    instance.get('/foo', { logLevel: 'info', jsonBodyLimit: 100 }, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 test('onResponse hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()

@@ -23,7 +23,7 @@ function asyncHookTest (t) {
       await sleep(1)
       request.test = 'the request is coming'
       reply.test = 'the reply has come'
-      if (request.req.method === 'HEAD') {
+      if (request.raw.method === 'HEAD') {
         throw new Error('some error')
       }
     })
@@ -39,7 +39,7 @@ function asyncHookTest (t) {
     })
 
     fastify.get('/', function (request, reply) {
-      t.is(request.req.raw, 'the request is coming')
+      t.is(request.raw.raw, 'the request is coming')
       t.is(reply.res.raw, 'the reply has come')
       t.is(request.test, 'the request is coming')
       t.is(reply.test, 'the reply has come')

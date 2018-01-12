@@ -7,7 +7,7 @@ Request is a core Fastify object containing the following fields:
 - `body` - the body
 - `params` - the params matching the URL
 - `headers` - the headers
-- `req` - the incoming HTTP request from Node core
+- `raw` - the incoming HTTP request from Node core *(you can use the alias `req`)*
 - `log` - the logger instance of the incoming request
 
 ```js
@@ -16,7 +16,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.query)
   console.log(request.params)
   console.log(request.headers)
-  console.log(request.req)
+  console.log(request.raw)
   request.log.info('some info')
 })
 ```

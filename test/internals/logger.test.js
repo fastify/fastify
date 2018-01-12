@@ -16,8 +16,8 @@ test('The logger should add a unique id for every request', t => {
 
   const fastify = Fastify()
   fastify.get('/', (req, reply) => {
-    t.ok(req.req.id)
-    reply.send({ id: req.req.id })
+    t.ok(req.raw.id)
+    reply.send({ id: req.raw.id })
   })
 
   fastify.listen(0, err => {
@@ -49,8 +49,8 @@ test('The logger should add a unique id for every request', t => {
 test('The logger should reuse request id header for req.id', t => {
   const fastify = Fastify()
   fastify.get('/', (req, reply) => {
-    t.ok(req.req.id)
-    reply.send({ id: req.req.id })
+    t.ok(req.raw.id)
+    reply.send({ id: req.raw.id })
   })
 
   fastify.listen(0, err => {

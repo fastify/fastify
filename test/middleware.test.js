@@ -177,8 +177,8 @@ test('middlewares should support encapsulation / 2', t => {
     })
 
     i.get('/local', function (request, reply) {
-      t.ok(request.req.global)
-      t.ok(request.req.local)
+      t.ok(request.raw.global)
+      t.ok(request.raw.local)
       reply.send({ hello: 'world' })
     })
 
@@ -186,8 +186,8 @@ test('middlewares should support encapsulation / 2', t => {
   })
 
   instance.get('/global', function (request, reply) {
-    t.ok(request.req.global)
-    t.notOk(request.req.local)
+    t.ok(request.raw.global)
+    t.notOk(request.raw.local)
     reply.send({ hello: 'world' })
   })
 
@@ -239,9 +239,9 @@ test('middlewares should support encapsulation / 3', t => {
     })
 
     i.get('/local', function (request, reply) {
-      t.ok(request.req.global)
-      t.ok(request.req.firstLocal)
-      t.ok(request.req.secondLocal)
+      t.ok(request.raw.global)
+      t.ok(request.raw.firstLocal)
+      t.ok(request.raw.secondLocal)
       reply.send({ hello: 'world' })
     })
 
@@ -249,9 +249,9 @@ test('middlewares should support encapsulation / 3', t => {
   })
 
   instance.get('/global', function (request, reply) {
-    t.ok(request.req.global)
-    t.notOk(request.req.firstLocal)
-    t.notOk(request.req.secondLocal)
+    t.ok(request.raw.global)
+    t.notOk(request.raw.firstLocal)
+    t.notOk(request.raw.secondLocal)
     reply.send({ hello: 'world' })
   })
 
@@ -304,10 +304,10 @@ test('middlewares should support encapsulation / 4', t => {
       })
 
       f.get('/secondLocal', function (request, reply) {
-        t.ok(request.req.global)
-        t.ok(request.req.firstLocal)
-        t.ok(request.req.secondLocal)
-        t.ok(request.req.thirdLocal)
+        t.ok(request.raw.global)
+        t.ok(request.raw.firstLocal)
+        t.ok(request.raw.secondLocal)
+        t.ok(request.raw.thirdLocal)
         reply.send({ hello: 'world' })
       })
 
@@ -320,10 +320,10 @@ test('middlewares should support encapsulation / 4', t => {
     })
 
     i.get('/firstLocal', function (request, reply) {
-      t.ok(request.req.global)
-      t.ok(request.req.firstLocal)
-      t.notOk(request.req.secondLocal)
-      t.notOk(request.req.thirdLocal)
+      t.ok(request.raw.global)
+      t.ok(request.raw.firstLocal)
+      t.notOk(request.raw.secondLocal)
+      t.notOk(request.raw.thirdLocal)
       reply.send({ hello: 'world' })
     })
 
@@ -331,10 +331,10 @@ test('middlewares should support encapsulation / 4', t => {
   })
 
   instance.get('/global', function (request, reply) {
-    t.ok(request.req.global)
-    t.notOk(request.req.firstLocal)
-    t.notOk(request.req.secondLocal)
-    t.notOk(request.req.thirdLocal)
+    t.ok(request.raw.global)
+    t.notOk(request.raw.firstLocal)
+    t.notOk(request.raw.secondLocal)
+    t.notOk(request.raw.thirdLocal)
     reply.send({ hello: 'world' })
   })
 
@@ -397,7 +397,7 @@ test('middlewares should support encapsulation / 5', t => {
   })
 
   instance.get('/global', function (request, reply) {
-    t.ok(request.req.global)
+    t.ok(request.raw.global)
     reply.send({ hello: 'world' })
   })
 
@@ -453,7 +453,7 @@ test('middlewares should support encapsulation with prefix', t => {
   }, { prefix: '/local' })
 
   instance.get('/global', function (request, reply) {
-    t.ok(request.req.global)
+    t.ok(request.raw.global)
     reply.send({ hello: 'world' })
   })
 
@@ -532,11 +532,11 @@ test('middlewares with prefix', t => {
 
   function handler (request, reply) {
     reply.send({
-      prefixed: request.req.prefixed,
-      slashed: request.req.slashed,
-      global: request.req.global,
-      global2: request.req.global2,
-      root: request.req.root
+      prefixed: request.raw.prefixed,
+      slashed: request.raw.slashed,
+      global: request.raw.global,
+      global2: request.raw.global2,
+      root: request.raw.root
     })
   }
 

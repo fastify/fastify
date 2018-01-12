@@ -19,8 +19,12 @@ const opts = {
 
 fastify
   .get('/', opts, function (req, reply) {
-    reply.header('Content-Type', 'application/json').code(200)
-    reply.send({ hello: 'world' })
+    reply.code(200).send({ hello: 'world' })
+  })
+  .get('/delayed', opts, function (req, reply) {
+    setTimeout(() => {
+      reply.send({ hello: 'world' })
+    }, 10)
   })
   .get('/promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {

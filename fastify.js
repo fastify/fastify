@@ -293,7 +293,7 @@ function build (options) {
       return
     }
 
-    handleRequest(req, res, state.params, state.context)
+    process.nextTick(handleRequest, req, res, state.params, state.context)
   }
 
   function override (old, fn, opts) {

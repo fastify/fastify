@@ -160,6 +160,31 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
+    test(`${upMethod} with no body - correctly replies`, t => {
+      t.plan(6)
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
+        headers: { 'Content-Length': '0' },
+        timeout: 500
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(JSON.parse(body.toString()), null)
+      })
+
+      // Must use inject to make a request without a Content-Length header
+      fastify.inject({
+        method: upMethod,
+        url: '/missing'
+      }, (err, res) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 200)
+        t.strictEqual(JSON.parse(res.payload), null)
+      })
+    })
+
     test(`${upMethod} returns 415 - incorrect media type if body is not json`, t => {
       t.plan(2)
       sget({
@@ -195,7 +220,7 @@ module.exports.payloadMethod = function (method, t) {
       })
     }
 
-    test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
+    test(`${upMethod} returns 400 - Bad Request`, t => {
       t.plan(4)
 
       sget({
@@ -208,7 +233,7 @@ module.exports.payloadMethod = function (method, t) {
         timeout: 500
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 422)
+        t.strictEqual(response.statusCode, 400)
       })
 
       sget({
@@ -219,7 +244,7 @@ module.exports.payloadMethod = function (method, t) {
         timeout: 500
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 422)
+        t.strictEqual(response.statusCode, 400)
       })
     })
 

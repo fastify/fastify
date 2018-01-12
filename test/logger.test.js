@@ -208,8 +208,8 @@ test('The logger should accept a custom genReqId function', t => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.ok(req.req.id)
-    reply.send({ id: req.req.id })
+    t.ok(req.raw.id)
+    reply.send({ id: req.raw.id })
   })
 
   fastify.listen(0, err => {

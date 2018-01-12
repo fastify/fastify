@@ -88,7 +88,7 @@ Let's rewrite the above example with a database connection.<br>
 const fastify = require('fastify')()
 
 fastify.register(require('./our-db-connector'), {
-  url: 'mongodb://mongo/db'
+  url: 'mongodb://localhost:27017/'
 })
 fastify.register(require('./our-first-route'))
 
@@ -118,7 +118,8 @@ module.exports = fp(db)
 // our-first-route.js
 
 async function routes (fastify, options) {
-  const collection = fastify.mongo.collection('test')
+  const database = fastify.mongo.db('db')
+  const collection = database.collection('test')
 
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }

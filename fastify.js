@@ -415,10 +415,6 @@ function build (options) {
     validateBodyLimitOption(opts.jsonBodyLimit)
 
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      for (var h of onRouteHooks) {
-        h.call(_fastify, opts)
-      }
-
       const jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
       const path = opts.url || opts.path
       const prefix = _fastify._routePrefix
@@ -426,6 +422,10 @@ function build (options) {
 
       const config = opts.config || {}
       config.url = url
+
+      for (var h of onRouteHooks) {
+        h.call(_fastify, opts)
+      }
 
       const context = new Context(
         opts.schema,

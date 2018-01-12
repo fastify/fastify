@@ -13,7 +13,7 @@ fastify.register(plugin, [options])
 
 <a name="plugin-options"></a>
 ### Plugin Options
-The optional `options` parameter for `fastify.register` gets supports a predefined set of options that Fastify itself will use. This options object will also be passed to the plugin upon invocation. The currently supported list of Fastify specific options is:
+The optional `options` parameter for `fastify.register` supports a predefined set of options that Fastify itself will use. This options object will also be passed to the plugin upon invocation. The currently supported list of Fastify specific options is:
 
 + [`logLevel`](https://github.com/fastify/fastify/blob/master/docs/Routes.md#custom-log-level)
 + [`prefix`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-options)

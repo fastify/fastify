@@ -177,7 +177,7 @@ module.exports.payloadMethod = function (method, t) {
       // Must use inject to make a request without a Content-Length header
       fastify.inject({
         method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/missing'
+        url: '/missing'
       }, (err, res) => {
         t.error(err)
         t.strictEqual(res.statusCode, 200)

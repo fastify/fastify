@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('register', t => {
-  t.plan(33)
+  t.plan(17)
 
   const fastify = Fastify()
 
@@ -36,42 +36,12 @@ test('register', t => {
     done()
   })
 
-  const route1 = function (instance, opts, done) {
-    t.notEqual(instance, fastify)
-    t.ok(fastify.isPrototypeOf(instance))
-
-    t.is(typeof opts, 'object')
-    t.is(typeof done, 'function')
-
-    instance.get('/third', function (req, reply) {
-      reply.send({ hello: 'world' })
-    })
-    done()
-  }
-
-  const route2 = function (instance, opts, done) {
-    t.notEqual(instance, fastify)
-    t.ok(fastify.isPrototypeOf(instance))
-
-    t.is(typeof opts, 'object')
-    t.is(typeof done, 'function')
-
-    instance.get('/fourth', function (req, reply) {
-      reply.send({ hello: 'world' })
-    })
-    done()
-  }
-
-  fastify.register([route1, route2])
-
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
 
     makeRequest('first')
     makeRequest('second')
-    makeRequest('third')
-    makeRequest('fourth')
   })
 
   function makeRequest (path) {

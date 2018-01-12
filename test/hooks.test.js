@@ -279,20 +279,28 @@ test('onRoute hook should be called / 1', t => {
 })
 
 test('onRoute hook should be called / 2', t => {
-  t.plan(3)
+  t.plan(5)
+  let firstHandler = 0
+  let secondHandler = 0
   const fastify = Fastify()
   fastify.addHook('onRoute', (route) => {
     t.pass()
+    firstHandler++
   })
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRoute', (route) => {
       t.pass()
+      secondHandler++
     })
     instance.get('/', opts, function (req, reply) {
       reply.send()
     })
     next()
+  })
+  .after(() => {
+    t.strictEqual(firstHandler, 1)
+    t.strictEqual(secondHandler, 1)
   })
 
   fastify.ready(err => {

@@ -11,6 +11,35 @@ You already see in the [getting started](https://github.com/fastify/fastify/blob
 fastify.register(plugin, [options])
 ```
 
+<a name="plugin-options"></a>
+### Plugin Options
+The optional `options` parameter for `fastify.register` supports a predefined set of options that Fastify itself will use, except when the plugin has been wrapped with [fastify-plugin](https://github.com/fastify/fastify-plugin). This options object will also be passed to the plugin upon invocation, regardless of whether or not the plugin has been wrapped. The currently supported list of Fastify specific options is:
+
++ [`logLevel`](https://github.com/fastify/fastify/blob/master/docs/Routes.md#custom-log-level)
++ [`prefix`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-options)
+
+It is possible that Fastify will directly support other options in the future. Thus, to avoid collisions, a plugin should consider namespacing its options. For example, a plugin `foo` might be registered like so:
+
+```js
+fatify.register(require('fastify-foo'), {
+  prefix: '/foo',
+  foo: {
+    fooOption1: 'value',
+    fooOption2: 'value'
+  }
+})
+```
+
+If collisions are not a concern, the plugin may simply accept the options object as-is:
+
+```js
+fatify.register(require('fastify-foo'), {
+  prefix: '/foo',
+  fooOption1: 'value',
+  fooOption2: 'value'
+})
+```
+
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option
 If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).<br>

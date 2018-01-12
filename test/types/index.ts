@@ -174,30 +174,7 @@ server
       reply.send({ hello: 'world' })
     })
     done()
-  },
-  {prefix: 'v1', hello: 'world'},
-  function (err) {
-    if (err) throw err
-  })
-  .register([
-    function (instance, options, done) {
-      instance.get('/first', opts, function (req, reply) {
-        reply.send({ hello: 'world' })
-      })
-      done()
-    },
-    function (instance, options, done) {
-      instance.get('/second', opts, function (req, reply) {
-        reply.send({ hello: 'world' })
-      })
-      done()
-    }
-  ],
-  {prefix: 'v1', hello: 'world'},
-  function (err) {
-    if (err) throw err
-  })
-
+  }, { prefix: 'v1', hello: 'world' })
 
 
 // Using decorate requires casting so the compiler knows about new properties

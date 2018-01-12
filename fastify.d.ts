@@ -266,9 +266,9 @@ declare namespace fastify {
     use(path: string, middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
 
     /**
-     * Registers a plugin or array of plugins on the server
+     * Registers a plugin
      */
-    register<T extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, T>|Array<Plugin<HttpServer, HttpRequest, HttpResponse, T>>, opts?: T, callback?: (err: Error) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    register<T extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, T>, opts?: T): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Decorate this fastify instance with new properties. Throws an execption if

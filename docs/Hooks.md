@@ -123,7 +123,7 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 
 ## Application Hooks
 
-You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers respond to an event outside the encapsulation boundaries.
+You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.
 
 - `'onClose'`
 - `'onRoute'`

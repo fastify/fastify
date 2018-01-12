@@ -1,13 +1,12 @@
 <h1 align="center">Fastify</h1>
 
-## Hooks
+## Request/Response Hooks
 
 By using the hooks you can interact directly inside the lifecycle of Fastify. There are five different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preHandler'`
 - `'onSend'`
 - `'onResponse'`
-- `'onClose'`
 
 Example:
 ```js
@@ -122,19 +121,38 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 })
 ```
 
+## Application Hooks
+
+You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers respond to an event outside the encapsulation boundaries.
+
+- `'onClose'`
+- `'onRoute'`
+
 <a name="on-close"></a>
 **'onClose'**<br>
-The unique hook that is not inside the lifecycle is `'onClose'`, this one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) that need a "shutdown" part, such as a connection to a database.<br>
-Only for this hook, the parameters of the function changes, the first one is the Fastify instance, the second one the `done` callback.
+This one is triggered when you call `fastify.close()` to stop the server, and it is useful if you have some [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) that need a "shutdown" part, such as a connection to a database.<br>
+The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
   // some code
   done()
 })
 ```
+<a name="on-route"></a>
+**'onRoute'**<br>
+This one is called when your register a new route.<br>
+The first argument are the `route` options. The interface is synchronous and you don't have to call a callback.
+```js
+fastify.addHook('onRoute', (route) => {
+  // some code
+  route.method
+  route.schema
+  route.url
+})
+```
 <a name="scope"></a>
 ### Scope
-Except for `'onClose'` all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify api.
+Except for [Application Hooks](#application-hooks) all the hooks are encapsulated this means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify api.
 
 ```js
 fastify.addHook('onRequest', function (req, res, next) {

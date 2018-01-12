@@ -160,6 +160,31 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
+    test(`${upMethod} with no body - correctly replies`, t => {
+      t.plan(6)
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
+        headers: { 'Content-Length': '0' },
+        timeout: 500
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(JSON.parse(body.toString()), null)
+      })
+
+      // Must use inject to make a request without a Content-Length header
+      fastify.inject({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/missing'
+      }, (err, res) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 200)
+        t.strictEqual(JSON.parse(res.payload), null)
+      })
+    })
+
     test(`${upMethod} returns 415 - incorrect media type if body is not json`, t => {
       t.plan(2)
       sget({

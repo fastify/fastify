@@ -423,6 +423,7 @@ function build (options) {
       const config = opts.config || {}
       config.url = url
 
+      // run 'onRoute' hooks
       for (var h of onRouteHooks) {
         h.call(_fastify, opts)
       }

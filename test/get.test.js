@@ -4,7 +4,6 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')()
-const safeStringify = require('fast-safe-stringify')
 
 const schema = {
   schema: {
@@ -175,9 +174,14 @@ test('wrong object for schema - get', t => {
 
 test('custom serializer - get', t => {
   t.plan(1)
+
+  function customSerializer (data) {
+    return JSON.stringify(data)
+  }
+
   try {
     fastify.get('/custom-serializer', numberSchema, function (req, reply) {
-      reply.code(200).serializer(safeStringify).send({ hello: 'world' })
+      reply.code(200).serializer(customSerializer).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {

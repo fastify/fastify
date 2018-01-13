@@ -8,7 +8,7 @@ const resolve = require('path').resolve
 const zlib = require('zlib')
 const pump = require('pump')
 const Fastify = require('..')
-const JSONStream = require('jsonstream')
+const JSONStream = require('JSONStream')
 
 test('should respond with a stream', t => {
   t.plan(7)

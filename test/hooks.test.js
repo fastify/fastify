@@ -308,6 +308,38 @@ test('onRoute hook should be called / 2', t => {
   })
 })
 
+test('onRoute hook should be called / 3', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  function handler (req, reply) {
+    reply.send()
+  }
+
+  fastify.addHook('onRoute', (route) => {
+    t.pass()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (route) => {
+      t.pass()
+    })
+    instance.get('/a', handler)
+    next()
+  })
+  .after((err, done) => {
+    t.error(err)
+    setTimeout(() => {
+      fastify.get('/b', handler)
+      done()
+    }, 10)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 test('onRoute should keep the context', t => {
   t.plan(4)
   const fastify = Fastify()

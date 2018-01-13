@@ -418,11 +418,6 @@ function build (options) {
       opts.logLevel = opts.logLevel || _fastify._logLevel
       opts.jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
 
-      // run 'onRoute' hooks
-      for (var h of onRouteHooks) {
-        h.call(_fastify, opts)
-      }
-
       const config = opts.config || {}
       config.url = url
 
@@ -462,6 +457,11 @@ function build (options) {
       } catch (err) {
         done(err)
         return
+      }
+
+      // run 'onRoute' hooks
+      for (var h of onRouteHooks) {
+        h.call(_fastify, opts)
       }
 
       done(notHandledErr)

@@ -152,6 +152,9 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.method
   routeOptions.schema
   routeOptions.url
+  routeOptions.jsonBodyLimit
+  routeOptions.logLevel
+  routeOptions.prefix
 })
 ```
 <a name="scope"></a>

@@ -334,17 +334,19 @@ test('onRoute should keep the context', t => {
 })
 
 test('onRoute hook should pass correct route', t => {
-  t.plan(5)
+  t.plan(7)
   const fastify = Fastify()
   fastify.addHook('onRoute', (route) => {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/')
+    t.strictEqual(route.path, '/')
   })
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRoute', (route) => {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/')
+      t.strictEqual(route.path, '/')
     })
     instance.get('/', opts, function (req, reply) {
       reply.send()
@@ -358,11 +360,12 @@ test('onRoute hook should pass correct route', t => {
 })
 
 test('onRoute hook should pass correct route with custom prefix', t => {
-  t.plan(7)
+  t.plan(9)
   const fastify = Fastify()
   fastify.addHook('onRoute', function (route) {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/v1/foo')
+    t.strictEqual(route.path, '/v1/foo')
     t.strictEqual(route.prefix, '/v1')
   })
 
@@ -370,6 +373,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/v1/foo')
+      t.strictEqual(route.path, '/v1/foo')
       t.strictEqual(route.prefix, '/v1')
     })
     instance.get('/foo', opts, function (req, reply) {

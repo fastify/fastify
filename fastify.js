@@ -420,6 +420,7 @@ function build (options) {
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
 
       opts.url = url
+      opts.path = url
       opts.prefix = prefix
       opts.logLevel = opts.logLevel || _fastify._logLevel
       opts.jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit

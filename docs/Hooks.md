@@ -134,7 +134,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 
 <a name="on-close"></a>
 **'onClose'**<br>
-Triggered when you call `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, such as a connection to a database.<br>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, such as a connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -144,8 +144,7 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 <a name="on-route"></a>
 **'onRoute'**<br>
-Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter.<br>
-The interface is synchronous, and, as such, the listeners do not get passed a callback.
+Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
   // some code
@@ -159,7 +158,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 ```
 <a name="scope"></a>
 ### Scope
-Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using register as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (req, res, next) {

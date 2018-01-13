@@ -34,7 +34,7 @@ fastify
     console.log('onResponse')
     next()
   })
-  .addHook('onRoute', function (route) {
+  .addHook('onRoute', function (routeOptions) {
     console.log('onRoute')
   })
 

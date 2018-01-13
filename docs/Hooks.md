@@ -143,11 +143,11 @@ fastify.addHook('onClose', (instance, done) => {
 This one is called when your register a new route.<br>
 The first argument are the `route` options. The interface is synchronous and you don't have to call a callback.
 ```js
-fastify.addHook('onRoute', (route) => {
+fastify.addHook('onRoute', (routeOptions) => {
   // some code
-  route.method
-  route.schema
-  route.url
+  routeOptions.method
+  routeOptions.schema
+  routeOptions.url
 })
 ```
 <a name="scope"></a>

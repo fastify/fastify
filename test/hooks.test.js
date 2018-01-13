@@ -408,6 +408,46 @@ test('onRoute hook should pass correct route with custom options', t => {
   })
 })
 
+test('onRoute hook should receive any route option', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.method, 'GET')
+      t.strictEqual(route.url, '/foo')
+      t.strictEqual(route.auth, 'basic')
+    })
+    instance.get('/foo', { auth: 'basic' }, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should preserve system route configuration', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.method, 'GET')
+      t.strictEqual(route.url, '/foo')
+      t.strictEqual(route.handler.length, 2)
+    })
+    instance.get('/foo', { url: '/bar', method: 'POST', handler: () => {} }, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 test('onResponse hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()

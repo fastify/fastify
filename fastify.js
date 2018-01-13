@@ -379,17 +379,14 @@ function build (options) {
       handler = options
       options = {}
     }
-    return _fastify.route({
+
+    options = Object.assign({}, options, {
       method,
       url,
-      handler,
-      schema: options.schema,
-      beforeHandler: options.beforeHandler,
-      config: options.config,
-      schemaCompiler: options.schemaCompiler,
-      jsonBodyLimit: options.jsonBodyLimit,
-      logLevel: options.logLevel
+      handler
     })
+
+    return _fastify.route(options)
   }
 
   // Route management

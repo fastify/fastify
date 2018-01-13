@@ -68,34 +68,6 @@ fastify.listen(3000, '127.0.0.1')
 #### route
 Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 
-<a name="routes-iterator"></a>
-#### routes iterator
-The Fastify instance is an Iterable object with all the registered routes.
-The route properties are the same the developer has declared [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
-```js
-fastify.get('/route', opts, handler)
-
-fastify.ready(() => {
-  for (var route of fastify) {
-    console.log(route)
-    /* will output:
-    {
-      '/route': {
-        get: {
-          method: String,
-          url: String,
-          schema: Object,
-          handler: Function,
-          Request: Function,
-          Reply: Function
-        }
-      }
-    }
-    */
-  }
-})
-```
-
 <a name="close"></a>
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.

@@ -54,7 +54,6 @@ function build (options) {
   const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
-  const map = new Map()
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
@@ -156,9 +155,6 @@ function build (options) {
   fastify.use = use
   fastify._middie = Middie(onRunMiddlewares)
   fastify._middlewares = []
-
-  // exposes the routes map
-  fastify[Symbol.iterator] = iterator
 
   // fake http injection (for testing purposes)
   fastify.inject = inject
@@ -461,31 +457,13 @@ function build (options) {
       context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
       context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
-      if (map.has(url)) {
-        if (map.get(url)[opts.method]) {
-          return done(new Error(`${opts.method} already set for ${url}`))
-        }
-
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = context
-          }
-        } else {
-          map.get(url)[opts.method] = context
-        }
+      try {
         router.on(opts.method, url, fastify, context)
-      } else {
-        const node = {}
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = context
-          }
-        } else {
-          node[opts.method] = context
-        }
-        map.set(url, node)
-        router.on(opts.method, url, fastify, context)
+      } catch (err) {
+        done(err)
+        return
       }
+
       done(notHandledErr)
     })
 
@@ -511,38 +489,6 @@ function build (options) {
     }
     this._fastify = fastify
     this.logLevel = logLevel
-  }
-
-  function iterator () {
-    var entries = map.entries()
-    var it = {}
-    it.next = function () {
-      var next = entries.next()
-
-      if (next.done) {
-        return {
-          value: null,
-          done: true
-        }
-      }
-
-      var value = {}
-      var methods = {}
-
-      value[next.value[0]] = methods
-
-      // out methods are saved Uppercase,
-      // so we lowercase them for a better usability
-      for (var method in next.value[1]) {
-        methods[method.toLowerCase()] = next.value[1][method]
-      }
-
-      return {
-        value: value,
-        done: false
-      }
-    }
-    return it
   }
 
   function inject (opts, cb) {

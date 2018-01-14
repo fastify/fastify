@@ -176,7 +176,7 @@ test('can use external logger instance', t => {
   })
 })
 
-test('can use external logger instance with custom serialiser', t => {
+test('can use external logger instance with custom serializer', t => {
   const lines = [['level', 30], ['req', { url: '/foo' }], ['level', 30], ['res', { statusCode: 200 }]]
   t.plan(lines.length + 2)
 
@@ -271,25 +271,21 @@ test('The logger should accept a custom genReqId function', t => {
 
 t.test('The logger should accept custom serializer', t => {
   t.plan(9)
-  var fastify = null
-  var stream = split(JSON.parse)
-  try {
-    fastify = Fastify({
-      logger: {
-        stream: stream,
-        level: 'info',
-        serializers: {
-          req: function (req) {
-            return {
-              url: req.url
-            }
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info',
+      serializers: {
+        req: function (req) {
+          return {
+            url: req.url
           }
         }
       }
-    })
-  } catch (e) {
-    t.fail()
-  }
+    }
+  })
 
   fastify.get('/custom', function (req, reply) {
     t.ok(req.log)

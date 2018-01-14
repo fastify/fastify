@@ -3,7 +3,6 @@
 const t = require('tap')
 const test = t.test
 const net = require('net')
-const writeStream = require('flush-write-stream')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
 
@@ -392,45 +391,5 @@ test('should throw an error due to custom serializer can not handle the payload 
     method: 'GET'
   }, (e, res) => {
     t.fail('should not be called')
-  })
-})
-
-test('should serialize request and response', t => {
-  t.plan(8)
-  const lines = []
-  const stream = writeStream((data, enc, cb) => {
-    lines.push(JSON.parse(data.toString()))
-    cb()
-  })
-  const fastify = Fastify({logger: {level: 'info', stream}})
-
-  fastify.get('/400', (req, reply) => {
-    reply.code(400).send(Error('400 error'))
-  })
-
-  fastify.get('/500', (req, reply) => {
-    reply.code(500).send(Error('500 error'))
-  })
-
-  fastify.inject({
-    url: '/400',
-    method: 'GET'
-  }, (e, res) => {
-    const l = lines.find((line) => line.res && line.res.statusCode === 400)
-    t.ok(l.req)
-    t.is(l.req.id, 1)
-    t.is(l.req.method, 'GET')
-    t.is(l.req.url, '/400')
-  })
-
-  fastify.inject({
-    url: '/500',
-    method: 'GET'
-  }, (e, res) => {
-    const l = lines.find((line) => line.res && line.res.statusCode === 500)
-    t.ok(l.req)
-    t.is(l.req.id, 2)
-    t.is(l.req.method, 'GET')
-    t.is(l.req.url, '/500')
   })
 })

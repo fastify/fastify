@@ -186,11 +186,7 @@ test('can use external logger instance with custom serialiser', t => {
     const key = check[0]
     const value = check[1]
 
-    if (typeof value === 'object') {
-      t.deepEqual(line[key], value)
-    } else {
-      t.equal(line[key], value)
-    }
+    t.deepEqual(line[key], value)
   })
 
   const logger = require('pino')({
@@ -274,7 +270,7 @@ test('The logger should accept a custom genReqId function', t => {
 })
 
 t.test('The logger should accept custom serializer', t => {
-  t.plan(8)
+  t.plan(9)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -297,7 +293,7 @@ t.test('The logger should accept custom serializer', t => {
 
   fastify.get('/custom', function (req, reply) {
     t.ok(req.log)
-    reply.send(new Error({ hello: 'world' }))
+    reply.send(new Error('kaboom'))
   })
 
   fastify.listen(0, err => {
@@ -315,6 +311,7 @@ t.test('The logger should accept custom serializer', t => {
 
         stream.once('data', line => {
           t.ok(line.res, 'res is defined')
+          t.equal(line.msg, 'kaboom', 'message is set')
           t.deepEqual(line.res, { statusCode: 500 }, 'default res serialiser is use')
         })
       })

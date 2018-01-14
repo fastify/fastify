@@ -55,6 +55,20 @@ const fastify = require('fastify')({
 })
 ```
 
+By default fastify provides default serializers. List of serialiazers is: `req`, `res` and `err`.
+Additionally, `serializers` option can be used to overwrite one or more serializers.
+```js
+const fastify = require('fastify')({
+  logger: {
+    serializers: {
+      req: function (req) { 
+        return { url: req.url } 
+      }
+    }
+  }
+})
+```
+
 You can also supply your own logger instance. Instead of passing configuration options, simply pass the instance.
 The logger you supply must conform to the Pino interface; that is, it must have the following methods:
 `info`, `error`, `debug`, `fatal`, `warn`, `trace`, `child`.

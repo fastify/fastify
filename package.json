@@ -64,6 +64,7 @@
     "node": ">=4.5"
   },
   "devDependencies": {
+    "JSONStream": "^1.0.3",
     "autocannon": "^0.16.5",
     "branch-comparer": "^0.4.0",
     "concurrently": "^3.5.1",
@@ -72,6 +73,7 @@
     "dns-prefetch-control": "^0.1.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^0.2.1",
+    "flush-write-stream": "^1.0.2",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.9.0",
@@ -80,7 +82,6 @@
     "http-errors": "^1.6.2",
     "ienoopen": "^1.0.0",
     "joi": "~11.3.4",
-    "JSONStream": "^1.0.3",
     "pre-commit": "^1.2.2",
     "semver": "^5.4.1",
     "serve-static": "^1.13.1",

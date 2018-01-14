@@ -54,7 +54,6 @@ function build (options) {
   const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
-  const map = new Map()
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
@@ -127,6 +126,8 @@ function build (options) {
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
 
+  const onRouteHooks = []
+
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
@@ -154,9 +155,6 @@ function build (options) {
   fastify.use = use
   fastify._middie = Middie(onRunMiddlewares)
   fastify._middlewares = []
-
-  // exposes the routes map
-  fastify[Symbol.iterator] = iterator
 
   // fake http injection (for testing purposes)
   fastify.inject = inject
@@ -377,17 +375,14 @@ function build (options) {
       handler = options
       options = {}
     }
-    return _fastify.route({
+
+    options = Object.assign({}, options, {
       method,
       url,
-      handler,
-      schema: options.schema,
-      beforeHandler: options.beforeHandler,
-      config: options.config,
-      schemaCompiler: options.schemaCompiler,
-      jsonBodyLimit: options.jsonBodyLimit,
-      logLevel: options.logLevel
+      handler
     })
+
+    return _fastify.route(options)
   }
 
   // Route management
@@ -411,12 +406,22 @@ function build (options) {
     }
 
     validateBodyLimitOption(opts.jsonBodyLimit)
-    var jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
 
-    _fastify.after((notHandledErr, done) => {
+    _fastify.after(function afterRouteAdded (notHandledErr, done) {
       const path = opts.url || opts.path
       const prefix = _fastify._routePrefix
       const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
+
+      opts.url = url
+      opts.path = url
+      opts.prefix = prefix
+      opts.logLevel = opts.logLevel || _fastify._logLevel
+      opts.jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
+
+      // run 'onRoute' hooks
+      for (var h of onRouteHooks) {
+        h.call(_fastify, opts)
+      }
 
       const config = opts.config || {}
       config.url = url
@@ -430,8 +435,8 @@ function build (options) {
         config,
         _fastify._errorHandler,
         _fastify._middie,
-        jsonBodyLimit,
-        opts.logLevel || _fastify._logLevel,
+        opts.jsonBodyLimit,
+        opts.logLevel,
         _fastify
       )
 
@@ -452,31 +457,13 @@ function build (options) {
       context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
       context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
-      if (map.has(url)) {
-        if (map.get(url)[opts.method]) {
-          return done(new Error(`${opts.method} already set for ${url}`))
-        }
-
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = context
-          }
-        } else {
-          map.get(url)[opts.method] = context
-        }
+      try {
         router.on(opts.method, url, fastify, context)
-      } else {
-        const node = {}
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = context
-          }
-        } else {
-          node[opts.method] = context
-        }
-        map.set(url, node)
-        router.on(opts.method, url, fastify, context)
+      } catch (err) {
+        done(err)
+        return
       }
+
       done(notHandledErr)
     })
 
@@ -502,38 +489,6 @@ function build (options) {
     }
     this._fastify = fastify
     this.logLevel = logLevel
-  }
-
-  function iterator () {
-    var entries = map.entries()
-    var it = {}
-    it.next = function () {
-      var next = entries.next()
-
-      if (next.done) {
-        return {
-          value: null,
-          done: true
-        }
-      }
-
-      var value = {}
-      var methods = {}
-
-      value[next.value[0]] = methods
-
-      // out methods are saved Uppercase,
-      // so we lowercase them for a better usability
-      for (var method in next.value[1]) {
-        methods[method.toLowerCase()] = next.value[1][method]
-      }
-
-      return {
-        value: value,
-        done: false
-      }
-    }
-    return it
   }
 
   function inject (opts, cb) {
@@ -568,7 +523,11 @@ function build (options) {
 
   function addHook (name, fn) {
     if (name === 'onClose') {
+      this._hooks.validate(name, fn)
       this.onClose(fn)
+    } else if (name === 'onRoute') {
+      this._hooks.validate(name, fn)
+      onRouteHooks.push(fn)
     } else {
       this._hooks.add(name, fn)
     }

@@ -39,6 +39,8 @@ declare namespace fastify {
 
     body: any,
 
+    id: any,
+
     req: HttpRequest,
     log: pino.Logger
   }

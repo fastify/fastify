@@ -123,7 +123,7 @@ server
       reply.send({ hello: 'route' })
     },
     beforeHandler: (req, reply, done) => {
-      req.log.info(`before handler for "${req.req.url}"`);
+      req.log.info(`before handler for "${req.req.url}" ${req.id}`);
       done();
     }
   })

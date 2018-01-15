@@ -7,10 +7,11 @@ const test = require('tap').test
 const Fastify = require('..')
 
 test('listen accepts a port and a callback', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   fastify.listen(0, (err) => {
     fastify.server.unref()
+    t.is(fastify.server.address().address, '127.0.0.1')
     t.error(err)
     t.pass()
     fastify.close()

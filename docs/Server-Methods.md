@@ -27,7 +27,8 @@ fastify.ready().then(() => {
 
 <a name="listen"></a>
 #### listen
-Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core.
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core. By default, the server will listen on address `127.0.0.1` when no specific address is provided.
+
 ```js
 fastify.listen(3000, err => {
   if (err) throw err
@@ -108,7 +109,7 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 
 ```js
 fastify.setNotFoundHandler(function (request, reply) {
-  // Default not found handler  
+  // Default not found handler
 })
 
 fastify.register(function (instance, options, next) {

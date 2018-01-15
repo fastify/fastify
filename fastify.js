@@ -40,14 +40,17 @@ function build (options) {
 
   var log
   if (isValidLogger(options.logger)) {
-    log = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
+    log = loggerUtils.createLogger({
+      logger: options.logger,
+      serializers: Object.assign({}, loggerUtils.serializers, options.logger.serializers)
+    })
   } else if (!options.logger) {
     log = Object.create(abstractLogging)
     log.child = () => log
   } else {
     options.logger = typeof options.logger === 'object' ? options.logger : {}
     options.logger.level = options.logger.level || 'info'
-    options.logger.serializers = options.logger.serializers || loggerUtils.serializers
+    options.logger.serializers = Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     log = loggerUtils.createLogger(options.logger)
   }
 

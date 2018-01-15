@@ -176,6 +176,49 @@ test('can use external logger instance', t => {
   })
 })
 
+test('can use external logger instance with custom serializer', t => {
+  const lines = [['level', 30], ['req', { url: '/foo' }], ['level', 30], ['res', { statusCode: 200 }]]
+  t.plan(lines.length + 2)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    const check = lines.shift()
+    const key = check[0]
+    const value = check[1]
+
+    t.deepEqual(line[key], value)
+  })
+
+  const logger = require('pino')({
+    level: 'info',
+    serializers: {
+      req: function (req) {
+        return {
+          url: req.url
+        }
+      }
+    }
+  }, splitStream)
+
+  const localFastify = Fastify({logger: logger})
+
+  localFastify.get('/foo', function (req, reply) {
+    t.ok(req.log)
+    req.log.info('log success')
+    reply.send({ hello: 'world' })
+  })
+
+  localFastify.listen(0, err => {
+    t.error(err)
+    http.get('http://localhost:' + localFastify.server.address().port + '/foo', (res) => {
+      res.resume()
+      res.on('end', () => {
+        localFastify.server.close()
+      })
+    })
+  })
+})
+
 test('expose the logger', t => {
   t.plan(2)
   var fastify = null
@@ -222,6 +265,52 @@ test('The logger should accept a custom genReqId function', t => {
       const payload = JSON.parse(res.payload)
       t.equal(payload.id, 'a')
       fastify.close()
+    })
+  })
+})
+
+t.test('The logger should accept custom serializer', t => {
+  t.plan(9)
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info',
+      serializers: {
+        req: function (req) {
+          return {
+            url: req.url
+          }
+        }
+      }
+    }
+  })
+
+  fastify.get('/custom', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('kaboom'))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port + '/custom')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+
+      stream.once('data', line => {
+        t.ok(line.req, 'req is defined')
+        t.equal(line.msg, 'incoming request', 'message is set')
+        t.deepEqual(line.req, { url: '/custom' }, 'custom req serialiser is use')
+
+        stream.once('data', line => {
+          t.ok(line.res, 'res is defined')
+          t.equal(line.msg, 'kaboom', 'message is set')
+          t.deepEqual(line.res, { statusCode: 500 }, 'default res serialiser is use')
+        })
+      })
     })
   })
 })

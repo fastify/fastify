@@ -42,7 +42,7 @@ function build (options) {
   if (isValidLogger(options.logger)) {
     log = loggerUtils.createLogger({
       logger: options.logger,
-      serializers: Object.assign(loggerUtils.serializers, options.logger.serializers)
+      serializers: Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     })
   } else if (!options.logger) {
     log = Object.create(abstractLogging)
@@ -50,7 +50,7 @@ function build (options) {
   } else {
     options.logger = typeof options.logger === 'object' ? options.logger : {}
     options.logger.level = options.logger.level || 'info'
-    options.logger.serializers = Object.assign(loggerUtils.serializers, options.logger.serializers)
+    options.logger.serializers = Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     log = loggerUtils.createLogger(options.logger)
   }
 

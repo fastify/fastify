@@ -218,8 +218,9 @@ function build (options) {
     /* Deal with listen (port, cb) */
     if (typeof address === 'function') {
       cb = address
-      address = '127.0.0.1'
+      address = undefined
     }
+    address = address || '127.0.0.1'
 
     if (cb === undefined) {
       return new Promise((resolve, reject) => {

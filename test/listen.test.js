@@ -104,9 +104,11 @@ if (os.platform() !== 'win32') {
 }
 
 test('listen without callback', t => {
+  t.plan(1)
   const fastify = Fastify()
   fastify.listen(0)
     .then(() => {
+      t.is(fastify.server.address().address, '127.0.0.1')
       fastify.close()
       t.end()
     })

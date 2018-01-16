@@ -111,6 +111,22 @@ fastify.listen(0, function (err) {
   if (err) t.error(err)
   fastify.server.unref()
 
+  test('cannot add another route after binding', t => {
+    t.plan(1)
+    try {
+      fastify.route({
+        method: 'GET',
+        url: '/another-get-route',
+        handler: function (req, reply) {
+          reply.send({ hello: 'world' })
+        }
+      })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+
   test('route - get', t => {
     t.plan(3)
     sget({

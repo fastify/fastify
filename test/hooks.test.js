@@ -820,6 +820,27 @@ test('onSend hook should receive valid request and reply objects if a custom con
   })
 })
 
+test('cannot add hook after binding', t => {
+  t.plan(2)
+  const instance = Fastify()
+
+  instance.get('/', function (request, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    try {
+      instance.addHook('onRequest', () => {})
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})
+
 if (Number(process.versions.node[0]) >= 8) {
   require('./hooks-async')(t)
 } else {

@@ -811,3 +811,21 @@ test('recognizes errors from the http-errors module', t => {
     })
   })
 })
+
+test('cannot set notFoundHandler after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    try {
+      fastify.setNotFoundHandler(() => { })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})

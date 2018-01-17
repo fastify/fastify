@@ -57,6 +57,7 @@ While you cannot change the configuration options of the default `ajv` instance,
 const fastify = require('fastify')()
 const Ajv = require('ajv')
 const ajv = new Ajv({
+  // the fastify defaults
   removeAdditional: true,
   useDefaults: true,
   coerceTypes: true

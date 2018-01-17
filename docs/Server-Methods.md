@@ -31,7 +31,10 @@ Starts the server on the given port after all the plugins are loaded, internally
 
 ```js
 fastify.listen(3000, err => {
-  if (err) throw err
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -39,7 +42,10 @@ Specifying an address is also supported:
 
 ```js
 fastify.listen(3000, '127.0.0.1', err => {
-  if (err) throw err
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -69,7 +75,10 @@ When deploying to a Docker, and potentially other, containers, it is advisable t
 
 ```js
 fastify.listen(3000, '0.0.0.0', (err) => {
-  if (err) throw err
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 

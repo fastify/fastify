@@ -65,7 +65,6 @@
   },
   "devDependencies": {
     "@types/node": "^8.5.8",
-    "@types/pino": "^4.7.0",
     "JSONStream": "^1.0.3",
     "autocannon": "^0.16.5",
     "branch-comparer": "^0.4.0",
@@ -96,6 +95,7 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
+    "@types/pino": "^4.7.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^6.0.1",
     "avvio": "^5.0.0",

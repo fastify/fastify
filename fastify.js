@@ -333,9 +333,16 @@ function build (options) {
       return instancePrefix
     }
 
-    if (pluginPrefix[0] !== '/') {
+    // Ensure that there is a '/' between the prefixes
+    if (instancePrefix.endsWith('/')) {
+      if (pluginPrefix[0] === '/') {
+        // Remove the extra '/' to avoid: '/first//second'
+        pluginPrefix = pluginPrefix.slice(1)
+      }
+    } else if (pluginPrefix[0] !== '/') {
       pluginPrefix = '/' + pluginPrefix
     }
+
     return instancePrefix + pluginPrefix
   }
 
@@ -412,9 +419,16 @@ function build (options) {
     validateBodyLimitOption(opts.jsonBodyLimit)
 
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      const path = opts.url || opts.path
       const prefix = _fastify._routePrefix
-      const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
+      var path = opts.url || opts.path
+      if (path === '/' && prefix.length > 0) {
+        // Ensure that '/prefix' + '/' gets registered as '/prefix'
+        path = ''
+      } else if (path[0] === '/' && prefix.endsWith('/')) {
+        // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
+        path = path.slice(1)
+      }
+      const url = prefix + path
 
       opts.url = url
       opts.path = url

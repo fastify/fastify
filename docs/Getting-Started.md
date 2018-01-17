@@ -55,6 +55,20 @@ Awesome, that was easy.<br>
 Unfortunately, writing a complex application requires significantly more code than this example. A classic problem when you are building a new application is how handle multiple files, asynchronous bootstrapping and the architecture of your code.<br>
 Fastify offers an easy platform that helps solve all of problems, and more.
 
+> ## Note
+> The above examples, and subsequent examples in this document, default to listening *only* on the localhost `127.0.0.1` interface. To listen on all available IPv4 interfaces the example should be modified to listen on `0.0.0.0` like so:
+>
+> ```js
+> fastify.listen(3000, '0.0.0.0', function (err) {
+>   if (err) {
+>     fastify.log.error(err)
+>     process.exit(1)
+>   }
+> })
+> ```
+>
+> When deploying to a Docker, or other type of, container this would be the easiest method for exposing the application.
+
 <a name="first-plugin"></a>
 ### Your first plugin
 As with JavaScript everything is an object, with Fastify everything is a plugin.<br>
@@ -135,7 +149,7 @@ async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })
-  
+
   fastify.get('/search/:id', async (request, reply) => {
     try {
       return await collection.findOne({ id: request.params.id })

@@ -27,10 +27,14 @@ fastify.ready().then(() => {
 
 <a name="listen"></a>
 #### listen
-Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core.
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core. By default, the server will listen on address `127.0.0.1` when no specific address is provided. If listening on any available interface is desired, then specifying `0.0.0.0` for the address will listen on all IPv4 address. Using `::` for the address will listen on all IPv6 addresses, and, depending on OS, may also listen on all IPv4 addresses. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+
 ```js
 fastify.listen(3000, err => {
-  if (err) throw err
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -38,7 +42,10 @@ Specifying an address is also supported:
 
 ```js
 fastify.listen(3000, '127.0.0.1', err => {
-  if (err) throw err
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -62,6 +69,17 @@ fastify.listen(3000, '127.0.0.1')
     console.log('Error starting server:', err)
     process.exit(1)
   })
+```
+
+When deploying to a Docker, and potentially other, containers, it is advisable to listen on `0.0.0.0` because they do not default to exposing mapped ports to `127.0.0.1`:
+
+```js
+fastify.listen(3000, '0.0.0.0', (err) => {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
 ```
 
 <a name="route"></a>
@@ -108,7 +126,7 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 
 ```js
 fastify.setNotFoundHandler(function (request, reply) {
-  // Default not found handler  
+  // Default not found handler
 })
 
 fastify.register(function (instance, options, next) {

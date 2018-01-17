@@ -224,6 +224,7 @@ function build (options) {
       cb = address
       address = undefined
     }
+    address = address || '127.0.0.1'
 
     if (cb === undefined) {
       return new Promise((resolve, reject) => {
@@ -237,8 +238,6 @@ function build (options) {
       })
     }
 
-    const hasAddress = address !== undefined
-
     fastify.ready(function (err) {
       if (err) return cb(err)
       if (listening) {
@@ -246,11 +245,7 @@ function build (options) {
       }
 
       server.on('error', wrap)
-      if (hasAddress) {
-        server.listen(port, address, wrap)
-      } else {
-        server.listen(port, wrap)
-      }
+      server.listen(port, address, wrap)
       listening = true
     })
 

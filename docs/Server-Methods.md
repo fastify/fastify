@@ -65,6 +65,14 @@ fastify.listen(3000, '127.0.0.1')
   })
 ```
 
+When deploying to a Docker, and potentially other, containers, it is advisable to listen on `0.0.0.0` because they do not default to exposing mapped ports to `127.0.0.1`:
+
+```js
+fastify.listen(3000, '0.0.0.0', (err) => {
+  if (err) throw err
+})
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).

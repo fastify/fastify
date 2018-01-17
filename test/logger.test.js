@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const http = require('http')
+const stream = require('stream')
 const split = require('split2')
 const Fastify = require('..')
 const pino = require('pino')
@@ -655,5 +656,32 @@ test('The default 404 handler logs the incoming request', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('should serialize request and response', t => {
+  t.plan(4)
+  const lines = []
+  const dest = new stream.Writable({
+    write: function (chunk, enc, cb) {
+      lines.push(JSON.parse(chunk))
+      cb()
+    }
+  })
+  const fastify = Fastify({logger: {level: 'info', stream: dest}})
+
+  fastify.get('/500', (req, reply) => {
+    reply.code(500).send(Error('500 error'))
+  })
+
+  fastify.inject({
+    url: '/500',
+    method: 'GET'
+  }, (e, res) => {
+    const l = lines.find((line) => line.res && line.res.statusCode === 500)
+    t.ok(l.req)
+    t.is(l.req.id, 1)
+    t.is(l.req.method, 'GET')
+    t.is(l.req.url, '/500')
   })
 })

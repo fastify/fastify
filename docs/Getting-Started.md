@@ -24,8 +24,10 @@ fastify.get('/', function (request, reply) {
 
 // Run the server!
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info('Fastify rocks 🤘')
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -38,10 +40,15 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
-fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info('Fastify rocks 🤘')
-})
+const start = async () => {
+  try {
+    await fastify.listen(3000)
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+}
+start()
 ```
 
 Awesome, that was easy.<br>
@@ -53,9 +60,12 @@ Fastify offers an easy platform that helps solve all of problems, and more.
 >
 > ```js
 > fastify.listen(3000, '0.0.0.0', function (err) {
->   if (err) throw err
->   fastify.log.info('Fastify rocks 🤘')
+>   if (err) {
+>     fastify.log.error(err)
+>     process.exit(1)
+>   }
 > })
+> ```
 >
 > When deploying to a Docker, or other type of, container this would be the easiest method for exposing the application.
 
@@ -70,8 +80,10 @@ const fastify = require('fastify')()
 fastify.register(require('./our-first-route'))
 
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info('Fastify rocks 🤘')
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -104,8 +116,10 @@ fastify.register(require('./our-db-connector'), {
 fastify.register(require('./our-first-route'))
 
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info('Fastify rocks 🤘')
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 

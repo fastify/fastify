@@ -78,7 +78,7 @@ function build (options) {
     started = true
   })
 
-  function throwIfAlreadyBinded (msg) {
+  function throwIfAlreadyBound (msg) {
     if (listening) throw new Error(msg)
   }
 
@@ -394,7 +394,7 @@ function build (options) {
 
   // Route management
   function route (opts) {
-    throwIfAlreadyBinded('Cannot add route when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot add route when fastify instance is already started!')
 
     const _fastify = this
 
@@ -521,7 +521,7 @@ function build (options) {
   }
 
   function use (url, fn) {
-    throwIfAlreadyBinded('Cannot call "use" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
       const prefix = this._routePrefix
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
@@ -532,7 +532,7 @@ function build (options) {
   }
 
   function addHook (name, fn) {
-    throwIfAlreadyBinded('Cannot call "addHook" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "addHook" when fastify instance is already started!')
 
     if (name === 'onClose') {
       this._hooks.validate(name, fn)
@@ -547,7 +547,7 @@ function build (options) {
   }
 
   function addContentTypeParser (contentType, fn) {
-    throwIfAlreadyBinded('Cannot call "addContentTypeParser" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "addContentTypeParser" when fastify instance is already started!')
 
     this._contentTypeParser.add(contentType, fn)
     return this
@@ -598,7 +598,7 @@ function build (options) {
   }
 
   function setNotFoundHandler (opts, handler) {
-    throwIfAlreadyBinded('Cannot call "setNotFoundHandler" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     if (this._notFoundHandler !== null && this._notFoundHandler !== basic404) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${this._routePrefix || '/'}'`)
@@ -658,14 +658,14 @@ function build (options) {
   }
 
   function setSchemaCompiler (schemaCompiler) {
-    throwIfAlreadyBinded('Cannot call "setSchemaCompiler" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "setSchemaCompiler" when fastify instance is already started!')
 
     this._schemaCompiler = schemaCompiler
     return this
   }
 
   function setErrorHandler (func) {
-    throwIfAlreadyBinded('Cannot call "setErrorHandler" when fastify instance is already started!')
+    throwIfAlreadyBound('Cannot call "setErrorHandler" when fastify instance is already started!')
 
     this._errorHandler = func
     return this

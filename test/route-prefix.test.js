@@ -177,6 +177,42 @@ test('Prefix without /', t => {
   })
 })
 
+test('Prefix with trailing /', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/route', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    fastify.register(function (fastify, opts, next) {
+      fastify.get('/route2', (req, reply) => {
+        reply.send({ hello: 'world2' })
+      })
+      next()
+    }, { prefix: '/inner/' })
+
+    next()
+  }, { prefix: '/v1/' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/route'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/inner/route2'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world2' })
+  })
+})
+
 test('Prefix works multiple levels deep', t => {
   t.plan(2)
   const fastify = Fastify()

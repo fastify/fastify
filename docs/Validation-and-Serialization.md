@@ -51,15 +51,19 @@ const schema = {
 
 The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string. The default `schemaCompiler` returns a function that implements the `ajv` validation interface. Fastify uses it internally to speed the validation up.
 
-If you want to change the default options of the `ajv` instance, you can pass the `ajv` option to Fastify. The options are described in the [Ajv documentation](https://github.com/epoberezkin/ajv#options).
+While you cannot change the configuration options of the default `ajv` instance, you can create your own:
 
 ```js
-const fastify = require('fastify')({
-  ajv: {
-    removeAdditional: true,
-    useDefaults:      true,
-    coerceTypes:      true
-  }
+const fastify = require('fastify')()
+const Ajv = require('ajv')
+const ajv = new Ajv({
+  // the fastify defaults
+  removeAdditional: true,
+  useDefaults: true,
+  coerceTypes: true
+})
+fastify.setSchemaCompiler(function (schema) {
+  return ajv.compile(schema)
 })
 ```
 

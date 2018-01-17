@@ -2,7 +2,6 @@
 
 const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
-const Ajv = require('ajv')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
@@ -15,8 +14,9 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
-const isValidLogger = require('./lib/validation').isValidLogger
-const schemaCompiler = require('./lib/validation').schemaCompiler
+const validation = require('./lib/validation')
+const isValidLogger = validation.isValidLogger
+const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
@@ -53,8 +53,6 @@ function build (options) {
     options.logger.serializers = Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     log = loggerUtils.createLogger(options.logger)
   }
-
-  const ajv = new Ajv(Object.assign({ coerceTypes: true }, options.ajv))
 
   const router = FindMyWay({ defaultRoute: defaultRoute })
 
@@ -141,7 +139,7 @@ function build (options) {
   fastify._contentTypeParser = new ContentTypeParser()
 
   fastify.setSchemaCompiler = setSchemaCompiler
-  fastify._schemaCompiler = schemaCompiler.bind({ ajv: ajv })
+  fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
   fastify.register = fastify.use

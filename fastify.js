@@ -338,8 +338,10 @@ function build (options) {
       return instancePrefix
     }
 
+    // Ensure that there is a '/' between the prefixes
     if (instancePrefix.endsWith('/')) {
       if (pluginPrefix[0] === '/') {
+        // Remove the extra '/' to avoid: '/first//second'
         pluginPrefix = pluginPrefix.slice(1)
       }
     } else if (pluginPrefix[0] !== '/') {
@@ -425,8 +427,10 @@ function build (options) {
       const prefix = _fastify._routePrefix
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
+        // Ensure that '/prefix' + '/' gets registered as '/prefix'
         path = ''
       } else if (path[0] === '/' && prefix.endsWith('/')) {
+        // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
         path = path.slice(1)
       }
       const url = prefix + path

@@ -427,3 +427,26 @@ test('\'*\' catch undefined Content-Type requests', t => {
     })
   })
 })
+
+test('cannot add custom parser after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.post('/', (req, res) => {
+    res.type('text/plain').send(req.body)
+  })
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    try {
+      fastify.addContentTypeParser('*', () => {})
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})

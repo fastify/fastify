@@ -43,6 +43,33 @@ test('use a middleware', t => {
   })
 })
 
+test('cannot add middleware after binding', t => {
+  t.plan(2)
+  const instance = fastify()
+
+  instance.get('/', function (request, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  instance.listen(0, err => {
+    t.error(err)
+    t.tearDown(instance.server.close.bind(instance.server))
+
+    try {
+      instance.route({
+        method: 'GET',
+        url: '/another-get-route',
+        handler: function (req, reply) {
+          reply.send({ hello: 'world' })
+        }
+      })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})
+
 test('use cors', t => {
   t.plan(3)
 

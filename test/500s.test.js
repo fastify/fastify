@@ -143,3 +143,21 @@ test('custom 500 with hooks', t => {
     t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
   })
 })
+
+test('cannot set errorHandler after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    try {
+      fastify.setErrorHandler(() => { })
+      t.fail()
+    } catch (e) {
+      t.pass()
+    }
+  })
+})

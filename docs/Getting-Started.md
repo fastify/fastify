@@ -24,8 +24,10 @@ fastify.get('/', function (request, reply) {
 
 // Run the server!
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info(`server listening on ${fastify.server.address().port}`)
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -38,10 +40,15 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
-fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info(`server listening on ${fastify.server.address().port}`)
-})
+const start = async () => {
+  try {
+    await fastify.listen(3000)
+  } catch (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+}
+start()
 ```
 
 Awesome, that was easy.<br>
@@ -59,8 +66,10 @@ const fastify = require('fastify')()
 fastify.register(require('./our-first-route'))
 
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info(`server listening on ${fastify.server.address().port}`)
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 
@@ -93,8 +102,10 @@ fastify.register(require('./our-db-connector'), {
 fastify.register(require('./our-first-route'))
 
 fastify.listen(3000, function (err) {
-  if (err) throw err
-  fastify.log.info(`server listening on ${fastify.server.address().port}`)
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
 })
 ```
 

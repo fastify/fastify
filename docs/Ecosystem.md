@@ -44,6 +44,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
+- [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.
 - [`fastify-nuxt`](https://github.com/lyquocnam/fastify-nuxt) VueJS server side rendering support for Fastify with [`NuxtJS`](https://nuxtjs.org/)
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.

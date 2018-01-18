@@ -67,7 +67,7 @@ Defines the maximum payload, in bytes, the server is allowed to accept for
 `PUT` and `POST` bodies when using the internal `application/json` content type
 parser.
 
-Default: `1048576` (1MiB)
++ Default: `1048576` (1MiB)
 
 <a name="factory-logger"></a>
 ### `logger`
@@ -77,7 +77,7 @@ This property is used to configure the internal logger instance.
 
 The possible values this property may have are:
 
-+ `undefined` or `false` (Default): the logger is disabled. All logging methods
++ Default: `undefined` or `false`. The logger is disabled. All logging methods
 will point to a null logger [abstract-logging](https://npm.im/abstract-logging)
 instance.
 

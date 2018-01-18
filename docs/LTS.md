@@ -1,5 +1,7 @@
+<h1 align="center">Fastify</h1>
+
 <a name="lts"></a>
-# Long Term Support
+## Long Term Support
 
 Fastify's Long Term Support (LTS) is provided according the schedule laid
 out in this document:
@@ -17,7 +19,7 @@ A "month" is to be a period of 30 consecutive days.
 [semver]: https://semver.org/
 
 <a name="lts-schedule"></a>
-## Schedule
+### Schedule
 
 | Version | Release Date | End Of LTS Date |
 |:--------|:-------------|:----------------|

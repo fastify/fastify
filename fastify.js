@@ -54,7 +54,10 @@ function build (options) {
     log = loggerUtils.createLogger(options.logger)
   }
 
-  const router = FindMyWay({ defaultRoute: defaultRoute })
+  const router = FindMyWay({
+    defaultRoute: defaultRoute,
+    ignoreTrailingSlash: options.ignoreTrailingSlash
+  })
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null

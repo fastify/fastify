@@ -36,7 +36,7 @@ This option also applies when the
 ### `ignoreTrailingSlash`
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. This option may be set to `true` to ignore traling slashes in routes.
+routing. This option may be set to `true` to ignore trailing slashes in routes.
 This option applies to *all* route registrations for the resulting server
 instance.
 
@@ -64,8 +64,7 @@ fastify.get('/bar', function (req, reply) {
 ### `jsonBodyLimit`
 
 Defines the maximum payload, in bytes, the server is allowed to accept for
-`PUT` and `POST` bodies when using the internal `application/json` content type
-parser.
+request bodies when using the internal `application/json` content type parser.
 
 + Default: `1048576` (1MiB)
 

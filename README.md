@@ -125,6 +125,10 @@ matters to you.
 _Fastify_ is the result of the work of a great community.
 Team members are listed in alphabetical order.
 
+## Long Term Support
+
+Fastify's support schedule is detailed in the [LTS document](https://github.com/fastify/fastify/blob/master/docs/LTS.md).
+
 ### Lead Maintainers
 
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>

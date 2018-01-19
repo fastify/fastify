@@ -27,12 +27,12 @@ fastify.register(
 `register` creates for you a new Fastify context, this means that if you do any change to the Fastify instance, that change(s) will not be reflected into the context's ancestors. In other words, encapsulation!
 
 
-*Why encapsulation is important?*<br>
+*Why is encapsulation important?*<br>
 Well, let's say you are creating a new disruptive startup, what do you do? You create an api server with all your stuff, everything in the same place, a monolith!<br>
 Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies an huge amount of work, because of cross dependencies and the lack of separation of concerns.<br>
 Fastify helps you a lot in this direction, because thanks to the encapsulation model it will completely avoid cross dependencies, and will help you structure your code in cohesive blocks.
 
-*Let's return to how to use correctly `register`.*<br>
+*Let's return to how to correctly use `register`.*<br>
 As you probably know, the required plugins must expose a single function with the following signature
 ```js
 module.exports = function (fastify, options, next) {}
@@ -67,7 +67,7 @@ module.exports = function (a, b) {
 const util = require('./your-awesome-utility')
 console.log(util('that is ', ' awesome'))
 ```
-And now you will import your utility in every file you need it. (and don't forget that probably you will need it also in your test).
+And now you will import your utility in every file you need it. (And don't forget that you will probably also need it in your test).
 
 Fastify offers you a way nicer and elegant way to do this, *decorators*.
 Create a decorator is extremely easy, just use the [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) api:
@@ -75,7 +75,7 @@ Create a decorator is extremely easy, just use the [`decorate`](https://github.c
 fastify.decorate('util', (a, b) => a + b)
 ```
 Now you can access your utility just by doing `fastify.util` whenever you need it, even inside your test.<br>
-And here's starts the magic; do you remember that few lines above we talked about encapsulation? Well, use `register` and `decorate` in conjunction enable exactly that, let me show you an example to clarify this:
+And here's starts the magic; do you remember that few lines above we talked about encapsulation? Well, using `register` and `decorate` in conjunction enable exactly that, let me show you an example to clarify this:
 ```js
 fastify.register((instance, opts, next) => {
   instance.decorate('util', (a, b) => a + b)
@@ -254,8 +254,8 @@ How can you distribute your code?
 
 The preferred way to distribute an utility is to wrap all your code inside a `register`, in this way your plugin can support an asynchronous bootstrap *(since `decorate` is a synchronous api)*, in the case of a database connection for example.
 
-*Wait, what? Don't you told me that `register` creates and encapsulation and what I create inside there will not be available outside?*<br>
-Yes, I told that. But what I didn't told you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
+*Wait, what? Didn't you tell me that `register` creates an encapsulation and that what I create inside there will not be available outside?*<br>
+Yes, I said that. But what I didn't tell you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
 ```js
 const fp = require('fastify-plugin')
 const dbClient = require('db-client')

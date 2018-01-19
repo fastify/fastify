@@ -197,7 +197,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 })
 
 test('encapsulated 404', t => {
-  t.plan(7)
+  t.plan(9)
 
   const test = t.test
   const fastify = Fastify()
@@ -223,6 +223,13 @@ test('encapsulated 404', t => {
     })
     next()
   }, { prefix: '/test2' })
+
+  fastify.register(function (f, opts, next) {
+    f.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('this was not found 4')
+    })
+    next()
+  }, { prefix: '/test3/' })
 
   t.tearDown(fastify.close.bind(fastify))
 
@@ -304,6 +311,32 @@ test('encapsulated 404', t => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
         t.strictEqual(body.toString(), 'this was not found 3')
+      })
+    })
+
+    test('unsupported method 3', t => {
+      t.plan(3)
+      sget({
+        method: 'PUT',
+        url: 'http://localhost:' + fastify.server.address().port + '/test3/',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(body.toString(), 'this was not found 4')
+      })
+    })
+
+    test('unsupported route 3', t => {
+      t.plan(3)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/test3/notSupported'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(body.toString(), 'this was not found 4')
       })
     })
   })

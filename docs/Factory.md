@@ -22,8 +22,8 @@ HTTP/2 module is used for binding the socket.
 
 An object used to configure the server's listening socket for TLS. The options
 are the same as the Node.js core
-[`createServer` method](https://nodejs.org/dist/latest-v8.x/docs/api/https.html#https_https_createserver_options_requestlistener). When this property is a falsy value, the socket will not be
-configured for TLS.
+[`createServer` method](https://nodejs.org/dist/latest-v8.x/docs/api/https.html#https_https_createserver_options_requestlistener).
+When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the
 <a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md#factory-http2">
@@ -76,9 +76,8 @@ This property is used to configure the internal logger instance.
 
 The possible values this property may have are:
 
-+ Default: `undefined` or `false`. The logger is disabled. All logging methods
-will point to a null logger [abstract-logging](https://npm.im/abstract-logging)
-instance.
++ Default: `false`. The logger is disabled. All logging methods will point to a
+null logger [abstract-logging](https://npm.im/abstract-logging) instance.
 
 + `pinoInstance`: a previously instantiated instance of Pino. The internal
 logger will point to this instance.

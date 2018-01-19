@@ -297,3 +297,39 @@ test('Different register - encapsulation check', t => {
     t.same(JSON.parse(res.payload), { route: '/v3/v4' })
   })
 })
+
+test('Can retrieve basePath within encapsulated instances', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/one', function (req, reply) {
+      reply.send(instance.basePath)
+    })
+
+    instance.register(function (instance, opts, next) {
+      instance.get('/two', function (req, reply) {
+        reply.send(instance.basePath)
+      })
+      next()
+    }, { prefix: '/v2' })
+
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/one'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.payload, '/v1')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/v1/v2/two'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.payload, '/v1/v2')
+  })
+})

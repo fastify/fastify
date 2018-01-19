@@ -82,7 +82,7 @@ const opts = {
     }
   }
 }
-fastify.get('/', opts, (req, reply) => {
+fastify.get('/', opts, (request, reply) => {
   reply.send({ hello: 'world' })
 })
 ```
@@ -97,28 +97,28 @@ To register a **parametric** path, use the *colon* before the parameter name. Fo
 
 ```js
 // parametric
-fastify.get('/example/:userId', (req, reply) => {}))
-fastify.get('/example/:userId/:secretToken', (req, reply) => {}))
+fastify.get('/example/:userId', (request, reply) => {}))
+fastify.get('/example/:userId/:secretToken', (request, reply) => {}))
 
 // wildcard
-fastify.get('/example/*', (req, reply) => {}))
+fastify.get('/example/*', (request, reply) => {}))
 ```
 
 Regular expression routes are supported as well, but pay attention, RegExp are very expensive in term of performance!
 ```js
 // parametric with regexp
-fastify.get('/example/:file(^\\d+).png', (req, reply) => {}))
+fastify.get('/example/:file(^\\d+).png', (request, reply) => {}))
 ```
 
 It's possible to define more than one parameter within the same couple of slash ("/"). Such as:
 ```js
-fastify.get('/example/near/:lat-:lng/radius/:r', (req, reply) => {}))
+fastify.get('/example/near/:lat-:lng/radius/:r', (request, reply) => {}))
 ```
 *Remember in this case to use the dash ("-") as parameters separator.*
 
 Finally it's possible to have multiple parameters with RegExp.
 ```js
-fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (req, reply) => {}))
+fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (request, reply) => {}))
 ```
 In this case as parameter separator it's possible to use whatever character is not matched by the regular expression.
 
@@ -201,7 +201,7 @@ fastify.listen(3000)
 ```
 Or you can directly pass it to a route:
 ```js
-fastify.get('/', { logLevel: 'warn' }, (req, reply) => {
+fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
   reply.send({ hello: 'world' })
 })
 ```

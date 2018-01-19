@@ -38,7 +38,7 @@ const opts: fastify.RouteShorthandOptions = {
   }
 }
 
-server.get('/ping', opts, (req, reply) => {
+server.get('/ping', opts, (request, reply) => {
   console.log(reply.res) // this is the http.ServerResponse with correct typings!
   reply.code(200).send({ pong: 'it worked!' })
 })
@@ -57,9 +57,9 @@ interface CustomIncomingMessage extends http.IncomingMessage {
 // Passing overrides for the http prototypes to fastify
 const server: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.ServerResponse> = fastify()
 
-server.get('/ping', (req, reply) => {
+server.get('/ping', (request, reply) => {
   // Access our custom method on the http prototype
-  const clientDeviceType = req.raw.getClientDeviceType()
+  const clientDeviceType = request.raw.getClientDeviceType()
 
   reply.send({ clientDeviceType: `you called this endpoint from a ${clientDeviceType}` })
 })
@@ -137,11 +137,11 @@ const server = fastify();
 
 server.register(urlData)
 
-server.get('/data', (req, reply) => {
-  console.log(req.urlData().auth)
-  console.log(req.urlData().host)
-  console.log(req.urlData().port)
-  console.log(req.urlData().query)
+server.get('/data', (request, reply) => {
+  console.log(request.urlData().auth)
+  console.log(request.urlData().host)
+  console.log(request.urlData().port)
+  console.log(request.urlData().query)
 
   reply.send({msg: 'ok'})
 })

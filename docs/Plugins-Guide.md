@@ -44,7 +44,7 @@ Fastify's plugin model is fully reentrant and graph-based, it handles without an
 Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `next` when everything is set up!
 ```js
 module.exports = function (fastify, options, next) {
-  fastify.get('/plugin', (req, reply) => {
+  fastify.get('/plugin', (request, reply) => {
     reply.send({ hello: 'world' })
   })
 
@@ -122,7 +122,7 @@ fastify.decorate('html', payload => {
   return generateHtml(payload)
 })
 
-fastify.get('/html', (req, reply) => {
+fastify.get('/html', (request, reply) => {
   reply
     .type('text/html')
     .send(fastify.html({ hello: 'world' }))
@@ -135,7 +135,7 @@ fastify.decorateReply('html', function (payload) {
   this.send(generateHtml(payload))
 })
 
-fastify.get('/html', (req, reply) => {
+fastify.get('/html', (request, reply) => {
   reply.html({ hello: 'world' })
 })
 ```
@@ -146,13 +146,13 @@ fastify.decorate('getHeader', (req, header) => {
   return req.headers[header]
 })
 
-fastify.addHook('preHandler', (req, reply, done) => {
-  req.isHappy = fastify.getHeader(req.raw, 'happy')
+fastify.addHook('preHandler', (request, reply, done) => {
+  request.isHappy = fastify.getHeader(request.raw, 'happy')
   done()
 })
 
-fastify.get('/happiness', (req, reply) => {
-  reply.send({ happy: req.isHappy })
+fastify.get('/happiness', (request, reply) => {
+  reply.send({ happy: request.isHappy })
 })
 ```
 Again, it works, but it can be way better!
@@ -163,13 +163,13 @@ fastify.decorateRequest('setHeader', function (header) {
 
 fastify.decorateRequest('isHappy', false) // this will be added to the Request object prototype, yay speed!
 
-fastify.addHook('preHandler', (req, reply, done) => {
-  req.setHeader('happy')
+fastify.addHook('preHandler', (request, reply, done) => {
+  request.setHeader('happy')
   done()
 })
 
-fastify.get('/happiness', (req, reply) => {
-  reply.send({ happy: req.isHappy })
+fastify.get('/happiness', (request, reply) => {
+  reply.send({ happy: request.isHappy })
 })
 ```
 
@@ -179,35 +179,35 @@ We've seen how extend server functionalities and how handle the encapsulation sy
 ## Hooks
 You just built an amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
-fastify.decorate('util', (req, key, value) => { req.key = value })
+fastify.decorate('util', (request, key, value) => { request.key = value })
 
-fastify.get('/plugin1', (req, reply) => {
-  fastify.util(req, 'timestamp', new Date())
-  reply.send(req)
+fastify.get('/plugin1', (request, reply) => {
+  fastify.util(request, 'timestamp', new Date())
+  reply.send(request)
 })
 
-fastify.get('/plugin2', (req, reply) => {
-  fastify.util(req, 'timestamp', new Date())
-  reply.send(req)
+fastify.get('/plugin2', (request, reply) => {
+  fastify.util(request, 'timestamp', new Date())
+  reply.send(request)
 })
 ```
 I think we all agree that this is terrible. Code repeat, awful readability and it cannot scale.
 
 So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!<br>
 ```js
-fastify.decorate('util', (req, key, value) => { req.key = value })
+fastify.decorate('util', (request, key, value) => { request.key = value })
 
-fastify.addHook('preHandler', (req, reply, done) => {
-  fastify.util(req, 'timestamp', new Date())
+fastify.addHook('preHandler', (request, reply, done) => {
+  fastify.util(request, 'timestamp', new Date())
   done()
 })
 
-fastify.get('/plugin1', (req, reply) => {
-  reply.send(req)
+fastify.get('/plugin1', (request, reply) => {
+  reply.send(request)
 })
 
-fastify.get('/plugin2', (req, reply) => {
-  reply.send(req)
+fastify.get('/plugin2', (request, reply) => {
+  reply.send(request)
 })
 ```
 Now for every request you will run your utility, it is obvious that you can register as many hooks as you need.<br>
@@ -215,22 +215,22 @@ It can happen that you want a hook that must be executed just for a subset of ro
 
 ```js
 fastify.register((instance, opts, next) => {
-  instance.decorate('util', (req, key, value) => { req.key = value })
+  instance.decorate('util', (request, key, value) => { request.key = value })
 
-  instance.addHook('preHandler', (req, reply, done) => {
-    instance.util(req, 'timestamp', new Date())
+  instance.addHook('preHandler', (request, reply, done) => {
+    instance.util(request, 'timestamp', new Date())
     done()
   })
 
-  instance.get('/plugin1', (req, reply) => {
-    reply.send(req)
+  instance.get('/plugin1', (request, reply) => {
+    reply.send(request)
   })
 
   next()
 })
 
-fastify.get('/plugin2', (req, reply) => {
-  reply.send(req)
+fastify.get('/plugin2', (request, reply) => {
+  reply.send(request)
 })
 ```
 Now your hook will run just for the first route!

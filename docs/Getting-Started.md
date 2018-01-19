@@ -262,7 +262,7 @@ And create your server file(s):
 'use strict'
 
 module.exports = async function (fastify, opts) {
-  fastify.get('/', async (req, reply) => {
+  fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })
 }

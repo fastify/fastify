@@ -12,10 +12,10 @@ available in that options object.
 <a name="factory-http2"></a>
 ### `http2` (Status: experimental)
 
-A truthy value that can be used to enable Node.js core's
-[HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html) socket.
+If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html)
+HTTP/2 module is used for binding the socket.
 
-+ Default: `undefined` or `false`
++ Default: `false`
 
 <a name="factory-https"></a>
 ### `https`
@@ -30,7 +30,7 @@ This option also applies when the
 <code><b>http2</b></code>
 </a> option is set.
 
-+ Default: `undefined` or `false`
++ Default: `null`
 
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`
@@ -40,7 +40,7 @@ routing. This option may be set to `true` to ignore trailing slashes in routes.
 This option applies to *all* route registrations for the resulting server
 instance.
 
-+ Default: `undefined` or `false`
++ Default: `false`
 
 #### Example
 

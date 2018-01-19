@@ -4,7 +4,7 @@
 
 <a name="server"></a>
 #### server
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the <a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md"><code><b>Fastify factory function</b></code></a>.
 
 <a name="ready"></a>
 #### ready

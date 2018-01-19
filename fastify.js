@@ -663,7 +663,7 @@ function build (options) {
 
     const prefix = this._routePrefix
 
-    fourOhFour.all(prefix + '/*', fastify, context)
+    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), fastify, context)
     fourOhFour.all(prefix || '/', fastify, context)
   }
 

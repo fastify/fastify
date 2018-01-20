@@ -272,7 +272,8 @@ function build (options) {
     this.context = context
   }
 
-  function hookIterator (fn, state, next) {
+  function hookIterator (fn, state, next, release) {
+    if (state.res.finished === true) return release()
     return fn(state.req, state.res, next)
   }
 

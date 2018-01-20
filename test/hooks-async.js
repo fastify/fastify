@@ -126,6 +126,78 @@ function asyncHookTest (t) {
       t.strictEqual(res.headers['content-length'], '22')
     })
   })
+
+  test('onRequest hooks should be able to block a request', t => {
+    t.plan(4)
+    const fastify = Fastify()
+
+    fastify.addHook('onRequest', async (req, res) => {
+      res.end('hello')
+    })
+
+    fastify.addHook('onRequest', async (req, res) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onResponse', async (res) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
+
+  test('preHandler hooks should be able to block a request', t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      reply.send('hello')
+    })
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.equal(payload, 'hello')
+    })
+
+    fastify.addHook('onResponse', async (res) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
 }
 
 module.exports = asyncHookTest

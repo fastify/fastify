@@ -127,6 +127,12 @@ function build (options) {
   fastify._routePrefix = ''
   fastify._logLevel = ''
 
+  Object.defineProperty(fastify, 'basePath', {
+    get: function () {
+      return this._routePrefix
+    }
+  })
+
   // expose logger instance
   fastify.log = log
 

@@ -120,6 +120,18 @@ fastify.register(function (instance, opts, next) {
     request.log.info('basePath: %s', instance.basePath)
     reply.send({basePath: instance.basePath})
   })
+
+  instance.register(function (instance, opts, next) {
+    instance.get('/bar', function (request, reply) {
+      // Will log "basePath: /v1/v2"
+      request.log.info('basePath: %s', instance.basePath)
+      reply.send({basePath: instance.basePath})
+    })
+
+    next()
+  }, { prefix: '/v2' })
+
+  next()
 }, { prefix: '/v1' })
 ```
 

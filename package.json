@@ -104,7 +104,7 @@
     "find-my-way": "^1.9.0",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.1",
-    "middie": "^3.0.0",
+    "middie": "^3.1.0",
     "pino": "^4.10.2",
     "pump": "^2.0.0"
   },

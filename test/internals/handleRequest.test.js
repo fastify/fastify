@@ -220,7 +220,7 @@ test('request should respond with an error if an unserialized payload is sent in
     t.strictEqual(res.statusCode, 500)
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
-      message: 'Attempted to send payload of invalid type \'object\' without serialization. Expected a string or Buffer.',
+      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
       statusCode: 500
     })
   })

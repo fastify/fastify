@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
+const stream = require('stream')
 const Fastify = require('..')
 
 const payload = { hello: 'world' }
@@ -646,30 +647,171 @@ test('onSend hook should support encapsulation / 2', t => {
   })
 })
 
+test('onSend hook is called after payload is serialized and headers are set', t => {
+  t.plan(30)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    const thePayload = { hello: 'world' }
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.deepEqual(JSON.parse(payload), thePayload)
+      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/json')
+      next()
+    })
+
+    instance.get('/json', (request, reply) => {
+      reply.send(thePayload)
+    })
+
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(payload, 'some text')
+      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/plain')
+      next()
+    })
+
+    instance.get('/text', (request, reply) => {
+      reply.send('some text')
+    })
+
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    const thePayload = Buffer.from('buffer payload')
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(payload, thePayload)
+      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      next()
+    })
+
+    instance.get('/buffer', (request, reply) => {
+      reply.send(thePayload)
+    })
+
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    var chunk = 'stream payload'
+    const thePayload = new stream.Readable({
+      read () {
+        this.push(chunk)
+        chunk = null
+      }
+    })
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(payload, thePayload)
+      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      next()
+    })
+
+    instance.get('/stream', (request, reply) => {
+      reply.send(thePayload)
+    })
+
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    const serializedPayload = 'serialized'
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(payload, serializedPayload)
+      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/custom')
+      next()
+    })
+
+    instance.get('/custom-serializer', (request, reply) => {
+      reply
+        .serializer(() => serializedPayload)
+        .type('text/custom')
+        .send('needs to be serialized')
+    })
+
+    next()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/json'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.headers['content-length'], '17')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/text'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(res.payload, 'some text')
+    t.strictEqual(res.headers['content-length'], '9')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/buffer'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(res.payload, 'buffer payload')
+    t.strictEqual(res.headers['content-length'], '14')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/stream'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(res.payload, 'stream payload')
+    t.strictEqual(res.headers['transfer-encoding'], 'chunked')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/custom-serializer'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(res.payload, 'serialized')
+    t.strictEqual(res.headers['content-type'], 'text/custom')
+  })
+})
+
 test('modify payload', t => {
   t.plan(10)
   const fastify = Fastify()
   const payload = { hello: 'world' }
   const modifiedPayload = { hello: 'modified' }
-  const anotherPayload = { winter: 'is coming' }
+  const anotherPayload = '"winter is coming"'
 
   fastify.addHook('onSend', function (request, reply, thePayload, next) {
     t.ok('onSend called')
-    t.deepEqual(thePayload, payload)
-    // onSend allows only to modify Object keys and not the full object's reference
-    thePayload.hello = 'modified'
+    t.deepEqual(JSON.parse(thePayload), payload)
+    thePayload = thePayload.replace('world', 'modified')
     next(null, thePayload)
   })
 
   fastify.addHook('onSend', function (request, reply, thePayload, next) {
     t.ok('onSend called')
-    t.deepEqual(thePayload, modifiedPayload)
+    t.deepEqual(JSON.parse(thePayload), modifiedPayload)
     next(null, anotherPayload)
   })
 
   fastify.addHook('onSend', function (request, reply, thePayload, next) {
     t.ok('onSend called')
-    t.deepEqual(thePayload, anotherPayload)
+    t.strictEqual(thePayload, anotherPayload)
     next()
   })
 
@@ -682,9 +824,35 @@ test('modify payload', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(anotherPayload, JSON.parse(res.payload))
+    t.strictEqual(res.payload, anotherPayload)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '22')
+    t.strictEqual(res.headers['content-length'], '18')
+  })
+})
+
+test('clear payload', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    t.ok('onSend called')
+    reply.code(304)
+    next(null, null)
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 304)
+    t.strictEqual(res.payload, '')
+    t.strictEqual(res.headers['content-length'], undefined)
+    t.strictEqual(res.headers['content-type'], 'application/json')
   })
 })
 

@@ -358,7 +358,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
       reply.send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object' without serialization. Expected a string or Buffer.")
+      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -370,7 +370,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
   })
 })
 
-test('should throw an error due to custom serializer can not handle the payload type', t => {
+test('should throw an error if the custom serializer does not serialize the payload to a valid type', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -382,7 +382,7 @@ test('should throw an error due to custom serializer can not handle the payload 
       .send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Serializer for Content-Type 'text/html' returned invalid payload of type 'object'. Expected a string or Buffer.")
+      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 

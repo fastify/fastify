@@ -3,6 +3,7 @@
 const sget = require('simple-get').concat
 const sleep = require('then-sleep')
 const Fastify = require('..')
+const fs = require('fs')
 
 function asyncHookTest (t) {
   const test = t.test
@@ -196,6 +197,96 @@ function asyncHookTest (t) {
       t.error(err)
       t.is(res.statusCode, 200)
       t.is(res.payload, 'hello')
+    })
+  })
+
+  test('onRequest respond with a stream', t => {
+    t.plan(3)
+    const fastify = Fastify()
+
+    fastify.addHook('onRequest', async (req, res) => {
+      return new Promise((resolve, reject) => {
+        const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+        stream.pipe(res)
+        res.once('finish', resolve)
+      })
+    })
+
+    fastify.addHook('onRequest', async (req, res) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onResponse', async (res) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+    })
+  })
+
+  test('preHandler respond with a stream', t => {
+    t.plan(7)
+    const fastify = Fastify()
+
+    fastify.addHook('onRequest', async (req, res) => {
+      t.ok('called')
+    })
+
+    // we are calling `reply.send` inside the `preHandler` hook with a stream,
+    // this triggers the `onSend` hook event if `preHanlder` has not yet finished
+    const order = [1, 2]
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      return new Promise((resolve, reject) => {
+        const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+        reply.send(stream)
+        reply.res.once('finish', () => {
+          t.is(order.shift(), 2)
+          resolve()
+        })
+      })
+    })
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.is(order.shift(), 1)
+      t.is(typeof payload.pipe, 'function')
+    })
+
+    fastify.addHook('onResponse', async (res) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
     })
   })
 }

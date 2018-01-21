@@ -125,6 +125,48 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 })
 ```
 
+### Respond to a request from an hook
+If need you can respond to a request before you reach the route handler, an example could be an authentication hook. If you are using `onRequest` or a middleware just use `res.end`, if you are using the `preHandler` hook use `reply.send`. Remember to always call `next` if you are using the standard hook api, if you are working with *async* hooks it will be done automatically by Fastify.
+```js
+// standard api
+fastify.addHook('preHandler', (request, reply, next) => {
+  reply.send({ hello: 'world' })
+  next()
+})
+
+// async api
+fastify.addHook('preHandler', async (request, reply) => {
+  reply.send({ hello: 'world' })
+})
+```
+
+If you want to respond with a stream, you should make sure that you don't call `next` before the response has finished.
+
+```js
+// standard api
+fastify.addHook('onRequest', (req, res, next) => {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  stream.pipe(res)
+  res.once('finish', next)
+})
+
+// standard api
+fastify.addHook('preHandler', (request, reply, next) => {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.send(stream)
+  reply.res.once('finish', next)
+})
+
+// async api
+fastify.addHook('onRequest', async (request, reply) => {
+  return new Promise((resolve, reject) => {
+    const stream = fs.createReadStream('some-file', 'utf8')
+    stream.pipe(res)
+    res.once('finish', resolve)
+  })
+})
+```
+
 ## Application Hooks
 
 You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.

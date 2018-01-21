@@ -278,6 +278,7 @@ function build (options) {
   }
 
   function middlewareCallback (err, state) {
+    if (state.res.finished === true) return
     if (err) {
       const req = state.req
       const request = new state.context.Request(state.params, req, null, req.headers, req.log)

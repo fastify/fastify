@@ -4,7 +4,6 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const http = require('http')
-const zlib = require('zlib')
 
 const Reply = require('../../lib/reply')
 
@@ -200,36 +199,6 @@ test('within an instance', t => {
     })
 
     t.end()
-  })
-})
-
-test('use reply.serialize in onSend hook', t => {
-  t.plan(4)
-
-  const fastify = require('../..')()
-  fastify.addHook('onSend', (request, reply, payload, next) => {
-    function _serialize () {
-      const _payload = reply.serialize(payload)
-      return zlib.gzipSync(_payload)
-    }
-    reply.serializer(_serialize)
-    reply.header('Content-Encoding', 'gzip')
-    next()
-  })
-  fastify.get('/', (request, reply) => {
-    reply.send({ hello: 'world' })
-  })
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-    })
   })
 })
 
@@ -478,7 +447,11 @@ test('reply.notFound() should invoke the 404 handler', t => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
       t.strictEqual(response.headers['content-type'], 'application/json')
-      t.deepEqual(body.toString(), '{"error":"Not Found","message":"Not found","statusCode":404}')
+      t.deepEqual(JSON.parse(body.toString()), {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Not found'
+      })
     })
 
     sget({

@@ -83,6 +83,7 @@ fastify.addHook('onResponse', async (res) => {
 | res | Node.js [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
 | request | Fastify [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) interface |
 | reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
+| payload | The serialized payload |
 | next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
 
 It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
@@ -108,22 +109,37 @@ fastify.addHook('preHandler', (request, reply, next) => {
 
 Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
-If you are using the `onSend` hook you can update the payload, for example:
+#### The `onSend` Hook
+
+If you are using the `onSend` hook, you can change the payload. For example:
+
 ```js
-
-fastify.addHook('onSend', (request, reply, payload, next) => {
-  var err = null;
-  payload.hello = 'world'
-  next(err, payload)
-})
-
-// Or
 fastify.addHook('onSend', (request, reply, payload, next) => {
   var err = null;
   var newPayload = payload.replace('some-text', 'some-new-text')
   next(err, newPayload)
 })
+
+// Or async
+fastify.addHook('onSend', async (request, reply, payload) => {
+  var newPayload = payload.replace('some-text', 'some-new-text')
+  return newPayload
+})
 ```
+
+You can also clear the payload to send a response with an empty body by replacing the payload with `null`:
+
+```js
+fastify.addHook('onSend', (request, reply, payload, next) => {
+  reply.code(304)
+  const newPayload = null
+  next(null, newPayload)
+})
+```
+
+> You can also send an empty body by replacing the payload with the empty string `''`, but be aware that this will cause the `Content-Length` header to be set to `0`, whereas the `Content-Length` header will not be set if the payload is `null`.
+
+Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
 
 ### Respond to a request from an hook
 If need you can respond to a request before you reach the route handler, an example could be an authentication hook. If you are using `onRequest` or a middleware just use `res.end`, if you are using the `preHandler` hook use `reply.send`. Remember to always call `next` if you are using the standard hook api, if you are working with *async* hooks it will be done automatically by Fastify.

@@ -107,6 +107,34 @@ Function to add middlewares to Fastify, check [here](https://github.com/fastify/
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
 
+<a name="base-path"></a>
+#### basepath
+The full path that will be prefixed to a route.
+
+Example:
+
+```js
+fastify.register(function (instance, opts, next) {
+  instance.get('/foo', function (request, reply) {
+    // Will log "basePath: /v1"
+    request.log.info('basePath: %s', instance.basePath)
+    reply.send({basePath: instance.basePath})
+  })
+
+  instance.register(function (instance, opts, next) {
+    instance.get('/bar', function (request, reply) {
+      // Will log "basePath: /v1/v2"
+      request.log.info('basePath: %s', instance.basePath)
+      reply.send({basePath: instance.basePath})
+    })
+
+    next()
+  }, { prefix: '/v2' })
+
+  next()
+}, { prefix: '/v1' })
+```
+
 <a name="log"></a>
 #### log
 The logger instance, check [here](https://github.com/fastify/fastify/blob/master/docs/Logging.md).

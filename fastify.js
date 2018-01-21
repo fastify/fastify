@@ -127,6 +127,12 @@ function build (options) {
   fastify._routePrefix = ''
   fastify._logLevel = ''
 
+  Object.defineProperty(fastify, 'basePath', {
+    get: function () {
+      return this._routePrefix
+    }
+  })
+
   // expose logger instance
   fastify.log = log
 
@@ -254,7 +260,11 @@ function build (options) {
       if (!err) {
         let address = server.address()
         if (typeof address === 'object') {
-          address = address.address + ':' + address.port
+          if (address.address.indexOf(':') === -1) {
+            address = address.address + ':' + address.port
+          } else {
+            address = '[' + address.address + ']:' + address.port
+          }
         }
         address = 'http' + (options.https ? 's' : '') + '://' + address
         fastify.log.info('Server listening at ' + address)

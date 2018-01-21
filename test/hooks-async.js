@@ -92,25 +92,23 @@ function asyncHookTest (t) {
     const fastify = Fastify()
     const payload = { hello: 'world' }
     const modifiedPayload = { hello: 'modified' }
-    const anotherPayload = { winter: 'is coming' }
+    const anotherPayload = '"winter is coming"'
 
     fastify.addHook('onSend', async function (request, reply, thePayload) {
       t.ok('onSend called')
-      t.deepEqual(thePayload, payload)
-      // onSend allows only to modify Object keys and not the full object's reference
-      thePayload.hello = 'modified'
-      return thePayload
+      t.deepEqual(JSON.parse(thePayload), payload)
+      return thePayload.replace('world', 'modified')
     })
 
     fastify.addHook('onSend', async function (request, reply, thePayload) {
       t.ok('onSend called')
-      t.deepEqual(thePayload, modifiedPayload)
+      t.deepEqual(JSON.parse(thePayload), modifiedPayload)
       return anotherPayload
     })
 
     fastify.addHook('onSend', async function (request, reply, thePayload) {
       t.ok('onSend called')
-      t.deepEqual(thePayload, anotherPayload)
+      t.strictEqual(thePayload, anotherPayload)
     })
 
     fastify.get('/', (req, reply) => {
@@ -122,9 +120,9 @@ function asyncHookTest (t) {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.deepEqual(anotherPayload, JSON.parse(res.payload))
+      t.strictEqual(res.payload, anotherPayload)
       t.strictEqual(res.statusCode, 200)
-      t.strictEqual(res.headers['content-length'], '22')
+      t.strictEqual(res.headers['content-length'], '18')
     })
   })
 

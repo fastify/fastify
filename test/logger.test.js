@@ -7,6 +7,7 @@ const stream = require('stream')
 const split = require('split2')
 const Fastify = require('..')
 const pino = require('pino')
+const os = require('os')
 
 test('defaults to info level', t => {
   t.plan(12)
@@ -683,5 +684,58 @@ test('should serialize request and response', t => {
     t.is(l.req.id, 1)
     t.is(l.req.method, 'GET')
     t.is(l.req.url, '/500')
+  })
+})
+
+{
+  const interfaces = os.networkInterfaces()
+  const ipv6 = Object.keys(interfaces)
+    .filter(name => name.substr(0, 2) === 'lo')
+    .map(name => interfaces[name])
+    .reduce((list, set) => list.concat(set), [])
+    .filter(info => info.family === 'IPv6')
+    .map(info => info.address)
+    .shift()
+
+  if (ipv6 !== undefined) {
+    test('Wrap IPv6 address in listening log message', t => {
+      t.plan(2)
+      const stream = split(JSON.parse)
+      const fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'info'
+        }
+      })
+      fastify.listen(0, ipv6, err => {
+        t.error(err)
+        stream.once('data', line => {
+          const expected = 'Server listening at http://[' + ipv6 + ']:' +
+            fastify.server.address().port
+          t.is(line.msg, expected)
+          fastify.close()
+        })
+      })
+    })
+  }
+}
+
+test('Do not wrap IPv4 address', t => {
+  t.plan(2)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.listen(0, '127.0.0.1', err => {
+    t.error(err)
+    stream.once('data', line => {
+      const expected = 'Server listening at http://127.0.0.1:' +
+        fastify.server.address().port
+      t.is(line.msg, expected)
+      fastify.close()
+    })
   })
 })

@@ -142,7 +142,7 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
 
 ### Respond to a request from an hook
-If need you can respond to a request before you reach the route handler, an example could be an authentication hook. If you are using `onRequest` or a middleware just use `res.end`, if you are using the `preHandler` hook use `reply.send`. Remember to always call `next` if you are using the standard hook api, if you are working with *async* hooks it will be done automatically by Fastify.
+If need you can respond to a request before you reach the route handler, an example could be an authentication hook. If you are using `onRequest` or a middleware just use `res.end`, if you are using the `preHandler` hook use `reply.send`. Remember to always call `next` if you are using the standard hook api otherwise the memory consumption of the server could potentially increase and it will prevent one of our optimizations, if you are working with *async* hooks it will be done automatically by Fastify.
 ```js
 // standard api
 fastify.addHook('preHandler', (request, reply, next) => {
@@ -159,27 +159,11 @@ fastify.addHook('preHandler', async (request, reply) => {
 If you want to respond with a stream, you should make sure that you don't call `next` before the response has finished.
 
 ```js
-// standard api
+const pump = require('pump')
+
 fastify.addHook('onRequest', (req, res, next) => {
   const stream = fs.createReadStream('some-file', 'utf8')
-  stream.pipe(res)
-  res.once('finish', next)
-})
-
-// standard api
-fastify.addHook('preHandler', (request, reply, next) => {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.send(stream)
-  reply.res.once('finish', next)
-})
-
-// async api
-fastify.addHook('onRequest', async (request, reply) => {
-  return new Promise((resolve, reject) => {
-    const stream = fs.createReadStream('some-file', 'utf8')
-    stream.pipe(res)
-    res.once('finish', resolve)
-  })
+  pump(stream, res, next)
 })
 ```
 

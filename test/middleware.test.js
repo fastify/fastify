@@ -647,3 +647,94 @@ test('middlewares with prefix', t => {
     })
   })
 })
+
+test('res.end should block middleware execution', t => {
+  t.plan(5)
+
+  const instance = fastify()
+
+  instance.addHook('onRequest', (req, res, next) => {
+    t.ok('called')
+    next()
+  })
+
+  instance.use(function (req, res, next) {
+    res.end('hello')
+  })
+
+  instance.use(function (req, res, next) {
+    t.fail('we should not be here')
+  })
+
+  instance.addHook('preHandler', (req, reply, next) => {
+    t.fail('this should not be called')
+  })
+
+  instance.addHook('onSend', (req, reply, payload, next) => {
+    t.fail('this should not be called')
+  })
+
+  instance.addHook('onResponse', (res, next) => {
+    t.ok('called')
+    next()
+  })
+
+  instance.get('/', function (request, reply) {
+    t.fail('we should no be here')
+  })
+
+  instance.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.is(res.payload, 'hello')
+  })
+})
+
+test('middlewares should be able to respond with a stream', t => {
+  t.plan(4)
+
+  const instance = fastify()
+
+  instance.addHook('onRequest', (req, res, next) => {
+    t.ok('called')
+    next()
+  })
+
+  instance.use(function (req, res, next) {
+    const stream = fs.createReadStream(process.cwd() + '/test/middleware.test.js', 'utf8')
+    stream.pipe(res)
+    res.once('finish', next)
+  })
+
+  instance.use(function (req, res, next) {
+    t.fail('we should not be here')
+  })
+
+  instance.addHook('preHandler', (req, reply, next) => {
+    t.fail('this should not be called')
+  })
+
+  instance.addHook('onSend', (req, reply, payload, next) => {
+    t.fail('this should not be called')
+  })
+
+  instance.addHook('onResponse', (res, next) => {
+    t.ok('called')
+    next()
+  })
+
+  instance.get('/', function (request, reply) {
+    t.fail('we should no be here')
+  })
+
+  instance.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+  })
+})

@@ -282,11 +282,13 @@ function build (options) {
     this.context = context
   }
 
-  function hookIterator (fn, state, next) {
+  function hookIterator (fn, state, next, release) {
+    if (state.res.finished === true) return release()
     return fn(state.req, state.res, next)
   }
 
   function middlewareCallback (err, state) {
+    if (state.res.finished === true) return
     if (err) {
       const req = state.req
       const request = new state.context.Request(state.params, req, null, req.headers, req.log)

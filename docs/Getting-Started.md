@@ -107,6 +107,8 @@ Fastify handles this internally, with minimum effort!
 
 Let's rewrite the above example with a database connection.<br>
 *(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md))*
+
+**server.js**
 ```js
 const fastify = require('fastify')()
 
@@ -123,12 +125,12 @@ fastify.listen(3000, function (err) {
 })
 ```
 
+**our-db-connector.js**
 ```js
-// our-db-connector.js
-const fp = require('fastify-plugin')
+const fastifyPlugin = require('fastify-plugin')
 const MongoClient = require('mongodb').MongoClient
 
-async function db (fastify, options) {
+async function dbConnector (fastify, options) {
   const url = options.url
   delete options.url
 
@@ -136,12 +138,13 @@ async function db (fastify, options) {
   fastify.decorate('mongo', db)
 }
 
-module.exports = fp(db)
+// Wrapping a plugin function with fastify-plugin exposes the decorators,
+// hooks, and middlewares declared inside the plugin to the parent scope.
+module.exports = fastifyPlugin(dbConnector)
 ```
 
+**our-first-route.js**
 ```js
-// our-first-route.js
-
 async function routes (fastify, options) {
   const database = fastify.mongo.db('db')
   const collection = database.collection('test')

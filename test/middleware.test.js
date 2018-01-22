@@ -514,7 +514,7 @@ test('middlewares should support encapsulation with prefix', t => {
   })
 })
 
-test('middlewares should support plugins', t => {
+test('middlewares should support non-encapsulated plugins', t => {
   t.plan(5)
 
   const instance = fastify()

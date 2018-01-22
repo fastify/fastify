@@ -138,8 +138,8 @@ async function dbConnector (fastify, options) {
   fastify.decorate('mongo', db)
 }
 
-// Wrapping a plugin function with fastify-plugin causes that plugin's encapsulation
-// to be skipped so that decorators will be available outside of the plugin.
+// Wrapping a plugin function with fastify-plugin exposes the decorators,
+// hooks, and middlewares declared inside the plugin in the parent scope.
 module.exports = fastifyPlugin(dbConnector)
 ```
 

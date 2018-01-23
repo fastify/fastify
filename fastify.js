@@ -169,7 +169,6 @@ function build (options) {
 
   // middleware support
   fastify.use = use
-  fastify._middie = Middie(onRunMiddlewares)
   fastify._middlewares = []
 
   // fake http injection (for testing purposes)
@@ -299,7 +298,11 @@ function build (options) {
       return
     }
 
-    state.context._middie.run(state.req, state.res, state)
+    if (state.context._middie !== null) {
+      state.context._middie.run(state.req, state.res, state)
+    } else {
+      onRunMiddlewares(null, state.req, state.res, state)
+    }
   }
 
   function onRunMiddlewares (err, req, res, state) {
@@ -319,7 +322,6 @@ function build (options) {
       return old
     }
 
-    const middlewares = Object.assign([], old._middlewares)
     const instance = Object.create(old)
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
@@ -327,17 +329,12 @@ function build (options) {
     instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
-    instance._middlewares = []
-    instance._middie = Middie(onRunMiddlewares)
+    instance._middlewares = old._middlewares.slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
       instance._notFoundHandler = null
       instance._404Context = null
-    }
-
-    for (var i = 0; i < middlewares.length; i++) {
-      instance.use.apply(instance, middlewares[i])
     }
 
     return instance
@@ -467,7 +464,7 @@ function build (options) {
         _fastify._contentTypeParser,
         config,
         _fastify._errorHandler,
-        _fastify._middie,
+        buildMiddie(_fastify._middlewares),
         opts.jsonBodyLimit,
         opts.logLevel,
         _fastify
@@ -551,7 +548,6 @@ function build (options) {
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     this._middlewares.push([url, fn])
-    this._middie.use(url, fn)
     return this
   }
 
@@ -652,7 +648,7 @@ function build (options) {
       this._contentTypeParser,
       opts.config || {},
       this._errorHandler,
-      this._middie,
+      buildMiddie(this._middlewares),
       this._jsonBodyLimit,
       this._logLevel,
       null
@@ -693,6 +689,19 @@ function build (options) {
 
     this._errorHandler = func
     return this
+  }
+
+  function buildMiddie (middlewares) {
+    if (!middlewares.length) {
+      return null
+    }
+
+    const middie = Middie(onRunMiddlewares)
+    for (var i = 0; i < middlewares.length; i++) {
+      middie.use.apply(middie, middlewares[i])
+    }
+
+    return middie
   }
 }
 

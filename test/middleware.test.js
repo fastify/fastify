@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')
+const fp = require('fastify-plugin')
 const cors = require('cors')
 const helmet = require('helmet')
 const serveStatic = require('serve-static')
@@ -510,6 +511,45 @@ test('middlewares should support encapsulation with prefix', t => {
         })
       })
     })
+  })
+})
+
+test('middlewares should support non-encapsulated plugins', t => {
+  t.plan(5)
+
+  const instance = fastify()
+
+  instance.register(fp(function (i, opts, done) {
+    i.use(function (req, res, next) {
+      t.ok('middleware called')
+      req.midval = 10
+      next()
+    })
+
+    done()
+  }))
+
+  instance.get('/', function (request, reply) {
+    t.strictEqual(request.raw.midval, 10)
+    reply.send({ hello: 'world' })
+  })
+
+  instance.register(fp(function (i, opts, done) {
+    i.use(function (req, res, next) {
+      t.fail('middleware should not be called')
+      next()
+    })
+
+    done()
+  }))
+
+  instance.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })
 

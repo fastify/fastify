@@ -58,6 +58,7 @@ function build (options) {
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash
   })
+  const fastify = router.lookup.bind(router)
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
@@ -86,17 +87,16 @@ function build (options) {
   }
 
   var server
-  const httpHandler = router.lookup.bind(router)
   if (options.https) {
     if (options.http2) {
-      server = http2().createSecureServer(options.https, httpHandler)
+      server = http2().createSecureServer(options.https, fastify)
     } else {
-      server = https.createServer(options.https, httpHandler)
+      server = https.createServer(options.https, fastify)
     }
   } else if (options.http2) {
-    server = http2().createServer(httpHandler)
+    server = http2().createServer(fastify)
   } else {
-    server = http.createServer(httpHandler)
+    server = http.createServer(fastify)
   }
 
   fastify.onClose((instance, done) => {
@@ -184,7 +184,7 @@ function build (options) {
 
   return fastify
 
-  function fastify (req, res, params, context) {
+  function routeHandler (req, res, params, context) {
     res._context = context
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
@@ -488,7 +488,7 @@ function build (options) {
       context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
       try {
-        router.on(opts.method, url, fastify, context)
+        router.on(opts.method, url, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -523,13 +523,13 @@ function build (options) {
 
   function inject (opts, cb) {
     if (started) {
-      return lightMyRequest(httpHandler, opts, cb)
+      return lightMyRequest(fastify, opts, cb)
     }
 
     if (cb) {
       this.ready(err => {
         if (err) throw err
-        return lightMyRequest(httpHandler, opts, cb)
+        return lightMyRequest(fastify, opts, cb)
       })
     } else {
       return new Promise((resolve, reject) => {
@@ -537,7 +537,7 @@ function build (options) {
           if (err) return reject(err)
           resolve()
         })
-      }).then(() => lightMyRequest(httpHandler, opts))
+      }).then(() => lightMyRequest(fastify, opts))
     }
   }
 
@@ -673,8 +673,8 @@ function build (options) {
 
     const prefix = this._routePrefix
 
-    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), fastify, context)
-    fourOhFour.all(prefix || '/', fastify, context)
+    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
+    fourOhFour.all(prefix || '/', routeHandler, context)
   }
 
   function setSchemaCompiler (schemaCompiler) {

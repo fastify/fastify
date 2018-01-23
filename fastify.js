@@ -59,6 +59,8 @@ function build (options) {
     ignoreTrailingSlash: options.ignoreTrailingSlash
   })
 
+  fastify.printRoutes = router.prettyPrint.bind(router)
+
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()

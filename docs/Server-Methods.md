@@ -169,3 +169,23 @@ fastify.register(function (instance, options, next) {
 #### setErrorHandler
 
 `fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers, *async await* is supported as well.
+
+<a name="print-routes"></a>
+#### printRoutes
+
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.<br/>
+*Remember to call it inside or after a `ready` call.*
+
+```js
+fastify.get('/test', () => {})
+fastify.get('/test/hello', () => {})
+fastify.get('/hello/world', () => {})
+
+fastify.ready(() => {
+  console.log(fastify.printRoutes())
+  // └── /
+  //   ├── test (GET)
+  //   │   └── /hello (GET)
+  //   └── hello/world (GET)
+})
+```

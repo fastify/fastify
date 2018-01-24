@@ -36,7 +36,7 @@ fastify.get('/', function (request, reply) {
 })
 
 // Run the server!
-fastify.listen(3000, function (err) {
+fastify.listen(3000, '127.0.0.1', function (err) { // use 0.0.0.0 in Docker, Heroku, etc
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })
@@ -52,7 +52,7 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen(3000, '127.0.0.1', function (err) { // use 0.0.0.0 in Docker, Heroku, etc
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })

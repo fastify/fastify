@@ -36,7 +36,7 @@ fastify.get('/', function (request, reply) {
 })
 
 // Run the server!
-fastify.listen(3000, function (err) {
+fastify.listen(3000, '127.0.0.1', function (err) {
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })
@@ -52,13 +52,17 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen(3000, '127.0.0.1', function (err) {
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })
 ```
 
 Do you want to know more? Head to the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+
+#### Note
+
+`.listen` binds to the local host, `127.0.0.1`, interface by default. See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#listen) for more information.
 
 ### Core features
 

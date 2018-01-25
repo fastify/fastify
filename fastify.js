@@ -54,6 +54,7 @@ function build (options) {
     log = loggerUtils.createLogger(options.logger)
   }
 
+  const fastify = {}
   const router = FindMyWay({
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash
@@ -184,7 +185,7 @@ function build (options) {
 
   return fastify
 
-  function fastify (req, res, params, context) {
+  function routeHandler (req, res, params, context) {
     res._context = context
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
@@ -488,7 +489,7 @@ function build (options) {
       context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
 
       try {
-        router.on(opts.method, url, fastify, context)
+        router.on(opts.method, url, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -673,8 +674,8 @@ function build (options) {
 
     const prefix = this._routePrefix
 
-    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), fastify, context)
-    fourOhFour.all(prefix || '/', fastify, context)
+    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
+    fourOhFour.all(prefix || '/', routeHandler, context)
   }
 
   function setSchemaCompiler (schemaCompiler) {

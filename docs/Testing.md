@@ -4,7 +4,100 @@
 Testing is one of the most important part when you are developing an application.
 Fastify does not offer a testing framework out of the box, but we can recommend you an handy and nice way to build your unit testing environment.
 
-The modules you'll need:
+### Approach #1 - Jest + Supertest
+
+Modules you'll need:
+- [Jest](https://github.com/facebook/jest): Facebook's awesome JavaScript testing solution. It has a lot of great features including own assertions, easy mocks, custom environments and many, many more.
+- [Supertest](https://github.com/visionmedia/supertest): HTTP assertions library. Just pass a node `http.Server` to it and use the magic.
+
+First we need to create a [custom Jest test environment](https://facebook.github.io/jest/docs/en/configuration.html#testenvironment-string):
+
+```js
+const NodeEnvironment = require('jest-environment-node');
+const fastify = require('path/to/your/server');
+
+// We need to extend our custom environment class from the
+// NodeEnvironment jest class - otherwise it won't work.
+class IntegrationEnvironment extends NodeEnvironment {
+    // This function loads up before any tests will run
+    async setup() {
+        // Here you can register any additional fastify plugins you want
+        // i.e. an in-memory mongo database:
+        // fastify.register(require('fastify-mongo-memory'));
+
+        // Wait until all fastify plugins have been loaded
+        await fastify.ready();
+
+        // Variables under this.global will be available in all test suites
+        // in the `global` variable. fastify.server is the Node HTTP Server
+        // which we will later need to pass to supertest
+        this.global.server = fastify.server;
+
+        // And in case for using the in-memory mongo plugin:
+        // this.global.db = fastify.mongo.db
+    }
+
+    // This function runs after all test suites complete
+    async teardown() {
+        fastify.close();
+    }
+}
+
+module.exports = IntegrationEnvironment;
+```
+
+In order to be able to run the server manually and import fastify instance as above, we need to configure our main fastify server file:
+
+```js
+const fastify = require('fastify')();
+
+fastify.get('/hello', async (req, reply) => {
+    reply.send({ hello: 'world' });
+});
+
+// This simple approach gives us the option to import
+// a fully configured fastify instance without running it.
+// We want to run the server manually after our
+// test environment gets ready.
+if (module.parent) {
+    module.exports = fastify;
+} else {
+    fastify.listen(8080, error => {
+        if (error) {
+            console.log(error);
+            throw error;
+        }
+        console.log('Listening on port 8080');
+    });
+}
+```
+
+And that's all! We can now start writing our tests which will be very clean and pleasant create. Check out this example:
+
+```js
+// Notice the `global.server` variable here. To make supertest
+// fully working you need to pass a Node HTTP Server to it.
+// Thanks to Jest test environments this is clean and easy!
+const request = require('supertest')(global.server);
+
+describe('hello world route', () => {
+    test('should return hello world', () => {
+        return request
+          .get('/hello')
+          .expect(200, {
+            hello: 'world'
+          });
+    });
+});
+```
+
+What's cool in this approach is that you can in an easy and clean way use your main fastify instance (fully configured), and add some additional configuration to it by creating your own test environment without having to interfere into your main server implementation.
+
+Of course, you don't have to limit yourself with one test environment - you can have plenty of them for different purposes!
+
+### Approach #2 - Tap + Request + Minimist
+
+Modules you'll need:
 - [Tap](https://www.npmjs.com/package/tap): an excellent testing framework, it will give you out of the box a very good assertion library and a lot utilities.
 - [Request](https://www.npmjs.com/package/request): a complete library to perform request of any kind.
 - [Minimist](https://www.npmjs.com/package/minimist): a CLI parser, that you will use to run server from the command line.

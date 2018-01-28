@@ -142,7 +142,7 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
 
 ### Respond to a request from a hook
-If need you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or a middleware, just use `res.end`. If you are using the `preHandler` hook, use `reply.send`.
+If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or a middleware, use `res.end`. If you are using the `preHandler` hook, use `reply.send`.
 
 ```js
 fastify.addHook('onRequest', (req, res, next) => {
@@ -155,7 +155,7 @@ fastify.addHook('preHandler', async (request, reply) => {
 })
 ```
 
-If you want to respond with a stream, you should avoid using an `async` function for the hook (or else you'll need to write code like [this](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275)).
+If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
 
 ```js
 const pump = require('pump')

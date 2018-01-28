@@ -157,6 +157,16 @@ fastify.get('/streams', function (request, reply) {
 })
 ```
 
+*send* method handles stream in [`objectMode`](https://nodejs.org/api/stream.html#stream_object_mode) too. This kind of stream needs to have a *serializer* set.
+```js
+fastify.get('/objStreams', function (request, reply) {
+  const stream = getMyObjectModeStream()
+  reply
+    .serializer(objectModeStreamToStringStreamSerializer)
+    .send(stream)
+})
+```
+
 <a name="errors"></a>
 #### Errors
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:

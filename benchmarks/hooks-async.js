@@ -17,29 +17,21 @@ const opts = {
   }
 }
 
-fastify
-  .addHook('onRequest', function (req, res, next) {
-    next()
-  })
-  .addHook('onRequest', function (req, res, next) {
-    next()
-  })
+function promiseFunction (resolve) {
+  setImmediate(resolve)
+}
+
+async function asyncHook () {
+  await new Promise(promiseFunction)
+}
 
 fastify
-  .addHook('preHandler', function (request, reply, next) {
-    next()
-  })
-  .addHook('preHandler', function (request, reply, next) {
-    setImmediate(next)
-  })
-  .addHook('preHandler', function (request, reply, next) {
-    next()
-  })
-
-fastify
-  .addHook('onSend', function (request, reply, payload, next) {
-    next()
-  })
+  .addHook('onRequest', asyncHook)
+  .addHook('onRequest', asyncHook)
+  .addHook('preHandler', asyncHook)
+  .addHook('preHandler', asyncHook)
+  .addHook('preHandler', asyncHook)
+  .addHook('onSend', asyncHook)
 
 fastify.get('/', opts, function (request, reply) {
   reply.send({ hello: 'world' })

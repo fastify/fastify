@@ -10,6 +10,7 @@ const pump = require('pump')
 const Fastify = require('..')
 const errors = require('http-errors')
 const JSONStream = require('JSONStream')
+const send = require('send')
 const Readable = require('stream').Readable
 
 test('should respond with a stream', t => {
@@ -223,6 +224,42 @@ test('return a 404 if the stream emits a 404 error', t => {
     sget(`http://localhost:${port}`, function (err, response) {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})
+
+test('should support send module 200 and 404', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    const stream = send(req.req, __filename)
+    reply.code(200).send(stream)
+  })
+
+  fastify.get('/error', function (req, reply) {
+    const stream = send(req.req, 'non-existing-file')
+    reply.code(200).send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.strictEqual(response.statusCode, 200)
+
+      fs.readFile(__filename, (err, expected) => {
+        t.error(err)
+        t.equal(expected.toString(), data.toString())
+      })
+    })
+
+    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+      t.error(err)
       t.strictEqual(response.statusCode, 404)
     })
   })

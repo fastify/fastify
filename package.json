@@ -83,7 +83,9 @@
     "ienoopen": "^1.0.0",
     "joi": "~11.3.4",
     "pre-commit": "^1.2.2",
+    "pump": "^2.0.1",
     "semver": "^5.5.0",
+    "send": "^0.16.1",
     "serve-static": "^1.13.1",
     "simple-get": "^2.7.0",
     "snazzy": "^7.0.0",
@@ -92,7 +94,6 @@
     "tap": "^11.0.1",
     "then-sleep": "^1.0.1",
     "typescript": "^2.6.2",
-    "pump": "^2.0.1",
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {

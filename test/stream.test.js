@@ -195,3 +195,64 @@ test('should respond with a stream1', t => {
     })
   })
 })
+
+test('should serialize the stream in objectMode', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  const stream = require('stream')
+
+  function mySerializer (s) {
+    return s.pipe(new stream.Transform({
+      objectMode: true,
+      transform: function (chunk, enc, done) {
+        done(null, JSON.stringify(chunk) + '\n')
+      }
+    }))
+  }
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    let counter = 0
+    var objectModeStream = new stream.Readable({
+      objectMode: true,
+      read: function () {
+        if (counter > 10) {
+          return this.push(null)
+        }
+        this.push({ counter: counter++ })
+      }
+    })
+    reply
+      .serializer(mySerializer)
+      .send(objectModeStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.strictEqual(response.statusCode, 200)
+
+      const split = (body + '').split('\n')
+      split.pop() // remove last empty chunk
+      t.deepEqual(split.map(JSON.parse), [
+        { counter: 0 },
+        { counter: 1 },
+        { counter: 2 },
+        { counter: 3 },
+        { counter: 4 },
+        { counter: 5 },
+        { counter: 6 },
+        { counter: 7 },
+        { counter: 8 },
+        { counter: 9 },
+        { counter: 10 }
+      ])
+    })
+  })
+})

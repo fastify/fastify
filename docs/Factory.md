@@ -42,8 +42,6 @@ instance.
 
 + Default: `false`
 
-#### Example
-
 ```js
 const fastify = require('fastify')({
   ignoreTrailingSlash: true
@@ -59,6 +57,12 @@ fastify.get('/bar', function (req, reply) {
   res.send('bar')
 })
 ```
+
+<a name="factory-max-param-length"></a>
+### `maxParamLength`
+You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br>
+This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br> 
+*If the maximum length limit is reached, the not found route will be invoked.*
 
 <a name="factory-json-limit"></a>
 ### `jsonBodyLimit`

@@ -4,7 +4,7 @@ const test = require('tap').test
 const sget = require('simple-get')
 const Fastify = require('../')
 
-test('honors ignoreTrailingSlash option', t => {
+test('Should honor ignoreTrailingSlash option', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -31,5 +31,30 @@ test('honors ignoreTrailingSlash option', t => {
       t.is(res.statusCode, 200)
       t.is(data.toString(), 'test')
     })
+  })
+})
+
+test('Should honor maxParamLength option', t => {
+  t.plan(4)
+  const fastify = Fastify({ maxParamLength: 10 })
+
+  fastify.get('/test/:id', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test/123456789'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test/123456789abcd'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
   })
 })

@@ -172,23 +172,6 @@ test('wrong object for schema - get', t => {
   }
 })
 
-test('custom serializer - get', t => {
-  t.plan(1)
-
-  function customSerializer (data) {
-    return JSON.stringify(data)
-  }
-
-  try {
-    fastify.get('/custom-serializer', numberSchema, function (req, reply) {
-      reply.code(200).serializer(customSerializer).send({ hello: 'world' })
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
-})
-
 test('empty response', t => {
   t.plan(1)
   try {
@@ -364,19 +347,6 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: null })
-    })
-  })
-
-  test('shorthand - custom serializer', t => {
-    t.plan(4)
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
 

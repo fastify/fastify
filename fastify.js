@@ -5,7 +5,7 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const fastIterator = require('fast-iterator')
+const hookRunner = require('./lib/hookRunner')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -285,8 +285,8 @@ function build (options) {
     this.context = context
   }
 
-  function hookIterator (fn, state, next, release) {
-    if (state.res.finished === true) return release()
+  function hookIterator (fn, state, next) {
+    if (state.res.finished === true) return undefined
     return fn(state.req, state.res, next)
   }
 
@@ -484,10 +484,10 @@ function build (options) {
       const onSend = _fastify._hooks.onSend
       const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
 
-      context.onRequest = onRequest.length ? fastIterator(onRequest, _fastify) : null
-      context.onResponse = onResponse.length ? fastIterator(onResponse, _fastify) : null
-      context.onSend = onSend.length ? fastIterator(onSend, _fastify) : null
-      context.preHandler = preHandler.length ? fastIterator(preHandler, _fastify) : null
+      context.onRequest = onRequest.length ? hookRunner(onRequest, _fastify) : null
+      context.onResponse = onResponse.length ? hookRunner(onResponse, _fastify) : null
+      context.onSend = onSend.length ? hookRunner(onSend, _fastify) : null
+      context.preHandler = preHandler.length ? hookRunner(preHandler, _fastify) : null
 
       try {
         router.on(opts.method, url, routeHandler, context)
@@ -615,7 +615,7 @@ function build (options) {
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: fastIterator([], null) }, request)
+    const reply = new Reply(res, { onSend: hookRunner([], null) }, request)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -661,10 +661,10 @@ function build (options) {
     const onSend = this._hooks.onSend
     const onResponse = this._hooks.onResponse
 
-    context.onRequest = onRequest.length ? fastIterator(onRequest, this) : null
-    context.preHandler = preHandler.length ? fastIterator(preHandler, this) : null
-    context.onSend = onSend.length ? fastIterator(onSend, this) : null
-    context.onResponse = onResponse.length ? fastIterator(onResponse, this) : null
+    context.onRequest = onRequest.length ? hookRunner(onRequest, this) : null
+    context.preHandler = preHandler.length ? hookRunner(preHandler, this) : null
+    context.onSend = onSend.length ? hookRunner(onSend, this) : null
+    context.onResponse = onResponse.length ? hookRunner(onResponse, this) : null
 
     if (this._404Context !== null) {
       Object.assign(this._404Context, context) // Replace the default 404 handler

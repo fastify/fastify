@@ -141,29 +141,28 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 
 Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
 
-### Respond to a request from an hook
-If need you can respond to a request before you reach the route handler, an example could be an authentication hook. If you are using `onRequest` or a middleware just use `res.end`, if you are using the `preHandler` hook use `reply.send`. Remember to always call `next` if you are using the standard hook api otherwise the memory consumption of the server could potentially increase and it will prevent one of our optimizations, if you are working with *async* hooks it will be done automatically by Fastify.
+### Respond to a request from a hook
+If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or a middleware, use `res.end`. If you are using the `preHandler` hook, use `reply.send`.
+
 ```js
-// standard api
-fastify.addHook('preHandler', (request, reply, next) => {
-  reply.send({ hello: 'world' })
-  next()
+fastify.addHook('onRequest', (req, res, next) => {
+  res.end('early response')
 })
 
-// async api
+// Works with async functions too
 fastify.addHook('preHandler', async (request, reply) => {
   reply.send({ hello: 'world' })
 })
 ```
 
-If you want to respond with a stream, you should make sure that you don't call `next` before the response has finished.
+If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
 
 ```js
 const pump = require('pump')
 
 fastify.addHook('onRequest', (req, res, next) => {
   const stream = fs.createReadStream('some-file', 'utf8')
-  pump(stream, res, next)
+  pump(stream, res, err => req.log.error(err))
 })
 ```
 

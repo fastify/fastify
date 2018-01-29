@@ -8,7 +8,7 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
-const runHooks = require('fast-iterator')
+const runHooks = require('../../lib/hookRunner')
 const sget = require('simple-get').concat
 
 const Ajv = require('ajv')

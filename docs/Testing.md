@@ -63,18 +63,23 @@ function buildFastify () {
   return fastify
 }
 
-module.exports = { buildFastify }
+module.exports = buildFastify
 ```
 
 **test.js**
 ```js
 const tap = require('tap')
-const buildFastify = require('./app').buildFastify
+const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(4)
   
   const fastify = buildFastify()
+  
+  // Even if the server is not running (inject does not run the server),
+  // at the end of your tests it is highly recommended to call `.close()`
+  // to ensure that all connections to external services get closed.
+  t.tearDown(() => fastify.close())
 
   fastify.inject({
     method: 'GET',
@@ -84,10 +89,6 @@ tap.test('GET `/` route', t => {
     t.strictEqual(response.statusCode, 200)
     t.strictEqual(response.headers['content-type'], 'application/json')
     t.deepEqual(JSON.parse(response.payload), { hello: 'world' })
-    // Even if the server is not running (inject does not run the server),
-    // at the end of your tests it is highly recommended to call `.close()`
-    // to ensure that all connections to external services get closed.
-    fastify.close()
   })
 })
 ```
@@ -103,12 +104,14 @@ Uses **app.js** from the previous example.
 ```js
 const tap = require('tap')
 const request = require('request')
-const buildFastify = require('./app').buildFastify
+const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(5)
   
   const fastify = buildFastify()
+  
+  t.tearDown(() => fastify.close())
   
   fastify.listen(0, (err) => {
     t.error(err)
@@ -121,7 +124,6 @@ tap.test('GET `/` route', t => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.deepEqual(JSON.parse(body), { hello: 'world' })
-      fastify.close()
     })
   })
 })
@@ -131,10 +133,13 @@ tap.test('GET `/` route', t => {
 ```js
 const tap = require('tap')
 const supertest = require('supertest')
-const buildFastify = require('./app').buildFastify
+const buildFastify = require('./app')
 
 tap.test('GET `/` route', async (t) => {
   const fastify = buildFastify()
+
+  t.tearDown(() => fastify.close())
+  
   await fastify.ready()
   
   const response = await supertest(fastify.server)
@@ -142,7 +147,5 @@ tap.test('GET `/` route', async (t) => {
     .expect(200)
     .expect('Content-Type', 'application/json')
   t.deepEqual(response.body, { hello: 'world' })
-  
-  fastify.close()
 })
 ```

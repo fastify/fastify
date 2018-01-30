@@ -5,6 +5,7 @@ const test = t.test
 const fp = require('fastify-plugin')
 const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
+const errors = require('http-errors')
 const Fastify = require('..')
 
 test('default 404', t => {
@@ -51,13 +52,17 @@ test('default 404', t => {
 })
 
 test('customized 404', t => {
-  t.plan(3)
+  t.plan(4)
 
   const test = t.test
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/with-error', function (req, reply) {
+    reply.send(new errors.NotFound())
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
@@ -88,6 +93,18 @@ test('customized 404', t => {
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port + '/notSupported'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(body.toString(), 'this was not found')
+      })
+    })
+
+    test('with error object', t => {
+      t.plan(3)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/with-error'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -817,7 +834,7 @@ test('recognizes errors from the http-errors module', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    reply.send(httpErrors.NotFound())
+    reply.send(httpErrors.Forbidden())
   })
 
   t.tearDown(fastify.close.bind(fastify))
@@ -830,15 +847,15 @@ test('recognizes errors from the http-errors module', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.strictEqual(res.statusCode, 404)
+      t.strictEqual(res.statusCode, 403)
 
       sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {
         t.error(err)
         const obj = JSON.parse(body.toString())
         t.strictDeepEqual(obj, {
-          error: 'Not Found',
-          message: 'Not Found',
-          statusCode: 404
+          error: 'Forbidden',
+          message: 'Forbidden',
+          statusCode: 403
         })
       })
     })

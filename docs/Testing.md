@@ -76,8 +76,7 @@ tap.test('GET `/` route', t => {
   
   const fastify = buildFastify()
   
-  // Even if the server is not running (inject does not run the server),
-  // at the end of your tests it is highly recommended to call `.close()`
+  // At the end of your tests it is highly recommended to call `.close()`
   // to ensure that all connections to external services get closed.
   t.tearDown(() => fastify.close())
 

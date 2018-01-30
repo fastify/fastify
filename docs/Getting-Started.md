@@ -67,7 +67,7 @@ Fastify offers an easy platform that helps solve all of problems, and more.
 > })
 > ```
 >
-> Similarly, specify `::1` to accept only local connections via IPv6, or `::` to accept any connection on all IPv4 and IPv6 addresses simultaneously.
+> Similarly, specify `::1` to accept only local connections via IPv6. Or specify `::` to accept connections on all IPv6 addresses, and, if the operating system supports it, also on all IPv4 addresses.
 >
 > When deploying to a Docker, or other type of, container this would be the easiest method for exposing the application.
 

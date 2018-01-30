@@ -834,7 +834,7 @@ test('recognizes errors from the http-errors module', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    reply.send(httpErrors.Forbidden())
+    reply.send(httpErrors.NotFound())
   })
 
   t.tearDown(fastify.close.bind(fastify))
@@ -847,15 +847,15 @@ test('recognizes errors from the http-errors module', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.strictEqual(res.statusCode, 403)
+      t.strictEqual(res.statusCode, 404)
 
       sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {
         t.error(err)
         const obj = JSON.parse(body.toString())
         t.strictDeepEqual(obj, {
-          error: 'Forbidden',
-          message: 'Forbidden',
-          statusCode: 403
+          error: 'Not Found',
+          message: 'Not found',
+          statusCode: 404
         })
       })
     })

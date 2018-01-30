@@ -83,7 +83,9 @@
     "ienoopen": "^1.0.0",
     "joi": "~11.3.4",
     "pre-commit": "^1.2.2",
+    "pump": "^2.0.1",
     "semver": "^5.5.0",
+    "send": "^0.16.1",
     "serve-static": "^1.13.1",
     "simple-get": "^2.7.0",
     "snazzy": "^7.0.0",
@@ -99,13 +101,13 @@
     "abstract-logging": "^1.0.0",
     "ajv": "^6.1.0",
     "avvio": "^5.0.1",
+    "end-of-stream": "^1.4.1",
     "fast-json-stringify": "^0.17.0",
     "find-my-way": "^1.10.0",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.1",
     "middie": "^3.1.0",
-    "pino": "^4.10.3",
-    "pump": "^2.0.1"
+    "pino": "^4.10.3"
   },
   "greenkeeper": {
     "ignore": [

@@ -8,14 +8,17 @@ const resolve = require('path').resolve
 const zlib = require('zlib')
 const pump = require('pump')
 const Fastify = require('..')
+const errors = require('http-errors')
 const JSONStream = require('JSONStream')
+const send = require('send')
+const Readable = require('stream').Readable
 
 test('should respond with a stream', t => {
-  t.plan(7)
+  t.plan(8)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    const stream = fs.createReadStream(__filename, 'utf8')
     reply.code(200).send(stream)
   })
 
@@ -28,23 +31,20 @@ test('should respond with a stream', t => {
     t.error(err)
     fastify.server.unref()
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/octet-stream')
       t.strictEqual(response.statusCode, 200)
 
-      response.on('error', err => {
+      fs.readFile(__filename, (err, expected) => {
         t.error(err)
-      })
-      response.on('end', () => {
-        t.pass('Correctly close the stream')
+        t.equal(expected.toString(), data.toString())
       })
     })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
-      t.type(err, Error)
-      t.equal(err.code, 'ECONNRESET')
-      t.pass('Correctly close the stream')
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
     })
   })
 })
@@ -92,8 +92,8 @@ test('should trigger the onSend hook only once if pumping the stream fails', t =
     fastify.server.unref()
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
-      t.type(err, Error)
-      t.equal(err.code, 'ECONNRESET')
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
     })
   })
 })
@@ -192,6 +192,75 @@ test('should respond with a stream1', t => {
       t.strictEqual(response.headers['content-type'], 'application/json')
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), [{ hello: 'world' }, { a: 42 }])
+    })
+  })
+})
+
+test('return a 404 if the stream emits a 404 error', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    var reallyLongStream = new Readable({
+      read: function () {
+        setImmediate(() => {
+          this.emit('error', new errors.NotFound())
+        })
+      }
+    })
+
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    var port = fastify.server.address().port
+
+    sget(`http://localhost:${port}`, function (err, response) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})
+
+test('should support send module 200 and 404', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    const stream = send(req.req, __filename)
+    reply.code(200).send(stream)
+  })
+
+  fastify.get('/error', function (req, reply) {
+    const stream = send(req.req, 'non-existing-file')
+    reply.code(200).send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
+      t.strictEqual(response.statusCode, 200)
+
+      fs.readFile(__filename, (err, expected) => {
+        t.error(err)
+        t.equal(expected.toString(), data.toString())
+      })
+    })
+
+    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
     })
   })
 })

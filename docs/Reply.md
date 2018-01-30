@@ -9,7 +9,6 @@ Reply is a core Fastify object that exposes the following functions:
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
-- `.serializer(function)` - Sets a custom serializer for the payload.
 - `.notFound()` - Invokes the 404 handler.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
@@ -39,9 +38,6 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 <a name="header"></a>
 ### Header
 Sets a custom header to the response.
-If you not set a `'Content-Type'` header, Fastify assumes that you are using `'application/json'`, unless you are send a stream, in that cases Fastify recognize it and sets the `'Content-Type'` at `'application/octet-stream'`.
-
-*Note that if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.*
 
 <a name="redirect"></a>
 ### Redirect
@@ -58,22 +54,6 @@ This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 ```js
 reply.type('text/html')
 ```
-
-<a name="serializer"></a>
-### Serializer
-Fastify was born as a full JSON compatible server, so out of the box will serialize your payload that you put in the `.send()` function using the internal serializers: [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise `JSON.stringify()`.
-
-If you need to use a custom serializer, such as [msgpack5](https://github.com/mcollina/msgpack5) or [protobuf](https://github.com/dcodeIO/ProtoBuf.js/), you can use the `.serializer()` utility. As noted above, if you are using a custom serializer that does not serialize to JSON, you must set a custom `'Content-Type'` header.
-
-```js
-reply
-  .header('Content-Type', 'application/x-protobuf')
-  .serializer(protoBuf.serialize)
-```
-
-Note that if a buffer is passed to `reply.send` it is expected to already be serialized and skip the serialization step.
-
-*Take a look [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#serialization) to understand how serialization is done.*
 
 <a name="notfound"></a>
 ### NotFound
@@ -106,45 +86,12 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="send-string"></a>
 #### Strings
-If you pass a string to `send` without a `Content-Type`, it will be sent as plain text. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json`, in which case it will be JSON-serialized like an object — see the section above).
+If you pass a string to `send` without a `Content-Type`, it will be sent as plain text. If you set the `Content-Type` header and send a string, it will be sent unmodified (unless the `Content-Type` header is set to `application/json`, in which case it will be JSON-serialized like an object — see the section above).
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send('plain string')
 })
 ```
-
-<a name="async-await-promise"></a>
-#### Async-Await and Promises
-Fastify natively handles promises and supports async-await.<br>
-*Note that in the following examples we are not using reply.send.*
-```js
-fastify.get('/promises', options, function (request, reply) {
-  const promise = new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
-  return promise
-})
-
-fastify.get('/async-await', options, async function (request, reply) {
-  var res = await new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
-  return res
-})
-```
-
-Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an object that has `statusCode` (or `status`) and `message` properties to modify the reply.
-
-```js
-fastify.get('/teapot', async function (request, reply) => {
-  const err = new Error()
-  err.statusCode = 418
-  err.message = 'short and stout'
-  throw err
-})
-```
-
-If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await)!
 
 <a name="send-streams"></a>
 #### Streams
@@ -154,6 +101,18 @@ fastify.get('/streams', function (request, reply) {
   const fs = require('fs')
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.send(stream)
+})
+```
+
+<a name="send-buffers"></a>
+#### Buffers
+If you are sending a buffer and you have not set a `'Content-Type'` header, *send* will set it to `'application/octet-stream'`.
+```js
+const fs = require('fs')
+fastify.get('/streams', function (request, reply) {
+  fs.readFile('some-file', (err, fileBuffer) => {
+    reply.send(err || fileBuffer)
+  })
 })
 ```
 
@@ -182,4 +141,42 @@ If you want to completely customize the error response, checkout [`setErrorHandl
 
 <a name="payload-type"></a>
 #### Type of the final payload
-It is crucial that the sent payload (if not `undefined`) is a `string` or a `Buffer`, otherwise *send* will throw at runtime.
+The type of the sent payload (after serialization and going through any [`onSend` hooks](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#the-onsend-hook)) must be one of the following types, otherwise an error will be thrown:
+
+- `string`
+- `Buffer`
+- `stream`
+- `undefined`
+- `null`
+
+<a name="async-await-promise"></a>
+#### Async-Await and Promises
+Fastify natively handles promises and supports async-await.<br>
+*Note that in the following examples we are not using reply.send.*
+```js
+fastify.get('/promises', options, function (request, reply) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve, 200, { hello: 'world' })
+  })
+})
+
+fastify.get('/async-await', options, async function (request, reply) {
+  var res = await new Promise(function (resolve) {
+    setTimeout(resolve, 200, { hello: 'world' })
+  })
+  return res
+})
+```
+
+Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an object that has `statusCode` (or `status`) and `message` properties to modify the reply.
+
+```js
+fastify.get('/teapot', async function (request, reply) => {
+  const err = new Error()
+  err.statusCode = 418
+  err.message = 'short and stout'
+  throw err
+})
+```
+
+If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).

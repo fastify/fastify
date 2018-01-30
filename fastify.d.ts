@@ -54,7 +54,6 @@ declare namespace fastify {
     type: (contentType: string) => FastifyReply<HttpResponse>
     redirect: (statusCode: number, url: string) => FastifyReply<HttpResponse>
     serialize: (payload: any) => string
-    serializer: (fn: Function) => FastifyReply<HttpResponse>
     send: (payload?: string|Array<any>|Object|Error|Promise<any>|NodeJS.ReadableStream) => FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse

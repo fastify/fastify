@@ -132,7 +132,7 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
-*If you need a custom serializer in a very specific part of your code, you can always set one with `reply.serializer(...)`.*
+*If you need a custom serializer in a very specific part of your code, you can set one with `reply.serializer(...)`.*
 
 <a name="resources"></a>
 ### Resources

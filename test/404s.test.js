@@ -879,3 +879,38 @@ test('cannot set notFoundHandler after binding', t => {
     }
   })
 })
+
+test('404 inside onSend', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  var called = false
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    if (!called) {
+      called = true
+      next(new errors.NotFound())
+    } else {
+      next()
+    }
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
+  })
+})

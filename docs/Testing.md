@@ -1,103 +1,13 @@
 <h1 align="center">Fastify</h1>
 
 ## Testing
-Testing is one of the most important part when you are developing an application.
-Fastify does not offer a testing framework out of the box, but we can recommend you an handy and nice way to build your unit testing environment.
-
-The modules you'll need:
-- [Tap](https://www.npmjs.com/package/tap): an excellent testing framework, it will give you out of the box a very good assertion library and a lot utilities.
-- [Request](https://www.npmjs.com/package/request): a complete library to perform request of any kind.
-- [Minimist](https://www.npmjs.com/package/minimist): a CLI parser, that you will use to run server from the command line.
-
-
-```js
-// server.js
-const minimist = require('minimist')
-const Fastify = require('fastify')
-
-const options = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
-  }
-}
-
-function start (opts, callback) {
-  const fastify = Fastify()
-
-  fastify.get('/', options, function (request, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.listen(opts.port, function (err) {
-    callback(err, fastify)
-  })
-}
-
-// In this way you can run the server both from the CLI and as a required module.
-if (require.main === module) {
-  // Run the server with:
-  // $ node server.js -p 8080
-  start(minimist(process.argv.slice(2), {
-    integer: ['port'],
-    alias: {
-      port: 'p'
-    },
-    default: {
-      port: 3000
-    }
-  }), (err, instance) => {
-    if (err) throw err
-
-    console.log(`server listening on ${instance.server.address().port}`)
-  })
-}
-
-// Here we are exposing the function that starts the server
-// in this way inside the test files we can require and run it.
-module.exports = { start }
-```
-
-```js
-// test.js
-const t = require('tap')
-const test = t.test
-const request = require('request')
-const server = require('./server')
-
-// Run the server
-server.start({ port: 0 }, (err, fastify) => {
-  t.error(err)
-
-  test('The server should start', t => {
-    t.plan(4)
-    // Perform the request
-    request({
-      method: 'GET',
-      uri: `http://localhost:${fastify.server.address().port}`
-    }, (err, response, body) => {
-      // Unit test
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-      fastify.close()
-    })
-  })
-})
-```
+Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
 
 <a name="inject"></a>
 ### Testing with http injection
-Fastify supports fake http injection thanks to [light-my-request](https://github.com/fastify/light-my-request).
+Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
-You just need to use the api `inject`:
+To inject a fake http request, use the `inject` method:
 ```js
 fastify.inject({
   method: String,
@@ -136,79 +46,105 @@ try {
   // handle error
 }
 ```
-Example:
+
+#### Example:
+
+**app.js**
 ```js
-// server.js
-const minimist = require('minimist')
-const fastify = require('fastify')()
+const Fastify = require('fastify')
 
-const options = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          hello: { type: 'string' }
-        }
-      }
-    }
-  }
-}
+function buildFastify () {
+  const fastify = Fastify()
 
-fastify.get('/', options, function (request, reply) {
-  reply.send({ hello: 'world' })
-})
-
-function start (opts, callback) {
-  fastify.listen(opts.port, function (err) {
-    callback(err, fastify)
+  fastify.get('/', function (request, reply) {
+    reply.send({ hello: 'world' })
   })
+  
+  return fastify
 }
 
-// In this way you can run the server both from the CLI and as a required module.
-if (require.main === module) {
-  // Run the server with:
-  // $ node server.js -p 8080
-  start(minimist(process.argv.slice(2), {
-    integer: ['port'],
-    alias: {
-      port: 'p'
-    },
-    default: {
-      port: 3000
-    }
-  }), (err, instance) => {
-    if (err) throw err
-
-    console.log(`server listening on ${instance.server.address().port}`)
-  })
-}
-
-// note that now we are also exposing the fastify instance
-module.exports = { start, fastify }
+module.exports = buildFastify
 ```
 
+**test.js**
 ```js
-// test.js
-const t = require('tap')
-const test = t.test
-const fastify = require('./server').fastify
+const tap = require('tap')
+const buildFastify = require('./app')
 
-test('GET `/` route', t => {
-  t.plan(3)
+tap.test('GET `/` route', t => {
+  t.plan(4)
+  
+  const fastify = buildFastify()
+  
+  // At the end of your tests it is highly recommended to call `.close()`
+  // to ensure that all connections to external services get closed.
+  t.tearDown(() => fastify.close())
 
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (err, res) => {
+  }, (err, response) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '' + res.payload.length)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
-    // even if the server is not running (inject does not run the server)
-    // at the end of your tests is highly recommended call `.close()`,
-    // in this way you will close all the connections to external services
-    fastify.close()
+    t.strictEqual(response.statusCode, 200)
+    t.strictEqual(response.headers['content-type'], 'application/json')
+    t.deepEqual(JSON.parse(response.payload), { hello: 'world' })
   })
+})
+```
+
+### Testing with a running server
+Fastify can also be tested after starting the server with `fastify.listen()` or after initializing routes and plugins with `fastify.ready()`.
+
+#### Example:
+
+Uses **app.js** from the previous example.
+
+**test-listen.js** (testing with [`Request`](https://www.npmjs.com/package/request))
+```js
+const tap = require('tap')
+const request = require('request')
+const buildFastify = require('./app')
+
+tap.test('GET `/` route', t => {
+  t.plan(5)
+  
+  const fastify = buildFastify()
+  
+  t.tearDown(() => fastify.close())
+  
+  fastify.listen(0, (err) => {
+    t.error(err)
+    
+    request({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+```
+
+**test-ready.js** (testing with [`SuperTest`](https://www.npmjs.com/package/supertest))
+```js
+const tap = require('tap')
+const supertest = require('supertest')
+const buildFastify = require('./app')
+
+tap.test('GET `/` route', async (t) => {
+  const fastify = buildFastify()
+
+  t.tearDown(() => fastify.close())
+  
+  await fastify.ready()
+  
+  const response = await supertest(fastify.server)
+    .get('/')
+    .expect(200)
+    .expect('Content-Type', 'application/json')
+  t.deepEqual(response.body, { hello: 'world' })
 })
 ```

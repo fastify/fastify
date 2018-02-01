@@ -61,7 +61,7 @@ declare namespace fastify {
   }
 
   interface ServerOptions {
-    logger?: pino.LoggerOptions,
+    logger?: pino.LoggerOptions | true,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: {

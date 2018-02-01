@@ -102,7 +102,7 @@
     "ajv": "^6.1.0",
     "avvio": "^5.0.1",
     "end-of-stream": "^1.4.1",
-    "fast-json-stringify": "^0.17.0",
+    "fast-json-stringify": "^1.0.0",
     "find-my-way": "^1.10.0",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.1",

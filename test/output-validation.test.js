@@ -56,7 +56,7 @@ test('wrong object for schema - output', t => {
   t.plan(1)
   try {
     fastify.get('/wrong-object-for-schema', opts, function (req, reply) {
-      // will send { hello: null }
+      // will send { }
       reply.code(201).send({ hello: 'world' })
     })
     t.pass()
@@ -129,7 +129,7 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 201)
       t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: null })
+      t.deepEqual(JSON.parse(body), {})
     })
   })
 

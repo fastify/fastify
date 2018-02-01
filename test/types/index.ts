@@ -28,6 +28,8 @@ import { createReadStream, readFile } from 'fs'
       key: readFileSync('path/to/key.pem')
     }
   });
+  //logger true
+  const logAllServer = fastify({ logger: true });
 
   // custom types
   interface CustomIncomingMessage extends http.IncomingMessage {

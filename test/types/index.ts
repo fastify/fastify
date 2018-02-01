@@ -7,6 +7,8 @@ import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
 
+// were importing cors using require, which causes it to be an `any`. This is done because `cors` exports
+// itself as an express.RequestHandler which is not compatible with the fastify TypeScript types
 const cors = require('cors');
 
 {

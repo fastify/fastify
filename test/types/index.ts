@@ -51,6 +51,15 @@ const cors = require('cors');
   customServer.use((req, res, next) => {
     console.log('can access props from CustomIncomingMessage', req.getDeviceType());
   })
+
+  interface CustomHttp2IncomingMessage extends http2.Http2ServerRequest {
+    getDeviceType: () => string;
+  }
+
+  const customHttp2Server: fastify.FastifyInstance<http2.Http2Server, CustomHttp2IncomingMessage, http2.Http2ServerResponse> = fastify();
+  customHttp2Server.use((req, res, next) => {
+    console.log('can access props from CustomIncomingMessage', req.getDeviceType());
+  });
 }
 
 const server = fastify({

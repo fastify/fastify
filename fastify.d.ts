@@ -8,9 +8,9 @@ import * as https from 'https';
 import * as pino from 'pino';
 
 declare function fastify<
-  HttpServer extends http.Server = http.Server, 
-  HttpRequest extends http.IncomingMessage = http.IncomingMessage, 
-  HttpResponse extends http.ServerResponse = http.ServerResponse
+  HttpServer extends (http.Server | http2.Http2Server) = http.Server, 
+  HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage, 
+  HttpResponse extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse
 >(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp): fastify.FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>;

@@ -7,7 +7,7 @@ Issues should only be posted in this repository after you have been able to repr
 them and confirm that they are a bug or incorrect/missing information in the [docs](https://github.com/fastify/fastify/docs).
 
 For all other questions, requests, help resolving an issue, or if you are not sure if this is
-the right place, please do not open an issue here. Instead, try to find a solution in the community [Gitter Chat](https://gitter.im/fastify).
+the right place, please do not open an issue here. Instead, ask a question in our [help](https://github.com/fastify/help) repository or try to find a solution in the community [Gitter Chat](https://gitter.im/fastify).
 
 If you have issues with the [fastify.io](https://www.fastify.io) site, please open an issue [here](https://github.com/fastify/website/issues).
 

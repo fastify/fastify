@@ -48,6 +48,57 @@ fastify.post('/the/url', { schema }, handler)
 ```
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
+<a name="shared-schema"></a>
+#### Adding a shared schema
+Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. *(Note that this API is not encapsulated)*
+```js
+const fastify = require('fastify')()
+
+fastify.addSchema({
+  $id: 'greetings',
+  type: 'object',
+  properties: {
+    hello: { type: 'string' }
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: 'greetings#'
+  },
+  handler: () => {}
+})
+```
+You can use the shared schema everywhere, as top level schema or nested inside other schemas:
+```js
+const fastify = require('fastify')()
+
+fastify.addSchema({
+  $id: 'greetings',
+  type: 'object',
+  properties: {
+    hello: { type: 'string' }
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        greeting: 'greetings#',
+        timestamp: { type: 'number' }
+      }
+    }
+  },
+  handler: () => {}
+})
+```
+
 <a name="schema-compiler"></a>
 #### Schema Compiler
 

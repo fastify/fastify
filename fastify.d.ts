@@ -8,7 +8,11 @@ import * as https from 'https';
 import * as pino from 'pino';
 import * as express from 'express';
 
-declare function fastify<HttpServer, HttpRequest, HttpResponse>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
+declare function fastify<
+  HttpServer extends http.Server = http.Server, 
+  HttpRequest extends http.IncomingMessage = http.IncomingMessage, 
+  HttpResponse extends http.ServerResponse = http.ServerResponse
+>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp): fastify.FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp2): fastify.FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>;

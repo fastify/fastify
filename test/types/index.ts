@@ -47,6 +47,9 @@ import { createReadStream, readFile } from 'fs'
     getDeviceType: () => string;
   }
   const customServer: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.ServerResponse> = fastify();
+  customServer.use((req, res, next) => {
+    console.log('can access props from CustomIncomingMessage', req.getDeviceType());
+  })
 }
 
 const server = fastify({

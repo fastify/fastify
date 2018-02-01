@@ -16,9 +16,9 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 
 declare namespace fastify {
 
-  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback?: (err?: Error) => void) => void
+  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback: (err?: Error) => void) => void
 
-  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback?: (err?: Error) => void) => void
+  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
 

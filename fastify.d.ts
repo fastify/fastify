@@ -348,6 +348,11 @@ declare namespace fastify {
      * Set a function that will be called whenever an error happens
      */
     setErrorHandler(handler: (error: Error, reply: FastifyReply<HttpResponse>) => void): void
+
+    /**
+     * Create a shared schema
+     */
+    addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
   }
 }
 

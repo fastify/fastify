@@ -9,6 +9,7 @@ const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
 const Hooks = require('../../lib/hooks')
 const runHooks = require('../../lib/hookRunner')
+const Schemas = require('../../lib/schemas')
 const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
@@ -67,7 +68,8 @@ test('handler function - invalid schema', t => {
     preHandler: runHooks(new Hooks().preHandler, {}),
     onSend: runHooks(new Hooks().onSend, {})
   }
-  buildSchema(context, schemaCompiler)
+  const schemas = new Schemas()
+  buildSchema(context, schemaCompiler, schemas)
   const request = {
     body: { hello: 'world' }
   }

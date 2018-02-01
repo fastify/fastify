@@ -20,6 +20,7 @@ const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
+const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 
@@ -84,7 +85,7 @@ function build (options) {
   })
 
   function throwIfAlreadyBound (msg) {
-    if (listening) throw new Error(msg)
+    if (started) throw new Error(msg)
   }
 
   var server
@@ -143,6 +144,10 @@ function build (options) {
   // hooks
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
+
+  // schemas
+  fastify.addSchema = addSchema
+  fastify._schemas = new Schemas()
 
   const onRouteHooks = []
 
@@ -473,7 +478,7 @@ function build (options) {
       )
 
       try {
-        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler)
+        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify._schemas)
       } catch (error) {
         done(error)
         return
@@ -565,6 +570,12 @@ function build (options) {
     } else {
       this._hooks.add(name, fn)
     }
+    return this
+  }
+
+  function addSchema (name, schema) {
+    throwIfAlreadyBound('Cannot call "addSchema" when fastify instance is already started!')
+    this._schemas.add(name, schema)
     return this
   }
 

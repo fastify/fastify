@@ -30,6 +30,10 @@ import { createReadStream, readFile } from 'fs'
   });
   // logger true
   const logAllServer = fastify({ logger: true });
+  logAllServer.addHook('onRequest', (req, res, next) => {
+    console.log('can access req', req.headers);
+    next();
+  });
 
   // other simple options
   const otherServer = fastify({

@@ -2,11 +2,12 @@
 // This file will be passed to the TypeScript CLI to verify our typings compile
 
 import * as fastify from '../../fastify'
-import * as cors from 'cors'
 import * as http from 'http';
 import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
+
+const cors = require('cors');
 
 {
   // http

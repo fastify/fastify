@@ -321,7 +321,7 @@ declare namespace fastify {
      /**
      * Hook that is called when a response is about to be sent to a client
      */
-    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.OutgoingMessage, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.ServerResponse, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Adds a hook that is triggered when server.close is called. Useful for closing connections

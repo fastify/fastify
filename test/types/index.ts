@@ -77,6 +77,7 @@ server.addHook('onRequest', function(req, res, next) {
 
 server.addHook('onResponse', function (res, next) {
   this.log.debug("`this` is not `any`");
+  this.log.debug({ code: res.statusCode }, "res has a statusCode");
   setTimeout(function() {
     console.log('response is finished after 100ms?', res.finished);
     next();

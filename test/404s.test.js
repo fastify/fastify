@@ -5,6 +5,7 @@ const test = t.test
 const fp = require('fastify-plugin')
 const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
+const errors = require('http-errors')
 const Fastify = require('..')
 
 test('default 404', t => {
@@ -51,13 +52,17 @@ test('default 404', t => {
 })
 
 test('customized 404', t => {
-  t.plan(3)
+  t.plan(4)
 
   const test = t.test
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/with-error', function (req, reply) {
+    reply.send(new errors.NotFound())
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
@@ -88,6 +93,18 @@ test('customized 404', t => {
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port + '/notSupported'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(body.toString(), 'this was not found')
+      })
+    })
+
+    test('with error object', t => {
+      t.plan(3)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/with-error'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
@@ -837,7 +854,7 @@ test('recognizes errors from the http-errors module', t => {
         const obj = JSON.parse(body.toString())
         t.strictDeepEqual(obj, {
           error: 'Not Found',
-          message: 'Not Found',
+          message: 'Not found',
           statusCode: 404
         })
       })
@@ -860,5 +877,40 @@ test('cannot set notFoundHandler after binding', t => {
     } catch (e) {
       t.pass()
     }
+  })
+})
+
+test('404 inside onSend', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  var called = false
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, next) {
+    if (!called) {
+      called = true
+      next(new errors.NotFound())
+    } else {
+      next()
+    }
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+    })
   })
 })

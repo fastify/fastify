@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const http = require('http')
-
+const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
@@ -414,18 +414,18 @@ test('undefined payload should be sent as-is', t => {
   })
 })
 
-test('reply.notFound() should invoke the 404 handler', t => {
+test('reply.send(new NotFound()) should invoke the 404 handler', t => {
   t.plan(9)
 
   const fastify = require('../..')()
 
   fastify.get('/not-found', function (req, reply) {
-    reply.notFound()
+    reply.send(new NotFound())
   })
 
   fastify.register(function (instance, options, next) {
     instance.get('/not-found', function (req, reply) {
-      reply.notFound()
+      reply.send(new NotFound())
     })
 
     instance.setNotFoundHandler(function (req, reply) {
@@ -466,21 +466,21 @@ test('reply.notFound() should invoke the 404 handler', t => {
   })
 })
 
-test('reply.notFound() should log a warning and send a basic response if called inside a 404 handler', t => {
+test('reply.send(new NotFound()) should log a warning and send a basic response if called inside a 404 handler', t => {
   t.plan(6)
 
   const fastify = require('../..')()
 
   fastify.get('/not-found', function (req, reply) {
-    reply.notFound()
+    reply.send(new NotFound())
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
     reply.res.log.warn = function mockWarn (message) {
-      t.type(message, 'string')
+      t.equal(message, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
     }
 
-    reply.notFound()
+    reply.send(new NotFound())
   })
 
   fastify.listen(0, err => {

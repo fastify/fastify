@@ -124,6 +124,10 @@ matters to you.
 - [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
 - [Community](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#community) - Community supported plugins.
 
+## Support
+- [Fastify help](https://github.com/fastify/help)
+- [Gitter Chat](https://gitter.im/fastify)
+
 ## Team
 
 _Fastify_ is the result of the work of a great community.

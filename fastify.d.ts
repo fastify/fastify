@@ -6,6 +6,7 @@ import * as http from 'http';
 import * as http2 from 'http2';
 import * as https from 'https';
 import * as pino from 'pino';
+import * as express from 'express';
 
 declare function fastify<HttpServer, HttpRequest, HttpResponse>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
@@ -275,11 +276,13 @@ declare namespace fastify {
      * Apply the given middleware to all incoming requests
      */
     use(middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
+    use(middleware: express.RequestHandler): void
 
     /**
      * Apply the given middleware to routes matching the given path
      */
     use(path: string, middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
+    use(path: string, middleware: express.RequestHandler): void
 
     /**
      * Registers a plugin

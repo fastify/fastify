@@ -98,6 +98,7 @@
     "x-xss-protection": "^1.0.0"
   },
   "dependencies": {
+    "@types/express": "^4.11.0",
     "@types/pino": "^4.7.1",
     "abstract-logging": "^1.0.0",
     "ajv": "^6.2.0",

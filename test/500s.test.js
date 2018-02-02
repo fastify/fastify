@@ -29,7 +29,7 @@ test('default 500', t => {
 })
 
 test('custom 500', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -37,7 +37,8 @@ test('custom 500', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.setErrorHandler(function (err, reply) {
+  fastify.setErrorHandler(function (err, request, reply) {
+    t.type(request, 'object')
     reply
       .code(500)
       .type('text/plain')
@@ -56,7 +57,7 @@ test('custom 500', t => {
 })
 
 test('encapsulated 500', t => {
-  t.plan(8)
+  t.plan(9)
 
   const fastify = Fastify()
 
@@ -69,7 +70,8 @@ test('encapsulated 500', t => {
       reply.send(new Error('kaboom'))
     })
 
-    f.setErrorHandler(function (err, reply) {
+    f.setErrorHandler(function (err, request, reply) {
+      t.type(request, 'object')
       reply
         .code(500)
         .type('text/plain')
@@ -113,7 +115,7 @@ test('custom 500 with hooks', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.setErrorHandler(function (err, reply) {
+  fastify.setErrorHandler(function (err, request, reply) {
     reply
       .code(500)
       .type('text/plain')

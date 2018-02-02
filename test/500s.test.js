@@ -29,7 +29,7 @@ test('default 500', t => {
 })
 
 test('custom 500', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
 
@@ -39,6 +39,7 @@ test('custom 500', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
+    t.type(request, fastify._Request)
     reply
       .code(500)
       .type('text/plain')
@@ -57,7 +58,7 @@ test('custom 500', t => {
 })
 
 test('encapsulated 500', t => {
-  t.plan(9)
+  t.plan(10)
 
   const fastify = Fastify()
 
@@ -72,6 +73,7 @@ test('encapsulated 500', t => {
 
     f.setErrorHandler(function (err, request, reply) {
       t.type(request, 'object')
+      t.type(request, f._Request)
       reply
         .code(500)
         .type('text/plain')

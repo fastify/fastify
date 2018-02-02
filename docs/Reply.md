@@ -11,7 +11,8 @@ Reply is a core Fastify object that exposes the following functions:
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
-- `.sent` - A boolean value that you can use if you need to know it `send` has already been called.
+- `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
+- `.res` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
 
 ```js
 fastify.get('/', options, function (request, reply) {

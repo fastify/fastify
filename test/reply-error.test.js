@@ -234,7 +234,7 @@ test('Support rejection with values that are not Error instances', t => {
         return Promise.reject(nonErr)
       })
 
-      fastify.setErrorHandler((err, reply) => {
+      fastify.setErrorHandler((err, request, reply) => {
         if (typeof err === 'object') {
           t.deepEqual(err, nonErr)
         } else {
@@ -272,7 +272,7 @@ test('invalid schema - ajv', t => {
     t.fail('we should not be here')
   })
 
-  fastify.setErrorHandler((err, reply) => {
+  fastify.setErrorHandler((err, request, reply) => {
     t.ok(Array.isArray(err.validation))
     reply.send('error')
   })
@@ -323,7 +323,7 @@ test('should set the status code and the headers from the error object (from cus
     reply.send(error)
   })
 
-  fastify.setErrorHandler((err, reply) => {
+  fastify.setErrorHandler((err, request, reply) => {
     t.is(err.message, 'ouch')
     t.is(reply.res.statusCode, 401)
     const error = new Error('kaboom')

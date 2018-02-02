@@ -208,7 +208,7 @@ server.get('/test-decorated-inputs', (req, reply) => {
 server.setNotFoundHandler((req, reply) => {
 })
 
-server.setErrorHandler((err, reply) => {
+server.setErrorHandler((err, request, reply) => {
 })
 
 server.listen(3000, err => {

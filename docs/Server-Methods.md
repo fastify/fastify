@@ -173,7 +173,13 @@ fastify.register(function (instance, options, next) {
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, reply))`: set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers, *async await* is supported as well.
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  // Send error response
+})
+```
 
 <a name="print-routes"></a>
 #### printRoutes

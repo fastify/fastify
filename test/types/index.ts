@@ -28,8 +28,15 @@ import { createReadStream, readFile } from 'fs'
       key: readFileSync('path/to/key.pem')
     }
   });
-  //logger true
+  // logger true
   const logAllServer = fastify({ logger: true });
+
+  // other simple options
+  const otherServer = fastify({
+    ignoreTrailingSlash: true,
+    jsonBodyLimit: 1000,
+    maxParamLength: 200,
+  })
 
   // custom types
   interface CustomIncomingMessage extends http.IncomingMessage {
@@ -114,7 +121,15 @@ const opts = {
         }
       }
     }
-  }
+  },
+  beforeHandler: [
+    (request, reply, next) => {
+      request.log.info(`before handler for "${request.raw.url}" ${request.id}`);
+      next();
+    }
+  ],
+  schemaCompiler: (schema: Object) => () => {},
+  jsonBodyLimit: 5000
 }
 
 // Chaining and route definitions
@@ -152,7 +167,9 @@ server
     reply.code(200).send(stream)
   })
   .post('/', opts, function (req, reply) {
-    reply.send({ hello: 'world' })
+    reply
+      .headers({'Content-Type': 'application/json'})
+      .send({ hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
     reply.send()
@@ -224,3 +241,9 @@ server.inject({ url: "/test" }, (err: Error, res: fastify.HTTPInjectResponse) =>
 
 server.inject({ url: "/testAgain" })
   .then((res: fastify.HTTPInjectResponse) => console.log(res.payload));
+
+server.setSchemaCompiler(function (schema: object) {
+  return () => true
+})
+
+server.addSchema({})

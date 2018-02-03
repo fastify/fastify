@@ -23,7 +23,9 @@ declare namespace fastify {
 
   type FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
-  type RequestHandler<HttpRequest, HttpResponse> = (req: FastifyRequest<HttpRequest>, res: FastifyReply<HttpResponse>) => void
+  type RequestHandler<HttpRequest, HttpResponse> = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
+
+  type SchemaCompiler = (schema: Object) => Function
 
   /**
    * fastify's wrapped version of node.js IncomingMessage
@@ -41,6 +43,7 @@ declare namespace fastify {
 
     id: any,
 
+    raw: HttpRequest,
     req: HttpRequest,
     log: pino.Logger
   }
@@ -51,17 +54,21 @@ declare namespace fastify {
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
+    headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>
     redirect: (statusCode: number, url: string) => FastifyReply<HttpResponse>
     serialize: (payload: any) => string
     serializer: (fn: Function) => FastifyReply<HttpResponse>
-    send: (payload?: string|Array<any>|Object|Error|Promise<any>|NodeJS.ReadableStream) => FastifyReply<HttpResponse>
+    send: (payload?: any) => FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
   }
 
   interface ServerOptions {
+    ignoreTrailingSlash?: boolean,
+    jsonBodyLimit?: number,
     logger?: pino.LoggerOptions | true,
+    maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: {
@@ -94,7 +101,9 @@ declare namespace fastify {
    */
   interface RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
     schema?: JSONSchema
-    beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>
+    beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
+    schemaCompiler?: SchemaCompiler
+    jsonBodyLimit?: number
   }
 
   /**
@@ -332,12 +341,12 @@ declare namespace fastify {
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: HTTPInjectOptions, clb: (err: Error, res: HTTPInjectResponse) => void): void
+    inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void
 
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: HTTPInjectOptions): Promise<HTTPInjectResponse>
+    inject(opts: HTTPInjectOptions | string): Promise<HTTPInjectResponse>
 
     /**
      * Set the 404 handler
@@ -348,6 +357,11 @@ declare namespace fastify {
      * Set a function that will be called whenever an error happens
      */
     setErrorHandler(handler: (error: Error, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+
+    /**
+     * Set the schema compiler for all routes.
+     */
+    setSchemaCompiler(schemaCompiler: SchemaCompiler): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Create a shared schema

@@ -18,6 +18,8 @@ connection__:
 ```js
 'use strict'
 
+const fs = require('fs')
+const path = require('path')
 const fastify = require('fastify')({
   http2: true,
   https: {
@@ -41,6 +43,8 @@ _Fastify_ supports this out of the box:
 ```js
 'use strict'
 
+const fs = require('fs')
+const path = require('path')
 const fastify = require('fastify')({
   http2: true,
   https: {

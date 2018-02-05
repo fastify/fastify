@@ -100,14 +100,14 @@
     "@types/pino": "^4.7.1",
     "abstract-logging": "^1.0.0",
     "ajv": "^6.1.1",
-    "avvio": "^5.0.1",
+    "avvio": "^5.1.0",
     "end-of-stream": "^1.4.1",
     "fast-json-stringify": "^1.0.0",
     "find-my-way": "^1.10.1",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.1",
     "middie": "^3.1.0",
-    "pino": "^4.10.3"
+    "pino": "^4.10.4"
   },
   "greenkeeper": {
     "ignore": [

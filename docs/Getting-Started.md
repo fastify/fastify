@@ -179,6 +179,40 @@ To solve this Fastify offers the `decorate` API, which adds custom objects to th
 
 To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
 
+<a name="plugin-loading-order"></a>
+### Loading order of your plugins
+To guarantee a consistent and predictable behavior of your application, we highly recommend to always load your code as shown below:
+```
+└── plugins (from the Fastify ecosystem)
+└── your plugins (your custom plugins)
+└── decorators
+└── hooks and middlewares
+└── your services
+```
+In this way you will always have access to all of the properties declared in the current scope.<br/>
+As discussed previously, Fastify offers a solid encapsulation model, to help you build your application as single and independent services. If you want to register a plugin only for a subset of routes, you have just to replicate the above structure.
+```
+└── plugins (from the Fastify ecosystem)
+└── your plugins (your custom plugins)
+└── decorators
+└── hooks and middlewares
+└── your services
+    │
+    └──  service A
+    │     └── plugins (from the Fastify ecosystem)
+    │     └── your plugins (your custom plugins)
+    │     └── decorators
+    │     └── hooks and middlewares
+    │     └── your services
+    │
+    └──  service B
+          └── plugins (from the Fastify ecosystem)
+          └── your plugins (your custom plugins)
+          └── decorators
+          └── hooks and middlewares
+          └── your services
+```
+
 <a name="validate-data"></a>
 ### Validate your data
 Data validation is extremely important and is a core concept of the framework.<br>

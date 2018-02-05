@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "0.43.0",
+  "version": "1.0.0-rc.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",

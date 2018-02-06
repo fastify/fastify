@@ -21,7 +21,7 @@ The optional `options` parameter for `fastify.register` supports a predefined se
 It is possible that Fastify will directly support other options in the future. Thus, to avoid collisions, a plugin should consider namespacing its options. For example, a plugin `foo` might be registered like so:
 
 ```js
-fatify.register(require('fastify-foo'), {
+fastify.register(require('fastify-foo'), {
   prefix: '/foo',
   foo: {
     fooOption1: 'value',
@@ -33,7 +33,7 @@ fatify.register(require('fastify-foo'), {
 If collisions are not a concern, the plugin may simply accept the options object as-is:
 
 ```js
-fatify.register(require('fastify-foo'), {
+fastify.register(require('fastify-foo'), {
   prefix: '/foo',
   fooOption1: 'value',
   fooOption2: 'value'

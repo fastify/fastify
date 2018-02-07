@@ -7,8 +7,6 @@ const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
-const Hooks = require('../../lib/hooks')
-const runHooks = require('../../lib/hookRunner')
 const Schemas = require('../../lib/schemas')
 const sget = require('simple-get').concat
 
@@ -65,8 +63,8 @@ test('handler function - invalid schema', t => {
     handler: () => {},
     Reply: Reply,
     Request: Request,
-    preHandler: runHooks(new Hooks().preHandler, {}),
-    onSend: runHooks(new Hooks().onSend, {})
+    preHandler: [],
+    onSend: []
   }
   const schemas = new Schemas()
   buildSchema(context, schemaCompiler, schemas)
@@ -97,8 +95,8 @@ test('handler function - reply', t => {
     },
     Reply: Reply,
     Request: Request,
-    preHandler: runHooks(new Hooks().preHandler, {}),
-    onSend: runHooks(new Hooks().onSend, {})
+    preHandler: [],
+    onSend: []
   }
   buildSchema(context, schemaCompiler)
   internals.handler(new Reply(res, context, {}))

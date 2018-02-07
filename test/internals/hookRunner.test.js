@@ -2,10 +2,10 @@
 
 const t = require('tap')
 const test = t.test
-const Fast = require('../../lib/hookRunner')
+const runHooks = require('../../lib/hookRunner')
 
 test('Basic', t => {
-  t.plan(9)
+  t.plan(8)
 
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
@@ -13,9 +13,7 @@ test('Basic', t => {
   const v4 = { winter: 'has come' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     return fn(this.a, this.b, value, next)
@@ -46,15 +44,13 @@ test('Basic', t => {
 })
 
 test('In case of error should skip to done', t => {
-  t.plan(7)
+  t.plan(6)
 
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     return fn(this.a, this.b, value, next)
@@ -83,14 +79,12 @@ test('In case of error should skip to done', t => {
 })
 
 test('Clean next', t => {
-  t.plan(9)
+  t.plan(8)
 
   const v1 = { hello: 'world' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     return fn(this.a, this.b, value, next)
@@ -121,7 +115,7 @@ test('Clean next', t => {
 })
 
 test('Should handle promises', t => {
-  t.plan(9)
+  t.plan(8)
 
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
@@ -129,9 +123,7 @@ test('Should handle promises', t => {
   const v4 = { winter: 'has come' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     return fn(this.a, this.b, value, next)
@@ -168,15 +160,13 @@ test('Should handle promises', t => {
 })
 
 test('In case of error should skip to done (with promises)', t => {
-  t.plan(7)
+  t.plan(6)
 
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     return fn(this.a, this.b, value, next)
@@ -209,16 +199,14 @@ test('In case of error should skip to done (with promises)', t => {
 })
 
 test('Be able to exit before its natural end', t => {
-  t.plan(5)
+  t.plan(4)
 
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
   const v3 = { winter: 'is coming' }
   const context = { context: true }
 
-  const fast = Fast([fn1, fn2, fn3], context)
-  t.is(typeof fast, 'function')
-  fast(iterator.bind({ a: 'a', b: 'b' }), v1, done)
+  runHooks([fn1.bind(context), fn2.bind(context), fn3.bind(context)], iterator.bind({ a: 'a', b: 'b' }), v1, done)
 
   function iterator (fn, value, next) {
     if (value.winter) {

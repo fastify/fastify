@@ -5,6 +5,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const stream = require('stream')
 const Fastify = require('..')
+const fp = require('fastify-plugin')
 const fs = require('fs')
 
 const payload = { hello: 'world' }
@@ -1243,6 +1244,93 @@ test('preHandler respond with a stream', t => {
   }, (err, res) => {
     t.error(err)
     t.is(res.statusCode, 200)
+  })
+})
+
+test('Register an hook after a plugin inside a plugin', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }))
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('Register an hook after a plugin inside a plugin (with beforeHandler)', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.get('/', {
+      beforeHandler: (req, reply, next) => {
+        t.ok('called')
+        next()
+      }
+    }, function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }))
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })
 

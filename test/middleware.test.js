@@ -515,7 +515,7 @@ test('middlewares should support encapsulation with prefix', t => {
 })
 
 test('middlewares should support non-encapsulated plugins', t => {
-  t.plan(5)
+  t.plan(6)
 
   const instance = fastify()
 
@@ -536,7 +536,7 @@ test('middlewares should support non-encapsulated plugins', t => {
 
   instance.register(fp(function (i, opts, done) {
     i.use(function (req, res, next) {
-      t.fail('middleware should not be called')
+      t.ok('middleware called')
       next()
     })
 

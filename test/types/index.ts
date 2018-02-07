@@ -129,7 +129,9 @@ const opts = {
     }
   ],
   schemaCompiler: (schema: Object) => () => {},
-  jsonBodyLimit: 5000
+  jsonBodyLimit: 5000,
+  logLevel: 'trace',
+  config: { }
 }
 
 // Chaining and route definitions

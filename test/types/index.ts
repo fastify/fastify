@@ -114,7 +114,9 @@ const opts = {
         }
       }
     }
-  }
+  },
+  logLevel: 'trace',
+  config: { }
 }
 
 // Chaining and route definitions

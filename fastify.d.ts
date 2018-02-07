@@ -103,7 +103,9 @@ declare namespace fastify {
   interface RouteOptions<HttpServer, HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
     method: HTTPMethod|HTTPMethod[],
     url: string,
-    handler: RequestHandler<HttpRequest, HttpResponse>
+    handler: RequestHandler<HttpRequest, HttpResponse>,
+    logLevel?: string,
+    config?: any
   }
 
   /**

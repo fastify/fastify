@@ -103,7 +103,9 @@ declare namespace fastify {
     schema?: JSONSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
-    jsonBodyLimit?: number
+    jsonBodyLimit?: number,
+    logLevel?: string,
+    config?: any
   }
 
   /**

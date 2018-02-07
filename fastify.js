@@ -5,7 +5,6 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const hookRunner = require('./lib/hookRunner')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -23,6 +22,7 @@ const Hooks = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
+const runHooks = require('./lib/hookRunner')
 
 const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
@@ -178,7 +178,7 @@ function build (options) {
   fastify.use = use
   fastify._middlewares = []
 
-  // fake http injection (for testing purposes)
+  // fake http injection
   fastify.inject = inject
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
@@ -204,7 +204,8 @@ function build (options) {
     res.on('error', onResFinished)
 
     if (context.onRequest !== null) {
-      context.onRequest(
+      runHooks(
+        context.onRequest,
         hookIterator,
         new State(req, res, params, context),
         middlewareCallback
@@ -223,7 +224,8 @@ function build (options) {
     if (ctx && ctx.onResponse !== null) {
       // deferring this with setImmediate will
       // slow us by 10%
-      ctx.onResponse(
+      runHooks(
+        ctx.onResponse,
         onResponseIterator,
         this,
         onResponseCallback
@@ -471,7 +473,7 @@ function build (options) {
         _fastify._contentTypeParser,
         config,
         _fastify._errorHandler,
-        buildMiddie(_fastify._middlewares),
+        null,
         opts.jsonBodyLimit,
         opts.logLevel,
         _fastify
@@ -484,15 +486,15 @@ function build (options) {
         return
       }
 
-      const onRequest = _fastify._hooks.onRequest
-      const onResponse = _fastify._hooks.onResponse
-      const onSend = _fastify._hooks.onSend
-      const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
-
-      context.onRequest = onRequest.length ? hookRunner(onRequest, _fastify) : null
-      context.onResponse = onResponse.length ? hookRunner(onResponse, _fastify) : null
-      context.onSend = onSend.length ? hookRunner(onSend, _fastify) : null
-      context.preHandler = preHandler.length ? hookRunner(preHandler, _fastify) : null
+      if (opts.beforeHandler) {
+        if (Array.isArray(opts.beforeHandler)) {
+          opts.beforeHandler.forEach((h, i) => {
+            opts.beforeHandler[i] = h.bind(_fastify)
+          })
+        } else {
+          opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+        }
+      }
 
       try {
         router.on(opts.method, url, routeHandler, context)
@@ -500,6 +502,23 @@ function build (options) {
         done(err)
         return
       }
+
+      // It can happen that a user register a plugin with some hooks/middlewares *after*
+      // the route registration. To be sure to load also that hoooks/middlwares,
+      // we must listen for the avvio's preReady event, and update the context object accordingly.
+      app.once('preReady', () => {
+        const onRequest = _fastify._hooks.onRequest
+        const onResponse = _fastify._hooks.onResponse
+        const onSend = _fastify._hooks.onSend
+        const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
+
+        context.onRequest = onRequest.length ? onRequest : null
+        context.preHandler = preHandler.length ? preHandler : null
+        context.onSend = onSend.length ? onSend : null
+        context.onResponse = onResponse.length ? onResponse : null
+
+        context._middie = buildMiddie(_fastify._middlewares)
+      })
 
       done(notHandledErr)
     })
@@ -568,7 +587,7 @@ function build (options) {
       this._hooks.validate(name, fn)
       onRouteHooks.push(fn)
     } else {
-      this._hooks.add(name, fn)
+      this._hooks.add(name, fn.bind(this))
     }
     return this
   }
@@ -626,7 +645,7 @@ function build (options) {
     req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: hookRunner([], null) }, request)
+    const reply = new Reply(res, { onSend: [] }, request)
     reply.code(404).send(new Error('Not found'))
   }
 
@@ -672,10 +691,10 @@ function build (options) {
     const onSend = this._hooks.onSend
     const onResponse = this._hooks.onResponse
 
-    context.onRequest = onRequest.length ? hookRunner(onRequest, this) : null
-    context.preHandler = preHandler.length ? hookRunner(preHandler, this) : null
-    context.onSend = onSend.length ? hookRunner(onSend, this) : null
-    context.onResponse = onResponse.length ? hookRunner(onResponse, this) : null
+    context.onRequest = onRequest.length ? onRequest : null
+    context.preHandler = preHandler.length ? preHandler : null
+    context.onSend = onSend.length ? onSend : null
+    context.onResponse = onResponse.length ? onResponse : null
 
     if (this._404Context !== null) {
       Object.assign(this._404Context, context) // Replace the default 404 handler

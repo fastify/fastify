@@ -80,7 +80,7 @@ function build (options) {
   var listening = false
   // true when Fastify is ready to go
   var started = false
-  app.on('preReady', () => {
+  app.on('start', () => {
     started = true
   })
 

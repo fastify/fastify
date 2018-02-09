@@ -484,7 +484,6 @@ function build (options) {
         _fastify._contentTypeParser,
         config,
         _fastify._errorHandler,
-        null,
         opts.jsonBodyLimit,
         opts.logLevel,
         _fastify
@@ -538,7 +537,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, middie, jsonBodyLimit, logLevel, fastify) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, jsonBodyLimit, logLevel, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -550,7 +549,7 @@ function build (options) {
     this.onResponse = null
     this.config = config
     this.errorHandler = errorHandler
-    this._middie = middie
+    this._middie = null
     this._jsonParserOptions = {
       limit: jsonBodyLimit
     }
@@ -691,21 +690,26 @@ function build (options) {
       this._contentTypeParser,
       opts.config || {},
       this._errorHandler,
-      buildMiddie(this._middlewares),
       this._jsonBodyLimit,
       this._logLevel,
       null
     )
 
-    const onRequest = this._hooks.onRequest
-    const preHandler = this._hooks.preHandler
-    const onSend = this._hooks.onSend
-    const onResponse = this._hooks.onResponse
+    app.once('preReady', () => {
+      const context = this._404Context
 
-    context.onRequest = onRequest.length ? onRequest : null
-    context.preHandler = preHandler.length ? preHandler : null
-    context.onSend = onSend.length ? onSend : null
-    context.onResponse = onResponse.length ? onResponse : null
+      const onRequest = this._hooks.onRequest
+      const preHandler = this._hooks.preHandler
+      const onSend = this._hooks.onSend
+      const onResponse = this._hooks.onResponse
+
+      context.onRequest = onRequest.length ? onRequest : null
+      context.preHandler = preHandler.length ? preHandler : null
+      context.onSend = onSend.length ? onSend : null
+      context.onResponse = onResponse.length ? onResponse : null
+
+      context._middie = buildMiddie(this._middlewares)
+    })
 
     if (this._404Context !== null) {
       Object.assign(this._404Context, context) // Replace the default 404 handler

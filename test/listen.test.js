@@ -29,6 +29,17 @@ test('listen accepts a port, address, and callback', t => {
   })
 })
 
+test('listen accepts a port, address, backlog and callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, '127.0.0.1', 511, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    t.pass()
+    fastify.close()
+  })
+})
+
 test('listen after Promise.resolve()', t => {
   t.plan(2)
   const f = Fastify()

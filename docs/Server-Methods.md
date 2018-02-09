@@ -49,6 +49,17 @@ fastify.listen(3000, '127.0.0.1', err => {
 })
 ```
 
+Specifying a backlog queue size is also supported:
+
+```js
+fastify.listen(3000, '127.0.0.1', 511, err => {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
+```
+
 If no callback is provided a Promise is returned:
 
 ```js

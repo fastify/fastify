@@ -235,13 +235,19 @@ function build (options) {
     }
   }
 
-  function listen (port, address, cb) {
+  function listen (port, address, backlog, cb) {
     /* Deal with listen (port, cb) */
     if (typeof address === 'function') {
       cb = address
       address = undefined
     }
     address = address || '127.0.0.1'
+
+    /* Deal with listen (port, address, cb) */
+    if (typeof backlog === 'function') {
+      cb = backlog
+      backlog = undefined
+    }
 
     if (cb === undefined) {
       return new Promise((resolve, reject) => {
@@ -262,7 +268,12 @@ function build (options) {
       }
 
       server.on('error', wrap)
-      server.listen(port, address, wrap)
+      if (backlog) {
+        server.listen(port, address, backlog, wrap)
+      } else {
+        server.listen(port, address, wrap)
+      }
+
       listening = true
     })
 

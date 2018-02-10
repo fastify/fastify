@@ -210,9 +210,9 @@ function build (options) {
         new State(req, res, params, context),
         middlewareCallback
       )
-    } else {
-      middlewareCallback(null, new State(req, res, params, context))
+      return
     }
+    middlewareCallback(null, new State(req, res, params, context))
   }
 
   function onResFinished (err) {
@@ -230,9 +230,9 @@ function build (options) {
         this,
         onResponseCallback
       )
-    } else {
-      onResponseCallback(err, this)
+      return
     }
+    onResponseCallback(err, this)
   }
 
   function listen (port, address, backlog, cb) {
@@ -304,7 +304,7 @@ function build (options) {
   }
 
   function hookIterator (fn, state, next) {
-    if (state.res.finished === true) return undefined
+    if (state.res.finished === true) return
     return fn(state.req, state.res, next)
   }
 
@@ -320,9 +320,9 @@ function build (options) {
 
     if (state.context._middie !== null) {
       state.context._middie.run(state.req, state.res, state)
-    } else {
-      onRunMiddlewares(null, state.req, state.res, state)
+      return
     }
+    onRunMiddlewares(null, state.req, state.res, state)
   }
 
   function onRunMiddlewares (err, req, res, state) {

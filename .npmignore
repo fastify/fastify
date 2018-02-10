@@ -67,3 +67,16 @@ examples
 
 # website tool
 tools/website.sh
+
+# tests
+test
+.travis.yml
+appveyor.yml
+
+# github
+.github
+
+# others
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+.editorconfig

@@ -389,12 +389,7 @@ function build (options) {
 
     for (var i = 0; i < children.length; i++) {
       const childInstance = children[i]
-      const hooks = childInstance._hooks
-
-      hooks.onRequest.unshift.apply(hooks.onRequest, parentHooks.onRequest)
-      hooks.preHandler.unshift.apply(hooks.preHandler, parentHooks.preHandler)
-      hooks.onSend.unshift.apply(hooks.onSend, parentHooks.onSend)
-      hooks.onResponse.unshift.apply(hooks.onResponse, parentHooks.onResponse)
+      childInstance._hooks.prependHooks(parentHooks)
 
       const middlewares = childInstance._middlewares
       middlewares.unshift.apply(middlewares, instance._middlewares)

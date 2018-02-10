@@ -121,18 +121,20 @@ test('onRequest hook should support encapsulation / 1', t => {
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRequest', () => {})
-    t.is(instance._hooks.onRequest.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onRequest.length, 1)
+    t.is(pluginInstance._hooks.onRequest.length, 2)
   })
 })
 
@@ -502,18 +504,20 @@ test('onResponse hook should support encapsulation / 1', t => {
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onResponse', () => {})
-    t.is(instance._hooks.onResponse.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onResponse.length, 1)
+    t.is(pluginInstance._hooks.onResponse.length, 2)
   })
 })
 
@@ -577,18 +581,20 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onSend', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', () => {})
-    t.is(instance._hooks.onSend.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onSend.length, 1)
+    t.is(pluginInstance._hooks.onSend.length, 2)
   })
 })
 
@@ -1317,6 +1323,58 @@ test('Register an hook after a plugin inside a plugin (with beforeHandler)', t =
     })
 
     instance.addHook('preHandler', function (req, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('Register hooks inside a plugin after an encapsulated plugin', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.is(request.topLevelCalledFirst, true)
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      request.topLevelCalledFirst = true
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onResponse', function (res, next) {
       t.ok('called')
       next()
     })

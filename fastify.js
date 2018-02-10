@@ -55,7 +55,9 @@ function build (options) {
     log = loggerUtils.createLogger(options.logger)
   }
 
-  const fastify = {}
+  const fastify = {
+    _children: []
+  }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash,
@@ -144,6 +146,7 @@ function build (options) {
   // hooks
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
+  app.once('preReady', () => cascadeHooksAndMiddlewares(fastify))
 
   // schemas
   fastify.addSchema = addSchema
@@ -343,13 +346,15 @@ function build (options) {
     }
 
     const instance = Object.create(old)
+    old._children.push(instance)
+    instance._children = []
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
+    instance._hooks = new Hooks()
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
-    instance._middlewares = old._middlewares.slice()
+    instance._middlewares = []
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
@@ -376,6 +381,26 @@ function build (options) {
     }
 
     return instancePrefix + pluginPrefix
+  }
+
+  function cascadeHooksAndMiddlewares (instance) {
+    const parentHooks = instance._hooks
+    const children = instance._children
+
+    for (var i = 0; i < children.length; i++) {
+      const childInstance = children[i]
+      const hooks = childInstance._hooks
+
+      hooks.onRequest.unshift.apply(hooks.onRequest, parentHooks.onRequest)
+      hooks.preHandler.unshift.apply(hooks.preHandler, parentHooks.preHandler)
+      hooks.onSend.unshift.apply(hooks.onSend, parentHooks.onSend)
+      hooks.onResponse.unshift.apply(hooks.onResponse, parentHooks.onResponse)
+
+      const middlewares = childInstance._middlewares
+      middlewares.unshift.apply(middlewares, instance._middlewares)
+
+      cascadeHooksAndMiddlewares(childInstance)
+    }
   }
 
   // Shorthand methods

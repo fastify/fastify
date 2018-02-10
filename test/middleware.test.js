@@ -778,3 +778,40 @@ test('middlewares should be able to respond with a stream', t => {
     t.is(res.statusCode, 200)
   })
 })
+
+test('Use a middleware inside a plugin after an encapsulated plugin', t => {
+  t.plan(5)
+  const f = fastify()
+
+  f.register(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      t.is(req.topLevelCalledFirst, true)
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  f.register(fp(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      req.topLevelCalledFirst = true
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  f.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})

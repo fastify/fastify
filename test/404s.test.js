@@ -481,8 +481,56 @@ test('run hooks and middleware on default 404', t => {
   })
 })
 
+test('run non-encapsulated plugin hooks and middleware on default 404', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.register(fp(function (instance, options, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.pass('onRequest called')
+      next()
+    })
+
+    instance.use(function (req, res, next) {
+      t.pass('middleware called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.pass('preHandler called')
+      next()
+    })
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.pass('onSend called')
+      next()
+    })
+
+    instance.addHook('onResponse', function (res, next) {
+      t.pass('onResponse called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
 test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
-  t.plan(8)
+  t.plan(13)
 
   const fastify = Fastify()
 
@@ -514,6 +562,7 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
 
     next()
   })
+
   fastify.register(plugin)
 
   fastify.get('/', function (req, reply) {
@@ -523,6 +572,8 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
   fastify.setNotFoundHandler(function (req, reply) {
     reply.code(404).send('this was not found')
   })
+
+  fastify.register(plugin) // Registering plugin after handler also works
 
   fastify.inject({url: '/not-found'}, (err, res) => {
     t.error(err)

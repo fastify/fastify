@@ -304,7 +304,7 @@ function build (options) {
   }
 
   function hookIterator (fn, state, next) {
-    if (state.res.finished === true) return
+    if (state.res.finished === true) return undefined
     return fn(state.req, state.res, next)
   }
 

@@ -210,9 +210,9 @@ function build (options) {
         new State(req, res, params, context),
         middlewareCallback
       )
-      return
+    } else {
+      middlewareCallback(null, new State(req, res, params, context))
     }
-    middlewareCallback(null, new State(req, res, params, context))
   }
 
   function onResFinished (err) {
@@ -230,9 +230,9 @@ function build (options) {
         this,
         onResponseCallback
       )
-      return
+    } else {
+      onResponseCallback(err, this)
     }
-    onResponseCallback(err, this)
   }
 
   function listen (port, address, backlog, cb) {
@@ -320,9 +320,9 @@ function build (options) {
 
     if (state.context._middie !== null) {
       state.context._middie.run(state.req, state.res, state)
-      return
+    } else {
+      onRunMiddlewares(null, state.req, state.res, state)
     }
-    onRunMiddlewares(null, state.req, state.res, state)
   }
 
   function onRunMiddlewares (err, req, res, state) {

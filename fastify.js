@@ -34,6 +34,8 @@ function validateBodyLimitOption (bodyLimit) {
   }
 }
 
+function noop () { }
+
 function build (options) {
   options = options || {}
   if (typeof options !== 'object') {
@@ -41,12 +43,14 @@ function build (options) {
   }
 
   var log
+  var hasLogger = false
   if (isValidLogger(options.logger)) {
     log = loggerUtils.createLogger({
       logger: options.logger,
       serializers: Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     })
   } else if (!options.logger) {
+    hasLogger = true
     log = Object.create(abstractLogging)
     log.child = () => log
   } else {
@@ -72,7 +76,7 @@ function build (options) {
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
-  const onResponseCallback = loggerUtils.onResponseCallback
+  const onResponseCallback = hasLogger ? noop : loggerUtils.onResponseCallback
 
   const app = avvio(fastify, {
     autostart: false
@@ -195,16 +199,19 @@ function build (options) {
   return fastify
 
   function routeHandler (req, res, params, context) {
-    res._context = context
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 
     req.log.info({ req }, 'incoming request')
 
-    res._startTime = now()
-    res.on('finish', onResFinished)
-    res.on('error', onResFinished)
+    res._startTime = hasLogger ? now() : undefined
+
+    if (hasLogger === false || context.onResponse !== null) {
+      res._context = context
+      res.on('finish', onResFinished)
+      res.on('error', onResFinished)
+    }
 
     if (context.onRequest !== null) {
       runHooks(

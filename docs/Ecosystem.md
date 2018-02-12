@@ -23,6 +23,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
 - [`fastify-register-timeout`](https://github.com/fastify/fastify-register-timeout) Register plugin with a timeout.
+- [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).

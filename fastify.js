@@ -396,6 +396,8 @@ function build (options) {
 
       cascadeHooksAndMiddlewares(childInstance)
     }
+
+    instance._children = null // Saves memory since the children array is not needed after this
   }
 
   // Shorthand methods

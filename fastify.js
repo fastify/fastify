@@ -26,6 +26,8 @@ const runHooks = require('./lib/hookRunner')
 
 const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
+const childrenKey = Symbol('children')
+
 function validateBodyLimitOption (jsonBodyLimit) {
   if (jsonBodyLimit === undefined) return
   if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
@@ -56,7 +58,7 @@ function build (options) {
   }
 
   const fastify = {
-    _children: []
+    [childrenKey]: []
   }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -345,8 +347,8 @@ function build (options) {
     }
 
     const instance = Object.create(old)
-    old._children.push(instance)
-    instance._children = []
+    old[childrenKey].push(instance)
+    instance[childrenKey] = []
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
@@ -588,14 +590,14 @@ function build (options) {
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     return this.after((err, done) => {
-      _addMiddleware(this, [url, fn])
+      addMiddleware(this, [url, fn])
       done(err)
     })
   }
 
-  function _addMiddleware (instance, middleware) {
+  function addMiddleware (instance, middleware) {
     instance._middlewares.push(middleware)
-    instance._children.forEach(child => _addMiddleware(child, middleware))
+    instance[childrenKey].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
@@ -618,7 +620,7 @@ function build (options) {
 
   function _addHook (instance, name, fn) {
     instance._hooks.add(name, fn.bind(instance))
-    instance._children.forEach(child => _addHook(child, name, fn))
+    instance[childrenKey].forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {

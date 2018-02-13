@@ -146,7 +146,6 @@ function build (options) {
   // hooks
   fastify.addHook = addHook
   fastify._hooks = new Hooks()
-  app.once('preReady', () => cascadeHooksAndMiddlewares(fastify))
 
   // schemas
   fastify.addSchema = addSchema
@@ -351,10 +350,10 @@ function build (options) {
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = new Hooks()
+    instance._hooks = Hooks.buildHooks(instance._hooks)
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
-    instance._middlewares = []
+    instance._middlewares = old._middlewares.slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
@@ -381,23 +380,6 @@ function build (options) {
     }
 
     return instancePrefix + pluginPrefix
-  }
-
-  function cascadeHooksAndMiddlewares (instance) {
-    const parentHooks = instance._hooks
-    const children = instance._children
-
-    for (var i = 0; i < children.length; i++) {
-      const childInstance = children[i]
-      childInstance._hooks.prependHooks(parentHooks)
-
-      const middlewares = childInstance._middlewares
-      middlewares.unshift.apply(middlewares, instance._middlewares)
-
-      cascadeHooksAndMiddlewares(childInstance)
-    }
-
-    instance._children = null // Saves memory since the children array is not needed after this
   }
 
   // Shorthand methods
@@ -605,8 +587,15 @@ function build (options) {
       const prefix = this._routePrefix
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
-    this._middlewares.push([url, fn])
-    return this
+    return this.after((err, done) => {
+      _addMiddleware(this, [url, fn])
+      done(err)
+    })
+  }
+
+  function _addMiddleware (instance, middleware) {
+    instance._middlewares.push(middleware)
+    instance._children.forEach(child => _addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
@@ -619,9 +608,17 @@ function build (options) {
       this._hooks.validate(name, fn)
       onRouteHooks.push(fn)
     } else {
-      this._hooks.add(name, fn.bind(this))
+      this.after((err, done) => {
+        _addHook(this, name, fn)
+        done(err)
+      })
     }
     return this
+  }
+
+  function _addHook (instance, name, fn) {
+    instance._hooks.add(name, fn.bind(instance))
+    instance._children.forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {

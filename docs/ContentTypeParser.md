@@ -24,7 +24,7 @@ You can also use the `hasContentTypeParser` API to find if a specific content ty
 ```js
 if (!fastify.hasContentTypeParser('application/jsoff')){
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    :
+    //code to parse request body /payload for given content type 
   })
 }
 ```

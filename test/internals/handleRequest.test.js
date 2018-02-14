@@ -102,13 +102,6 @@ test('handler function - reply', t => {
   internals.handler(new Reply(res, context, {}))
 })
 
-test('jsonBody should be a function', t => {
-  t.plan(2)
-
-  t.is(typeof internals.jsonBody, 'function')
-  t.is(internals.jsonBody.length, 3)
-})
-
 test('request should be defined in onSend Hook on post request with content type application/json', t => {
   t.plan(7)
   const fastify = require('../..')()

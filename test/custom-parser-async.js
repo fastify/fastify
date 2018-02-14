@@ -1,3 +1,5 @@
+'use strict'
+
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat

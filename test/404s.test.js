@@ -913,6 +913,39 @@ test('recognizes errors from the http-errors module', t => {
   })
 })
 
+test('issue #786', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  function myPlugin (f, o, n) {
+    f.post('/bulk', (req, reply) => reply.send({ hello: 'world' }))
+    f.get('/', (req, reply) => reply.send({ hello: 'world!!!!!' }))
+    n()
+  }
+
+  fastify.register(myPlugin, { prefix: '/aa/' })
+    .register(myPlugin, { prefix: '/bb/' })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/aa/bulk',
+    payload: {}
+  })
+  .then(response => {
+    t.strictEqual(response.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/bulk',
+    payload: {}
+  })
+  .then(response => {
+    t.strictEqual(response.statusCode, 404)
+  })
+})
+
 test('cannot set notFoundHandler after binding', t => {
   t.plan(2)
 

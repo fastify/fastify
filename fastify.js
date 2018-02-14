@@ -26,7 +26,7 @@ const runHooks = require('./lib/hookRunner')
 
 const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
-const childrenKey = Symbol('children')
+const childrenKey = Symbol('fastify.children')
 
 function validateBodyLimitOption (jsonBodyLimit) {
   if (jsonBodyLimit === undefined) return

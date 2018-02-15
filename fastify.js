@@ -26,6 +26,8 @@ const runHooks = require('./lib/hookRunner')
 
 const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
+const childrenKey = Symbol('fastify.children')
+
 function validateBodyLimitOption (jsonBodyLimit) {
   if (jsonBodyLimit === undefined) return
   if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
@@ -55,7 +57,9 @@ function build (options) {
     log = loggerUtils.createLogger(options.logger)
   }
 
-  const fastify = {}
+  const fastify = {
+    [childrenKey]: []
+  }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash,
@@ -343,6 +347,8 @@ function build (options) {
     }
 
     const instance = Object.create(old)
+    old[childrenKey].push(instance)
+    instance[childrenKey] = []
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
@@ -583,8 +589,15 @@ function build (options) {
       const prefix = this._routePrefix
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
-    this._middlewares.push([url, fn])
-    return this
+    return this.after((err, done) => {
+      addMiddleware(this, [url, fn])
+      done(err)
+    })
+  }
+
+  function addMiddleware (instance, middleware) {
+    instance._middlewares.push(middleware)
+    instance[childrenKey].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
@@ -597,9 +610,17 @@ function build (options) {
       this._hooks.validate(name, fn)
       onRouteHooks.push(fn)
     } else {
-      this._hooks.add(name, fn.bind(this))
+      this.after((err, done) => {
+        _addHook(this, name, fn)
+        done(err)
+      })
     }
     return this
+  }
+
+  function _addHook (instance, name, fn) {
+    instance._hooks.add(name, fn.bind(instance))
+    instance[childrenKey].forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {

@@ -103,36 +103,54 @@ test('hooks', t => {
 })
 
 test('onRequest hook should support encapsulation / 1', t => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRequest', () => {})
-    t.is(instance._hooks.onRequest.length, 1)
+    instance.addHook('onRequest', (req, res, next) => {
+      t.strictEqual(req.url, '/plugin')
+      next()
+    })
+
+    instance.get('/plugin', (request, reply) => {
+      reply.send()
+    })
+
     next()
   })
 
-  fastify.ready(err => {
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 0)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject('/plugin', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
   })
 })
 
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRequest', () => {})
-    t.is(instance._hooks.onRequest.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onRequest.length, 1)
+    t.is(pluginInstance._hooks.onRequest.length, 2)
   })
 })
 
@@ -484,36 +502,55 @@ test('onRoute hook should preserve system route configuration', t => {
 })
 
 test('onResponse hook should support encapsulation / 1', t => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onResponse', () => {})
-    t.is(instance._hooks.onResponse.length, 1)
+    instance.addHook('onResponse', (res, next) => {
+      t.strictEqual(res.plugin, true)
+      next()
+    })
+
+    instance.get('/plugin', (request, reply) => {
+      reply.res.plugin = true
+      reply.send()
+    })
+
     next()
   })
 
-  fastify.ready(err => {
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
     t.error(err)
-    t.is(fastify._hooks.onResponse.length, 0)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject('/plugin', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
   })
 })
 
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onResponse', () => {})
-    t.is(instance._hooks.onResponse.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onResponse.length, 1)
+    t.is(pluginInstance._hooks.onResponse.length, 2)
   })
 })
 
@@ -577,18 +614,20 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onSend', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', () => {})
-    t.is(instance._hooks.onSend.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onSend.length, 1)
+    t.is(pluginInstance._hooks.onSend.length, 2)
   })
 })
 
@@ -1330,6 +1369,285 @@ test('Register an hook after a plugin inside a plugin (with beforeHandler)', t =
   }, (err, res) => {
     t.error(err)
     t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('Register hooks inside a plugin after an encapsulated plugin', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onResponse', function (res, next) {
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('onRequest hooks should run in the order in which they are defined', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, undefined)
+      req.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      t.strictEqual(request.req.previous, 5)
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onRequest', function (req, res, next) {
+        t.strictEqual(req.previous, 1)
+        req.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, 2)
+      req.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onRequest', function (req, res, next) {
+        t.strictEqual(req.previous, 3)
+        req.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, 4)
+      req.previous = 5
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('preHandler hooks should run in the order in which they are defined', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, undefined)
+      request.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      t.strictEqual(request.previous, 5)
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('preHandler', function (request, reply, next) {
+        t.strictEqual(request.previous, 1)
+        request.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, 2)
+      request.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('preHandler', function (request, reply, next) {
+        t.strictEqual(request.previous, 3)
+        request.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, 4)
+      request.previous = 5
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('onSend hooks should run in the order in which they are defined', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, undefined)
+      request.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({})
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onSend', function (request, reply, payload, next) {
+        t.strictEqual(request.previous, 1)
+        request.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, 2)
+      request.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onSend', function (request, reply, payload, next) {
+        t.strictEqual(request.previous, 3)
+        request.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, 4)
+      next(null, '5')
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), 5)
+  })
+})
+
+test('onResponse hooks should run in the order in which they are defined', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, undefined)
+      res.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onResponse', function (res, next) {
+        t.strictEqual(res.previous, 1)
+        res.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, 2)
+      res.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onResponse', function (res, next) {
+        t.strictEqual(res.previous, 3)
+        res.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, 4)
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })

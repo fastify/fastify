@@ -618,3 +618,15 @@ test('The charset should not interfere with the content type handling', t => {
     })
   })
 })
+
+test('Wrong parseAs parameter', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
+    t.fail('should throw')
+  } catch (err) {
+    t.is(err.message, 'The body parser can only parse your data as \'string\' or \'buffer\', you asked \'fireworks\' which is not supported.')
+  }
+})

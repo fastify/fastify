@@ -515,7 +515,7 @@ test('Should get the body as string', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/json', { asString: true }, function (req, reply, body, done) {
+  fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, reply, body, done) {
     t.ok('called')
     t.ok(typeof body === 'string')
     try {
@@ -554,7 +554,7 @@ test('Should get the body as buffer', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/json', { asBuffer: true }, function (req, reply, body, done) {
+  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, reply, body, done) {
     t.ok('called')
     t.ok(Buffer.isBuffer(body))
     try {

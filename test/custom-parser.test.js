@@ -450,3 +450,183 @@ test('cannot add custom parser after binding', t => {
     }
   })
 })
+
+test('Can override the default json parser', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/json', function (req, done) {
+    t.ok('called')
+    jsonParser(req, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
+test('Can\'t override the json parser multiple times', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('application/json', function (req, done) {
+    jsonParser(req, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  try {
+    fastify.addContentTypeParser('application/json', function (req, done) {
+      t.ok('called')
+      jsonParser(req, function (err, body) {
+        done(err, body)
+      })
+    })
+  } catch (err) {
+    t.is(err.message, 'Content type parser \'application/json\' already present.')
+  }
+})
+
+test('Should get the body as string', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
+    t.ok('called')
+    t.ok(typeof body === 'string')
+    try {
+      var json = JSON.parse(body)
+      done(null, json)
+    } catch (err) {
+      err.statusCode = 400
+      done(err, undefined)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
+test('Should get the body as buffer', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, function (req, body, done) {
+    t.ok('called')
+    t.ok(body instanceof Buffer)
+    try {
+      var json = JSON.parse(body)
+      done(null, json)
+    } catch (err) {
+      err.statusCode = 400
+      done(err, undefined)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
+test('The charset should not interfere with the content type handling', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/json', function (req, done) {
+    t.ok('called')
+    jsonParser(req, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/json charset=utf-8'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
+test('Wrong parseAs parameter', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
+    t.fail('should throw')
+  } catch (err) {
+    t.is(err.message, 'The body parser can only parse your data as \'string\' or \'buffer\', you asked \'fireworks\' which is not supported.')
+  }
+})

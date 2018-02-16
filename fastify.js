@@ -24,14 +24,13 @@ const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const runHooks = require('./lib/hookRunner')
 
-const DEFAULT_JSON_BODY_LIMIT = 1024 * 1024 // 1 MiB
-
+const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')
 
-function validateBodyLimitOption (jsonBodyLimit) {
-  if (jsonBodyLimit === undefined) return
-  if (!Number.isInteger(jsonBodyLimit) || jsonBodyLimit <= 0) {
-    throw new TypeError(`'jsonBodyLimit' option must be an integer > 0. Got '${jsonBodyLimit}'`)
+function validateBodyLimitOption (bodyLimit) {
+  if (bodyLimit === undefined) return
+  if (!Number.isInteger(bodyLimit) || bodyLimit <= 0) {
+    throw new TypeError(`'bodyLimit' option must be an integer > 0. Got '${bodyLimit}'`)
   }
 }
 
@@ -118,9 +117,9 @@ function build (options) {
     server.on('clientError', handleClientError)
   }
 
-  // JSON body limit option
-  validateBodyLimitOption(options.jsonBodyLimit)
-  fastify._jsonBodyLimit = options.jsonBodyLimit || DEFAULT_JSON_BODY_LIMIT
+  // body limit option
+  validateBodyLimitOption(options.bodyLimit)
+  fastify._bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -454,7 +453,7 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    validateBodyLimitOption(opts.jsonBodyLimit)
+    validateBodyLimitOption(opts.bodyLimit)
 
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
       const prefix = _fastify._routePrefix
@@ -472,7 +471,7 @@ function build (options) {
       opts.path = url
       opts.prefix = prefix
       opts.logLevel = opts.logLevel || _fastify._logLevel
-      opts.jsonBodyLimit = opts.jsonBodyLimit || _fastify._jsonBodyLimit
+      opts.bodyLimit = opts.bodyLimit || _fastify._bodyLimit
 
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
@@ -490,7 +489,7 @@ function build (options) {
         _fastify._contentTypeParser,
         config,
         _fastify._errorHandler,
-        opts.jsonBodyLimit,
+        opts.bodyLimit,
         opts.logLevel,
         _fastify
       )
@@ -543,7 +542,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, jsonBodyLimit, logLevel, fastify) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, fastify) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -556,8 +555,8 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = null
-    this._jsonParserOptions = {
-      limit: jsonBodyLimit
+    this._parserOptions = {
+      limit: bodyLimit
     }
     this._fastify = fastify
     this.logLevel = logLevel
@@ -629,10 +628,15 @@ function build (options) {
     return this
   }
 
-  function addContentTypeParser (contentType, fn) {
+  function addContentTypeParser (contentType, opts, parser) {
     throwIfAlreadyStarted('Cannot call "addContentTypeParser" when fastify instance is already started!')
 
-    this._contentTypeParser.add(contentType, fn)
+    if (typeof opts === 'function') {
+      parser = opts
+      opts = {}
+    }
+
+    this._contentTypeParser.add(contentType, opts, parser)
     return this
   }
 
@@ -711,7 +715,7 @@ function build (options) {
       this._contentTypeParser,
       opts.config || {},
       this._errorHandler,
-      this._jsonBodyLimit,
+      this._bodyLimit,
       this._logLevel,
       null
     )

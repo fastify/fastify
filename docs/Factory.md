@@ -61,14 +61,13 @@ fastify.get('/bar', function (req, reply) {
 <a name="factory-max-param-length"></a>
 ### `maxParamLength`
 You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br>
-This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br> 
+This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br>
 *If the maximum length limit is reached, the not found route will be invoked.*
 
-<a name="factory-json-limit"></a>
-### `jsonBodyLimit`
+<a name="factory-body-limit"></a>
+### `bodyLimit`
 
-Defines the maximum payload, in bytes, the server is allowed to accept for
-request bodies when using the internal `application/json` content type parser.
+Defines the maximum payload, in bytes, the server is allowed to accept.
 
 + Default: `1048576` (1MiB)
 

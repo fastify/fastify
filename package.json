@@ -107,7 +107,8 @@
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.1",
     "middie": "^3.1.0",
-    "pino": "^4.10.4"
+    "pino": "^4.10.4",
+    "tiny-lru": "^1.5.0"
   },
   "greenkeeper": {
     "ignore": [

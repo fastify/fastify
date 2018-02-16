@@ -60,6 +60,26 @@ test('decorate should throw if a declared dependency is not present', t => {
   fastify.ready(() => t.pass())
 })
 
+// issue #777
+test('should pass error for missing request decorator', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const plugin = fp(function (instance, opts, next) {
+    next()
+  }, {
+    decorators: {
+      request: ['foo']
+    }
+  })
+  fastify
+    .register(plugin)
+    .ready((err) => {
+      t.type(err, Error)
+      t.match(err, /The decorator 'foo'/)
+    })
+})
+
 test('decorateReply inside register', t => {
   t.plan(12)
   const fastify = Fastify()

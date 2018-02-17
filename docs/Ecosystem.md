@@ -10,6 +10,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-bankai`](https://github.com/fastify/fastify-bankai) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.
 - [`fastify-caching`](https://github.com/fastify/fastify-caching) General server-side cache and etag support.
+- [`fastify-circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) A low overhead circuit breaker for your routes.
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
@@ -21,6 +22,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify MongoDB connection plugin, with which you can share the same MongoDB connection pool across every part of your server.
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart support for Fastify.
 - [`fastify-postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server.
+- [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
 - [`fastify-register-timeout`](https://github.com/fastify/fastify-register-timeout) Register plugin with a timeout.

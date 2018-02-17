@@ -22,7 +22,7 @@ const Hooks = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const runHooks = require('./lib/hookRunner')
+const runHooks = require('./lib/hookRunner').hookRunner
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')

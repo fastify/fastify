@@ -1652,6 +1652,29 @@ test('onResponse hooks should run in the order in which they are defined', t => 
   })
 })
 
+test('onRequest, preHandler, and onResponse hooks that resolve to a value do not cause an error', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify
+    .addHook('onRequest', () => Promise.resolve(1))
+    .addHook('onRequest', () => Promise.resolve(true))
+    .addHook('preHandler', () => Promise.resolve(null))
+    .addHook('preHandler', () => Promise.resolve('a'))
+    .addHook('onResponse', () => Promise.resolve({}))
+    .addHook('onResponse', () => Promise.resolve([]))
+
+  fastify.get('/', (request, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
 if (Number(process.versions.node[0]) >= 8) {
   require('./hooks-async')(t)
 } else {

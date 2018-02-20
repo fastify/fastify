@@ -249,3 +249,5 @@ server.setSchemaCompiler(function (schema: object) {
 })
 
 server.addSchema({})
+
+server.printRoutes()

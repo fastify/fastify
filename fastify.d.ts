@@ -369,6 +369,11 @@ declare namespace fastify {
      * Create a shared schema
      */
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Prints the representation of the internal radix tree used by the router
+     */
+    printRoutes(): string
   }
 }
 

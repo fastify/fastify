@@ -255,3 +255,14 @@ server.printRoutes()
 server.ready(function (err) {
   if (err) throw err
 })
+
+server.ready(function (err, done) {
+  if (err) throw err
+  done()
+})
+
+server.ready(function (err, context, done) {
+  if (err) throw err
+  server.log.debug(context)
+  done()
+})

@@ -261,7 +261,7 @@ declare namespace fastify {
      * Registers a listener function that is invoked when all the plugins have
      * been loaded. It receives an error parameter if something went wrong.
      */
-    ready(readyListener?: () => void): void
+    ready(readyListener?: (err: Error) => void): void
 
     /**
      * Call this function to close the server instance and run the "onClose" callback

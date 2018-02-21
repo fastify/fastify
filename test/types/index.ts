@@ -251,3 +251,7 @@ server.setSchemaCompiler(function (schema: object) {
 server.addSchema({})
 
 server.printRoutes()
+
+server.ready(function (err) {
+  if (err) throw err
+})

@@ -258,11 +258,19 @@ server.ready(function (err) {
 
 server.ready(function (err, done) {
   if (err) throw err
-  done()
+  done(err)
 })
 
 server.ready(function (err, context, done) {
   if (err) throw err
   server.log.debug(context)
-  done()
+  done(err)
 })
+
+server.ready()
+  .then((context) => {
+    server.log.debug(context)
+  })
+  .catch((err) => {
+    server.log.error(err)
+  })

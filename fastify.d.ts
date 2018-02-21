@@ -261,6 +261,7 @@ declare namespace fastify {
      * Registers a listener function that is invoked when all the plugins have
      * been loaded. It receives an error parameter if something went wrong.
      */
+    ready(): Promise<FastifyInstance<HttpServer, HttpRequest, HttpResponse>>
     ready(readyListener?: (err: Error) => void): void
     ready(readyListener?: (err: Error, done: Function) => void): void
     ready(readyListener?: (err: Error, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void

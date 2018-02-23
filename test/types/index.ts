@@ -257,12 +257,10 @@ server.ready(function (err) {
 })
 
 server.ready(function (err, done) {
-  if (err) throw err
   done(err)
 })
 
 server.ready(function (err, context, done) {
-  if (err) throw err
   server.log.debug(context)
   done(err)
 })

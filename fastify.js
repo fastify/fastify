@@ -157,7 +157,7 @@ function build (options) {
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser()
+  fastify._contentTypeParser = new ContentTypeParser(fastify._bodyLimit)
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -634,6 +634,14 @@ function build (options) {
     if (typeof opts === 'function') {
       parser = opts
       opts = {}
+    }
+
+    if (!opts) {
+      opts = {}
+    }
+
+    if (!opts.bodyLimit) {
+      opts.bodyLimit = this._bodyLimit
     }
 
     this._contentTypeParser.add(contentType, opts, parser)

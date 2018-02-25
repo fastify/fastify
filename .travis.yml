@@ -8,7 +8,7 @@ node_js:
 
 
 script:
-  - npm run coveralls
+  - npm run coveralls -- -c
 
 after_script:
   - ./tools/website.sh

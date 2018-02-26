@@ -554,10 +554,8 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = null
-    const globalLimit = fastify !== null ? fastify._bodyLimit : bodyLimit
     this._parserOptions = {
-      limit: bodyLimit,
-      globalLimit
+      limit: bodyLimit || null
     }
     this._fastify = fastify
     this.logLevel = logLevel

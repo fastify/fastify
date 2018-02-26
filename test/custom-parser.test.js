@@ -670,3 +670,41 @@ test('Should allow defining the bodyLimit per parser', t => {
     })
   })
 })
+
+test('route bodyLimit should take precedence over a custom parser bodyLimit', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.tearDown(() => fastify.close())
+
+  fastify.post('/', { bodyLimit: 5 }, (request, reply) => {
+    reply.send(request.body)
+  })
+
+  fastify.addContentTypeParser(
+    'x/foo',
+    { parseAs: 'string', bodyLimit: 100 },
+    function (req, body, done) {
+      t.fail('should not be invoked')
+      done()
+    }
+  )
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '1234567890',
+      headers: { 'Content-Type': 'x/foo' }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictDeepEqual(JSON.parse(body.toString()), {
+        statusCode: 413,
+        error: 'Payload Too Large',
+        message: 'Request body is too large'
+      })
+      fastify.close()
+    })
+  })
+})

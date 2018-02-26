@@ -251,3 +251,24 @@ server.setSchemaCompiler(function (schema: object) {
 server.addSchema({})
 
 server.printRoutes()
+
+server.ready(function (err) {
+  if (err) throw err
+})
+
+server.ready(function (err, done) {
+  done(err)
+})
+
+server.ready(function (err, context, done) {
+  server.log.debug(context)
+  done(err)
+})
+
+server.ready()
+  .then((context) => {
+    server.log.debug(context)
+  })
+  .catch((err) => {
+    server.log.error(err)
+  })

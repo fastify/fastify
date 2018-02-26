@@ -420,6 +420,11 @@ function build (options) {
     if (!handler && typeof options === 'function') {
       handler = options
       options = {}
+    } else if (!handler && typeof options !== 'object') {
+      throw new TypeError(`options for route ${method}:${url} must be an object!`)
+    } else if (!handler && options.handler && typeof options.handler === 'function') {
+      // Support handler in shorthand route options.
+      handler = options.handler
     }
 
     options = Object.assign({}, options, {

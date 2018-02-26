@@ -471,7 +471,6 @@ function build (options) {
       opts.path = url
       opts.prefix = prefix
       opts.logLevel = opts.logLevel || _fastify._logLevel
-      opts.bodyLimit = opts.bodyLimit || _fastify._bodyLimit
 
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
@@ -555,8 +554,10 @@ function build (options) {
     this.config = config
     this.errorHandler = errorHandler
     this._middie = null
+    const globalLimit = fastify !== null ? fastify._bodyLimit : bodyLimit
     this._parserOptions = {
-      limit: bodyLimit
+      limit: bodyLimit,
+      globalLimit
     }
     this._fastify = fastify
     this.logLevel = logLevel

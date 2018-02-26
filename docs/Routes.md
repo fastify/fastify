@@ -91,7 +91,7 @@ fastify.get('/', opts, (request, reply) => {
 
 `fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
 
-You also can put the handler as a function named handler into options like this:
+The handler may also be supplied via the `options` object:
 ```js
 const opts = {
   schema: {
@@ -104,14 +104,14 @@ const opts = {
       }
     }
   },
-  handler(request, reply) {
+  handler (request, reply) {
     reply.send({ hello: 'world' })
   }
 }
 fastify.get('/', opts)
 ```
 
-*If handler is a funtion as the third param in shorthand route and also exists in `options`, we will use the third param in shorthand route as the default handler for this request.*
+> Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then the third parameter takes precedence over the the value supplied in the `options`.*
 
 <a name="url-building"></a>
 ### Url building

@@ -697,7 +697,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.deepEqual(JSON.parse(payload), thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/json')
+      t.strictEqual(reply._headers['content-type'], 'application/json')
       next()
     })
 
@@ -711,7 +711,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, 'some text')
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/plain')
+      t.strictEqual(reply._headers['content-type'], 'text/plain')
       next()
     })
 
@@ -727,7 +727,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -749,7 +749,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -765,7 +765,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, serializedPayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/custom')
+      t.strictEqual(reply._headers['content-type'], 'text/custom')
       next()
     })
 
@@ -892,7 +892,7 @@ test('clear payload', t => {
     t.error(err)
     t.strictEqual(res.statusCode, 304)
     t.strictEqual(res.payload, '')
-    t.strictEqual(res.headers['content-length'], undefined)
+    t.strictEqual(res.headers['content-length'], '0')
     t.strictEqual(res.headers['content-type'], 'application/json')
   })
 })

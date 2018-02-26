@@ -408,7 +408,7 @@ test('undefined payload should be sent as-is', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], undefined)
-      t.strictEqual(response.headers['content-length'], undefined)
+      t.strictEqual(response.headers['content-length'], '0')
       t.strictEqual(body.length, 0)
     })
   })

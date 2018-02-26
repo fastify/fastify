@@ -429,11 +429,11 @@ function build (options) {
       }
     }
 
-    options = Object.assign({}, options, {
+    options = Object.assign({}, {
       method,
       url,
       handler
-    })
+    }, options)
 
     return _fastify.route(options)
   }

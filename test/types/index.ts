@@ -272,3 +272,16 @@ server.ready()
   .catch((err) => {
     server.log.error(err)
   })
+
+server.after(function (err) {
+  if (err) throw err
+})
+
+server.after(function (err, done) {
+  done(err)
+})
+
+server.after(function (err, context, done) {
+  server.log.debug(context)
+  done(err)
+})

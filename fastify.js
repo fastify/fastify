@@ -417,14 +417,16 @@ function build (options) {
   }
 
   function _route (_fastify, method, url, options, handler) {
-    if (!handler && typeof options === 'function') {
-      handler = options
-      options = {}
-    } else if (!handler && typeof options !== 'object') {
-      throw new TypeError(`options for route ${method}:${url} must be an object!`)
-    } else if (!handler && options.handler && typeof options.handler === 'function') {
-      // Support handler in shorthand route options.
-      handler = options.handler
+    if (!handler) {
+      if (typeof options === 'function') {
+        handler = options
+        options = {}
+      } else if (typeof options !== 'object') {
+        throw new TypeError(`options for route ${method}:${url} must be an object`)
+      } else if (options.handler && typeof options.handler === 'function') {
+        // Support handler in shorthand route options.
+        handler = options.handler
+      }
     }
 
     options = Object.assign({}, options, {

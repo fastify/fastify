@@ -16,7 +16,7 @@ import * as cors from 'cors'
 import { createReadStream } from 'fs'
 import * as http from 'http'
 
-const server = fastify()
+const server = fastify<http.Server, http.IncomingMessage, http.ServerResponse>()
 
 const opts = {
   schema: {
@@ -48,7 +48,11 @@ server.use(cors())
 server.get('/', opts, getHelloHandler)
 server.get('/stream', getStreamHandler)
 
-server.listen(3000, err => {
-  if (err) throw err
-  console.log(`server listening on ${server.server.address().port}`)
+const start = async () => {
+  await server.listen(3000)
+}
+
+start().catch(err => {
+  server.log.error(err);
+  process.exit(1);
 })

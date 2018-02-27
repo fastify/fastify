@@ -32,7 +32,7 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 ```
 
 #### Body Parser
-You can parse the body of the request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body, it could be `'string'` or `'buffer'`. If you use the `parseAs` option Fastify will internally handle the stream and perform some checks, such as the [maximum size](https://github.com/fastify/fastify/blob/master/docs/Factory.md#factory-body-limit) of the body and the content length.
+You can parse the body of the request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body, it could be `'string'` or `'buffer'`. If you use the `parseAs` option Fastify will internally handle the stream and perform some checks, such as the [maximum size](https://github.com/fastify/fastify/blob/master/docs/Factory.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
@@ -47,6 +47,10 @@ fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function
 As you can see, now the function signature is `(req, body, done)` instead of `(req, done)`.
 
 See [`example/parser.js`](https://github.com/fastify/fastify/blob/master/examples/parser.js) for an example.
+
+##### Custom Parser Options
++ `parseAs` (string): Either `'string'` or `'buffer'` to designate how the incoming data should be collected. Default: `'buffer'`.
++ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](https://github.com/fastify/fastify/blob/master/docs/Factory.md#bodylimit).
 
 #### Catch All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you just need to add the `'*'` content type.

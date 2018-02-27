@@ -157,7 +157,7 @@ function build (options) {
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser()
+  fastify._contentTypeParser = new ContentTypeParser(fastify._bodyLimit)
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -471,7 +471,6 @@ function build (options) {
       opts.path = url
       opts.prefix = prefix
       opts.logLevel = opts.logLevel || _fastify._logLevel
-      opts.bodyLimit = opts.bodyLimit || _fastify._bodyLimit
 
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
@@ -556,7 +555,7 @@ function build (options) {
     this.errorHandler = errorHandler
     this._middie = null
     this._parserOptions = {
-      limit: bodyLimit
+      limit: bodyLimit || null
     }
     this._fastify = fastify
     this.logLevel = logLevel
@@ -634,6 +633,14 @@ function build (options) {
     if (typeof opts === 'function') {
       parser = opts
       opts = {}
+    }
+
+    if (!opts) {
+      opts = {}
+    }
+
+    if (!opts.bodyLimit) {
+      opts.bodyLimit = this._bodyLimit
     }
 
     this._contentTypeParser.add(contentType, opts, parser)

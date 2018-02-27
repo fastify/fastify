@@ -319,10 +319,10 @@ test('onRoute hook should be called / 2', t => {
     })
     next()
   })
-  .after(() => {
-    t.strictEqual(firstHandler, 1)
-    t.strictEqual(secondHandler, 1)
-  })
+    .after(() => {
+      t.strictEqual(firstHandler, 1)
+      t.strictEqual(secondHandler, 1)
+    })
 
   fastify.ready(err => {
     t.error(err)
@@ -348,13 +348,13 @@ test('onRoute hook should be called / 3', t => {
     instance.get('/a', handler)
     next()
   })
-  .after((err, done) => {
-    t.error(err)
-    setTimeout(() => {
-      fastify.get('/b', handler)
-      done()
-    }, 10)
-  })
+    .after((err, done) => {
+      t.error(err)
+      setTimeout(() => {
+        fastify.get('/b', handler)
+        done()
+      }, 10)
+    })
 
   fastify.ready(err => {
     t.error(err)

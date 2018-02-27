@@ -417,11 +417,9 @@ function build (options) {
   }
 
   function _route (_fastify, method, url, options, handler) {
-    if (!handler) {
-      if (typeof options === 'function') {
-        handler = options
-        options = {}
-      }
+    if (!handler && typeof options === 'function') {
+      handler = options
+      options = {}
     }
 
     options = Object.assign({}, options, {

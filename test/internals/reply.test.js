@@ -194,7 +194,7 @@ test('within an instance', t => {
       const url = 'http://localhost:' + fastify.server.address().port + '/redirect-onsend'
       http.get(url, (response) => {
         t.strictEqual(response.headers['x-onsend'], 'yes')
-        t.strictEqual(response.headers['content-length'], undefined)
+        t.strictEqual(response.headers['content-length'], '0')
         t.strictEqual(response.headers['location'], '/')
       })
     })

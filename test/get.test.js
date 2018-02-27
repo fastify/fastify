@@ -362,7 +362,7 @@ fastify.listen(0, err => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], undefined)
+      t.strictEqual(response.headers['content-length'], '0')
       t.deepEqual(body.toString(), '')
     })
   })

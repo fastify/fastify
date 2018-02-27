@@ -377,9 +377,9 @@ test('should throw an error if the custom serializer does not serialize the payl
   fastify.get('/', (req, reply) => {
     try {
       reply
-      .type('text/html')
-      .serializer(payload => payload)
-      .send({})
+        .type('text/html')
+        .serializer(payload => payload)
+        .send({})
     } catch (err) {
       t.type(err, TypeError)
       t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")

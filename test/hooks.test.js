@@ -1675,6 +1675,52 @@ test('onRequest, preHandler, and onResponse hooks that resolve to a value do not
   })
 })
 
+test('If a response header has been set inside an hook it shoulod not be overwritten by the final response handler', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', (req, res, next) => {
+    res.setHeader('X-Custom-Header', 'hello')
+    next()
+  })
+
+  fastify.get('/', (request, reply) => {
+    t.ok(reply.getHeader('x-custom-header'))
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.headers['x-custom-header'], 'hello')
+    t.strictEqual(res.headers['content-type'], 'text/plain')
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
+test('If the content type has been set inside an hook it should not be changed', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', (req, res, next) => {
+    res.setHeader('content-type', 'text/html')
+    next()
+  })
+
+  fastify.get('/', (request, reply) => {
+    t.notOk(reply._headers['content-type'])
+    t.ok(reply.getHeader('content-type'))
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.headers['content-type'], 'text/html')
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
 if (Number(process.versions.node[0]) >= 8) {
   require('./hooks-async')(t)
 } else {

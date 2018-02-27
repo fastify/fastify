@@ -8,7 +8,7 @@ const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(10)
+  t.plan(11)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -20,6 +20,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
+  t.is(typeof reply._headers, 'object')
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
@@ -498,4 +499,18 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
       t.deepEqual(body.toString(), '404 Not Found')
     })
   })
+})
+
+test('reply.getHeaders should return the internal header or the one present in the response', t => {
+  t.plan(2)
+  const response = {
+    getHeader: (key) => {
+      return 'text/plain'
+    }
+  }
+  function context () {}
+  function request () {}
+  const reply = new Reply(response, context, request)
+  t.notOk(reply._headers['content-type'])
+  t.strictEqual(reply.getHeader('content-type'), 'text/plain')
 })

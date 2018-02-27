@@ -181,12 +181,40 @@ test('Should throw if reply decorator dependencies are not met', t => {
 })
 
 test('Should throw if handler as the third parameter to the shortcut method is missing and the second parameter is not a function and also not an object', t => {
-  t.plan(1)
+  t.plan(5)
 
   const fastify = Fastify()
 
   try {
-    fastify.get('/', 1)
+    fastify.get('/foo/1', '')
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+
+  try {
+    fastify.get('/foo/2', 1)
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+
+  try {
+    fastify.get('/foo/3', [])
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+
+  try {
+    fastify.get('/foo/4', undefined)
+    t.fail()
+  } catch (e) {
+    t.pass()
+  }
+
+  try {
+    fastify.get('/foo/5', null)
     t.fail()
   } catch (e) {
     t.pass()

@@ -892,7 +892,7 @@ test('clear payload', t => {
     t.error(err)
     t.strictEqual(res.statusCode, 304)
     t.strictEqual(res.payload, '')
-    t.strictEqual(res.headers['content-length'], '0')
+    t.strictEqual(res.headers['content-length'], undefined)
     t.strictEqual(res.headers['content-type'], 'application/json')
   })
 })

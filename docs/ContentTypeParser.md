@@ -50,7 +50,7 @@ See [`example/parser.js`](https://github.com/fastify/fastify/blob/master/example
 
 ##### Custom Parser Options
 + `parseAs` (string): Either `'string'` or `'buffer'` to designate how the incoming data should be collected. Default: `'buffer'`.
-+ `bodyLimit` (number): May be supplied to override the global maximum body limit on a per parser basis. Default: `null`.
++ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](https://github.com/fastify/fastify/blob/master/docs/Factory.md#bodylimit).
 
 #### Catch All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you just need to add the `'*'` content type.

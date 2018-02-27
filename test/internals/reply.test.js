@@ -502,10 +502,15 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
 })
 
 test('reply.getHeaders should return the internal header or the one present in the response', t => {
-  t.plan(2)
+  t.plan(4)
   const response = {
     getHeader: (key) => {
+      t.equal(key, 'content-type')
       return 'text/plain'
+    },
+    hasHeader: (key) => {
+      t.equal(key, 'content-type')
+      return true
     }
   }
   function context () {}

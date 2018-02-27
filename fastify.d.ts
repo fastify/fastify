@@ -290,9 +290,9 @@ declare namespace fastify {
      * `Register a callback that will be executed just after a register.
      * It can take up to three parameters
      */
-    after(afterListener?: (err: Error) => void): void
-    after(afterListener?: (err: Error, done: Function) => void): void
-    after(afterListener?: (err: Error, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
+    after(afterListener: (err: Error) => void): void
+    after(afterListener: (err: Error, done: Function) => void): void
+    after(afterListener: (err: Error, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
 
     /**
      * Decorate this fastify instance with new properties. Throws an execption if

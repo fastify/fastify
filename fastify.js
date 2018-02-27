@@ -421,8 +421,6 @@ function build (options) {
       if (typeof options === 'function') {
         handler = options
         options = {}
-      } else if (Object.prototype.toString.call(options) !== '[object Object]') {
-        throw new TypeError(`options for route ${method}:${url} must be an object`)
       }
     }
 

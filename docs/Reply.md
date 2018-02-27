@@ -5,7 +5,6 @@ The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
-- `.getHeader(name)` - Get a response header value.
 - `.header(name, value)` - Sets a response header.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
@@ -36,10 +35,6 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 <a name="code"></a>
 ### Code
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
-
-<a name="get-header"></a>
-### getHeader
-Get a response header value.
 
 <a name="header"></a>
 ### Header

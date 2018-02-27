@@ -1676,7 +1676,7 @@ test('onRequest, preHandler, and onResponse hooks that resolve to a value do not
 })
 
 test('If a response header has been set inside an hook it shoulod not be overwritten by the final response handler', t => {
-  t.plan(6)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addHook('onRequest', (req, res, next) => {
@@ -1685,7 +1685,6 @@ test('If a response header has been set inside an hook it shoulod not be overwri
   })
 
   fastify.get('/', (request, reply) => {
-    t.ok(reply.getHeader('x-custom-header'))
     reply.send('hello')
   })
 
@@ -1699,7 +1698,7 @@ test('If a response header has been set inside an hook it shoulod not be overwri
 })
 
 test('If the content type has been set inside an hook it should not be changed', t => {
-  t.plan(6)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addHook('onRequest', (req, res, next) => {
@@ -1709,7 +1708,6 @@ test('If the content type has been set inside an hook it should not be changed',
 
   fastify.get('/', (request, reply) => {
     t.notOk(reply._headers['content-type'])
-    t.ok(reply.getHeader('content-type'))
     reply.send('hello')
   })
 

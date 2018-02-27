@@ -52,8 +52,10 @@ profile-*
 .vscode
 *code-workspace
 
-# flamegraphs
+# clinic
 profile*
+*clinic*
+*flamegraph*
 
 # lock files
 yarn.lock

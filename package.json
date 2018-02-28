@@ -61,7 +61,7 @@
   },
   "homepage": "https://github.com/fastify/fastify#readme",
   "engines": {
-    "node": ">=4.5"
+    "node": ">=6"
   },
   "devDependencies": {
     "@types/node": "^8.5.8",

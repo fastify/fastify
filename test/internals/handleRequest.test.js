@@ -44,10 +44,7 @@ test('handler function - invalid schema', t => {
     t.equal(res.statusCode, 400)
     t.pass()
   }
-  res.setHeader = (key, value) => {
-    return
-  }
-  res.getHeader = (key) => {
+  res.writeHead = () => {
     return
   }
   res.log = { error: () => {}, info: () => {} }
@@ -81,10 +78,7 @@ test('handler function - reply', t => {
     t.equal(res.statusCode, 204)
     t.pass()
   }
-  res.getHeader = (key) => {
-    return false
-  }
-  res.setHeader = (key, value) => {
+  res.writeHead = () => {
     return
   }
   const context = {

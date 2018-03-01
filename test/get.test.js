@@ -81,6 +81,9 @@ const headersSchema = {
       properties: {
         'x-test': {
           type: 'number'
+        },
+        'Y-Test': {
+          type: 'number'
         }
       }
     }
@@ -257,14 +260,16 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       headers: {
-        'x-test': 1
+        'x-test': '1',
+        'Y-Test': '3'
       },
+      json: true,
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.strictEqual(JSON.parse(body)['x-test'], 1)
+      t.strictEqual(body['x-test'], 1)
+      t.strictEqual(body['y-test'], 3)
     })
   })
 

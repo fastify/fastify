@@ -14,6 +14,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
+- [`fastify-elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify.
 - [`fastify-http-proxy`](https://github.com/fastify/fastify-http-proxy)Proxy your http requests to another server, with hooks.
@@ -25,7 +26,6 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
-- [`fastify-register-timeout`](https://github.com/fastify/fastify-register-timeout) Register plugin with a timeout.
 - [`fastify-reply-from`](https://github.com/fastify/fastify-reply-from) Plugin to forward the current http request to another server.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.

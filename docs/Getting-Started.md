@@ -155,8 +155,12 @@ async function routes (fastify, options) {
     return { hello: 'world' }
   })
 
-  fastify.get('/search/:id', (request, reply) => {
-    return collection.findOne({ id: request.params.id })
+  fastify.get('/search/:id', async (request, reply) => {
+    const result = await collection.findOne({ id: request.params.id })
+    if (result.value === null) {
+      throw new Error('Invalid value')
+    }
+    return result.value
   })
 }
 

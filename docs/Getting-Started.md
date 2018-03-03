@@ -159,7 +159,6 @@ async function routes (fastify, options) {
     try {
       return await collection.findOne({ id: request.params.id })
     } catch (err) {
-      reg.log.error(err)
       return new Error('Something went wrong')
     }
   })

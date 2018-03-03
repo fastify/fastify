@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const net = require('net')
+const semver = require('semver')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
 
@@ -100,7 +101,7 @@ test('onRequest hook error handling with external done', t => {
   })
 })
 
-if (Number(process.versions.node[0]) >= 6) {
+if (semver.gt(process.versions.node, '6.0.0')) {
   test('Should reply 400 on client error', t => {
     t.plan(2)
 

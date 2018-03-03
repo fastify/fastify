@@ -117,7 +117,7 @@ function build (options) {
     }
   })
 
-  if (Number(process.versions.node[0]) >= 6) {
+  if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
     server.on('clientError', handleClientError)
   }
 

@@ -20,6 +20,8 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 
 ### Install
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/fastify/fastify.svg)](https://greenkeeper.io/)
+
 ```
 npm i fastify --save
 ```

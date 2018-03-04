@@ -196,23 +196,23 @@ test('path can be specified in place of uri', t => {
   })
 })
 
-test('invalid jsonBodyLimit option - route', t => {
+test('invalid bodyLimit option - route', t => {
   t.plan(2)
 
   try {
     fastify.route({
-      jsonBodyLimit: false,
+      bodyLimit: false,
       method: 'PUT',
       handler: () => null
     })
-    t.fail('jsonBodyLimit must be an integer')
+    t.fail('bodyLimit must be an integer')
   } catch (err) {
     t.ok(err)
   }
 
   try {
-    fastify.post('/url', { jsonBodyLimit: 10000.1 }, () => null)
-    t.fail('jsonBodyLimit must be an integer')
+    fastify.post('/url', { bodyLimit: 10000.1 }, () => null)
+    t.fail('bodyLimit must be an integer')
   } catch (err) {
     t.ok(err)
   }

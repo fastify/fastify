@@ -61,7 +61,7 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
-  test(`${upMethod} with jsonBodyLimit option`, t => {
+  test(`${upMethod} with bodyLimit option`, t => {
     t.plan(1)
     try {
       fastify[loMethod]('/with-limit', { bodyLimit: 1 }, function (req, reply) {

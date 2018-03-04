@@ -43,14 +43,14 @@ function build (options) {
   }
 
   var log
-  var hasLogger = false
+  var hasLogger = true
   if (isValidLogger(options.logger)) {
     log = loggerUtils.createLogger({
       logger: options.logger,
       serializers: Object.assign({}, loggerUtils.serializers, options.logger.serializers)
     })
   } else if (!options.logger) {
-    hasLogger = true
+    hasLogger = false
     log = Object.create(abstractLogging)
     log.child = () => log
   } else {
@@ -76,7 +76,7 @@ function build (options) {
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
-  const onResponseCallback = hasLogger ? noop : loggerUtils.onResponseCallback
+  const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
 
   const app = avvio(fastify, {
     autostart: false
@@ -202,13 +202,12 @@ function build (options) {
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
+    res._startTime = hasLogger ? now() : undefined
+    res._context = context
 
     req.log.info({ req }, 'incoming request')
 
-    res._startTime = hasLogger ? now() : undefined
-
-    if (hasLogger === false || context.onResponse !== null) {
-      res._context = context
+    if (hasLogger === true || context.onResponse !== null) {
       res.on('finish', onResFinished)
       res.on('error', onResFinished)
     }

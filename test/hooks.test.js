@@ -449,9 +449,9 @@ test('onRoute hook should pass correct route with custom options', t => {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.logLevel, 'info')
-      t.strictEqual(route.jsonBodyLimit, 100)
+      t.strictEqual(route.bodyLimit, 100)
     })
-    instance.get('/foo', { logLevel: 'info', jsonBodyLimit: 100 }, function (req, reply) {
+    instance.get('/foo', { logLevel: 'info', bodyLimit: 100 }, function (req, reply) {
       reply.send()
     })
     next()

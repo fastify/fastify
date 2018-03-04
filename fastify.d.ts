@@ -66,7 +66,7 @@ declare namespace fastify {
 
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
-    jsonBodyLimit?: number,
+    bodyLimit?: number,
     logger?: pino.LoggerOptions | true,
     maxParamLength?: number,
   }
@@ -103,7 +103,7 @@ declare namespace fastify {
     schema?: JSONSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
-    jsonBodyLimit?: number,
+    bodyLimit?: number,
     logLevel?: string,
     config?: any
   }

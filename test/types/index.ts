@@ -34,7 +34,7 @@ import { createReadStream, readFile } from 'fs'
   // other simple options
   const otherServer = fastify({
     ignoreTrailingSlash: true,
-    jsonBodyLimit: 1000,
+    bodyLimit: 1000,
     maxParamLength: 200,
   })
 
@@ -129,7 +129,7 @@ const opts = {
     }
   ],
   schemaCompiler: (schema: Object) => () => {},
-  jsonBodyLimit: 5000,
+  bodyLimit: 5000,
   logLevel: 'trace',
   config: { }
 }

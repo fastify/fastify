@@ -192,7 +192,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.method
   routeOptions.schema
   routeOptions.url
-  routeOptions.jsonBodyLimit
+  routeOptions.bodyLimit
   routeOptions.logLevel
   routeOptions.prefix
 })

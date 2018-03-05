@@ -10,6 +10,7 @@
 [![NPM version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify) [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/fastify)
 [![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master)
+[![Greenkeeper badge](https://badges.greenkeeper.io/fastify/fastify.svg)](https://greenkeeper.io/)
 </div>
 <br />
 
@@ -19,8 +20,6 @@ How can you efficiently handle the resources of your server, knowing that you ar
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
 ### Install
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/fastify/fastify.svg)](https://greenkeeper.io/)
 
 ```
 npm i fastify --save

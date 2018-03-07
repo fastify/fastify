@@ -551,7 +551,7 @@ test('reply.hasHeader returns correct values', t => {
 })
 
 test('reply.getHeader returns correct values', t => {
-  t.plan(3)
+  t.plan(4)
 
   const fastify = require('../../')()
 
@@ -560,7 +560,11 @@ test('reply.getHeader returns correct values', t => {
     t.is(reply.getHeader('x-foo'), 'foo')
 
     reply.header('x-foo', 'bar')
-    t.strictDeepEqual(reply.getHeader('x-foo'), ['foo', 'bar'])
+    t.strictDeepEqual(reply.getHeader('x-foo'), 'bar')
+
+    reply.header('set-cookie', 'one')
+    reply.header('set-cookie', 'two')
+    t.strictDeepEqual(reply.getHeader('set-cookie'), ['one', 'two'])
 
     reply.send()
   })

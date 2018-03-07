@@ -495,8 +495,7 @@ function build (options) {
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
-        opts.logLevel,
-        _fastify
+        opts.logLevel
       )
 
       try {
@@ -538,6 +537,10 @@ function build (options) {
         context.onResponse = onResponse.length ? onResponse : null
 
         context._middie = buildMiddie(_fastify._middlewares)
+
+        // Must store the 404 Context in 'preReady' because it is only guaranteed to
+        // be available after all of the plugins and routes have been loaded.
+        context._404Context = _fastify._404Context
       })
 
       done(notHandledErr)
@@ -547,7 +550,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, fastify) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -563,8 +566,8 @@ function build (options) {
     this._parserOptions = {
       limit: bodyLimit || null
     }
-    this._fastify = fastify
     this.logLevel = logLevel
+    this._404Context = null
   }
 
   function inject (opts, cb) {
@@ -729,8 +732,7 @@ function build (options) {
       opts.config || {},
       this._errorHandler,
       this._bodyLimit,
-      this._logLevel,
-      null
+      this._logLevel
     )
 
     app.once('preReady', () => {

@@ -115,7 +115,7 @@ test('customized 404', t => {
 })
 
 test('setting a custom 404 handler multiple times is an error', t => {
-  t.plan(4)
+  t.plan(5)
 
   t.test('at the root level', t => {
     t.plan(2)
@@ -193,6 +193,39 @@ test('setting a custom 404 handler multiple times is an error', t => {
       instance.register((instance2, options, next) => {
         try {
           instance2.setNotFoundHandler(() => {})
+          t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
+        } catch (err) {
+          t.type(err, Error)
+          t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
+        }
+        next()
+      })
+
+      next()
+    }, { prefix: '/prefix' })
+
+    fastify.setNotFoundHandler(() => {})
+
+    fastify.listen(0, err => {
+      t.error(err)
+      fastify.close()
+    })
+  })
+
+  t.test('in separate plugins at the same level', t => {
+    t.plan(3)
+
+    const fastify = Fastify()
+
+    fastify.register((instance, options, next) => {
+      instance.register((instance2A, options, next) => {
+        instance2A.setNotFoundHandler(() => {})
+        next()
+      })
+
+      instance.register((instance2B, options, next) => {
+        try {
+          instance2B.setNotFoundHandler(() => {})
           t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
         } catch (err) {
           t.type(err, Error)
@@ -427,6 +460,53 @@ test('custom 404 hook and handler context', t => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
     t.strictEqual(res.payload, 'encapsulated was not found')
+  })
+})
+
+test('encapsulated custom 404 without - prefix hook and handler context', t => {
+  t.plan(13)
+
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.register(function (instance, opts, next) {
+    instance.decorate('bar', 84)
+
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      next()
+    })
+
+    instance.setNotFoundHandler(function (request, reply) {
+      t.strictEqual(this.foo, 42)
+      t.strictEqual(this.bar, 84)
+      reply.code(404).send('custom not found')
+    })
+
+    next()
+  })
+
+  fastify.inject('/not-found', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'custom not found')
   })
 })
 
@@ -910,6 +990,91 @@ test('recognizes errors from the http-errors module', t => {
         })
       })
     })
+  })
+})
+
+test('the default 404 handler can be invoked inside a prefixed plugin', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/path', function (request, reply) {
+      reply.send(httpErrors.NotFound())
+    })
+
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject('/v1/path', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictDeepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'Not found',
+      statusCode: 404
+    })
+  })
+})
+
+test('an inherited custom 404 handler can be invoked inside a prefixed plugin', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler(function (request, reply) {
+    reply.code(404).send('custom handler')
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/path', function (request, reply) {
+      reply.send(httpErrors.NotFound())
+    })
+
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject('/v1/path', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'custom handler')
+  })
+})
+
+test('encapsulated custom 404 handler without a prefix is the handler for the entire 404 level', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.setNotFoundHandler(function (request, reply) {
+      reply.code(404).send('custom handler')
+    })
+
+    next()
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.register(function (instance2, opts, next) {
+      instance2.setNotFoundHandler(function (request, reply) {
+        reply.code(404).send('custom handler 2')
+      })
+      next()
+    })
+
+    next()
+  }, { prefix: 'prefixed' })
+
+  fastify.inject('/not-found', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'custom handler')
+  })
+
+  fastify.inject('/prefixed/not-found', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'custom handler 2')
   })
 })
 

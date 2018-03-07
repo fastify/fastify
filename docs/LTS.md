@@ -23,4 +23,4 @@ A "month" is to be a period of 30 consecutive days.
 
 | Version | Release Date | End Of LTS Date |
 |:--------|:-------------|:----------------|
-| 1.0.0   | TBD          | TBD             |
+| 1.0.0   | 2018-03-06   | TBD             |

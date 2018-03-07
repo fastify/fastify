@@ -500,3 +500,81 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
     })
   })
 })
+
+test('reply can set multiple instances of same header', t => {
+  t.plan(4)
+
+  const fastify = require('../../')()
+
+  fastify.get('/headers', function (req, reply) {
+    reply
+      .header('set-cookie', 'one')
+      .header('set-cookie', 'two')
+      .send({})
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, (err, response, body) => {
+      t.error(err)
+      t.ok(response.headers['set-cookie'])
+      t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two'])
+    })
+  })
+})
+
+test('reply.hasHeader returns correct values', t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    t.is(reply.hasHeader('x-foo'), true)
+    t.is(reply.hasHeader('x-bar'), false)
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {})
+  })
+})
+
+test('reply.getHeader returns correct values', t => {
+  t.plan(4)
+
+  const fastify = require('../../')()
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    t.is(reply.getHeader('x-foo'), 'foo')
+
+    reply.header('x-foo', 'bar')
+    t.strictDeepEqual(reply.getHeader('x-foo'), 'bar')
+
+    reply.header('set-cookie', 'one')
+    reply.header('set-cookie', 'two')
+    t.strictDeepEqual(reply.getHeader('set-cookie'), ['one', 'two'])
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {})
+  })
+})

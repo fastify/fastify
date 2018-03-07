@@ -6,6 +6,8 @@ Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
 - `.header(name, value)` - Sets a response header.
+- `.getHeader(name)` - Retrieve value of already set header.
+- `.hasHeader(name)` = Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
@@ -41,6 +43,18 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 Sets a response header.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
+
+<a name="getHeader"></a>
+### GetHeader
+Retrieves the value of a previously set header.
+```js
+reply.header('x-foo', 'foo')
+reply.getHeader('x-foo') // 'foo'
+```
+
+<a name="hasHeader"></a>
+### HasHeader
+Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
 ### Redirect

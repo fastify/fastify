@@ -58,20 +58,3 @@ test('Should honor maxParamLength option', t => {
     t.strictEqual(res.statusCode, 404)
   })
 })
-
-test('Should handler in shorthand route options take effect if there is no handler function as the third parameter and the second parameter is an object', t => {
-  t.plan(2)
-  const fastify = Fastify()
-
-  fastify.register((instance, opts, next) => {
-    instance.addHook('onRoute', function (route) {
-      t.strictEqual(route.handler.length, 1)
-    })
-    instance.get('/foo', { handler: (req) => {} })
-    next()
-  })
-
-  fastify.ready(err => {
-    t.error(err)
-  })
-})

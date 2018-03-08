@@ -189,9 +189,10 @@ function build (options) {
   fastify.inject = inject
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
-  fastify.setNotFoundHandler = setNotFoundHandler
-  fastify._notFoundHandler = null
+  fastify._canSetNotFoundHandler = true
+  fastify._404LevelInstance = fastify
   fastify._404Context = null
+  fastify.setNotFoundHandler = setNotFoundHandler
   fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
@@ -364,8 +365,8 @@ function build (options) {
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
-      instance._notFoundHandler = null
-      instance._404Context = null
+      instance._canSetNotFoundHandler = true
+      instance._404LevelInstance = instance
     }
 
     return instance
@@ -703,8 +704,10 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    if (this._notFoundHandler !== null && this._notFoundHandler !== basic404) {
-      throw new Error(`Not found handler already set for Fastify instance with prefix: '${this._routePrefix || '/'}'`)
+    const prefix = this._routePrefix || '/'
+
+    if (this._canSetNotFoundHandler === false) {
+      throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
     if (typeof opts === 'function') {
@@ -712,17 +715,21 @@ function build (options) {
       opts = undefined
     }
     opts = opts || {}
-    handler = handler ? handler.bind(this) : basic404
 
-    this._notFoundHandler = handler
+    if (handler) {
+      this._404LevelInstance._canSetNotFoundHandler = false
+      handler = handler.bind(this)
+    } else {
+      handler = basic404
+    }
 
     this.after((notHandledErr, done) => {
-      _setNotFoundHandler.call(this, opts, handler)
+      _setNotFoundHandler.call(this, prefix, opts, handler)
       done(notHandledErr)
     })
   }
 
-  function _setNotFoundHandler (opts, handler) {
+  function _setNotFoundHandler (prefix, opts, handler) {
     const context = new Context(
       opts.schema,
       handler,
@@ -751,14 +758,12 @@ function build (options) {
       context._middie = buildMiddie(this._middlewares)
     })
 
-    if (this._404Context !== null) {
+    if (this._404Context !== null && prefix === '/') {
       Object.assign(this._404Context, context) // Replace the default 404 handler
       return
     }
 
-    this._404Context = context
-
-    const prefix = this._routePrefix
+    this._404LevelInstance._404Context = context
 
     fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
     fourOhFour.all(prefix || '/', routeHandler, context)

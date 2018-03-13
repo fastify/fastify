@@ -197,6 +197,8 @@ function build (options) {
 
   fastify.setErrorHandler = setErrorHandler
 
+  fastify.SUPPORTED_METHODS = supportedMethods
+
   return fastify
 
   function routeHandler (req, res, params, context) {

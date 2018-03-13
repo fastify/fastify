@@ -489,3 +489,19 @@ test('plugin metadata - dependencies (nested)', t => {
     next()
   }
 })
+
+test('plugin - should has SUPPORTED_METHODS property', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  t.type(fastify.SUPPORTED_METHODS, 'Array')
+
+  fastify.register(function (instance, opts, next) {
+    t.equal(instance.SUPPORTED_METHODS, fastify.SUPPORTED_METHODS)
+    next()
+  })
+
+  fastify.ready(() => {
+    t.pass('everything right')
+  })
+})

@@ -389,7 +389,7 @@ declare namespace fastify {
     /**
      * Array that contains all HTTP methods
      */
-    SUPPORTED_METHODS: [string]
+    SUPPORTED_METHODS: string[]
   }
 }
 

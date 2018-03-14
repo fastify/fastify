@@ -491,7 +491,7 @@ test('onRoute hook should preserve system route configuration', t => {
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.handler.length, 2)
     })
-    instance.get('/foo', { url: '/bar', method: 'POST', handler: () => {} }, function (req, reply) {
+    instance.get('/foo', { url: '/bar', method: 'POST' }, function (req, reply) {
       reply.send()
     })
     next()

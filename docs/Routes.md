@@ -111,7 +111,7 @@ const opts = {
 fastify.get('/', opts)
 ```
 
-> Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then the third parameter takes precedence over the the value supplied in the `options`.
+> Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then throws duplicate `handler` error.
 
 <a name="url-building"></a>
 ### Url building

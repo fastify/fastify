@@ -502,6 +502,22 @@ test('onRoute hook should preserve system route configuration', t => {
   })
 })
 
+test('onRoute hook should preserve handler function in options of shorthand route system configuration', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.handler.length, 2)
+    })
+    instance.get('/foo', { handler: (req, reply) => {} })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 test('onResponse hook should support encapsulation / 1', t => {
   t.plan(5)
   const fastify = Fastify()

@@ -120,7 +120,7 @@ server.addHook('onClose', (instance, done) => {
   done();
 })
 
-const opts = {
+const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema: {
     response: {
       200: {
@@ -275,11 +275,11 @@ server.ready(function (err) {
   if (err) throw err
 })
 
-server.ready(function (err, done) {
+server.ready(function (err: Error, done: Function) {
   done(err)
 })
 
-server.ready(function (err, context, done) {
+server.ready(function (err: Error, context: fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>, done: Function) {
   server.log.debug(context)
   done(err)
 })
@@ -296,11 +296,11 @@ server.after(function (err) {
   if (err) throw err
 })
 
-server.after(function (err, done) {
+server.after(function (err: Error, done: Function) {
   done(err)
 })
 
-server.after(function (err, context, done) {
+server.after(function (err: Error, context: fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>, done: Function) {
   server.log.debug(context)
   done(err)
 })

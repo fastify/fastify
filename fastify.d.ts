@@ -103,7 +103,7 @@ declare namespace fastify {
   /**
    * Optional configuration parameters for the route being created
    */
-  interface RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
+  interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     schema?: JSONSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
@@ -167,7 +167,7 @@ declare namespace fastify {
   /**
    * Represents the fastify instance created by the factory function the module exports.
    */
-  interface FastifyInstance<HttpServer, HttpRequest, HttpResponse> {
+  interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     server: HttpServer
     log: pino.Logger
 

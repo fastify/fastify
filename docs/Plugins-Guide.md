@@ -3,7 +3,7 @@
 # The hitchhiker's guide to plugins
 First of all, `DON'T PANIC`!
 
-Fastify has been built since the beginning to be an extremely modular system, we built a powerful api that allows you to add methods and utilities to Fastify by creating a namespace, we built a system that creates an encapsulation model that allows you to split you application in multiple microservices at any moment, without the need to refactor the entire application.
+Fastify was built from the beginning to be an extremely modular system. We built a powerful API that allows you to add methods and utilities to Fastify by creating a namespace. We built a system that creates an encapsulation model that allows you to split your application in multiple microservices at any moment, without the need to refactor the entire application.
 
 **Table of contents**
 - [Register](#register)
@@ -17,19 +17,19 @@ Fastify has been built since the beginning to be an extremely modular system, we
 <a name="register"></a>
 ## Register
 As in JavaScript everything is an object, in Fastify everything is a plugin.<br>
-Your routes, your utilities and so on are all plugins. And to add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
+Your routes, your utilities and so on are all plugins. To add a new plugin, whatever its functionality is, in Fastify you have a nice and unique api to use: [`register`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 ```js
 fastify.register(
   require('./my-plugin'),
   { options }
 )
 ```
-`register` creates for you a new Fastify context, this means that if you do any change to the Fastify instance, that change(s) will not be reflected into the context's ancestors. In other words, encapsulation!
+`register` creates a new Fastify context, this means that if you do any change to the Fastify instance, those changes will not be reflected in the context's ancestors. In other words, encapsulation!
 
 
 *Why is encapsulation important?*<br>
 Well, let's say you are creating a new disruptive startup, what do you do? You create an api server with all your stuff, everything in the same place, a monolith!<br>
-Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies an huge amount of work, because of cross dependencies and the lack of separation of concerns.<br>
+Ok, you are growing very fast and you want to change your architecture and try microservices. Usually this implies a huge amount of work, because of cross dependencies and the lack of separation of concerns.<br>
 Fastify helps you a lot in this direction, because thanks to the encapsulation model it will completely avoid cross dependencies, and will help you structure your code in cohesive blocks.
 
 *Let's return to how to correctly use `register`.*<br>
@@ -52,7 +52,7 @@ module.exports = function (fastify, options, next) {
 }
 ```
 
-Well, now you know how to use the `register` api and how it works, but how add new functionalities to fastify and even better, share them with other developers?
+Well, now you know how to use the `register` api and how it works, but how do we add new functionality to Fastify and even better, share them with other developers?
 
 <a name="decorators"></a>
 ## Decorators
@@ -90,8 +90,8 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
-Inside the second register call `instance.util` will throw an error, because `util` exist only inside the first register context.<br>
-Let's step back for a moment and get deepen on this: when using the `register` api you will create a new context every time and this avoid situations like the one mentioned few line above. But pay attention, the encapsulation works only for the ancestors and the brothers, but not for the sons.
+Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
+Let's step back for a moment and get deeper on this: when using the `register` api you will create a new context every time and this avoids situations like the one mentioned few line above. But pay attention, the encapsulation works only for the ancestors and the brothers, but not for the sons.
 ```js
 fastify.register((instance, opts, next) => {
   instance.decorate('util', (a, b) => a + b)
@@ -173,7 +173,7 @@ fastify.get('/happiness', (request, reply) => {
 })
 ```
 
-We've seen how extend server functionalities and how handle the encapsulation system, but what if you need to add a function that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
+We've seen how to extend server functionality and how handle the encapsulation system, but what if you need to add a function that must be executed every time that the server "[emits](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)" an event?
 
 <a name="hooks"></a>
 ## Hooks
@@ -236,7 +236,7 @@ fastify.get('/plugin2', (request, reply) => {
 Now your hook will run just for the first route!
 
 As you probably noticed at this time, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.<br>
-Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that do exactly what you need, and you don't want to redo all the work.
+Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that does exactly what you need, and you don't want to redo all the work.
 
 <a name="middlewares"></a>
 ## Middlewares
@@ -252,7 +252,7 @@ fastify.use(yourMiddleware)
 Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.<br>
 How can you distribute your code?
 
-The preferred way to distribute an utility is to wrap all your code inside a `register`, in this way your plugin can support an asynchronous bootstrap *(since `decorate` is a synchronous api)*, in the case of a database connection for example.
+The preferred way to distribute a utility is to wrap all your code inside a `register`, in this way your plugin can support an asynchronous bootstrap *(since `decorate` is a synchronous api)*, in the case of a database connection for example.
 
 *Wait, what? Didn't you tell me that `register` creates an encapsulation and that what I create inside there will not be available outside?*<br>
 Yes, I said that. But what I didn't tell you, is that you can tell to Fastify to avoid this behavior, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
@@ -274,15 +274,15 @@ You can also tell to `fastify-plugin` to check the installed version of Fastify,
 <a name="handle-errors"></a>
 ## Handle errors
 It can happen that one of your plugins could fail during the startup. Maybe you expect it and you have a custom logic that will be triggered in that case. How can you do this?
-The `after` api is what you need. `after` simply register a callback that will be executed just after a register, and it can take up to three parameters.<br>
-The callback changes basing on the parameters your are giving:
+The `after` api is what you need. `after` simply registers a callback that will be executed just after a register, and it can take up to three parameters.<br>
+The callback changes based on the parameters your are giving:
 
 1. If no parameter is given to the callback and there is an error, that error will be passed to the next error handler.
 1. If one parameter is given to the callback, that parameter will be the error object.
 1. If two parameters are given to the callback, the first will be the error object, the second will be the done callback.
 1. If three parameters are given to the callback, the first will be the error object, the second will be the top level context unless you have specified both server and override, in that case the context will be what the override returns, and the third the done callback.
 
-Let's see how use it:
+Let's see how to use it:
 ```js
 fastify
   .register(require('./database-connector'))

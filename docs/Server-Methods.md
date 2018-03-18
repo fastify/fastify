@@ -8,7 +8,7 @@
 
 <a name="ready"></a>
 #### ready
-Function called when all the plugins has been loaded.
+Function called when all the plugins have been loaded.
 It takes an error parameter if something went wrong.
 ```js
 fastify.ready(err => {
@@ -95,7 +95,7 @@ fastify.listen(3000, '0.0.0.0', (err) => {
 
 <a name="route"></a>
 #### route
-Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
+Method to add routes to the server, it also has shorthand functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 
 <a name="close"></a>
 #### close
@@ -107,7 +107,7 @@ Function useful if you need to decorate the fastify instance, Reply or Request, 
 
 <a name="register"></a>
 #### register
-Fastify allows the user to extend its functionalities with plugins.
+Fastify allows the user to extend its functionality with plugins.
 A plugin can be a set of routes, a server decorator or whatever, check [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 
 <a name="use"></a>

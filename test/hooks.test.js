@@ -491,9 +491,28 @@ test('onRoute hook should preserve system route configuration', t => {
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.handler.length, 2)
     })
-    instance.get('/foo', { url: '/bar', method: 'POST', handler: () => {} }, function (req, reply) {
+    instance.get('/foo', { url: '/bar', method: 'POST' }, function (req, reply) {
       reply.send()
     })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should preserve handler function in options of shorthand route system configuration', t => {
+  t.plan(2)
+
+  const handler = (req, reply) => {}
+
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.handler, handler)
+    })
+    instance.get('/foo', { handler })
     next()
   })
 

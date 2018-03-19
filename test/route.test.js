@@ -225,3 +225,23 @@ test('invalid bodyLimit option - route', t => {
     t.strictEqual(err.message, "'bodyLimit' option must be an integer > 0. Got '10000.1'")
   }
 })
+
+test('handler function in options of shorthand route should works correctly', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.get('/foo', {
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/foo'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})

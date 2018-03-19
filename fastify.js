@@ -427,12 +427,22 @@ function build (options) {
     if (!handler && typeof options === 'function') {
       handler = options
       options = {}
+    } else if (handler && typeof handler === 'function') {
+      if (Object.prototype.toString.call(options) !== '[object Object]') {
+        throw new Error(`Options for ${method}:${url} route must be an object`)
+      } else if (options.handler) {
+        if (typeof options.handler === 'function') {
+          throw new Error(`Duplicate handler for ${method}:${url} route is not allowed!`)
+        } else {
+          throw new Error(`Handler for ${method}:${url} route must be a function`)
+        }
+      }
     }
 
     options = Object.assign({}, options, {
       method,
       url,
-      handler
+      handler: handler || (options && options.handler)
     })
 
     return _fastify.route(options)

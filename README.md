@@ -121,6 +121,7 @@ matters to you.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Benchmarking.md"><code><b>Benchmarking</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/HTTP2.md"><code><b>HTTP2</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/LTS.md"><code><b>Long Term Support</b></code></a>
 
 ## Ecosystem
 - [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
@@ -134,10 +135,6 @@ matters to you.
 
 _Fastify_ is the result of the work of a great community.
 Team members are listed in alphabetical order.
-
-## Long Term Support
-
-Fastify's support schedule is detailed in the [LTS document](https://github.com/fastify/fastify/blob/master/docs/LTS.md).
 
 ### Lead Maintainers
 

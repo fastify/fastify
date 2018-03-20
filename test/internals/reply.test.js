@@ -46,6 +46,16 @@ test('reply.serializer should set a custom serializer', t => {
   t.equal(reply._serializer, 'serializer')
 })
 
+test('reply.serialize should serialize payload', t => {
+  t.plan(1)
+  const reply = new Reply(null, null, null)
+  reply.serializer(payload => {
+    const key = Object.keys(payload)[0]
+    return `<${key}>${payload.key}</${key}>`
+  })
+  t.equal(reply.serialize({ foo: 'bar' }), `<foo>bar</foo>`)
+})
+
 test('within an instance', t => {
   const fastify = require('../..')()
   const test = t.test

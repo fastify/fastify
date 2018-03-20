@@ -7,7 +7,11 @@ import * as http2 from 'http2';
 import * as https from 'https';
 import * as pino from 'pino';
 
-declare function fastify<HttpServer, HttpRequest, HttpResponse>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
+declare function fastify<
+  HttpServer extends (http.Server | http2.Http2Server) = http.Server, 
+  HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage, 
+  HttpResponse extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse
+>(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp): fastify.FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp2): fastify.FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>;
@@ -15,9 +19,9 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 
 declare namespace fastify {
 
-  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback?: (err?: Error) => void) => void
+  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback: (err?: Error) => void) => void
 
-  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback?: (err?: Error) => void) => void
+  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
 
@@ -99,7 +103,7 @@ declare namespace fastify {
   /**
    * Optional configuration parameters for the route being created
    */
-  interface RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
+  interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     schema?: JSONSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
@@ -163,7 +167,7 @@ declare namespace fastify {
   /**
    * Represents the fastify instance created by the factory function the module exports.
    */
-  interface FastifyInstance<HttpServer, HttpRequest, HttpResponse> {
+  interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     server: HttpServer
     log: pino.Logger
 

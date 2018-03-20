@@ -2,11 +2,14 @@
 // This file will be passed to the TypeScript CLI to verify our typings compile
 
 import * as fastify from '../../fastify'
-import * as cors from 'cors'
 import * as http from 'http';
 import * as http2 from 'http2';
 import { readFileSync } from 'fs'
 import { createReadStream, readFile } from 'fs'
+
+// were importing cors using require, which causes it to be an `any`. This is done because `cors` exports
+// itself as an express.RequestHandler which is not compatible with the fastify TypeScript types
+const cors = require('cors');
 
 {
   // http
@@ -30,6 +33,10 @@ import { createReadStream, readFile } from 'fs'
   });
   // logger true
   const logAllServer = fastify({ logger: true });
+  logAllServer.addHook('onRequest', (req, res, next) => {
+    console.log('can access req', req.headers);
+    next();
+  });
 
   // other simple options
   const otherServer = fastify({
@@ -43,6 +50,18 @@ import { createReadStream, readFile } from 'fs'
     getDeviceType: () => string;
   }
   const customServer: fastify.FastifyInstance<http.Server, CustomIncomingMessage, http.ServerResponse> = fastify();
+  customServer.use((req, res, next) => {
+    console.log('can access props from CustomIncomingMessage', req.getDeviceType());
+  })
+
+  interface CustomHttp2IncomingMessage extends http2.Http2ServerRequest {
+    getDeviceType: () => string;
+  }
+
+  const customHttp2Server: fastify.FastifyInstance<http2.Http2Server, CustomHttp2IncomingMessage, http2.Http2ServerResponse> = fastify();
+  customHttp2Server.use((req, res, next) => {
+    console.log('can access props from CustomIncomingMessage', req.getDeviceType());
+  });
 }
 
 const server = fastify({
@@ -101,7 +120,7 @@ server.addHook('onClose', (instance, done) => {
   done();
 })
 
-const opts = {
+const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema: {
     response: {
       200: {
@@ -256,11 +275,11 @@ server.ready(function (err) {
   if (err) throw err
 })
 
-server.ready(function (err, done) {
+server.ready(function (err: Error, done: Function) {
   done(err)
 })
 
-server.ready(function (err, context, done) {
+server.ready(function (err: Error, context: fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>, done: Function) {
   server.log.debug(context)
   done(err)
 })
@@ -277,11 +296,11 @@ server.after(function (err) {
   if (err) throw err
 })
 
-server.after(function (err, done) {
+server.after(function (err: Error, done: Function) {
   done(err)
 })
 
-server.after(function (err, context, done) {
+server.after(function (err: Error, context: fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>, done: Function) {
   server.log.debug(context)
   done(err)
 })

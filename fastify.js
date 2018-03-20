@@ -10,7 +10,7 @@ const abstractLogging = require('abstract-logging')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
-const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
+const supportedMethods = http.METHODS
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
 const validation = require('./lib/validation')

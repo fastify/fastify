@@ -48,12 +48,10 @@ test('reply.serializer should set a custom serializer', t => {
 
 test('reply.serialize should serialize payload', t => {
   t.plan(1)
-  const reply = new Reply(null, null, null)
-  reply.serializer(payload => {
-    const key = Object.keys(payload)[0]
-    return `<${key}>${payload.key}</${key}>`
-  })
-  t.equal(reply.serialize({ foo: 'bar' }), `<foo>bar</foo>`)
+  const response = { statusCode: 200 }
+  const context = { responseSchema: {} }
+  const reply = new Reply(response, context, null)
+  t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
 })
 
 test('within an instance', t => {

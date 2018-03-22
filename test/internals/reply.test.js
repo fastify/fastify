@@ -6,6 +6,7 @@ const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
+const responseSchema = require('../../lib/validation').responseSchema
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(11)
@@ -49,7 +50,16 @@ test('reply.serializer should set a custom serializer', t => {
 test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
-  const context = { responseSchema: {} }
+  const context = {
+    [responseSchema]: {
+      200: {
+        type: 'object',
+        properties: {
+          foo: { type: 'string' }
+        }
+      }
+    }
+  }
   const reply = new Reply(response, context, null)
   t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
 })

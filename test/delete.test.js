@@ -261,7 +261,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: 'query.hello should be integer',
+        message: 'querystring.hello should be integer',
         statusCode: 400
       })
     })

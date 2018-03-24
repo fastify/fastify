@@ -23,6 +23,7 @@ const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const runHooks = require('./lib/hookRunner').hookRunner
+const toString = require('./toString')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')
@@ -70,7 +71,11 @@ function build (options) {
   })
 
   fastify.printRoutes = router.prettyPrint.bind(router)
+<<<<<<< HEAD
 
+=======
+  
+>>>>>>> 134a4d3... simple toString implementation
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
@@ -204,6 +209,8 @@ function build (options) {
   fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
+
+  fastify.toString = toString
 
   return fastify
 

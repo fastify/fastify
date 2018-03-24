@@ -6,7 +6,6 @@ const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
-const responseSchema = require('../../lib/validation').responseSchema
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(11)
@@ -50,18 +49,51 @@ test('reply.serializer should set a custom serializer', t => {
 test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
-  const context = {
-    [responseSchema]: {
-      200: {
-        type: 'object',
-        properties: {
-          foo: { type: 'string' }
-        }
-      }
-    }
-  }
+  const context = {}
+  // const context = {
+  //   [responseSchema]: {
+  //     200: {
+  //       type: 'object',
+  //       properties: {
+  //         foo: { type: 'string' }
+  //       }
+  //     }
+  //   }
+  // }
   const reply = new Reply(response, context, null)
   t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
+})
+
+test('reply.serialize with Fastify instance', t => {
+  t.plan(2)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            foo: { type: 'string' }
+          }
+        }
+      }
+    },
+    handler: (req, reply) => {
+      reply.send(
+        reply.serialize({foo: 'bar'})
+      )
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
 })
 
 test('within an instance', t => {

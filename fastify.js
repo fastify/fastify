@@ -71,11 +71,6 @@ function build (options) {
   })
 
   fastify.printRoutes = router.prettyPrint.bind(router)
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 134a4d3... simple toString implementation
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()

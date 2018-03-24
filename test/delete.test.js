@@ -197,13 +197,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: JSON.stringify([{
-          keyword: 'type',
-          dataPath: '.test',
-          schemaPath: '#/properties/test/type',
-          params: { type: 'integer' },
-          message: 'should be integer'
-        }]),
+        message: 'params.test should be integer',
         statusCode: 400
       })
     })
@@ -238,13 +232,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: JSON.stringify([{
-          keyword: 'type',
-          dataPath: '[\'x-test\']',
-          schemaPath: '#/properties/x-test/type',
-          params: { type: 'number' },
-          message: 'should be number'
-        }]),
+        message: "headers['x-test'] should be number",
         statusCode: 400
       })
     })
@@ -273,13 +261,7 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: JSON.stringify([{
-          keyword: 'type',
-          dataPath: '.hello',
-          schemaPath: '#/properties/hello/type',
-          params: { type: 'integer' },
-          message: 'should be integer'
-        }]),
+        message: 'querystring.hello should be integer',
         statusCode: 400
       })
     })

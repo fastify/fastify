@@ -50,21 +50,11 @@ test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const context = {}
-  // const context = {
-  //   [responseSchema]: {
-  //     200: {
-  //       type: 'object',
-  //       properties: {
-  //         foo: { type: 'string' }
-  //       }
-  //     }
-  //   }
-  // }
   const reply = new Reply(response, context, null)
   t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
 })
 
-test('reply.serialize with Fastify instance', t => {
+test('reply.serialize should serialize payload with Fastify instance', t => {
   t.plan(2)
   const fastify = require('../..')()
   fastify.route({

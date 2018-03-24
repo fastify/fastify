@@ -46,6 +46,46 @@ test('reply.serializer should set a custom serializer', t => {
   t.equal(reply._serializer, 'serializer')
 })
 
+test('reply.serialize should serialize payload', t => {
+  t.plan(1)
+  const response = { statusCode: 200 }
+  const context = {}
+  const reply = new Reply(response, context, null)
+  t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
+})
+
+test('reply.serialize should serialize payload with Fastify instance', t => {
+  t.plan(2)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            foo: { type: 'string' }
+          }
+        }
+      }
+    },
+    handler: (req, reply) => {
+      reply.send(
+        reply.serialize({foo: 'bar'})
+      )
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+})
+
 test('within an instance', t => {
   const fastify = require('../..')()
   const test = t.test

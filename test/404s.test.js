@@ -1098,3 +1098,68 @@ test('404 inside onSend', t => {
     })
   })
 })
+
+test('Not found on supported method (should return a 404)', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.strictEqual(res.statusCode, 404)
+
+      sget({
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+      })
+    })
+  })
+})
+
+// Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
+test('Not found on unsupported method (should return a 404)', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.all('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'PROPFIND',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.strictEqual(res.statusCode, 404)
+
+      sget({
+        method: 'PROPFIND',
+        url: 'http://localhost:' + fastify.server.address().port
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+      })
+    })
+  })
+})

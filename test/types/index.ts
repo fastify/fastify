@@ -275,7 +275,9 @@ server.addContentTypeParser('foo/bar', {}, (req, done) => {
 
 server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
 
-server.hasContentTypeParser('foo/bar')
+if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
+  throw new Error('Invalid')
+}
 
 server.printRoutes()
 

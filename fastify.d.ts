@@ -31,7 +31,8 @@ declare namespace fastify {
 
   type SchemaCompiler = (schema: Object) => Function
 
-  type ContentTypeParser<HttpRequest> = (req: HttpRequest, done?: (err: Error, body?: any) => void) => void | Promise<any>;
+  type AsyncContentTypeParser<HttpRequest> = (req: HttpRequest) => Promise<any>;
+  type ContentTypeParser<HttpRequest> = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void;
 
   /**
    * fastify's wrapped version of node.js IncomingMessage
@@ -390,7 +391,7 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: object | ContentTypeParser<HttpRequest>, parser?: ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

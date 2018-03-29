@@ -158,10 +158,10 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
-If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#seterrorhandler) API.
+If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#seterrorhandler) API.
 
 Errors with a `status` or `statusCode` property equal to `404` will be routed to the not found handler.
-See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#setnotfoundhandler)
+See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler)
 API to learn more about handling such cases:
 
 ```js

@@ -551,7 +551,9 @@ function build (options) {
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        context._404Context = _fastify._404Context
+        const _404Context = Object.assign({}, _fastify._404Context)
+        _404Context.onSend = context.onSend
+        context._404Context = _404Context
       })
 
       done(notHandledErr)

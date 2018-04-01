@@ -1163,3 +1163,27 @@ test('Not found on unsupported method (should return a 404)', t => {
     })
   })
 })
+
+// https://github.com/fastify/fastify/issues/868
+test('onSend hooks run when an encapsulated route invokes the notFound handler', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, options, done) => {
+    instance.addHook('onSend', (request, reply, payload, next) => {
+      t.pass('onSend hook called')
+      next()
+    })
+
+    instance.get('/', (request, reply) => {
+      reply.send(new errors.NotFound())
+    })
+
+    done()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})

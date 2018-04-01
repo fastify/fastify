@@ -102,7 +102,7 @@ module.exports = routes
 ```
 In this example we used the `register` API. This API is the core of the Fastify framework, and is the only way to register routes, plugins and so on.
 
-At the beginning of this guide we noted that Fastify provides a foundation that assists with the asynchronous bootstrapping of your an application. Why this is important?
+At the beginning of this guide we noted that Fastify provides a foundation that assists with the asynchronous bootstrapping of your application. Why this is important?
 Consider the scenario where a database connection is needed to handle data storage. Obviously the database connection needs to be available prior to the server accepting connections. How do we address this problem?<br>
 A typical solution is to use a complex callback, or promises, system that will mix the framework API with other libraries and the application code.<br>
 Fastify handles this internally, with minimum effort!

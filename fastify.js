@@ -688,7 +688,7 @@ function build (options) {
   }
 
   function basic404 (req, reply) {
-    reply.code(404).send(new Error('Not found'))
+    reply.code(404).send(new Error('Not Found'))
   }
 
   function fourOhFourFallBack (req, res) {
@@ -710,7 +710,7 @@ function build (options) {
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
     const reply = new Reply(res, { onSend: [] }, request)
-    reply.code(404).send(new Error('Not found'))
+    reply.code(404).send(new Error('Not Found'))
   }
 
   function setNotFoundHandler (opts, handler) {

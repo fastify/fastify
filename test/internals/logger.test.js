@@ -91,7 +91,7 @@ test('The logger should add a timestamp if logging to stdout', t => {
   stream.once('data', (line) => {
     t.equal(line.msg, 'incoming request')
     stream.once('data', (line) => {
-      t.equal(line.msg, 'Not found')
+      t.equal(line.msg, 'Not Found')
       stream.once('data', (line) => {
         t.equal(line.msg, 'request completed')
         t.ok(line.responseTime, 'responseTime exists')

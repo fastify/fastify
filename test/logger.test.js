@@ -640,7 +640,7 @@ test('Should set a custom log level for a specific route', t => {
 test('The default 404 handler logs the incoming request', t => {
   t.plan(5)
 
-  const expectedMessages = ['incoming request', 'Not found', 'request completed']
+  const expectedMessages = ['incoming request', 'Not Found', 'request completed']
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {

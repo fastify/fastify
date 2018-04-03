@@ -491,7 +491,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
       t.deepEqual(JSON.parse(body.toString()), {
         statusCode: 404,
         error: 'Not Found',
-        message: 'Not found'
+        message: 'Not Found'
       })
     })
 

@@ -551,7 +551,9 @@ function build (options) {
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        context._404Context = _fastify._404Context
+        const _404Context = Object.assign({}, _fastify._404Context)
+        _404Context.onSend = context.onSend
+        context._404Context = _404Context
       })
 
       done(notHandledErr)
@@ -686,7 +688,7 @@ function build (options) {
   }
 
   function basic404 (req, reply) {
-    reply.code(404).send(new Error('Not found'))
+    reply.code(404).send(new Error('Not Found'))
   }
 
   function fourOhFourFallBack (req, res) {
@@ -708,7 +710,7 @@ function build (options) {
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
     const reply = new Reply(res, { onSend: [] }, request)
-    reply.code(404).send(new Error('Not found'))
+    reply.code(404).send(new Error('Not Found'))
   }
 
   function setNotFoundHandler (opts, handler) {

@@ -919,7 +919,7 @@ test('log debug for 404', t => {
 
       const INFO_LEVEL = 30
       t.strictEqual(JSON.parse(logStream.logs[0]).msg, 'incoming request')
-      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not found')
+      t.strictEqual(JSON.parse(logStream.logs[1]).msg, 'Not Found')
       t.strictEqual(JSON.parse(logStream.logs[1]).level, INFO_LEVEL)
       t.strictEqual(JSON.parse(logStream.logs[2]).msg, 'request completed')
       t.strictEqual(logStream.logs.length, 3)
@@ -953,7 +953,7 @@ test('recognizes errors from the http-errors module', t => {
         const obj = JSON.parse(body.toString())
         t.strictDeepEqual(obj, {
           error: 'Not Found',
-          message: 'Not found',
+          message: 'Not Found',
           statusCode: 404
         })
       })
@@ -979,7 +979,7 @@ test('the default 404 handler can be invoked inside a prefixed plugin', t => {
     t.strictEqual(res.statusCode, 404)
     t.strictDeepEqual(JSON.parse(res.payload), {
       error: 'Not Found',
-      message: 'Not found',
+      message: 'Not Found',
       statusCode: 404
     })
   })
@@ -1161,5 +1161,29 @@ test('Not found on unsupported method (should return a 404)', t => {
         t.strictEqual(response.statusCode, 404)
       })
     })
+  })
+})
+
+// https://github.com/fastify/fastify/issues/868
+test('onSend hooks run when an encapsulated route invokes the notFound handler', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, options, done) => {
+    instance.addHook('onSend', (request, reply, payload, next) => {
+      t.pass('onSend hook called')
+      next()
+    })
+
+    instance.get('/', (request, reply) => {
+      reply.send(new errors.NotFound())
+    })
+
+    done()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
   })
 })

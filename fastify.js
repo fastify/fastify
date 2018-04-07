@@ -263,7 +263,11 @@ function build (options) {
       var listen = new Promise((resolve, reject) => {
         server.listen(port, address, backlog, (err) => {
           if (err) reject(err)
-          else resolve()
+          else {
+            server.removeListener('error', errEventHandler)
+            logServerAddress(server.address(), options.https)
+            resolve()
+          }
         })
       })
 
@@ -271,8 +275,6 @@ function build (options) {
         errEvent, // e.g invalid port range error is always emitted before the server listening
         listen
       ])
-        .then(() => server.removeListener('error', errEventHandler))
-        .then(() => logServerAddress(server.address(), options.https))
     })
   }
 

@@ -272,7 +272,7 @@ function build (options) {
         listen
       ])
         .then(() => server.removeListener('error', errEventHandler))
-        .then(() => printServerAddress(server.address(), options.https))
+        .then(() => logServerAddress(server.address(), options.https))
     })
   }
 
@@ -310,14 +310,14 @@ function build (options) {
 
     function wrap (err) {
       if (!err) {
-        printServerAddress(server.address(), options.https)
+        logServerAddress(server.address(), options.https)
       }
       server.removeListener('error', wrap)
       cb(err)
     }
   }
 
-  function printServerAddress (address, isHttps) {
+  function logServerAddress (address, isHttps) {
     if (typeof address === 'object') {
       if (address.address.indexOf(':') === -1) {
         address = address.address + ':' + address.port

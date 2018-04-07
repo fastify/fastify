@@ -5,7 +5,6 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
-const promisify = require('util').promisify
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -253,18 +252,24 @@ function build (options) {
       return Promise.reject(new Error('Fastify is already listening'))
     }
 
-    var listen = promisify(server.listen.bind(server))
-    var errEventHandler
-    var errEvent = new Promise((resolve, reject) => {
-      errEventHandler = (err) => reject(err)
-      server.once('error', errEventHandler)
-    })
-
     return fastify.ready().then(() => {
       listening = true
+
+      var errEventHandler
+      var errEvent = new Promise((resolve, reject) => {
+        errEventHandler = (err) => reject(err)
+        server.once('error', errEventHandler)
+      })
+      var listen = new Promise((resolve, reject) => {
+        server.listen(port, address, backlog, (err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
+
       return Promise.race([
         errEvent, // is always emitted before the server listening
-        listen(port, address, backlog)
+        listen
       ])
         .then(() => server.removeListener('error', errEventHandler))
         .then(() => printServerAddress(server.address(), options.https))

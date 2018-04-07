@@ -268,7 +268,7 @@ function build (options) {
       })
 
       return Promise.race([
-        errEvent, // is always emitted before the server listening
+        errEvent, // e.g invalid port range error is always emitted before the server listening
         listen
       ])
         .then(() => server.removeListener('error', errEventHandler))

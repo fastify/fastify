@@ -5,6 +5,7 @@ const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const Middie = require('middie')
+const promisify = require('util').promisify
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 
@@ -245,6 +246,32 @@ function build (options) {
     }
   }
 
+  function listenPromise (port, address, backlog) {
+    address = address || '127.0.0.1'
+
+    if (listening) {
+      return Promise.reject(new Error('Fastify is already listening'))
+    }
+
+    var listen = promisify(server.listen.bind(server))
+    var errEventHandler
+    var errEvent = new Promise((resolve, reject) => {
+      errEventHandler = (err) => reject(err)
+      server.once('error', errEventHandler)
+    })
+
+    return fastify.ready().then(() => {
+      listening = true
+      return Promise.race([
+        errEvent, // is always emitted before the server listening
+        listen(port, address, backlog)
+      ])
+        .then(() => listen(port, address, backlog))
+        .then(() => server.removeListener('error', errEventHandler))
+        .then(() => printServerAddress(server.address(), options.https))
+    })
+  }
+
   function listen (port, address, backlog, cb) {
     /* Deal with listen (port, cb) */
     if (typeof address === 'function') {
@@ -259,17 +286,7 @@ function build (options) {
       backlog = undefined
     }
 
-    if (cb === undefined) {
-      return new Promise((resolve, reject) => {
-        fastify.listen(port, address, err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        })
-      })
-    }
+    if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
       if (err) return cb(err)
@@ -277,7 +294,7 @@ function build (options) {
         return cb(new Error('Fastify is already listening'))
       }
 
-      server.on('error', wrap)
+      server.once('error', wrap)
       if (backlog) {
         server.listen(port, address, backlog, wrap)
       } else {
@@ -289,21 +306,23 @@ function build (options) {
 
     function wrap (err) {
       if (!err) {
-        let address = server.address()
-        if (typeof address === 'object') {
-          if (address.address.indexOf(':') === -1) {
-            address = address.address + ':' + address.port
-          } else {
-            address = '[' + address.address + ']:' + address.port
-          }
-        }
-        address = 'http' + (options.https ? 's' : '') + '://' + address
-        fastify.log.info('Server listening at ' + address)
+        printServerAddress(server.address(), options.https)
       }
-
       server.removeListener('error', wrap)
       cb(err)
     }
+  }
+
+  function printServerAddress (address, isHttps) {
+    if (typeof address === 'object') {
+      if (address.address.indexOf(':') === -1) {
+        address = address.address + ':' + address.port
+      } else {
+        address = '[' + address.address + ']:' + address.port
+      }
+    }
+    address = 'http' + (isHttps ? 's' : '') + '://' + address
+    fastify.log.info('Server listening at ' + address)
   }
 
   function State (req, res, params, context) {

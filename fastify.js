@@ -266,7 +266,6 @@ function build (options) {
         errEvent, // is always emitted before the server listening
         listen(port, address, backlog)
       ])
-        .then(() => listen(port, address, backlog))
         .then(() => server.removeListener('error', errEventHandler))
         .then(() => printServerAddress(server.address(), options.https))
     })

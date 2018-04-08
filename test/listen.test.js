@@ -165,6 +165,17 @@ test('listen twice on the same port without callback rejects', t => {
     .catch(err => t.error(err))
 })
 
+test('listen on invalid port without callback rejects', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.listen(-1)
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
 test('listen logs the port as info', t => {
   t.plan(1)
   const fastify = Fastify()

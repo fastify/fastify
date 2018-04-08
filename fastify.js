@@ -245,6 +245,39 @@ function build (options) {
     }
   }
 
+  function listenPromise (port, address, backlog) {
+    address = address || '127.0.0.1'
+
+    if (listening) {
+      return Promise.reject(new Error('Fastify is already listening'))
+    }
+
+    return fastify.ready().then(() => {
+      listening = true
+
+      var errEventHandler
+      var errEvent = new Promise((resolve, reject) => {
+        errEventHandler = (err) => reject(err)
+        server.once('error', errEventHandler)
+      })
+      var listen = new Promise((resolve, reject) => {
+        server.listen(port, address, backlog, (err) => {
+          if (err) reject(err)
+          else {
+            server.removeListener('error', errEventHandler)
+            logServerAddress(server.address(), options.https)
+            resolve()
+          }
+        })
+      })
+
+      return Promise.race([
+        errEvent, // e.g invalid port range error is always emitted before the server listening
+        listen
+      ])
+    })
+  }
+
   function listen (port, address, backlog, cb) {
     /* Deal with listen (port, cb) */
     if (typeof address === 'function') {
@@ -259,17 +292,7 @@ function build (options) {
       backlog = undefined
     }
 
-    if (cb === undefined) {
-      return new Promise((resolve, reject) => {
-        fastify.listen(port, address, err => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve()
-          }
-        })
-      })
-    }
+    if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
       if (err) return cb(err)
@@ -277,7 +300,7 @@ function build (options) {
         return cb(new Error('Fastify is already listening'))
       }
 
-      server.on('error', wrap)
+      server.once('error', wrap)
       if (backlog) {
         server.listen(port, address, backlog, wrap)
       } else {
@@ -289,21 +312,23 @@ function build (options) {
 
     function wrap (err) {
       if (!err) {
-        let address = server.address()
-        if (typeof address === 'object') {
-          if (address.address.indexOf(':') === -1) {
-            address = address.address + ':' + address.port
-          } else {
-            address = '[' + address.address + ']:' + address.port
-          }
-        }
-        address = 'http' + (options.https ? 's' : '') + '://' + address
-        fastify.log.info('Server listening at ' + address)
+        logServerAddress(server.address(), options.https)
       }
-
       server.removeListener('error', wrap)
       cb(err)
     }
+  }
+
+  function logServerAddress (address, isHttps) {
+    if (typeof address === 'object') {
+      if (address.address.indexOf(':') === -1) {
+        address = address.address + ':' + address.port
+      } else {
+        address = '[' + address.address + ']:' + address.port
+      }
+    }
+    address = 'http' + (isHttps ? 's' : '') + '://' + address
+    fastify.log.info('Server listening at ' + address)
   }
 
   function State (req, res, params, context) {

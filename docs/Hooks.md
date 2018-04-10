@@ -77,6 +77,8 @@ fastify.addHook('onResponse', async (res) => {
 })
 ```
 
+If the `async`/`await` form is used, (or equivalently, if the hook returns a `Promise`), be sure to not call `next`. Otherwise you will duplicate the execution of any further handlers.
+
 | Parameter   |  Description  |
 |-------------|-------------|
 | req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |

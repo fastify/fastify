@@ -74,7 +74,7 @@ declare namespace fastify {
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
-    logger?: pino.LoggerOptions | true,
+    logger?: pino.LoggerOptions | boolean,
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {

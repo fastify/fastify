@@ -314,3 +314,9 @@ server.after(function (err: Error, context: fastify.FastifyInstance<http2.Http2S
   server.log.debug(context)
   done(err)
 })
+
+{
+  const server: fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> = fastify({
+    logger: process.env.NODE_ENV === 'dev' ? true : false
+  })
+}

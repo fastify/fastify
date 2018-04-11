@@ -31,6 +31,9 @@ declare namespace fastify {
 
   type SchemaCompiler = (schema: Object) => Function
 
+  type AsyncContentTypeParser<HttpRequest> = (req: HttpRequest) => Promise<any>;
+  type ContentTypeParser<HttpRequest> = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void;
+
   /**
    * fastify's wrapped version of node.js IncomingMessage
    */
@@ -342,7 +345,7 @@ declare namespace fastify {
      * Hook that is fired after a request is processed, but before the "onResponse"
      * hook
      */
-     addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
      /**
      * Hook that is called when a response is about to be sent to a client
@@ -384,6 +387,16 @@ declare namespace fastify {
      * Create a shared schema
      */
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Add a content type parser
+     */
+    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+
+    /**
+     * Check if a parser for the specified content type exists
+     */
+    hasContentTypeParser(contentType: string): boolean;
 
     /**
      * Prints the representation of the internal radix tree used by the router

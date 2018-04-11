@@ -269,6 +269,16 @@ server.setSchemaCompiler(function (schema: object) {
 
 server.addSchema({})
 
+server.addContentTypeParser('foo/bar', {}, (req, done) => {
+  done!(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
+
+if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
+  throw new Error('Invalid')
+}
+
 server.printRoutes()
 
 server.ready(function (err) {

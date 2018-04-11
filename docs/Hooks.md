@@ -77,7 +77,7 @@ fastify.addHook('onResponse', async (res) => {
 })
 ```
 
-If the `async`/`await` form is used, (or equivalently, if the hook returns a `Promise`), be sure to not call `next`. Otherwise you will duplicate the execution of any further handlers.
+**Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
 | Parameter   |  Description  |
 |-------------|-------------|

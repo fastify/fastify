@@ -18,6 +18,11 @@
     "type": "git",
     "url": "git+https://github.com/fastify/fastify.git"
   },
+  "files": [
+    "$npm_package_main",
+    "fastify.d.ts",
+    "lib"
+  ],
   "keywords": [
     "web",
     "framework",

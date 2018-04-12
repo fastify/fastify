@@ -123,7 +123,7 @@ if (semver.gt(process.versions.node, '6.0.0')) {
           message: 'Client Error',
           statusCode: 400
         })
-        t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`, chunks)
+        t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`, chunks)
         fastify.close()
       })
     })

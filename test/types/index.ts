@@ -75,6 +75,8 @@ const server = fastify({
 // Third party middleware
 server.use(cors())
 
+console.log(server.SUPPORTED_METHODS)
+
 // Custom middleware
 server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`);

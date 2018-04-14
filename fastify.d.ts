@@ -402,6 +402,11 @@ declare namespace fastify {
      * Prints the representation of the internal radix tree used by the router
      */
     printRoutes(): string
+
+    /**
+     * Array that contains all HTTP methods
+     */
+    SUPPORTED_METHODS: string[]
   }
 }
 

@@ -211,3 +211,12 @@ fastify.ready(() => {
   //   └── hello/world (GET)
 })
 ```
+
+<a name="supported-methods"></a>
+#### SUPPORTED_METHODS
+
+`fastify.SUPPORTED_METHODS`: an array that contains all supported HTTP methods.<br/>
+
+```js
+fastify.SUPPORTED_METHODS // [ 'GET', 'POST', ... ]
+```

@@ -230,3 +230,24 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 })
 ```
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
+
+
+<a name="routes-config"></a>
+### Config
+Registering a new handler, you can pass a configuration object to it and retrieve it in the handler.
+
+```js
+// server.js
+const fastify = require('fastify')()
+
+function handler (req, reply) {
+  reply.send(reply.context.config.output)
+}
+
+fastify.register('/en', { config: { output: 'hello world!' } }, handler)
+fastify.register('/it', { config: { output: 'ciao mondo!' } }, handler)
+
+fastify.listen(3000)
+```
+
+*Remember to not abuse of this feature. Please consider to use `decorate`, `decorateRequest` and `decorateReply` methods before*

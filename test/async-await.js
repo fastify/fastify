@@ -239,7 +239,7 @@ function asyncTest (t) {
 
     fastify.decorateReply('wow', function () {
       return new Promise((resolve) => {
-        resolve({ hello: 'world' })
+        resolve()
       })
     })
 
@@ -253,8 +253,7 @@ function asyncTest (t) {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { hello: 'world' })
+      t.equal(res.payload, '')
     })
   })
 
@@ -265,27 +264,6 @@ function asyncTest (t) {
 
     fastify.get('/', async (req, reply) => {
       reply.code(204)
-    })
-
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 204)
-    })
-  })
-
-  test('does not call reply.send() twice if 204 reponse is already sent', t => {
-    t.plan(3)
-
-    const fastify = Fastify()
-
-    fastify.get('/', async (req, reply) => {
-      reply.code(204).send()
-      reply.send = () => {
-        t.equal(reply.sent, true)
-      }
     })
 
     fastify.inject({

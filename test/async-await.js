@@ -211,14 +211,41 @@ function asyncTest (t) {
     const fastify = Fastify()
 
     fastify.decorateReply('wow', function () {
-      setImmediate(() => {
+      return new Promise((resolve) => {
         this.send({ hello: 'world' })
+        resolve()
       })
     })
 
     fastify.get('/', async (req, reply) => {
       await sleep(1)
-      reply.wow()
+      return reply.wow()
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.deepEqual(payload, { hello: 'world' })
+    })
+  })
+
+  test('support reply decorators with await / 2', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    fastify.decorateReply('wow', function () {
+      return new Promise((resolve) => {
+        resolve({ hello: 'world' })
+      })
+    })
+
+    fastify.get('/', async (req, reply) => {
+      await sleep(1)
+      return reply.wow()
     })
 
     fastify.inject({
@@ -250,14 +277,14 @@ function asyncTest (t) {
   })
 
   test('does not call reply.send() twice if 204 reponse is already sent', t => {
-    t.plan(2)
+    t.plan(3)
 
     const fastify = Fastify()
 
     fastify.get('/', async (req, reply) => {
       reply.code(204).send()
       reply.send = () => {
-        throw new Error('reply.send() was called twice')
+        t.equal(reply.sent, true)
       }
     })
 

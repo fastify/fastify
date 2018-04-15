@@ -244,10 +244,8 @@ function handler (req, reply) {
   reply.send(reply.context.config.output)
 }
 
-fastify.register('/en', { config: { output: 'hello world!' } }, handler)
-fastify.register('/it', { config: { output: 'ciao mondo!' } }, handler)
+fastify.get('/en', { config: { output: 'hello world!' } }, handler)
+fastify.get('/it', { config: { output: 'ciao mondo!' } }, handler)
 
 fastify.listen(3000)
 ```
-
-*Remember to not abuse of this feature. Please consider to use `decorate`, `decorateRequest` and `decorateReply` methods before*

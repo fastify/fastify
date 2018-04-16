@@ -115,7 +115,7 @@ test('onClose should keep the context', t => {
 })
 
 test('Should return 503 while closing', t => {
-  t.plan(7)
+  t.plan(8)
   const fastify = Fastify()
 
   fastify.addHook('onClose', (instance, done) => {
@@ -143,6 +143,7 @@ test('Should return 503 while closing', t => {
         t.strictEqual(res.statusCode, 503)
         t.strictEqual(res.headers['content-type'], 'application/json')
         t.strictEqual(res.headers['content-length'], '80')
+        t.strictEqual(res.headers['connection'], 'close')
         t.deepEqual(JSON.parse(res.payload), {
           error: 'Service Unavailable',
           message: 'Service Unavailable',

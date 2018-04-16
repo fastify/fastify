@@ -313,7 +313,7 @@ function asyncTest (t) {
     }
   })
 
-  test('error is logged when promise is fulfilled with undefined and statusCode other than 204', t => {
+  test('error is logged because promise was fulfilled with undefined', t => {
     t.plan(3)
 
     var fastify = null
@@ -349,6 +349,47 @@ function asyncTest (t) {
         timeout: 200
       }, (err, res, body) => {
         t.is(err.message, 'Request timed out')
+      })
+    })
+  })
+
+  test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
+    t.plan(3)
+
+    var fastify = null
+    var stream = split(JSON.parse)
+    try {
+      fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'error'
+        }
+      })
+    } catch (e) {
+      t.fail()
+    }
+
+    t.tearDown(fastify.close.bind(fastify))
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204)
+    })
+
+    stream.once('data', line => {
+      t.fail('should not log an error')
+    })
+
+    fastify.listen(0, (err) => {
+      t.error(err)
+      fastify.server.unref()
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/',
+        timeout: 200
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 204)
       })
     })
   })

@@ -113,17 +113,12 @@ function build (options) {
   app.once('preReady', () => {
     fastify.onClose((instance, done) => {
       closing = true
-      done(null)
+      if (listening) {
+        instance.server.close(done)
+      } else {
+        done(null)
+      }
     })
-  })
-
-  fastify.onClose((instance, done) => {
-    closing = true
-    if (listening) {
-      instance.server.close(done)
-    } else {
-      done(null)
-    }
   })
 
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {

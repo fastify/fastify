@@ -357,7 +357,7 @@ function asyncTest (t) {
     })
 
     stream.once('data', line => {
-      t.ok(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
+      t.strictEqual(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
     })
 
     fastify.listen(0, (err) => {

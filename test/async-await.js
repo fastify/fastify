@@ -394,6 +394,52 @@ function asyncTest (t) {
     })
   })
 
+  test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
+    t.plan(4)
+
+    var fastify = null
+    var stream = split(JSON.parse)
+    var payload = { 'hello': 'world' }
+    try {
+      fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'error'
+        }
+      })
+    } catch (e) {
+      t.fail()
+    }
+
+    t.tearDown(fastify.close.bind(fastify))
+
+    fastify.get('/', async (req, reply) => {
+      reply.send(payload)
+    })
+
+    stream.once('data', line => {
+      t.fail('should not log an error')
+    })
+
+    fastify.listen(0, (err) => {
+      t.error(err)
+      fastify.server.unref()
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/',
+        timeout: 200
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 200)
+        t.deepEqual(
+          payload,
+          JSON.parse(body)
+        )
+      })
+    })
+  })
+
   test('Thrown Error instance sets HTTP status code', t => {
     t.plan(3)
 

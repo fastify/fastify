@@ -6,6 +6,7 @@
   "typings": "fastify.d.ts",
   "scripts": {
     "lint": "standard | snazzy",
+    "checkdeps": "node -e 'c = child_process.spawnSync(\"npm\", [\"ls\"]); console.log(c.status === 0 ? \"\": c.stderr.toString()); process.exit(c.status)'",
     "unit": "tap -j4 test/*.test.js test/*/*.test.js",
     "typescript": "tsc --project ./test/types/tsconfig.json",
     "test": "npm run lint && npm run unit && npm run typescript",
@@ -118,5 +119,9 @@
       "@types/node",
       "@types/pino"
     ]
-  }
+  },
+  "pre-commit": [
+    "test",
+    "checkdeps"
+  ]
 }

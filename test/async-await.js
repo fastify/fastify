@@ -249,27 +249,6 @@ function asyncTest (t) {
     })
   })
 
-  test('does not call reply.send() twice if 204 reponse is already sent', t => {
-    t.plan(2)
-
-    const fastify = Fastify()
-
-    fastify.get('/', async (req, reply) => {
-      reply.code(204).send()
-      reply.send = () => {
-        throw new Error('reply.send() was called twice')
-      }
-    })
-
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 204)
-    })
-  })
-
   test('inject async await', async t => {
     t.plan(1)
 
@@ -332,6 +311,154 @@ function asyncTest (t) {
     } catch (err) {
       t.fail(err)
     }
+  })
+
+  test('does not call reply.send() twice if 204 reponse is already sent', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204).send()
+      reply.send = () => {
+        throw new Error('reply.send() was called twice')
+      }
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 204)
+    })
+  })
+
+  test('error is logged because promise was fulfilled with undefined', t => {
+    t.plan(3)
+
+    var fastify = null
+    var stream = split(JSON.parse)
+    try {
+      fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'error'
+        }
+      })
+    } catch (e) {
+      t.fail()
+    }
+
+    t.tearDown(fastify.close.bind(fastify))
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(200)
+    })
+
+    stream.once('data', line => {
+      t.strictEqual(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
+    })
+
+    fastify.listen(0, (err) => {
+      t.error(err)
+      fastify.server.unref()
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/',
+        timeout: 200
+      }, (err, res, body) => {
+        t.is(err.message, 'Request timed out')
+      })
+    })
+  })
+
+  test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
+    t.plan(3)
+
+    var fastify = null
+    var stream = split(JSON.parse)
+    try {
+      fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'error'
+        }
+      })
+    } catch (e) {
+      t.fail()
+    }
+
+    t.tearDown(fastify.close.bind(fastify))
+
+    fastify.get('/', async (req, reply) => {
+      reply.code(204)
+    })
+
+    stream.once('data', line => {
+      t.fail('should not log an error')
+    })
+
+    fastify.listen(0, (err) => {
+      t.error(err)
+      fastify.server.unref()
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/',
+        timeout: 200
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 204)
+      })
+    })
+  })
+
+  test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
+    t.plan(4)
+
+    var fastify = null
+    var stream = split(JSON.parse)
+    var payload = { 'hello': 'world' }
+    try {
+      fastify = Fastify({
+        logger: {
+          stream: stream,
+          level: 'error'
+        }
+      })
+    } catch (e) {
+      t.fail()
+    }
+
+    t.tearDown(fastify.close.bind(fastify))
+
+    fastify.get('/', async (req, reply) => {
+      reply.send(payload)
+    })
+
+    stream.once('data', line => {
+      t.fail('should not log an error')
+    })
+
+    fastify.listen(0, (err) => {
+      t.error(err)
+      fastify.server.unref()
+
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/',
+        timeout: 200
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 200)
+        t.deepEqual(
+          payload,
+          JSON.parse(body)
+        )
+      })
+    })
   })
 
   test('Thrown Error instance sets HTTP status code', t => {

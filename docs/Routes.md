@@ -159,7 +159,7 @@ fastify.get('/', options, async function (request, reply) {
   return processed
 })
 ```
-**Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+* **Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
@@ -171,7 +171,8 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
-**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* **Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* **Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 <a name="promise-resolution"></a>
 ### Promise resolution

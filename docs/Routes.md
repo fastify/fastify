@@ -180,7 +180,7 @@ fastify.get('/', options, async function (request, reply) {
 If you use `async/await` or return a promise inside your handler you should be aware of a special behaviour which is  necessary to support the callback and promise control-flow. You can't fulfilled (resolve) a promise with `undefined` it is ignored, a *error* log will also be emitted because you pass the control of the response to the promise which can never be fulfilled (resolved). There are only two simple rules to remember:
 
 * If you want to use `async/await` or promises but respond a value with `reply.send`, **don't** `return` any value.
-* If you only want to use `async/await` or promises, **don't** use `reply.send` and return any value except `undefined`.
+* If you only want to use `async/await` or promises, **don't** use `reply.send` and `return` any value except `undefined`.
 
 This way is a little bit opinionated but it's the only way to support the most common patterns in the Node.js ecosystem. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
 

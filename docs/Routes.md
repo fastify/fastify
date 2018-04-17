@@ -159,7 +159,10 @@ fastify.get('/', options, async function (request, reply) {
   return processed
 })
 ```
-As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body (given that body is not `undefined`) and you are done!
+**Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+
+As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
+
 If you need it you can also send back the data to the user with `reply.send`.
 ```js
 fastify.get('/', options, async function (request, reply) {
@@ -168,7 +171,17 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
-**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted if the value is not `undefined`.
+**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+
+<a name="promise-resolution"></a>
+### Promise resolution
+
+If you use `async/await` or return a promise inside your handler you should be aware of a special behaviour which is  necessary to support the callback and promise control-flow. You can't fulfilled (resolve) a promise with `undefined` it is ignored, a *error* log will also be emitted because you pass the control of the response to the promise which can never be fulfilled (resolved). There are only two simple rules to remember:
+
+* If you want to use `async/await` or promises but respond a value with `reply.send`, **don't** `return` any value.
+* If you only want to use `async/await` or promises, **don't** use `reply.send` and return any value except `undefined`.
+
+This way is a little bit opinionated but is the only way to support the most common patterns in the Node.js ecosystem. In spite of so much freedom we highly recommend to go with one only style because error handling should be handled in a consistent way within your application.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

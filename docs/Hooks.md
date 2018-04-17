@@ -77,6 +77,8 @@ fastify.addHook('onResponse', async (res) => {
 })
 ```
 
+**Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+
 | Parameter   |  Description  |
 |-------------|-------------|
 | req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |

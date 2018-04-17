@@ -181,8 +181,10 @@ If you use `async/await` or return a promise inside your handler you should be a
 
 1. If you want to use `async/await` or promises but respond a value with `reply.send`:
     - **Don't** `return` any value.
+    - **Don't** forget to call `reply.send`.
 2. If you want to use `async/await` or promises:
-    - **Don't** use `reply.send` and `return` any value except `undefined`.
+    - **Don't** use `reply.send`.
+    - **Don't** forget to return any value except `undefined`.
 
 This way is a little bit opinionated but it's the only way to support the most common patterns in the Node.js ecosystem. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
 

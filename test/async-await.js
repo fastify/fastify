@@ -367,7 +367,7 @@ function asyncTest (t) {
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port + '/',
-        timeout: 200
+        timeout: 500
       }, (err, res, body) => {
         t.is(err.message, 'Request timed out')
       })
@@ -406,8 +406,7 @@ function asyncTest (t) {
 
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/',
-        timeout: 200
+        url: 'http://localhost:' + fastify.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.strictEqual(res.statusCode, 204)
@@ -448,8 +447,7 @@ function asyncTest (t) {
 
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/',
-        timeout: 200
+        url: 'http://localhost:' + fastify.server.address().port + '/'
       }, (err, res, body) => {
         t.error(err)
         t.strictEqual(res.statusCode, 200)

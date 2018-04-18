@@ -159,7 +159,10 @@ fastify.get('/', options, async function (request, reply) {
   return processed
 })
 ```
-As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body (given that body is not `undefined`) and you are done!
+**Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+
+As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
+
 If you need it you can also send back the data to the user with `reply.send`.
 ```js
 fastify.get('/', options, async function (request, reply) {
@@ -168,7 +171,25 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
-**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted if the value is not `undefined`.
+**Warning:**
+* If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+
+<a name="promise-resolution"></a>
+### Promise resolution
+
+If you use `async/await` or return a promise inside your handler you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If you resolve the handler's promise with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
+
+1. If you want to use `async/await` or promises but respond a value with `reply.send`:
+    - **Don't** `return` any value.
+    - **Don't** forget to call `reply.send`.
+2. If you want to use `async/await` or promises:
+    - **Don't** use `reply.send`.
+    - **Don't** return `undefined`.
+
+In this way, we can support both `callback-style` and `async-await`, with the minimum trade-off. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
+
+**Notice**: Every async function returns a promise by itself.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

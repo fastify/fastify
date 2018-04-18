@@ -3,7 +3,6 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const http = require('http')
 
 test('close callback', t => {
   t.plan(4)
@@ -152,58 +151,5 @@ test('Should return 503 while closing - injection', t => {
         })
       })
     }, 100)
-  })
-})
-
-test('Should return 503 while closing - keep alive', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.addHook('onClose', (instance, done) => {
-    setTimeout(done, 250)
-  })
-
-  fastify.get('/', (req, reply) => {
-    fastify.close()
-    process.nextTick(() => {
-      reply.send({ hello: 'world' })
-    })
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    const agent = new http.Agent({
-      keepAlive: true,
-      keepAliveMsecs: 1000,
-      maxSocket: 1
-    })
-
-    const opts = {
-      host: 'localhost',
-      port: fastify.server.address().port,
-      agent: agent,
-      path: '/'
-    }
-
-    const codes = [200, 503]
-
-    const req1 = http.get(opts, res => {
-      t.strictEqual(res.statusCode, codes.shift())
-      if (!codes.length) agent.destroy()
-    })
-
-    req1.on('error', err => t.fail(err))
-    req1.end()
-
-    process.nextTick(() => {
-      const req2 = http.get(opts, res => {
-        t.strictEqual(res.statusCode, codes.shift())
-        if (!codes.length) agent.destroy()
-      })
-
-      req2.on('error', err => t.fail(err))
-      req2.end()
-    })
   })
 })

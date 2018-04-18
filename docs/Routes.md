@@ -171,8 +171,9 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
-* **Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
-* **Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+**Warning:**
+* If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 <a name="promise-resolution"></a>
 ### Promise resolution
@@ -186,7 +187,7 @@ If you use `async/await` or return a promise inside your handler you should be a
     - **Don't** use `reply.send`.
     - **Don't** return `undefined`.
 
-This way is a little bit opinionated but it's the only way to support the most common patterns in the Node.js ecosystem. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
+In this way, we can support both `callback-style` and `async-await`, with the minimum trade-off. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
 
 **Notice**: Every async function returns a promise by itself.
 

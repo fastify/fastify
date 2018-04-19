@@ -35,36 +35,47 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ```
 
 <a name="code"></a>
-### Code
+### .code(statusCode)
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="header"></a>
-### Header
-Sets a response header.
+### .header(key, value)
+Sets a response header. If the value is omitted or undefined it is coerced
+to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
 
 <a name="getHeader"></a>
-### GetHeader
+### .getHeader(key)
 Retrieves the value of a previously set header.
 ```js
 reply.header('x-foo', 'foo')
 reply.getHeader('x-foo') // 'foo'
 ```
 
+<a name="getHeader"></a>
+### .removeHeader(key)
+
+Removed the value of a previously set header.
+```js
+reply.header('x-foo', 'foo')
+reply.removeHeader('x-foo')
+reply.getHeader('x-foo') // undefined
+```
+
 <a name="hasHeader"></a>
-### HasHeader
+### .hasHeader(key)
 Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
-### Redirect
+### .redirect(dest)
 Redirects a request to the specified url, the status code is optional, default to `302`.
 ```js
 reply.redirect('/home')
 ```
 
 <a name="type"></a>
-### Type
+### .type(contentType, type)
 Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 
@@ -73,7 +84,7 @@ reply.type('text/html')
 ```
 
 <a name="serializer"></a>
-### Serializer
+### .serializer(func)
 `.send()` will by default JSON-serialize any value that is not one of: `Buffer`, `stream`, `string`, `undefined`, `Error`. If you need to replace the default serializer with a custom serializer for a particular request, you can do so with the `.serializer()` utility. Be aware that if you are using a custom serializer, you must set a custom `'Content-Type'` header.
 
 ```js
@@ -93,7 +104,7 @@ reply
 See [`.send()`](#send) for more information on sending different types of values.
 
 <a name="send"></a>
-### Send
+### .send(data)
  As the name suggests, `.send()` is the function that sends the payload to the end user.
 
 <a name="send-object"></a>

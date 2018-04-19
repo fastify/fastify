@@ -620,7 +620,7 @@ test('reply.getHeader returns correct values', t => {
 })
 
 test('reply.header can remove the value', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = require('../../')()
 
@@ -631,6 +631,9 @@ test('reply.header can remove the value', t => {
     t.is(reply.getHeader('x-foo'), 'foo')
 
     reply.header('x-foo', undefined)
+    t.strictDeepEqual(reply.getHeader('x-foo'), '')
+
+    reply.removeHeader('x-foo')
     t.strictDeepEqual(reply.getHeader('x-foo'), undefined)
 
     reply.send()

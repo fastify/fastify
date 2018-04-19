@@ -56,7 +56,7 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
-<a name="usage"></a>
+<a name="usage_notes"></a>
 #### Usage Notes
 `decorateReply` and `decorateRequest` are used to modify the `Reply` and `Request` constructors respectively by adding methods or properties. To update these properties you should directly access the desired property of the `Reply` or `Request` object.
 
@@ -67,8 +67,9 @@ As an example let's add a user property to the `Request` object:
 fastify.decorateRequest('user', '') 
 
 // Update our property
-fastify.addHook('preHandler', (req, reply) => {
+fastify.addHook('preHandler', (req, reply, next) => {
   req.user = 'Bob Dylan'
+  next()
 })
 // And finally access it
 fastify.get('/', (req, reply) => {

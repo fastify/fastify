@@ -40,7 +40,8 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="header"></a>
 ### .header(key, value)
-Sets a response header.
+Sets a response header. If the value is omitted or undefined it is coerced
+to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
 

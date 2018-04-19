@@ -648,7 +648,7 @@ test('reply.removeHeader can remove the value', t => {
   })
 })
 
-test('reply.header can remove the value', t => {
+test('reply.header can reset the value', t => {
   t.plan(3)
 
   const fastify = require('../../')()

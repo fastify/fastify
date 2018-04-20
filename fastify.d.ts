@@ -34,6 +34,10 @@ declare namespace fastify {
   type AsyncContentTypeParser<HttpRequest> = (req: HttpRequest) => Promise<any>;
   type ContentTypeParser<HttpRequest> = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void;
 
+  interface FastifyContext {
+    config: any
+  }
+
   /**
    * fastify's wrapped version of node.js IncomingMessage
    */
@@ -69,7 +73,7 @@ declare namespace fastify {
     send: (payload?: any) => FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
-    context: any
+    context: FastifyContext
   }
 
   interface ServerOptions {

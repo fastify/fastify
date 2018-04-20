@@ -586,20 +586,25 @@ test('Should get the body as buffer', t => {
 })
 
 test('Should parse empty bodies as a string', t => {
-  t.plan(5)
+  t.plan(9)
   const fastify = Fastify()
 
-  fastify.post('/', (req, reply) => {
-    reply.send(req.body)
-  })
-
-  fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, function (req, body, done) {
+  fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
     t.strictEqual(body, '')
     done(null, body)
   })
 
+  fastify.route({
+    method: ['POST', 'DELETE'],
+    url: '/',
+    handler (request, reply) {
+      reply.send(request.body)
+    }
+  })
+
   fastify.listen(0, err => {
     t.error(err)
+    fastify.server.unref()
 
     sget({
       method: 'POST',
@@ -612,7 +617,19 @@ test('Should parse empty bodies as a string', t => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(body.toString(), '')
-      fastify.close()
+    })
+
+    sget({
+      method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '')
     })
   })
 })

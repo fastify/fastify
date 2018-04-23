@@ -255,6 +255,7 @@ declare namespace fastify {
      * Node core.
      */
     listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, hostname: string): Promise<void>
 
     /**
      * Starts the server on the given port after all the plugins are loaded,
@@ -263,6 +264,8 @@ declare namespace fastify {
      */
     listen(port: number, callback?: (err: Error) => void): http.Server
     listen(path: string, callback?: (err: Error) => void): http.Server
+    listen(port: number): Promise<void>
+    listen(path: string): Promise<void>
 
     /**
      * Registers a listener function that is invoked when all the plugins have

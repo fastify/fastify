@@ -928,7 +928,7 @@ test('log debug for 404', t => {
 })
 
 test('Unknown method', t => {
-  t.plan(6)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -941,24 +941,23 @@ test('Unknown method', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    fastify.inject({
+    const handler = () => {}
+    // See https://github.com/fastify/light-my-request/pull/20
+    t.throws(() => fastify.inject({
       method: 'UNKNWON_METHOD',
       url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.strictEqual(res.statusCode, 404)
+    }, handler), Error)
 
-      sget({
-        method: 'UNKNWON_METHOD',
-        url: 'http://localhost:' + fastify.server.address().port
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.strictDeepEqual(JSON.parse(body), {
-          error: 'Bad Request',
-          message: 'Client Error',
-          statusCode: 400
-        })
+    sget({
+      method: 'UNKNWON_METHOD',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.strictDeepEqual(JSON.parse(body), {
+        error: 'Bad Request',
+        message: 'Client Error',
+        statusCode: 400
       })
     })
   })

@@ -88,7 +88,7 @@
     "semver": "^5.5.0",
     "send": "^0.16.1",
     "serve-static": "^1.13.1",
-    "simple-get": "^2.7.0",
+    "simple-get": "^3.0.1",
     "snazzy": "^7.1.1",
     "split2": "^2.2.0",
     "standard": "^11.0.0",

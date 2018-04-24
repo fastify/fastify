@@ -254,6 +254,23 @@ server.listen(3000, err => {
   server.log.info(`server listening on ${server.server.address().port}`)
 })
 
+server.listen(3000, '0.0.0.0', err => {
+  if (err) throw err
+  server.log.info(`server listening on ${server.server.address().port}`)
+})
+
+server.listen(3000).then(() => {
+  server.log.info(`server listening on ${server.server.address().port}`)
+}).catch((error: Error) => {
+  throw error
+})
+
+server.listen(3000, '0.0.0.0').then(() => {
+  server.log.info(`server listening on ${server.server.address().port}`)
+}).catch((error: Error) => {
+  throw error
+})
+
 // http injections
 server.inject({ url: "/test" }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err);

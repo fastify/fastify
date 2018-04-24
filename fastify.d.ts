@@ -168,6 +168,14 @@ declare namespace fastify {
   }
 
   /**
+   * 
+   */
+  interface AddContentParserOptions {
+    parseAs?: 'string' | 'buffer',
+    bodyLimit?: number
+  }
+
+  /**
    * Represents the fastify instance created by the factory function the module exports.
    */
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
@@ -394,6 +402,7 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
+    addContentTypeParser(contentType: string, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
     addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**

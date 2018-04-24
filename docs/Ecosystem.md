@@ -41,10 +41,12 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](http://bookshelfjs.org/) orm support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
+- [`fastify-datastore`](https://github.com/now-ims/now-fastify-datastore) Fastify plugin for [Google Cloud Datastore](https://cloud.google.com/nodejs/docs/reference/datastore/1.4.x/). 
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-error-page`](https://github.com/hemerajs/fastify-error-page) Fastify plugin to print errors in structured HTML to the browser.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon) Fastify plugin to serve default favicon.
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
+- [`fastify-firestore`](https://github.com/now-ims/fastify-firestore) Fastify plugin for [Google Cloud Firestore](https://cloud.google.com/nodejs/docs/reference/firestore/0.13.x/).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT user scope verifier.

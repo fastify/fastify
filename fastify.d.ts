@@ -403,7 +403,7 @@ declare namespace fastify {
      * Add a content type parser
      */
     addContentTypeParser(contentType: string, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
-    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, opts: AddContentParserOptions | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

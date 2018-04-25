@@ -253,22 +253,27 @@ function build (options) {
     }
 
     return fastify.ready().then(() => {
-      listening = true
-
       var errEventHandler
       var errEvent = new Promise((resolve, reject) => {
-        errEventHandler = (err) => reject(err)
+        errEventHandler = (err) => {
+          listening = false
+          reject(err)
+        }
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
         server.listen(port, address, backlog, (err) => {
-          if (err) reject(err)
-          else {
+          if (err) {
+            listening = false
+            reject(err)
+          } else {
             server.removeListener('error', errEventHandler)
             logServerAddress(server.address(), options.https)
             resolve()
           }
         })
+        // we set it afterwards because listen can throw
+        listening = true
       })
 
       return Promise.race([
@@ -313,6 +318,8 @@ function build (options) {
     function wrap (err) {
       if (!err) {
         logServerAddress(server.address(), options.https)
+      } else {
+        listening = false
       }
       server.removeListener('error', wrap)
       cb(err)

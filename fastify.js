@@ -13,6 +13,8 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
+const errorCodes = require('./lib/errors').codes
+const annotateError = require('./lib/errors').annotateErrorWithCode
 const validation = require('./lib/validation')
 const isValidLogger = validation.isValidLogger
 const buildSchemaCompiler = validation.buildSchemaCompiler
@@ -356,7 +358,7 @@ function build (options) {
       const req = state.req
       const request = new state.context.Request(state.params, req, null, req.headers, req.log)
       const reply = new state.context.Reply(state.res, state.context, request)
-      reply.send(err)
+      reply.send(annotateError(err, errorCodes.FST_ERR_ON_REQUEST_HOOK))
       return
     }
 
@@ -371,7 +373,7 @@ function build (options) {
     if (err) {
       const request = new state.context.Request(state.params, req, null, req.headers, req.log)
       const reply = new state.context.Reply(res, state.context, request)
-      reply.send(err)
+      reply.send(annotateError(err, errorCodes.FST_ERR_RUN_MIDDLEWARE))
       return
     }
 
@@ -720,7 +722,7 @@ function build (options) {
   }
 
   function basic404 (req, reply) {
-    reply.code(404).send(new Error('Not Found'))
+    reply.code(404).send(annotateError(new Error('Not Found'), errorCodes.FST_ERR_HTTP))
   }
 
   function fourOhFourFallBack (req, res) {
@@ -742,7 +744,7 @@ function build (options) {
     req.log.warn(fourOhFour.prettyPrint())
     const request = new Request(null, req, null, req.headers, req.log)
     const reply = new Reply(res, { onSend: [] }, request)
-    reply.code(404).send(new Error('Not Found'))
+    reply.code(404).send(annotateError(new Error('Not Found'), errorCodes.FST_ERR_HTTP))
   }
 
   function setNotFoundHandler (opts, handler) {

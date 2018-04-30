@@ -709,7 +709,7 @@ test('Wrong parseAs parameter', t => {
     fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `Code: FST_ERR_CTP_INVALID_PARSE_AS; The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
+    t.is(err.message, `Code: FST_ERR_CTP_INVALID_PARSE_TYPE; The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
   }
 })
 

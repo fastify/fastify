@@ -119,7 +119,7 @@ module.exports.payloadMethod = function (method, t) {
         url: 'http://localhost:' + fastify.server.address().port,
         body: JSON.stringify({ hello: 'world' }),
         headers: {
-          'content-type': 'application/json;charset=utf-8'
+          'content-type': 'application/json; charset=utf-8'
         }
       }, (err, response, body) => {
         t.error(err)

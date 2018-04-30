@@ -310,7 +310,7 @@ test('plain string without content type should send a text/plain', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'hello world!')
     })
   })
@@ -385,7 +385,7 @@ test('plain string with content type application/json should be serialized as js
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(body.toString(), '"hello world!"')
     })
   })
@@ -501,7 +501,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'Custom not found response')
     })
   })
@@ -535,7 +535,7 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), '404 Not Found')
     })
   })

@@ -717,7 +717,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.deepEqual(JSON.parse(payload), thePayload)
-      t.strictEqual(reply._headers['content-type'], 'application/json')
+      t.strictEqual(reply._headers['content-type'], 'application/json; charset=utf-8')
       next()
     })
 
@@ -731,7 +731,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, 'some text')
-      t.strictEqual(reply._headers['content-type'], 'text/plain')
+      t.strictEqual(reply._headers['content-type'], 'text/plain; charset=utf-8')
       next()
     })
 
@@ -913,7 +913,7 @@ test('clear payload', t => {
     t.strictEqual(res.statusCode, 304)
     t.strictEqual(res.payload, '')
     t.strictEqual(res.headers['content-length'], undefined)
-    t.strictEqual(res.headers['content-type'], 'application/json')
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
   })
 })
 
@@ -1711,7 +1711,7 @@ test('If a response header has been set inside an hook it shoulod not be overwri
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.strictEqual(res.headers['x-custom-header'], 'hello')
-    t.strictEqual(res.headers['content-type'], 'text/plain')
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
     t.strictEqual(res.statusCode, 200)
     t.strictEqual(res.payload, 'hello')
   })

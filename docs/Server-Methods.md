@@ -6,6 +6,17 @@
 #### server
 `fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](https://github.com/fastify/fastify/blob/master/docs/Factory.md).
 
+<a name="after"></a>
+### after
+Invoked when the current plugin and all the plugin that has been registered under
+him have finished loading and is executed before the method ``` fastify.ready ```
+
+```js
+fastify.after(err => {
+  console.log('this plugin is loaded!')
+})
+```
+
 <a name="ready"></a>
 #### ready
 Function called when all the plugins have been loaded.
@@ -22,17 +33,6 @@ fastify.ready().then(() => {
   console.log('successfully booted!')
 }, (err) => {
   console.log('an error happened', err)
-})
-```
-
-<a name="after"></a>
-### after
-Invoked when all plugins and routes have been loaded
-and executed before the method ``` fastify.ready ```
-
-```js
-fastify.after(err => {
-  console.log('this plugin is loaded!')
 })
 ```
 

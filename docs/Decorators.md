@@ -56,6 +56,28 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
+<a name="usage_notes"></a>
+#### Usage Notes
+`decorateReply` and `decorateRequest` are used to modify the `Reply` and `Request` constructors respectively by adding methods or properties. To update these properties you should directly access the desired property of the `Reply` or `Request` object.
+
+As an example let's add a user property to the `Request` object:
+
+```js
+// Decorate request with a 'user' property
+fastify.decorateRequest('user', '') 
+
+// Update our property
+fastify.addHook('preHandler', (req, reply, next) => {
+  req.user = 'Bob Dylan'
+  next()
+})
+// And finally access it
+fastify.get('/', (req, reply) => {
+  reply.send(`Hello ${req.user}!`)
+})
+```
+Note: The usage of `decorateReply` and `decorateRequest` is optional in this case but will allow Fastify to optimize for performance.
+
 <a name="sync-async"></a>
 #### Sync and Async
 `decorate` is a *synchronous* API. If you need to add a decorator that has an *asynchronous* bootstrap, Fastify could boot up before your decorator is ready. To avoid this issue, you must use the `register` API in combination with `fastify-plugin`. To learn more, check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.

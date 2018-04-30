@@ -178,7 +178,7 @@ fastify.get('/', options, async function (request, reply) {
 <a name="promise-resolution"></a>
 ### Promise resolution
 
-If you use `async/await` or return a promise inside your handler you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If you resolve the handler's promise with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
+If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
 
 1. If you want to use `async/await` or promises but respond a value with `reply.send`:
     - **Don't** `return` any value.

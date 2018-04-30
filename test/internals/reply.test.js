@@ -310,7 +310,7 @@ test('plain string without content type should send a text/plain', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'hello world!')
     })
   })
@@ -385,7 +385,7 @@ test('plain string with content type application/json should be serialized as js
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(body.toString(), '"hello world!"')
     })
   })
@@ -501,7 +501,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'Custom not found response')
     })
   })
@@ -535,7 +535,7 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), '404 Not Found')
     })
   })
@@ -616,5 +616,61 @@ test('reply.getHeader returns correct values', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, () => {})
+  })
+})
+
+test('reply.removeHeader can remove the value', t => {
+  t.plan(5)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    t.is(reply.getHeader('x-foo'), 'foo')
+
+    t.is(reply.removeHeader('x-foo'), reply)
+    t.strictDeepEqual(reply.getHeader('x-foo'), undefined)
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
+  })
+})
+
+test('reply.header can reset the value', t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    reply.header('x-foo', undefined)
+    t.strictDeepEqual(reply.getHeader('x-foo'), '')
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
   })
 })

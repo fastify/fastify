@@ -27,12 +27,12 @@ fastify.ready().then(() => {
 
 <a name="after"></a>
 ### after
-An function called when all routes have been loaded
+Invoked when all plugins and routes have been loaded
 and executed before the method ``` fastify.ready ```
 
 ```js
 fastify.after(err => {
-  console.log('successfully after loaded all routes!')
+  console.log('this plugin is loaded!')
 })
 ```
 

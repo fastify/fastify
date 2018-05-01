@@ -7,7 +7,7 @@
 `fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](https://github.com/fastify/fastify/blob/master/docs/Factory.md).
 
 <a name="after"></a>
-### after
+#### after
 Invoked when the current plugin and all the plugin 
 that has been registered inside it have finished loading.
 It is always executed before the method ``` fastify.ready ```.

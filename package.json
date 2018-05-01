@@ -81,7 +81,7 @@
     "hsts": "^2.1.0",
     "http-errors": "^1.6.3",
     "ienoopen": "^1.0.0",
-    "joi": "~13.2.0",
+    "joi": "~11.4.0",
     "pre-commit": "^1.2.2",
     "proxyquire": "^2.0.1",
     "pump": "^3.0.0",

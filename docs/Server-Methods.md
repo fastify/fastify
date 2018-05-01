@@ -8,9 +8,9 @@
 
 <a name="after"></a>
 #### after
-Invoked when the current plugin and all the plugin 
-that has been registered inside it have finished loading.
-It is always executed before the method ``` fastify.ready ```.
+Invoked when the current plugin and all the plugins
+that have been registered within it have finished loading.
+It is always executed before the method `fastify.ready`.
 
 ```js
 fastify

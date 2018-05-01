@@ -8,13 +8,26 @@
 
 <a name="after"></a>
 ### after
-Invoked when the current plugin and all the plugin that has been registered under
-him have finished loading and is executed before the method ``` fastify.ready ```
+Invoked when the current plugin and all the plugin 
+that has been registered inside it have finished loading.
+It is always executed before the method ``` fastify.ready ```.
 
 ```js
-fastify.after(err => {
-  console.log('this plugin is loaded!')
-})
+fastify
+  .register((instance. opts, next) => {
+    console.log('Current plugin')
+    next()
+  })
+  .after(err => {
+    console.log('After current plugin')
+  })
+  .register((instance. opts, next) => {
+    console.log('Next plugin')
+    next()
+  })
+  .ready(err => {
+    console.log('Everything has been loaded')
+  })
 ```
 
 <a name="ready"></a>

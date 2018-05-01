@@ -1,3 +1,5 @@
+const pluginUtils = require('./lib/pluginUtils')
+
 const LINES = {
   r: '└──', //right
   t: '├──', //T shape
@@ -5,20 +7,21 @@ const LINES = {
 }
 
 function toString() {
-  console.log('Fastify Instance toString')
+  let output_string = 'Fastify Instance toString'
   /* Print hooks */
-  console.log(`\nHooks`)
+  output_string += `\n\nTop Level Hooks`
+
   Object.keys(this._hooks).forEach((lfm, i) => {
     const hooks = this._hooks[lfm]
-    console.log(`${
+    output_string += `\n${
       i < 3 ? LINES.t : LINES.r
-    } ${lfm} (${hooks.length} hooks): ${hooks.length > 0 ? hooks.map(h=>h.name) : '[]'}`)
+    } ${lfm} (${hooks.length} hooks): ${hooks.length > 0 ? hooks.map(h=>h.name) : '[]'}`
   })
   /* Ideally: iterate over routes and print plugins & middleware by scope */
-  console.log(`\nRoutes`)
-  console.log(`${this.printRoutes()}`)
+  output_string += `\n\nRoutes`
+  output_string += `\n${this.printRoutes()}`
 
-  console.log(`\nMiddleware`)
+  output_string += `\nTop Level Middleware`
   const middlewares = {
     '/': []
   }
@@ -30,13 +33,17 @@ function toString() {
     } else middlewares['/'].push(mdw[0].name)
   })
   Object.keys(middlewares).forEach((key, i, keys) => {
-    console.log(`${
+    output_string += `\n${
       i < keys.length - 1 ? LINES.t : LINES.r
-    } ${key}: [${middlewares[key].join(', ')}]`)
+    } ${key}: [${middlewares[key].join(', ')}]`
   })
 
-  console.log(`\nPlugins`)
-  console.log(`${LINES.r} TODO`)
+  output_string += `\n\nPlugins`
+  output_string += `\n${LINES.r} TODO`
+  console.log(`Registered Plugins: ${this[pluginUtils.registeredPlugins]}`)
+  // console.log(this)
+  console.log(output_string)
+  return output_string
 }
 
 module.exports = toString

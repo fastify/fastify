@@ -210,6 +210,14 @@ server
       reply.send({ hello: 'world' })
     }
   })
+  .route({
+    method: 'GET',
+    url: '/with-config',
+    config: { foo: 'bar' },
+    handler: function (req, reply) {
+      reply.send(reply.context.config)
+    }
+  })
   .register(function (instance, options, done) {
     instance.get('/route', opts, function (req, reply) {
       reply.send({ hello: 'world' })

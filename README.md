@@ -89,22 +89,22 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| micro (`microrouter`) | 9.1.0 (`microrouter@3.1.1` ) | &#10003; | 18,314       |
-| hapi               | 17.2.1                     | &#10003;     | 18,402        |
-| Express            | 4.16.2                     | &#10003;     | 19,401        |
-| spirit (`spirit-router`) | 0.6.1 (`spirit-router@0.5.0`) | &#10003; | 20,923   |
-| total.js           | 2.9.4                      | &#10003;     | 21,992        |
-| Restify            | 6.3.4                      | &#10003;     | 22,039        |
-| Koa (`koa-router`) | 2.5.0 (`koa-router@7.4.0`) | &#10003;     | 22,737        |
-| Koa                | 2.5.0                      | &#10007;     | 23,115        |
-| take-five          | 1.3.4                      | &#10003;     | 23,597        |
-| connect (`router`) | 3.6.6 (`router@1.3.2`)     | &#10003;     | 27,066        |
-| spirit             | 0.6.1                      | &#10007;     | 31,013        |
-| **Fastify**        | **1.0.0**                  | **&#10003;** | **31,634**    |
-| micro              | 9.1.0                      | &#10007;     | 31,793        |
-| connect            | 3.6.6                      | &#10007;     | 31,925        |
+| micro (`microrouter`) | 9.3.0 (`microrouter@3.1.2` ) | &#10003; | 20,922       |
+| hapi               | 17.4.0                     | &#10003;     | 20,617        |
+| Express            | 4.16.3                     | &#10003;     | 22,538        |
+| total.js           | 2.9.30                     | &#10003;     | 21,776        |
+| Restify            | 7.1.0                      | &#10003;     | 22,205        |
+| Koa (`koa-router`) | 2.5.1 (`koa-router@7.4.0`) | &#10003;     | 22,718        |
+| Koa                | 2.5.1                      | &#10007;     | 24,719        |
+| spirit (`spirit-router`) | 0.6.1 (`spirit-router@0.5.0`) | &#10003; | 28,948   |
+| take-five          | 1.3.4                      | &#10003;     | 28,012        |
+| connect (`router`) | 3.6.6 (`router@1.3.2`)     | &#10003;     | 31,669        |
+| micro              | 9.3.0                      | &#10007;     | 35,514        |
+| **Fastify**        | **1.3.1**                  | **&#10003;** | **35,441**    |
+| spirit             | 0.6.1                      | &#10007;     | 36,519        |
+| connect            | 3.6.6                      | &#10007;     | 37,414        |
 | -                  |                            |              |               |
-| `http.Server`      | 8.9.4                      | &#10007;     | 34,680        |
+| `http.Server`      | 8.11.1                      | &#10007;     | 25,688       |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework

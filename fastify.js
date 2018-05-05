@@ -268,8 +268,7 @@ function build (options) {
             reject(err)
           } else {
             server.removeListener('error', errEventHandler)
-            var address = logServerAddress(server.address(), options.https) || null
-            resolve(address)
+            resolve(logServerAddress(server.address(), options.https))
           }
         })
         // we set it afterwards because listen can throw

@@ -138,8 +138,8 @@ test('double listen errors', t => {
 test('double listen err, address (first listen)', t => {
   t.plan(3)
   const fastify = Fastify()
-  fastify.listen(0, (err, address1) => {
-    t.is(address1, 'http://127.0.0.1:' + fastify.server.address().port)
+  fastify.listen(0, (err, address) => {
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
     fastify.listen(fastify.server.address().port, (err) => {
       t.ok(err)
@@ -153,8 +153,8 @@ test('double listen err, address (second listen)', t => {
   const fastify = Fastify()
   fastify.listen(0, (err) => {
     t.error(err)
-    fastify.listen(fastify.server.address().port, (err, address2) => {
-      t.is(null, address2)
+    fastify.listen(fastify.server.address().port, (err, address) => {
+      t.is(null, address)
       t.ok(err)
       fastify.close()
     })
@@ -177,8 +177,8 @@ test('listen twice on the same port', t => {
 test('listen twice on the same port (first listen)', t => {
   t.plan(3)
   const fastify = Fastify()
-  fastify.listen(0, (err, address1) => {
-    t.is(address1, 'http://127.0.0.1:' + fastify.server.address().port)
+  fastify.listen(0, (err, address) => {
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
     const s2 = Fastify()
     s2.listen(fastify.server.address().port, (err) => {
@@ -194,8 +194,8 @@ test('listen twice on the same port (second listen)', t => {
   fastify.listen(0, (err) => {
     t.error(err)
     const s2 = Fastify()
-    s2.listen(fastify.server.address().port, (err, address2) => {
-      t.is(null, address2)
+    s2.listen(fastify.server.address().port, (err, address) => {
+      t.is(null, address)
       fastify.close()
       t.ok(err)
     })
@@ -217,20 +217,6 @@ if (os.platform() !== 'win32') {
       fastify.close()
     })
   })
-
-  test('listen on socket with callback address', t => {
-    t.plan(2)
-    const fastify = Fastify()
-    const sockFile = path.join(os.tmpdir(), 'server.sock')
-    try {
-      fs.unlinkSync(sockFile)
-    } catch (e) { }
-    fastify.listen(sockFile, (err, address) => {
-      t.error(err)
-      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-      fastify.close()
-    })
-  })
 }
 
 test('listen without callback', t => {
@@ -241,6 +227,51 @@ test('listen without callback', t => {
       t.is(fastify.server.address().address, '127.0.0.1')
       fastify.close()
       t.end()
+    })
+})
+
+test('listen null without callback', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(null)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
+test('listen without port without callback', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen()
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
+test('listen with undefined without callback', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(undefined)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
     })
 })
 
@@ -274,13 +305,13 @@ test('double listen without callback rejects', t => {
 })
 
 test('double listen without callback rejects and passing address in resolve', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
   fastify.listen(0)
-    .then(() => {
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
       fastify.listen(0)
-        .then((address) => {
-          t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+        .then(() => {
           t.error(new Error('second call to fastify.listen resolved'))
           fastify.close()
         })

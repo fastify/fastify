@@ -228,7 +228,6 @@ if (os.platform() !== 'win32') {
     fastify.listen(sockFile, (err, address) => {
       t.error(err)
       t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-      // t.equal(sockFile, fastify.server.address())
       fastify.close()
     })
   })
@@ -245,6 +244,17 @@ test('listen without callback', t => {
     })
 })
 
+test('listen without callback and pass address as params', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(0)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+})
+
 test('double listen without callback rejects', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -252,6 +262,25 @@ test('double listen without callback rejects', t => {
     .then(() => {
       fastify.listen(0)
         .then(() => {
+          t.error(new Error('second call to fastify.listen resolved'))
+          fastify.close()
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('double listen without callback rejects and passing address in resolve', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(0)
+    .then(() => {
+      fastify.listen(0)
+        .then((address) => {
+          t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
           t.error(new Error('second call to fastify.listen resolved'))
           fastify.close()
         })
@@ -284,13 +313,57 @@ test('listen twice on the same port without callback rejects', t => {
     .catch(err => t.error(err))
 })
 
-test('listen on invalid port without callback rejects', t => {
+test('listen twice on the same port without callback rejects along with pass address in resolve (first listen)', t => {
+  t.plan(2)
   const fastify = Fastify()
 
-  return fastify.listen(-1)
+  fastify.listen(0)
+    .then((address) => {
+      const s2 = Fastify()
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      s2.listen(fastify.server.address().port)
+        .then(() => {
+          fastify.close()
+          s2.close()
+          t.error(new Error('listen on port already in use resolved'))
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('listen twice on the same port without callback rejects along with pass address in resolve (second listen)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.listen(0)
+    .then(() => {
+      const s2 = Fastify()
+      s2.listen(fastify.server.address().port)
+        .then((address) => {
+          t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+          fastify.close()
+          s2.close()
+          t.error(new Error('listen on port already in use resolved'))
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('listen on invalid port without callback rejects', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(-1)
     .catch(err => {
       t.ok(err)
-      return fastify.close()
+      fastify.close()
     })
 })
 

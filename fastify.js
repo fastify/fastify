@@ -299,9 +299,9 @@ function build (options) {
     if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
-      if (err) return cb(err, null)
+      if (err) return cb(err)
       if (listening) {
-        return cb(new Error('Fastify is already listening'), null)
+        return cb(new Error('Fastify is already listening'))
       }
 
       server.once('error', wrap)
@@ -315,7 +315,7 @@ function build (options) {
     })
 
     function wrap (err) {
-      var address = null
+      var address
       if (!err) {
         address = logServerAddress(server.address(), options.https)
       } else {

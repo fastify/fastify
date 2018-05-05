@@ -122,20 +122,6 @@ test('listen after Promise.resolve()', t => {
     })
 })
 
-test('listen after Promise.resolve() listen callback with (err, address)', t => {
-  t.plan(2)
-  const f = Fastify()
-  Promise.resolve()
-    .then(() => {
-      f.listen(0, (err, address) => {
-        f.server.unref()
-        t.is(address, 'http://127.0.0.1:' + f.server.address().port)
-        t.error(err)
-        return f.close()
-      })
-    })
-})
-
 test('register after listen using Promise.resolve()', t => {
   t.plan(1)
   const f = Fastify()

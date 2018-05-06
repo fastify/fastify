@@ -253,37 +253,40 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
 })
 
 test('the content type should be a string', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   try {
     fastify.addContentTypeParser(null, () => {})
     t.fail()
   } catch (err) {
+    t.is(err.code, 'FST_ERR_CTP_INVALID_TYPE')
     t.is(err.message, 'Code: FST_ERR_CTP_INVALID_TYPE; The content type should be a string')
   }
 })
 
 test('the content type cannot be an empty string', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   try {
     fastify.addContentTypeParser('', () => {})
     t.fail()
   } catch (err) {
+    t.is(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
     t.is(err.message, 'Code: FST_ERR_CTP_EMPTY_TYPE; The content type cannot be an empty string')
   }
 })
 
 test('the content type handler should be a function', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   try {
     fastify.addContentTypeParser('aaa', null)
     t.fail()
   } catch (err) {
+    t.is(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
     t.is(err.message, 'Code: FST_ERR_CTP_INVALID_HANDLER; The content type handler should be a function')
   }
 })
@@ -486,7 +489,7 @@ test('Can override the default json parser', t => {
 })
 
 test('Can\'t override the json parser multiple times', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.addContentTypeParser('application/json', function (req, done) {
@@ -503,6 +506,7 @@ test('Can\'t override the json parser multiple times', t => {
       })
     })
   } catch (err) {
+    t.is(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
     t.is(err.message, `Code: FST_ERR_CTP_ALREADY_PRESENT; Content type parser 'application/json' already present.`)
   }
 })
@@ -702,13 +706,14 @@ test('The charset should not interfere with the content type handling', t => {
 })
 
 test('Wrong parseAs parameter', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   try {
     fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
     t.fail('should throw')
   } catch (err) {
+    t.is(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
     t.is(err.message, `Code: FST_ERR_CTP_INVALID_PARSE_TYPE; The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
   }
 })

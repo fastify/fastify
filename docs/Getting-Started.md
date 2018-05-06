@@ -289,7 +289,7 @@ Then, add the following lines to `package.json`:
 ```json
 {
   "scripts": {
-    "start": "fastify server.js"
+    "start": "fastify start server.js"
   }
 }
 ```

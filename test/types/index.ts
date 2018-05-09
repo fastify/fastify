@@ -262,9 +262,9 @@ server.listen(3000, err => {
   if (err) throw err
   const address = server.server.address()
   if (typeof address === 'object') {
-    server.log.info(`server listening on ${(<AddressInfo>server.server.address()).port}`)
+    server.log.info(`server listening on ${address.port}`)
   } else {
-    server.log.info(`server listening on ${server.server.address()}`)
+    server.log.info(`server listening on ${address}`)
   }
 })
 

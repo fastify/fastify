@@ -1,11 +1,14 @@
+/* eslint no-unused-vars: 0 */
+/* eslint no-undef: 0 */
+/* eslint space-infix-ops: 0 */
 
 /// <reference types="node" />
 /// <reference types="pino" />
 
-import * as http from 'http';
-import * as http2 from 'http2';
-import * as https from 'https';
-import * as pino from 'pino';
+import * as http from 'http'
+import * as http2 from 'http2'
+import * as https from 'https'
+import * as pino from 'pino'
 
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
@@ -19,20 +22,20 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 
 declare namespace fastify {
 
-  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback: (err?: Error) => void) => void
+  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: Error) => void) => void
 
-  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
+  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
 
-  type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
+  type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
 
-  type FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
+  type FastifyMiddleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
-  type RequestHandler<HttpRequest, HttpResponse> = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
+  type RequestHandler < HttpRequest, HttpResponse > = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
 
   type SchemaCompiler = (schema: Object) => Function
 
-  type AsyncContentTypeParser<HttpRequest> = (req: HttpRequest) => Promise<any>;
-  type ContentTypeParser<HttpRequest> = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void;
+  type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest) => Promise<any>
+  type ContentTypeParser < HttpRequest > = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void
 
   interface FastifyContext {
     config: any
@@ -338,7 +341,7 @@ declare namespace fastify {
     /**
      * Add a hook that is triggered when a request is initially received
      */
-    addHook(name: 'onRequest', hook: Middleware<HttpServer,HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRequest', hook: Middleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired before a request is processed, but after the "onRequest"

@@ -2,6 +2,7 @@
 // This file will be passed to the TypeScript CLI to verify our typings compile
 
 import * as fastify from '../../fastify'
+import { AddressInfo } from "net";
 import * as http from 'http';
 import * as http2 from 'http2';
 import { readFileSync } from 'fs'
@@ -259,7 +260,12 @@ server.setErrorHandler((err, request, reply) => {
 
 server.listen(3000, err => {
   if (err) throw err
-  server.log.info(`server listening on ${server.server.address().port}`)
+  const address = server.server.address()
+  if (typeof address === 'object') {
+    server.log.info(`server listening on ${(<AddressInfo>server.server.address()).port}`)
+  } else {
+    server.log.info(`server listening on ${server.server.address()}`)
+  }
 })
 
 // http injections

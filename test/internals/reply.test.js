@@ -674,3 +674,115 @@ test('reply.header can reset the value', t => {
     })
   })
 })
+
+test('Reply should handle JSON content type with a charset', t => {
+  t.plan(16)
+
+  const fastify = require('../../')()
+
+  fastify.get('/default', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/utf8', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/utf16', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-16')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/utf32', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf8', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf16', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-16')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf32', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/no-space-type-utf32', function (req, reply) {
+    reply
+      .type('application/json;charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.inject('/default', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/utf8', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/utf16', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+
+  fastify.inject('/utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+  })
+
+  fastify.inject('/type-utf8', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/type-utf16', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+
+  fastify.inject('/type-utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+  })
+
+  fastify.inject('/no-space-type-utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json;charset=utf-32')
+  })
+})
+
+test('Content type and charset set previously', t => {
+  t.plan(2)
+
+  const fastify = require('../../')()
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    res.setHeader('content-type', 'application/json; charset=utf-16')
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+})

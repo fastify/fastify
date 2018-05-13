@@ -2,7 +2,6 @@
 
 const t = require('tap')
 const test = t.test
-const sget = require('simple-get').concat
 const Fastify = require('..')
 
 const schema = {
@@ -18,7 +17,7 @@ function handler (req, reply) {
 }
 
 test('config', t => {
-  t.plan(10)
+  t.plan(9)
   const fastify = Fastify()
 
   fastify.get('/get', {
@@ -41,38 +40,30 @@ test('config', t => {
     handler: handler
   })
 
-  fastify.listen(0, err => {
+  fastify.inject({
+    method: 'GET',
+    url: '/get'
+  }, (err, response) => {
     t.error(err)
-    fastify.server.unref()
+    t.strictEqual(response.statusCode, 200)
+    t.deepEquals(JSON.parse(response.payload), Object.assign({url: '/get'}, schema.config))
+  })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/get',
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEquals(body, Object.assign({url: '/get'}, schema.config))
-    })
+  fastify.inject({
+    method: 'GET',
+    url: '/route'
+  }, (err, response) => {
+    t.error(err)
+    t.strictEqual(response.statusCode, 200)
+    t.deepEquals(JSON.parse(response.payload), Object.assign({url: '/route'}, schema.config))
+  })
 
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/route',
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEquals(body, Object.assign({url: '/route'}, schema.config))
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/no-config',
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEquals(body, {url: '/no-config'})
-    })
+  fastify.inject({
+    method: 'GET',
+    url: '/no-config'
+  }, (err, response) => {
+    t.error(err)
+    t.strictEqual(response.statusCode, 200)
+    t.deepEquals(JSON.parse(response.payload), {url: '/no-config'})
   })
 })

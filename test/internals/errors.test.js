@@ -28,6 +28,24 @@ test('Create error with no statusCode property', t => {
   t.ok(err.stack)
 })
 
+test('Should throw when error code has no fastify code', t => {
+  t.plan(1)
+  try {
+    createError()
+  } catch (err) {
+    t.equal(err.message, 'Fastify error code must not be empty')
+  }
+})
+
+test('Should throw when error code has no message', t => {
+  t.plan(1)
+  try {
+    createError('code')
+  } catch (err) {
+    t.equal(err.message, `Fastify error message must not be empty`)
+  }
+})
+
 test('Create error with different base', t => {
   t.plan(7)
   const NewError = createError('CODE', 'hey %s', 500, TypeError)

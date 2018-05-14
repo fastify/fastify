@@ -95,6 +95,7 @@
     "tap": "^11.1.4",
     "then-sleep": "^1.0.1",
     "typescript": "^2.8.3",
+    "uws": "^10.148.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {

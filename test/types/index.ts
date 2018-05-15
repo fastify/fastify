@@ -120,6 +120,9 @@ server.addHook('onClose', (instance, done) => {
   done()
 })
 
+server.addHook('onRoute', (opts) => {
+})
+
 const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema: {
     response: {

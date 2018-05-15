@@ -371,7 +371,7 @@ declare namespace fastify {
      * routeOptions object as the sole parameter.
      * The interface is synchronous, and, as such, the listeners do not get passed a callback.
      */
-    addHook(name: 'onRoute', hook: (opts: RouteOptions<HttpServer, HttpRequest, HttpResponse>) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRoute', hook: (opts: RouteOptions<HttpServer, HttpRequest, HttpResponse> & { path?: string, prefix?: string }) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Useful for testing http requests without running a sever

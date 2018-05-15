@@ -100,14 +100,16 @@ declare namespace fastify {
   }
   interface ServerOptionsAsSecureHttp2 extends ServerOptionsAsHttp2, ServerOptionsAsSecure {}
 
-  interface JSONSchema {
-    // TODO - define/import JSONSchema types
-    body?: Object
-    querystring?: Object
-    params?: Object
+  // TODO - define/import JSONSchema types
+  type JSONSchema = Object
+
+  interface RouteSchema {
+    body?: JSONSchema
+    querystring?: JSONSchema
+    params?: JSONSchema
     response?: {
-      [code: number]: Object,
-      [code: string]: Object
+      [code: number]: JSONSchema,
+      [code: string]: JSONSchema
     }
   }
 
@@ -115,7 +117,7 @@ declare namespace fastify {
    * Optional configuration parameters for the route being created
    */
   interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
-    schema?: JSONSchema
+    schema?: RouteSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number,

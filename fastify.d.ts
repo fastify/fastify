@@ -369,6 +369,13 @@ declare namespace fastify {
     addHook(name: 'onClose', hook: (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Adds a hook that is triggered when a new route is registered. Listeners are passed a
+     * routeOptions object as the sole parameter.
+     * The interface is synchronous, and, as such, the listeners do not get passed a callback.
+     */
+    addHook(name: 'onRoute', hook: (opts: RouteOptions<HttpServer, HttpRequest, HttpResponse> & { path: string, prefix: string }) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
      * Useful for testing http requests without running a sever
      */
     inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void

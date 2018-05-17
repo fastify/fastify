@@ -53,6 +53,10 @@ declare namespace fastify {
       [key: string]: any
     },
 
+    headers: {
+      [key: string]: any
+    },
+
     body: any,
 
     id: any,

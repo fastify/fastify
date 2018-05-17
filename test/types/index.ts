@@ -169,6 +169,9 @@ server
       done()
     }
   })
+  .get('/req', function (req, reply) {
+    reply.send(req.headers)
+  })
   .get('/', opts, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })

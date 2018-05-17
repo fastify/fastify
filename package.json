@@ -94,7 +94,7 @@
     "snazzy": "^7.1.1",
     "split2": "^2.2.0",
     "standard": "^11.0.1",
-    "tap": "^11.1.4",
+    "tap": "^12.0.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.8.3",
     "typescript-eslint-parser": "^15.0.0",

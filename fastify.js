@@ -177,6 +177,8 @@ function build (options) {
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
   fastify.decorateRequest = decorator.decorateRequest
+  fastify.hasRequestDecorator = decorator.existRequest
+  fastify.hasReplyDecorator = decorator.existReply
 
   fastify._Reply = Reply.buildReply(Reply)
   fastify._Request = Request.buildRequest(Request)

@@ -383,3 +383,115 @@ test('decorators should be instance separated', t => {
 
   t.pass()
 })
+
+test('hasRequestDecorator', t => {
+  const requestDecoratorName = 'my-decorator-name'
+
+  t.test('is a function', t => {
+    t.plan(1)
+    const fastify = Fastify()
+    t.ok(fastify.hasRequestDecorator)
+  })
+
+  t.test('should check if the given request decoration already exist', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    fastify.decorateRequest(requestDecoratorName, 42)
+    t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+  })
+
+  t.test('should be plugin encapsulable', t => {
+    t.plan(4)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+
+    fastify.register(function (fastify2, opts, next) {
+      fastify2.decorateRequest(requestDecoratorName, 42)
+      t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
+      next()
+    })
+
+    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+
+    fastify.ready(function () {
+      t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    })
+  })
+
+  t.test('should be inherited', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.decorateRequest(requestDecoratorName, 42)
+
+    fastify.register(function (fastify2, opts, next) {
+      t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
+      next()
+    })
+
+    fastify.ready(function () {
+      t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+    })
+  })
+
+  t.end()
+})
+
+test('hasReplyDecorator', t => {
+  const replyDecoratorName = 'my-decorator-name'
+
+  t.test('is a function', t => {
+    t.plan(1)
+    const fastify = Fastify()
+    t.ok(fastify.hasReplyDecorator)
+  })
+
+  t.test('should check if the given reply decoration already exist', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    fastify.decorateReply(replyDecoratorName, 42)
+    t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+  })
+
+  t.test('should be plugin encapsulable', t => {
+    t.plan(4)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+
+    fastify.register(function (fastify2, opts, next) {
+      fastify2.decorateReply(replyDecoratorName, 42)
+      t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
+      next()
+    })
+
+    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+
+    fastify.ready(function () {
+      t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    })
+  })
+
+  t.test('should be inherited', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.decorateReply(replyDecoratorName, 42)
+
+    fastify.register(function (fastify2, opts, next) {
+      t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
+      next()
+    })
+
+    fastify.ready(function () {
+      t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+    })
+  })
+
+  t.end()
+})

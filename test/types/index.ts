@@ -233,6 +233,9 @@ server
 
 // Using decorate requires casting so the compiler knows about new properties
 server.decorate('utility', () => {})
+server.hasDecorator('utility')
+server.hasRequestDecorator('utility')
+server.hasReplyDecorator('utility')
 
 // Define a decorated instance
 interface DecoratedInstance extends fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> {

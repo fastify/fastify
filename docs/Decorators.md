@@ -64,7 +64,7 @@ As an example let's add a user property to the `Request` object:
 
 ```js
 // Decorate request with a 'user' property
-fastify.decorateRequest('user', '') 
+fastify.decorateRequest('user', '')
 
 // Update our property
 fastify.addHook('preHandler', (req, reply, next) => {
@@ -96,4 +96,18 @@ If a dependency is not satisfied, `decorate` will throw an exception, but don't 
 You can check for the presence of a decorator with the `hasDecorator` API:
 ```js
 fastify.hasDecorator('utility')
+```
+
+<a name="has-request-decorator"></a>
+#### hasRequestDecorator
+You can check for the presence of a Request decorator with the `hasRequestDecorator` API:
+```js
+fastify.hasRequestDecorator('utility')
+```
+
+<a name="has-reply-decorator"></a>
+#### hasReplyDecorator
+You can check for the presence of a Reply decorator with the `hasReplyDecorator` API:
+```js
+fastify.hasReplyDecorator('utility')
 ```

@@ -345,6 +345,16 @@ declare namespace fastify {
     hasDecorator(name: string): boolean
 
     /**
+     * Determines if the given named request decorator is available
+     */
+    hasRequestDecorator(name: string): boolean
+
+    /**
+     * Determines if the given named reply decorator is available
+     */
+    hasReplyDecorator(name: string): boolean
+
+    /**
      * Add a hook that is triggered when a request is initially received
      */
     addHook(name: 'onRequest', hook: Middleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

@@ -98,7 +98,7 @@ function build (options) {
   var server
   const httpHandler = router.lookup.bind(router)
   if (options.serverFactory) {
-    server = options.serverFactory(httpHandler)
+    server = options.serverFactory(httpHandler, options)
   } else if (options.https) {
     if (options.http2) {
       server = http2().createSecureServer(options.https, httpHandler)

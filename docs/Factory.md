@@ -108,10 +108,10 @@ are not present on the object, they will be added accordingly:
 <a name="custom-http-server"></a>
 ### `serverFactory`
 You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
-`serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters.
+`serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
-const serverFactory = handler => {
+const serverFactory = (handler, opts) => {
   const server = http.createServer((req, res) => {
     handler(req, res)
   })

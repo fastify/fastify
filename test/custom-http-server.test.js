@@ -7,9 +7,11 @@ const http = require('http')
 const sget = require('simple-get').concat
 
 test('Should support a custom http server', t => {
-  t.plan(5)
+  t.plan(6)
 
-  const serverFactory = handler => {
+  const serverFactory = (handler, opts) => {
+    t.ok(opts.serverFactory)
+
     const server = http.createServer((req, res) => {
       req.custom = true
       handler(req, res)

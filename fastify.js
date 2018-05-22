@@ -71,6 +71,8 @@ function build (options) {
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
+  // Http request timemout
+  const requestTimeout = options.requestTimeout || 1000 * 60
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
@@ -204,6 +206,7 @@ function build (options) {
   return fastify
 
   function routeHandler (req, res, params, context) {
+    req.setTimeout(requestTimeout)
     if (closing === true) {
       res.writeHead(503, {
         'Content-Type': 'application/json',

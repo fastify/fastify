@@ -9,7 +9,7 @@ const sget = require('simple-get').concat
 test('Should support a custom http server', t => {
   t.plan(5)
 
-  const httpServer = handler => {
+  const serverFactory = handler => {
     const server = http.createServer((req, res) => {
       req.custom = true
       handler(req, res)
@@ -18,7 +18,7 @@ test('Should support a custom http server', t => {
     return server
   }
 
-  const fastify = Fastify({ httpServer })
+  const fastify = Fastify({ serverFactory })
 
   t.teardown(fastify.close.bind(fastify))
 

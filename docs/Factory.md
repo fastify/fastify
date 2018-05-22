@@ -106,12 +106,12 @@ are not present on the object, they will be added accordingly:
       corresponding property.
 
 <a name="custom-http-server"></a>
-### `httpServer`
-You can pass a custom http server to Fastify by using the `httpServer` option.<br/>
-`httpServer` is a function that takes an `handler` as parameter, which takes the `request` and `response` objects as parameters.
+### `serverFactory`
+You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
+`serverFactory` is a function that takes an `handler` as parameter, which takes the `request` and `response` objects as parameters.
 
 ```js
-const httpServer = handler => {
+const serverFactory = handler => {
   const server = http.createServer((req, res) => {
     handler(req, res)
   })
@@ -119,7 +119,7 @@ const httpServer = handler => {
   return server
 }
 
-const fastify = Fastify({ httpServer })
+const fastify = Fastify({ serverFactory })
 
 fastify.get('/', (req, reply) => {
   reply.send({ hello: 'world' })
@@ -128,4 +128,4 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the sever instance inside the `httpServer` function before the `return` statement.
+Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the sever instance inside the `serverFactory` function before the `return` statement.

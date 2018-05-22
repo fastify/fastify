@@ -104,3 +104,28 @@ are not present on the object, they will be added accordingly:
         ```
       Any user supplied serializer will override the default serializer of the
       corresponding property.
+
+<a name="custom-http-server"></a>
+### `serverFactory`
+You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
+`serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
+
+```js
+const serverFactory = (handler, opts) => {
+  const server = http.createServer((req, res) => {
+    handler(req, res)
+  })
+
+  return server
+}
+
+const fastify = Fastify({ serverFactory })
+
+fastify.get('/', (req, reply) => {
+  reply.send({ hello: 'world' })
+})
+
+fastify.listen(3000)
+```
+
+Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the sever instance inside the `serverFactory` function before the `return` statement.

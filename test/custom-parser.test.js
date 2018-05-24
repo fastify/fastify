@@ -585,6 +585,88 @@ test('Should get the body as buffer', t => {
   })
 })
 
+test('Should parse empty bodies as a string', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
+    t.strictEqual(body, '')
+    done(null, body)
+  })
+
+  fastify.route({
+    method: ['POST', 'DELETE'],
+    url: '/',
+    handler (request, reply) {
+      reply.send(request.body)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '')
+    })
+
+    sget({
+      method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '')
+    })
+  })
+})
+
+test('Should parse empty bodies as a buffer', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('text/plain', { parseAs: 'buffer' }, function (req, body, done) {
+    t.ok(body instanceof Buffer)
+    t.strictEqual(body.length, 0)
+    done(null, body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.length, 0)
+      fastify.close()
+    })
+  })
+})
+
 test('The charset should not interfere with the content type handling', t => {
   t.plan(5)
   const fastify = Fastify()

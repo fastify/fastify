@@ -311,3 +311,46 @@ test('Nested id calls', t => {
     t.strictEqual(res.payload, 'string')
   })
 })
+
+test('Use the same schema id in diferent places', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      id: { type: 'number' }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/:id',
+    schema: {
+      response: {
+        200: {
+          type: 'array',
+          items: 'test#'
+        }
+      }
+    },
+    handler: () => {}
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/:id',
+    schema: {
+      body: 'test#',
+      response: {
+        200: 'test#'
+      }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})

@@ -310,7 +310,7 @@ test('plain string without content type should send a text/plain', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'hello world!')
     })
   })
@@ -385,7 +385,7 @@ test('plain string with content type application/json should be serialized as js
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(body.toString(), '"hello world!"')
     })
   })
@@ -501,7 +501,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), 'Custom not found response')
     })
   })
@@ -535,7 +535,7 @@ test('reply.send(new NotFound()) should log a warning and send a basic response 
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
       t.deepEqual(body.toString(), '404 Not Found')
     })
   })
@@ -616,5 +616,173 @@ test('reply.getHeader returns correct values', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, () => {})
+  })
+})
+
+test('reply.removeHeader can remove the value', t => {
+  t.plan(5)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    t.is(reply.getHeader('x-foo'), 'foo')
+
+    t.is(reply.removeHeader('x-foo'), reply)
+    t.strictDeepEqual(reply.getHeader('x-foo'), undefined)
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
+  })
+})
+
+test('reply.header can reset the value', t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    reply.header('x-foo', undefined)
+    t.strictDeepEqual(reply.getHeader('x-foo'), '')
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
+  })
+})
+
+test('Reply should handle JSON content type with a charset', t => {
+  t.plan(16)
+
+  const fastify = require('../../')()
+
+  fastify.get('/default', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/utf8', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/utf16', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-16')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/utf32', function (req, reply) {
+    reply
+      .header('content-type', 'application/json; charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf8', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-8')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf16', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-16')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/type-utf32', function (req, reply) {
+    reply
+      .type('application/json; charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.get('/no-space-type-utf32', function (req, reply) {
+    reply
+      .type('application/json;charset=utf-32')
+      .send({ hello: 'world' })
+  })
+
+  fastify.inject('/default', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/utf8', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/utf16', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+
+  fastify.inject('/utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+  })
+
+  fastify.inject('/type-utf8', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+  })
+
+  fastify.inject('/type-utf16', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+
+  fastify.inject('/type-utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+  })
+
+  fastify.inject('/no-space-type-utf32', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json;charset=utf-32')
+  })
+})
+
+test('Content type and charset set previously', t => {
+  t.plan(2)
+
+  const fastify = require('../../')()
+
+  fastify.addHook('onRequest', function (req, res, next) {
+    res.setHeader('content-type', 'application/json; charset=utf-16')
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
   })
 })

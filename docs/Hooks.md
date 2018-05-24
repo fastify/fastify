@@ -6,7 +6,7 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 
 ## Request/Response Hooks
 
-By using the hooks you can interact directly inside the lifecycle of Fastify. There are five different Hooks that you can use *(in order of execution)*:
+By using the hooks you can interact directly inside the lifecycle of Fastify. There are four different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preHandler'`
 - `'onSend'`
@@ -76,6 +76,8 @@ fastify.addHook('onResponse', async (res) => {
   return
 })
 ```
+
+**Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
 | Parameter   |  Description  |
 |-------------|-------------|

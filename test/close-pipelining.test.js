@@ -7,7 +7,7 @@ const autocannon = require('autocannon')
 
 test('Should return 503 while closing - pipelining', t => {
   t.plan(5)
-  const fastify = Fastify({ requestTimeout: 10 })
+  const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
     fastify.close()

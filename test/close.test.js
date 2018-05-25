@@ -113,3 +113,43 @@ test('onClose should keep the context', t => {
     t.error(err)
   })
 })
+
+test('Should return 503 while closing - injection', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.addHook('onClose', (instance, done) => {
+    setTimeout(done, 150)
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    fastify.close()
+
+    setTimeout(() => {
+      fastify.inject({
+        method: 'GET',
+        url: '/'
+      }, (err, res) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 503)
+        t.strictEqual(res.headers['content-type'], 'application/json')
+        t.strictEqual(res.headers['content-length'], '80')
+        t.strictEqual(res.headers['connection'], 'close')
+        t.deepEqual(JSON.parse(res.payload), {
+          error: 'Service Unavailable',
+          message: 'Service Unavailable',
+          statusCode: 503
+        })
+      })
+    }, 100)
+  })
+})

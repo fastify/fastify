@@ -6,7 +6,6 @@ const Fastify = require('..')
 const autocannon = require('autocannon')
 
 test('Should return 503 while closing - pipelining', t => {
-  t.plan(5)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -21,16 +20,16 @@ test('Should return 503 while closing - pipelining', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       pipelining: 1,
       connections: 1,
-      amount: 3
+      amount: 10
     })
 
-    const codes = [200, 503, 'error']
+    const codes = [200, 503]
     instance.on('response', (client, statusCode) => {
-      t.strictEqual(codes.shift(), statusCode)
+      t.strictEqual(statusCode, codes.shift())
     })
 
-    instance.on('done', () => t.pass())
-    instance.on('reqError', () => t.strictEqual(codes.shift(), 'error'))
+    instance.on('done', () => t.end('Done'))
+    instance.on('reqError', () => t.deepEqual(codes.shift(), null))
     instance.on('error', err => t.fail(err))
   })
 })

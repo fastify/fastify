@@ -123,7 +123,8 @@ Method to add routes to the server, it also has shorthand functions, check [here
 
 <a name="close"></a>
 #### close
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
+Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
 
 <a name="decorate"></a>
 #### decorate*

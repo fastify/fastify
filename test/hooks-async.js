@@ -351,6 +351,43 @@ function asyncHookTest (t) {
       t.is(res.statusCode, 200)
     })
   })
+
+  test('onAuth hook should be executed always before preHandler hooks', t => {
+    t.plan(8)
+    const fastify = Fastify()
+
+    const order = [1, 2, 3, 4, 5]
+
+    fastify.addHook('preHandler', async (req, res) => {
+      t.strictEqual(order.shift(), 3)
+    })
+
+    fastify.addHook('onAuth', async (req, res) => {
+      t.strictEqual(order.shift(), 1)
+    })
+
+    fastify.addHook('preHandler', async (req, res) => {
+      t.strictEqual(order.shift(), 4)
+    })
+
+    const beforeHandler = async (req, reply) => {
+      t.strictEqual(order.shift(), 5)
+    }
+
+    fastify.get('/', { beforeHandler }, async (request, reply) => {
+      return { hello: 'world' }
+    })
+
+    fastify.addHook('onAuth', async (req, res) => {
+      t.strictEqual(order.shift(), 2)
+    })
+
+    fastify.inject('/', (err, res) => {
+      t.error(err)
+      t.strictEqual(res.statusCode, 200)
+      t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    })
+  })
 }
 
 module.exports = asyncHookTest

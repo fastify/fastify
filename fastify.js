@@ -591,7 +591,10 @@ function build (options) {
         const onRequest = _fastify._hooks.onRequest
         const onResponse = _fastify._hooks.onResponse
         const onSend = _fastify._hooks.onSend
-        const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
+        const onAuth = _fastify._hooks.onAuth
+        const preHandler = onAuth.concat(
+          _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
+        )
 
         context.onRequest = onRequest.length ? onRequest : null
         context.preHandler = preHandler.length ? preHandler : null

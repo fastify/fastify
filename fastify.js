@@ -287,8 +287,7 @@ function build (options) {
             reject(err)
           } else {
             server.removeListener('error', errEventHandler)
-            logServerAddress(server.address(), options.https)
-            resolve()
+            resolve(logServerAddress(server.address(), options.https))
           }
         })
         // we set it afterwards because listen can throw
@@ -335,13 +334,14 @@ function build (options) {
     })
 
     function wrap (err) {
+      var address
       if (!err) {
-        logServerAddress(server.address(), options.https)
+        address = logServerAddress(server.address(), options.https)
       } else {
         listening = false
       }
       server.removeListener('error', wrap)
-      cb(err)
+      cb(err, address)
     }
   }
 
@@ -355,6 +355,7 @@ function build (options) {
     }
     address = 'http' + (isHttps ? 's' : '') + '://' + address
     fastify.log.info('Server listening at ' + address)
+    return address
   }
 
   function State (req, res, params, context) {

@@ -18,11 +18,57 @@ test('listen accepts a port and a callback', t => {
   })
 })
 
+test('listen accepts a port and a callbac with (err, address)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, (err, address) => {
+    fastify.server.unref()
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.error(err)
+    fastify.close()
+  })
+})
+
 test('listen accepts a port, address, and callback', t => {
   t.plan(2)
   const fastify = Fastify()
   fastify.listen(0, '127.0.0.1', (err) => {
     fastify.server.unref()
+    t.error(err)
+    t.pass()
+    fastify.close()
+  })
+})
+
+test('listen accepts a port and a callback with (err, address)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  fastify.listen(0, (err, address) => {
+    fastify.server.unref()
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.error(err)
+    t.pass()
+    fastify.close()
+  })
+})
+
+test('listen accepts a port, address, and callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, '127.0.0.1', (err) => {
+    fastify.server.unref()
+    t.error(err)
+    t.pass()
+    fastify.close()
+  })
+})
+
+test('listen accepts a port, address, and callback with (err, address)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  fastify.listen(0, '127.0.0.1', (err, address) => {
+    fastify.server.unref()
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
     t.pass()
     fastify.close()
@@ -36,6 +82,28 @@ test('listen accepts a port, address, backlog and callback', t => {
     fastify.server.unref()
     t.error(err)
     t.pass()
+    fastify.close()
+  })
+})
+
+test('listen accepts a port, address, backlog and callback with (err, address)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, '127.0.0.1', 511, (err, address) => {
+    fastify.server.unref()
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('listen accepts a port, address, backlog and callback with (err, address)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, '127.0.0.1', 511, (err, address) => {
+    fastify.server.unref()
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.error(err)
     fastify.close()
   })
 })
@@ -76,6 +144,20 @@ test('double listen errors', t => {
   t.plan(2)
   const fastify = Fastify()
   fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+    fastify.listen(fastify.server.address().port, (err) => {
+      t.ok(err)
+      fastify.close()
+    })
+  })
+})
+
+test('double listen errors callback with (err, address)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
     t.error(err)
     fastify.listen(fastify.server.address().port, (err) => {
       t.ok(err)
@@ -91,8 +173,23 @@ test('listen twice on the same port', t => {
     t.error(err)
     const s2 = Fastify()
     s2.listen(fastify.server.address().port, (err) => {
-      fastify.close()
       t.ok(err)
+      fastify.close()
+    })
+  })
+})
+
+test('listen twice on the same port callback with (err, address)', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    const s2 = Fastify()
+    s2.listen(fastify.server.address().port, (err, address) => {
+      t.is(address === undefined, true)
+      t.ok(err)
+      fastify.close()
     })
   })
 })
@@ -125,11 +222,86 @@ test('listen without callback', t => {
     })
 })
 
+test('listen null without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(null)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
+test('listen without port without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen()
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
+test('listen with undefined without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(undefined)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+    .catch(err => {
+      t.ok(err)
+      fastify.close()
+    })
+})
+
+test('listen without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.listen(0)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      fastify.close()
+      t.end()
+    })
+})
+
 test('double listen without callback rejects', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.listen(0)
     .then(() => {
+      fastify.listen(0)
+        .then(() => {
+          t.error(new Error('second call to fastify.listen resolved'))
+          fastify.close()
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('double listen without callback with (address)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.listen(0)
+    .then((address) => {
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
       fastify.listen(0)
         .then(() => {
           t.error(new Error('second call to fastify.listen resolved'))
@@ -164,9 +336,31 @@ test('listen twice on the same port without callback rejects', t => {
     .catch(err => t.error(err))
 })
 
-test('listen on invalid port without callback rejects', t => {
+test('listen twice on the same port without callback rejects with (address)', t => {
+  t.plan(2)
   const fastify = Fastify()
 
+  fastify.listen(0)
+    .then((address) => {
+      const s2 = Fastify()
+      t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      s2.listen(fastify.server.address().port)
+        .then((address) => {
+          t.error(new Error('listen on port already in use resolved'))
+          s2.close()
+          fastify.close()
+        })
+        .catch(err => {
+          t.ok(err)
+          fastify.close()
+        })
+    })
+    .catch(err => t.error(err))
+})
+
+test('listen on invalid port without callback rejects', t => {
+  t.plan(1)
+  const fastify = Fastify()
   return fastify.listen(-1)
     .catch(err => {
       t.ok(err)

@@ -8,6 +8,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header.
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
 - [`fastify-bankai`](https://github.com/fastify/fastify-bankai) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify.
+- [`fastify-basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic auth plugin for Fastify.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.
 - [`fastify-caching`](https://github.com/fastify/fastify-caching) General server-side cache and etag support.
 - [`fastify-circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) A low overhead circuit breaker for your routes.
@@ -55,6 +56,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock) Fastify Mock KnexJS for testing support.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser) Fastify plugin to parse request language.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).
+- [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
@@ -68,6 +70,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
+- [`fastify-swaggergen`](https://github.com/seriousme/fastify-swaggergen) Automatically generate a fastify configuration/plugin from a Swagger specification.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen) Automatically generate a browser-compatible, trusted, self-signed, localhost-only, TLS certificate.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.

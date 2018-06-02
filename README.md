@@ -5,12 +5,21 @@
 <div align="center">
 
 [![Build Status](https://travis-ci.org/fastify/fastify.svg?branch=master)](https://travis-ci.org/fastify/fastify)
+[![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+
+</div>
+
+<div align="center">
+
 [![NPM version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify) [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/fastify)
-[![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master)
+[![Security Responsible
+Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
+
 </div>
+
 <br />
 
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.

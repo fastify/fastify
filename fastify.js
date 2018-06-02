@@ -85,6 +85,7 @@ function build (options) {
   app.override = override
 
   var listening = false
+  var closing = false
   // true when Fastify is ready to go
   var started = false
   app.on('start', () => {
@@ -97,7 +98,9 @@ function build (options) {
 
   var server
   const httpHandler = router.lookup.bind(router)
-  if (options.https) {
+  if (options.serverFactory) {
+    server = options.serverFactory(httpHandler, options)
+  } else if (options.https) {
     if (options.http2) {
       server = http2().createSecureServer(options.https, httpHandler)
     } else {
@@ -109,12 +112,15 @@ function build (options) {
     server = http.createServer(httpHandler)
   }
 
-  fastify.onClose((instance, done) => {
-    if (listening) {
-      instance.server.close(done)
-    } else {
-      done(null)
-    }
+  app.once('preReady', () => {
+    fastify.onClose((instance, done) => {
+      closing = true
+      if (listening) {
+        instance.server.close(done)
+      } else {
+        done(null)
+      }
+    })
   })
 
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
@@ -177,6 +183,8 @@ function build (options) {
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
   fastify.decorateRequest = decorator.decorateRequest
+  fastify.hasRequestDecorator = decorator.existRequest
+  fastify.hasReplyDecorator = decorator.existReply
 
   fastify._Reply = Reply.buildReply(Reply)
   fastify._Request = Request.buildRequest(Request)
@@ -200,6 +208,17 @@ function build (options) {
   return fastify
 
   function routeHandler (req, res, params, context) {
+    if (closing === true) {
+      res.writeHead(503, {
+        'Content-Type': 'application/json',
+        'Content-Length': '80',
+        'Connection': 'close'
+      })
+      res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
+      setImmediate(() => req.destroy())
+      return
+    }
+
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url

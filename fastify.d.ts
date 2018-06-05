@@ -182,6 +182,14 @@ declare namespace fastify {
   }
 
   /**
+   * 
+   */
+  interface AddContentParserOptions {
+    parseAs?: 'string' | 'buffer',
+    bodyLimit?: number
+  }
+
+  /**
    * Represents the fastify instance created by the factory function the module exports.
    */
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
@@ -269,6 +277,7 @@ declare namespace fastify {
      * Node core.
      */
     listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, hostname: string): Promise<void>
 
     /**
      * Starts the server on the given port after all the plugins are loaded,
@@ -277,6 +286,8 @@ declare namespace fastify {
      */
     listen(port: number, callback?: (err: Error) => void): http.Server
     listen(path: string, callback?: (err: Error) => void): http.Server
+    listen(port: number): Promise<void>
+    listen(path: string): Promise<void>
 
     /**
      * Registers a listener function that is invoked when all the plugins have
@@ -422,7 +433,8 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, opts: AddContentParserOptions | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

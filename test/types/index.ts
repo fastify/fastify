@@ -295,6 +295,14 @@ server.addContentTypeParser('foo/bar', {}, (req, done) => {
   done!(null, {})
 })
 
+server.addContentTypeParser('foo/bar', {parseAs: 'string'}, (req, done) => {
+  done!(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {bodyLimit: 20}, (req, done) => {
+  done!(null, {})
+})
+
 server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
 
 if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {

@@ -422,7 +422,7 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, opts: {parseAs?: string, bodyLimit?: number} | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

@@ -281,15 +281,10 @@ function build (options) {
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
-        server.listen(port, address, backlog, (err) => {
-          if (err) {
-            listening = false
-            reject(err)
-          } else {
-            server.removeListener('error', errEventHandler)
-            logServerAddress(server.address(), options.https)
-            resolve()
-          }
+        server.listen(port, address, backlog, () => {
+          server.removeListener('error', errEventHandler)
+          logServerAddress(server.address(), options.https)
+          resolve()
         })
         // we set it afterwards because listen can throw
         listening = true

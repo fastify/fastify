@@ -261,7 +261,7 @@ test('the content type should be a string', t => {
     t.fail()
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_INVALID_TYPE')
-    t.is(err.message, 'Code: FST_ERR_CTP_INVALID_TYPE; The content type should be a string')
+    t.is(err.message, 'FST_ERR_CTP_INVALID_TYPE: The content type should be a string')
   }
 })
 
@@ -274,7 +274,7 @@ test('the content type cannot be an empty string', t => {
     t.fail()
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
-    t.is(err.message, 'Code: FST_ERR_CTP_EMPTY_TYPE; The content type cannot be an empty string')
+    t.is(err.message, 'FST_ERR_CTP_EMPTY_TYPE: The content type cannot be an empty string')
   }
 })
 
@@ -287,7 +287,7 @@ test('the content type handler should be a function', t => {
     t.fail()
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
-    t.is(err.message, 'Code: FST_ERR_CTP_INVALID_HANDLER; The content type handler should be a function')
+    t.is(err.message, 'FST_ERR_CTP_INVALID_HANDLER: The content type handler should be a function')
   }
 })
 
@@ -507,7 +507,7 @@ test('Can\'t override the json parser multiple times', t => {
     })
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.is(err.message, `Code: FST_ERR_CTP_ALREADY_PRESENT; Content type parser 'application/json' already present.`)
+    t.is(err.message, `FST_ERR_CTP_ALREADY_PRESENT: Content type parser 'application/json' already present.`)
   }
 })
 
@@ -714,7 +714,7 @@ test('Wrong parseAs parameter', t => {
     t.fail('should throw')
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-    t.is(err.message, `Code: FST_ERR_CTP_INVALID_PARSE_TYPE; The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
+    t.is(err.message, `FST_ERR_CTP_INVALID_PARSE_TYPE: The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
   }
 })
 
@@ -751,7 +751,7 @@ test('Should allow defining the bodyLimit per parser', t => {
       t.strictDeepEqual(JSON.parse(body.toString()), {
         statusCode: 413,
         error: 'Payload Too Large',
-        message: 'Code: FST_ERR_CTP_BODY_TOO_LARGE; Request body is too large'
+        message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large'
       })
       fastify.close()
     })
@@ -789,7 +789,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
       t.strictDeepEqual(JSON.parse(body.toString()), {
         statusCode: 413,
         error: 'Payload Too Large',
-        message: 'Code: FST_ERR_CTP_BODY_TOO_LARGE; Request body is too large'
+        message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large'
       })
       fastify.close()
     })

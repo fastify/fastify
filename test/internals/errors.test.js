@@ -4,6 +4,18 @@ const t = require('tap')
 const test = t.test
 const { createError } = require('../../lib/errors')
 
+test('Create error with zero parameter', t => {
+  t.plan(6)
+  const NewError = createError('CODE', 'Not available')
+  const err = new NewError()
+  t.type(err, Error)
+  t.equal(err.name, 'FastifyError [CODE]')
+  t.equal(err.message, 'CODE: Not available')
+  t.equal(err.code, 'CODE')
+  t.equal(err.statusCode, 500)
+  t.ok(err.stack)
+})
+
 test('Create error with 1 parameter', t => {
   t.plan(6)
   const NewError = createError('CODE', 'hey %s')

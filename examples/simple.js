@@ -23,7 +23,7 @@ fastify
       .send({ hello: 'world' })
   })
 
-fastify.listen(3000, err => {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
   console.log(`server listening on ${fastify.server.address().port}`)
 })

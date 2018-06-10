@@ -10,7 +10,7 @@ const pino = require('pino')
 const os = require('os')
 
 test('defaults to info level', t => {
-  t.plan(12)
+  t.plan(13)
   var fastify = null
   var stream = split(JSON.parse)
   try {
@@ -28,30 +28,32 @@ test('defaults to info level', t => {
     reply.send({ hello: 'world' })
   })
 
+  stream.once('data', listenAtLogLine => {
+    t.ok(listenAtLogLine, 'listen at log message is ok')
+
+    stream.once('data', line => {
+      const id = line.reqId
+      t.ok(line.reqId, 'reqId is defined')
+      t.ok(line.req, 'req is defined')
+      t.equal(line.msg, 'incoming request', 'message is set')
+      t.equal(line.req.method, 'GET', 'method is get')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, id)
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'request completed', 'message is set')
+        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        t.ok(line.responseTime, 'responseTime is defined')
+      })
+    })
+  })
+
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
 
     http.get('http://localhost:' + fastify.server.address().port)
-    stream.once('data', listenAtLogLine => {
-      t.ok(listenAtLogLine, 'listen at log message is ok')
-
-      stream.once('data', line => {
-        const id = line.reqId
-        t.ok(line.reqId, 'reqId is defined')
-        t.ok(line.req, 'req is defined')
-        t.equal(line.msg, 'incoming request', 'message is set')
-        t.equal(line.req.method, 'GET', 'method is get')
-
-        stream.once('data', line => {
-          t.equal(line.reqId, id)
-          t.ok(line.reqId, 'reqId is defined')
-          t.ok(line.res, 'res is defined')
-          t.equal(line.msg, 'request completed', 'message is set')
-          t.equal(line.res.statusCode, 200, 'statusCode is 200')
-        })
-      })
-    })
   })
 })
 
@@ -638,7 +640,7 @@ test('Should set a custom log level for a specific route', t => {
 test('The default 404 handler logs the incoming request', t => {
   t.plan(5)
 
-  const expectedMessages = ['incoming request', 'Not found', 'request completed']
+  const expectedMessages = ['incoming request', 'Not Found', 'request completed']
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {

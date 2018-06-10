@@ -4,11 +4,35 @@
 
 <a name="server"></a>
 #### server
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the <a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md"><code><b>Fastify factory function</b></code></a>.
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](https://github.com/fastify/fastify/blob/master/docs/Factory.md).
+
+<a name="after"></a>
+#### after
+Invoked when the current plugin and all the plugins
+that have been registered within it have finished loading.
+It is always executed before the method `fastify.ready`.
+
+```js
+fastify
+  .register((instance. opts, next) => {
+    console.log('Current plugin')
+    next()
+  })
+  .after(err => {
+    console.log('After current plugin')
+  })
+  .register((instance. opts, next) => {
+    console.log('Next plugin')
+    next()
+  })
+  .ready(err => {
+    console.log('Everything has been loaded')
+  })
+```
 
 <a name="ready"></a>
 #### ready
-Function called when all the plugins has been loaded.
+Function called when all the plugins have been loaded.
 It takes an error parameter if something went wrong.
 ```js
 fastify.ready(err => {
@@ -95,11 +119,12 @@ fastify.listen(3000, '0.0.0.0', (err) => {
 
 <a name="route"></a>
 #### route
-Method to add routes to the server, it also have shorthands functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
+Method to add routes to the server, it also has shorthand functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).
 
 <a name="close"></a>
 #### close
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
+Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
 
 <a name="decorate"></a>
 #### decorate*
@@ -107,7 +132,7 @@ Function useful if you need to decorate the fastify instance, Reply or Request, 
 
 <a name="register"></a>
 #### register
-Fastify allows the user to extend its functionalities with plugins.
+Fastify allows the user to extend its functionality with plugins.
 A plugin can be a set of routes, a server decorator or whatever, check [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 
 <a name="use"></a>

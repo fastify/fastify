@@ -152,17 +152,26 @@ test('listen twice on the same port without callback rejects', t => {
       const s2 = Fastify()
       s2.listen(fastify.server.address().port)
         .then(() => {
-          t.error(new Error('listen on port already in use resolved'))
           fastify.close()
           s2.close()
+          t.error(new Error('listen on port already in use resolved'))
         })
         .catch(err => {
           t.ok(err)
           fastify.close()
-          s2.close()
         })
     })
     .catch(err => t.error(err))
+})
+
+test('listen on invalid port without callback rejects', t => {
+  const fastify = Fastify()
+
+  return fastify.listen(-1)
+    .catch(err => {
+      t.ok(err)
+      return fastify.close()
+    })
 })
 
 test('listen logs the port as info', t => {

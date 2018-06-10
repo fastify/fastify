@@ -5,24 +5,24 @@ const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test
 
-test('jsonBodyLimit', t => {
+test('bodyLimit', t => {
   t.plan(5)
 
   try {
-    Fastify({ jsonBodyLimit: 1.3 })
+    Fastify({ bodyLimit: 1.3 })
     t.fail('option must be an integer')
   } catch (err) {
     t.ok(err)
   }
 
   try {
-    Fastify({ jsonBodyLimit: [] })
+    Fastify({ bodyLimit: [] })
     t.fail('option must be an integer')
   } catch (err) {
     t.ok(err)
   }
 
-  const fastify = Fastify({ jsonBodyLimit: 1 })
+  const fastify = Fastify({ bodyLimit: 1 })
 
   fastify.post('/', (request, reply) => {
     reply.send({error: 'handler should not be called'})

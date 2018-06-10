@@ -6,6 +6,8 @@ Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
 - `.header(name, value)` - Sets a response header.
+- `.getHeader(name)` - Retrieve value of already set header.
+- `.hasHeader(name)` = Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
@@ -19,7 +21,7 @@ fastify.get('/', options, function (request, reply) {
   // Your code
   reply
     .code(200)
-    .header('Content-Type', 'application/json')
+    .header('Content-Type', 'application/json; charset=utf-8')
     .send({ hello: 'world' })
 })
 ```
@@ -33,24 +35,47 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ```
 
 <a name="code"></a>
-### Code
+### .code(statusCode)
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="header"></a>
-### Header
-Sets a response header.
+### .header(key, value)
+Sets a response header. If the value is omitted or undefined it is coerced
+to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
 
+<a name="getHeader"></a>
+### .getHeader(key)
+Retrieves the value of a previously set header.
+```js
+reply.header('x-foo', 'foo')
+reply.getHeader('x-foo') // 'foo'
+```
+
+<a name="getHeader"></a>
+### .removeHeader(key)
+
+Removed the value of a previously set header.
+```js
+reply.header('x-foo', 'foo')
+reply.removeHeader('x-foo')
+reply.getHeader('x-foo') // undefined
+```
+
+<a name="hasHeader"></a>
+### .hasHeader(key)
+Returns a boolean indicating if the specified header has been set.
+
 <a name="redirect"></a>
-### Redirect
+### .redirect(dest)
 Redirects a request to the specified url, the status code is optional, default to `302`.
 ```js
 reply.redirect('/home')
 ```
 
 <a name="type"></a>
-### Type
+### .type(contentType, type)
 Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 
@@ -59,7 +84,7 @@ reply.type('text/html')
 ```
 
 <a name="serializer"></a>
-### Serializer
+### .serializer(func)
 `.send()` will by default JSON-serialize any value that is not one of: `Buffer`, `stream`, `string`, `undefined`, `Error`. If you need to replace the default serializer with a custom serializer for a particular request, you can do so with the `.serializer()` utility. Be aware that if you are using a custom serializer, you must set a custom `'Content-Type'` header.
 
 ```js
@@ -79,7 +104,7 @@ reply
 See [`.send()`](#send) for more information on sending different types of values.
 
 <a name="send"></a>
-### Send
+### .send(data)
  As the name suggests, `.send()` is the function that sends the payload to the end user.
 
 <a name="send-object"></a>
@@ -93,7 +118,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="send-string"></a>
 #### Strings
-If you pass a string to `send` without a `Content-Type`, it will be sent as plain text. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json`, in which case it will be JSON-serialized like an object — see the section above).
+If you pass a string to `send` without a `Content-Type`, it will be sent as `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json; charset=utf-8`, in which case it will be JSON-serialized like an object — see the section above).
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send('plain string')
@@ -144,10 +169,10 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
-If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#seterrorhandler) API.
+If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#seterrorhandler) API.
 
 Errors with a `status` or `statusCode` property equal to `404` will be routed to the not found handler.
-See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/error-docs/docs/Server-Methods.md#setnotfoundhandler)
+See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler)
 API to learn more about handling such cases:
 
 ```js

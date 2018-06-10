@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const semver = require('semver')
 const sget = require('simple-get').concat
 const stream = require('stream')
 const Fastify = require('..')
@@ -103,36 +104,54 @@ test('hooks', t => {
 })
 
 test('onRequest hook should support encapsulation / 1', t => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addHook('onRequest', () => {})
-    t.is(instance._hooks.onRequest.length, 1)
+    instance.addHook('onRequest', (req, res, next) => {
+      t.strictEqual(req.url, '/plugin')
+      next()
+    })
+
+    instance.get('/plugin', (request, reply) => {
+      reply.send()
+    })
+
     next()
   })
 
-  fastify.ready(err => {
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 0)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject('/plugin', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
   })
 })
 
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onRequest', () => {})
-    t.is(instance._hooks.onRequest.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onRequest.length, 1)
+    t.is(pluginInstance._hooks.onRequest.length, 2)
   })
 })
 
@@ -301,10 +320,10 @@ test('onRoute hook should be called / 2', t => {
     })
     next()
   })
-  .after(() => {
-    t.strictEqual(firstHandler, 1)
-    t.strictEqual(secondHandler, 1)
-  })
+    .after(() => {
+      t.strictEqual(firstHandler, 1)
+      t.strictEqual(secondHandler, 1)
+    })
 
   fastify.ready(err => {
     t.error(err)
@@ -330,13 +349,13 @@ test('onRoute hook should be called / 3', t => {
     instance.get('/a', handler)
     next()
   })
-  .after((err, done) => {
-    t.error(err)
-    setTimeout(() => {
-      fastify.get('/b', handler)
-      done()
-    }, 10)
-  })
+    .after((err, done) => {
+      t.error(err)
+      setTimeout(() => {
+        fastify.get('/b', handler)
+        done()
+      }, 10)
+    })
 
   fastify.ready(err => {
     t.error(err)
@@ -430,9 +449,9 @@ test('onRoute hook should pass correct route with custom options', t => {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.logLevel, 'info')
-      t.strictEqual(route.jsonBodyLimit, 100)
+      t.strictEqual(route.bodyLimit, 100)
     })
-    instance.get('/foo', { logLevel: 'info', jsonBodyLimit: 100 }, function (req, reply) {
+    instance.get('/foo', { logLevel: 'info', bodyLimit: 100 }, function (req, reply) {
       reply.send()
     })
     next()
@@ -472,7 +491,7 @@ test('onRoute hook should preserve system route configuration', t => {
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.handler.length, 2)
     })
-    instance.get('/foo', { url: '/bar', method: 'POST', handler: () => {} }, function (req, reply) {
+    instance.get('/foo', { url: '/bar', method: 'POST' }, function (req, reply) {
       reply.send()
     })
     next()
@@ -483,37 +502,75 @@ test('onRoute hook should preserve system route configuration', t => {
   })
 })
 
-test('onResponse hook should support encapsulation / 1', t => {
-  t.plan(3)
-  const fastify = Fastify()
+test('onRoute hook should preserve handler function in options of shorthand route system configuration', t => {
+  t.plan(2)
 
+  const handler = (req, reply) => {}
+
+  const fastify = Fastify()
   fastify.register((instance, opts, next) => {
-    instance.addHook('onResponse', () => {})
-    t.is(instance._hooks.onResponse.length, 1)
+    instance.addHook('onRoute', function (route) {
+      t.strictEqual(route.handler, handler)
+    })
+    instance.get('/foo', { handler })
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onResponse.length, 0)
+  })
+})
+
+test('onResponse hook should support encapsulation / 1', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onResponse', (res, next) => {
+      t.strictEqual(res.plugin, true)
+      next()
+    })
+
+    instance.get('/plugin', (request, reply) => {
+      reply.res.plugin = true
+      reply.send()
+    })
+
+    next()
+  })
+
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject('/plugin', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
   })
 })
 
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onResponse', () => {})
-    t.is(instance._hooks.onResponse.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onResponse.length, 1)
+    t.is(pluginInstance._hooks.onResponse.length, 2)
   })
 })
 
@@ -577,18 +634,20 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
+  var pluginInstance
 
   fastify.addHook('onSend', () => {})
 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', () => {})
-    t.is(instance._hooks.onSend.length, 2)
+    pluginInstance = instance
     next()
   })
 
   fastify.ready(err => {
     t.error(err)
     t.is(fastify._hooks.onSend.length, 1)
+    t.is(pluginInstance._hooks.onSend.length, 2)
   })
 })
 
@@ -658,7 +717,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.deepEqual(JSON.parse(payload), thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/json')
+      t.strictEqual(reply._headers['content-type'], 'application/json; charset=utf-8')
       next()
     })
 
@@ -672,7 +731,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, 'some text')
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/plain')
+      t.strictEqual(reply._headers['content-type'], 'text/plain; charset=utf-8')
       next()
     })
 
@@ -688,7 +747,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -710,7 +769,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'application/octet-stream')
+      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -726,7 +785,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, serializedPayload)
-      t.strictEqual(reply.res.getHeader('Content-Type'), 'text/custom')
+      t.strictEqual(reply._headers['content-type'], 'text/custom')
       next()
     })
 
@@ -854,7 +913,7 @@ test('clear payload', t => {
     t.strictEqual(res.statusCode, 304)
     t.strictEqual(res.payload, '')
     t.strictEqual(res.headers['content-length'], undefined)
-    t.strictEqual(res.headers['content-type'], 'application/json')
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
   })
 })
 
@@ -1334,7 +1393,353 @@ test('Register an hook after a plugin inside a plugin (with beforeHandler)', t =
   })
 })
 
-if (Number(process.versions.node[0]) >= 8) {
+test('Register hooks inside a plugin after an encapsulated plugin', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.ok('called')
+      next()
+    })
+
+    instance.addHook('onResponse', function (res, next) {
+      t.ok('called')
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('onRequest hooks should run in the order in which they are defined', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, undefined)
+      req.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      t.strictEqual(request.req.previous, 5)
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onRequest', function (req, res, next) {
+        t.strictEqual(req.previous, 1)
+        req.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, 2)
+      req.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onRequest', function (req, res, next) {
+        t.strictEqual(req.previous, 3)
+        req.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onRequest', function (req, res, next) {
+      t.strictEqual(req.previous, 4)
+      req.previous = 5
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('preHandler hooks should run in the order in which they are defined', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, undefined)
+      request.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      t.strictEqual(request.previous, 5)
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('preHandler', function (request, reply, next) {
+        t.strictEqual(request.previous, 1)
+        request.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, 2)
+      request.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('preHandler', function (request, reply, next) {
+        t.strictEqual(request.previous, 3)
+        request.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('preHandler', function (request, reply, next) {
+      t.strictEqual(request.previous, 4)
+      request.previous = 5
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('onSend hooks should run in the order in which they are defined', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, undefined)
+      request.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({})
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onSend', function (request, reply, payload, next) {
+        t.strictEqual(request.previous, 1)
+        request.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, 2)
+      request.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onSend', function (request, reply, payload, next) {
+        t.strictEqual(request.previous, 3)
+        request.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onSend', function (request, reply, payload, next) {
+      t.strictEqual(request.previous, 4)
+      next(null, '5')
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), 5)
+  })
+})
+
+test('onResponse hooks should run in the order in which they are defined', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  fastify.register(function (instance, opts, next) {
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, undefined)
+      res.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onResponse', function (res, next) {
+        t.strictEqual(res.previous, 1)
+        res.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  fastify.register(fp(function (instance, opts, next) {
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, 2)
+      res.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.addHook('onResponse', function (res, next) {
+        t.strictEqual(res.previous, 3)
+        res.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.addHook('onResponse', function (res, next) {
+      t.strictEqual(res.previous, 4)
+      next()
+    })
+
+    next()
+  }))
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('onRequest, preHandler, and onResponse hooks that resolve to a value do not cause an error', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify
+    .addHook('onRequest', () => Promise.resolve(1))
+    .addHook('onRequest', () => Promise.resolve(true))
+    .addHook('preHandler', () => Promise.resolve(null))
+    .addHook('preHandler', () => Promise.resolve('a'))
+    .addHook('onResponse', () => Promise.resolve({}))
+    .addHook('onResponse', () => Promise.resolve([]))
+
+  fastify.get('/', (request, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
+test('If a response header has been set inside an hook it shoulod not be overwritten by the final response handler', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', (req, res, next) => {
+    res.setHeader('X-Custom-Header', 'hello')
+    next()
+  })
+
+  fastify.get('/', (request, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.headers['x-custom-header'], 'hello')
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
+test('If the content type has been set inside an hook it should not be changed', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', (req, res, next) => {
+    res.setHeader('content-type', 'text/html')
+    next()
+  })
+
+  fastify.get('/', (request, reply) => {
+    t.notOk(reply._headers['content-type'])
+    reply.send('hello')
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.headers['content-type'], 'text/html')
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, 'hello')
+  })
+})
+
+if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {
   t.pass('Skip because Node version < 8')

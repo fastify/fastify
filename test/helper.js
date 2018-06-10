@@ -61,10 +61,10 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
-  test(`${upMethod} with jsonBodyLimit option`, t => {
+  test(`${upMethod} with bodyLimit option`, t => {
     t.plan(1)
     try {
-      fastify[loMethod]('/with-limit', { jsonBodyLimit: 1 }, function (req, reply) {
+      fastify[loMethod]('/with-limit', { bodyLimit: 1 }, function (req, reply) {
         reply.send(req.body)
       })
       t.pass()
@@ -119,7 +119,7 @@ module.exports.payloadMethod = function (method, t) {
         url: 'http://localhost:' + fastify.server.address().port,
         body: JSON.stringify({ hello: 'world' }),
         headers: {
-          'content-type': 'application/json;charset=utf-8'
+          'content-type': 'application/json; charset=utf-8'
         }
       }, (err, response, body) => {
         t.error(err)

@@ -1,14 +1,13 @@
 language: node_js
 
 node_js:
+  - "10"
   - "9"
   - "8"
   - "6"
-  - "4"
-
 
 script:
-  - npm run coveralls
+  - npm run coveralls -- -c
 
 after_script:
   - ./tools/website.sh

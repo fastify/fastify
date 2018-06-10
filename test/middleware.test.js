@@ -152,7 +152,7 @@ test('use helmet and cors', t => {
 })
 
 test('middlewares should support encapsulation / 1', t => {
-  t.plan(9)
+  t.plan(8)
 
   const instance = fastify()
 
@@ -162,7 +162,6 @@ test('middlewares should support encapsulation / 1', t => {
       t.fail('this should not be called')
       next()
     })
-    t.ok(i._middlewares.length > 0)
     done()
   })
 
@@ -776,5 +775,98 @@ test('middlewares should be able to respond with a stream', t => {
   }, (err, res) => {
     t.error(err)
     t.is(res.statusCode, 200)
+  })
+})
+
+test('Use a middleware inside a plugin after an encapsulated plugin', t => {
+  t.plan(5)
+  const f = fastify()
+
+  f.register(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      t.ok('first middleware called')
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  f.register(fp(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      t.ok('second middleware called')
+      next()
+    })
+
+    next()
+  }))
+
+  f.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('middlewares should run in the order in which they are defined', t => {
+  t.plan(9)
+  const f = fastify()
+
+  f.register(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      t.strictEqual(req.previous, undefined)
+      req.previous = 1
+      next()
+    })
+
+    instance.get('/', function (request, reply) {
+      t.strictEqual(request.req.previous, 5)
+      reply.send({ hello: 'world' })
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.use(function (req, res, next) {
+        t.strictEqual(req.previous, 1)
+        req.previous = 2
+        next()
+      })
+      next()
+    }))
+
+    next()
+  })
+
+  f.register(fp(function (instance, opts, next) {
+    instance.use(function (req, res, next) {
+      t.strictEqual(req.previous, 2)
+      req.previous = 3
+      next()
+    })
+
+    instance.register(fp(function (i, opts, next) {
+      i.use(function (req, res, next) {
+        t.strictEqual(req.previous, 3)
+        req.previous = 4
+        next()
+      })
+      next()
+    }))
+
+    instance.use(function (req, res, next) {
+      t.strictEqual(req.previous, 4)
+      req.previous = 5
+      next()
+    })
+
+    next()
+  }))
+
+  f.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
   })
 })

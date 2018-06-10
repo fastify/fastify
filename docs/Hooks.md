@@ -6,7 +6,7 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 
 ## Request/Response Hooks
 
-By using the hooks you can interact directly inside the lifecycle of Fastify. There are five different Hooks that you can use *(in order of execution)*:
+By using the hooks you can interact directly inside the lifecycle of Fastify. There are four different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preHandler'`
 - `'onSend'`
@@ -77,6 +77,8 @@ fastify.addHook('onResponse', async (res) => {
 })
 ```
 
+**Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+
 | Parameter   |  Description  |
 |-------------|-------------|
 | req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
@@ -89,7 +91,7 @@ fastify.addHook('onResponse', async (res) => {
 It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
-If you get an error during the execution of you hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
+If you get an error during the execution of your hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 ```js
 fastify.addHook('onRequest', (req, res, next) => {
@@ -192,7 +194,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.method
   routeOptions.schema
   routeOptions.url
-  routeOptions.jsonBodyLimit
+  routeOptions.bodyLimit
   routeOptions.logLevel
   routeOptions.prefix
 })
@@ -211,7 +213,7 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="before-handler"></a>
 ### beforeHandler
-Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example.), it could also be an array of functions.<br>
+Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.<br>
 **`beforeHandler` is executed always after the `preHandler` hook.**
 
 ```js

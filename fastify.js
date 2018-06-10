@@ -177,6 +177,7 @@ function build (options) {
   fastify.register = function (plugin, options) {
     avvioUse(plugin, options)
     fastify[pluginUtils.registeredPlugins].push(plugin)
+    return fastify
   }
   fastify.listen = listen
   fastify.server = server

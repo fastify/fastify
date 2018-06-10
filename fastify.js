@@ -320,7 +320,7 @@ function build (options) {
     fastify.ready(function (err) {
       if (err) return cb(err)
       if (listening) {
-        return cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'), null)
       }
 
       server.once('error', wrap)
@@ -337,7 +337,7 @@ function build (options) {
       server.removeListener('error', wrap)
       if (!err) {
         address = logServerAddress(server.address(), options.https)
-        cb(err, address)
+        cb(null, address)
       } else {
         listening = false
         cb(err, null)

@@ -173,7 +173,14 @@ function build (options) {
   fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
-  fastify.register = fastify.use
+  fastify.avvioUse = fastify.use
+  fastify.register = function (plugin, options) {
+    fastify.avvioUse(plugin, options)
+    if (plugin.name.length === 0) {
+      log.warn('Warning: should not use anonymous plugins. Provide a function name on declaration.')
+    }
+    fastify[pluginUtils.registeredPlugins].push(plugin)
+  }
   fastify.listen = listen
   fastify.server = server
   fastify[pluginUtils.registeredPlugins] = []

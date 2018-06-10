@@ -15,16 +15,16 @@ fastify.use(function helloWorld (instance, req, res) {
   console.log('Hello')
 })
 
-// fastify.use(require('cors')())
+fastify.use(require('cors')())
 
-// fastify.use('/abc', function specialABC (instance, req, res) {
-//   console.log('ABC')
-// })
+fastify.use('/abc', function specialABC (instance, req, res) {
+  console.log('ABC')
+})
 
-// fastify.register(fp((instance, opts, next) => {
-//   instance.decorate('util', (a, b) => a + b)
-//   next()
-// })) // this is loaded last and as a nameless function
+fastify.register(fp((instance, opts, next) => {
+  instance.decorate('util', (a, b) => a + b)
+  next()
+})) // this is loaded last and as a nameless function
 
 fastify.register(fp(function exampleFunc (instance, opts, next) {
   instance.decorate('util2', (a, b) => a - b)

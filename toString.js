@@ -39,8 +39,12 @@ function toString() {
   })
 
   output_string += `\n\nPlugins`
-  output_string += `\n${LINES.r} TODO`
-  console.log(`Registered Plugins: ${this[pluginUtils.registeredPlugins]}`)
+  const plugins = this[pluginUtils.registeredPlugins]
+  plugins.forEach((plugin, i) => {
+    output_string += `\n${
+      i < plugins.length - 1 ? LINES.t : LINES.r
+    } ${plugin.name.length === 0 ? 'anonymous' + i : plugin.name}`
+  })
   // console.log(this)
   console.log(output_string)
   return output_string

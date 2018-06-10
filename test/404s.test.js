@@ -118,7 +118,7 @@ test('customized 404', t => {
       })
     })
 
-    test('with error object and custom headers property', t => {
+    test('error object with headers property', t => {
       t.plan(4)
       sget({
         method: 'GET',
@@ -133,7 +133,7 @@ test('customized 404', t => {
   })
 })
 
-test('custom headers in notFound handler', t => {
+test('custom header in notFound handler', t => {
   t.plan(2)
 
   const test = t.test

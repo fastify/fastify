@@ -128,6 +128,58 @@ test('contentTypeParser should handle multiple custom parsers', t => {
   })
 })
 
+test('contentTypeParser should handle an array of custom contentTypes', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.post('/hello', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  function customParser (req, done) {
+    jsonParser(req, function (err, body) {
+      done(err, body)
+    })
+  }
+
+  fastify.addContentTypeParser(['application/jsoff', 'application/ffosj'], customParser)
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/jsoff'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/hello',
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/ffosj'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+    })
+  })
+})
+
 test('contentTypeParser should handle errors', t => {
   t.plan(3)
   const fastify = Fastify()

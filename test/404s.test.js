@@ -125,6 +125,7 @@ test('customized 404', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/with-error-custom-header'
       }, (err, response, body) => {
         t.error(err)
+
         t.strictEqual(response.statusCode, 404)
         t.strictEqual(response.headers['x-foo'], 'bar')
         t.strictEqual(body.toString(), 'this was not found')

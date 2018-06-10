@@ -23,7 +23,7 @@ const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const runHooks = require('./lib/hookRunner').hookRunner
-const toString = require('./toString')
+const toString = require('./lib/toString')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')
@@ -173,12 +173,9 @@ function build (options) {
   fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
-  fastify.avvioUse = fastify.use
+  const avvioUse = fastify.use
   fastify.register = function (plugin, options) {
-    fastify.avvioUse(plugin, options)
-    if (plugin.name.length === 0) {
-      log.warn('Warning: should not use anonymous plugins. Provide a function name on declaration.')
-    }
+    avvioUse(plugin, options)
     fastify[pluginUtils.registeredPlugins].push(plugin)
   }
   fastify.listen = listen

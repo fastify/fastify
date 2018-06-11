@@ -1,9 +1,11 @@
 <h1 align="center">Fastify</h1>
 
 ## Ecosystem
+
 Plugins maintained by the fastify team are listed under [Core](#core) while plugins maintained by the community are listed in the [Community](#community) section.
 
 #### [Core](#core)
+
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header.
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
@@ -33,10 +35,11 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
-- [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of *"Service Unavailable"* plugin for Fastify.
+- [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
+- [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
 
 #### [Community](#community)
+
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.

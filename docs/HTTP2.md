@@ -12,8 +12,8 @@ _Fastify_, but Node's `req` and `res` can be access through our
 
 ### Secure (HTTPS)
 
-HTTP2 is supported in all modern browsers __only over a secure
-connection__:
+HTTP2 is supported in all modern browsers **only over a secure
+connection**:
 
 ```js
 'use strict'
@@ -28,7 +28,7 @@ const fastify = require('fastify')({
   }
 })
 
-fastify.get('/', function (request, reply) {
+fastify.get('/', function(request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
@@ -55,7 +55,7 @@ const fastify = require('fastify')({
 })
 
 // this route can be accessed through both protocols
-fastify.get('/', function (request, reply) {
+fastify.get('/', function(request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
@@ -80,7 +80,7 @@ const fastify = require('fastify')({
   http2: true
 })
 
-fastify.get('/', function (request, reply) {
+fastify.get('/', function(request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
@@ -92,4 +92,3 @@ You can test your new server with:
 ```
 $ npx h2url http://localhost:3000
 ```
-

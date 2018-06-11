@@ -18,7 +18,7 @@ const fastify = require('fastify')({
   logger: true
 })
 
-fastify.get('/', options, function (request, reply) {
+fastify.get('/', options, function(request, reply) {
   request.log.info('Some info about the current request')
   reply.send({ hello: 'world' })
 })
@@ -38,7 +38,7 @@ const fastify = require('fastify')({
   }
 })
 
-fastify.get('/', options, function (request, reply) {
+fastify.get('/', options, function(request, reply) {
   request.log.info('Some info about the current request')
   reply.send({ hello: 'world' })
 })
@@ -46,29 +46,33 @@ fastify.get('/', options, function (request, reply) {
 
 By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated.
 Additionally, `genReqId` option can be used for generating the request id by yourself. It will received the incoming request as a parameter.
+
 ```js
 let i = 0
 const fastify = require('fastify')({
   logger: {
-    genReqId: function (req) { return i++ }
+    genReqId: function(req) {
+      return i++
+    }
   }
 })
 ```
 
 The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. This behavior can be customized by specifying custom serializers.
+
 ```js
 const fastify = require('fastify')({
   logger: {
     serializers: {
-      req: function (req) { 
-        return { url: req.url } 
+      req: function(req) {
+        return { url: req.url }
       }
     }
   }
 })
 ```
 
-*This option will be ignored by any logger other than Pino.*
+_This option will be ignored by any logger other than Pino._
 
 You can also supply your own logger instance. Instead of passing configuration options, simply pass the instance.
 The logger you supply must conform to the Pino interface; that is, it must have the following methods:
@@ -82,10 +86,12 @@ const fastify = require('fastify')({ logger: log })
 
 log.info('does not have request information')
 
-fastify.get('/', function (request, reply) {
-  request.log.info('includes request information, but is the same logger instance as `log`')
+fastify.get('/', function(request, reply) {
+  request.log.info(
+    'includes request information, but is the same logger instance as `log`'
+  )
   reply.send({ hello: 'world' })
 })
 ```
 
-*The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).*
+_The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md)._

@@ -52,7 +52,7 @@ test('default 404', t => {
 })
 
 test('customized 404', t => {
-  t.plan(4)
+  t.plan(5)
 
   const test = t.test
   const fastify = Fastify()
@@ -63,6 +63,12 @@ test('customized 404', t => {
 
   fastify.get('/with-error', function (req, reply) {
     reply.send(new errors.NotFound())
+  })
+
+  fastify.get('/with-error-custom-header', function (req, reply) {
+    const err = new errors.NotFound()
+    err.headers = { 'x-foo': 'bar' }
+    reply.send(err)
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
@@ -108,6 +114,49 @@ test('customized 404', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
+        t.strictEqual(body.toString(), 'this was not found')
+      })
+    })
+
+    test('error object with headers property', t => {
+      t.plan(4)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/with-error-custom-header'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(response.headers['x-foo'], 'bar')
+        t.strictEqual(body.toString(), 'this was not found')
+      })
+    })
+  })
+})
+
+test('custom header in notFound handler', t => {
+  t.plan(2)
+
+  const test = t.test
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler(function (req, reply) {
+    reply.code(404).header('x-foo', 'bar').send('this was not found')
+  })
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    test('not found with custom header', t => {
+      t.plan(4)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/notSupported'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 404)
+        t.strictEqual(response.headers['x-foo'], 'bar')
         t.strictEqual(body.toString(), 'this was not found')
       })
     })

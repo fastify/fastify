@@ -35,9 +35,7 @@ test('should return valid string', t => {
     next()
   }))
 
-  const STR = `Fastify Instance toString
-
-Top Level Hooks
+  const STR = `Top Level Hooks
 ├── onRequest (0 hooks): []
 ├── preHandler (0 hooks): []
 ├── onResponse (0 hooks): []

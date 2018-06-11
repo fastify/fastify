@@ -92,6 +92,18 @@ console.log(fn[Symbol.for('fastify.display-name')]) // -> 'mySuperDuperPlugin'
 
 It is recommended you used a named function, but anonymous functions are supported. This was added for use within `fastify.toString()`.
 
+`toString` prioritizes the `Symbol.for('fastify.display-name')` property. You can set it yourself for named and unnamed functions like so when you are not using `fastify-plugin`:
+```js
+const func = (fastify, opts, next) => next()
+// or
+function func (fastify, opts, next) {
+  next()
+}
+
+// set a custom display name to be used in toString
+func[Symbol.for('fastify.display-name')] = 'customDisplayName'
+```
+
 <a name="handle-scope"></a>
 ### Handle the scope
 If you are using `register` only for extending the functionality of the server with  [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), it is your responsibility to tell Fastify to not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.

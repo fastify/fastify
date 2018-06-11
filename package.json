@@ -75,7 +75,7 @@
     "dns-prefetch-control": "^0.1.0",
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^1.0.1",
+    "fastify-plugin": "^1.1.1",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.12.0",

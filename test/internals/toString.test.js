@@ -50,7 +50,7 @@ Top Level Middleware
 └── /abc: [routeABC]
 
 Plugins
-├── anonymous0
+├── toString.test
 └── standardPlugin`
 
   fastify.ready(() => {

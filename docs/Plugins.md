@@ -79,6 +79,19 @@ Sometimes, you will need to know when the server is about to close, for example 
 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
+If you register an anonymous function using `fastify-plugin`, it will automatically gain a new property based on the file name the `.fp()` method was called from. You can access it using `Symbol.for('fastify.display-name')`. See the example below.
+
+```javascript
+// in mySuperDuperPlugin.js
+const fn = fp((fastify, opts, next) => {
+  next()
+})
+
+console.log(fn[Symbol.for('fastify.display-name')]) // -> 'mySuperDuperPlugin'
+```
+
+It is recommended you used a named function, but anonymous functions are supported. This was added for use within `fastify.toString()`.
+
 <a name="handle-scope"></a>
 ### Handle the scope
 If you are using `register` only for extending the functionality of the server with  [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), it is your responsibility to tell Fastify to not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.

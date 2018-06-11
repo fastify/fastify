@@ -716,7 +716,12 @@ function build (options) {
       opts.bodyLimit = this._bodyLimit
     }
 
-    this._contentTypeParser.add(contentType, opts, parser)
+    if (Array.isArray(contentType)) {
+      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
+    } else {
+      this._contentTypeParser.add(contentType, opts, parser)
+    }
+
     return this
   }
 

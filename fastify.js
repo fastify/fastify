@@ -308,7 +308,7 @@ function build (options) {
       cb = address
       address = undefined
     }
-    address = address || '127.0.0.1'
+    address = address || '0.0.0.0'
 
     /* Deal with listen (port, address, cb) */
     if (typeof backlog === 'function') {

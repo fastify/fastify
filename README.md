@@ -95,13 +95,15 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 | Koa                | 2.5.1                      | &#10007;     | 25,378        |
 | **Fastify**        | **1.6.0**                  | **&#10003;** | **37,433**    |
 | -                  |                            |              |               |
-| `http.Server`      | 8.11.2                      | &#10007;     | 29,855       |
+| `http.Server`      | 8.11.2                      | &#10007;     | 29,855\*     |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
 overhead. The overhead that each framework has on your application
 depends on your application, you should __always__ benchmark if performance
 matters to you.
+
+\* Node.js core is slower than Fastify because of https://github.com/nodejs/node/issues/20798. The problem has already been solved in Node.js 10.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

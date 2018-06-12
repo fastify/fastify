@@ -11,7 +11,7 @@ test('listen accepts a port and a callback', t => {
   const fastify = Fastify()
   fastify.listen(0, (err) => {
     fastify.server.unref()
-    t.is(fastify.server.address().address, '127.0.0.1')
+    t.is(fastify.server.address().address, '0.0.0.0')
     t.error(err)
     t.pass()
     fastify.close()
@@ -119,7 +119,7 @@ test('listen without callback', t => {
   const fastify = Fastify()
   fastify.listen(0)
     .then(() => {
-      t.is(fastify.server.address().address, '127.0.0.1')
+      t.is(fastify.server.address().address, '0.0.0.0')
       fastify.close()
       t.end()
     })

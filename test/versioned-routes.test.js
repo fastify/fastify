@@ -4,6 +4,8 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
+const http = require('http')
+const split = require('split2')
 
 test('Should register a versioned route', t => {
   t.plan(11)
@@ -362,57 +364,41 @@ test('Bas accept version (server)', t => {
   })
 })
 
-test('encapsulated 500', t => {
-  t.plan(8)
-
-  const fastify = Fastify()
+test('test log stream', t => {
+  t.plan(3)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
 
   fastify.get('/', { version: '1.2.0' }, function (req, reply) {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.register(function (f, opts, next) {
-    f.get('/', { version: '1.3.0' }, function (req, reply) {
-      reply.send(new Error('kaboom'))
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get({
+      hostname: 'localhost',
+      port: fastify.server.address().port,
+      path: '/',
+      method: 'GET',
+      headers: {
+        'Accept-Version': '1.x'
+      }
     })
 
-    f.setErrorHandler(function (err, request, reply) {
-      reply
-        .code(500)
-        .type('text/plain')
-        .send('an error happened: ' + err.message)
-    })
-
-    next()
-  }, { prefix: 'test' })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/test',
-    headers: {
-      'Accept-Version': '1.3.0'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      'Accept-Version': '1.2.0'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json')
-    t.deepEqual(JSON.parse(res.payload), {
-      error: 'Internal Server Error',
-      message: 'kaboom',
-      statusCode: 500
+    stream.once('data', listenAtLogLine => {
+      stream.once('data', line => {
+        t.equal(line.req.version, '1.x')
+        stream.once('data', line => {
+          t.equal(line.req.version, '1.x')
+        })
+      })
     })
   })
 })

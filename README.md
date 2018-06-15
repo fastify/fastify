@@ -89,28 +89,21 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| micro (`microrouter`) | 9.1.0 (`microrouter@3.1.1` ) | &#10003; | 18,314       |
-| hapi               | 17.2.1                     | &#10003;     | 18,402        |
-| Express            | 4.16.2                     | &#10003;     | 19,401        |
-| spirit (`spirit-router`) | 0.6.1 (`spirit-router@0.5.0`) | &#10003; | 20,923   |
-| total.js           | 2.9.4                      | &#10003;     | 21,992        |
-| Restify            | 6.3.4                      | &#10003;     | 22,039        |
-| Koa (`koa-router`) | 2.5.0 (`koa-router@7.4.0`) | &#10003;     | 22,737        |
-| Koa                | 2.5.0                      | &#10007;     | 23,115        |
-| take-five          | 1.3.4                      | &#10003;     | 23,597        |
-| connect (`router`) | 3.6.6 (`router@1.3.2`)     | &#10003;     | 27,066        |
-| spirit             | 0.6.1                      | &#10007;     | 31,013        |
-| **Fastify**        | **1.0.0**                  | **&#10003;** | **31,634**    |
-| micro              | 9.1.0                      | &#10007;     | 31,793        |
-| connect            | 3.6.6                      | &#10007;     | 31,925        |
+| hapi               | 17.5.1                     | &#10003;     | 22,139        |
+| Express            | 4.16.3                     | &#10003;     | 22,265        |
+| Restify            | 7.1.0                      | &#10003;     | 23,604        |
+| Koa                | 2.5.1                      | &#10007;     | 25,378        |
+| **Fastify**        | **1.6.0**                  | **&#10003;** | **37,433**    |
 | -                  |                            |              |               |
-| `http.Server`      | 8.9.4                      | &#10007;     | 34,680        |
+| `http.Server`      | 8.11.2                      | &#10007;     | 29,855\*     |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
 overhead. The overhead that each framework has on your application
 depends on your application, you should __always__ benchmark if performance
 matters to you.
+
+\* Node.js core is slower than Fastify because of https://github.com/nodejs/node/issues/20798. The problem has already been solved in Node.js 10.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

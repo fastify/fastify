@@ -222,7 +222,6 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 Data validation is extremely important and is a core concept of the framework.<br>
 To validate incoming requests, Fastify uses [JSON Schema](http://json-schema.org/).
 Let's look at an example demonstrating validation for routes:
-
 ```js
 const opts = {
   schema: {

@@ -314,6 +314,7 @@ function build (options) {
 
     fastify.ready(function (err) {
       if (err) return cb(err)
+
       if (listening) {
         return cb(new Error('Fastify is already listening'), null)
       }

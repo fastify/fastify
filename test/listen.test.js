@@ -11,7 +11,6 @@ test('listen accepts a port and a callback', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, (err) => {
-    fastify.server.unref()
     t.is(fastify.server.address().address, '127.0.0.1')
     t.error(err)
   })
@@ -22,7 +21,6 @@ test('listen accepts a port and a callback with (err, address)', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
   })
@@ -33,7 +31,6 @@ test('listen accepts a port, address, and callback', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, '127.0.0.1', (err) => {
-    fastify.server.unref()
     t.error(err)
   })
 })
@@ -43,7 +40,6 @@ test('listen accepts a port and a callback with (err, address)', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, (err, address) => {
-    fastify.server.unref()
     t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
   })
@@ -54,7 +50,6 @@ test('listen accepts a port, address, backlog and callback', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, '127.0.0.1', 511, (err) => {
-    fastify.server.unref()
     t.error(err)
   })
 })
@@ -64,9 +59,8 @@ test('listen accepts a port, address, backlog and callback with (err, address)',
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, '127.0.0.1', 511, (err, address) => {
-    fastify.server.unref()
     t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-    t.is(err, null)
+    t.error(err)
   })
 })
 
@@ -75,9 +69,8 @@ test('listen accepts a port, address, backlog and callback with (err, address)',
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, '127.0.0.1', 511, (err, address) => {
-    fastify.server.unref()
     t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-    t.is(err, null)
+    t.error(err)
   })
 })
 
@@ -90,7 +83,7 @@ test('listen after Promise.resolve()', t => {
       f.listen(0, (err, address) => {
         f.server.unref()
         t.is(address, 'http://127.0.0.1:' + f.server.address().port)
-        t.is(err, null)
+        t.error(err)
       })
     })
 })
@@ -131,9 +124,8 @@ test('double listen errors callback with (err, address)', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, (err1, address1) => {
-    fastify.server.unref()
     t.is(address1, 'http://127.0.0.1:' + fastify.server.address().port)
-    t.is(err1, null)
+    t.error(err1)
     fastify.listen(fastify.server.address().port, (err2, address2) => {
       t.is(address2, null)
       t.ok(err2)
@@ -147,7 +139,7 @@ test('listen twice on the same port', t => {
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, (err1, address1) => {
     t.is(address1, 'http://127.0.0.1:' + fastify.server.address().port)
-    t.is(err1, null)
+    t.error(err1)
     const s2 = Fastify()
     t.tearDown(s2.close.bind(s2))
     s2.listen(fastify.server.address().port, (err2, address2) => {
@@ -164,7 +156,7 @@ test('listen twice on the same port callback with (err, address)', t => {
   fastify.listen(0, (err1, address1) => {
     const _port = fastify.server.address().port
     t.is(address1, 'http://127.0.0.1:' + _port)
-    t.is(err1, null)
+    t.error(err1)
     const s2 = Fastify()
     t.tearDown(s2.close.bind(s2))
     s2.listen(_port, (err2, address2) => {
@@ -198,7 +190,6 @@ test('listen without callback', t => {
   fastify.listen(0)
     .then(() => {
       t.is(fastify.server.address().address, '127.0.0.1')
-      t.end()
     })
 })
 
@@ -209,7 +200,6 @@ test('listen null without callback with (address)', t => {
   fastify.listen(null)
     .then(address => {
       t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-      t.end()
     })
 })
 
@@ -230,7 +220,6 @@ test('listen with undefined without callback with (address)', t => {
   fastify.listen(undefined)
     .then(address => {
       t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-      t.end()
     })
 })
 
@@ -241,7 +230,6 @@ test('listen without callback with (address)', t => {
   fastify.listen(0)
     .then(address => {
       t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
-      t.end()
     })
 })
 

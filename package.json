@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
@@ -75,7 +75,7 @@
     "dns-prefetch-control": "^0.1.0",
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^1.0.1",
+    "fastify-plugin": "^1.1.3",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.12.0",

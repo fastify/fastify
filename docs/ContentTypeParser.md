@@ -14,6 +14,12 @@ fastify.addContentTypeParser('application/jsoff', function (req, done) {
     done(err, body)
   })
 })
+// handle multiple content types as the same
+fastify.addContentTypeParser(['text/xml', 'application/xml'], function (req, done) {
+  xmlParser(req, function (err, body) {
+    done(err, body)
+  })
+})
 // async also supported in Node versions >= 8.0.0
 fastify.addContentTypeParser('application/jsoff', async function (req) {
   var res = await new Promise((resolve, reject) => resolve(req))

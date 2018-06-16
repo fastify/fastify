@@ -6,19 +6,14 @@ This document aims to be a gentle introduction to the framework and its features
 Let's start!
 
 <a name="install"></a>
-
 ### Install
-
 ```
 npm i fastify --save
 ```
 
 <a name="first-server"></a>
-
 ### Your first server
-
 Let's write our first server:
-
 ```js
 // Require the framework and instantiate it
 const fastify = require('fastify')()
@@ -40,7 +35,6 @@ fastify.listen(3000, function (err, address) {
 
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br>
 *(we also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks)*
-
 ```js
 const fastify = require('fastify')()
 
@@ -246,7 +240,6 @@ fastify.post('/', opts, async (request, reply) => {
   return { hello: 'world' }
 })
 ```
-
 This example shows how to pass an options object to the route, which accepts a `schema` key, that contains all of the schemas for route, `body`, `querystring`, `params` and `headers`.<br>
 Read [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) to learn more.
 
@@ -254,7 +247,6 @@ Read [Validation and Serialization](https://github.com/fastify/fastify/blob/mast
 ### Serialize your data
 Fastify has first class support for JSON. It is extremely optimized to parse a JSON body and to serialize JSON output.<br>
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the schema option like so:
-
 ```js
 const opts = {
   schema: {
@@ -293,7 +285,7 @@ Fastify also has CLI integration thanks to
 
 First, install `fastify-cli`:
 
-```bash
+```
 npm i fastify-cli
 ```
 

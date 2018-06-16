@@ -171,7 +171,6 @@ if (os.platform() !== 'win32') {
   test('listen on socket', t => {
     t.plan(2)
     const fastify = Fastify()
-    t.tearDown(fastify.close.bind(fastify))
     const sockFile = path.join(os.tmpdir(), 'server.sock')
     try {
       fs.unlinkSync(sockFile)
@@ -179,6 +178,7 @@ if (os.platform() !== 'win32') {
     fastify.listen(sockFile, (err) => {
       t.error(err)
       t.equal(sockFile, fastify.server.address())
+      fastify.close()
     })
   })
 }

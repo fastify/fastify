@@ -573,7 +573,7 @@ function build (options) {
       }
 
       try {
-        router.on(opts.method, url, routeHandler, context)
+        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -735,6 +735,9 @@ function build (options) {
   }
 
   function defaultRoute (req, res) {
+    if (req.headers['accept-version'] !== undefined) {
+      req.headers['accept-version'] = undefined
+    }
     fourOhFour.lookup(req, res)
   }
 

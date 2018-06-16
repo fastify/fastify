@@ -16,7 +16,9 @@ npm i fastify --save
 Let's write our first server:
 ```js
 // Require the framework and instantiate it
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 // Declare a route
 fastify.get('/', function (request, reply) {
@@ -29,7 +31,7 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  console.log(`server listening on ${address}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 
@@ -66,7 +68,7 @@ Fastify offers an easy platform that helps solve all of problems, and more.
 >     fastify.log.error(err)
 >     process.exit(1)
 >   }
->   console.log(`server listening on ${address}`)
+>   fastify.log.info(`server listening on ${address}`)
 > })
 > ```
 >
@@ -80,7 +82,9 @@ As with JavaScript everything is an object, with Fastify everything is a plugin.
 Before digging into it, let's see how it works!<br>
 Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (checkout the [route declaration](https://github.com/fastify/fastify/blob/master/docs/Routes.md) docs).
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 fastify.register(require('./our-first-route'))
 
@@ -89,7 +93,7 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  console.log(`server listening on ${address}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 
@@ -116,7 +120,9 @@ Let's rewrite the above example with a database connection.<br>
 
 **server.js**
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 fastify.register(require('./our-db-connector'), {
   url: 'mongodb://localhost:27017/'
@@ -128,7 +134,7 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  console.log(`server listening on ${address}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 

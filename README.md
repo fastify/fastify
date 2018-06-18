@@ -37,7 +37,9 @@ npm i fastify --save
 
 ```js
 // Require the framework and instantiate it
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 // Declare a route
 fastify.get('/', function (request, reply) {
@@ -45,25 +47,27 @@ fastify.get('/', function (request, reply) {
 })
 
 // Run the server!
-fastify.listen(3000, '127.0.0.1', function (err) {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 
 with async-await:
 
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 fastify.get('/', async (request, reply) => {
   reply.type('application/json').code(200)
   return { hello: 'world' }
 })
 
-fastify.listen(3000, '127.0.0.1', function (err) {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 

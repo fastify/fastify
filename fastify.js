@@ -283,8 +283,7 @@ function build (options) {
       var listen = new Promise((resolve, reject) => {
         server.listen(port, address, backlog, () => {
           server.removeListener('error', errEventHandler)
-          logServerAddress(server.address(), options.https)
-          resolve()
+          resolve(logServerAddress(server.address(), options.https))
         })
         // we set it afterwards because listen can throw
         listening = true
@@ -315,8 +314,9 @@ function build (options) {
 
     fastify.ready(function (err) {
       if (err) return cb(err)
+
       if (listening) {
-        return cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'), null)
       }
 
       server.once('error', wrap)
@@ -330,13 +330,14 @@ function build (options) {
     })
 
     function wrap (err) {
+      server.removeListener('error', wrap)
       if (!err) {
-        logServerAddress(server.address(), options.https)
+        address = logServerAddress(server.address(), options.https)
+        cb(null, address)
       } else {
         listening = false
+        cb(err, null)
       }
-      server.removeListener('error', wrap)
-      cb(err)
     }
   }
 
@@ -350,6 +351,7 @@ function build (options) {
     }
     address = 'http' + (isHttps ? 's' : '') + '://' + address
     fastify.log.info('Server listening at ' + address)
+    return address
   }
 
   function State (req, res, params, context) {

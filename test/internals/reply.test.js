@@ -18,7 +18,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply._customError, 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
-  t.is(typeof reply.code, 'function')
+  t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
   t.is(typeof reply._headers, 'object')

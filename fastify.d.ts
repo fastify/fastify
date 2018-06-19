@@ -71,6 +71,7 @@ declare namespace fastify {
    */
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
+    status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>

@@ -93,3 +93,28 @@ test('decorate should internally call checkDependencies', t => {
     t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
   }
 })
+
+test('decorate should recognize getter/setter objects', t => {
+  t.plan(6)
+
+  const one = {}
+  decorator.add.call(one, 'foo', {
+    getter: () => this._a,
+    setter: (val) => {
+      t.pass()
+      this._a = val
+    }
+  })
+  t.is(one.hasOwnProperty('foo'), true)
+  t.is(one.foo, undefined)
+  one.foo = 'a'
+  t.is(one.foo, 'a')
+
+  // getter only
+  const two = {}
+  decorator.add.call(two, 'foo', {
+    getter: () => 'a getter'
+  })
+  t.is(two.hasOwnProperty('foo'), true)
+  t.is(two.foo, 'a getter')
+})

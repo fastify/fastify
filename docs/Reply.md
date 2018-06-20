@@ -5,6 +5,7 @@ The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
+- `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.header(name, value)` - Sets a response header.
 - `.getHeader(name)` - Retrieve value of already set header.
 - `.hasHeader(name)` = Determine if a header has been set.

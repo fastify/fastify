@@ -8,7 +8,7 @@ const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(11)
+  t.plan(12)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -18,6 +18,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply._customError, 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
+  t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
   t.is(typeof reply._headers, 'object')
@@ -784,5 +785,19 @@ test('Content type and charset set previously', t => {
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+})
+
+test('.status() is an alias for .code()', t => {
+  t.plan(2)
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.status(418).send()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 418)
   })
 })

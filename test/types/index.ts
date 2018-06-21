@@ -176,6 +176,9 @@ server
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
   })
+  .get('/status', function (req, reply) {
+    reply.status(204).send()
+  })
   .get('/promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
       resolve({ hello: 'world' })

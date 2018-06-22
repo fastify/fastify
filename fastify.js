@@ -342,14 +342,15 @@ function build (options) {
   }
 
   function logServerAddress (address, isHttps) {
-    if (typeof address === 'object') {
+    const isUnixSocket = typeof address === 'string'
+    if (!isUnixSocket) {
       if (address.address.indexOf(':') === -1) {
         address = address.address + ':' + address.port
       } else {
         address = '[' + address.address + ']:' + address.port
       }
     }
-    address = 'http' + (isHttps ? 's' : '') + '://' + address
+    address = (isUnixSocket ? '' : ('http' + (isHttps ? 's' : '') + '://')) + address
     fastify.log.info('Server listening at ' + address)
     return address
   }

@@ -169,16 +169,19 @@ test('listen twice on the same port callback with (err, address)', t => {
 // https://nodejs.org/api/net.html#net_ipc_support
 if (os.platform() !== 'win32') {
   test('listen on socket', t => {
-    t.plan(2)
+    t.plan(3)
     const fastify = Fastify()
+    t.tearDown(fastify.close.bind(fastify))
+
     const sockFile = path.join(os.tmpdir(), 'server.sock')
     try {
       fs.unlinkSync(sockFile)
     } catch (e) { }
-    fastify.listen(sockFile, (err) => {
+
+    fastify.listen(sockFile, (err, address) => {
       t.error(err)
       t.equal(sockFile, fastify.server.address())
-      fastify.close()
+      t.equal(address, sockFile)
     })
   })
 }

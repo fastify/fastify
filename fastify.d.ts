@@ -71,6 +71,7 @@ declare namespace fastify {
    */
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
+    status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>
@@ -268,15 +269,15 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, hostname: string, callback?: (err: Error, address: string) => void): http.Server
 
     /**
      * Starts the server on the given port after all the plugins are loaded,
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, callback?: (err: Error) => void): http.Server
-    listen(path: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, callback?: (err: Error, address: string) => void): http.Server
+    listen(path: string, callback?: (err: Error, address: string) => void): http.Server
 
     /**
      * Registers a listener function that is invoked when all the plugins have

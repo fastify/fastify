@@ -288,15 +288,9 @@ function build (options) {
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
-        server.listen(port, address, backlog, (err) => {
-          if (err) {
-            listening = false
-            reject(err)
-          } else {
-            server.removeListener('error', errEventHandler)
-            logServerAddress(server.address(), options.https)
-            resolve()
-          }
+        server.listen(port, address, backlog, () => {
+          server.removeListener('error', errEventHandler)
+          resolve(logServerAddress(server.address(), options.https))
         })
         // we set it afterwards because listen can throw
         listening = true
@@ -327,8 +321,9 @@ function build (options) {
 
     fastify.ready(function (err) {
       if (err) return cb(err)
+
       if (listening) {
-        return cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'), null)
       }
 
       server.once('error', wrap)
@@ -342,26 +337,29 @@ function build (options) {
     })
 
     function wrap (err) {
+      server.removeListener('error', wrap)
       if (!err) {
-        logServerAddress(server.address(), options.https)
+        address = logServerAddress(server.address(), options.https)
+        cb(null, address)
       } else {
         listening = false
+        cb(err, null)
       }
-      server.removeListener('error', wrap)
-      cb(err)
     }
   }
 
   function logServerAddress (address, isHttps) {
-    if (typeof address === 'object') {
+    const isUnixSocket = typeof address === 'string'
+    if (!isUnixSocket) {
       if (address.address.indexOf(':') === -1) {
         address = address.address + ':' + address.port
       } else {
         address = '[' + address.address + ']:' + address.port
       }
     }
-    address = 'http' + (isHttps ? 's' : '') + '://' + address
+    address = (isUnixSocket ? '' : ('http' + (isHttps ? 's' : '') + '://')) + address
     fastify.log.info('Server listening at ' + address)
+    return address
   }
 
   function State (req, res, params, context) {
@@ -585,7 +583,7 @@ function build (options) {
       }
 
       try {
-        router.on(opts.method, url, routeHandler, context)
+        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -723,7 +721,12 @@ function build (options) {
       opts.bodyLimit = this._bodyLimit
     }
 
-    this._contentTypeParser.add(contentType, opts, parser)
+    if (Array.isArray(contentType)) {
+      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
+    } else {
+      this._contentTypeParser.add(contentType, opts, parser)
+    }
+
     return this
   }
 
@@ -742,6 +745,9 @@ function build (options) {
   }
 
   function defaultRoute (req, res) {
+    if (req.headers['accept-version'] !== undefined) {
+      req.headers['accept-version'] = undefined
+    }
     fourOhFour.lookup(req, res)
   }
 

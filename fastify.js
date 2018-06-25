@@ -173,12 +173,7 @@ function build (options) {
   fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
-  const avvioUse = fastify.use
-  fastify.register = function (plugin, options) {
-    avvioUse(plugin, options)
-    fastify[pluginUtils.registeredPlugins].push(plugin)
-    return fastify
-  }
+  fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
   fastify[pluginUtils.registeredPlugins] = []

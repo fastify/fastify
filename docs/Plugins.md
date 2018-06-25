@@ -103,6 +103,13 @@ function func (fastify, opts, next) {
 // set a custom display name to be used in toString
 func[Symbol.for('fastify.display-name')] = 'customDisplayName'
 ```
+Furthermore, if you are using `fastify-plugin` meta data to set the name for a plugin, `fastify.toString` will priortize this instead of the `Symbol.for('fastify.display-name')` property. See below for an example of declaring a plugin name using the meta data option.
+
+```js
+fastify.register(fp(async () => {}, {
+  name: 'my-plugin'
+}))
+```
 
 <a name="handle-scope"></a>
 ### Handle the scope

@@ -515,3 +515,18 @@ test('should register properties via getter/setter objects', t => {
     t.notOk(fastify.test)
   })
 })
+
+test('should register empty values', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorate('test', null)
+    t.true(instance.hasOwnProperty('test'))
+    next()
+  })
+
+  fastify.ready(() => {
+    t.notOk(fastify.test)
+  })
+})

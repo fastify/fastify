@@ -279,6 +279,17 @@ server.listen(3000, err => {
   }
 })
 
+server.listen(3000, '127.0.0.1', err => {
+  if (err) throw err
+})
+
+server.listen(3000, '127.0.0.1', 511, err => {
+  if (err) throw err
+})
+
+server.listen(3000)
+  .then((address: string) => console.log(address))
+
 // http injections
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)

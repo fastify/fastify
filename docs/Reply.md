@@ -8,7 +8,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.header(name, value)` - Sets a response header.
 - `.getHeader(name)` - Retrieve value of already set header.
-- `.hasHeader(name)` = Determine if a header has been set.
+- `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.

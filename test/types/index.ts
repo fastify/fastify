@@ -279,6 +279,30 @@ server.listen(3000, err => {
   }
 })
 
+server.listen(3000, '127.0.0.1', err => {
+  if (err) throw err
+})
+
+server.listen(3000, '127.0.0.1', 511, err => {
+  if (err) throw err
+})
+
+server.listen('/tmp/sock', err => {
+  if (err) throw err
+})
+
+server.listen(3000)
+  .then((address: string) => console.log(address))
+
+server.listen(3000, '127.0.0.1')
+  .then((address: string) => console.log(address))
+
+server.listen(3000, '127.0.0.1', 511)
+  .then((address: string) => console.log(address))
+
+server.listen('/tmp/sock')
+  .then((address: string) => console.log(address))
+
 // http injections
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)

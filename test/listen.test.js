@@ -35,11 +35,11 @@ test('listen accepts a port, address, and callback', t => {
   })
 })
 
-test('listen accepts a port and a callback with (err, address)', t => {
+test('listen accepts a port, address and a callback with (err, address)', t => {
   t.plan(2)
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
-  fastify.listen(0, (err, address) => {
+  fastify.listen(0, '127.0.0.1', (err, address) => {
     t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
   })
@@ -50,16 +50,6 @@ test('listen accepts a port, address, backlog and callback', t => {
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0, '127.0.0.1', 511, (err) => {
-    t.error(err)
-  })
-})
-
-test('listen accepts a port, address, backlog and callback with (err, address)', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  t.tearDown(fastify.close.bind(fastify))
-  fastify.listen(0, '127.0.0.1', 511, (err, address) => {
-    t.is(address, 'http://127.0.0.1:' + fastify.server.address().port)
     t.error(err)
   })
 })

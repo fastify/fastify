@@ -773,10 +773,21 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
+    const _fastify = this
     const prefix = this._routePrefix || '/'
 
     if (this._canSetNotFoundHandler === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
+    }
+
+    if (typeof opts === 'object' && opts.beforeHandler) {
+      if (Array.isArray(opts.beforeHandler)) {
+        opts.beforeHandler.forEach((h, i) => {
+          opts.beforeHandler[i] = h.bind(_fastify)
+        })
+      } else {
+        opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+      }
     }
 
     if (typeof opts === 'function') {
@@ -815,7 +826,7 @@ function build (options) {
       const context = this._404Context
 
       const onRequest = this._hooks.onRequest
-      const preHandler = this._hooks.preHandler
+      const preHandler = this._hooks.preHandler.concat(opts.beforeHandler || [])
       const onSend = this._hooks.onSend
       const onResponse = this._hooks.onResponse
 

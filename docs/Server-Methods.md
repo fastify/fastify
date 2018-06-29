@@ -193,14 +193,22 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 
 `fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md#lifecycle).
 
+You can also register [beforeHandler](https://www.fastify.io/docs/latest/Hooks/#beforehandler) hook for the 404 handler. 
+
 ```js
-fastify.setNotFoundHandler(function (request, reply) {
-  // Default not found handler
+fastify.setNotFoundHandler({
+  beforeHandler: (req, reply, next) => {
+    req.body.beforeHandler = true
+    next()
+  }  
+}, function (request, reply) {
+    // Default not found handler with beforeHandler hook
 })
 
 fastify.register(function (instance, options, next) {
   instance.setNotFoundHandler(function (request, reply) {
-    // Handle not found request to URLs that begin with '/v1'
+    // Handle not found request without beforeHandler hook
+    // to URLs that begin with '/v1'
   })
   next()
 }, { prefix: '/v1' })

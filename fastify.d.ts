@@ -272,7 +272,9 @@ declare namespace fastify {
     listen(port: number, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
+    listen(sockFile: string, callback: (err: Error, address: string) => void): void
     listen(port: number, address?: string, backlog?: number): Promise<string>
+    listen(sockFile: string): Promise<string>
 
     /**
      * Registers a listener function that is invoked when all the plugins have

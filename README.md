@@ -140,6 +140,10 @@ matters to you.
 - [Fastify help](https://github.com/fastify/help)
 - [Gitter Chat](https://gitter.im/fastify)
 
+## Starter Project
+
+- [Fastify Starter Project](https://github.com/SarasArya/fastify-starter-project)
+
 ## Team
 
 _Fastify_ is the result of the work of a great community.

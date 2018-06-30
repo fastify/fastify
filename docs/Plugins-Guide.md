@@ -195,7 +195,7 @@ I think we all agree that this is terrible. Code repeat, awful readability and i
 
 So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!<br>
 ```js
-fastify.decorate('util', (request, key, value) => { request.key = value })
+fastify.decorate('util', (request, key, value) => { request[key] = value })
 
 fastify.addHook('preHandler', (request, reply, done) => {
   fastify.util(request, 'timestamp', new Date())
@@ -215,7 +215,7 @@ It can happen that you want a hook that must be executed just for a subset of ro
 
 ```js
 fastify.register((instance, opts, next) => {
-  instance.decorate('util', (request, key, value) => { request.key = value })
+  instance.decorate('util', (request, key, value) => { request[key] = value })
 
   instance.addHook('preHandler', (request, reply, done) => {
     instance.util(request, 'timestamp', new Date())

@@ -5,12 +5,21 @@
 <div align="center">
 
 [![Build Status](https://travis-ci.org/fastify/fastify.svg?branch=master)](https://travis-ci.org/fastify/fastify)
+[![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+
+</div>
+
+<div align="center">
+
 [![NPM version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify) [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/fastify)
-[![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master)
+[![Security Responsible
+Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
+
 </div>
+
 <br />
 
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
@@ -28,7 +37,9 @@ npm i fastify --save
 
 ```js
 // Require the framework and instantiate it
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 // Declare a route
 fastify.get('/', function (request, reply) {
@@ -36,25 +47,27 @@ fastify.get('/', function (request, reply) {
 })
 
 // Run the server!
-fastify.listen(3000, '127.0.0.1', function (err) {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 
 with async-await:
 
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 fastify.get('/', async (request, reply) => {
   reply.type('application/json').code(200)
   return { hello: 'world' }
 })
 
-fastify.listen(3000, '127.0.0.1', function (err) {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
+  fastify.log.info(`server listening on ${address}`)
 })
 ```
 
@@ -80,28 +93,21 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| micro (`microrouter`) | 9.1.0 (`microrouter@3.1.1` ) | &#10003; | 18,314       |
-| hapi               | 17.2.1                     | &#10003;     | 18,402        |
-| Express            | 4.16.2                     | &#10003;     | 19,401        |
-| spirit (`spirit-router`) | 0.6.1 (`spirit-router@0.5.0`) | &#10003; | 20,923   |
-| total.js           | 2.9.4                      | &#10003;     | 21,992        |
-| Restify            | 6.3.4                      | &#10003;     | 22,039        |
-| Koa (`koa-router`) | 2.5.0 (`koa-router@7.4.0`) | &#10003;     | 22,737        |
-| Koa                | 2.5.0                      | &#10007;     | 23,115        |
-| take-five          | 1.3.4                      | &#10003;     | 23,597        |
-| connect (`router`) | 3.6.6 (`router@1.3.2`)     | &#10003;     | 27,066        |
-| spirit             | 0.6.1                      | &#10007;     | 31,013        |
-| **Fastify**        | **1.0.0**                  | **&#10003;** | **31,634**    |
-| micro              | 9.1.0                      | &#10007;     | 31,793        |
-| connect            | 3.6.6                      | &#10007;     | 31,925        |
+| hapi               | 17.5.1                     | &#10003;     | 22,139        |
+| Express            | 4.16.3                     | &#10003;     | 22,265        |
+| Restify            | 7.1.0                      | &#10003;     | 23,604        |
+| Koa                | 2.5.1                      | &#10007;     | 25,378        |
+| **Fastify**        | **1.6.0**                  | **&#10003;** | **37,433**    |
 | -                  |                            |              |               |
-| `http.Server`      | 8.9.4                      | &#10007;     | 34,680        |
+| `http.Server`      | 8.11.2                      | &#10007;     | 29,855\*     |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
 overhead. The overhead that each framework has on your application
 depends on your application, you should __always__ benchmark if performance
 matters to you.
+
+\* Node.js core is slower than Fastify because of https://github.com/nodejs/node/issues/20798. The problem has already been solved in Node.js 10.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
@@ -116,12 +122,15 @@ matters to you.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code><b>Reply</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code><b>Request</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md"><code><b>Factory</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md"><code><b>Plugins</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Benchmarking.md"><code><b>Benchmarking</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Write-Plugin.md"><code><b>How to write a good plugin</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/HTTP2.md"><code><b>HTTP2</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/LTS.md"><code><b>Long Term Support</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
 
 ## Ecosystem
 - [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).

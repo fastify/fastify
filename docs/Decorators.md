@@ -34,6 +34,22 @@ console.log(fastify.conf.db)
 
 Decorators are not *overwritable*. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
 
+Decorators accept special "getter/setter" objects. These objects have functions named `getter` and `setter` (though, the `setter` function is optional). This allows defining properties via decorators. For example:
+
+```js
+fastify.decorate('foo', {
+  getter () {
+    return 'a getter'
+  }
+})
+```
+
+Will define the `foo` property on the *Fastify* instance:
+
+```js
+console.log(fastify.foo) // 'a getter'
+```
+
 <a name="decorate-reply"></a>
 **decorateReply**
 As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
@@ -56,6 +72,28 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
+<a name="usage_notes"></a>
+#### Usage Notes
+`decorateReply` and `decorateRequest` are used to modify the `Reply` and `Request` constructors respectively by adding methods or properties. To update these properties you should directly access the desired property of the `Reply` or `Request` object.
+
+As an example let's add a user property to the `Request` object:
+
+```js
+// Decorate request with a 'user' property
+fastify.decorateRequest('user', '')
+
+// Update our property
+fastify.addHook('preHandler', (req, reply, next) => {
+  req.user = 'Bob Dylan'
+  next()
+})
+// And finally access it
+fastify.get('/', (req, reply) => {
+  reply.send(`Hello ${req.user}!`)
+})
+```
+Note: The usage of `decorateReply` and `decorateRequest` is optional in this case but will allow Fastify to optimize for performance.
+
 <a name="sync-async"></a>
 #### Sync and Async
 `decorate` is a *synchronous* API. If you need to add a decorator that has an *asynchronous* bootstrap, Fastify could boot up before your decorator is ready. To avoid this issue, you must use the `register` API in combination with `fastify-plugin`. To learn more, check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.
@@ -74,4 +112,18 @@ If a dependency is not satisfied, `decorate` will throw an exception, but don't 
 You can check for the presence of a decorator with the `hasDecorator` API:
 ```js
 fastify.hasDecorator('utility')
+```
+
+<a name="has-request-decorator"></a>
+#### hasRequestDecorator
+You can check for the presence of a Request decorator with the `hasRequestDecorator` API:
+```js
+fastify.hasRequestDecorator('utility')
+```
+
+<a name="has-reply-decorator"></a>
+#### hasReplyDecorator
+You can check for the presence of a Reply decorator with the `hasReplyDecorator` API:
+```js
+fastify.hasReplyDecorator('utility')
 ```

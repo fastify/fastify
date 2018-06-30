@@ -1,15 +1,18 @@
+/* eslint no-unused-vars: 0 */
+/* eslint no-undef: 0 */
+/* eslint space-infix-ops: 0 */
 
 /// <reference types="node" />
 /// <reference types="pino" />
 
-import * as http from 'http';
-import * as http2 from 'http2';
-import * as https from 'https';
-import * as pino from 'pino';
+import * as http from 'http'
+import * as http2 from 'http2'
+import * as https from 'https'
+import * as pino from 'pino'
 
 declare function fastify<
-  HttpServer extends (http.Server | http2.Http2Server) = http.Server, 
-  HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage, 
+  HttpServer extends (http.Server | http2.Http2Server) = http.Server,
+  HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage,
   HttpResponse extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse
 >(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
@@ -19,17 +22,24 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 
 declare namespace fastify {
 
-  type Plugin<HttpServer, HttpRequest, HttpResponse, T> = (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, opts: T, callback: (err?: Error) => void) => void
+  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: Error) => void) => void
 
-  type Middleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
+  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
 
-  type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS';
+  type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
 
-  type FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
+  type FastifyMiddleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
-  type RequestHandler<HttpRequest, HttpResponse> = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
+  type RequestHandler < HttpRequest, HttpResponse > = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
 
   type SchemaCompiler = (schema: Object) => Function
+
+  type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest) => Promise<any>
+  type ContentTypeParser < HttpRequest > = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void
+
+  interface FastifyContext {
+    config: any
+  }
 
   /**
    * fastify's wrapped version of node.js IncomingMessage
@@ -40,6 +50,10 @@ declare namespace fastify {
     },
 
     params: {
+      [key: string]: any
+    },
+
+    headers: {
       [key: string]: any
     },
 
@@ -57,6 +71,7 @@ declare namespace fastify {
    */
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
+    status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>
@@ -66,12 +81,13 @@ declare namespace fastify {
     send: (payload?: any) => FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
+    context: FastifyContext
   }
 
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
-    logger?: pino.LoggerOptions | true,
+    logger?: pino.LoggerOptions | boolean,
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
@@ -89,14 +105,16 @@ declare namespace fastify {
   }
   interface ServerOptionsAsSecureHttp2 extends ServerOptionsAsHttp2, ServerOptionsAsSecure {}
 
-  interface JSONSchema {
-    // TODO - define/import JSONSchema types
-    body?: Object
-    querystring?: Object
-    params?: Object
+  // TODO - define/import JSONSchema types
+  type JSONSchema = Object
+
+  interface RouteSchema {
+    body?: JSONSchema
+    querystring?: JSONSchema
+    params?: JSONSchema
     response?: {
-      [code: number]: Object,
-      [code: string]: Object
+      [code: number]: JSONSchema,
+      [code: string]: JSONSchema
     }
   }
 
@@ -104,7 +122,7 @@ declare namespace fastify {
    * Optional configuration parameters for the route being created
    */
   interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
-    schema?: JSONSchema
+    schema?: RouteSchema
     beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number,
@@ -251,15 +269,12 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
-
-    /**
-     * Starts the server on the given port after all the plugins are loaded,
-     * internally waits for the .ready() event. The callback is the same as the
-     * Node core.
-     */
-    listen(port: number, callback?: (err: Error) => void): http.Server
-    listen(path: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, callback: (err: Error, address: string) => void): void
+    listen(port: number, address: string, callback: (err: Error, address: string) => void): void
+    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
+    listen(sockFile: string, callback: (err: Error, address: string) => void): void
+    listen(port: number, address?: string, backlog?: number): Promise<string>
+    listen(sockFile: string): Promise<string>
 
     /**
      * Registers a listener function that is invoked when all the plugins have
@@ -328,9 +343,19 @@ declare namespace fastify {
     hasDecorator(name: string): boolean
 
     /**
+     * Determines if the given named request decorator is available
+     */
+    hasRequestDecorator(name: string): boolean
+
+    /**
+     * Determines if the given named reply decorator is available
+     */
+    hasReplyDecorator(name: string): boolean
+
+    /**
      * Add a hook that is triggered when a request is initially received
      */
-    addHook(name: 'onRequest', hook: Middleware<HttpServer,HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRequest', hook: Middleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired before a request is processed, but after the "onRequest"
@@ -342,7 +367,7 @@ declare namespace fastify {
      * Hook that is fired after a request is processed, but before the "onResponse"
      * hook
      */
-     addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
      /**
      * Hook that is called when a response is about to be sent to a client
@@ -354,6 +379,13 @@ declare namespace fastify {
      * and performing cleanup tasks
      */
     addHook(name: 'onClose', hook: (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Adds a hook that is triggered when a new route is registered. Listeners are passed a
+     * routeOptions object as the sole parameter.
+     * The interface is synchronous, and, as such, the listeners do not get passed a callback.
+     */
+    addHook(name: 'onRoute', hook: (opts: RouteOptions<HttpServer, HttpRequest, HttpResponse> & { path: string, prefix: string }) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Useful for testing http requests without running a sever
@@ -384,6 +416,16 @@ declare namespace fastify {
      * Create a shared schema
      */
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Add a content type parser
+     */
+    addContentTypeParser(contentType: string, opts: {parseAs?: string, bodyLimit?: number} | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+
+    /**
+     * Check if a parser for the specified content type exists
+     */
+    hasContentTypeParser(contentType: string): boolean;
 
     /**
      * Prints the representation of the internal radix tree used by the router

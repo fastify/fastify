@@ -28,6 +28,7 @@ They need to be in
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `config`: object used to store custom configuration.
+* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/versioned-routes/docs/Routes.md#version).
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 
@@ -159,7 +160,10 @@ fastify.get('/', options, async function (request, reply) {
   return processed
 })
 ```
-As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body (given that body is not `undefined`) and you are done!
+**Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+
+As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
+
 If you need it you can also send back the data to the user with `reply.send`.
 ```js
 fastify.get('/', options, async function (request, reply) {
@@ -168,7 +172,25 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
-**Warning:** If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted if the value is not `undefined`.
+**Warning:**
+* If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+
+<a name="promise-resolution"></a>
+### Promise resolution
+
+If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
+
+1. If you want to use `async/await` or promises but respond a value with `reply.send`:
+    - **Don't** `return` any value.
+    - **Don't** forget to call `reply.send`.
+2. If you want to use `async/await` or promises:
+    - **Don't** use `reply.send`.
+    - **Don't** return `undefined`.
+
+In this way, we can support both `callback-style` and `async-await`, with the minimum trade-off. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
+
+**Notice**: Every async function returns a promise by itself.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing
@@ -230,3 +252,50 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 })
 ```
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
+
+
+<a name="routes-config"></a>
+### Config
+Registering a new handler, you can pass a configuration object to it and retrieve it in the handler.
+
+```js
+// server.js
+const fastify = require('fastify')()
+
+function handler (req, reply) {
+  reply.send(reply.context.config.output)
+}
+
+fastify.get('/en', { config: { output: 'hello world!' } }, handler)
+fastify.get('/it', { config: { output: 'ciao mondo!' } }, handler)
+
+fastify.listen(3000)
+```
+
+<a name="version"></a>
+### Version
+If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
+Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
+*Be aware that using this feature will cause a degradation of the overall performances of the router.*
+```js
+fastify.route({
+  method: 'GET',
+  url: '/',
+  version: '1.2.0',
+  handler: function (request, reply) {
+    reply.send({ hello: 'world' })
+  }
+})
+
+fastify.inject({
+  method: 'GET',
+  url: '/',
+  headers: {
+    'Accept-Version': '1.x' // it could also be '1.2.0' or '1.2.x'
+  }
+}, (err, res) => {
+  // { hello: 'world' }
+})
+```
+If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
+If the request will not have the `Accept-Version` header, a 404 error will be returned.

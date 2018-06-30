@@ -85,6 +85,7 @@ function build (options) {
   app.override = override
 
   var listening = false
+  var closing = false
   // true when Fastify is ready to go
   var started = false
   app.on('start', () => {
@@ -97,7 +98,9 @@ function build (options) {
 
   var server
   const httpHandler = router.lookup.bind(router)
-  if (options.https) {
+  if (options.serverFactory) {
+    server = options.serverFactory(httpHandler, options)
+  } else if (options.https) {
     if (options.http2) {
       server = http2().createSecureServer(options.https, httpHandler)
     } else {
@@ -109,12 +112,15 @@ function build (options) {
     server = http.createServer(httpHandler)
   }
 
-  fastify.onClose((instance, done) => {
-    if (listening) {
-      instance.server.close(done)
-    } else {
-      done(null)
-    }
+  app.once('preReady', () => {
+    fastify.onClose((instance, done) => {
+      closing = true
+      if (listening) {
+        instance.server.close(done)
+      } else {
+        done(null)
+      }
+    })
   })
 
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
@@ -202,6 +208,17 @@ function build (options) {
   return fastify
 
   function routeHandler (req, res, params, context) {
+    if (closing === true) {
+      res.writeHead(503, {
+        'Content-Type': 'application/json',
+        'Content-Length': '80',
+        'Connection': 'close'
+      })
+      res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
+      setImmediate(() => req.destroy())
+      return
+    }
+
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
@@ -264,15 +281,9 @@ function build (options) {
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
-        server.listen(port, address, backlog, (err) => {
-          if (err) {
-            listening = false
-            reject(err)
-          } else {
-            server.removeListener('error', errEventHandler)
-            logServerAddress(server.address(), options.https)
-            resolve()
-          }
+        server.listen(port, address, backlog, () => {
+          server.removeListener('error', errEventHandler)
+          resolve(logServerAddress(server.address(), options.https))
         })
         // we set it afterwards because listen can throw
         listening = true
@@ -303,8 +314,9 @@ function build (options) {
 
     fastify.ready(function (err) {
       if (err) return cb(err)
+
       if (listening) {
-        return cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'), null)
       }
 
       server.once('error', wrap)
@@ -318,26 +330,29 @@ function build (options) {
     })
 
     function wrap (err) {
+      server.removeListener('error', wrap)
       if (!err) {
-        logServerAddress(server.address(), options.https)
+        address = logServerAddress(server.address(), options.https)
+        cb(null, address)
       } else {
         listening = false
+        cb(err, null)
       }
-      server.removeListener('error', wrap)
-      cb(err)
     }
   }
 
   function logServerAddress (address, isHttps) {
-    if (typeof address === 'object') {
+    const isUnixSocket = typeof address === 'string'
+    if (!isUnixSocket) {
       if (address.address.indexOf(':') === -1) {
         address = address.address + ':' + address.port
       } else {
         address = '[' + address.address + ']:' + address.port
       }
     }
-    address = 'http' + (isHttps ? 's' : '') + '://' + address
+    address = (isUnixSocket ? '' : ('http' + (isHttps ? 's' : '') + '://')) + address
     fastify.log.info('Server listening at ' + address)
+    return address
   }
 
   function State (req, res, params, context) {
@@ -561,7 +576,7 @@ function build (options) {
       }
 
       try {
-        router.on(opts.method, url, routeHandler, context)
+        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -699,7 +714,12 @@ function build (options) {
       opts.bodyLimit = this._bodyLimit
     }
 
-    this._contentTypeParser.add(contentType, opts, parser)
+    if (Array.isArray(contentType)) {
+      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
+    } else {
+      this._contentTypeParser.add(contentType, opts, parser)
+    }
+
     return this
   }
 
@@ -718,6 +738,9 @@ function build (options) {
   }
 
   function defaultRoute (req, res) {
+    if (req.headers['accept-version'] !== undefined) {
+      req.headers['accept-version'] = undefined
+    }
     fourOhFour.lookup(req, res)
   }
 

@@ -495,3 +495,38 @@ test('hasReplyDecorator', t => {
 
   t.end()
 })
+
+test('should register properties via getter/setter objects', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorate('test', {
+      getter () {
+        return 'a getter'
+      }
+    })
+    t.ok(instance.test)
+    t.is(instance.test, 'a getter')
+    next()
+  })
+
+  fastify.ready(() => {
+    t.notOk(fastify.test)
+  })
+})
+
+test('should register empty values', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorate('test', null)
+    t.true(instance.hasOwnProperty('test'))
+    next()
+  })
+
+  fastify.ready(() => {
+    t.notOk(fastify.test)
+  })
+})

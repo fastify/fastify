@@ -176,6 +176,9 @@ server
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
   })
+  .get('/status', function (req, reply) {
+    reply.status(204).send()
+  })
   .get('/promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
       resolve({ hello: 'world' })
@@ -276,6 +279,30 @@ server.listen(3000, err => {
   }
 })
 
+server.listen(3000, '127.0.0.1', err => {
+  if (err) throw err
+})
+
+server.listen(3000, '127.0.0.1', 511, err => {
+  if (err) throw err
+})
+
+server.listen('/tmp/sock', err => {
+  if (err) throw err
+})
+
+server.listen(3000)
+  .then((address: string) => console.log(address))
+
+server.listen(3000, '127.0.0.1')
+  .then((address: string) => console.log(address))
+
+server.listen(3000, '127.0.0.1', 511)
+  .then((address: string) => console.log(address))
+
+server.listen('/tmp/sock')
+  .then((address: string) => console.log(address))
+
 // http injections
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)
@@ -292,6 +319,14 @@ server.setSchemaCompiler(function (schema: object) {
 server.addSchema({})
 
 server.addContentTypeParser('foo/bar', {}, (req, done) => {
+  done!(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {parseAs: 'string'}, (req, done) => {
+  done!(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {bodyLimit: 20}, (req, done) => {
   done!(null, {})
 })
 

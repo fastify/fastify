@@ -71,6 +71,7 @@ declare namespace fastify {
    */
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
+    status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>
@@ -268,15 +269,12 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
-
-    /**
-     * Starts the server on the given port after all the plugins are loaded,
-     * internally waits for the .ready() event. The callback is the same as the
-     * Node core.
-     */
-    listen(port: number, callback?: (err: Error) => void): http.Server
-    listen(path: string, callback?: (err: Error) => void): http.Server
+    listen(port: number, callback: (err: Error, address: string) => void): void
+    listen(port: number, address: string, callback: (err: Error, address: string) => void): void
+    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
+    listen(sockFile: string, callback: (err: Error, address: string) => void): void
+    listen(port: number, address?: string, backlog?: number): Promise<string>
+    listen(sockFile: string): Promise<string>
 
     /**
      * Registers a listener function that is invoked when all the plugins have
@@ -422,7 +420,7 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string, opts: {parseAs?: string, bodyLimit?: number} | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

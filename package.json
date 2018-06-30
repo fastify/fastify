@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "1.4.0",
+  "version": "1.7.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
@@ -75,7 +75,7 @@
     "dns-prefetch-control": "^0.1.0",
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^1.0.1",
+    "fastify-plugin": "^1.1.3",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.12.0",
@@ -97,7 +97,7 @@
     "tap": "^12.0.0",
     "then-sleep": "^1.0.1",
     "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0",
+    "typescript-eslint-parser": "^16.0.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {
@@ -107,7 +107,7 @@
     "avvio": "^5.4.3",
     "end-of-stream": "^1.4.1",
     "fast-json-stringify": "^1.5.2",
-    "find-my-way": "^1.12.0",
+    "find-my-way": "^1.14.0",
     "flatstr": "^1.0.5",
     "light-my-request": "^2.0.2",
     "middie": "^3.1.0",

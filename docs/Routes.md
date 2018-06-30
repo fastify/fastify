@@ -60,6 +60,22 @@ fastify.route({
 })
 ```
 
+You can also declare an array of routes using the above statement:
+
+```js
+const routes = [
+  {
+    method: 'GET',
+    path: '/',
+    handler: myHandler
+  },
+  ... // other route definition
+]
+
+routes.forEach(r => fastify.route(r))
+```
+
+
 <a name="shorthand-declaration"></a>
 ### Shorthand declaration
 The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:<br>

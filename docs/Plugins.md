@@ -79,7 +79,7 @@ Sometimes, you will need to know when the server is about to close, for example 
 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
-If you register an anonymous function using `fastify-plugin`, it will automatically gain a new property based on the file name the `.fp()` method was called from. You can access it using `Symbol.for('fastify.display-name')`. See the example below.
+If you register an anonymous function using `fastify-plugin`, it will automatically set the meta option `name` to the file name the `.fp()` method was called from. You can access it using `fn[Symbol.for('plugin-meta')].name` or `fn[Symbol.for('fastify.display-name')]`. See the example below. If you set the name using the meta property, the file name will be ignored and the `fastify.display-name` will be set to the meta name as well.
 
 ```javascript
 // in mySuperDuperPlugin.js
@@ -87,29 +87,19 @@ const fn = fp((fastify, opts, next) => {
   next()
 })
 
+console.log(fn[Symbol.for('plugin-meta')].name) // -> 'mySuperDuperPlugin'
 console.log(fn[Symbol.for('fastify.display-name')]) // -> 'mySuperDuperPlugin'
+
+const fn2 = fp((fastify, opts, next) => next(), {
+  name: "thisIsAGreatFunction"
+})
+
+console.log(fn2[Symbol.for('plugin-meta')].name) // -> 'thisIsAGreatFunction'
+console.log(fn2[Symbol.for('fastify.display-name')]) // -> 'thisIsAGreatFunction'
 ```
 
-It is recommended you used a named function, but anonymous functions are supported. This was added for use within `fastify.toString()`.
+It is recommended you use a named function, but anonymous functions are supported. This was added for use within `fastify.toString()`. 
 
-`toString` prioritizes the `Symbol.for('fastify.display-name')` property. You can set it yourself for named and unnamed functions like so when you are not using `fastify-plugin`:
-```js
-const func = (fastify, opts, next) => next()
-// or
-function func (fastify, opts, next) {
-  next()
-}
-
-// set a custom display name to be used in toString
-func[Symbol.for('fastify.display-name')] = 'customDisplayName'
-```
-Furthermore, if you are using `fastify-plugin` meta data to set the name for a plugin, `fastify.toString` will priortize this instead of the `Symbol.for('fastify.display-name')` property. See below for an example of declaring a plugin name using the meta data option.
-
-```js
-fastify.register(fp(async () => {}, {
-  name: 'my-plugin'
-}))
-```
 
 <a name="handle-scope"></a>
 ### Handle the scope

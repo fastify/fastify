@@ -35,6 +35,16 @@ test('should return valid string', t => {
     next()
   }))
 
+  fastify.register((instance, opts, next) => {
+    instance.decorate('anonWithoutFastifyPlugin', (a, b) => a * b)
+    next()
+  })
+
+  fastify.register(function namedWithoutFP (instance, opts, next) {
+    instance.decorate('namedWithoutFP', (a, b) => a / b)
+    next()
+  })
+
   const STR = `Top Level Hooks
 ├── onRequest (0 hooks): []
 ├── preHandler (0 hooks): []
@@ -51,7 +61,9 @@ Top Level Middleware
 
 Plugins
 ├── toString.test
-└── standardPlugin`
+├── standardPlugin
+├── anonymous0
+└── namedWithoutFP`
 
   fastify.ready(() => {
     t.is(fastify.toString(), STR)

@@ -79,27 +79,32 @@ Sometimes, you will need to know when the server is about to close, for example 
 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
-If you register an anonymous function using `fastify-plugin`, it will automatically set the meta option `name` to the file name the `.fp()` method was called from. You can access it using `fn[Symbol.for('plugin-meta')].name` or `fn[Symbol.for('fastify.display-name')]`. See the example below. If you set the name using the meta property, the file name will be ignored and the `fastify.display-name` will be set to the meta name as well.
+#### Registering named or anonymous functions
+When you register a plugin it is recommended you use `fastify-plugin`. You can set the name of your plugin using metadata like so:
 
-```javascript
-// in mySuperDuperPlugin.js
-const fn = fp((fastify, opts, next) => {
-  next()
-})
-
-console.log(fn[Symbol.for('plugin-meta')].name) // -> 'mySuperDuperPlugin'
-console.log(fn[Symbol.for('fastify.display-name')]) // -> 'mySuperDuperPlugin'
-
-const fn2 = fp((fastify, opts, next) => next(), {
-  name: "thisIsAGreatFunction"
-})
-
-console.log(fn2[Symbol.for('plugin-meta')].name) // -> 'thisIsAGreatFunction'
-console.log(fn2[Symbol.for('fastify.display-name')]) // -> 'thisIsAGreatFunction'
+```js
+fastify.register(fp(async () => {}, { name: 'myAsyncFunction' }))
 ```
 
-It is recommended you use a named function, but anonymous functions are supported. This was added for use within `fastify.toString()`. 
+Internally, `fastify` will register this anonymous function as `'myAsyncFunction'`. `fastify-plugin` will always prioritize the meta property, even when supplied a named function. If you do not provide a `meta.name` to the `fp()` method, `fastify-plugin` will try and use the function name; if its an anonymous function it will use the file name from which the `fp()` method was called. See the examples below:
 
+```js
+// myAsyncPlugin.js
+fastify.register(fp(async myAsyncFunction () {})) // -> 'myAsyncFunction'
+fastify.register(fp(async () => {})) // -> 'myAsyncPlugin'
+```
+
+In order to register a plugin you **do not** need to use `fastify-plugin`. By providing a named function, `fastify` will register the plugin using the function name. If you provide an anonymous function, then it will use default to `'anonymous' + index`. See the example below for more details:
+
+```js
+fastify.register(function myFunction () {}) // -> 'myFunction'
+fastify.register(() => {}) // -> 'anonymous0'
+fastify.register(() => {}) // -> 'anonymous1'
+```
+
+These details are important for internal use with `fastify.toString()`
+
+Previously, a property was added to `fastify-plugin` called `Symbol.for('fastify.display-name')`. This will be deprecated in the next major release of `fastify-plugin` (v2.x).
 
 <a name="handle-scope"></a>
 ### Handle the scope

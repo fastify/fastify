@@ -129,3 +129,15 @@ fastify.listen(3000)
 ```
 
 Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the sever instance inside the `serverFactory` function before the `return` statement.
+
+<a name="factory-case-sensitive"></a>
+### `caseSensitive`
+
+If set to `false`, all paths would be lowercased by `route()` API, and
+all URLs will be lowercased before matching, essentially disabling case
+sensitivity for paths.
+
++ Default: `true`.
+
+Please note this setting this option to `false` goes against
+[RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).

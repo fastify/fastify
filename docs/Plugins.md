@@ -86,7 +86,7 @@ When you register a plugin it is recommended you use `fastify-plugin`. You can s
 fastify.register(fp(async () => {}, { name: 'myAsyncFunction' }))
 ```
 
-Internally, `fastify` will register this anonymous function as `'myAsyncFunction'`. `fastify-plugin` will always prioritize the meta property, even when supplied a named function. If you do not provide a `meta.name` to the `fp()` method, `fastify-plugin` will try and use the function name; if its an anonymous function it will use the file name from which the `fp()` method was called. See the examples below:
+Internally, `fastify` will register this anonymous function as `'myAsyncFunction'`. `fastify-plugin` will always prioritize the meta property, even when supplied a named function. If you do not provide a `meta.name` to the `fp()` method, `fastify-plugin` will try and use the function name; if it's an anonymous function it will use the file name from which the `fp()` method was called. See the examples below:
 
 ```js
 // myAsyncPlugin.js

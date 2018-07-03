@@ -32,3 +32,31 @@ test('case insensitive', t => {
     })
   })
 })
+
+test('case insensitive inject', t => {
+  t.plan(4)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.get('/foo', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/FOO'
+    }, (err, response) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(response.payload), {
+        hello: 'world'
+      })
+    })
+  })
+})

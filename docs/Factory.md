@@ -133,11 +133,17 @@ Internally Fastify uses the API of Node core http server, so if you are using a 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
 
-If set to `false`, all paths would be lowercased by `route()` API, and
-all URLs will be lowercased before matching, essentially disabling case
-sensitivity for paths.
+By default, value equal to `true`, routes are registered as case sensitive. That is, `/foo` is not equivalent to `/Foo`. When set to `false`, routes are registered in a fashion such that `/foo` is equivalent to `/Foo` which is equivalent to `/FOO`.
 
-+ Default: `true`.
+Setting `caseSensitivy` to `false` will also result in
+all params (and all value matched by regexps) to be lowercased as well.
+
+```js
+fastify.get('/user/:username', (request, reply) => {
+  // Given the URL: /user/NodeJS
+  console.log(request.params.username) // -> 'nodejs'
+})
+```
 
 Please note this setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).

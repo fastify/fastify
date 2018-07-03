@@ -66,7 +66,8 @@ function build (options) {
   const router = FindMyWay({
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength
+    maxParamLength: options.maxParamLength,
+    caseSensitive: options.caseSensitive
   })
 
   fastify.printRoutes = router.prettyPrint.bind(router)

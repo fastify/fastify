@@ -31,9 +31,9 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 
 Good tools make API development quicker and easier to maintain than doing everything manually.
 
-The [Fastify CLI](https://github.com/fastify/fastify-cli), is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
+The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
 
-The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli) while adhering to the Style Guide recommendations that benefit every Fastify project.
+The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
 
 ### Install
 

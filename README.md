@@ -27,30 +27,13 @@ How can you efficiently handle the resources of your server, knowing that you ar
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
-### Quick start
+### Install
 
-Good tools make API development quicker and easier to maintain than doing everything manually.
-
-The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
-
-The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
+```
+npm i fastify --save
+```
 
 ### Example
-
-Open a terminal window.
-
-```
-npm install fastify-cli --global
-```
-
-
-Generate a new project and default app by running the following command:
-
-```
-fastify generate
-```
-
-For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
 
 ```js
 // Require the framework and instantiate it
@@ -89,6 +72,32 @@ fastify.listen(3000, (err, address) => {
 ```
 
 Do you want to know more? Head to the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+
+### Quick start with Fastify CLI
+
+Good tools make API development quicker and easier to maintain than doing everything manually.
+
+The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
+
+The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
+
+The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
+
+### Example
+
+Open a terminal window.
+
+```
+npm install fastify-cli --global
+```
+
+Generate a new project and default app by running the following command:
+
+```
+fastify generate
+```
+
+For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
 
 #### Note
 

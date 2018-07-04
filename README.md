@@ -27,6 +27,35 @@ How can you efficiently handle the resources of your server, knowing that you ar
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
+### Quick start
+
+Good tools make API's development quicker and easier to maintain that if you did everything by hand.
+
+The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create a new project, add plugins, services and perform a variety of development tasks such as testing, and started the project.
+
+The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli) while adhering to the Style Guide recommendations that benefit every Fastify project.
+
+### Install
+
+```
+npm install fastify-cli --global
+```
+
+Open a terminal window.
+
+Generate a new project and default app by running the following command:
+
+
+```
+fastify generate
+```
+
+For more information, see the [Fastify CLI](https://github.com/fastify/fastify-cli) documentation.
+
+
+Otherwise do not want to use the [Fastify CLI](https://github.com/fastify/fastify-cli) you can do manualemnte too, as shown below
+
+
 ### Install
 
 ```

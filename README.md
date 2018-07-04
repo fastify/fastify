@@ -81,8 +81,6 @@ The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line inte
 
 The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
 
-The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
-
 ### Example
 
 Open a terminal window.

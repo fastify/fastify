@@ -33,9 +33,13 @@ Good tools make API development quicker and easier to maintain than doing everyt
 
 The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
 
-The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
-
 ### Install
+
+```
+npm i fastify --save
+```
+
+### Example
 
 ```
 npm install fastify-cli --global
@@ -45,20 +49,11 @@ Open a terminal window.
 
 Generate a new project and default app by running the following command:
 
-
 ```
 fastify generate
 ```
 
 For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
-
-### Install
-
-```
-npm i fastify --save
-```
-
-### Example
 
 ```js
 // Require the framework and instantiate it

@@ -70,11 +70,13 @@ function build (options) {
     caseSensitive: options.caseSensitive
   })
 
+  const requestIdHeaderKey = options.requestIdHeaderKey || 'request-id'
+
   fastify.printRoutes = router.prettyPrint.bind(router)
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
-  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
+  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeaderKey)
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop

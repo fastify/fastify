@@ -110,6 +110,7 @@ matters to you.
 \* Node.js core is slower than Fastify because of https://github.com/nodejs/node/issues/20798. The problem has already been solved in Node.js 10.
 
 ## Documentation
+中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md"><code><b>Server Methods</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Routes.md"><code><b>Routes</b></code></a>

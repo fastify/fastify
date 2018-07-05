@@ -296,3 +296,23 @@ fastify.listen(0, err => {
     })
   })
 })
+
+// https://github.com/fastify/fastify/issues/936
+test('shorthand - delete with application/json Content-Type header and without body', t => {
+  t.plan(4)
+  const fastify = require('..')()
+  fastify.delete('/', {}, (req, reply) => {
+    t.equal(req.body, null)
+    reply.send(req.body)
+  })
+  fastify.inject({
+    method: 'DELETE',
+    url: '/',
+    headers: { 'Content-Type': 'application/json' },
+    body: null
+  }, (err, response) => {
+    t.error(err)
+    t.strictEqual(response.statusCode, 200)
+    t.deepEqual(JSON.parse(response.payload), null)
+  })
+})

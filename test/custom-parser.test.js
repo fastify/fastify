@@ -638,7 +638,7 @@ test('Should get the body as buffer', t => {
 })
 
 test('Should parse empty bodies as a string', t => {
-  t.plan(9)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
@@ -647,7 +647,7 @@ test('Should parse empty bodies as a string', t => {
   })
 
   fastify.route({
-    method: ['POST', 'DELETE'],
+    method: ['POST'],
     url: '/',
     handler (request, reply) {
       reply.send(request.body)
@@ -660,19 +660,6 @@ test('Should parse empty bodies as a string', t => {
 
     sget({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: '',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '')
-    })
-
-    sget({
-      method: 'DELETE',
       url: 'http://localhost:' + fastify.server.address().port,
       body: '',
       headers: {

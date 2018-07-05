@@ -280,7 +280,7 @@ test('The request id header key can be customized', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: { stream: stream, level: 'info' },
-    requestIdHeaderKey: 'my-custom-request-id'
+    requestIdHeader: 'my-custom-request-id'
   })
   t.tearDown(() => fastify.close())
 

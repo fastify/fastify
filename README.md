@@ -73,6 +73,30 @@ fastify.listen(3000, (err, address) => {
 
 Do you want to know more? Head to the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 
+### Quick start with Fastify CLI
+
+Good tools make API development quicker and easier to maintain than doing everything manually.
+
+The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
+
+The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
+
+### Example
+
+Open a terminal window.
+
+```
+npm install fastify-cli --global
+```
+
+Generate a new project and default app by running the following command:
+
+```
+fastify generate
+```
+
+For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
+
 #### Note
 
 `.listen` binds to the local host, `127.0.0.1`, interface by default. See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#listen) for more information.

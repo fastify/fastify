@@ -76,6 +76,7 @@
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.1.3",
+    "form-data": "^2.3.2",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.12.1",

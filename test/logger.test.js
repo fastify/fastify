@@ -273,6 +273,51 @@ test('The logger should accept a custom genReqId function', t => {
   })
 })
 
+test('The request id header key can be customized', t => {
+  t.plan(9)
+  const REQUEST_ID = '42'
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: { stream: stream, level: 'info' },
+    requestIdHeader: 'my-custom-request-id'
+  })
+  t.tearDown(() => fastify.close())
+
+  fastify.get('/', (req, reply) => {
+    t.equal(req.raw.id, REQUEST_ID)
+    req.log.info('some log message')
+    reply.send({ id: req.raw.id })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'my-custom-request-id': REQUEST_ID
+    }
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, REQUEST_ID)
+
+    stream.once('data', line => {
+      t.equal(line.reqId, REQUEST_ID)
+      t.equal(line.msg, 'incoming request', 'message is set')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, REQUEST_ID)
+        t.equal(line.msg, 'some log message', 'message is set')
+
+        stream.once('data', line => {
+          t.equal(line.reqId, REQUEST_ID)
+          t.equal(line.msg, 'request completed', 'message is set')
+        })
+      })
+    })
+  })
+})
+
 t.test('The logger should accept custom serializer', t => {
   t.plan(9)
 

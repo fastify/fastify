@@ -147,3 +147,10 @@ fastify.get('/user/:username', (request, reply) => {
 
 Please note this setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
+
+<a name="factory-request-id-header"></a>
+### `requestIdHeader`
+
+The header name used to know the request id. See [the request id](./Logging.md#logging-request-id) section.
+
++ Default: `'request-id'`

@@ -325,17 +325,16 @@ test('should reject in error case', t => {
 })
 
 test('inject a multipart request using form-body', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.addContentTypeParser('*', function (req, done) {
     var body = ''
-    req.raw.on('data', d => {
+    req.on('data', d => {
       body += d
     })
-    req.raw.on('end', () => {
-      req.body = body
-      done()
+    req.on('end', () => {
+      done(null, body)
     })
   })
   fastify.post('/', (req, reply) => {
@@ -352,6 +351,7 @@ test('inject a multipart request using form-body', t => {
   })
     .then(response => {
       t.equal(response.statusCode, 200)
+      t.ok(/Content-Disposition: form-data; name="my_field"/.test(response.payload))
     })
 })
 

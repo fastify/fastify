@@ -76,6 +76,7 @@
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.1.3",
+    "form-data": "^2.3.2",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
     "helmet": "^3.12.1",
@@ -109,7 +110,7 @@
     "fast-json-stringify": "^1.5.4",
     "find-my-way": "^1.15.0",
     "flatstr": "^1.0.8",
-    "light-my-request": "^2.0.2",
+    "light-my-request": "^2.0.3",
     "middie": "^3.1.0",
     "pino": "^4.17.3",
     "tiny-lru": "^1.6.1"

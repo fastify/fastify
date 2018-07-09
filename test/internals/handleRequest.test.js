@@ -97,12 +97,13 @@ test('handler function - reply', t => {
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {
-  t.plan(7)
+  t.plan(8)
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.ok(request)
     t.ok(request.raw)
+    t.ok(request.id)
     t.ok(request.params)
     t.ok(request.query)
     done()

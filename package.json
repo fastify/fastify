@@ -60,7 +60,7 @@
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://github.com/fastify/fastify#readme",
+  "homepage": "https://www.fastify.io/",
   "engines": {
     "node": ">=6"
   },

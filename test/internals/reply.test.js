@@ -294,7 +294,7 @@ test('buffer with content type should not send application/octet-stream', t => {
 })
 
 test('stream using reply.res.writeHead should return customize headers', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = require('../..')()
   const fs = require('fs')
@@ -305,6 +305,9 @@ test('stream using reply.res.writeHead should return customize headers', t => {
   var buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
+    reply.res.log.warn = function mockWarn (message) {
+      t.equal(message, 'response will send, but you shouldn\'t use res.writeHead in stream mode')
+    }
     reply.res.writeHead(200, {
       location: '/'
     })

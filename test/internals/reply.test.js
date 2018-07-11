@@ -298,8 +298,10 @@ test('stream using reply.res.writeHead should return customize headers', t => {
 
   const fastify = require('../..')()
   const fs = require('fs')
-  let stream = fs.createReadStream('/dev/null')
-  let buf = fs.readFileSync('/dev/null')
+
+  let streamPath = process.platform === 'win32' ? 'nul' : '/dev/null'
+  let stream = fs.createReadStream(streamPath)
+  let buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.res.writeHead(200, {

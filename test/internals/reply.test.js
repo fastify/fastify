@@ -300,9 +300,9 @@ test('stream using reply.res.writeHead should return customize headers', t => {
   const fs = require('fs')
   const path = require('path')
 
-  let streamPath = path.join(process.cwd(), './package.json')
-  let stream = fs.createReadStream(streamPath)
-  let buf = fs.readFileSync(streamPath)
+  var streamPath = path.join(__dirname, '..', '..', 'package.json')
+  var stream = fs.createReadStream(streamPath)
+  var buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.res.writeHead(200, {

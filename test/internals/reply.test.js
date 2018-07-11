@@ -298,8 +298,9 @@ test('stream using reply.res.writeHead should return customize headers', t => {
 
   const fastify = require('../..')()
   const fs = require('fs')
+  const path = require('path')
 
-  let streamPath = process.platform === 'win32' ? 'nul' : '/dev/null'
+  let streamPath = path.join(process.cwd(), './package.json')
   let stream = fs.createReadStream(streamPath)
   let buf = fs.readFileSync(streamPath)
 
@@ -308,7 +309,6 @@ test('stream using reply.res.writeHead should return customize headers', t => {
       location: '/'
     })
     reply.send(stream)
-    reply.res.end()
   })
 
   fastify.listen(0, err => {

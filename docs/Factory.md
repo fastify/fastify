@@ -12,8 +12,7 @@ available in that options object.
 <a name="factory-http2"></a>
 ### `http2` (Status: experimental)
 
-If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html)
-HTTP/2 module is used for binding the socket.
+If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html) module is used for binding the socket.
 
 + Default: `false`
 

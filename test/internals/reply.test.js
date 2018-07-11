@@ -293,6 +293,36 @@ test('buffer with content type should not send application/octet-stream', t => {
   })
 })
 
+test('stream using reply.res.writeHead should return customize headers', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+  const fs = require('fs')
+  let stream = fs.createReadStream('/dev/null')
+  let buf = fs.readFileSync('/dev/null')
+
+  fastify.get('/', function (req, reply) {
+    reply.res.writeHead(200, {
+      location: '/'
+    })
+    reply.send(stream)
+    reply.res.end()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.strictEqual(response.headers['location'], '/')
+      t.deepEqual(body, buf)
+      t.error(err)
+    })
+  })
+})
+
 test('plain string without content type should send a text/plain', t => {
   t.plan(4)
 

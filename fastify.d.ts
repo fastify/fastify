@@ -265,6 +265,16 @@ declare namespace fastify {
     options(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Defines a route for all the supported methods with the given mount path, options, and handler
+     */
+    all(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Defines a route for all the supported methods with the given mount path and handler
+     */
+    all(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
      * Starts the server on the given port after all the plugins are loaded,
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.

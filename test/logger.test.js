@@ -708,7 +708,7 @@ test('The default 404 handler logs the incoming request', t => {
 })
 
 test('should serialize request and response', t => {
-  t.plan(4)
+  t.plan(3)
   const lines = []
   const dest = new stream.Writable({
     write: function (chunk, enc, cb) {
@@ -728,7 +728,6 @@ test('should serialize request and response', t => {
   }, (e, res) => {
     const l = lines.find((line) => line.res && line.res.statusCode === 500)
     t.ok(l.req)
-    t.is(l.req.id, 1)
     t.is(l.req.method, 'GET')
     t.is(l.req.url, '/500')
   })

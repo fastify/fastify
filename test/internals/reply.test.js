@@ -293,8 +293,37 @@ test('buffer with content type should not send application/octet-stream', t => {
   })
 })
 
+test('stream with content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+  const fs = require('fs')
+  const path = require('path')
+
+  var streamPath = path.join(__dirname, '..', '..', 'package.json')
+  var stream = fs.createReadStream(streamPath)
+  var buf = fs.readFileSync(streamPath)
+
+  fastify.get('/', function (req, reply) {
+    reply.header('Content-Type', 'text/plain').send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, buf)
+    })
+  })
+})
+
 test('stream using reply.res.writeHead should return customize headers', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = require('../..')()
   const fs = require('fs')
@@ -321,9 +350,10 @@ test('stream using reply.res.writeHead should return customize headers', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
-      t.strictEqual(response.headers['location'], '/')
-      t.deepEqual(body, buf)
       t.error(err)
+      t.strictEqual(response.headers['location'], '/')
+      t.strictEqual(response.headers['Content-Type'], undefined)
+      t.deepEqual(body, buf)
     })
   })
 })

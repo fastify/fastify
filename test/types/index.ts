@@ -233,6 +233,12 @@ server
     })
     done()
   }, { prefix: 'v1', hello: 'world' })
+  .all('/all/no-opts', function (req, reply) {
+    reply.send(req.headers)
+  })
+  .all('/all/with-opts', opts, function (req, reply) {
+    reply.send(req.headers)
+  })
 
 // Using decorate requires casting so the compiler knows about new properties
 server.decorate('utility', () => {})

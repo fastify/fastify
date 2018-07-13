@@ -150,6 +150,6 @@ Please note this setting this option to `false` goes against
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`
 
-The header name used to know the request id. See [the request id](./Logging.md#logging-request-id) section.
+The header name used to know the request id. See [the request id](https://github.com/fastify/fastify/blob/master/docs/Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`

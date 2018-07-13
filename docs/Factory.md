@@ -93,7 +93,7 @@ are not present on the object, they will be added accordingly:
     * `serializers`: a hash of serialization functions. By default, serializers
       are added for `req` (incoming request objects), `res` (outgoing repsonse
       objets), and `err` (standard `Error` objects). When a log method receives
-      and object with any of these properties then the respective serializer will
+      an object with any of these properties then the respective serializer will
       be used for that property. For example:
         ```js
         fastify.get('/foo', function (req, res) {

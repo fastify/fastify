@@ -14,14 +14,14 @@ It is always executed before the method `fastify.ready`.
 
 ```js
 fastify
-  .register((instance. opts, next) => {
+  .register((instance, opts, next) => {
     console.log('Current plugin')
     next()
   })
   .after(err => {
     console.log('After current plugin')
   })
-  .register((instance. opts, next) => {
+  .register((instance, opts, next) => {
     console.log('Next plugin')
     next()
   })
@@ -99,7 +99,7 @@ Specifying an address without a callback is also supported:
 
 ```js
 fastify.listen(3000, '127.0.0.1')
-  .then((adress) => console.log(`server listening on ${address}`))
+  .then((address) => console.log(`server listening on ${address}`))
   .catch(err => {
     console.log('Error starting server:', err)
     process.exit(1)

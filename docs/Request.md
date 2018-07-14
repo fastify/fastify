@@ -8,7 +8,7 @@ Request is a core Fastify object containing the following properties:
 - `params` - the params matching the URL
 - `headers` - the parsed headers
 - `raw` - the incoming HTTP request from Node core *(you can use the alias `req`)*
-- `id` - fastify apply an incremental id to every request
+- `id` - the request id
 - `log` - the logger instance of the incoming request
 
 **Example**

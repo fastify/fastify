@@ -239,8 +239,8 @@ As you probably noticed at this time, `request` and `reply` are not the standard
 
 <a name="middlewares"></a>
 ## Middlewares
-Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that does exactly what you need, and you don't want to redo all the work.
 Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*<br>
+Let's say that you are arriving from Express, and you already have some Middleware that does exactly what you need, and you don't want to redo all the work.
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
 const yourMiddleware = require('your-middleware')

@@ -428,7 +428,7 @@ declare namespace fastify {
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Get all schemas
+     * Get all shared schemas
      */
     getAllSchemas(): Array<Object>
 

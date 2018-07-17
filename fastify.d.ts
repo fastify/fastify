@@ -428,6 +428,11 @@ declare namespace fastify {
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Get all schemas
+     */
+    getAllSchemas(): Array<Object>
+
+    /**
      * Add a content type parser
      */
     addContentTypeParser(contentType: string, opts: {parseAs?: string, bodyLimit?: number} | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;

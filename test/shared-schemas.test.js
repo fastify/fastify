@@ -10,6 +10,12 @@ test('Should expose addSchema function', t => {
   t.is(typeof fastify.addSchema, 'function')
 })
 
+test('Should expose getAllSchemas function', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.is(typeof fastify.getAllSchemas, 'function')
+})
+
 test('The schemas should be added to an internal store', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -17,6 +23,16 @@ test('The schemas should be added to an internal store', t => {
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
   t.deepEqual(fastify._schemas.store, { id: schema })
+})
+
+test('The schemas should be accessible via getAllChemas', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const schema = { $id: 'id', my: 'schema' }
+  fastify.addSchema(schema)
+  t.deepEqual(fastify._schemas.getAllSchemas(), { id: schema })
+  t.deepEqual(fastify.getAllSchemas(), { id: schema })
 })
 
 test('Should throw if the $id property is missing', t => {

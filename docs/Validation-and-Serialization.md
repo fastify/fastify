@@ -100,9 +100,9 @@ fastify.route({
 ```
 
 <a name="get-shared-schema"></a>
-#### Retrieving all shared schemas
+#### Retrieving a copy of all shared schemas
 
-The function `getAllSchemas` returns all shared schemas that were added by `addSchema` method.
+The function `getSchemas` returns all shared schemas that were added by `addSchema` method.
 
 <a name="schema-compiler"></a>
 #### Schema Compiler

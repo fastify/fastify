@@ -430,7 +430,7 @@ declare namespace fastify {
     /**
      * Get all shared schemas
      */
-    getAllSchemas(): {[shemaId: string]: Object}
+    getSchemas(): {[shemaId: string]: Object}
 
     /**
      * Add a content type parser

@@ -163,8 +163,8 @@ function build (options) {
 
   // schemas
   fastify.addSchema = addSchema
-  fastify.getAllSchemas = getAllSchemas
   fastify._schemas = new Schemas()
+  fastify.getSchemas = fastify._schemas.getSchemas.bind(fastify._schemas)
 
   const onRouteHooks = []
 
@@ -700,10 +700,6 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
     this._schemas.add(name, schema)
     return this
-  }
-
-  function getAllSchemas () {
-    return this._schemas.getAllSchemas()
   }
 
   function addContentTypeParser (contentType, opts, parser) {

@@ -25,7 +25,7 @@ test('The schemas should be added to an internal store', t => {
   t.deepEqual(fastify._schemas.store, { id: schema })
 })
 
-test('The schemas should be accessible via getAllChemas', t => {
+test('The schemas should be accessible via getAllSchemas', t => {
   t.plan(2)
   const fastify = Fastify()
 

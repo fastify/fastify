@@ -164,6 +164,7 @@ function build (options) {
   // schemas
   fastify.addSchema = addSchema
   fastify._schemas = new Schemas()
+  fastify.getSchemas = fastify._schemas.getSchemas.bind(fastify._schemas)
 
   const onRouteHooks = []
 

@@ -271,6 +271,7 @@ function build (options) {
   function listenPromise (port, address, backlog) {
     // This will listen to what localhost is.
     // It can be 127.0.0.1 or ::1, depending on the operating system.
+    // Fixes https://github.com/fastify/fastify/issues/1022.
     address = address || 'localhost'
 
     if (listening) {

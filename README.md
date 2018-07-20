@@ -99,7 +99,8 @@ For more information, see the [Fastify CLI documentation](https://github.com/fas
 
 #### Note
 
-`.listen` binds to the local host, `127.0.0.1`, interface by default. See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#listen) for more information.
+`.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration).
+See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#listen) for more information.
 
 ### Core features
 

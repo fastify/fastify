@@ -442,7 +442,7 @@ test('The schema resolver should clean the $id key before passing it to the comp
   fastify.ready(t.error)
 })
 
-test('Get schema anyway should not add `properties` if *Of is present', t => {
+test('Get schema anyway should not add `properties` if allOf is present', t => {
   t.plan(1)
   const fastify = Fastify()
 
@@ -458,6 +458,84 @@ test('Get schema anyway should not add `properties` if *Of is present', t => {
     $id: 'second',
     type: 'object',
     allOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if oneOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    oneOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if anyOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    anyOf: [
       {
         type: 'object',
         properties: {

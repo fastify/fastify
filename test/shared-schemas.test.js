@@ -377,3 +377,184 @@ test('Use the same schema id in diferent places', t => {
     t.error(err)
   })
 })
+
+// https://github.com/fastify/fastify/issues/1043
+test('The schema resolver should clean the $id key before passing it to the compiler', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: {
+        type: 'number'
+      }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    allOf: [
+      {
+        type: 'object',
+        properties: {
+          second: {
+            type: 'number'
+          }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      description: `get`,
+      body: 'second#',
+      response: {
+        200: 'second#'
+      }
+    },
+    handler: (request, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'PATCH',
+    schema: {
+      description: `patch`,
+      body: 'first#',
+      response: {
+        200: 'first#'
+      }
+    },
+    handler: (request, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if allOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    allOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if oneOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    oneOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if anyOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    anyOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})

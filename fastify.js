@@ -77,6 +77,7 @@ function build (options) {
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
+  const trustProxy = options.trustProxy
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
@@ -148,24 +149,7 @@ function build (options) {
   fastify.route = route
   fastify._routePrefix = ''
   fastify._logLevel = ''
-  if (options.trustProxy) {
-    const tp = options.trustProxy
-    if (typeof tp === 'function') {
-      fastify._trustProxyFn = tp
-    } else if (tp === true) {
-      // Support plain true/false
-      fastify._trustProxyFn = function () { return true }
-    } else if (typeof tp === 'number') {
-      // Support trusting hop count
-      fastify._trustProxyFn = function (a, i) { return i < tp }
-    } else if (typeof tp === 'string') {
-      // Support comma-separated tps
-      const vals = tp.split(',').map(it => it.trim())
-      fastify._trustProxyFn = proxyAddr.compile(vals)
-    } else {
-      fastify._trustProxyFn = proxyAddr.compile(tp || [])
-    }
-  }
+
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
       return this._routePrefix
@@ -242,9 +226,11 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    if (typeof context.trustProxyFn === 'function') {
-      req.ip = proxyAddr(req, context.trustProxyFn)
-      req.ips = proxyAddr.all(req, context.trustProxyFn)
+
+    if (trustProxy) {
+      const proxyFn = getTrustProxyFn()
+      req.ip = proxyAddr(req, proxyFn)
+      req.ips = proxyAddr.all(req, proxyFn)
       if (req.ip) {
         req.hostname = req.headers['x-forwarded-host']
       }
@@ -910,6 +896,25 @@ function build (options) {
     }
 
     return middie
+  }
+
+  function getTrustProxyFn () {
+    const tp = options.trustProxy
+    if (typeof tp === 'function') {
+      return tp
+    } else if (tp === true) {
+      // Support plain true/false
+      return function () { return true }
+    } else if (typeof tp === 'number') {
+      // Support trusting hop count
+      return function (a, i) { return i < tp }
+    } else if (typeof tp === 'string') {
+      // Support comma-separated tps
+      const vals = tp.split(',').map(it => it.trim())
+      return proxyAddr.compile(vals)
+    } else {
+      return proxyAddr.compile(tp || [])
+    }
   }
 }
 

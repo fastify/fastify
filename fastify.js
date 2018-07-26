@@ -7,6 +7,7 @@ const https = require('https')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
+const proxyAddr = require('proxy-addr')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -147,7 +148,24 @@ function build (options) {
   fastify.route = route
   fastify._routePrefix = ''
   fastify._logLevel = ''
-
+  if (options.trustProxy) {
+    const tp = options.trustProxy
+    if (typeof tp === 'function') {
+      fastify._trustProxyFn = tp
+    } else if (tp === true) {
+      // Support plain true/false
+      fastify._trustProxyFn = function () { return true }
+    } else if (typeof tp === 'number') {
+      // Support trusting hop count
+      fastify._trustProxyFn = function (a, i) { return i < tp }
+    } else if (typeof tp === 'string') {
+      // Support comma-separated tps
+      const vals = tp.split(',').map(it => it.trim())
+      fastify._trustProxyFn = proxyAddr.compile(vals)
+    } else {
+      fastify._trustProxyFn = proxyAddr.compile(tp || [])
+    }
+  }
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
       return this._routePrefix
@@ -224,6 +242,15 @@ function build (options) {
     }
 
     req.id = genReqId(req)
+    if (typeof context.trustProxyFn === 'function') {
+      req.ip = proxyAddr(req, context.trustProxyFn)
+      req.ips = proxyAddr.all(req, context.trustProxyFn)
+      if (req.ip) {
+        req.hostname = req.headers['x-forwarded-host']
+      }
+    }
+    req.ip = req.ip || req.connection.remoteAddress
+    req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
     res._startTime = hasLogger ? now() : undefined
@@ -562,7 +589,8 @@ function build (options) {
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
-        opts.logLevel
+        opts.logLevel,
+        _fastify._trustProxyFn
       )
 
       try {
@@ -619,7 +647,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, trustProxyFn) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -637,6 +665,7 @@ function build (options) {
     }
     this.logLevel = logLevel
     this._404Context = null
+    this.trustProxyFn = trustProxyFn
   }
 
   function inject (opts, cb) {

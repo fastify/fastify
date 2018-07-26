@@ -91,7 +91,7 @@ declare namespace fastify {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     logger?: pino.LoggerOptions | boolean,
-    trustProxy: string | number | boolean | Array<string> | TrustProxyFunction,
+    trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {

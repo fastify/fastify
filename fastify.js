@@ -575,8 +575,7 @@ function build (options) {
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
-        opts.logLevel,
-        _fastify._trustProxyFn
+        opts.logLevel
       )
 
       try {
@@ -633,7 +632,7 @@ function build (options) {
     return _fastify
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, trustProxyFn) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -651,7 +650,6 @@ function build (options) {
     }
     this.logLevel = logLevel
     this._404Context = null
-    this.trustProxyFn = trustProxyFn
   }
 
   function inject (opts, cb) {

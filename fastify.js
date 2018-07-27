@@ -900,19 +900,21 @@ function build (options) {
     const tp = options.trustProxy
     if (typeof tp === 'function') {
       return tp
-    } else if (tp === true) {
+    }
+    if (tp === true) {
       // Support plain true/false
       return function () { return true }
-    } else if (typeof tp === 'number') {
+    }
+    if (typeof tp === 'number') {
       // Support trusting hop count
       return function (a, i) { return i < tp }
-    } else if (typeof tp === 'string') {
+    }
+    if (typeof tp === 'string') {
       // Support comma-separated tps
       const vals = tp.split(',').map(it => it.trim())
       return proxyAddr.compile(vals)
-    } else {
-      return proxyAddr.compile(tp || [])
     }
+    return proxyAddr.compile(tp || [])
   }
 }
 

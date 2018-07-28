@@ -157,7 +157,7 @@ The header name used to know the request id. See [the request id](https://github
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
 
-By enabling the `trustProxy` option, faistify will have knowledge that it's sitting behind a proxy and that the X-Forwarded-* header fields may be trusted, which otherwise may be easily spoofed.
+By enabling the `trustProxy` option, Faistify will have knowledge that it's sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
 
 ```js
 const fastify = Fastify({ trustProxy: true })
@@ -166,7 +166,7 @@ const fastify = Fastify({ trustProxy: true })
 + Default: `false`
 + `true/false`: Trust all proxies (`true`) or do not trust any proxies (`false`).
 + `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
-+ `Array<string>`: Trust only given IP/CIDR  list (e.g. `['127.0.0.1']`).
++ `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
 + `Function`: Custom trust function that takes `address` as first arg
     ```js

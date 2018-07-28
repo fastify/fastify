@@ -164,20 +164,20 @@ const fastify = Fastify({ trustProxy: true })
 ```
 
 + Default: `false`
-+ `true/false`: Trust or not to trust all proxies.
-+ `string`: Trust only given ip/net (e.g. `'127.0.0.1'`). Could be comma-separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
-+ `Array<string>`: Trust only given hosts (e.g. `['127.0.0.1']`)
++ `true/false`: Trust all proxies (`true`) or do not trust any proxies (`false`).
++ `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
++ `Array<string>`: Trust only given IP/CIDR  list (e.g. `['127.0.0.1']`).
 + `number`: Trust the nth hop from the front-facing proxy server as the client.
 + `Function`: Custom trust function that takes `address` as first arg
-```js
-function myTrustFn(address, hop) {
-  return address === '1.2.3.4' || hop === 1
-}
-```
+    ```js
+    function myTrustFn(address, hop) {
+      return address === '1.2.3.4' || hop === 1
+    }
+    ```
 
 For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
 
-You may also access `ip` and `hostname` values from raw `request`
+You may also access `ip` and `hostname` values from raw `request`.
 
 ```js
 fastify.get('/', (request, reply) => {

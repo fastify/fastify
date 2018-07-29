@@ -213,6 +213,36 @@ function build (options) {
 
   return fastify
 
+  function getTrustProxyFn () {
+    const tp = options.trustProxy
+    if (typeof tp === 'function') {
+      return tp
+    }
+    if (tp === true) {
+      // Support plain true/false
+      return function () { return true }
+    }
+    if (typeof tp === 'number') {
+      // Support trusting hop count
+      return function (a, i) { return i < tp }
+    }
+    if (typeof tp === 'string') {
+      // Support comma-separated tps
+      const vals = tp.split(',').map(it => it.trim())
+      return proxyAddr.compile(vals)
+    }
+    return proxyAddr.compile(tp || [])
+  }
+
+  function _handleTrustProxy (req) {
+    const proxyFn = getTrustProxyFn()
+    req.ip = proxyAddr(req, proxyFn)
+    req.ips = proxyAddr.all(req, proxyFn)
+    if (req.ip) {
+      req.hostname = req.headers['x-forwarded-host']
+    }
+  }
+
   function routeHandler (req, res, params, context) {
     if (closing === true) {
       res.writeHead(503, {
@@ -886,36 +916,6 @@ function build (options) {
     }
 
     return middie
-  }
-
-  function getTrustProxyFn () {
-    const tp = options.trustProxy
-    if (typeof tp === 'function') {
-      return tp
-    }
-    if (tp === true) {
-      // Support plain true/false
-      return function () { return true }
-    }
-    if (typeof tp === 'number') {
-      // Support trusting hop count
-      return function (a, i) { return i < tp }
-    }
-    if (typeof tp === 'string') {
-      // Support comma-separated tps
-      const vals = tp.split(',').map(it => it.trim())
-      return proxyAddr.compile(vals)
-    }
-    return proxyAddr.compile(tp || [])
-  }
-
-  function _handleTrustProxy (req) {
-    const proxyFn = getTrustProxyFn()
-    req.ip = proxyAddr(req, proxyFn)
-    req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip) {
-      req.hostname = req.headers['x-forwarded-host']
-    }
   }
 }
 

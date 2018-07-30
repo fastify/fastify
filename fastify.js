@@ -83,7 +83,7 @@ function build (options) {
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
-  
+
   const app = avvio(fastify, {
     autostart: false
   })
@@ -211,7 +211,7 @@ function build (options) {
   fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
-  
+
   return fastify
 
   function getTrustProxyFn () {

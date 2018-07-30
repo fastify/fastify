@@ -78,11 +78,12 @@ function build (options) {
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const handleTrustProxy = options.trustProxy ? _handleTrustProxy : noop
+  const proxyFn = getTrustProxyFn()
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
-
+  
   const app = avvio(fastify, {
     autostart: false
   })
@@ -210,7 +211,7 @@ function build (options) {
   fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
-
+  
   return fastify
 
   function getTrustProxyFn () {
@@ -235,7 +236,6 @@ function build (options) {
   }
 
   function _handleTrustProxy (req) {
-    const proxyFn = getTrustProxyFn()
     req.ip = proxyAddr(req, proxyFn)
     req.ips = proxyAddr.all(req, proxyFn)
     if (req.ip) {

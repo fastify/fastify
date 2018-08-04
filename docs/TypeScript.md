@@ -2,7 +2,7 @@
 
 <a id="typescript"></a>
 ## TypeScript
-Fastify is shipped with the a typings file, but it still require to install `@types/node`, depending on the Node.js version that you are using.
+Fastify is shipped with a typings file, but it still require to install `@types/node`, depending on the Node.js version that you are using.
 
 ## Types support
 We do care about the TypeScript community, but the framework is written in plain JavaScript and currently no one of the core team is a TypeScript user while only one of the collaborators is.

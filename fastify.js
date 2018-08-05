@@ -4,6 +4,7 @@ const FindMyWay = require('find-my-way')
 const avvio = require('avvio')
 const http = require('http')
 const https = require('https')
+const urlUtil = require('url')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
@@ -33,8 +34,6 @@ function validateBodyLimitOption (bodyLimit) {
     throw new TypeError(`'bodyLimit' option must be an integer > 0. Got '${bodyLimit}'`)
   }
 }
-
-function noop () { }
 
 function build (options) {
   options = options || {}
@@ -77,9 +76,6 @@ function build (options) {
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
-  const now = loggerUtils.now
-  const onResponseIterator = loggerUtils.onResponseIterator
-  const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
 
   const app = avvio(fastify, {
     autostart: false
@@ -226,45 +222,23 @@ function build (options) {
     req.id = genReqId(req)
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
-    res._startTime = hasLogger ? now() : undefined
-    res._context = context
 
     req.log.info({ req }, 'incoming request')
 
-    if (hasLogger === true || context.onResponse !== null) {
-      res.on('finish', onResFinished)
-      res.on('error', onResFinished)
-    }
+    var request = new context.Request(params, req, urlUtil.parse(req.url, true).query, req.headers, req.log)
+    var reply = new context.Reply(res, context, request, res.log)
+
+    reply._setup(hasLogger)
 
     if (context.onRequest !== null) {
       runHooks(
         context.onRequest,
         hookIterator,
-        new State(req, res, params, context),
+        reply,
         middlewareCallback
       )
     } else {
-      middlewareCallback(null, new State(req, res, params, context))
-    }
-  }
-
-  function onResFinished (err) {
-    this.removeListener('finish', onResFinished)
-    this.removeListener('error', onResFinished)
-
-    var ctx = this._context
-
-    if (ctx && ctx.onResponse !== null) {
-      // deferring this with setImmediate will
-      // slow us by 10%
-      runHooks(
-        ctx.onResponse,
-        onResponseIterator,
-        this,
-        onResponseCallback
-      )
-    } else {
-      onResponseCallback(err, this)
+      middlewareCallback(null, reply)
     }
   }
 
@@ -362,44 +336,32 @@ function build (options) {
     return address
   }
 
-  function State (req, res, params, context) {
-    this.req = req
-    this.res = res
-    this.params = params
-    this.context = context
+  function hookIterator (fn, reply, next) {
+    if (reply.sent === true) return undefined
+    return fn(reply.request, reply, next)
   }
 
-  function hookIterator (fn, state, next) {
-    if (state.res.finished === true) return undefined
-    return fn(state.req, state.res, next)
-  }
-
-  function middlewareCallback (err, state) {
-    if (state.res.finished === true) return
+  function middlewareCallback (err, reply) {
+    if (reply.sent === true) return
     if (err) {
-      const req = state.req
-      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
-      const reply = new state.context.Reply(state.res, state.context, request)
       reply.send(err)
       return
     }
 
-    if (state.context._middie !== null) {
-      state.context._middie.run(state.req, state.res, state)
+    if (reply.context._middie !== null) {
+      reply.context._middie.run(reply.request.raw, reply.res, reply)
     } else {
-      onRunMiddlewares(null, state.req, state.res, state)
+      onRunMiddlewares(null, null, null, reply)
     }
   }
 
-  function onRunMiddlewares (err, req, res, state) {
+  function onRunMiddlewares (err, req, res, reply) {
     if (err) {
-      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
-      const reply = new state.context.Reply(res, state.context, request)
       reply.send(err)
       return
     }
 
-    handleRequest(req, res, state.params, state.context)
+    handleRequest(reply.request, reply)
   }
 
   function override (old, fn, opts) {
@@ -766,14 +728,13 @@ function build (options) {
 
     req.log.info({ req }, 'incoming request')
 
-    res._startTime = now()
-    res.on('finish', onResFinished)
-    res.on('error', onResFinished)
+    var request = new Request(null, req, null, req.headers, req.log)
+    var reply = new Reply(res, { onSend: [] }, request, res.log)
 
-    req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
-    req.log.warn(fourOhFour.prettyPrint())
-    const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: [] }, request)
+    reply._setup(hasLogger)
+
+    request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    request.log.warn(fourOhFour.prettyPrint())
     reply.code(404).send(new Error('Not Found'))
   }
 

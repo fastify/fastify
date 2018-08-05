@@ -14,7 +14,7 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 
 Example:
 ```js
-fastify.addHook('onRequest', (req, res, next) => {
+fastify.addHook('onRequest', (request, reply, next) => {
   // some code
   next()
 })
@@ -29,14 +29,14 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
   next()
 })
 
-fastify.addHook('onResponse', (res, next) => {
+fastify.addHook('onResponse', (request, reply, next) => {
   // some code
   next()
 })
 ```
 Or `async/await`
 ```js
-fastify.addHook('onRequest', async (req, res) => {
+fastify.addHook('onRequest', async (request, reply) => {
   // some code
   await asyncMethod()
   // error occurred
@@ -66,7 +66,7 @@ fastify.addHook('onSend', async (request, reply, payload) => {
   return
 })
 
-fastify.addHook('onResponse', async (res) => {
+fastify.addHook('onResponse', async (request, reply) => {
   // some code
   await asyncMethod()
   // error occurred
@@ -79,14 +79,10 @@ fastify.addHook('onResponse', async (res) => {
 
 **Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
-| Parameter   |  Description  |
-|-------------|-------------|
-| req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
-| res | Node.js [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
-| request | Fastify [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) interface |
-| reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
-| payload | The serialized payload |
-| next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
+**Notice:** in the `onRequest` hook, `request.body` will always be `null`, because the body parsing happens before the `preHandler` hook.
+
+[Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
+`next` if the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
 
 It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
@@ -94,7 +90,7 @@ Hooks are affected by Fastify's encapsulation, and can thus be applied to select
 If you get an error during the execution of your hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 ```js
-fastify.addHook('onRequest', (req, res, next) => {
+fastify.addHook('onRequest', (request, reply, next) => {
   next(new Error('some error'))
 })
 ```
@@ -102,14 +98,12 @@ fastify.addHook('onRequest', (req, res, next) => {
 If you want to pass a custom error code to the user, just use `reply.code()`:
 ```js
 fastify.addHook('preHandler', (request, reply, next) => {
-  reply.code(500)
+  reply.code(400)
   next(new Error('some error'))
 })
 ```
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
-
-Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
 
 #### The `onSend` Hook
 
@@ -143,12 +137,15 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
 
 Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
 
+#### The `onResponse` Hook
+The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
+
 ### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or a middleware, use `res.end`. If you are using the `preHandler` hook, use `reply.send`.
+If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
 
 ```js
-fastify.addHook('onRequest', (req, res, next) => {
-  res.end('early response')
+fastify.addHook('onRequest', (request, reply, next) => {
+  reply.send('early response')
 })
 
 // Works with async functions too
@@ -160,11 +157,9 @@ fastify.addHook('preHandler', async (request, reply) => {
 If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
 
 ```js
-const pump = require('pump')
-
-fastify.addHook('onRequest', (req, res, next) => {
+fastify.addHook('onRequest', (request, reply, next) => {
   const stream = fs.createReadStream('some-file', 'utf8')
-  pump(stream, res, err => req.log.error(err))
+  reply.send(stream)
 })
 ```
 
@@ -204,7 +199,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
-fastify.addHook('onRequest', function (req, res, next) {
+fastify.addHook('onRequest', function (request, reply, next) {
   const self = this // Fastify context
   next()
 })

@@ -460,7 +460,7 @@ test('custom 404 hook and handler context', t => {
     t.strictEqual(this.foo, 42)
     next()
   })
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.strictEqual(this.foo, 42)
     next()
   })
@@ -485,7 +485,7 @@ test('custom 404 hook and handler context', t => {
       t.strictEqual(this.bar, 84)
       next()
     })
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
@@ -537,7 +537,7 @@ test('encapsulated custom 404 without - prefix hook and handler context', t => {
       t.strictEqual(this.bar, 84)
       next()
     })
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.strictEqual(this.foo, 42)
       t.strictEqual(this.bar, 84)
       next()
@@ -584,7 +584,7 @@ test('run hooks and middleware on default 404', t => {
     next()
   })
 
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.pass('onResponse called')
     next()
   })
@@ -636,7 +636,7 @@ test('run non-encapsulated plugin hooks and middleware on default 404', t => {
       next()
     })
 
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse called')
       next()
     })
@@ -684,7 +684,7 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
       next()
     })
 
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse called')
       next()
     })
@@ -736,7 +736,7 @@ test('run hooks and middleware with encapsulated 404', t => {
     next()
   })
 
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.pass('onResponse called')
     next()
   })
@@ -766,7 +766,7 @@ test('run hooks and middleware with encapsulated 404', t => {
       next()
     })
 
-    f.addHook('onResponse', function (res, next) {
+    f.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse 2 called')
       next()
     })
@@ -880,7 +880,7 @@ test('hooks check 404', t => {
     t.ok('called', 'onRequest')
     next()
   })
-  fastify.addHook('onResponse', (res, next) => {
+  fastify.addHook('onResponse', (request, reply, next) => {
     t.ok('called', 'onResponse')
     next()
   })

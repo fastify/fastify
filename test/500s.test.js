@@ -132,7 +132,7 @@ test('custom 500 with hooks', t => {
     t.ok('called', 'onRequest')
     next()
   })
-  fastify.addHook('onResponse', (res, next) => {
+  fastify.addHook('onResponse', (request, reply, next) => {
     t.ok('called', 'onResponse')
     next()
   })

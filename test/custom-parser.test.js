@@ -676,7 +676,8 @@ test('Should parse empty bodies as a string', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       body: '',
       headers: {
-        'Content-Type': 'text/plain'
+        'Content-Type': 'text/plain',
+        'Content-Length': '0'
       }
     }, (err, response, body) => {
       t.error(err)

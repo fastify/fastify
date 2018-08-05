@@ -93,7 +93,7 @@ are not present on the object, they will be added accordingly:
     * `serializers`: a hash of serialization functions. By default, serializers
       are added for `req` (incoming request objects), `res` (outgoing repsonse
       objets), and `err` (standard `Error` objects). When a log method receives
-      and object with any of these properties then the respective serializer will
+      an object with any of these properties then the respective serializer will
       be used for that property. For example:
         ```js
         fastify.get('/foo', function (req, res) {
@@ -127,14 +127,14 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the sever instance inside the `serverFactory` function before the `return` statement.
+Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
 
 By default, value equal to `true`, routes are registered as case sensitive. That is, `/foo` is not equivalent to `/Foo`. When set to `false`, routes are registered in a fashion such that `/foo` is equivalent to `/Foo` which is equivalent to `/FOO`.
 
-Setting `caseSensitivy` to `false` will also result in
+Setting `caseSensitive` to `false` will also result in
 all params (and all value matched by regexps) to be lowercased as well.
 
 ```js
@@ -150,6 +150,6 @@ Please note this setting this option to `false` goes against
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`
 
-The header name used to know the request id. See [the request id](./Logging.md#logging-request-id) section.
+The header name used to know the request id. See [the request id](https://github.com/fastify/fastify/blob/master/docs/Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`

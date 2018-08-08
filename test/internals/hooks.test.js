@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 
-const Hooks = require('../../lib/hooks')
+const { Hooks } = require('../../lib/hooks')
 const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {

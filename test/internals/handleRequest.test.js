@@ -68,7 +68,7 @@ test('handler function - invalid schema', t => {
   const request = {
     body: { hello: 'world' }
   }
-  internals.handler(new Reply(res, context, request))
+  internals.handler(request, new Reply(res, context, request))
 })
 
 test('handler function - reply', t => {
@@ -93,7 +93,7 @@ test('handler function - reply', t => {
     onSend: []
   }
   buildSchema(context, schemaCompiler)
-  internals.handler(new Reply(res, context, {}))
+  internals.handler({}, new Reply(res, context, {}))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

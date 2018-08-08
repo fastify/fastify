@@ -19,11 +19,10 @@ const isValidLogger = validation.isValidLogger
 const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/ContentTypeParser')
-const Hooks = require('./lib/hooks')
+const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const runHooks = require('./lib/hookRunner').hookRunner
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')
@@ -73,6 +72,7 @@ function build (options) {
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
+  const setupResponseListeners = Reply.setupResponseListeners
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
@@ -228,17 +228,20 @@ function build (options) {
     var request = new context.Request(params, req, urlUtil.parse(req.url, true).query, req.headers, req.log)
     var reply = new context.Reply(res, context, request, res.log)
 
-    reply._setup(hasLogger)
+    if (hasLogger === true || context.onResponse !== null) {
+      setupResponseListeners(reply)
+    }
 
     if (context.onRequest !== null) {
-      runHooks(
+      hookRunner(
         context.onRequest,
         hookIterator,
+        request,
         reply,
         middlewareCallback
       )
     } else {
-      middlewareCallback(null, reply)
+      middlewareCallback(null, request, reply)
     }
   }
 
@@ -336,12 +339,7 @@ function build (options) {
     return address
   }
 
-  function hookIterator (fn, reply, next) {
-    if (reply.sent === true) return undefined
-    return fn(reply.request, reply, next)
-  }
-
-  function middlewareCallback (err, reply) {
+  function middlewareCallback (err, request, reply) {
     if (reply.sent === true) return
     if (err) {
       reply.send(err)
@@ -349,7 +347,7 @@ function build (options) {
     }
 
     if (reply.context._middie !== null) {
-      reply.context._middie.run(reply.request.raw, reply.res, reply)
+      reply.context._middie.run(request.raw, reply.res, reply)
     } else {
       onRunMiddlewares(null, null, null, reply)
     }
@@ -376,7 +374,7 @@ function build (options) {
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
+    instance._hooks = buildHooks(instance._hooks)
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
     instance._middlewares = old._middlewares.slice()

@@ -888,8 +888,8 @@ test('Content type and charset set previously', t => {
 
   const fastify = require('../../')()
 
-  fastify.addHook('onRequest', function (req, res, next) {
-    res.setHeader('content-type', 'application/json; charset=utf-16')
+  fastify.addHook('onRequest', function (req, reply, next) {
+    reply.header('content-type', 'application/json; charset=utf-16')
     next()
   })
 

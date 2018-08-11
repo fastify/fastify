@@ -2,18 +2,15 @@
 
 const t = require('tap')
 const test = t.test
-const runHooks = require('../../lib/hookRunner').hookRunner
-const runOnSendHooks = require('../../lib/hookRunner').onSendHookRunner
+const { hookRunner, onSendHookRunner } = require('../../lib/hooks')
 
 test('hookRunner - Basic', t => {
-  t.plan(8)
+  t.plan(9)
 
-  const originalState = { a: 'a', b: 'b' }
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
-
-  function iterator (fn, state, next) {
-    return fn(state.a, state.b, next)
+  function iterator (fn, a, b, next) {
+    return fn(a, b, next)
   }
 
   function fn1 (a, b, next) {
@@ -34,21 +31,20 @@ test('hookRunner - Basic', t => {
     next()
   }
 
-  function done (err, state) {
+  function done (err, a, b) {
     t.error(err)
-    t.strictEqual(state, originalState)
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
   }
 })
 
 test('hookRunner - In case of error should skip to done', t => {
-  t.plan(6)
+  t.plan(7)
 
-  const originalState = { a: 'a', b: 'b' }
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
-
-  function iterator (fn, state, next) {
-    return fn(state.a, state.b, next)
+  function iterator (fn, a, b, next) {
+    return fn(a, b, next)
   }
 
   function fn1 (a, b, next) {
@@ -67,21 +63,20 @@ test('hookRunner - In case of error should skip to done', t => {
     t.fail('We should not be here')
   }
 
-  function done (err, state) {
+  function done (err, a, b) {
     t.strictEqual(err.message, 'kaboom')
-    t.strictEqual(state, originalState)
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
   }
 })
 
 test('hookRunner - Should handle promises', t => {
-  t.plan(8)
+  t.plan(9)
 
-  const originalState = { a: 'a', b: 'b' }
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
-
-  function iterator (fn, state, next) {
-    return fn(state.a, state.b, next)
+  function iterator (fn, a, b, next) {
+    return fn(a, b, next)
   }
 
   function fn1 (a, b) {
@@ -102,21 +97,20 @@ test('hookRunner - Should handle promises', t => {
     return Promise.resolve()
   }
 
-  function done (err, state) {
+  function done (err, a, b) {
     t.error(err)
-    t.strictEqual(state, originalState)
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
   }
 })
 
 test('hookRunner - In case of error should skip to done (with promises)', t => {
-  t.plan(6)
+  t.plan(7)
 
-  const originalState = { a: 'a', b: 'b' }
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
-
-  function iterator (fn, state, next) {
-    return fn(state.a, state.b, next)
+  function iterator (fn, a, b, next) {
+    return fn(a, b, next)
   }
 
   function fn1 (a, b) {
@@ -135,34 +129,36 @@ test('hookRunner - In case of error should skip to done (with promises)', t => {
     t.fail('We should not be here')
   }
 
-  function done (err, state) {
+  function done (err, a, b) {
     t.strictEqual(err.message, 'kaboom')
-    t.strictEqual(state, originalState)
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
   }
 })
 
 test('hookRunner - Be able to exit before its natural end', t => {
-  t.plan(2)
+  t.plan(4)
 
-  const originalState = { a: 'a', b: 'b' }
+  var shouldStop = false
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
-
-  function iterator (fn, state, next) {
-    if (state.stop) {
+  function iterator (fn, a, b, next) {
+    if (shouldStop) {
       return undefined
     }
-    return fn(state, next)
+    return fn(a, b, next)
   }
 
-  function fn1 (state, next) {
-    t.strictEqual(state, originalState)
+  function fn1 (a, b, next) {
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
     next()
   }
 
-  function fn2 (state) {
-    t.strictEqual(state, originalState)
-    state.stop = true
+  function fn2 (a, b) {
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
+    shouldStop = true
     return Promise.resolve()
   }
 
@@ -180,128 +176,123 @@ test('hookRunner - Promises that resolve to a value do not change the state', t 
 
   const originalState = { a: 'a', b: 'b' }
 
-  runHooks([fn1, fn2, fn3], iterator, originalState, done)
+  hookRunner([fn1, fn2, fn3], iterator, originalState, 'b', done)
 
-  function iterator (fn, state, next) {
-    return fn(state, next)
+  function iterator (fn, state, b, next) {
+    return fn(state, b, next)
   }
 
-  function fn1 (state, next) {
+  function fn1 (state, b, next) {
     t.strictEqual(state, originalState)
     return Promise.resolve(null)
   }
 
-  function fn2 (state, next) {
+  function fn2 (state, b, next) {
     t.strictEqual(state, originalState)
     return Promise.resolve('string')
   }
 
-  function fn3 (state, next) {
+  function fn3 (state, b, next) {
     t.strictEqual(state, originalState)
     return Promise.resolve({ object: true })
   }
 
-  function done (err, state) {
+  function done (err, state, b) {
     t.error(err)
     t.strictEqual(state, originalState)
   }
 })
 
 test('onSendHookRunner - Basic', t => {
-  t.plan(12)
+  t.plan(13)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const originalPayload = 'payload'
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, originalPayload, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, originalPayload, done)
 
   function fn1 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
     next()
   }
 
   function fn2 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
     next()
   }
 
   function fn3 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
     next()
   }
 
-  function done (err, reply, payload) {
+  function done (err, request, reply, payload) {
     t.error(err)
-    t.strictEqual(reply, originalReply)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
   }
 })
 
 test('onSendHookRunner - Can change the payload', t => {
-  t.plan(12)
+  t.plan(7)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
   const v3 = { winter: 'is coming' }
   const v4 = { winter: 'has come' }
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, v1, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
   function fn1 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v1)
+    t.deepEqual(payload, v1)
     next(null, v2)
   }
 
   function fn2 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(payload, v2)
     next(null, v3)
   }
 
   function fn3 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v3)
+    t.deepEqual(payload, v3)
     next(null, v4)
   }
 
-  function done (err, reply, payload) {
+  function done (err, request, reply, payload) {
     t.error(err)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v4)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
+    t.deepEqual(payload, v4)
   }
 })
 
 test('onSendHookRunner - In case of error should skip to done', t => {
-  t.plan(9)
+  t.plan(6)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, v1, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
   function fn1 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v1)
+    t.deepEqual(payload, v1)
     next(null, v2)
   }
 
   function fn2 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(payload, v2)
     next(new Error('kaboom'))
   }
 
@@ -309,72 +300,66 @@ test('onSendHookRunner - In case of error should skip to done', t => {
     t.fail('We should not be here')
   }
 
-  function done (err, reply, payload) {
+  function done (err, request, reply, payload) {
     t.strictEqual(err.message, 'kaboom')
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
+    t.deepEqual(payload, v2)
   }
 })
 
 test('onSendHookRunner - Should handle promises', t => {
-  t.plan(12)
+  t.plan(7)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
   const v3 = { winter: 'is coming' }
   const v4 = { winter: 'has come' }
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, v1, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
   function fn1 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v1)
+    t.deepEqual(payload, v1)
     return Promise.resolve(v2)
   }
 
   function fn2 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(payload, v2)
     return Promise.resolve(v3)
   }
 
   function fn3 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v3)
+    t.deepEqual(payload, v3)
     return Promise.resolve(v4)
   }
 
-  function done (err, reply, payload) {
+  function done (err, request, reply, payload) {
     t.error(err)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v4)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
+    t.deepEqual(payload, v4)
   }
 })
 
 test('onSendHookRunner - In case of error should skip to done (with promises)', t => {
-  t.plan(9)
+  t.plan(6)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, v1, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
   function fn1 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v1)
+    t.deepEqual(payload, v1)
     return Promise.resolve(v2)
   }
 
   function fn2 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(payload, v2)
     return Promise.reject(new Error('kaboom'))
   }
 
@@ -382,33 +367,31 @@ test('onSendHookRunner - In case of error should skip to done (with promises)', 
     t.fail('We should not be here')
   }
 
-  function done (err, reply, payload) {
+  function done (err, request, reply, payload) {
     t.strictEqual(err.message, 'kaboom')
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(request, originalRequest)
+    t.deepEqual(reply, originalReply)
+    t.deepEqual(payload, v2)
   }
 })
 
 test('onSendHookRunner - Be able to exit before its natural end', t => {
-  t.plan(6)
+  t.plan(2)
 
-  const originalReply = { request: {} }
+  const originalRequest = { body: null }
+  const originalReply = { request: originalRequest }
   const v1 = { hello: 'world' }
   const v2 = { ciao: 'mondo' }
 
-  runOnSendHooks([fn1, fn2, fn3], originalReply, v1, done)
+  onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
   function fn1 (request, reply, payload, next) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v1)
+    t.deepEqual(payload, v1)
     next(null, v2)
   }
 
   function fn2 (request, reply, payload) {
-    t.strictEqual(request, originalReply.request)
-    t.strictEqual(reply, originalReply)
-    t.strictEqual(payload, v2)
+    t.deepEqual(payload, v2)
   }
 
   function fn3 () {

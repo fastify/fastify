@@ -112,7 +112,7 @@
     "flatstr": "^1.0.8",
     "light-my-request": "^2.0.3",
     "middie": "^3.1.0",
-    "pino": "^4.17.3",
+    "pino": "^5.0.1",
     "tiny-lru": "^1.6.1"
   },
   "greenkeeper": {

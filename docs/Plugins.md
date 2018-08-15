@@ -48,7 +48,25 @@ Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-p
 <a name="error-handling"></a>
 #### Error handling
 The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).<br>
-As general rule, it is highly recommended that you handle your errors in the `register`'s callback, otherwise the server will not start, and you will find the unhandled error in the `listen` callback.
+As general rule, it is highly recommended that you handle your errors in the next `after` or `ready` block, otherwise you will get them inside the `listen` callback.
+
+```js
+fastify.register(require('my-plugin'))
+
+// `after` will be executed once
+// the previous declared `register` has finished
+fastify.after(err => console.log(err))
+
+// `ready` will be executed once all the registers declared
+// have finished their execution
+fastify.ready(err => console.log(err))
+
+// `listen` is a special ready,
+// so it behaves in the same way
+fastify.listen(3000, (err, address) => {
+  if (err) console.log(err)
+})
+```
 
 <a name="create-plugin"></a>
 ### Create a plugin

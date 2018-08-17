@@ -603,7 +603,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body.toString()), {
         statusCode: 404,
         error: 'Not Found',

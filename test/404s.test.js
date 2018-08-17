@@ -24,7 +24,7 @@ test('default 404', t => {
     t.error(err)
 
     test('unsupported method', t => {
-      t.plan(2)
+      t.plan(3)
       sget({
         method: 'PUT',
         url: 'http://localhost:' + fastify.server.address().port,
@@ -33,11 +33,12 @@ test('default 404', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
+        t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       })
     })
 
     test('unsupported route', t => {
-      t.plan(2)
+      t.plan(3)
       sget({
         method: 'GET',
         url: 'http://localhost:' + fastify.server.address().port + '/notSupported',
@@ -46,6 +47,7 @@ test('default 404', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
+        t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       })
     })
   })

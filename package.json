@@ -110,7 +110,7 @@
     "fast-json-stringify": "^1.5.4",
     "find-my-way": "^1.15.0",
     "flatstr": "^1.0.8",
-    "light-my-request": "^2.0.3",
+    "light-my-request": "^3.0.0",
     "middie": "^3.1.0",
     "pino": "^4.17.3",
     "tiny-lru": "^1.6.1"

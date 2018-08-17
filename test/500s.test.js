@@ -19,7 +19,7 @@ test('default 500', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json')
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
@@ -99,7 +99,7 @@ test('encapsulated 500', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json')
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',

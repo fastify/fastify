@@ -61,6 +61,9 @@ declare namespace fastify {
 
     id: any,
 
+    ip: string,
+    hostname: string,
+
     raw: HttpRequest,
     req: HttpRequest,
     log: pino.Logger
@@ -83,11 +86,12 @@ declare namespace fastify {
     res: HttpResponse
     context: FastifyContext
   }
-
+  type TrustProxyFunction = (addr: string, index: number) => boolean
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     logger?: pino.LoggerOptions | boolean,
+    trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {

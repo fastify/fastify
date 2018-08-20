@@ -11,7 +11,7 @@ Reply is a core Fastify object that exposes the following functions:
 - `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
-- `.notFound()` - Invokes the custom not found handler.
+- `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
@@ -76,11 +76,11 @@ Redirects a request to the specified url, the status code is optional, default t
 reply.redirect('/home')
 ```
 
-<a name="not-found"></a>
-### .notFound()
+<a name="call-not-found"></a>
+### .callNotFound()
 Invokes the custom not found handler.
 ```js
-reply.notFound()
+reply.callNotFound()
 ```
 
 <a name="type"></a>

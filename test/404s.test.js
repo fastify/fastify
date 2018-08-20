@@ -1557,7 +1557,7 @@ test('reply.notFound invoked the notFound handler', t => {
   })
 
   fastify.get('/', function (req, reply) {
-    reply.notFound()
+    reply.callNotFound()
   })
 
   fastify.inject({
@@ -1592,7 +1592,7 @@ test('The custom error handler should be invoked after the custom not found hand
   })
 
   fastify.get('/', function (req, reply) {
-    reply.notFound()
+    reply.callNotFound()
   })
 
   fastify.inject({
@@ -1623,7 +1623,7 @@ test('If the custom not found handler does not use an Error, the custom error ha
   })
 
   fastify.get('/', function (req, reply) {
-    reply.notFound()
+    reply.callNotFound()
   })
 
   fastify.inject({

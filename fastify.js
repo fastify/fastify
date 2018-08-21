@@ -7,6 +7,7 @@ const https = require('https')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
+const proxyAddr = require('proxy-addr')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -76,6 +77,8 @@ function build (options) {
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
+  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : noop
+  const proxyFn = getTrustProxyFn()
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
@@ -211,6 +214,35 @@ function build (options) {
 
   return fastify
 
+  function getTrustProxyFn () {
+    const tp = options.trustProxy
+    if (typeof tp === 'function') {
+      return tp
+    }
+    if (tp === true) {
+      // Support plain true/false
+      return function () { return true }
+    }
+    if (typeof tp === 'number') {
+      // Support trusting hop count
+      return function (a, i) { return i < tp }
+    }
+    if (typeof tp === 'string') {
+      // Support comma-separated tps
+      const vals = tp.split(',').map(it => it.trim())
+      return proxyAddr.compile(vals)
+    }
+    return proxyAddr.compile(tp || [])
+  }
+
+  function _handleTrustProxy (req) {
+    req.ip = proxyAddr(req, proxyFn)
+    req.ips = proxyAddr.all(req, proxyFn)
+    if (req.ip) {
+      req.hostname = req.headers['x-forwarded-host']
+    }
+  }
+
   function routeHandler (req, res, params, context) {
     if (closing === true) {
       res.writeHead(503, {
@@ -224,6 +256,9 @@ function build (options) {
     }
 
     req.id = genReqId(req)
+    handleTrustProxy(req)
+    req.ip = req.ip || req.connection.remoteAddress
+    req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
     res._startTime = hasLogger ? now() : undefined

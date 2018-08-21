@@ -157,7 +157,7 @@ The header name used to know the request id. See [the request id](https://github
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
 
-By enabling the `trustProxy` option, Faistify will have knowledge that it's sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
+By enabling the `trustProxy` option, Fastify will have knowledge that it's sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
 
 ```js
 const fastify = Fastify({ trustProxy: true })

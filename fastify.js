@@ -77,7 +77,7 @@ function build (options) {
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
-  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : noop
+  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
   const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
   const now = loggerUtils.now
@@ -238,9 +238,13 @@ function build (options) {
   function _handleTrustProxy (req) {
     req.ip = proxyAddr(req, proxyFn)
     req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip) {
+    if (req.ip !== undefined) {
       req.hostname = req.headers['x-forwarded-host']
     }
+  }
+
+  function _ipAsRemoteAddress (req) {
+    req.ip = req.connection.remoteAddress
   }
 
   function routeHandler (req, res, params, context) {
@@ -257,7 +261,6 @@ function build (options) {
 
     req.id = genReqId(req)
     handleTrustProxy(req)
-    req.ip = req.ip || req.connection.remoteAddress
     req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url

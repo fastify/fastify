@@ -69,7 +69,7 @@
     "JSONStream": "^1.3.3",
     "autocannon": "^2.3.0",
     "branch-comparer": "^0.4.0",
-    "concurrently": "^3.6.0",
+    "concurrently": "^4.0.0",
     "cors": "^2.8.4",
     "coveralls": "^3.0.2",
     "dns-prefetch-control": "^0.1.0",

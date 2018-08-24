@@ -85,7 +85,8 @@ function build (options) {
   const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
 
   const app = avvio(fastify, {
-    autostart: false
+    autostart: false,
+    timeout: Number(options.pluginTimeout) || 0
   })
   // Override to allow the plugin incapsulation
   app.override = override

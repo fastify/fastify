@@ -120,6 +120,7 @@
     "ignore": [
       "boom",
       "joi",
+      "pino",
       "@types/node",
       "@types/pino"
     ]

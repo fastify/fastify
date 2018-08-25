@@ -116,7 +116,11 @@ test('customized 404', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body.toString(), 'this was not found')
+        t.deepEqual(JSON.parse(body), {
+          error: 'Not Found',
+          message: 'Not Found',
+          statusCode: 404
+        })
       })
     })
 
@@ -129,7 +133,11 @@ test('customized 404', t => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
         t.strictEqual(response.headers['x-foo'], 'bar')
-        t.strictEqual(body.toString(), 'this was not found')
+        t.deepEqual(JSON.parse(body), {
+          error: 'Not Found',
+          message: 'Not Found',
+          statusCode: 404
+        })
       })
     })
   })
@@ -1092,7 +1100,11 @@ test('an inherited custom 404 handler can be invoked inside a prefixed plugin', 
   fastify.inject('/v1/path', (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
-    t.strictEqual(res.payload, 'custom handler')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
+    })
   })
 })
 
@@ -1534,5 +1546,94 @@ test('beforeHandler for setNotFoundHandler', t => {
       var payload = JSON.parse(res.payload)
       t.deepEqual(payload, { foo: 43, hello: 'world' })
     })
+  })
+})
+
+test('reply.notFound invoked the notFound handler', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404).send(new Error('kaboom'))
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'kaboom',
+      statusCode: 404
+    })
+  })
+})
+
+test('The custom error handler should be invoked after the custom not found handler', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  const order = [1, 2]
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.is(order.shift(), 2)
+    t.type(err, Error)
+    reply.send(err)
+  })
+
+  fastify.setNotFoundHandler((req, reply) => {
+    t.is(order.shift(), 1)
+    reply.code(404).send(new Error('kaboom'))
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'kaboom',
+      statusCode: 404
+    })
+  })
+})
+
+test('If the custom not found handler does not use an Error, the custom error handler should not be called', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((_err, req, reply) => {
+    t.fail('Should not be called')
+  })
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404).send('kaboom')
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'kaboom')
   })
 })

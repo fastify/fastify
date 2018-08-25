@@ -30,7 +30,7 @@ function helper (code) {
     }, (error, res) => {
       t.error(error)
       t.strictEqual(res.statusCode, Number(code))
-      t.equal(res.headers['content-type'], 'application/json')
+      t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(
         {
           error: statusCodes[code],

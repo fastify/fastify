@@ -223,7 +223,7 @@ test('return a 404 if the stream emits a 404 error', t => {
 
     sget(`http://localhost:${port}`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.strictEqual(response.statusCode, 404)
     })
   })

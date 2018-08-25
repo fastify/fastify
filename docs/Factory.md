@@ -153,3 +153,44 @@ Please note this setting this option to `false` goes against
 The header name used to know the request id. See [the request id](https://github.com/fastify/fastify/blob/master/docs/Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`
+
+<a name="factory-trust-proxy"></a>
+### `trustProxy`
+
+By enabling the `trustProxy` option, Fastify will have knowledge that it's sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
+
+```js
+const fastify = Fastify({ trustProxy: true })
+```
+
++ Default: `false`
++ `true/false`: Trust all proxies (`true`) or do not trust any proxies (`false`).
++ `string`: Trust only given IP/CIDR (e.g. `'127.0.0.1'`). May be a list of comma separated values (e.g. `'127.0.0.1,192.168.1.1/24'`).
++ `Array<string>`: Trust only given IP/CIDR list (e.g. `['127.0.0.1']`).
++ `number`: Trust the nth hop from the front-facing proxy server as the client.
++ `Function`: Custom trust function that takes `address` as first arg
+    ```js
+    function myTrustFn(address, hop) {
+      return address === '1.2.3.4' || hop === 1
+    }
+    ```
+
+For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
+
+You may also access `ip` and `hostname` values from raw `request`.
+
+```js
+fastify.get('/', (request, reply) => {
+  console.log(request.raw.ip)
+  console.log(request.raw.hostname)
+})
+```
+
+<a name="plugin-timeout"></a>
+### `pluginTimeout`
+
+The maximum amount of time in milliseconds in which a plugin can load.
+If not, [`ready`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#ready)
+will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
+
++ Default: `0` (disabled)

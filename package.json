@@ -97,7 +97,7 @@
     "standard": "^11.0.1",
     "tap": "^12.0.0",
     "then-sleep": "^1.0.1",
-    "typescript": "^2.9.2",
+    "typescript": "^3.0.1",
     "typescript-eslint-parser": "^18.0.0",
     "x-xss-protection": "^1.1.0"
   },

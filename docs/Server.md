@@ -4,7 +4,7 @@
 ## Factory
 
 The Fastify module exports a factory function that is used to create new
-<a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md"><code><b>Fastify server</b></code></a>
+<a href="https://github.com/fastify/fastify/blob/master/docs/Server.md"><code><b>Fastify server</b></code></a>
 instances. This factory function accepts an options object which is used to
 customize the resulting instance. This document describes the properties
 available in that options object.
@@ -25,7 +25,7 @@ are the same as the Node.js core
 When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the
-<a href="https://github.com/fastify/fastify/blob/master/docs/Factory.md#factory-http2">
+<a href="https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-http2">
 <code><b>http2</b></code>
 </a> option is set.
 
@@ -190,7 +190,7 @@ fastify.get('/', (request, reply) => {
 ### `pluginTimeout`
 
 The maximum amount of time in milliseconds in which a plugin can load.
-If not, [`ready`](https://github.com/fastify/fastify/blob/master/docs/Factory.md#ready)
+If not, [`ready`](https://github.com/fastify/fastify/blob/master/docs/Server.md#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 + Default: `0` (disabled)
@@ -201,7 +201,7 @@ will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 <a name="server"></a>
 #### server
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](https://github.com/fastify/fastify/blob/master/docs/Factory.md).
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](https://github.com/fastify/fastify/blob/master/docs/Server.md).
 
 <a name="after"></a>
 #### after

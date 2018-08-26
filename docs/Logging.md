@@ -46,7 +46,7 @@ fastify.get('/', options, function (request, reply) {
 
 <a name="logging-request-id" />
 
-By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Factory.md#factory-request-id-header) options for customizing that header name.
+By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) options for customizing that header name.
 Additionally, `genReqId` option can be used for generating the request id by yourself. It will received the incoming request as a parameter.
 
 ```js

@@ -6,17 +6,14 @@ const sget = require('simple-get').concat
 const fastify = require('..')
 
 const sgetForwardedRequest = (app, forHeader, path) => {
-  sget(
-    {
-      method: 'GET',
-      headers: {
-        'X-Forwarded-For': forHeader,
-        'X-Forwarded-Host': 'example.com'
-      },
-      url: 'http://localhost:' + app.server.address().port + path
+  sget({
+    method: 'GET',
+    headers: {
+      'X-Forwarded-For': forHeader,
+      'X-Forwarded-Host': 'example.com'
     },
-    () => {}
-  )
+    url: 'http://localhost:' + app.server.address().port + path
+  }, () => {})
 }
 
 const testRequestValues = (t, req, options) => {

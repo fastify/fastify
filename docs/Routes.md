@@ -234,7 +234,7 @@ Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-p
 It could happen that you need different log levels in your routes, with Fastify achieve this is very straightforward.<br/>
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/API.md#discussion-3) that you need.
 
-Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler) and [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#seterrorhandler) will be affected.
+Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#setnotfoundhandler) and [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) will be affected.
 
 ```js
 // server.js

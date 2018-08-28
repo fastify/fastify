@@ -5,23 +5,43 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')
 
+const sgetForwardedRequest = (app, forHeader, path) => {
+  sget({
+    method: 'GET',
+    headers: {
+      'X-Forwarded-For': forHeader,
+      'X-Forwarded-Host': 'example.com'
+    },
+    url: 'http://localhost:' + app.server.address().port + path
+  }, () => {})
+}
+
+const testRequestValues = (t, req, options) => {
+  if (options.ip) {
+    t.ok(req.raw.ip, 'ip is defined')
+    t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
+  }
+  if (options.hostname) {
+    t.ok(req.raw.hostname, 'hostname is defined')
+    t.equal(req.raw.hostname, options.hostname, 'gets hostname from x-forwarded-host')
+  }
+  if (options.ips) {
+    t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
+  }
+}
+
 test('trust proxy', (t) => {
   t.plan(8)
   const app = fastify({
     trustProxy: true
   })
   app.get('/trustproxy', function (req, reply) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.ok(req.raw.hostname, 'hostname is defined')
-    t.equal(req.raw.ip, '1.1.1.1', 'gets ip from x-forwarder-for')
-    t.equal(req.raw.hostname, 'example.com', 'gets hostname from x-forwarded-host')
+    testRequestValues(t, req, {ip: '1.1.1.1', hostname: 'example.com'})
     reply.code(200).send({ip: req.ip, hostname: req.hostname})
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.equal(req.raw.ip, '2.2.2.2', 'gets ip from x-forwarder-for')
-    t.deepEqual(req.raw.ips, ['127.0.0.1', '1.1.1.1', '2.2.2.2'], 'gets ips from x-forwarder-for')
+    testRequestValues(t, req, {ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2']})
     reply.code(200).send({ip: req.ip, hostname: req.hostname})
   })
 
@@ -30,28 +50,8 @@ test('trust proxy', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sget(
-      {
-        method: 'GET',
-        headers: {
-          'X-Forwarded-For': '1.1.1.1',
-          'X-Forwarded-Host': 'example.com'
-        },
-        url: 'http://localhost:' + app.server.address().port + '/trustproxy'
-      },
-      () => {}
-    )
-    sget(
-      {
-        method: 'GET',
-        headers: {
-          'X-Forwarded-For': '2.2.2.2, 1.1.1.1',
-          'X-Forwarded-Host': 'example.com'
-        },
-        url: 'http://localhost:' + app.server.address().port + '/trustproxychain'
-      },
-      () => {}
-    )
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain')
   })
 })
 
@@ -62,8 +62,7 @@ test('trust proxy chain', (t) => {
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.equal(req.raw.ip, '1.1.1.1', 'gets ip from x-forwarder-for')
+    testRequestValues(t, req, {ip: '1.1.1.1'})
     reply.code(200).send({ip: req.ip, hostname: req.hostname})
   })
 
@@ -72,30 +71,17 @@ test('trust proxy chain', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sget(
-      {
-        method: 'GET',
-        headers: {
-          'X-Forwarded-For': '192.168.1.1, 1.1.1.1',
-          'X-Forwarded-Host': 'example.com'
-        },
-        url: 'http://localhost:' + app.server.address().port + '/trustproxychain'
-      },
-      () => {}
-    )
+    sgetForwardedRequest(app, '192.168.1.1, 1.1.1.1', '/trustproxychain')
   })
 })
 
 test('trust proxy function', (t) => {
-  t.plan(5)
+  t.plan(3)
   const app = fastify({
     trustProxy: (address) => address === '127.0.0.1'
   })
   app.get('/trustproxyfunc', function (req, reply) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.ok(req.raw.hostname, 'hostname is defined')
-    t.equal(req.raw.ip, '1.1.1.1', 'gets ip from x-forwarder-for')
-    t.equal(req.raw.hostname, 'example.com', 'gets hostname from x-forwarded-host')
+    testRequestValues(t, req, {ip: '1.1.1.1'})
     reply.code(200).send({ip: req.ip, hostname: req.hostname})
   })
 
@@ -104,16 +90,6 @@ test('trust proxy function', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sget(
-      {
-        method: 'GET',
-        headers: {
-          'X-Forwarded-For': '1.1.1.1',
-          'X-Forwarded-Host': 'example.com'
-        },
-        url: 'http://localhost:' + app.server.address().port + '/trustproxyfunc'
-      },
-      () => {}
-    )
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxyfunc')
   })
 })

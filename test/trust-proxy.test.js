@@ -112,3 +112,22 @@ test('trust proxy number', (t) => {
     sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxynumber')
   })
 })
+
+test('trust proxy IP addresses', (t) => {
+  t.plan(4)
+  const app = fastify({
+    trustProxy: '127.0.0.1, 2.2.2.2'
+  })
+  app.get('/trustproxyipaddrs', function (req, reply) {
+    testRequestValues(t, req, {ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1']})
+    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+  })
+
+  t.tearDown(app.close.bind(app))
+
+  app.listen(0, (err) => {
+    app.server.unref()
+    t.error(err)
+    sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs')
+  })
+})

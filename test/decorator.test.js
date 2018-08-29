@@ -516,6 +516,78 @@ test('should register properties via getter/setter objects', t => {
   })
 })
 
+test('decorateRequest should work with getter/setter', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorateRequest('test', {
+      getter () {
+        return 'a getter'
+      }
+    })
+
+    instance.get('/req-decorated-get-set', (req, res) => {
+      res.send({test: req.test})
+    })
+
+    next()
+  })
+
+  fastify.get('/not-decorated', (req, res) => {
+    t.notOk(req.test)
+    res.send()
+  })
+
+  fastify.ready(() => {
+    fastify.inject({url: '/req-decorated-get-set'}, (err, res) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(res.payload), {test: 'a getter'})
+    })
+
+    fastify.inject({url: '/not-decorated'}, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
+})
+
+test('decorateReply should work with getter/setter', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.decorateReply('test', {
+      getter () {
+        return 'a getter'
+      }
+    })
+
+    instance.get('/res-decorated-get-set', (req, res) => {
+      res.send({test: res.test})
+    })
+
+    next()
+  })
+
+  fastify.get('/not-decorated', (req, res) => {
+    t.notOk(res.test)
+    res.send()
+  })
+
+  fastify.ready(() => {
+    fastify.inject({url: '/res-decorated-get-set'}, (err, res) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(res.payload), {test: 'a getter'})
+    })
+
+    fastify.inject({url: '/not-decorated'}, (err, res) => {
+      t.error(err)
+      t.pass()
+    })
+  })
+})
+
 test('should register empty values', t => {
   t.plan(2)
   const fastify = Fastify()

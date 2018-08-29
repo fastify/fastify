@@ -133,7 +133,7 @@ test('Should throw on duplicate request decorator', t => {
     fastify.decorateRequest('foo', fooObj)
     t.fail()
   } catch (e) {
-    t.ok(/has been already added/.test(e.message))
+    t.ok(/has already been added/.test(e.message))
   }
 })
 
@@ -162,7 +162,7 @@ test('Should throw on duplicate reply decorator', t => {
     fastify.decorateReply('foo', fooObj)
     t.fail()
   } catch (e) {
-    t.ok(/has been already added/.test(e.message))
+    t.ok(/has already been added/.test(e.message))
   }
 })
 

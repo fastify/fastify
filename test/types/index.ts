@@ -22,7 +22,7 @@ const cors = require('cors')
     }
   })
   // http2
-  const h2Server = fastify({http2: true})
+  const h2Server = fastify({ http2: true })
   // secure http2
   const h2SecureServer = fastify({
     http2: true,
@@ -198,7 +198,7 @@ server
   })
   .post('/', opts, function (req, reply) {
     reply
-      .headers({'Content-Type': 'application/json'})
+      .headers({ 'Content-Type': 'application/json' })
       .send({ hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
@@ -328,11 +328,11 @@ server.addContentTypeParser('foo/bar', {}, (req, done) => {
   done!(null, {})
 })
 
-server.addContentTypeParser('foo/bar', {parseAs: 'string'}, (req, done) => {
+server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, done) => {
   done!(null, {})
 })
 
-server.addContentTypeParser('foo/bar', {bodyLimit: 20}, (req, done) => {
+server.addContentTypeParser('foo/bar', { bodyLimit: 20 }, (req, done) => {
   done!(null, {})
 })
 

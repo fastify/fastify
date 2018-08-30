@@ -52,7 +52,7 @@ test('reply.serialize should serialize payload', t => {
   const response = { statusCode: 200 }
   const context = {}
   const reply = new Reply(response, context, null)
-  t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
+  t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
 })
 
 test('reply.serialize should serialize payload with Fastify instance', t => {
@@ -73,7 +73,7 @@ test('reply.serialize should serialize payload with Fastify instance', t => {
     },
     handler: (req, reply) => {
       reply.send(
-        reply.serialize({foo: 'bar'})
+        reply.serialize({ foo: 'bar' })
       )
     }
   })
@@ -129,7 +129,7 @@ test('within an instance', t => {
     reply.serializer(function (body) {
       return require('querystring').stringify(body)
     })
-    reply.send({hello: 'world!'})
+    reply.send({ hello: 'world!' })
   })
 
   fastify.register(function (instance, options, next) {
@@ -590,7 +590,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     })
 
     next()
-  }, {prefix: '/prefixed'})
+  }, { prefix: '/prefixed' })
 
   fastify.listen(0, err => {
     t.error(err)

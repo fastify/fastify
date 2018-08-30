@@ -109,13 +109,13 @@ The function `getSchemas` returns all shared schemas that were added by `addSche
 
 The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string. The default `schemaCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface. Fastify uses it internally to speed the validation up.
 
-Fastify's baseline ajv configuration is:
+Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#options-to-modify-validated-data) is:
 
 ```js
 {
-  removeAdditional: true,
-  useDefaults: true,
-  coerceTypes: true
+  removeAdditional: true, // remove additional properties
+  useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
+  coerceTypes: true  // change data type of data to match type keyword
 }
 ```
 

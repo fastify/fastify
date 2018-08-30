@@ -528,7 +528,7 @@ test('decorateRequest should work with getter/setter', t => {
     })
 
     instance.get('/req-decorated-get-set', (req, res) => {
-      res.send({test: req.test})
+      res.send({ test: req.test })
     })
 
     next()
@@ -540,12 +540,12 @@ test('decorateRequest should work with getter/setter', t => {
   })
 
   fastify.ready(() => {
-    fastify.inject({url: '/req-decorated-get-set'}, (err, res) => {
+    fastify.inject({ url: '/req-decorated-get-set' }, (err, res) => {
       t.error(err)
-      t.deepEqual(JSON.parse(res.payload), {test: 'a getter'})
+      t.deepEqual(JSON.parse(res.payload), { test: 'a getter' })
     })
 
-    fastify.inject({url: '/not-decorated'}, (err, res) => {
+    fastify.inject({ url: '/not-decorated' }, (err, res) => {
       t.error(err)
       t.pass()
     })
@@ -564,7 +564,7 @@ test('decorateReply should work with getter/setter', t => {
     })
 
     instance.get('/res-decorated-get-set', (req, res) => {
-      res.send({test: res.test})
+      res.send({ test: res.test })
     })
 
     next()
@@ -576,12 +576,12 @@ test('decorateReply should work with getter/setter', t => {
   })
 
   fastify.ready(() => {
-    fastify.inject({url: '/res-decorated-get-set'}, (err, res) => {
+    fastify.inject({ url: '/res-decorated-get-set' }, (err, res) => {
       t.error(err)
-      t.deepEqual(JSON.parse(res.payload), {test: 'a getter'})
+      t.deepEqual(JSON.parse(res.payload), { test: 'a getter' })
     })
 
-    fastify.inject({url: '/not-decorated'}, (err, res) => {
+    fastify.inject({ url: '/not-decorated' }, (err, res) => {
       t.error(err)
       t.pass()
     })

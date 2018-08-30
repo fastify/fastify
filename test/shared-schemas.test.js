@@ -32,7 +32,7 @@ test('The schemas should be accessible via getSchemas', t => {
   const schemas = [
     { $id: 'id', my: 'schema' },
     { $id: 'abc', my: 'schema' },
-    { $id: 'bcd', my: 'schema', properties: {a: 'a', b: 1} }
+    { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
   ]
   const expected = {}
   schemas.forEach(function (schema) {

@@ -161,7 +161,7 @@ test('can use external logger instance', t => {
 
   const logger = require('pino')(splitStream)
 
-  const localFastify = Fastify({logger: logger})
+  const localFastify = Fastify({ logger: logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -204,7 +204,7 @@ test('can use external logger instance with custom serializer', t => {
     }
   }, splitStream)
 
-  const localFastify = Fastify({logger: logger})
+  const localFastify = Fastify({ logger: logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -716,7 +716,7 @@ test('should serialize request and response', t => {
       cb()
     }
   })
-  const fastify = Fastify({logger: {level: 'info', stream: dest}})
+  const fastify = Fastify({ logger: { level: 'info', stream: dest } })
 
   fastify.get('/500', (req, reply) => {
     reply.code(500).send(Error('500 error'))

@@ -78,7 +78,7 @@ module.exports.payloadMethod = function (method, t) {
             }
           }
         }
-        fastify2[loMethod]('/plugin', withInstanceCustomCompiler, (req, reply) => reply.send({hello: 'never here!'}))
+        fastify2[loMethod]('/plugin', withInstanceCustomCompiler, (req, reply) => reply.send({ hello: 'never here!' }))
 
         const optsWithCustomValidator2 = {
           schema: {
@@ -94,7 +94,7 @@ module.exports.payloadMethod = function (method, t) {
             }
           }
         }
-        fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) => reply.send({hello: 'never here!'}))
+        fastify2[loMethod]('/plugin/custom', optsWithCustomValidator2, (req, reply) => reply.send({ hello: 'never here!' }))
 
         next()
       })

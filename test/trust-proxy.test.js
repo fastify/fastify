@@ -36,13 +36,13 @@ test('trust proxy', (t) => {
     trustProxy: true
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, {ip: '1.1.1.1', hostname: 'example.com'})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, {ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2']})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'] })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   t.tearDown(app.close.bind(app))
@@ -62,8 +62,8 @@ test('trust proxy chain', (t) => {
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, {ip: '1.1.1.1'})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '1.1.1.1' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   t.tearDown(app.close.bind(app))
@@ -81,8 +81,8 @@ test('trust proxy function', (t) => {
     trustProxy: (address) => address === '127.0.0.1'
   })
   app.get('/trustproxyfunc', function (req, reply) {
-    testRequestValues(t, req, {ip: '1.1.1.1'})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '1.1.1.1' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   t.tearDown(app.close.bind(app))
@@ -100,8 +100,8 @@ test('trust proxy number', (t) => {
     trustProxy: 1
   })
   app.get('/trustproxynumber', function (req, reply) {
-    testRequestValues(t, req, {ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1']})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1'] })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   t.tearDown(app.close.bind(app))
@@ -119,8 +119,8 @@ test('trust proxy IP addresses', (t) => {
     trustProxy: '127.0.0.1, 2.2.2.2'
   })
   app.get('/trustproxyipaddrs', function (req, reply) {
-    testRequestValues(t, req, {ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1']})
-    reply.code(200).send({ip: req.ip, hostname: req.hostname})
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1'] })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   t.tearDown(app.close.bind(app))

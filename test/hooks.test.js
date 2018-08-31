@@ -150,8 +150,8 @@ test('onRequest hook should support encapsulation / 2', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 1)
-    t.is(pluginInstance._hooks.onRequest.length, 2)
+    t.is(fastify[Symbol.for('fastify.hooks')].onRequest.length, 1)
+    t.is(pluginInstance[Symbol.for('fastify.hooks')].onRequest.length, 2)
   })
 })
 
@@ -569,8 +569,8 @@ test('onResponse hook should support encapsulation / 2', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onResponse.length, 1)
-    t.is(pluginInstance._hooks.onResponse.length, 2)
+    t.is(fastify[Symbol.for('fastify.hooks')].onResponse.length, 1)
+    t.is(pluginInstance[Symbol.for('fastify.hooks')].onResponse.length, 2)
   })
 })
 
@@ -646,8 +646,8 @@ test('onSend hook should support encapsulation / 1', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onSend.length, 1)
-    t.is(pluginInstance._hooks.onSend.length, 2)
+    t.is(fastify[Symbol.for('fastify.hooks')].onSend.length, 1)
+    t.is(pluginInstance[Symbol.for('fastify.hooks')].onSend.length, 2)
   })
 })
 

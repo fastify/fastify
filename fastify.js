@@ -163,7 +163,7 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks()
+  fastify[Symbol.for('fastify.hooks')] = new Hooks()
 
   // schemas
   fastify.addSchema = addSchema
@@ -452,7 +452,7 @@ function build (options) {
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
+    instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
     instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
     instance._middlewares = old._middlewares.slice()
@@ -631,10 +631,10 @@ function build (options) {
       // the route registration. To be sure to load also that hoooks/middlwares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
       app.once('preReady', () => {
-        const onRequest = _fastify._hooks.onRequest
-        const onResponse = _fastify._hooks.onResponse
-        const onSend = _fastify._hooks.onSend
-        const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
+        const onRequest = _fastify[Symbol.for('fastify.hooks')].onRequest
+        const onResponse = _fastify[Symbol.for('fastify.hooks')].onResponse
+        const onSend = _fastify[Symbol.for('fastify.hooks')].onSend
+        const preHandler = _fastify[Symbol.for('fastify.hooks')].preHandler.concat(opts.beforeHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
         context.preHandler = preHandler.length ? preHandler : null
@@ -718,10 +718,10 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
     if (name === 'onClose') {
-      this._hooks.validate(name, fn)
+      this[Symbol.for('fastify.hooks')].validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onRoute') {
-      this._hooks.validate(name, fn)
+      this[Symbol.for('fastify.hooks')].validate(name, fn)
       onRouteHooks.push(fn)
     } else {
       this.after((err, done) => {
@@ -733,7 +733,7 @@ function build (options) {
   }
 
   function _addHook (instance, name, fn) {
-    instance._hooks.add(name, fn.bind(instance))
+    instance[Symbol.for('fastify.hooks')].add(name, fn.bind(instance))
     instance[Symbol.for('fastify.children')].forEach(child => _addHook(child, name, fn))
   }
 
@@ -870,10 +870,10 @@ function build (options) {
     app.once('preReady', () => {
       const context = this._404Context
 
-      const onRequest = this._hooks.onRequest
-      const preHandler = this._hooks.preHandler.concat(opts.beforeHandler || [])
-      const onSend = this._hooks.onSend
-      const onResponse = this._hooks.onResponse
+      const onRequest = this[Symbol.for('fastify.hooks')].onRequest
+      const preHandler = this[Symbol.for('fastify.hooks')].preHandler.concat(opts.beforeHandler || [])
+      const onSend = this[Symbol.for('fastify.hooks')].onSend
+      const onResponse = this[Symbol.for('fastify.hooks')].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
       context.preHandler = preHandler.length ? preHandler : null

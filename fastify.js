@@ -205,7 +205,7 @@ function build (options) {
   fastify.inject = inject
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
-  fastify._canSetNotFoundHandler = true
+  fastify[Symbol.for('fastify.canSetNotFoundHandler')] = true
   fastify._404LevelInstance = fastify
   fastify._404Context = null
   fastify.setNotFoundHandler = setNotFoundHandler
@@ -459,7 +459,7 @@ function build (options) {
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
-      instance._canSetNotFoundHandler = true
+      instance[Symbol.for('fastify.canSetNotFoundHandler')] = true
       instance._404LevelInstance = instance
     }
 
@@ -821,7 +821,7 @@ function build (options) {
     const _fastify = this
     const prefix = this[Symbol.for('fastify.routePrefix')] || '/'
 
-    if (this._canSetNotFoundHandler === false) {
+    if (this[Symbol.for('fastify.canSetNotFoundHandler')] === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
@@ -842,7 +842,7 @@ function build (options) {
     opts = opts || {}
 
     if (handler) {
-      this._404LevelInstance._canSetNotFoundHandler = false
+      this._404LevelInstance[Symbol.for('fastify.canSetNotFoundHandler')] = false
       handler = handler.bind(this)
     } else {
       handler = basic404

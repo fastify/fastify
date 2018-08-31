@@ -714,7 +714,7 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
 
   fastify.register(plugin) // Registering plugin after handler also works
 
-  fastify.inject({url: '/not-found'}, (err, res) => {
+  fastify.inject({ url: '/not-found' }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
     t.strictEqual(res.payload, 'this was not found')

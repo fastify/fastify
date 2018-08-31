@@ -8,6 +8,7 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
+import * as tls from 'tls'
 import * as pino from 'pino'
 
 declare function fastify<
@@ -95,10 +96,7 @@ declare namespace fastify {
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
-    https: {
-      key: Buffer,
-      cert: Buffer
-    }
+    https: tls.TlsOptions
   }
   interface ServerOptionsAsHttp extends ServerOptions {
     http2?: false

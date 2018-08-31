@@ -927,11 +927,11 @@ test('onSend hook throws', t => {
   })
 
   fastify.get('/', (req, reply) => {
-    reply.send({hello: 'world'})
+    reply.send({ hello: 'world' })
   })
 
   fastify.delete('/', (req, reply) => {
-    reply.send({hello: 'world'})
+    reply.send({ hello: 'world' })
   })
 
   fastify.listen(0, err => {

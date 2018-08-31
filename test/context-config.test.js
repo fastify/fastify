@@ -46,7 +46,7 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({url: '/get'}, schema.config))
+    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/get' }, schema.config))
   })
 
   fastify.inject({
@@ -55,7 +55,7 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({url: '/route'}, schema.config))
+    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/route' }, schema.config))
   })
 
   fastify.inject({
@@ -64,6 +64,6 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), {url: '/no-config'})
+    t.deepEquals(JSON.parse(response.payload), { url: '/no-config' })
   })
 })

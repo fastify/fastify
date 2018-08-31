@@ -76,6 +76,7 @@ module.exports.payloadMethod = function (method, t) {
   fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
+      return
     }
 
     fastify.server.unref()

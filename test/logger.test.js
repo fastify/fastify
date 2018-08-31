@@ -181,7 +181,7 @@ test('can use external logger instance', t => {
 
   const logger = require('pino')(splitStream)
 
-  const localFastify = Fastify({logger: logger})
+  const localFastify = Fastify({ logger: logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -738,7 +738,7 @@ test('should serialize request and response', t => {
       cb()
     }
   })
-  const fastify = Fastify({logger: {level: 'info', stream: dest}})
+  const fastify = Fastify({ logger: { level: 'info', stream: dest } })
 
   fastify.get('/500', (req, reply) => {
     reply.code(500).send(Error('500 error'))
@@ -804,97 +804,6 @@ test('Do not wrap IPv4 address', t => {
         fastify.server.address().port
       t.is(line.msg, expected)
       fastify.close()
-    })
-  })
-})
-
-test('should log the error if custom error handler does not handle it', t => {
-  t.plan(8)
-
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    logger: {
-      stream: stream,
-      level: 'info'
-    }
-  })
-
-  fastify.get('/error', function (req, reply) {
-    t.ok(req.log)
-    reply.send(new Error('a 500 error'))
-  })
-
-  fastify.setErrorHandler((err, req, reply) => {
-    reply.send(err)
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
-    stream.once('data', listenAtLogLine => {
-      t.ok(listenAtLogLine, 'listen at log message is ok')
-
-      stream.once('data', line => {
-        t.equal(line.msg, 'incoming request', 'message is set')
-
-        stream.once('data', line => {
-          t.equal(line.level, 50, 'level is correct')
-          t.equal(line.msg, 'a 500 error', 'message is set')
-
-          stream.once('data', line => {
-            t.equal(line.msg, 'request completed', 'message is set')
-            t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
-          })
-        })
-      })
-    })
-  })
-})
-
-test('should log the error after custom error handler handled it', t => {
-  t.plan(7)
-
-  const stream = split(JSON.parse)
-  const fastify = Fastify({
-    logger: {
-      stream: stream,
-      level: 'info'
-    }
-  })
-
-  fastify.get('/error', function (req, reply) {
-    t.ok(req.log)
-    reply.send(new Error('bad request'))
-  })
-
-  fastify.setErrorHandler((err, req, reply) => {
-    const msg = err.message
-    if (msg === 'bad request') {
-      reply.code(400).send({ message: msg })
-    } else {
-      reply.send(err)
-    }
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
-    stream.once('data', listenAtLogLine => {
-      t.ok(listenAtLogLine, 'listen at log message is ok')
-
-      stream.once('data', line => {
-        t.equal(line.msg, 'incoming request', 'message is set')
-
-        stream.once('data', line => {
-          t.equal(line.level, 30, 'level is correct')
-          t.equal(line.msg, 'request completed', 'message is set')
-          t.deepEqual(line.res, { statusCode: 400 }, 'status code is set')
-        })
-      })
     })
   })
 })

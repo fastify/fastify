@@ -149,12 +149,12 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify._routePrefix = ''
+  fastify[Symbol.for('fastify.routePrefix')] = ''
   fastify._logLevel = ''
 
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
-      return this._routePrefix
+      return this[Symbol.for('fastify.routePrefix')]
     }
   })
 
@@ -453,7 +453,7 @@ function build (options) {
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
-    instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
+    instance[Symbol.for('fastify.routePrefix')] = buildRoutePrefix(instance[Symbol.for('fastify.routePrefix')], opts.prefix)
     instance._logLevel = opts.logLevel || instance._logLevel
     instance._middlewares = old._middlewares.slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
@@ -567,7 +567,7 @@ function build (options) {
     validateBodyLimitOption(opts.bodyLimit)
 
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      const prefix = _fastify._routePrefix
+      const prefix = _fastify[Symbol.for('fastify.routePrefix')]
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
         // Ensure that '/prefix' + '/' gets registered as '/prefix'
@@ -700,7 +700,7 @@ function build (options) {
   function use (url, fn) {
     throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
-      const prefix = this._routePrefix
+      const prefix = this[Symbol.for('fastify.routePrefix')]
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     return this.after((err, done) => {
@@ -819,7 +819,7 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     const _fastify = this
-    const prefix = this._routePrefix || '/'
+    const prefix = this[Symbol.for('fastify.routePrefix')] || '/'
 
     if (this._canSetNotFoundHandler === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)

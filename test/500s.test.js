@@ -39,7 +39,7 @@ test('custom 500', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
-    t.type(request, fastify._Request)
+    t.type(request, fastify[Symbol.for('fastify.Request')])
     reply
       .code(500)
       .type('text/plain')
@@ -73,7 +73,7 @@ test('encapsulated 500', t => {
 
     f.setErrorHandler(function (err, request, reply) {
       t.type(request, 'object')
-      t.type(request, f._Request)
+      t.type(request, f[Symbol.for('fastify.Request')])
       reply
         .code(500)
         .type('text/plain')

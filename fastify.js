@@ -195,7 +195,7 @@ function build (options) {
   fastify.hasReplyDecorator = decorator.existReply
 
   fastify[Symbol.for('fastify.Reply')] = Reply.buildReply(Reply)
-  fastify._Request = Request.buildRequest(Request)
+  fastify[Symbol.for('fastify.Request')] = Request.buildRequest(Request)
 
   // middleware support
   fastify.use = use
@@ -450,7 +450,7 @@ function build (options) {
     old[Symbol.for('fastify.children')].push(instance)
     instance[Symbol.for('fastify.children')] = []
     instance[Symbol.for('fastify.Reply')] = Reply.buildReply(instance[Symbol.for('fastify.Reply')])
-    instance._Request = Request.buildRequest(instance._Request)
+    instance[Symbol.for('fastify.Request')] = Request.buildRequest(instance[Symbol.for('fastify.Request')])
     instance[Symbol.for('fastify.contentTypeParser')] = ContentTypeParser.buildContentTypeParser(instance[Symbol.for('fastify.contentTypeParser')])
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
     instance[Symbol.for('fastify.routePrefix')] = buildRoutePrefix(instance[Symbol.for('fastify.routePrefix')], opts.prefix)
@@ -595,7 +595,7 @@ function build (options) {
         opts.schema,
         opts.handler.bind(_fastify),
         _fastify[Symbol.for('fastify.Reply')],
-        _fastify._Request,
+        _fastify[Symbol.for('fastify.Request')],
         _fastify[Symbol.for('fastify.contentTypeParser')],
         config,
         _fastify._errorHandler,
@@ -859,7 +859,7 @@ function build (options) {
       opts.schema,
       handler,
       this[Symbol.for('fastify.Reply')],
-      this._Request,
+      this[Symbol.for('fastify.Request')],
       this[Symbol.for('fastify.contentTypeParser')],
       opts.config || {},
       this._errorHandler,

@@ -229,7 +229,7 @@ test('decorateRequest inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance._Request.prototype.test)
+    t.ok(instance[Symbol.for('fastify.Request')].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')

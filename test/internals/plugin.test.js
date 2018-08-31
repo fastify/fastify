@@ -43,7 +43,7 @@ test('checkDecorators should check if the given decorator is present in the inst
   function context () {}
   context.plugin = true
   context[Symbol.for('fastify.Reply')] = { prototype: { plugin: true } }
-  context._Request = { prototype: { plugin: true } }
+  context[Symbol.for('fastify.Request')] = { prototype: { plugin: true } }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)
@@ -69,7 +69,7 @@ test('checkDecorators should check if the given decorator is present in the inst
   function context () {}
   context.plugin = true
   context[Symbol.for('fastify.Reply')] = { prototype: { plugin: true } }
-  context._Request = { prototype: {} }
+  context[Symbol.for('fastify.Request')] = { prototype: {} }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)

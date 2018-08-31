@@ -207,7 +207,7 @@ function build (options) {
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
   fastify[Symbol.for('fastify.canSetNotFoundHandler')] = true
   fastify[Symbol.for('fastify.404LevelInstance')] = fastify
-  fastify._404Context = null
+  fastify[Symbol.for('fastify.404Context')] = null
   fastify.setNotFoundHandler = setNotFoundHandler
   fastify.setNotFoundHandler() // Set the default 404 handler
 
@@ -645,9 +645,9 @@ function build (options) {
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        const _404Context = Object.assign({}, _fastify._404Context)
+        const _404Context = Object.assign({}, _fastify[Symbol.for('fastify.404Context')])
         _404Context.onSend = context.onSend
-        context._404Context = _404Context
+        context[Symbol.for('fastify.404Context')] = _404Context
       })
 
       done(notHandledErr)
@@ -674,7 +674,7 @@ function build (options) {
       limit: bodyLimit || null
     }
     this.logLevel = logLevel
-    this._404Context = null
+    this[Symbol.for('fastify.404Context')] = null
   }
 
   function inject (opts, cb) {
@@ -868,7 +868,7 @@ function build (options) {
     )
 
     app.once('preReady', () => {
-      const context = this._404Context
+      const context = this[Symbol.for('fastify.404Context')]
 
       const onRequest = this[Symbol.for('fastify.hooks')].onRequest
       const preHandler = this[Symbol.for('fastify.hooks')].preHandler.concat(opts.beforeHandler || [])
@@ -883,12 +883,12 @@ function build (options) {
       context._middie = buildMiddie(this[Symbol.for('fastify.middlewares')])
     })
 
-    if (this._404Context !== null && prefix === '/') {
-      Object.assign(this._404Context, context) // Replace the default 404 handler
+    if (this[Symbol.for('fastify.404Context')] !== null && prefix === '/') {
+      Object.assign(this[Symbol.for('fastify.404Context')], context) // Replace the default 404 handler
       return
     }
 
-    this[Symbol.for('fastify.404LevelInstance')]._404Context = context
+    this[Symbol.for('fastify.404LevelInstance')][Symbol.for('fastify.404Context')] = context
 
     fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
     fourOhFour.all(prefix || '/', routeHandler, context)

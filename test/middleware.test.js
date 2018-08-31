@@ -157,7 +157,7 @@ test('middlewares should support encapsulation / 1', t => {
   const instance = fastify()
 
   instance.register((i, opts, done) => {
-    t.ok(i._middlewares.length === 0)
+    t.ok(i[Symbol.for('fastify.middlewares')].length === 0)
     i.use(function (req, res, next) {
       t.fail('this should not be called')
       next()
@@ -166,13 +166,13 @@ test('middlewares should support encapsulation / 1', t => {
   })
 
   instance.get('/', function (request, reply) {
-    t.ok(instance._middlewares.length === 0)
+    t.ok(instance[Symbol.for('fastify.middlewares')].length === 0)
     reply.send({ hello: 'world' })
   })
 
   instance.listen(0, err => {
     t.error(err)
-    t.ok(instance._middlewares.length === 0)
+    t.ok(instance[Symbol.for('fastify.middlewares')].length === 0)
     t.tearDown(instance.server.close.bind(instance.server))
 
     sget({

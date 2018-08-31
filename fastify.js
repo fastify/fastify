@@ -199,7 +199,7 @@ function build (options) {
 
   // middleware support
   fastify.use = use
-  fastify._middlewares = []
+  fastify[Symbol.for('fastify.middlewares')] = []
 
   // fake http injection
   fastify.inject = inject
@@ -455,7 +455,7 @@ function build (options) {
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
     instance[Symbol.for('fastify.routePrefix')] = buildRoutePrefix(instance[Symbol.for('fastify.routePrefix')], opts.prefix)
     instance[Symbol.for('fastify.logLevel')] = opts.logLevel || instance[Symbol.for('fastify.logLevel')]
-    instance._middlewares = old._middlewares.slice()
+    instance[Symbol.for('fastify.middlewares')] = old[Symbol.for('fastify.middlewares')].slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
@@ -641,7 +641,7 @@ function build (options) {
         context.onSend = onSend.length ? onSend : null
         context.onResponse = onResponse.length ? onResponse : null
 
-        context._middie = buildMiddie(_fastify._middlewares)
+        context._middie = buildMiddie(_fastify[Symbol.for('fastify.middlewares')])
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
@@ -710,7 +710,7 @@ function build (options) {
   }
 
   function addMiddleware (instance, middleware) {
-    instance._middlewares.push(middleware)
+    instance[Symbol.for('fastify.middlewares')].push(middleware)
     instance[Symbol.for('fastify.children')].forEach(child => addMiddleware(child, middleware))
   }
 
@@ -880,7 +880,7 @@ function build (options) {
       context.onSend = onSend.length ? onSend : null
       context.onResponse = onResponse.length ? onResponse : null
 
-      context._middie = buildMiddie(this._middlewares)
+      context._middie = buildMiddie(this[Symbol.for('fastify.middlewares')])
     })
 
     if (this._404Context !== null && prefix === '/') {

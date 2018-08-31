@@ -9,7 +9,22 @@ const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 const proxyAddr = require('proxy-addr')
 
-const symbols = require('./lib/symbols.js')
+const {
+  childrenKey,
+  bodyLimitKey,
+  routePrefixKey,
+  logLevelKey,
+  hooksKey,
+  schemasKey,
+  contentTypeParserKey,
+  ReplyKey,
+  RequestKey,
+  middlewaresKey,
+  canSetNotFoundHandlerKey,
+  fourOhFourLevelInstanceKey,
+  fourOhFourContextKey
+} = require('./lib/symbols.js')
+
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -62,7 +77,7 @@ function build (options) {
   }
 
   const fastify = {
-    [symbols.childrenKey]: []
+    [childrenKey]: []
   }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -136,7 +151,7 @@ function build (options) {
 
   // body limit option
   validateBodyLimitOption(options.bodyLimit)
-  fastify[symbols.bodyLimitKey] = options.bodyLimit || DEFAULT_BODY_LIMIT
+  fastify[bodyLimitKey] = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -149,12 +164,12 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify[symbols.routePrefixKey] = ''
-  fastify[symbols.logLevelKey] = ''
+  fastify[routePrefixKey] = ''
+  fastify[logLevelKey] = ''
 
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
-      return this[symbols.routePrefixKey]
+      return this[routePrefixKey]
     }
   })
 
@@ -163,19 +178,19 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify[symbols.hooksKey] = new Hooks()
+  fastify[hooksKey] = new Hooks()
 
   // schemas
   fastify.addSchema = addSchema
-  fastify[symbols.schemasKey] = new Schemas()
-  fastify.getSchemas = fastify[symbols.schemasKey].getSchemas.bind(fastify[symbols.schemasKey])
+  fastify[schemasKey] = new Schemas()
+  fastify.getSchemas = fastify[schemasKey].getSchemas.bind(fastify[schemasKey])
 
   const onRouteHooks = []
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify[symbols.contentTypeParserKey] = new ContentTypeParser(fastify[symbols.bodyLimitKey])
+  fastify[contentTypeParserKey] = new ContentTypeParser(fastify[bodyLimitKey])
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -194,20 +209,20 @@ function build (options) {
   fastify.hasRequestDecorator = decorator.existRequest
   fastify.hasReplyDecorator = decorator.existReply
 
-  fastify[symbols.ReplyKey] = Reply.buildReply(Reply)
-  fastify[symbols.RequestKey] = Request.buildRequest(Request)
+  fastify[ReplyKey] = Reply.buildReply(Reply)
+  fastify[RequestKey] = Request.buildRequest(Request)
 
   // middleware support
   fastify.use = use
-  fastify[symbols.middlewaresKey] = []
+  fastify[middlewaresKey] = []
 
   // fake http injection
   fastify.inject = inject
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
-  fastify[symbols.canSetNotFoundHandlerKey] = true
-  fastify[symbols['404LevelInstanceKey']] = fastify
-  fastify[symbols['404Context']] = null
+  fastify[canSetNotFoundHandlerKey] = true
+  fastify[fourOhFourLevelInstanceKey] = fastify
+  fastify[fourOhFourContextKey] = null
   fastify.setNotFoundHandler = setNotFoundHandler
   fastify.setNotFoundHandler() // Set the default 404 handler
 
@@ -447,20 +462,20 @@ function build (options) {
     }
 
     const instance = Object.create(old)
-    old[symbols.childrenKey].push(instance)
-    instance[symbols.childrenKey] = []
-    instance[symbols.ReplyKey] = Reply.buildReply(instance[symbols.ReplyKey])
-    instance[symbols.RequestKey] = Request.buildRequest(instance[symbols.RequestKey])
-    instance[symbols.contentTypeParserKey] = ContentTypeParser.buildContentTypeParser(instance[symbols.contentTypeParserKey])
-    instance[symbols.hooksKey] = Hooks.buildHooks(instance[symbols.hooksKey])
-    instance[symbols.routePrefixKey] = buildRoutePrefix(instance[symbols.routePrefixKey], opts.prefix)
-    instance[symbols.logLevelKey] = opts.logLevel || instance[symbols.logLevelKey]
-    instance[symbols.middlewaresKey] = old[symbols.middlewaresKey].slice()
+    old[childrenKey].push(instance)
+    instance[childrenKey] = []
+    instance[ReplyKey] = Reply.buildReply(instance[ReplyKey])
+    instance[RequestKey] = Request.buildRequest(instance[RequestKey])
+    instance[contentTypeParserKey] = ContentTypeParser.buildContentTypeParser(instance[contentTypeParserKey])
+    instance[hooksKey] = Hooks.buildHooks(instance[hooksKey])
+    instance[routePrefixKey] = buildRoutePrefix(instance[routePrefixKey], opts.prefix)
+    instance[logLevelKey] = opts.logLevel || instance[logLevelKey]
+    instance[middlewaresKey] = old[middlewaresKey].slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
-      instance[symbols.canSetNotFoundHandlerKey] = true
-      instance[symbols['404LevelInstanceKey']] = instance
+      instance[canSetNotFoundHandlerKey] = true
+      instance[fourOhFourLevelInstanceKey] = instance
     }
 
     return instance
@@ -567,7 +582,7 @@ function build (options) {
     validateBodyLimitOption(opts.bodyLimit)
 
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      const prefix = _fastify[symbols.routePrefixKey]
+      const prefix = _fastify[routePrefixKey]
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
         // Ensure that '/prefix' + '/' gets registered as '/prefix'
@@ -581,7 +596,7 @@ function build (options) {
       opts.url = url
       opts.path = url
       opts.prefix = prefix
-      opts.logLevel = opts.logLevel || _fastify[symbols.logLevelKey]
+      opts.logLevel = opts.logLevel || _fastify[logLevelKey]
 
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
@@ -594,9 +609,9 @@ function build (options) {
       const context = new Context(
         opts.schema,
         opts.handler.bind(_fastify),
-        _fastify[symbols.ReplyKey],
-        _fastify[symbols.RequestKey],
-        _fastify[symbols.contentTypeParserKey],
+        _fastify[ReplyKey],
+        _fastify[RequestKey],
+        _fastify[contentTypeParserKey],
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
@@ -604,7 +619,7 @@ function build (options) {
       )
 
       try {
-        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[symbols.schemasKey])
+        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[schemasKey])
       } catch (error) {
         done(error)
         return
@@ -631,23 +646,23 @@ function build (options) {
       // the route registration. To be sure to load also that hoooks/middlwares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
       app.once('preReady', () => {
-        const onRequest = _fastify[symbols.hooksKey].onRequest
-        const onResponse = _fastify[symbols.hooksKey].onResponse
-        const onSend = _fastify[symbols.hooksKey].onSend
-        const preHandler = _fastify[symbols.hooksKey].preHandler.concat(opts.beforeHandler || [])
+        const onRequest = _fastify[hooksKey].onRequest
+        const onResponse = _fastify[hooksKey].onResponse
+        const onSend = _fastify[hooksKey].onSend
+        const preHandler = _fastify[hooksKey].preHandler.concat(opts.beforeHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
         context.onResponse = onResponse.length ? onResponse : null
 
-        context._middie = buildMiddie(_fastify[symbols.middlewaresKey])
+        context._middie = buildMiddie(_fastify[middlewaresKey])
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        const _404Context = Object.assign({}, _fastify[symbols['404Context']])
+        const _404Context = Object.assign({}, _fastify[fourOhFourContextKey])
         _404Context.onSend = context.onSend
-        context[symbols['404Context']] = _404Context
+        context[fourOhFourContextKey] = _404Context
       })
 
       done(notHandledErr)
@@ -674,7 +689,7 @@ function build (options) {
       limit: bodyLimit || null
     }
     this.logLevel = logLevel
-    this[symbols['404Context']] = null
+    this[fourOhFourContextKey] = null
   }
 
   function inject (opts, cb) {
@@ -700,7 +715,7 @@ function build (options) {
   function use (url, fn) {
     throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
-      const prefix = this[symbols.routePrefixKey]
+      const prefix = this[routePrefixKey]
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     return this.after((err, done) => {
@@ -710,18 +725,18 @@ function build (options) {
   }
 
   function addMiddleware (instance, middleware) {
-    instance[symbols.middlewaresKey].push(middleware)
-    instance[symbols.childrenKey].forEach(child => addMiddleware(child, middleware))
+    instance[middlewaresKey].push(middleware)
+    instance[childrenKey].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
     if (name === 'onClose') {
-      this[symbols.hooksKey].validate(name, fn)
+      this[hooksKey].validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onRoute') {
-      this[symbols.hooksKey].validate(name, fn)
+      this[hooksKey].validate(name, fn)
       onRouteHooks.push(fn)
     } else {
       this.after((err, done) => {
@@ -733,13 +748,13 @@ function build (options) {
   }
 
   function _addHook (instance, name, fn) {
-    instance[symbols.hooksKey].add(name, fn.bind(instance))
-    instance[symbols.childrenKey].forEach(child => _addHook(child, name, fn))
+    instance[hooksKey].add(name, fn.bind(instance))
+    instance[childrenKey].forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this[symbols.schemasKey].add(name, schema)
+    this[schemasKey].add(name, schema)
     return this
   }
 
@@ -756,20 +771,20 @@ function build (options) {
     }
 
     if (!opts.bodyLimit) {
-      opts.bodyLimit = this[symbols.bodyLimitKey]
+      opts.bodyLimit = this[bodyLimitKey]
     }
 
     if (Array.isArray(contentType)) {
-      contentType.forEach((type) => this[symbols.contentTypeParserKey].add(type, opts, parser))
+      contentType.forEach((type) => this[contentTypeParserKey].add(type, opts, parser))
     } else {
-      this[symbols.contentTypeParserKey].add(contentType, opts, parser)
+      this[contentTypeParserKey].add(contentType, opts, parser)
     }
 
     return this
   }
 
   function hasContentTypeParser (contentType, fn) {
-    return this[symbols.contentTypeParserKey].hasParser(contentType)
+    return this[contentTypeParserKey].hasParser(contentType)
   }
 
   function handleClientError (e, socket) {
@@ -819,9 +834,9 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     const _fastify = this
-    const prefix = this[symbols.routePrefixKey] || '/'
+    const prefix = this[routePrefixKey] || '/'
 
-    if (this[symbols.canSetNotFoundHandlerKey] === false) {
+    if (this[canSetNotFoundHandlerKey] === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
@@ -842,7 +857,7 @@ function build (options) {
     opts = opts || {}
 
     if (handler) {
-      this[symbols['404LevelInstanceKey']][symbols.canSetNotFoundHandlerKey] = false
+      this[fourOhFourLevelInstanceKey][canSetNotFoundHandlerKey] = false
       handler = handler.bind(this)
     } else {
       handler = basic404
@@ -858,37 +873,37 @@ function build (options) {
     const context = new Context(
       opts.schema,
       handler,
-      this[symbols.ReplyKey],
-      this[symbols.RequestKey],
-      this[symbols.contentTypeParserKey],
+      this[ReplyKey],
+      this[RequestKey],
+      this[contentTypeParserKey],
       opts.config || {},
       this._errorHandler,
-      this[symbols.bodyLimitKey],
-      this[symbols.logLevelKey]
+      this[bodyLimitKey],
+      this[logLevelKey]
     )
 
     app.once('preReady', () => {
-      const context = this[symbols['404Context']]
+      const context = this[fourOhFourContextKey]
 
-      const onRequest = this[symbols.hooksKey].onRequest
-      const preHandler = this[symbols.hooksKey].preHandler.concat(opts.beforeHandler || [])
-      const onSend = this[symbols.hooksKey].onSend
-      const onResponse = this[symbols.hooksKey].onResponse
+      const onRequest = this[hooksKey].onRequest
+      const preHandler = this[hooksKey].preHandler.concat(opts.beforeHandler || [])
+      const onSend = this[hooksKey].onSend
+      const onResponse = this[hooksKey].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null
       context.onResponse = onResponse.length ? onResponse : null
 
-      context._middie = buildMiddie(this[symbols.middlewaresKey])
+      context._middie = buildMiddie(this[middlewaresKey])
     })
 
-    if (this[symbols['404Context']] !== null && prefix === '/') {
-      Object.assign(this[symbols['404Context']], context) // Replace the default 404 handler
+    if (this[fourOhFourContextKey] !== null && prefix === '/') {
+      Object.assign(this[fourOhFourContextKey], context) // Replace the default 404 handler
       return
     }
 
-    this[symbols['404LevelInstanceKey']][symbols['404Context']] = context
+    this[fourOhFourLevelInstanceKey][fourOhFourContextKey] = context
 
     fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
     fourOhFour.all(prefix || '/', routeHandler, context)

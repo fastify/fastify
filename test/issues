@@ -1,0 +1,179 @@
+
+> fastify@1.11.1 test /home/cris7fe/fastify
+> npm run lint && npm run unit && npm run typescript
+
+
+> fastify@1.11.1 lint /home/cris7fe/fastify
+> standard --verbose | snazzy && npm run lint:typescript
+
+
+> fastify@1.11.1 lint:typescript /home/cris7fe/fastify
+> standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts
+
+
+> fastify@1.11.1 unit /home/cris7fe/fastify
+> tap -j4 test/*.test.js test/*/*.test.js
+
+TAP version 13
+not ok 1 - test/404s.test.js # time=1541.252ms
+  ---
+  timeout: 30000
+  file: test/404s.test.js
+  command: /usr/bin/node
+  args:
+    - test/404s.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 2 - test/500s.test.js # time=1470.058ms
+  ---
+  timeout: 30000
+  file: test/500s.test.js
+  command: /usr/bin/node
+  args:
+    - test/500s.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 3 - test/async-await.test.js # time=1499.65ms
+  ---
+  timeout: 30000
+  file: test/async-await.test.js
+  command: /usr/bin/node
+  args:
+    - test/async-await.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 4 - test/beforeHandler.test.js # time=1465.737ms
+  ---
+  timeout: 30000
+  file: test/beforeHandler.test.js
+  command: /usr/bin/node
+  args:
+    - test/beforeHandler.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 5 - test/bodyLimit.test.js # time=777.899ms
+  ---
+  timeout: 30000
+  file: test/bodyLimit.test.js
+  command: /usr/bin/node
+  args:
+    - test/bodyLimit.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 6 - test/case-insensitive.test.js # time=1338.406ms
+  ---
+  timeout: 30000
+  file: test/case-insensitive.test.js
+  command: /usr/bin/node
+  args:
+    - test/case-insensitive.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 7 - test/chainable.test.js # time=1318.042ms
+  ---
+  timeout: 30000
+  file: test/chainable.test.js
+  command: /usr/bin/node
+  args:
+    - test/chainable.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 8 - test/close-pipelining.test.js # time=1327.783ms
+  ---
+  timeout: 30000
+  file: test/close-pipelining.test.js
+  command: /usr/bin/node
+  args:
+    - test/close-pipelining.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+
+not ok 9 - test/close.test.js # time=1364.197ms
+  ---
+  timeout: 30000
+  file: test/close.test.js
+  command: /usr/bin/node
+  args:
+    - test/close.test.js
+  stdio:
+    - 0
+    - pipe
+    - 2
+  cwd: /home/cris7fe/fastify
+  exitCode: 1
+  ...
+{
+    1..0 # no tests found
+}
+

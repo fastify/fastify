@@ -9,6 +9,7 @@ const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 const proxyAddr = require('proxy-addr')
 
+require('./lib/symbols.js')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -26,7 +27,6 @@ const pluginUtils = require('./lib/pluginUtils')
 const runHooks = require('./lib/hookRunner').hookRunner
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
-const childrenKey = Symbol('fastify.children')
 
 function validateBodyLimitOption (bodyLimit) {
   if (bodyLimit === undefined) return
@@ -62,7 +62,7 @@ function build (options) {
   }
 
   const fastify = {
-    [childrenKey]: []
+    [Symbol.for('fastify.children')]: []
   }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -447,8 +447,8 @@ function build (options) {
     }
 
     const instance = Object.create(old)
-    old[childrenKey].push(instance)
-    instance[childrenKey] = []
+    old[Symbol.for('fastify.children')].push(instance)
+    instance[Symbol.for('fastify.children')] = []
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
@@ -711,7 +711,7 @@ function build (options) {
 
   function addMiddleware (instance, middleware) {
     instance._middlewares.push(middleware)
-    instance[childrenKey].forEach(child => addMiddleware(child, middleware))
+    instance[Symbol.for('fastify.children')].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
@@ -734,7 +734,7 @@ function build (options) {
 
   function _addHook (instance, name, fn) {
     instance._hooks.add(name, fn.bind(instance))
-    instance[childrenKey].forEach(child => _addHook(child, name, fn))
+    instance[Symbol.for('fastify.children')].forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {

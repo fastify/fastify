@@ -427,7 +427,7 @@ function build (options) {
     instance[ReplyKey] = Reply.buildReply(instance[ReplyKey])
     instance[RequestKey] = Request.buildRequest(instance[RequestKey])
     instance[contentTypeParserKey] = ContentTypeParser.buildContentTypeParser(instance[contentTypeParserKey])
-    instance[hooksKey] = Hooks.buildHooks(instance[hooksKey])
+    instance[hooksKey] = buildHooks(instance[hooksKey])
     instance[routePrefixKey] = buildRoutePrefix(instance[routePrefixKey], opts.prefix)
     instance[logLevelKey] = opts.logLevel || instance[logLevelKey]
     instance[middlewaresKey] = old[middlewaresKey].slice()
@@ -781,8 +781,6 @@ function build (options) {
 
     var request = new Request(null, req, null, req.headers, req.log)
     var reply = new Reply(res, { onSend: [] }, request, res.log)
-
-    reply._setup(hasLogger)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     request.log.warn(fourOhFour.prettyPrint())

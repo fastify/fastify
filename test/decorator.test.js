@@ -87,7 +87,7 @@ test('decorateReply inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance[symbols.ReplyKey].prototype.test)
+    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -230,7 +230,7 @@ test('decorateRequest inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance[symbols.RequestKey].prototype.test)
+    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')

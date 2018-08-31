@@ -175,7 +175,7 @@ function build (options) {
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser(fastify[Symbol.for('fastify.bodyLimit')])
+  fastify[Symbol.for('fastify.contentTypeParser')] = new ContentTypeParser(fastify[Symbol.for('fastify.bodyLimit')])
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -451,7 +451,7 @@ function build (options) {
     instance[Symbol.for('fastify.children')] = []
     instance._Reply = Reply.buildReply(instance._Reply)
     instance._Request = Request.buildRequest(instance._Request)
-    instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
+    instance[Symbol.for('fastify.contentTypeParser')] = ContentTypeParser.buildContentTypeParser(instance[Symbol.for('fastify.contentTypeParser')])
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
     instance[Symbol.for('fastify.routePrefix')] = buildRoutePrefix(instance[Symbol.for('fastify.routePrefix')], opts.prefix)
     instance[Symbol.for('fastify.logLevel')] = opts.logLevel || instance[Symbol.for('fastify.logLevel')]
@@ -596,7 +596,7 @@ function build (options) {
         opts.handler.bind(_fastify),
         _fastify._Reply,
         _fastify._Request,
-        _fastify._contentTypeParser,
+        _fastify[Symbol.for('fastify.contentTypeParser')],
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
@@ -760,16 +760,16 @@ function build (options) {
     }
 
     if (Array.isArray(contentType)) {
-      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
+      contentType.forEach((type) => this[Symbol.for('fastify.contentTypeParser')].add(type, opts, parser))
     } else {
-      this._contentTypeParser.add(contentType, opts, parser)
+      this[Symbol.for('fastify.contentTypeParser')].add(contentType, opts, parser)
     }
 
     return this
   }
 
   function hasContentTypeParser (contentType, fn) {
-    return this._contentTypeParser.hasParser(contentType)
+    return this[Symbol.for('fastify.contentTypeParser')].hasParser(contentType)
   }
 
   function handleClientError (e, socket) {
@@ -860,7 +860,7 @@ function build (options) {
       handler,
       this._Reply,
       this._Request,
-      this._contentTypeParser,
+      this[Symbol.for('fastify.contentTypeParser')],
       opts.config || {},
       this._errorHandler,
       this[Symbol.for('fastify.bodyLimit')],

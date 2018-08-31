@@ -206,7 +206,7 @@ function build (options) {
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
   fastify[Symbol.for('fastify.canSetNotFoundHandler')] = true
-  fastify._404LevelInstance = fastify
+  fastify[Symbol.for('fastify.404LevelInstance')] = fastify
   fastify._404Context = null
   fastify.setNotFoundHandler = setNotFoundHandler
   fastify.setNotFoundHandler() // Set the default 404 handler
@@ -460,7 +460,7 @@ function build (options) {
 
     if (opts.prefix) {
       instance[Symbol.for('fastify.canSetNotFoundHandler')] = true
-      instance._404LevelInstance = instance
+      instance[Symbol.for('fastify.404LevelInstance')] = instance
     }
 
     return instance
@@ -842,7 +842,7 @@ function build (options) {
     opts = opts || {}
 
     if (handler) {
-      this._404LevelInstance[Symbol.for('fastify.canSetNotFoundHandler')] = false
+      this[Symbol.for('fastify.404LevelInstance')][Symbol.for('fastify.canSetNotFoundHandler')] = false
       handler = handler.bind(this)
     } else {
       handler = basic404
@@ -888,7 +888,7 @@ function build (options) {
       return
     }
 
-    this._404LevelInstance._404Context = context
+    this[Symbol.for('fastify.404LevelInstance')]._404Context = context
 
     fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
     fourOhFour.all(prefix || '/', routeHandler, context)

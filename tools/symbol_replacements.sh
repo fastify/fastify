@@ -3,7 +3,7 @@
 git add . && git commit -m "Tested replacing bodyLimit"
 ./tools/replace_key.sh "[Symbol.for('fastify.routePrefix')]" "[Symbol.for('fastify.routePrefix')]"
 git add . && git commit -m "Tested replacing routePrefix"
-./tools/replace_key.sh "._logLevel" "[Symbol.for('fastify.logLevel')]"
+./tools/replace_key.sh "[Symbol.for('fastify.logLevel')]" "[Symbol.for('fastify.logLevel')]"
 git add . && git commit -m "Tested replacing logLevel"
 ./tools/replace_key.sh "._contentTypeParser" "[Symbol.for('fastify.contentTypeParser')]"
 git add . && git commit -m "Tested replacing contentTypeParser"

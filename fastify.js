@@ -150,7 +150,7 @@ function build (options) {
   // extended route
   fastify.route = route
   fastify[Symbol.for('fastify.routePrefix')] = ''
-  fastify._logLevel = ''
+  fastify[Symbol.for('fastify.logLevel')] = ''
 
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
@@ -454,7 +454,7 @@ function build (options) {
     instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
     instance[Symbol.for('fastify.routePrefix')] = buildRoutePrefix(instance[Symbol.for('fastify.routePrefix')], opts.prefix)
-    instance._logLevel = opts.logLevel || instance._logLevel
+    instance[Symbol.for('fastify.logLevel')] = opts.logLevel || instance[Symbol.for('fastify.logLevel')]
     instance._middlewares = old._middlewares.slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
@@ -581,7 +581,7 @@ function build (options) {
       opts.url = url
       opts.path = url
       opts.prefix = prefix
-      opts.logLevel = opts.logLevel || _fastify._logLevel
+      opts.logLevel = opts.logLevel || _fastify[Symbol.for('fastify.logLevel')]
 
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
@@ -864,7 +864,7 @@ function build (options) {
       opts.config || {},
       this._errorHandler,
       this[Symbol.for('fastify.bodyLimit')],
-      this._logLevel
+      this[Symbol.for('fastify.logLevel')]
     )
 
     app.once('preReady', () => {

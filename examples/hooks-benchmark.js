@@ -18,10 +18,10 @@ const opts = {
 }
 
 fastify
-  .addHook('onRequest', function (req, res, next) {
+  .addHook('onRequest', function (request, reply, next) {
     next()
   })
-  .addHook('onRequest', function (req, res, next) {
+  .addHook('onRequest', function (request, reply, next) {
     next()
   })
 

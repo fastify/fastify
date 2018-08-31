@@ -116,7 +116,11 @@ test('customized 404', t => {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
-        t.strictEqual(body.toString(), 'this was not found')
+        t.deepEqual(JSON.parse(body), {
+          error: 'Not Found',
+          message: 'Not Found',
+          statusCode: 404
+        })
       })
     })
 
@@ -129,7 +133,11 @@ test('customized 404', t => {
         t.error(err)
         t.strictEqual(response.statusCode, 404)
         t.strictEqual(response.headers['x-foo'], 'bar')
-        t.strictEqual(body.toString(), 'this was not found')
+        t.deepEqual(JSON.parse(body), {
+          error: 'Not Found',
+          message: 'Not Found',
+          statusCode: 404
+        })
       })
     })
   })
@@ -462,7 +470,7 @@ test('custom 404 hook and handler context', t => {
     t.strictEqual(this.foo, 42)
     next()
   })
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.strictEqual(this.foo, 42)
     next()
   })
@@ -487,7 +495,7 @@ test('custom 404 hook and handler context', t => {
       t.strictEqual(this.bar, 84)
       next()
     })
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.strictEqual(this.bar, 84)
       next()
     })
@@ -539,7 +547,7 @@ test('encapsulated custom 404 without - prefix hook and handler context', t => {
       t.strictEqual(this.bar, 84)
       next()
     })
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.strictEqual(this.foo, 42)
       t.strictEqual(this.bar, 84)
       next()
@@ -586,7 +594,7 @@ test('run hooks and middleware on default 404', t => {
     next()
   })
 
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.pass('onResponse called')
     next()
   })
@@ -638,7 +646,7 @@ test('run non-encapsulated plugin hooks and middleware on default 404', t => {
       next()
     })
 
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse called')
       next()
     })
@@ -686,7 +694,7 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
       next()
     })
 
-    instance.addHook('onResponse', function (res, next) {
+    instance.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse called')
       next()
     })
@@ -738,7 +746,7 @@ test('run hooks and middleware with encapsulated 404', t => {
     next()
   })
 
-  fastify.addHook('onResponse', function (res, next) {
+  fastify.addHook('onResponse', function (request, reply, next) {
     t.pass('onResponse called')
     next()
   })
@@ -768,7 +776,7 @@ test('run hooks and middleware with encapsulated 404', t => {
       next()
     })
 
-    f.addHook('onResponse', function (res, next) {
+    f.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse 2 called')
       next()
     })
@@ -882,7 +890,7 @@ test('hooks check 404', t => {
     t.ok('called', 'onRequest')
     next()
   })
-  fastify.addHook('onResponse', (res, next) => {
+  fastify.addHook('onResponse', (request, reply, next) => {
     t.ok('called', 'onResponse')
     next()
   })
@@ -1092,7 +1100,11 @@ test('an inherited custom 404 handler can be invoked inside a prefixed plugin', 
   fastify.inject('/v1/path', (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
-    t.strictEqual(res.payload, 'custom handler')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
+    })
   })
 })
 
@@ -1534,5 +1546,94 @@ test('beforeHandler for setNotFoundHandler', t => {
       var payload = JSON.parse(res.payload)
       t.deepEqual(payload, { foo: 43, hello: 'world' })
     })
+  })
+})
+
+test('reply.notFound invoked the notFound handler', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404).send(new Error('kaboom'))
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'kaboom',
+      statusCode: 404
+    })
+  })
+})
+
+test('The custom error handler should be invoked after the custom not found handler', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  const order = [1, 2]
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.is(order.shift(), 2)
+    t.type(err, Error)
+    reply.send(err)
+  })
+
+  fastify.setNotFoundHandler((req, reply) => {
+    t.is(order.shift(), 1)
+    reply.code(404).send(new Error('kaboom'))
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'kaboom',
+      statusCode: 404
+    })
+  })
+})
+
+test('If the custom not found handler does not use an Error, the custom error handler should not be called', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((_err, req, reply) => {
+    t.fail('Should not be called')
+  })
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404).send('kaboom')
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.payload, 'kaboom')
   })
 })

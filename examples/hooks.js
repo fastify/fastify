@@ -18,7 +18,7 @@ const opts = {
 }
 
 fastify
-  .addHook('onRequest', function (req, res, next) {
+  .addHook('onRequest', function (request, reply, next) {
     console.log('onRequest')
     next()
   })
@@ -30,7 +30,7 @@ fastify
     console.log('onSend')
     next()
   })
-  .addHook('onResponse', function (res, next) {
+  .addHook('onResponse', function (request, reply, next) {
     console.log('onResponse')
     next()
   })

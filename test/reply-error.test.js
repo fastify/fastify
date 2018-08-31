@@ -77,8 +77,8 @@ test('onRequest hook error handling with external done', t => {
   const fastify = Fastify()
   const err = new Error('winter is coming')
 
-  fastify.addHook('onRequest', (req, res, done) => {
-    res.statusCode = 400
+  fastify.addHook('onRequest', (req, reply, done) => {
+    reply.code(400)
     done(err)
   })
 

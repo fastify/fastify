@@ -1,13 +1,33 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test, tearDown } = require('tap')
 const http = require('http')
 const stream = require('stream')
 const split = require('split2')
 const Fastify = require('..')
 const pino = require('pino')
+const path = require('path')
 const os = require('os')
+const fs = require('fs')
+
+const files = []
+let count = 0
+
+function file () {
+  const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${process.hrtime().toString()}-${count++}`)
+  files.push(file)
+  return file
+}
+
+tearDown(() => {
+  files.forEach((file) => {
+    try {
+      fs.unlinkSync(file)
+    } catch (e) {
+      console.log(e)
+    }
+  })
+})
 
 test('defaults to info level', t => {
   t.plan(13)
@@ -204,7 +224,10 @@ test('can use external logger instance with custom serializer', t => {
     }
   }, splitStream)
 
-  const localFastify = Fastify({ logger: logger })
+  
+  const localFastify = Fastify({
+    logger: logger
+  })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -318,7 +341,7 @@ test('The request id header key can be customized', t => {
   })
 })
 
-t.test('The logger should accept custom serializer', t => {
+test('The logger should accept custom serializer', t => {
   t.plan(9)
 
   const stream = split(JSON.parse)
@@ -708,7 +731,7 @@ test('The default 404 handler logs the incoming request', t => {
 })
 
 test('should serialize request and response', t => {
-  t.plan(4)
+  t.plan(3)
   const lines = []
   const dest = new stream.Writable({
     write: function (chunk, enc, cb) {
@@ -728,7 +751,6 @@ test('should serialize request and response', t => {
   }, (e, res) => {
     const l = lines.find((line) => line.res && line.res.statusCode === 500)
     t.ok(l.req)
-    t.is(l.req.id, 1)
     t.is(l.req.method, 'GET')
     t.is(l.req.url, '/500')
   })
@@ -783,6 +805,145 @@ test('Do not wrap IPv4 address', t => {
         fastify.server.address().port
       t.is(line.msg, expected)
       fastify.close()
+    })
+  })
+})
+
+test('should log the error if custom error handler does not handle it', t => {
+  t.plan(8)
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('a 500 error'))
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    reply.send(err)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+
+        stream.once('data', line => {
+          t.equal(line.level, 50, 'level is correct')
+          t.equal(line.msg, 'a 500 error', 'message is set')
+
+          stream.once('data', line => {
+            t.equal(line.msg, 'request completed', 'message is set')
+            t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
+          })
+        })
+      })
+    })
+  })
+})
+
+test('should log the error after custom error handler handled it', t => {
+  t.plan(7)
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('bad request'))
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    const msg = err.message
+    if (msg === 'bad request') {
+      reply.code(400).send({ message: msg })
+    } else {
+      reply.send(err)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+
+        stream.once('data', line => {
+          t.equal(line.level, 30, 'level is correct')
+          t.equal(line.msg, 'request completed', 'message is set')
+          t.deepEqual(line.res, { statusCode: 400 }, 'status code is set')
+        })
+      })
+    })
+  })
+})
+
+test('file option', t => {
+  t.plan(13)
+  var fastify = null
+  var dest = file()
+
+  fastify = Fastify({
+    logger: {
+      file: dest
+    }
+  })
+
+  fastify.get('/', function (req, reply) {
+    t.ok(req.log)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port, () => {
+      const stream = fs.createReadStream(dest).pipe(split(JSON.parse))
+
+      stream.once('data', listenAtLogLine => {
+        t.ok(listenAtLogLine, 'listen at log message is ok')
+
+        stream.once('data', line => {
+          const id = line.reqId
+          t.ok(line.reqId, 'reqId is defined')
+          t.ok(line.req, 'req is defined')
+          t.equal(line.msg, 'incoming request', 'message is set')
+          t.equal(line.req.method, 'GET', 'method is get')
+
+          stream.once('data', line => {
+            t.equal(line.reqId, id)
+            t.ok(line.reqId, 'reqId is defined')
+            t.ok(line.res, 'res is defined')
+            t.equal(line.msg, 'request completed', 'message is set')
+            t.equal(line.res.statusCode, 200, 'statusCode is 200')
+            t.ok(line.responseTime, 'responseTime is defined')
+            stream.resume()
+          })
+        })
+      })
     })
   })
 })

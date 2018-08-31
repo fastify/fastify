@@ -714,7 +714,7 @@ test('res.end should block middleware execution', t => {
     t.fail('this should not be called')
   })
 
-  instance.addHook('onResponse', (res, next) => {
+  instance.addHook('onResponse', (request, reply, next) => {
     t.ok('called')
     next()
   })
@@ -761,7 +761,7 @@ test('middlewares should be able to respond with a stream', t => {
     t.fail('this should not be called')
   })
 
-  instance.addHook('onResponse', (res, next) => {
+  instance.addHook('onResponse', (request, reply, next) => {
     t.ok('called')
     next()
   })

@@ -136,7 +136,7 @@ function build (options) {
 
   // body limit option
   validateBodyLimitOption(options.bodyLimit)
-  fastify._bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
+  fastify[Symbol.for('fastify.bodyLimit')] = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -175,7 +175,7 @@ function build (options) {
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser(fastify._bodyLimit)
+  fastify._contentTypeParser = new ContentTypeParser(fastify[Symbol.for('fastify.bodyLimit')])
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -756,7 +756,7 @@ function build (options) {
     }
 
     if (!opts.bodyLimit) {
-      opts.bodyLimit = this._bodyLimit
+      opts.bodyLimit = this[Symbol.for('fastify.bodyLimit')]
     }
 
     if (Array.isArray(contentType)) {
@@ -863,7 +863,7 @@ function build (options) {
       this._contentTypeParser,
       opts.config || {},
       this._errorHandler,
-      this._bodyLimit,
+      this[Symbol.for('fastify.bodyLimit')],
       this._logLevel
     )
 

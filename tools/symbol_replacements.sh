@@ -1,5 +1,5 @@
 #!/bin/bash
-./tools/replace_key.sh "._bodyLimit" "[Symbol.for('fastify.bodyLimit')]"
+./tools/replace_key.sh "[Symbol.for('fastify.bodyLimit')]" "[Symbol.for('fastify.bodyLimit')]"
 git add . && git commit -m "Tested replacing bodyLimit"
 ./tools/replace_key.sh "._routePrefix" "[Symbol.for('fastify.routePrefix')]"
 git add . && git commit -m "Tested replacing routePrefix"

@@ -167,8 +167,8 @@ function build (options) {
 
   // schemas
   fastify.addSchema = addSchema
-  fastify._schemas = new Schemas()
-  fastify.getSchemas = fastify._schemas.getSchemas.bind(fastify._schemas)
+  fastify[Symbol.for('fastify.schemas')] = new Schemas()
+  fastify.getSchemas = fastify[Symbol.for('fastify.schemas')].getSchemas.bind(fastify[Symbol.for('fastify.schemas')])
 
   const onRouteHooks = []
 
@@ -604,7 +604,7 @@ function build (options) {
       )
 
       try {
-        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify._schemas)
+        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[Symbol.for('fastify.schemas')])
       } catch (error) {
         done(error)
         return
@@ -739,7 +739,7 @@ function build (options) {
 
   function addSchema (name, schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this._schemas.add(name, schema)
+    this[Symbol.for('fastify.schemas')].add(name, schema)
     return this
   }
 

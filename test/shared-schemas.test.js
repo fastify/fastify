@@ -22,7 +22,7 @@ test('The schemas should be added to an internal store', t => {
 
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.deepEqual(fastify._schemas.store, { id: schema })
+  t.deepEqual(fastify[Symbol.for('fastify.schemas')].store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {

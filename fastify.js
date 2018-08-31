@@ -194,7 +194,7 @@ function build (options) {
   fastify.hasRequestDecorator = decorator.existRequest
   fastify.hasReplyDecorator = decorator.existReply
 
-  fastify._Reply = Reply.buildReply(Reply)
+  fastify[Symbol.for('fastify.Reply')] = Reply.buildReply(Reply)
   fastify._Request = Request.buildRequest(Request)
 
   // middleware support
@@ -449,7 +449,7 @@ function build (options) {
     const instance = Object.create(old)
     old[Symbol.for('fastify.children')].push(instance)
     instance[Symbol.for('fastify.children')] = []
-    instance._Reply = Reply.buildReply(instance._Reply)
+    instance[Symbol.for('fastify.Reply')] = Reply.buildReply(instance[Symbol.for('fastify.Reply')])
     instance._Request = Request.buildRequest(instance._Request)
     instance[Symbol.for('fastify.contentTypeParser')] = ContentTypeParser.buildContentTypeParser(instance[Symbol.for('fastify.contentTypeParser')])
     instance[Symbol.for('fastify.hooks')] = Hooks.buildHooks(instance[Symbol.for('fastify.hooks')])
@@ -594,7 +594,7 @@ function build (options) {
       const context = new Context(
         opts.schema,
         opts.handler.bind(_fastify),
-        _fastify._Reply,
+        _fastify[Symbol.for('fastify.Reply')],
         _fastify._Request,
         _fastify[Symbol.for('fastify.contentTypeParser')],
         config,
@@ -858,7 +858,7 @@ function build (options) {
     const context = new Context(
       opts.schema,
       handler,
-      this._Reply,
+      this[Symbol.for('fastify.Reply')],
       this._Request,
       this[Symbol.for('fastify.contentTypeParser')],
       opts.config || {},

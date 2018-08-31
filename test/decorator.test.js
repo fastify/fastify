@@ -86,7 +86,7 @@ test('decorateReply inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance._Reply.prototype.test)
+    t.ok(instance[Symbol.for('fastify.Reply')].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')

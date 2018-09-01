@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const symbols = require('../lib/symbols.js')
 
 test('Should expose addSchema function', t => {
   t.plan(1)
@@ -22,7 +23,7 @@ test('The schemas should be added to an internal store', t => {
 
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.deepEqual(fastify._schemas.store, { id: schema })
+  t.deepEqual(fastify[symbols.kSchemas].store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {

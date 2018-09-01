@@ -8,6 +8,7 @@ const stream = require('stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const fs = require('fs')
+const symbols = require('../lib/symbols.js')
 
 const payload = { hello: 'world' }
 
@@ -148,8 +149,8 @@ test('onRequest hook should support encapsulation / 2', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onRequest.length, 1)
-    t.is(pluginInstance._hooks.onRequest.length, 2)
+    t.is(fastify[symbols.kHooks].onRequest.length, 1)
+    t.is(pluginInstance[symbols.kHooks].onRequest.length, 2)
   })
 })
 
@@ -567,8 +568,8 @@ test('onResponse hook should support encapsulation / 2', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onResponse.length, 1)
-    t.is(pluginInstance._hooks.onResponse.length, 2)
+    t.is(fastify[symbols.kHooks].onResponse.length, 1)
+    t.is(pluginInstance[symbols.kHooks].onResponse.length, 2)
   })
 })
 
@@ -644,8 +645,8 @@ test('onSend hook should support encapsulation / 1', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(fastify._hooks.onSend.length, 1)
-    t.is(pluginInstance._hooks.onSend.length, 2)
+    t.is(fastify[symbols.kHooks].onSend.length, 1)
+    t.is(pluginInstance[symbols.kHooks].onSend.length, 2)
   })
 })
 

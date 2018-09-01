@@ -5,6 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
+const symbols = require('../lib/symbols.js')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -86,7 +87,7 @@ test('decorateReply inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance._Reply.prototype.test)
+    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -229,7 +230,7 @@ test('decorateRequest inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance._Request.prototype.test)
+    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')

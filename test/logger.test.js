@@ -824,3 +824,143 @@ test('file option', t => {
     })
   })
 })
+
+test('should log the error if no error handler is defined', t => {
+  t.plan(8)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('a generic error'))
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 50, 'level is correct')
+          t.equal(line.msg, 'a generic error', 'message is set')
+          stream.once('data', line => {
+            t.equal(line.msg, 'request completed', 'message is set')
+            t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
+          })
+        })
+      })
+    })
+  })
+})
+
+test('should log as info if error status code >= 400 and < 500 if no error handler is defined', t => {
+  t.plan(8)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/400', function (req, reply) {
+    t.ok(req.log)
+    reply.send(Object.assign(new Error('a 400 error'), { statusCode: 400 }))
+  })
+  fastify.get('/503', function (req, reply) {
+    t.ok(req.log)
+    reply.send(Object.assign(new Error('a 503 error'), { statusCode: 503 }))
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/400')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 30, 'level is correct')
+          t.equal(line.msg, 'a 400 error', 'message is set')
+          stream.once('data', line => {
+            t.equal(line.msg, 'request completed', 'message is set')
+            t.deepEqual(line.res, { statusCode: 400 }, 'status code is set')
+          })
+        })
+      })
+    })
+  })
+})
+
+test('should log as error if error status code >= 500 if no error handler is defined', t => {
+  t.plan(8)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/503', function (req, reply) {
+    t.ok(req.log)
+    reply.send(Object.assign(new Error('a 503 error'), { statusCode: 503 }))
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/503')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 50, 'level is correct')
+          t.equal(line.msg, 'a 503 error', 'message is set')
+          stream.once('data', line => {
+            t.equal(line.msg, 'request completed', 'message is set')
+            t.deepEqual(line.res, { statusCode: 503 }, 'status code is set')
+          })
+        })
+      })
+    })
+  })
+})
+
+test('should not log the error if error handler is defined', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.send(new Error('something happened'))
+  })
+  fastify.setErrorHandler((err, req, reply) => {
+    reply.send(err)
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 30, 'level is correct')
+          t.equal(line.msg, 'request completed', 'message is set')
+          t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
+        })
+      })
+    })
+  })
+})

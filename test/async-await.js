@@ -522,6 +522,36 @@ function asyncTest (t) {
       )
     })
   })
+
+  test('customErrorHandler support without throwing', t => {
+    t.plan(4)
+
+    const fastify = Fastify()
+
+    fastify.get('/', async (req, reply) => {
+      const error = new Error('ouch')
+      error.statusCode = 400
+      throw error
+    })
+
+    fastify.setErrorHandler(async (err, req, reply) => {
+      t.is(err.message, 'ouch')
+      reply.code(401).send('kaboom')
+      reply.send = t.fail.bind(t, 'should not be called')
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.strictEqual(res.statusCode, 401)
+      t.deepEqual(
+        'kaboom',
+        res.payload
+      )
+    })
+  })
 }
 
 module.exports = asyncTest

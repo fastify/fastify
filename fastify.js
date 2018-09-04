@@ -688,12 +688,8 @@ function build (options) {
         return lightMyRequest(httpHandler, opts, cb)
       })
     } else {
-      return new Promise((resolve, reject) => {
-        this.ready(err => {
-          if (err) return reject(err)
-          resolve()
-        })
-      }).then(() => lightMyRequest(httpHandler, opts))
+      return this.ready()
+        .then(() => lightMyRequest(httpHandler, opts))
     }
   }
 

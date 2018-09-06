@@ -6,7 +6,7 @@ const Fastify = require('..')
 test('Fastify should throw on wrong options', t => {
   t.plan(2)
   try {
-    const f = require('..')('lol') // eslint-disable-line
+    require('..')('lol') // eslint-disable-line
     t.fail()
   } catch (e) {
     t.is(e.message, 'Options must be an object')
@@ -21,7 +21,7 @@ test('Fastify should throw on multiple assignment to the same route', t => {
   fastify.get('/', () => {})
 
   fastify.ready(err => {
-    t.is(err.message, "Method 'GET' already declared for route '/'")
+    t.ok(/Method 'GET' already declared for route '\/'/.test(err.message))
   })
 })
 

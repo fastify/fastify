@@ -75,7 +75,7 @@ test('checkDecorators should check if the given decorator is present in the inst
     pluginUtils.checkDecorators.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `The decorator 'plugin' is not present in Request`)
+    t.ok(/The decorator 'plugin' is not present in Request/.test(err.message))
   }
 
   function fn () {}
@@ -115,7 +115,7 @@ test('checkDependencies should check if the given dependency is present in the i
     pluginUtils.checkDependencies.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `The dependency 'plugin' is not registered`)
+    t.ok(/The dependency 'plugin' is not registered/.test(err.message))
   }
 
   function fn () {}

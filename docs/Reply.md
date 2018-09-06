@@ -177,9 +177,6 @@ fastify.get('/', function (request, reply) {
   reply.send(httpErrors.Gone())
 })
 ```
-By default Fastify will log the error depending on the `statusCode`:
-- for `400 <= statusCode < 500` the error will be logged with level `info`
-- for `statusCode >= 500` the error will be logged with level `error`
 
 If you want to completely customize the error handling, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) API.<br>
 *Note: you are responsibile for logging when customizing the error handler*

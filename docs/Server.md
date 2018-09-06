@@ -441,6 +441,7 @@ fastify.register(function (instance, options, next) {
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
+  // Log error
   // Send error response
 })
 ```

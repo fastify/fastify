@@ -97,7 +97,7 @@ function build (options) {
 
   const app = avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || 0
+    timeout: Number(options.pluginTimeout) || 10000
   })
   // Override to allow the plugin incapsulation
   app.override = override

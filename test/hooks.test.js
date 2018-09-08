@@ -1739,6 +1739,48 @@ test('If the content type has been set inside an hook it should not be changed',
   })
 })
 
+test('onAuth hook should be executed always before preHandler hooks', t => {
+  t.plan(8)
+  const fastify = Fastify()
+
+  const order = [1, 2, 3, 4, 5]
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    t.strictEqual(order.shift(), 3)
+    next()
+  })
+
+  fastify.addHook('onAuth', (req, reply, next) => {
+    t.strictEqual(order.shift(), 1)
+    next()
+  })
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    t.strictEqual(order.shift(), 4)
+    next()
+  })
+
+  const beforeHandler = (req, reply, next) => {
+    t.strictEqual(order.shift(), 5)
+    next()
+  }
+
+  fastify.get('/', { beforeHandler }, (request, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.addHook('onAuth', (req, reply, next) => {
+    t.strictEqual(order.shift(), 2)
+    next()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

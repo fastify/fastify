@@ -35,7 +35,7 @@ const validation = require('./lib/validation')
 const isValidLogger = validation.isValidLogger
 const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/ContentTypeParser')
+const ContentTypeParser = require('./lib/contentTypeParser')
 const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
@@ -663,12 +663,8 @@ function build (options) {
         return lightMyRequest(httpHandler, opts, cb)
       })
     } else {
-      return new Promise((resolve, reject) => {
-        this.ready(err => {
-          if (err) return reject(err)
-          resolve()
-        })
-      }).then(() => lightMyRequest(httpHandler, opts))
+      return this.ready()
+        .then(() => lightMyRequest(httpHandler, opts))
     }
   }
 

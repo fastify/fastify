@@ -370,3 +370,24 @@ function getStream () {
 
   return new Read()
 }
+
+test('should error the promise if ready errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts) => {
+    return Promise.reject(new Error('kaboom'))
+  }).after(function () {
+    t.pass('after is called')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }).then(() => {
+    t.fail('this should not be called')
+  }).catch(err => {
+    t.ok(err)
+    t.strictequal(err.message, 'kaboom')
+  })
+})

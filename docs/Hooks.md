@@ -8,6 +8,7 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 
 By using the hooks you can interact directly inside the lifecycle of Fastify. There are four different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
+- `'preValidation'`
 - `'preHandler'`
 - `'onSend'`
 - `'onResponse'`
@@ -15,6 +16,11 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 Example:
 ```js
 fastify.addHook('onRequest', (request, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('preValidation', (request, reply, next) => {
   // some code
   next()
 })
@@ -37,6 +43,16 @@ fastify.addHook('onResponse', (request, reply, next) => {
 Or `async/await`
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('preValidation', async (request, reply) => {
   // some code
   await asyncMethod()
   // error occurred
@@ -79,7 +95,7 @@ fastify.addHook('onResponse', async (request, reply) => {
 
 **Notice:** the `next` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `next` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
-**Notice:** in the `onRequest` hook, `request.body` will always be `null`, because the body parsing happens before the `preHandler` hook.
+**Notice:** in the `onRequest` and `preValidation` hooks, `request.body` will always be `null`, because the body parsing happens before the `preHandler` hook.
 
 [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
 `next` if the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
@@ -206,12 +222,18 @@ fastify.addHook('onRequest', function (request, reply, next) {
 ```
 Note: using an arrow function will break the binding of this to the Fastify instance.
 
-<a name="before-handler"></a>
-### beforeHandler
-Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.<br>
-**`beforeHandler` is executed always after the `preHandler` hook.**
-
+<a name="route-hooks"></a>
+## Route level hooks
+You can declare one or more custom `preValidation` and `preHandler` hook(s) that will be unique for the route.
+If you do so, those hooks always be executed as last hook in their category.<br/>
+This can be useful if you need to run the authentication, and the `preValidation` hooks is exactly what you need for doing that.
+Let's make an example:
 ```js
+fastify.addHook('preValidation', (request, reply, done) => {
+  // your code
+  done()
+})
+
 fastify.addHook('preHandler', (request, reply, done) => {
   // your code
   done()
@@ -221,31 +243,17 @@ fastify.route({
   method: 'GET',
   url: '/',
   schema: { ... },
-  beforeHandler: function (request, reply, done) {
-    // your code
+  preValidation: function (request, reply, done) {
+    // this hook will always be executed after the shared `preValidation` hooks
+    done()
+  },
+  preHandler: function (request, reply, done) {
+    // this hook will always be executed after the shared `preHandler` hooks
     done()
   },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
 })
-
-fastify.route({
-  method: 'GET',
-  url: '/',
-  schema: { ... },
-  beforeHandler: [
-    function first (request, reply, done) {
-      // your code
-      done()
-    },
-    function second (request, reply, done) {
-      // your code
-      done()
-    }
-  ],
-  handler: function (request, reply) {
-    reply.send({ hello: 'world' })
-  }
-})
 ```
+**Note**: both options also accept an array of functions.

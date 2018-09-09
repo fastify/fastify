@@ -196,6 +196,40 @@ function asyncHookTest (t) {
     })
   })
 
+  test('preValidation hooks should be able to block a request', t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.addHook('preValidation', async (req, reply) => {
+      reply.send('hello')
+    })
+
+    fastify.addHook('preValidation', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.equal(payload, 'hello')
+    })
+
+    fastify.addHook('onResponse', async (request, reply) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
+
   test('onRequest hooks should be able to block a request (last hook)', t => {
     t.plan(5)
     const fastify = Fastify()

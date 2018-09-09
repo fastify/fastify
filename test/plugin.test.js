@@ -5,6 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
+const lolex = require('lolex')
 
 test('require a plugin', t => {
   t.plan(1)
@@ -502,4 +503,22 @@ test('pluginTimeout', t => {
     t.ok(err)
     t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
   })
+})
+
+test('pluginTimeout default', t => {
+  t.plan(2)
+  const clock = lolex.install()
+
+  const fastify = Fastify()
+  fastify.register(function (app, opts, next) {
+    // default time elapsed without calling next
+    clock.tick(10000)
+  })
+
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+  })
+
+  t.tearDown(clock.uninstall)
 })

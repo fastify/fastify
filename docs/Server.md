@@ -189,11 +189,11 @@ fastify.get('/', (request, reply) => {
 <a name="plugin-timeout"></a>
 ### `pluginTimeout`
 
-The maximum amount of time in milliseconds in which a plugin can load.
+The maximum amount of time in *milliseconds* in which a plugin can load.
 If not, [`ready`](https://github.com/fastify/fastify/blob/master/docs/Server.md#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
-+ Default: `0` (disabled)
++ Default: `10000`
 
 ## Instance
 

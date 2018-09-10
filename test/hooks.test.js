@@ -1402,7 +1402,7 @@ test('Register an hook after a plugin inside a plugin', t => {
   })
 })
 
-test('Register an hook after a plugin inside a plugin (with beforeHandler)', t => {
+test('Register an hook after a plugin inside a plugin (with preHandler option)', t => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -1413,7 +1413,7 @@ test('Register an hook after a plugin inside a plugin (with beforeHandler)', t =
     })
 
     instance.get('/', {
-      beforeHandler: (req, reply, next) => {
+      preHandler: (req, reply, next) => {
         t.ok('called')
         next()
       }

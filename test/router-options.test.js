@@ -308,9 +308,16 @@ test('preHandler option should keep the context', t => {
   })
 })
 
-test('Backwards compatibility with beforeHandler option', t => {
-  t.plan(2)
+test('Backwards compatibility with beforeHandler option (should emit a warning)', t => {
+  t.plan(3)
   const fastify = Fastify()
+
+  process.on('warning', warn => {
+    t.strictEqual(
+      warn.message,
+      'The route option `beforeHandler` has been deprecated, use `preHandler` instead'
+    )
+  })
 
   fastify.post('/', {
     beforeHandler: (req, reply, done) => {

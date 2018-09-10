@@ -1288,16 +1288,16 @@ test('onSend hooks run when an encapsulated route invokes the notFound handler',
 })
 
 // https://github.com/fastify/fastify/issues/713
-test('beforeHandler for setNotFoundHandler', t => {
+test('preHandler option for setNotFoundHandler', t => {
   t.plan(8)
 
-  t.test('beforeHandler', t => {
+  t.test('preHandler option', t => {
     t.plan(2)
     const fastify = Fastify()
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
-        req.body.beforeHandler = true
+      preHandler: (req, reply, done) => {
+        req.body.preHandler = true
         done()
       }
     }, function (req, reply) {
@@ -1311,11 +1311,11 @@ test('beforeHandler for setNotFoundHandler', t => {
     }, (err, res) => {
       t.error(err)
       var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { beforeHandler: true, hello: 'world' })
+      t.deepEqual(payload, { preHandler: true, hello: 'world' })
     })
   })
 
-  t.test('beforeHandler should be called after preHandler hook', t => {
+  t.test('preHandler option should be called after preHandler hook', t => {
     t.plan(2)
     const fastify = Fastify()
 
@@ -1325,7 +1325,7 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
+      preHandler: (req, reply, done) => {
         req.body.check += 'b'
         done()
       }
@@ -1344,12 +1344,12 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
   })
 
-  t.test('beforeHandler should be unique per prefix', t => {
+  t.test('preHandler option should be unique per prefix', t => {
     t.plan(4)
     const fastify = Fastify()
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
+      preHandler: (req, reply, done) => {
         req.body.hello = 'earth'
         done()
       }
@@ -1386,12 +1386,12 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
   })
 
-  t.test('beforeHandler should handle errors', t => {
+  t.test('preHandler option should handle errors', t => {
     t.plan(3)
     const fastify = Fastify()
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
+      preHandler: (req, reply, done) => {
         done(new Error('kaboom'))
       }
     }, (req, reply) => {
@@ -1414,12 +1414,12 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
   })
 
-  t.test('beforeHandler should handle errors with custom status code', t => {
+  t.test('preHandler option should handle errors with custom status code', t => {
     t.plan(3)
     const fastify = Fastify()
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
+      preHandler: (req, reply, done) => {
         reply.code(401)
         done(new Error('go away'))
       }
@@ -1443,18 +1443,18 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
   })
 
-  t.test('beforeHandler could accept an array of functions', t => {
+  t.test('preHandler option could accept an array of functions', t => {
     t.plan(2)
     const fastify = Fastify()
 
     fastify.setNotFoundHandler({
-      beforeHandler: [
+      preHandler: [
         (req, reply, done) => {
-          req.body.beforeHandler = 'a'
+          req.body.preHandler = 'a'
           done()
         },
         (req, reply, done) => {
-          req.body.beforeHandler += 'b'
+          req.body.preHandler += 'b'
           done()
         }
       ]
@@ -1469,11 +1469,11 @@ test('beforeHandler for setNotFoundHandler', t => {
     }, (err, res) => {
       t.error(err)
       var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { beforeHandler: 'ab', hello: 'world' })
+      t.deepEqual(payload, { preHandler: 'ab', hello: 'world' })
     })
   })
 
-  t.test('beforeHandler does not interfere with preHandler', t => {
+  t.test('preHandler option does not interfere with preHandler', t => {
     t.plan(4)
     const fastify = Fastify()
 
@@ -1483,7 +1483,7 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
 
     fastify.setNotFoundHandler({
-      beforeHandler: (req, reply, done) => {
+      preHandler: (req, reply, done) => {
         req.body.check += 'b'
         done()
       }
@@ -1520,14 +1520,14 @@ test('beforeHandler for setNotFoundHandler', t => {
     })
   })
 
-  t.test('beforeHandler should keep the context', t => {
+  t.test('preHandler option should keep the context', t => {
     t.plan(3)
     const fastify = Fastify()
 
     fastify.decorate('foo', 42)
 
     fastify.setNotFoundHandler({
-      beforeHandler: function (req, reply, done) {
+      preHandler: function (req, reply, done) {
         t.strictEqual(this.foo, 42)
         this.foo += 1
         req.body.foo = this.foo
@@ -1635,5 +1635,31 @@ test('If the custom not found handler does not use an Error, the custom error ha
     t.error(err)
     t.strictEqual(res.statusCode, 404)
     t.strictEqual(res.payload, 'kaboom')
+  })
+})
+
+test('preValidation option', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', true)
+
+  fastify.setNotFoundHandler({
+    preValidation: function (req, reply, done) {
+      t.true(this.foo)
+      done()
+    }
+  }, function (req, reply) {
+    reply.code(404).send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/not-found',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
   })
 })

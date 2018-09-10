@@ -350,7 +350,7 @@ function build (options) {
     if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
-      if (err) return cb(err)
+      if (err != null) return cb(err)
 
       if (listening) {
         return cb(new Error('Fastify is already listening'), null)
@@ -394,7 +394,7 @@ function build (options) {
 
   function middlewareCallback (err, request, reply) {
     if (reply.sent === true) return
-    if (err) {
+    if (err != null) {
       reply.send(err)
       return
     }
@@ -407,7 +407,7 @@ function build (options) {
   }
 
   function onRunMiddlewares (err, req, res, reply) {
-    if (err) {
+    if (err != null) {
       reply.send(err)
       return
     }
@@ -596,13 +596,12 @@ function build (options) {
       }
 
       if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
         opts.preHandler = opts.beforeHandler
       }
       if (opts.preHandler) {
         if (Array.isArray(opts.preHandler)) {
-          opts.preHandler.forEach((h, i) => {
-            opts.preHandler[i] = h.bind(_fastify)
-          })
+          opts.preHandler.map(hook => hook.bind(_fastify))
         } else {
           opts.preHandler = opts.preHandler.bind(_fastify)
         }
@@ -610,9 +609,7 @@ function build (options) {
 
       if (opts.preValidation) {
         if (Array.isArray(opts.preValidation)) {
-          opts.preValidation.forEach((h, i) => {
-            opts.preValidation[i] = h.bind(_fastify)
-          })
+          opts.preValidation.map(hook => hook.bind(_fastify))
         } else {
           opts.preValidation = opts.preValidation.bind(_fastify)
         }
@@ -818,13 +815,25 @@ function build (options) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
-    if (typeof opts === 'object' && opts.beforeHandler) {
-      if (Array.isArray(opts.beforeHandler)) {
-        opts.beforeHandler.forEach((h, i) => {
-          opts.beforeHandler[i] = h.bind(_fastify)
-        })
-      } else {
-        opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+    if (typeof opts === 'object') {
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
+        }
       }
     }
 
@@ -914,6 +923,12 @@ function build (options) {
     }
 
     return middie
+  }
+
+  function beforeHandlerWarning () {
+    if (beforeHandlerWarning.called) return
+    beforeHandlerWarning.called = true
+    process.emitWarning('The route option `beforeHandler` has been deprecated, use `preHandler` instead')
   }
 }
 

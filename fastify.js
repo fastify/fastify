@@ -601,7 +601,7 @@ function build (options) {
       }
       if (opts.preHandler) {
         if (Array.isArray(opts.preHandler)) {
-          opts.preHandler.map(hook => hook.bind(_fastify))
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
         } else {
           opts.preHandler = opts.preHandler.bind(_fastify)
         }
@@ -609,7 +609,7 @@ function build (options) {
 
       if (opts.preValidation) {
         if (Array.isArray(opts.preValidation)) {
-          opts.preValidation.map(hook => hook.bind(_fastify))
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
         } else {
           opts.preValidation = opts.preValidation.bind(_fastify)
         }
@@ -822,7 +822,7 @@ function build (options) {
       }
       if (opts.preHandler) {
         if (Array.isArray(opts.preHandler)) {
-          opts.preHandler.map(hook => hook.bind(_fastify))
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
         } else {
           opts.preHandler = opts.preHandler.bind(_fastify)
         }
@@ -830,7 +830,7 @@ function build (options) {
 
       if (opts.preValidation) {
         if (Array.isArray(opts.preValidation)) {
-          opts.preValidation.map(hook => hook.bind(_fastify))
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
         } else {
           opts.preValidation = opts.preValidation.bind(_fastify)
         }

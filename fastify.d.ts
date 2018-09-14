@@ -35,7 +35,10 @@ declare namespace fastify {
 
   type SchemaCompiler = (schema: Object) => Function
 
+  type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest, rawBody: string | Buffer) => Promise<any>
   type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest) => Promise<any>
+  
+  type ContentTypeParser < HttpRequest > = (req: HttpRequest, rawBody: string | Buffer, done: (err: Error | null, body?: any) => void) => void
   type ContentTypeParser < HttpRequest > = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void
 
   interface FastifyContext {

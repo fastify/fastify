@@ -28,6 +28,8 @@ const runHooks = require('./lib/hookRunner').hookRunner
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 const childrenKey = Symbol('fastify.children')
 
+const map = new Map()
+
 function validateBodyLimitOption (bodyLimit) {
   if (bodyLimit === undefined) return
   if (!Number.isInteger(bodyLimit) || bodyLimit <= 0) {
@@ -157,6 +159,10 @@ function build (options) {
       return this._routePrefix
     }
   })
+
+  // expose all routes
+  fastify.allroutes = {}
+  fastify.allroutes[Symbol.iterator] = iterator
 
   // expose logger instance
   fastify.log = log
@@ -603,6 +609,13 @@ function build (options) {
         opts.logLevel
       )
 
+      // store info about route
+      if (map.has(url)) {
+        map.get(url).push(opts)
+      } else {
+        map.set(url, [opts])
+      }
+
       try {
         buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify._schemas)
       } catch (error) {
@@ -675,6 +688,33 @@ function build (options) {
     }
     this.logLevel = logLevel
     this._404Context = null
+  }
+
+  function iterator () {
+    var entries = map.entries()
+    var it = {}
+    it.next = function () {
+      var next = entries.next()
+      if (next.done) {
+        return {
+          value: null,
+          done: true
+        }
+      }
+      var value = {}
+      var methods = {}
+      value[next.value[0]] = methods
+      // out methods are saved Uppercase,
+      // so we lowercase them for a better usability
+      for (var index in next.value[1]) {
+        methods[next.value[1][index]['method']] = next.value[1][index]
+      }
+      return {
+        value: value,
+        done: false
+      }
+    }
+    return it
   }
 
   function inject (opts, cb) {

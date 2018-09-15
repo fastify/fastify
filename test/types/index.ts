@@ -172,6 +172,11 @@ server
   .get('/req', function (req, reply) {
     reply.send(req.headers)
   })
+  .get<{ foo: number }>('/req', function ({ query, headers }, reply) {
+    const foo: number = query.foo
+
+    reply.send(headers)
+  })
   .get('/', opts, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })

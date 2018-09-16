@@ -35,8 +35,13 @@ declare namespace fastify {
 
   type SchemaCompiler = (schema: Object) => Function
 
-  type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest) => Promise<any>
-  type ContentTypeParser < HttpRequest > = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void
+  type BodyParser<HttpRequest, RawBody extends string | Buffer> =
+    | ((req: HttpRequest, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
+    | ((req: HttpRequest, rawBody: RawBody) => Promise<any>)
+
+  type ContentTypeParser<HttpRequest> =
+    | ((req: HttpRequest, done: (err: Error | null, body?: any) => void) => void)
+    | ((req: HttpRequest) => Promise<any>)
 
   interface FastifyContext {
     config: any
@@ -437,7 +442,10 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: {parseAs?: string, bodyLimit?: number} | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
+    addContentTypeParser(contentType: string | string[], opts: { bodyLimit?: number }, parser: ContentTypeParser<HttpRequest>): void
+    addContentTypeParser(contentType: string | string[], opts: { parseAs: "string"; bodyLimit?: number }, parser: BodyParser<HttpRequest, string>): void
+    addContentTypeParser(contentType: string | string[], opts: { parseAs: "buffer"; bodyLimit?: number }, parser: BodyParser<HttpRequest, Buffer>): void
+    addContentTypeParser(contentType: string | string[], parser: ContentTypeParser<HttpRequest>): void
 
     /**
      * Check if a parser for the specified content type exists

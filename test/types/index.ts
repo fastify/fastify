@@ -324,19 +324,35 @@ server.setSchemaCompiler(function (schema: object) {
 
 server.addSchema({})
 
-server.addContentTypeParser('foo/bar', {}, (req, done) => {
-  done!(null, {})
+server.addContentTypeParser('*', (req, done) => {
+  done(null, {})
 })
 
-server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, done) => {
-  done!(null, {})
+server.addContentTypeParser(['foo/bar'], (req, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {}, (req, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser(['foo/bar'], {}, (req, done) => {
+  done(null, {})
 })
 
 server.addContentTypeParser('foo/bar', { bodyLimit: 20 }, (req, done) => {
-  done!(null, {})
+  done(null, {})
 })
 
-server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
+server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, body: string, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', { parseAs: 'buffer', bodyLimit: 20 }, (req, body: Buffer, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', async (req: http2.Http2ServerRequest) => [])
 
 if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
   throw new Error('Invalid')

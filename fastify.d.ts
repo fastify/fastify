@@ -442,9 +442,9 @@ declare namespace fastify {
     /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string, opts: { bodyLimit?: number }, parser: ContentTypeParser<HttpRequest>): void
-    addContentTypeParser(contentType: string, opts: { parseAs: "string"; bodyLimit?: number }, parser: BodyParser<HttpRequest, string>): void
-    addContentTypeParser(contentType: string, opts: { parseAs: "buffer"; bodyLimit?: number }, parser: BodyParser<HttpRequest, Buffer>): void
+    addContentTypeParser(contentType: string | string[], opts: { bodyLimit?: number }, parser: ContentTypeParser<HttpRequest>): void
+    addContentTypeParser(contentType: string | string[], opts: { parseAs: "string"; bodyLimit?: number }, parser: BodyParser<HttpRequest, string>): void
+    addContentTypeParser(contentType: string | string[], opts: { parseAs: "buffer"; bodyLimit?: number }, parser: BodyParser<HttpRequest, Buffer>): void
     addContentTypeParser(contentType: string | string[], parser: ContentTypeParser<HttpRequest>): void
 
     /**

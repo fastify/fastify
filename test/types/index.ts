@@ -336,6 +336,10 @@ server.addContentTypeParser('foo/bar', {}, (req, done) => {
   done(null, {})
 })
 
+server.addContentTypeParser(['foo/bar'], {}, (req, done) => {
+  done(null, {})
+})
+
 server.addContentTypeParser('foo/bar', { bodyLimit: 20 }, (req, done) => {
   done(null, {})
 })

@@ -308,6 +308,34 @@ test('preHandler option should keep the context', t => {
   })
 })
 
+test('preHandler option should keep the context (array)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preHandler: [function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      this.foo += 1
+      req.body.foo = this.foo
+      done()
+    }]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { foo: 43, hello: 'world' })
+  })
+})
+
 test('Backwards compatibility with beforeHandler option (should emit a warning)', t => {
   t.plan(3)
   const fastify = Fastify()
@@ -529,6 +557,32 @@ test('preValidation option should keep the context', t => {
       t.strictEqual(this.foo, 42)
       done()
     }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should keep the context (array)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preValidation: [function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      done()
+    }]
   }, (req, reply) => {
     reply.send(req.body)
   })

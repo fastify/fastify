@@ -239,10 +239,8 @@ module.exports.payloadMethod = function (method, t) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port,
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': '0'
-        },
+        body: '',
+        headers: { 'Content-Type': 'application/json' },
         timeout: 500
       }, (err, response, body) => {
         t.error(err)

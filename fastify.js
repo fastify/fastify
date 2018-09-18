@@ -7,7 +7,6 @@ const https = require('https')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
-const proxyAddr = require('proxy-addr')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -18,7 +17,7 @@ const validation = require('./lib/validation')
 const isValidLogger = validation.isValidLogger
 const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/contentTypeParser')
+const ContentTypeParser = require('./lib/ContentTypeParser')
 const Hooks = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
@@ -67,26 +66,20 @@ function build (options) {
   const router = FindMyWay({
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength,
-    caseSensitive: options.caseSensitive
+    maxParamLength: options.maxParamLength
   })
-
-  const requestIdHeader = options.requestIdHeader || 'request-id'
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
   // logger utils
   const customGenReqId = options.logger ? options.logger.genReqId : null
-  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
-  const proxyFn = getTrustProxyFn()
-  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
+  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
   const now = loggerUtils.now
   const onResponseIterator = loggerUtils.onResponseIterator
   const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
 
   const app = avvio(fastify, {
-    autostart: false,
-    timeout: Number(options.pluginTimeout) || 0
+    autostart: false
   })
   // Override to allow the plugin incapsulation
   app.override = override
@@ -168,7 +161,6 @@ function build (options) {
   // schemas
   fastify.addSchema = addSchema
   fastify._schemas = new Schemas()
-  fastify.getSchemas = fastify._schemas.getSchemas.bind(fastify._schemas)
 
   const onRouteHooks = []
 
@@ -215,39 +207,6 @@ function build (options) {
 
   return fastify
 
-  function getTrustProxyFn () {
-    const tp = options.trustProxy
-    if (typeof tp === 'function') {
-      return tp
-    }
-    if (tp === true) {
-      // Support plain true/false
-      return function () { return true }
-    }
-    if (typeof tp === 'number') {
-      // Support trusting hop count
-      return function (a, i) { return i < tp }
-    }
-    if (typeof tp === 'string') {
-      // Support comma-separated tps
-      const vals = tp.split(',').map(it => it.trim())
-      return proxyAddr.compile(vals)
-    }
-    return proxyAddr.compile(tp || [])
-  }
-
-  function _handleTrustProxy (req) {
-    req.ip = proxyAddr(req, proxyFn)
-    req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip !== undefined) {
-      req.hostname = req.headers['x-forwarded-host']
-    }
-  }
-
-  function _ipAsRemoteAddress (req) {
-    req.ip = req.connection.remoteAddress
-  }
-
   function routeHandler (req, res, params, context) {
     if (closing === true) {
       res.writeHead(503, {
@@ -261,8 +220,6 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    handleTrustProxy(req)
-    req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
     res._startTime = hasLogger ? now() : undefined
@@ -308,6 +265,8 @@ function build (options) {
   }
 
   function listenPromise (port, address, backlog) {
+    address = address || '127.0.0.1'
+
     if (listening) {
       return Promise.reject(new Error('Fastify is already listening'))
     }
@@ -322,9 +281,15 @@ function build (options) {
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
-        server.listen(port, address, backlog, () => {
-          server.removeListener('error', errEventHandler)
-          resolve(logServerAddress(server.address(), options.https))
+        server.listen(port, address, backlog, (err) => {
+          if (err) {
+            listening = false
+            reject(err)
+          } else {
+            server.removeListener('error', errEventHandler)
+            logServerAddress(server.address(), options.https)
+            resolve()
+          }
         })
         // we set it afterwards because listen can throw
         listening = true
@@ -343,11 +308,7 @@ function build (options) {
       cb = address
       address = undefined
     }
-
-    // This will listen to what localhost is.
-    // It can be 127.0.0.1 or ::1, depending on the operating system.
-    // Fixes https://github.com/fastify/fastify/issues/1022.
-    address = address || 'localhost'
+    address = address || '127.0.0.1'
 
     /* Deal with listen (port, address, cb) */
     if (typeof backlog === 'function') {
@@ -359,9 +320,8 @@ function build (options) {
 
     fastify.ready(function (err) {
       if (err) return cb(err)
-
       if (listening) {
-        return cb(new Error('Fastify is already listening'), null)
+        return cb(new Error('Fastify is already listening'))
       }
 
       server.once('error', wrap)
@@ -375,29 +335,26 @@ function build (options) {
     })
 
     function wrap (err) {
-      server.removeListener('error', wrap)
       if (!err) {
-        address = logServerAddress(server.address(), options.https)
-        cb(null, address)
+        logServerAddress(server.address(), options.https)
       } else {
         listening = false
-        cb(err, null)
       }
+      server.removeListener('error', wrap)
+      cb(err)
     }
   }
 
   function logServerAddress (address, isHttps) {
-    const isUnixSocket = typeof address === 'string'
-    if (!isUnixSocket) {
+    if (typeof address === 'object') {
       if (address.address.indexOf(':') === -1) {
         address = address.address + ':' + address.port
       } else {
         address = '[' + address.address + ']:' + address.port
       }
     }
-    address = (isUnixSocket ? '' : ('http' + (isHttps ? 's' : '') + '://')) + address
+    address = 'http' + (isHttps ? 's' : '') + '://' + address
     fastify.log.info('Server listening at ' + address)
-    return address
   }
 
   function State (req, res, params, context) {
@@ -621,7 +578,7 @@ function build (options) {
       }
 
       try {
-        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
+        router.on(opts.method, url, routeHandler, context)
       } catch (err) {
         done(err)
         return
@@ -688,8 +645,12 @@ function build (options) {
         return lightMyRequest(httpHandler, opts, cb)
       })
     } else {
-      return this.ready()
-        .then(() => lightMyRequest(httpHandler, opts))
+      return new Promise((resolve, reject) => {
+        this.ready(err => {
+          if (err) return reject(err)
+          resolve()
+        })
+      }).then(() => lightMyRequest(httpHandler, opts))
     }
   }
 
@@ -755,12 +716,7 @@ function build (options) {
       opts.bodyLimit = this._bodyLimit
     }
 
-    if (Array.isArray(contentType)) {
-      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
-    } else {
-      this._contentTypeParser.add(contentType, opts, parser)
-    }
-
+    this._contentTypeParser.add(contentType, opts, parser)
     return this
   }
 
@@ -779,9 +735,6 @@ function build (options) {
   }
 
   function defaultRoute (req, res) {
-    if (req.headers['accept-version'] !== undefined) {
-      req.headers['accept-version'] = undefined
-    }
     fourOhFour.lookup(req, res)
   }
 
@@ -814,21 +767,10 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    const _fastify = this
     const prefix = this._routePrefix || '/'
 
     if (this._canSetNotFoundHandler === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
-    }
-
-    if (typeof opts === 'object' && opts.beforeHandler) {
-      if (Array.isArray(opts.beforeHandler)) {
-        opts.beforeHandler.forEach((h, i) => {
-          opts.beforeHandler[i] = h.bind(_fastify)
-        })
-      } else {
-        opts.beforeHandler = opts.beforeHandler.bind(_fastify)
-      }
     }
 
     if (typeof opts === 'function') {
@@ -867,7 +809,7 @@ function build (options) {
       const context = this._404Context
 
       const onRequest = this._hooks.onRequest
-      const preHandler = this._hooks.preHandler.concat(opts.beforeHandler || [])
+      const preHandler = this._hooks.preHandler
       const onSend = this._hooks.onSend
       const onResponse = this._hooks.onResponse
 

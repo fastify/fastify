@@ -8,7 +8,6 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import * as tls from 'tls'
 import * as pino from 'pino'
 
 declare function fastify<
@@ -27,49 +26,16 @@ declare namespace fastify {
 
   type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
 
-  type DefaultQuery = { [k: string]: any }
-  type DefaultParams = { [k: string]: any }
-  type DefaultHeaders = { [k: string]: any }
-  type DefaultBody = any
-
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
 
-  type FastifyMiddleware<
-  HttpServer,
-  HttpRequest,
-  HttpResponse,
-  Query = DefaultQuery,
-  Params = DefaultParams,
-  Headers = DefaultHeaders,
-  Body = DefaultBody
-  > = (
-    this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>,
-    req: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
-    reply: FastifyReply<HttpResponse>,
-    done: (err?: Error) => void,
-  ) => void
+  type FastifyMiddleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, done: (err?: Error) => void) => void
 
-  type RequestHandler<
-  HttpRequest,
-  HttpResponse,
-  Query = DefaultQuery,
-  Params = DefaultParams,
-  Headers = DefaultHeaders,
-  Body = DefaultBody
-  > = (
-    request: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
-    reply: FastifyReply<HttpResponse>,
-  ) => void | Promise<any>
+  type RequestHandler < HttpRequest, HttpResponse > = (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void | Promise<any>
 
   type SchemaCompiler = (schema: Object) => Function
 
-  type BodyParser<HttpRequest, RawBody extends string | Buffer> =
-    | ((req: HttpRequest, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
-    | ((req: HttpRequest, rawBody: RawBody) => Promise<any>)
-
-  type ContentTypeParser<HttpRequest> =
-    | ((req: HttpRequest, done: (err: Error | null, body?: any) => void) => void)
-    | ((req: HttpRequest) => Promise<any>)
+  type AsyncContentTypeParser < HttpRequest > = (req: HttpRequest) => Promise<any>
+  type ContentTypeParser < HttpRequest > = (req: HttpRequest, done: (err: Error | null, body?: any) => void) => void
 
   interface FastifyContext {
     config: any
@@ -78,28 +44,25 @@ declare namespace fastify {
   /**
    * fastify's wrapped version of node.js IncomingMessage
    */
-  interface FastifyRequest<
-    HttpRequest,
-    Query = DefaultQuery,
-    Params = DefaultParams,
-    Headers = DefaultHeaders,
-    Body = DefaultBody
-  > {
-    query: Query
+  interface FastifyRequest<HttpRequest> {
+    query: {
+      [key: string]: any
+    },
 
-    params: Params
+    params: {
+      [key: string]: any
+    },
 
-    headers: Headers
+    headers: {
+      [key: string]: any
+    },
 
-    body: Body
+    body: any,
 
-    id: any
+    id: any,
 
-    ip: string
-    hostname: string
-
-    raw: HttpRequest
-    req: HttpRequest
+    raw: HttpRequest,
+    req: HttpRequest,
     log: pino.Logger
   }
 
@@ -108,7 +71,6 @@ declare namespace fastify {
    */
   interface FastifyReply<HttpResponse> {
     code: (statusCode: number) => FastifyReply<HttpResponse>
-    status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
     type: (contentType: string) => FastifyReply<HttpResponse>
@@ -120,16 +82,18 @@ declare namespace fastify {
     res: HttpResponse
     context: FastifyContext
   }
-  type TrustProxyFunction = (addr: string, index: number) => boolean
+
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     logger?: pino.LoggerOptions | boolean,
-    trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
-    https: tls.TlsOptions
+    https: {
+      key: Buffer,
+      cert: Buffer
+    }
   }
   interface ServerOptionsAsHttp extends ServerOptions {
     http2?: false
@@ -156,40 +120,22 @@ declare namespace fastify {
   /**
    * Optional configuration parameters for the route being created
    */
-  interface RouteShorthandOptions<
-    HttpServer = http.Server,
-    HttpRequest = http.IncomingMessage,
-    HttpResponse = http.ServerResponse,
-    Query = DefaultQuery,
-    Params = DefaultParams,
-    Headers = DefaultHeaders,
-    Body = DefaultBody
-  > {
+  interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     schema?: RouteSchema
-    beforeHandler?:
-      | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
-      | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
+    beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
-    bodyLimit?: number
-    logLevel?: string
+    bodyLimit?: number,
+    logLevel?: string,
     config?: any
   }
 
   /**
    * Route configuration options such as "url" and "method"
    */
-  interface RouteOptions<
-    HttpServer,
-    HttpRequest,
-    HttpResponse,
-    Query = DefaultQuery,
-    Params = DefaultParams,
-    Headers = DefaultHeaders,
-    Body = DefaultBody
-  > extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body> {
-    method: HTTPMethod | HTTPMethod[]
-    url: string
-    handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>
+  interface RouteOptions<HttpServer, HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
+    method: HTTPMethod|HTTPMethod[],
+    url: string,
+    handler: RequestHandler<HttpRequest, HttpResponse>
   }
 
   /**
@@ -245,157 +191,92 @@ declare namespace fastify {
     /**
      * Adds a route to the server
      */
-    route<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      opts: RouteOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    route(opts: RouteOptions<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a GET route with the given mount path, options, and handler
      */
-    get<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    get(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a GET route with the given mount path and handler
      */
-    get<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    get(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PUT route with the given mount path, options, and handler
      */
-    put<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    put(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PUT route with the given mount path and handler
      */
-    put<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    put(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PATCH route with the given mount path, options, and handler
      */
-    patch<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    patch(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a PATCH route with the given mount path and handler
      */
-    patch<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    patch(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a POST route with the given mount path, options, and handler
      */
-    post<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    post(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a POST route with the given mount path and handler
      */
-    post<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    post(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a HEAD route with the given mount path, options, and handler
      */
-    head<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    head(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a HEAD route with the given mount path and handler
      */
-    head<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    head(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a DELETE route with the given mount path, options, and handler
      */
-    delete<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    delete(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a DELETE route with the given mount path and handler
      */
-    delete<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    delete(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a OPTIONS route with the given mount path, options, and handler
      */
-    options<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    options(url: string, opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse>, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Defines a OPTIONS route with the given mount path and handler
      */
-    options<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
-     * Defines a route for all the supported methods with the given mount path, options, and handler
-     */
-    all<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
-     * Defines a route for all the supported methods with the given mount path and handler
-     */
-    all<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
-      url: string,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-    ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    options(url: string, handler: RequestHandler<HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Starts the server on the given port after all the plugins are loaded,
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(port: number, callback: (err: Error, address: string) => void): void
-    listen(port: number, address: string, callback: (err: Error, address: string) => void): void
-    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
-    listen(sockFile: string, callback: (err: Error, address: string) => void): void
-    listen(port: number, address?: string, backlog?: number): Promise<string>
-    listen(sockFile: string): Promise<string>
+    listen(port: number, hostname: string, callback?: (err: Error) => void): http.Server
+
+    /**
+     * Starts the server on the given port after all the plugins are loaded,
+     * internally waits for the .ready() event. The callback is the same as the
+     * Node core.
+     */
+    listen(port: number, callback?: (err: Error) => void): http.Server
+    listen(path: string, callback?: (err: Error) => void): http.Server
 
     /**
      * Registers a listener function that is invoked when all the plugins have
@@ -539,17 +420,9 @@ declare namespace fastify {
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Get all shared schemas
-     */
-    getSchemas(): {[shemaId: string]: Object}
-
-    /**
      * Add a content type parser
      */
-    addContentTypeParser(contentType: string | string[], opts: { bodyLimit?: number }, parser: ContentTypeParser<HttpRequest>): void
-    addContentTypeParser(contentType: string | string[], opts: { parseAs: "string"; bodyLimit?: number }, parser: BodyParser<HttpRequest, string>): void
-    addContentTypeParser(contentType: string | string[], opts: { parseAs: "buffer"; bodyLimit?: number }, parser: BodyParser<HttpRequest, Buffer>): void
-    addContentTypeParser(contentType: string | string[], parser: ContentTypeParser<HttpRequest>): void
+    addContentTypeParser(contentType: string, opts: object | AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>, parser?: AsyncContentTypeParser<HttpRequest> | ContentTypeParser<HttpRequest>): void;
 
     /**
      * Check if a parser for the specified content type exists

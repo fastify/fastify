@@ -5,7 +5,6 @@ const test = t.test
 const Stream = require('stream')
 const util = require('util')
 const Fastify = require('..')
-const FormData = require('form-data')
 
 test('inject should exist', t => {
   t.plan(2)
@@ -324,37 +323,6 @@ test('should reject in error case', t => {
     })
 })
 
-test('inject a multipart request using form-body', t => {
-  t.plan(2)
-  const fastify = Fastify()
-
-  fastify.addContentTypeParser('*', function (req, done) {
-    var body = ''
-    req.on('data', d => {
-      body += d
-    })
-    req.on('end', () => {
-      done(null, body)
-    })
-  })
-  fastify.post('/', (req, reply) => {
-    reply.send(req.body)
-  })
-
-  const form = new FormData()
-  form.append('my_field', 'my value')
-
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: form
-  })
-    .then(response => {
-      t.equal(response.statusCode, 200)
-      t.ok(/Content-Disposition: form-data; name="my_field"/.test(response.payload))
-    })
-})
-
 // https://github.com/hapijs/shot/blob/master/test/index.js#L836
 function getStream () {
   const Read = function () {
@@ -370,24 +338,3 @@ function getStream () {
 
   return new Read()
 }
-
-test('should error the promise if ready errors', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  fastify.register((instance, opts) => {
-    return Promise.reject(new Error('kaboom'))
-  }).after(function () {
-    t.pass('after is called')
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }).then(() => {
-    t.fail('this should not be called')
-  }).catch(err => {
-    t.ok(err)
-    t.strictequal(err.message, 'kaboom')
-  })
-})

@@ -22,7 +22,7 @@ const cors = require('cors')
     }
   })
   // http2
-  const h2Server = fastify({ http2: true })
+  const h2Server = fastify({http2: true})
   // secure http2
   const h2SecureServer = fastify({
     http2: true,
@@ -172,17 +172,9 @@ server
   .get('/req', function (req, reply) {
     reply.send(req.headers)
   })
-  .get<{ foo: number }>('/req', function ({ query, headers }, reply) {
-  const foo: number = query.foo
-
-  reply.send(headers)
-})
   .get('/', opts, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
-  })
-  .get('/status', function (req, reply) {
-    reply.status(204).send()
   })
   .get('/promise', opts, function (req, reply) {
     const promise = new Promise(function (resolve, reject) {
@@ -203,7 +195,7 @@ server
   })
   .post('/', opts, function (req, reply) {
     reply
-      .headers({ 'Content-Type': 'application/json' })
+      .headers({'Content-Type': 'application/json'})
       .send({ hello: 'world' })
   })
   .head('/', {}, function (req, reply) {
@@ -238,51 +230,6 @@ server
     })
     done()
   }, { prefix: 'v1', hello: 'world' })
-  .all('/all/no-opts', function (req, reply) {
-    reply.send(req.headers)
-  })
-  .all('/all/with-opts', opts, function (req, reply) {
-    reply.send(req.headers)
-  })
-
-// Generics example
-interface Query {
-  foo: string
-  bar: number
-}
-
-interface Params {
-  foo: string
-}
-
-interface Headers {
-  'X-Access-Token': string
-}
-
-interface Body {
-  foo: {
-    bar: {
-      baz: number
-    }
-  }
-}
-
-// Query, Params, Headers, and Body can be provided as generics
-server.get<Query, Params, Headers, Body>('/', ({ query, params, headers, body }, reply) => {
-  const bar: number = query.bar
-  const foo: string = params.foo
-  const xAccessToken: string = headers['X-Access-Token']
-  const baz: number = body.foo.bar.baz
-
-  reply.send({ hello: 'world' })
-})
-
-// Default values are exported for each
-server.get<fastify.DefaultQuery, Params>('/', ({ params }, reply) => {
-  const foo: string = params.foo
-
-  reply.send({ hello: 'world' })
-})
 
 // Using decorate requires casting so the compiler knows about new properties
 server.decorate('utility', () => {})
@@ -329,30 +276,6 @@ server.listen(3000, err => {
   }
 })
 
-server.listen(3000, '127.0.0.1', err => {
-  if (err) throw err
-})
-
-server.listen(3000, '127.0.0.1', 511, err => {
-  if (err) throw err
-})
-
-server.listen('/tmp/sock', err => {
-  if (err) throw err
-})
-
-server.listen(3000)
-  .then((address: string) => console.log(address))
-
-server.listen(3000, '127.0.0.1')
-  .then((address: string) => console.log(address))
-
-server.listen(3000, '127.0.0.1', 511)
-  .then((address: string) => console.log(address))
-
-server.listen('/tmp/sock')
-  .then((address: string) => console.log(address))
-
 // http injections
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)
@@ -368,35 +291,11 @@ server.setSchemaCompiler(function (schema: object) {
 
 server.addSchema({})
 
-server.addContentTypeParser('*', (req, done) => {
-  done(null, {})
-})
-
-server.addContentTypeParser(['foo/bar'], (req, done) => {
-  done(null, {})
-})
-
 server.addContentTypeParser('foo/bar', {}, (req, done) => {
-  done(null, {})
+  done!(null, {})
 })
 
-server.addContentTypeParser(['foo/bar'], {}, (req, done) => {
-  done(null, {})
-})
-
-server.addContentTypeParser('foo/bar', { bodyLimit: 20 }, (req, done) => {
-  done(null, {})
-})
-
-server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, body: string, done) => {
-  done(null, {})
-})
-
-server.addContentTypeParser('foo/bar', { parseAs: 'buffer', bodyLimit: 20 }, (req, body: Buffer, done) => {
-  done(null, {})
-})
-
-server.addContentTypeParser('foo/bar', async (req: http2.Http2ServerRequest) => [])
+server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
 
 if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
   throw new Error('Invalid')

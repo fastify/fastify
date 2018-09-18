@@ -810,6 +810,7 @@ test('Should allow defining the bodyLimit per parser', t => {
       const expectedError = new FST_ERR_CTP_BODY_TOO_LARGE()
       t.strictDeepEqual(JSON.parse(body.toString()), {
         statusCode: expectedError.statusCode,
+        code: expectedError.code,
         error: 'Payload Too Large',
         message: expectedError.message
       })
@@ -849,6 +850,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
       const expectedError = new FST_ERR_CTP_BODY_TOO_LARGE()
       t.strictDeepEqual(JSON.parse(body.toString()), {
         statusCode: expectedError.statusCode,
+        code: expectedError.code,
         error: 'Payload Too Large',
         message: expectedError.message
       })

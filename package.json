@@ -1,11 +1,11 @@
 {
   "name": "fastify",
-  "version": "1.5.0",
+  "version": "1.11.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
   "scripts": {
-    "lint": "standard | snazzy && npm run lint:typescript",
+    "lint": "standard --verbose | snazzy && npm run lint:typescript",
     "lint:typescript": "standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts",
     "unit": "tap -j4 test/*.test.js test/*/*.test.js",
     "typescript": "tsc --project ./test/types/tsconfig.json",
@@ -44,6 +44,11 @@
       "email": "deusdustin@gmail.com"
     },
     {
+      "name": "Trivikram Kamat",
+      "url": "http://trivikr.github.io",
+      "email": "trivikr.dev@gmail.com"
+    },
+    {
       "name": "Luciano Mammino",
       "url": "https://loige.co"
     },
@@ -60,25 +65,27 @@
   "bugs": {
     "url": "https://github.com/fastify/fastify/issues"
   },
-  "homepage": "https://github.com/fastify/fastify#readme",
+  "homepage": "https://www.fastify.io/",
   "engines": {
     "node": ">=6"
   },
   "devDependencies": {
-    "@types/node": "^9.4.6",
-    "JSONStream": "^1.3.2",
+    "@types/node": "^10.5.1",
+    "JSONStream": "^1.3.3",
     "autocannon": "^2.3.0",
     "branch-comparer": "^0.4.0",
-    "concurrently": "^3.5.1",
+    "concurrently": "^4.0.0",
     "cors": "^2.8.4",
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.2",
     "dns-prefetch-control": "^0.1.0",
+    "eslint-import-resolver-node": "^0.3.2",
     "eslint-plugin-typescript": "^0.12.0",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^1.0.1",
+    "fastify-plugin": "^1.1.3",
+    "form-data": "^2.3.2",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
-    "helmet": "^3.12.0",
+    "helmet": "^3.12.1",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.1.0",
     "http-errors": "^1.6.3",
@@ -91,33 +98,35 @@
     "send": "^0.16.2",
     "serve-static": "^1.13.2",
     "simple-get": "^3.0.2",
-    "snazzy": "^7.1.1",
-    "split2": "^2.2.0",
-    "standard": "^11.0.1",
+    "snazzy": "^8.0.0",
+    "split2": "^3.0.0",
+    "standard": "^12.0.0",
     "tap": "^12.0.0",
     "then-sleep": "^1.0.1",
-    "typescript": "^2.8.3",
-    "typescript-eslint-parser": "^15.0.0",
+    "typescript": "^3.0.1",
+    "typescript-eslint-parser": "^18.0.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {
-    "@types/pino": "^4.7.1",
+    "@types/pino": "^4.16.0",
     "abstract-logging": "^1.0.0",
-    "ajv": "^6.4.0",
-    "avvio": "^5.4.3",
+    "ajv": "^6.5.2",
+    "avvio": "^5.8.0",
     "end-of-stream": "^1.4.1",
-    "fast-json-stringify": "^1.5.2",
-    "find-my-way": "^1.12.0",
-    "flatstr": "^1.0.5",
-    "light-my-request": "^2.0.2",
+    "fast-json-stringify": "^1.5.4",
+    "find-my-way": "^1.15.0",
+    "flatstr": "^1.0.8",
+    "light-my-request": "^3.0.0",
     "middie": "^3.1.0",
-    "pino": "^4.16.1",
-    "tiny-lru": "^1.5.2"
+    "pino": "^4.17.3",
+    "proxy-addr": "^2.0.3",
+    "tiny-lru": "^1.6.1"
   },
   "greenkeeper": {
     "ignore": [
       "boom",
       "joi",
+      "pino",
       "@types/node",
       "@types/pino"
     ]

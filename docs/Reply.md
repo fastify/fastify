@@ -5,9 +5,10 @@ The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions:
 
 - `.code(statusCode)` - Sets the status code.
+- `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.header(name, value)` - Sets a response header.
 - `.getHeader(name)` - Retrieve value of already set header.
-- `.hasHeader(name)` = Determine if a header has been set.
+- `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer and returns the serialized payload.
@@ -69,7 +70,7 @@ Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
 ### .redirect(dest)
-Redirects a request to the specified url, the status code is optional, default to `302`.
+Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
 ```js
 reply.redirect('/home')
 ```
@@ -169,10 +170,10 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
-If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#seterrorhandler) API.
+If you want to completely customize the error response, checkout [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) API.
 
 Errors with a `status` or `statusCode` property equal to `404` will be routed to the not found handler.
-See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server-Methods.md#setnotfoundhandler)
+See [`server.setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#setnotfoundhandler)
 API to learn more about handling such cases:
 
 ```js

@@ -40,7 +40,7 @@ test('handlers have access to the internal context', (t) => {
   t.plan(5)
 
   const instance = fastify()
-  instance.get('/', {config: {foo: 'bar'}}, function (req, reply) {
+  instance.get('/', { config: { foo: 'bar' } }, function (req, reply) {
     t.ok(reply.context)
     t.ok(reply.context.config)
     t.type(reply.context.config, Object)

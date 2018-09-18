@@ -489,3 +489,17 @@ test('plugin metadata - dependencies (nested)', t => {
     next()
   }
 })
+
+test('pluginTimeout', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    pluginTimeout: 10
+  })
+  fastify.register(function (app, opts, next) {
+    // to no call next on purpose
+  })
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+  })
+})

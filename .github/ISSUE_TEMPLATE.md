@@ -1,4 +1,4 @@
-#### You have already researched for similiar issues?
+#### You have already researched for similar issues?
 It's not uncommon that somebody already opened an issue or in best case it's already fixed but not merged. That's the reason why you should [search](https://github.com/fastify/fastify/issues) at first before submitting a new one.
 
 #### Are you sure this is an issue with the fastify or are you just looking for some help?
@@ -19,7 +19,7 @@ email all security related issues to the [Fastify Team](https://github.com/fasti
 
 #### What are you trying to achieve or the steps to reproduce?
 
-Describe your issue here, include as much detail as neccessary to reproduce the issue
+Describe your issue here, include as much detail as necessary to reproduce the issue
 or implement a missing functionality. If you are reporting a bug, you will get faster response
 if you submit a pull request with a failing test.
 

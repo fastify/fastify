@@ -34,6 +34,22 @@ console.log(fastify.conf.db)
 
 Decorators are not *overwritable*. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
 
+Decorators accept special "getter/setter" objects. These objects have functions named `getter` and `setter` (though, the `setter` function is optional). This allows defining properties via decorators. For example:
+
+```js
+fastify.decorate('foo', {
+  getter () {
+    return 'a getter'
+  }
+})
+```
+
+Will define the `foo` property on the *Fastify* instance:
+
+```js
+console.log(fastify.foo) // 'a getter'
+```
+
 <a name="decorate-reply"></a>
 **decorateReply**
 As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:

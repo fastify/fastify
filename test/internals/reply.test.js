@@ -8,7 +8,7 @@ const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(11)
+  t.plan(12)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -18,6 +18,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply._customError, 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
+  t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
   t.is(typeof reply._headers, 'object')
@@ -51,7 +52,7 @@ test('reply.serialize should serialize payload', t => {
   const response = { statusCode: 200 }
   const context = {}
   const reply = new Reply(response, context, null)
-  t.equal(reply.serialize({foo: 'bar'}), '{"foo":"bar"}')
+  t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
 })
 
 test('reply.serialize should serialize payload with Fastify instance', t => {
@@ -72,7 +73,7 @@ test('reply.serialize should serialize payload with Fastify instance', t => {
     },
     handler: (req, reply) => {
       reply.send(
-        reply.serialize({foo: 'bar'})
+        reply.serialize({ foo: 'bar' })
       )
     }
   })
@@ -114,13 +115,21 @@ test('within an instance', t => {
     reply.redirect(301, '/')
   })
 
+  fastify.get('/redirect-code-before-call', function (req, reply) {
+    reply.code(307).redirect('/')
+  })
+
+  fastify.get('/redirect-code-before-call-overwrite', function (req, reply) {
+    reply.code(307).redirect(302, '/')
+  })
+
   fastify.get('/custom-serializer', function (req, reply) {
     reply.code(200)
     reply.type('text/plain')
     reply.serializer(function (body) {
       return require('querystring').stringify(body)
     })
-    reply.send({hello: 'world!'})
+    reply.send({ hello: 'world!' })
   })
 
   fastify.register(function (instance, options, next) {
@@ -239,6 +248,48 @@ test('within an instance', t => {
       })
     })
 
+    test('redirect to `/` - 6', t => {
+      t.plan(4)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-type'], 'text/plain')
+        t.deepEqual(body.toString(), 'hello world!')
+      })
+    })
+
+    test('redirect to `/` - 7', t => {
+      t.plan(4)
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite'
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(response.headers['content-type'], 'text/plain')
+        t.deepEqual(body.toString(), 'hello world!')
+      })
+    })
+
+    test('redirect to `/` - 8', t => {
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
+        t.strictEqual(response.statusCode, 307)
+      })
+    })
+
+    test('redirect to `/` - 9', t => {
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
+        t.strictEqual(response.statusCode, 302)
+      })
+    })
+
     t.end()
   })
 })
@@ -288,6 +339,71 @@ test('buffer with content type should not send application/octet-stream', t => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'text/plain')
       t.deepEqual(body, Buffer.alloc(1024))
+    })
+  })
+})
+
+test('stream with content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+  const fs = require('fs')
+  const path = require('path')
+
+  var streamPath = path.join(__dirname, '..', '..', 'package.json')
+  var stream = fs.createReadStream(streamPath)
+  var buf = fs.readFileSync(streamPath)
+
+  fastify.get('/', function (req, reply) {
+    reply.header('Content-Type', 'text/plain').send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'text/plain')
+      t.deepEqual(body, buf)
+    })
+  })
+})
+
+test('stream using reply.res.writeHead should return customize headers', t => {
+  t.plan(6)
+
+  const fastify = require('../..')()
+  const fs = require('fs')
+  const path = require('path')
+
+  var streamPath = path.join(__dirname, '..', '..', 'package.json')
+  var stream = fs.createReadStream(streamPath)
+  var buf = fs.readFileSync(streamPath)
+
+  fastify.get('/', function (req, reply) {
+    reply.res.log.warn = function mockWarn (message) {
+      t.equal(message, 'response will send, but you shouldn\'t use res.writeHead in stream mode')
+    }
+    reply.res.writeHead(200, {
+      location: '/'
+    })
+    reply.send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['location'], '/')
+      t.strictEqual(response.headers['Content-Type'], undefined)
+      t.deepEqual(body, buf)
     })
   })
 })
@@ -474,7 +590,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     })
 
     next()
-  }, {prefix: '/prefixed'})
+  }, { prefix: '/prefixed' })
 
   fastify.listen(0, err => {
     t.error(err)
@@ -487,7 +603,7 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'application/json')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(JSON.parse(body.toString()), {
         statusCode: 404,
         error: 'Not Found',
@@ -784,5 +900,19 @@ test('Content type and charset set previously', t => {
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+  })
+})
+
+test('.status() is an alias for .code()', t => {
+  t.plan(2)
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.status(418).send()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 418)
   })
 })

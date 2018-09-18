@@ -97,12 +97,13 @@ test('handler function - reply', t => {
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {
-  t.plan(7)
+  t.plan(8)
   const fastify = require('../..')()
 
   fastify.addHook('onSend', (request, reply, payload, done) => {
     t.ok(request)
     t.ok(request.raw)
+    t.ok(request.id)
     t.ok(request.params)
     t.ok(request.query)
     done()
@@ -183,8 +184,8 @@ test('request should be defined in onSend Hook on options request with content t
       }
     }, (err, response, body) => {
       t.error(err)
-      // a 415 error is expected because of missing content type parser
-      t.strictEqual(response.statusCode, 415)
+      // Body parsing skipped, so no body sent
+      t.strictEqual(response.statusCode, 200)
     })
   })
 })

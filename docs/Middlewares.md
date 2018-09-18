@@ -2,7 +2,7 @@
 
 ## Middlewares
 
-Fastify provides out of the box an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.
+Fastify out of the box provides an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.
 
 *If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.*
 

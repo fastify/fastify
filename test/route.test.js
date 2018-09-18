@@ -97,7 +97,7 @@ test('route', t => {
     t.plan(1)
     try {
       fastify.get('/add-multiple', function (req, reply) {
-        reply.send({hello: 'Bob!'})
+        reply.send({ hello: 'Bob!' })
       })
       fastify.route({
         method: ['PUT', 'DELETE'],

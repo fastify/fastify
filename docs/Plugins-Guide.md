@@ -195,7 +195,7 @@ I think we all agree that this is terrible. Code repeat, awful readability and i
 
 So what can you do to avoid this annoying issue? Yes, you are right, use an [hook](https://github.com/fastify/fastify/blob/master/docs/Hooks.md)!<br>
 ```js
-fastify.decorate('util', (request, key, value) => { request.key = value })
+fastify.decorate('util', (request, key, value) => { request[key] = value })
 
 fastify.addHook('preHandler', (request, reply, done) => {
   fastify.util(request, 'timestamp', new Date())
@@ -215,7 +215,7 @@ It can happen that you want a hook that must be executed just for a subset of ro
 
 ```js
 fastify.register((instance, opts, next) => {
-  instance.decorate('util', (request, key, value) => { request.key = value })
+  instance.decorate('util', (request, key, value) => { request[key] = value })
 
   instance.addHook('preHandler', (request, reply, done) => {
     instance.util(request, 'timestamp', new Date())
@@ -236,11 +236,11 @@ fastify.get('/plugin2', (request, reply) => {
 Now your hook will run just for the first route!
 
 As you probably noticed at this time, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.<br>
-Let's say that you are arriving from a framework like Express or Restify, and you already have some Middleware that does exactly what you need, and you don't want to redo all the work.
 
 <a name="middlewares"></a>
 ## Middlewares
 Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*<br>
+Let's say that you are arriving from Express, and you already have some Middleware that does exactly what you need, and you don't want to redo all the work.
 How we can do that? Checkout our middlewares engine, [middie](https://github.com/fastify/middie).
 ```js
 const yourMiddleware = require('your-middleware')

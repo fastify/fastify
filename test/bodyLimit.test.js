@@ -25,7 +25,7 @@ test('bodyLimit', t => {
   const fastify = Fastify({ bodyLimit: 1 })
 
   fastify.post('/', (request, reply) => {
-    reply.send({error: 'handler should not be called'})
+    reply.send({ error: 'handler should not be called' })
   })
 
   fastify.listen(0, function (err) {

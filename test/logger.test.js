@@ -161,7 +161,7 @@ test('can use external logger instance', t => {
 
   const logger = require('pino')(splitStream)
 
-  const localFastify = Fastify({logger: logger})
+  const localFastify = Fastify({ logger: logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -204,7 +204,7 @@ test('can use external logger instance with custom serializer', t => {
     }
   }, splitStream)
 
-  const localFastify = Fastify({logger: logger})
+  const localFastify = Fastify({ logger: logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -269,6 +269,51 @@ test('The logger should accept a custom genReqId function', t => {
       const payload = JSON.parse(res.payload)
       t.equal(payload.id, 'a')
       fastify.close()
+    })
+  })
+})
+
+test('The request id header key can be customized', t => {
+  t.plan(9)
+  const REQUEST_ID = '42'
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: { stream: stream, level: 'info' },
+    requestIdHeader: 'my-custom-request-id'
+  })
+  t.tearDown(() => fastify.close())
+
+  fastify.get('/', (req, reply) => {
+    t.equal(req.raw.id, REQUEST_ID)
+    req.log.info('some log message')
+    reply.send({ id: req.raw.id })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'my-custom-request-id': REQUEST_ID
+    }
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, REQUEST_ID)
+
+    stream.once('data', line => {
+      t.equal(line.reqId, REQUEST_ID)
+      t.equal(line.msg, 'incoming request', 'message is set')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, REQUEST_ID)
+        t.equal(line.msg, 'some log message', 'message is set')
+
+        stream.once('data', line => {
+          t.equal(line.reqId, REQUEST_ID)
+          t.equal(line.msg, 'request completed', 'message is set')
+        })
+      })
     })
   })
 })
@@ -671,7 +716,7 @@ test('should serialize request and response', t => {
       cb()
     }
   })
-  const fastify = Fastify({logger: {level: 'info', stream: dest}})
+  const fastify = Fastify({ logger: { level: 'info', stream: dest } })
 
   fastify.get('/500', (req, reply) => {
     reply.code(500).send(Error('500 error'))

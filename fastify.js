@@ -86,7 +86,13 @@ function build (options) {
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'
-  const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+
+  let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+
+  if (options.logger && options.logger.genReqId) {
+    process.emitWarning(`Using 'genReqId' in logger options is deprecated. Use fastify options instead. See: https://www.fastify.io/docs/latest/Server/#gen-request-id`)
+    genReqId = options.logger.genReqId
+  }
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 

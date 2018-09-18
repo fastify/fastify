@@ -159,7 +159,7 @@ The header name used to know the request id. See [the request id](https://github
 
 Function for generating the request id. It will receive the incoming request as a parameter.
 
-+ Default: `monotonically increasing integer`
++ Default: `value of 'request-id' if provided or monotonically increasing integers`
 
 Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
 

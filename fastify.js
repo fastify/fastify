@@ -40,6 +40,7 @@ const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
+const reqIdGenFactory = require('./lib/reqIdGenFactory')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
@@ -85,15 +86,15 @@ function build (options) {
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'
+  const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
   const setupResponseListeners = Reply.setupResponseListeners
+
   // logger utils
-  const customGenReqId = options.logger ? options.logger.genReqId : null
   const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
-  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
 
   const app = avvio(fastify, {
     autostart: false,

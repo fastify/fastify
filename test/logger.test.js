@@ -264,37 +264,6 @@ test('expose the logger', t => {
   t.is(typeof fastify.log, 'object')
 })
 
-test('The logger should accept a custom genReqId function', t => {
-  t.plan(4)
-
-  const fastify = Fastify({
-    logger: {
-      level: 'fatal',
-      genReqId: function () {
-        return 'a'
-      }
-    }
-  })
-
-  fastify.get('/', (req, reply) => {
-    t.ok(req.raw.id)
-    reply.send({ id: req.raw.id })
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.inject({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, res) => {
-      t.error(err)
-      const payload = JSON.parse(res.payload)
-      t.equal(payload.id, 'a')
-      fastify.close()
-    })
-  })
-})
-
 test('The request id header key can be customized', t => {
   t.plan(9)
   const REQUEST_ID = '42'

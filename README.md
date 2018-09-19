@@ -191,7 +191,6 @@ Team members are listed in alphabetical order.
 
 This project is kindly sponsored by:
 - [nearForm](http://nearform.com)
-- [LetzDoIt](http://www.letzdoitapp.com/)
 
 ## License
 

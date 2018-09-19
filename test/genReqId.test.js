@@ -1,7 +1,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 
-test('The logger should accept a custom genReqId function', t => {
+test('Should accept a custom genReqId function', t => {
   t.plan(4)
 
   const fastify = Fastify({

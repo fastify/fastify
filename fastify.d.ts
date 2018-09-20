@@ -125,7 +125,8 @@ declare namespace fastify {
    */
   interface RouteShorthandOptions<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     schema?: RouteSchema
-    beforeHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
+    preValidation?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
+    preHandler?: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse> | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number,
     logLevel?: string,
@@ -370,7 +371,12 @@ declare namespace fastify {
     addHook(name: 'onRequest', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Hook that is fired before a request is processed, but after the "onRequest"
+     * Add a hook that is triggered after the onRequest hook and middlewares, but before the validation
+     */
+    addHook(name: 'preValidation', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Hook that is fired before a request is processed, but after the "preValidation"
      * hook
      */
     addHook(name: 'preHandler', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

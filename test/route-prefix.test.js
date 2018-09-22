@@ -298,18 +298,18 @@ test('Different register - encapsulation check', t => {
   })
 })
 
-test('Can retrieve basePath within encapsulated instances', t => {
+test('Can retrieve prefix within encapsulated instances', t => {
   t.plan(4)
   const fastify = Fastify()
 
   fastify.register(function (instance, opts, next) {
     instance.get('/one', function (req, reply) {
-      reply.send(instance.basePath)
+      reply.send(instance.prefix)
     })
 
     instance.register(function (instance, opts, next) {
       instance.get('/two', function (req, reply) {
-        reply.send(instance.basePath)
+        reply.send(instance.prefix)
       })
       next()
     }, { prefix: '/v2' })

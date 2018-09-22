@@ -170,7 +170,7 @@ function build (options) {
   fastify[kRoutePrefix] = ''
   fastify[kLogLevel] = ''
 
-  Object.defineProperty(fastify, 'basePath', {
+  Object.defineProperty(fastify, 'prefix', {
     get: function () {
       return this[kRoutePrefix]
     }

@@ -37,7 +37,8 @@ test('rawBody function', t => {
   }
   const rs = new Readable()
   rs._read = function () {}
-  const request = new Request('params', rs, 'query', 'headers', 'log')
+  rs.headers = { 'content-length': body.length }
+  const request = new Request('params', rs, 'query', { 'content-length': body.length }, 'log')
   const reply = new Reply(res, context, {})
   internals.rawBody(
     request,
@@ -45,6 +46,6 @@ test('rawBody function', t => {
     reply.context._parserOptions,
     parser
   )
-  rs.emit('data', body)
+  rs.emit('data', body.toString())
   rs.emit('end')
 })

@@ -117,6 +117,7 @@
     "fast-json-stringify": "^1.5.4",
     "find-my-way": "^1.15.0",
     "flatstr": "^1.0.8",
+    "jitson": "^1.0.0",
     "light-my-request": "^3.0.0",
     "middie": "^3.1.0",
     "pino": "^5.0.0",

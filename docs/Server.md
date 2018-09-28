@@ -168,6 +168,7 @@ let i = 0
 const fastify = require('fastify')({
   genReqId: function (req) { return i++ }
 })
+```
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
@@ -355,8 +356,8 @@ Function to add middlewares to Fastify, check [here](https://github.com/fastify/
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
 
-<a name="base-path"></a>
-#### basepath
+<a name="prefix"></a>
+#### prefix
 The full path that will be prefixed to a route.
 
 Example:
@@ -364,16 +365,16 @@ Example:
 ```js
 fastify.register(function (instance, opts, next) {
   instance.get('/foo', function (request, reply) {
-    // Will log "basePath: /v1"
-    request.log.info('basePath: %s', instance.basePath)
-    reply.send({basePath: instance.basePath})
+    // Will log "prefix: /v1"
+    request.log.info('prefix: %s', instance.prefix)
+    reply.send({ prefix: instance.prefix })
   })
 
   instance.register(function (instance, opts, next) {
     instance.get('/bar', function (request, reply) {
-      // Will log "basePath: /v1/v2"
-      request.log.info('basePath: %s', instance.basePath)
-      reply.send({basePath: instance.basePath})
+      // Will log "prefix: /v1/v2"
+      request.log.info('prefix: %s', instance.prefix)
+      reply.send({ prefix: instance.prefix })
     })
 
     next()

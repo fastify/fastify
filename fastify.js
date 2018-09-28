@@ -170,8 +170,15 @@ function build (options) {
   fastify[kRoutePrefix] = ''
   fastify[kLogLevel] = ''
 
+  Object.defineProperty(fastify, 'prefix', {
+    get: function () {
+      return this[kRoutePrefix]
+    }
+  })
+
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
+      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
       return this[kRoutePrefix]
     }
   })

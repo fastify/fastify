@@ -64,11 +64,13 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from a directory and inject the fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
+- [`fastify-metrics`](https://gitlab.com/m03geek/fastify-metrics) Plugin for exporting [Prometheus](https://prometheus.io) metrics.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.
 - [`fastify-nuxt`](https://github.com/lyquocnam/fastify-nuxt) VueJS server side rendering support for Fastify with [`NuxtJS`](https://nuxtjs.org/)
+- [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+ documentation from routes schemas for Fastify.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.

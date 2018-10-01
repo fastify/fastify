@@ -144,9 +144,15 @@ const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRe
       }
     }
   },
-  beforeHandler: [
+  preValidation: [
     (request, reply, next) => {
-      request.log.info(`before handler for "${request.raw.url}" ${request.id}`)
+      request.log.info(`pre validation for "${request.raw.url}" ${request.id}`)
+      next()
+    }
+  ],
+  preHandler: [
+    (request, reply, next) => {
+      request.log.info(`pre handler for "${request.raw.url}" ${request.id}`)
       next()
     }
   ],
@@ -164,8 +170,12 @@ server
     handler: (req, reply) => {
       reply.send({ hello: 'route' })
     },
-    beforeHandler: (req, reply, done) => {
-      req.log.info(`before handler for "${req.req.url}" ${req.id}`)
+    preValidation: (req, reply, done) => {
+      req.log.info(`pre validation for "${req.req.url}" ${req.id}`)
+      done()
+    },
+    preHandler: (req, reply, done) => {
+      req.log.info(`pre handler for "${req.req.url}" ${req.id}`)
       done()
     }
   })

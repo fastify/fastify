@@ -7,21 +7,26 @@ const { Hooks } = require('../../lib/hooks')
 const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {
-  t.plan(5)
+  t.plan(6)
   const hooks = new Hooks()
   t.is(typeof hooks, 'object')
   t.ok(Array.isArray(hooks.onRequest))
   t.ok(Array.isArray(hooks.onSend))
+  t.ok(Array.isArray(hooks.preValidation))
   t.ok(Array.isArray(hooks.preHandler))
   t.ok(Array.isArray(hooks.onResponse))
 })
 
 test('hooks.add should add a hook to the given hook', t => {
-  t.plan(8)
+  t.plan(10)
   const hooks = new Hooks()
   hooks.add('onRequest', noop)
   t.is(hooks.onRequest.length, 1)
   t.is(typeof hooks.onRequest[0], 'function')
+
+  hooks.add('preValidation', noop)
+  t.is(hooks.preValidation.length, 1)
+  t.is(typeof hooks.preValidation[0], 'function')
 
   hooks.add('preHandler', noop)
   t.is(hooks.preHandler.length, 1)

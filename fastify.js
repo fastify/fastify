@@ -1,7 +1,7 @@
 'use strict'
 
 const FindMyWay = require('find-my-way')
-const avvio = require('avvio')
+const Avvio = require('avvio')
 const http = require('http')
 const https = require('https')
 const urlUtil = require('url')
@@ -102,18 +102,18 @@ function build (options) {
   const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
 
-  const app = avvio(fastify, {
+  const avvio = Avvio(fastify, {
     autostart: false,
     timeout: Number(options.pluginTimeout) || 10000
   })
   // Override to allow the plugin incapsulation
-  app.override = override
+  avvio.override = override
 
   var listening = false
   var closing = false
   // true when Fastify is ready to go
   var started = false
-  app.on('start', () => {
+  avvio.on('start', () => {
     started = true
   })
 
@@ -137,7 +137,7 @@ function build (options) {
     server = http.createServer(httpHandler)
   }
 
-  app.once('preReady', () => {
+  avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
       closing = true
       if (listening) {
@@ -364,7 +364,7 @@ function build (options) {
     if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
-      if (err) return cb(err)
+      if (err != null) return cb(err)
 
       if (listening) {
         return cb(new Error('Fastify is already listening'), null)
@@ -408,7 +408,7 @@ function build (options) {
 
   function middlewareCallback (err, request, reply) {
     if (reply.sent === true) return
-    if (err) {
+    if (err != null) {
       reply.send(err)
       return
     }
@@ -421,12 +421,22 @@ function build (options) {
   }
 
   function onRunMiddlewares (err, req, res, reply) {
-    if (err) {
+    if (err != null) {
       reply.send(err)
       return
     }
 
-    handleRequest(reply.request, reply)
+    if (reply.context.preValidation !== null) {
+      hookRunner(
+        reply.context.preValidation,
+        hookIterator,
+        reply.request,
+        reply,
+        handleRequest
+      )
+    } else {
+      handleRequest(null, reply.request, reply)
+    }
   }
 
   function override (old, fn, opts) {
@@ -599,13 +609,23 @@ function build (options) {
         return
       }
 
-      if (opts.beforeHandler) {
-        if (Array.isArray(opts.beforeHandler)) {
-          opts.beforeHandler.forEach((h, i) => {
-            opts.beforeHandler[i] = h.bind(_fastify)
-          })
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
         } else {
-          opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
         }
       }
 
@@ -619,13 +639,15 @@ function build (options) {
       // It can happen that a user register a plugin with some hooks/middlewares *after*
       // the route registration. To be sure to load also that hoooks/middlwares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
-      app.once('preReady', () => {
+      avvio.once('preReady', () => {
         const onRequest = _fastify[kHooks].onRequest
         const onResponse = _fastify[kHooks].onResponse
         const onSend = _fastify[kHooks].onSend
-        const preHandler = _fastify[kHooks].preHandler.concat(opts.beforeHandler || [])
+        const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
+        const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
+        context.preValidation = preValidation.length ? preValidation : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
         context.onResponse = onResponse.length ? onResponse : null
@@ -807,13 +829,25 @@ function build (options) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
-    if (typeof opts === 'object' && opts.beforeHandler) {
-      if (Array.isArray(opts.beforeHandler)) {
-        opts.beforeHandler.forEach((h, i) => {
-          opts.beforeHandler[i] = h.bind(_fastify)
-        })
-      } else {
-        opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+    if (typeof opts === 'object') {
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
+        }
       }
     }
 
@@ -849,15 +883,17 @@ function build (options) {
       this[kLogLevel]
     )
 
-    app.once('preReady', () => {
+    avvio.once('preReady', () => {
       const context = this[kFourOhFourContext]
 
       const onRequest = this[kHooks].onRequest
-      const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || [])
+      const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
+      const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
       const onSend = this[kHooks].onSend
       const onResponse = this[kHooks].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
+      context.preValidation = preValidation.length ? preValidation : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null
       context.onResponse = onResponse.length ? onResponse : null
@@ -901,6 +937,12 @@ function build (options) {
     }
 
     return middie
+  }
+
+  function beforeHandlerWarning () {
+    if (beforeHandlerWarning.called) return
+    beforeHandlerWarning.called = true
+    process.emitWarning('The route option `beforeHandler` has been deprecated, use `preHandler` instead')
   }
 }
 

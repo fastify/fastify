@@ -86,7 +86,7 @@ The goal in this guide is to build and run a simple Fastify project, using the [
 Open a terminal window.
 
 ```
-npm install fastify-cli --global
+npm i fastify-cli -g
 ```
 
 Generate a new project and default app by running the following command:

@@ -30,7 +30,7 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 ### Install
 
 ```
-npm i fastify --save
+npm i fastify -s
 ```
 
 ### Example

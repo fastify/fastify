@@ -19,7 +19,7 @@ test('server methods should be incapsulated via .register', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.decorate('test', () => {})
+    instance.decorate('test', () => { })
     t.ok(instance.test)
     next()
   })
@@ -34,7 +34,7 @@ test('hasServerMethod should check if the given method already exist', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.decorate('test', () => {})
+    instance.decorate('test', () => { })
     t.ok(instance.hasDecorator('test'))
     next()
   })
@@ -50,10 +50,10 @@ test('decorate should throw if a declared dependency is not present', t => {
 
   fastify.register((instance, opts, next) => {
     try {
-      instance.decorate('test', () => {}, ['dependency'])
+      instance.decorate('test', () => { }, ['dependency'])
       t.fail()
     } catch (e) {
-      t.is(e.message, 'Fastify decorator: missing dependency: \'dependency\'.')
+      t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'dependency\'.')
     }
     next()
   })

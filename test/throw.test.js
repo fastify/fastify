@@ -17,8 +17,8 @@ test('Fastify should throw on wrong options', t => {
 test('Fastify should throw on multiple assignment to the same route', t => {
   t.plan(1)
   const fastify = Fastify()
-  fastify.get('/', () => {})
-  fastify.get('/', () => {})
+  fastify.get('/', () => { })
+  fastify.get('/', () => { })
 
   fastify.ready(err => {
     t.is(err.message, "Method 'GET' already declared for route '/'")
@@ -33,7 +33,7 @@ test('Should throw on unsupported method', t => {
       method: 'TROLL',
       url: '/',
       schema: {},
-      handler: function (req, reply) {}
+      handler: function (req, reply) { }
     })
     t.fail()
   } catch (e) {
@@ -63,7 +63,7 @@ test('Should throw if one method is unsupported', t => {
       method: ['GET', 'TROLL'],
       url: '/',
       schema: {},
-      handler: function (req, reply) {}
+      handler: function (req, reply) { }
     })
     t.fail()
   } catch (e) {
@@ -147,7 +147,7 @@ test('Should throw if request decorator dependencies are not met', t => {
     fastify.decorateRequest('bar', fooObj, ['world'])
     t.fail()
   } catch (e) {
-    t.ok(/missing dependency/.test(e.message))
+    t.ok(/FST_ERR_DEC_MISSING_DEPENDENCY/.test(e.message))
   }
 })
 
@@ -268,35 +268,35 @@ test('Should throw if there is handler function as the third parameter to the sh
   const fastify = Fastify()
 
   try {
-    fastify.get('/foo/1', '', (req, res) => {})
+    fastify.get('/foo/1', '', (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()
   }
 
   try {
-    fastify.get('/foo/2', 1, (req, res) => {})
+    fastify.get('/foo/2', 1, (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()
   }
 
   try {
-    fastify.get('/foo/3', [], (req, res) => {})
+    fastify.get('/foo/3', [], (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()
   }
 
   try {
-    fastify.get('/foo/4', undefined, (req, res) => {})
+    fastify.get('/foo/4', undefined, (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()
   }
 
   try {
-    fastify.get('/foo/5', null, (req, res) => {})
+    fastify.get('/foo/5', null, (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()
@@ -310,8 +310,8 @@ test('Should throw if found duplicate handler as the third parameter to the shor
 
   try {
     fastify.get('/foo/abc', {
-      handler: (req, res) => {}
-    }, (req, res) => {})
+      handler: (req, res) => { }
+    }, (req, res) => { })
     t.fail()
   } catch (e) {
     t.pass()

@@ -182,6 +182,11 @@ server
   .get('/req', function (req, reply) {
     reply.send(req.headers)
   })
+  .get<{ foo: number }>('/req', function ({ query, headers }, reply) {
+  const foo: number = query.foo
+
+  reply.send(headers)
+})
   .get('/', opts, function (req, reply) {
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
@@ -249,6 +254,45 @@ server
   .all('/all/with-opts', opts, function (req, reply) {
     reply.send(req.headers)
   })
+
+// Generics example
+interface Query {
+  foo: string
+  bar: number
+}
+
+interface Params {
+  foo: string
+}
+
+interface Headers {
+  'X-Access-Token': string
+}
+
+interface Body {
+  foo: {
+    bar: {
+      baz: number
+    }
+  }
+}
+
+// Query, Params, Headers, and Body can be provided as generics
+server.get<Query, Params, Headers, Body>('/', ({ query, params, headers, body }, reply) => {
+  const bar: number = query.bar
+  const foo: string = params.foo
+  const xAccessToken: string = headers['X-Access-Token']
+  const baz: number = body.foo.bar.baz
+
+  reply.send({ hello: 'world' })
+})
+
+// Default values are exported for each
+server.get<fastify.DefaultQuery, Params>('/', ({ params }, reply) => {
+  const foo: string = params.foo
+
+  reply.send({ hello: 'world' })
+})
 
 // Using decorate requires casting so the compiler knows about new properties
 server.decorate('utility', () => {})
@@ -334,19 +378,35 @@ server.setSchemaCompiler(function (schema: object) {
 
 server.addSchema({})
 
-server.addContentTypeParser('foo/bar', {}, (req, done) => {
-  done!(null, {})
+server.addContentTypeParser('*', (req, done) => {
+  done(null, {})
 })
 
-server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, done) => {
-  done!(null, {})
+server.addContentTypeParser(['foo/bar'], (req, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', {}, (req, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser(['foo/bar'], {}, (req, done) => {
+  done(null, {})
 })
 
 server.addContentTypeParser('foo/bar', { bodyLimit: 20 }, (req, done) => {
-  done!(null, {})
+  done(null, {})
 })
 
-server.addContentTypeParser('foo/bar', {}, async (req: http2.Http2ServerRequest) => [])
+server.addContentTypeParser('foo/bar', { parseAs: 'string' }, (req, body: string, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', { parseAs: 'buffer', bodyLimit: 20 }, (req, body: Buffer, done) => {
+  done(null, {})
+})
+
+server.addContentTypeParser('foo/bar', async (req: http2.Http2ServerRequest) => [])
 
 if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
   throw new Error('Invalid')

@@ -6,16 +6,6 @@ const test = t.test
 const semver = require('semver')
 const sget = require('simple-get').concat
 const Fastify = require('..')
-const {
-  codes: {
-    FST_ERR_CTP_INVALID_TYPE,
-    FST_ERR_CTP_EMPTY_TYPE,
-    FST_ERR_CTP_ALREADY_PRESENT,
-    FST_ERR_CTP_INVALID_HANDLER,
-    FST_ERR_CTP_INVALID_PARSE_TYPE,
-    FST_ERR_CTP_BODY_TOO_LARGE
-  }
-} = require('./../lib/errors')
 
 const jsonParser = require('fast-json-body')
 if (semver.gt(process.versions.node, '8.0.0')) {
@@ -226,11 +216,11 @@ test('contentTypeParser should support encapsulation', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addContentTypeParser('application/jsoff', () => {})
+    instance.addContentTypeParser('application/jsoff', () => { })
     t.ok(instance.hasContentTypeParser('application/jsoff'))
 
     instance.register((instance, opts, next) => {
-      instance.addContentTypeParser('application/ffosj', () => {})
+      instance.addContentTypeParser('application/ffosj', () => { })
       t.ok(instance.hasContentTypeParser('application/jsoff'))
       t.ok(instance.hasContentTypeParser('application/ffosj'))
       next()
@@ -320,10 +310,10 @@ test('the content type should be a string', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser(null, () => {})
+    fastify.addContentTypeParser(null, () => { })
     t.fail()
   } catch (err) {
-    t.is(err.message, new FST_ERR_CTP_INVALID_TYPE().message)
+    t.is(err.message, 'FST_ERR_CTP_INVALID_TYPE: The content type should be a string')
   }
 })
 
@@ -332,10 +322,10 @@ test('the content type cannot be an empty string', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser('', () => {})
+    fastify.addContentTypeParser('', () => { })
     t.fail()
   } catch (err) {
-    t.is(err.message, new FST_ERR_CTP_EMPTY_TYPE().message)
+    t.is(err.message, 'FST_ERR_CTP_EMPTY_TYPE: The content type cannot be an empty string')
   }
 })
 
@@ -347,7 +337,7 @@ test('the content type handler should be a function', t => {
     fastify.addContentTypeParser('aaa', null)
     t.fail()
   } catch (err) {
-    t.is(err.message, new FST_ERR_CTP_INVALID_HANDLER().message)
+    t.is(err.message, 'FST_ERR_CTP_INVALID_HANDLER: The content type handler should be a function')
   }
 })
 
@@ -506,7 +496,7 @@ test('cannot add custom parser after binding', t => {
     t.error(err)
 
     try {
-      fastify.addContentTypeParser('*', () => {})
+      fastify.addContentTypeParser('*', () => { })
       t.fail()
     } catch (e) {
       t.pass()
@@ -566,7 +556,7 @@ test('Can\'t override the json parser multiple times', t => {
       })
     })
   } catch (err) {
-    t.is(err.message, new FST_ERR_CTP_ALREADY_PRESENT('application/json').message)
+    t.is(err.message, 'FST_ERR_CTP_ALREADY_PRESENT: Content type parser \'application/json\' already present.')
   }
 })
 
@@ -770,10 +760,10 @@ test('Wrong parseAs parameter', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
+    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => { })
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, new FST_ERR_CTP_INVALID_PARSE_TYPE('fireworks').message)
+    t.is(err.message, `FST_ERR_CTP_INVALID_PARSE_TYPE: The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
   }
 })
 
@@ -807,12 +797,11 @@ test('Should allow defining the bodyLimit per parser', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      const expectedError = new FST_ERR_CTP_BODY_TOO_LARGE()
       t.strictDeepEqual(JSON.parse(body.toString()), {
-        statusCode: expectedError.statusCode,
-        code: expectedError.code,
+        statusCode: 413,
+        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
-        message: expectedError.message
+        message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large'
       })
       fastify.close()
     })
@@ -847,12 +836,11 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
       headers: { 'Content-Type': 'x/foo' }
     }, (err, response, body) => {
       t.error(err)
-      const expectedError = new FST_ERR_CTP_BODY_TOO_LARGE()
       t.strictDeepEqual(JSON.parse(body.toString()), {
-        statusCode: expectedError.statusCode,
-        code: expectedError.code,
+        statusCode: 413,
+        code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
-        message: expectedError.message
+        message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large'
       })
       fastify.close()
     })

@@ -50,7 +50,7 @@ test('Should throw if the $id property is missing', t => {
   try {
     fastify.addSchema({ type: 'string' })
   } catch (err) {
-    t.is(err.message, 'Missing schema $id property')
+    t.is(err.message, 'FST_ERR_SCH_MISSING_ID: Missing schema $id property')
   }
 })
 
@@ -62,7 +62,7 @@ test('Cannot add multiple times the same id', t => {
   try {
     fastify.addSchema({ $id: 'id' })
   } catch (err) {
-    t.is(err.message, 'Schema with id \'id\' already declared!')
+    t.is(err.message, 'FST_ERR_SCH_ALREADY_PRESENT: Schema with id \'id\' already declared!')
   }
 })
 
@@ -82,7 +82,7 @@ test('Should throw of the schema does not exists', t => {
   })
 
   fastify.ready(err => {
-    t.is(err.message, 'Schema with id \'test\' does not exist!')
+    t.is(err.message, 'FST_ERR_SCH_NOT_PRESENT: Schema with id \'test\' does not exist!')
   })
 })
 
@@ -359,7 +359,7 @@ test('Use the same schema id in diferent places', t => {
         }
       }
     },
-    handler: () => {}
+    handler: () => { }
   })
 
   fastify.route({
@@ -371,7 +371,7 @@ test('Use the same schema id in diferent places', t => {
         200: 'test#'
       }
     },
-    handler: () => {}
+    handler: () => { }
   })
 
   fastify.ready(err => {
@@ -476,7 +476,7 @@ test('Get schema anyway should not add `properties` if allOf is present', t => {
       querystring: 'second#',
       response: { 200: 'second#' }
     },
-    handler: () => {}
+    handler: () => { }
   })
 
   fastify.ready(t.error)
@@ -515,7 +515,7 @@ test('Get schema anyway should not add `properties` if oneOf is present', t => {
       querystring: 'second#',
       response: { 200: 'second#' }
     },
-    handler: () => {}
+    handler: () => { }
   })
 
   fastify.ready(t.error)
@@ -554,7 +554,7 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
       querystring: 'second#',
       response: { 200: 'second#' }
     },
-    handler: () => {}
+    handler: () => { }
   })
 
   fastify.ready(t.error)

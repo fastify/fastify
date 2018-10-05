@@ -53,7 +53,7 @@ test('preHandler hook error handling with external code', t => {
     done(err)
   })
 
-  fastify.get('/', () => {})
+  fastify.get('/', () => { })
 
   fastify.inject({
     method: 'GET',
@@ -82,7 +82,7 @@ test('onRequest hook error handling with external done', t => {
     done(err)
   })
 
-  fastify.get('/', () => {})
+  fastify.get('/', () => { })
 
   fastify.inject({
     method: 'GET',
@@ -359,7 +359,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
       reply.send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.strictEqual(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -383,7 +383,7 @@ test('should throw an error if the custom serializer does not serialize the payl
         .send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.strictEqual(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 

@@ -32,24 +32,6 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
-Decorators are not *overwritable*. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
-
-Decorators accept special "getter/setter" objects. These objects have functions named `getter` and `setter` (though, the `setter` function is optional). This allows defining properties via decorators. For example:
-
-```js
-fastify.decorate('foo', {
-  getter () {
-    return 'a getter'
-  }
-})
-```
-
-Will define the `foo` property on the *Fastify* instance:
-
-```js
-console.log(fastify.foo) // 'a getter'
-```
-
 <a name="decorate-reply"></a>
 **decorateReply**
 As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
@@ -71,6 +53,87 @@ fastify.decorateRequest('utility', function () {
 ```
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
+
+<a name="decorators-encapsulation"></a>
+#### Decorators and encapsulation
+
+Decorators are not *overwritable* within the same encapsulated plugin. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
+
+As an example, the following will throw:
+
+````js
+const server = require('fastify')()
+
+server.register(require('point-of-view'), {
+  engine: {
+    marko: require('marko')
+  }
+})
+
+// point-of-view adds a view decorator to
+// the current (root) instance. This throws
+server.register(require('point-of-view'), {
+  engine: {
+    pug: require('pug')
+  }
+})
+
+server.get('/', (req, reply) => {
+  reply.view('/index.marko', { hello: 'world' })
+})
+
+
+server.listen(3000)
+```
+
+
+But this will not:
+
+```js
+const server = require('fastify')()
+
+server.register(require('point-of-view'), {
+  engine: {
+    marko: require('marko')
+  }
+})
+
+server.register(async function (server, opts) {
+  // point-of-view adds a view decorator to
+  // the current encapsulated plugin. This will not
+  // throw
+  server.register(require('point-of-view'), {
+    engine: {
+      pug: require('pug')
+    }
+  })
+
+  server.get('/', (req, reply) => {
+    reply.view('/index.marko', { hello: 'world' })
+  })
+}, { prefix: '/bar' })
+
+server.listen(3000)
+```
+
+<a name="getters-setters"></a>
+#### Getters and Setters
+
+Decorators accept special "getter/setter" objects. These objects have functions named `getter` and `setter` (though, the `setter` function is optional). This allows defining properties via decorators. For example:
+
+```js
+fastify.decorate('foo', {
+  getter () {
+    return 'a getter'
+  }
+})
+```
+
+Will define the `foo` property on the *Fastify* instance:
+
+```js
+console.log(fastify.foo) // 'a getter'
+```
 
 <a name="usage_notes"></a>
 #### Usage Notes

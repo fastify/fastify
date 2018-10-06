@@ -47,7 +47,7 @@ test('handler function - invalid schema', t => {
   res.writeHead = () => {
     return
   }
-  res.log = { error: () => { }, info: () => { } }
+  res.log = { error: () => {}, info: () => {} }
   const context = {
     schema: {
       body: {
@@ -57,7 +57,7 @@ test('handler function - invalid schema', t => {
         }
       }
     },
-    handler: () => { },
+    handler: () => {},
     Reply: Reply,
     Request: Request,
     preHandler: [],

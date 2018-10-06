@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 
 const { Hooks } = require('../../lib/hooks')
-const noop = () => { }
+const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {
   t.plan(5)
@@ -49,11 +49,12 @@ test('hooks should throw on unexisting handler', t => {
 
 test('should throw on wrong parameters', t => {
   const hooks = new Hooks()
-  t.plan(2)
+  t.plan(4)
   try {
     hooks.add(null, noop)
     t.fail()
   } catch (e) {
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
     t.is(e.message, 'FST_ERR_HOOK_INVALID_TYPE: The hook name must be a string')
   }
 
@@ -61,6 +62,7 @@ test('should throw on wrong parameters', t => {
     hooks.add('', null)
     t.fail()
   } catch (e) {
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
     t.is(e.message, 'FST_ERR_HOOK_INVALID_HANDLER: The hook callback must be a function')
   }
 })

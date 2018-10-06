@@ -22,7 +22,7 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
 
   fastify.register((instance, opts, next) => {
     instance.register(fp((i, o, n) => {
-      i.decorate('test', () => { })
+      i.decorate('test', () => {})
       t.ok(i.test)
       n()
     }))
@@ -133,14 +133,14 @@ test('check dependencies - should not throw', t => {
 
   fastify.register((instance, opts, next) => {
     instance.register(fp((i, o, n) => {
-      i.decorate('test', () => { })
+      i.decorate('test', () => {})
       t.ok(i.test)
       n()
     }))
 
     instance.register(fp((i, o, n) => {
       try {
-        i.decorate('otherTest', () => { }, ['test'])
+        i.decorate('otherTest', () => {}, ['test'])
         t.ok(i.test)
         t.ok(i.otherTest)
         n()
@@ -180,22 +180,23 @@ test('check dependencies - should not throw', t => {
 })
 
 test('check dependencies - should throw', t => {
-  t.plan(11)
+  t.plan(12)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
     instance.register(fp((i, o, n) => {
       try {
-        i.decorate('otherTest', () => { }, ['test'])
+        i.decorate('otherTest', () => {}, ['test'])
         t.fail()
       } catch (e) {
+        t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
         t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
       }
       n()
     }))
 
     instance.register(fp((i, o, n) => {
-      i.decorate('test', () => { })
+      i.decorate('test', () => {})
       t.ok(i.test)
       t.notOk(i.otherTest)
       n()

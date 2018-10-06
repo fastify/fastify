@@ -216,11 +216,11 @@ test('contentTypeParser should support encapsulation', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addContentTypeParser('application/jsoff', () => { })
+    instance.addContentTypeParser('application/jsoff', () => {})
     t.ok(instance.hasContentTypeParser('application/jsoff'))
 
     instance.register((instance, opts, next) => {
-      instance.addContentTypeParser('application/ffosj', () => { })
+      instance.addContentTypeParser('application/ffosj', () => {})
       t.ok(instance.hasContentTypeParser('application/jsoff'))
       t.ok(instance.hasContentTypeParser('application/ffosj'))
       next()
@@ -310,7 +310,7 @@ test('the content type should be a string', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser(null, () => { })
+    fastify.addContentTypeParser(null, () => {})
     t.fail()
   } catch (err) {
     t.is(err.message, 'FST_ERR_CTP_INVALID_TYPE: The content type should be a string')
@@ -322,7 +322,7 @@ test('the content type cannot be an empty string', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser('', () => { })
+    fastify.addContentTypeParser('', () => {})
     t.fail()
   } catch (err) {
     t.is(err.message, 'FST_ERR_CTP_EMPTY_TYPE: The content type cannot be an empty string')
@@ -496,7 +496,7 @@ test('cannot add custom parser after binding', t => {
     t.error(err)
 
     try {
-      fastify.addContentTypeParser('*', () => { })
+      fastify.addContentTypeParser('*', () => {})
       t.fail()
     } catch (e) {
       t.pass()
@@ -760,7 +760,7 @@ test('Wrong parseAs parameter', t => {
   const fastify = Fastify()
 
   try {
-    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => { })
+    fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
     t.fail('should throw')
   } catch (err) {
     t.is(err.message, `FST_ERR_CTP_INVALID_PARSE_TYPE: The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)

@@ -26,7 +26,7 @@ An invalid handler was passed for the content type.
 <a id="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
 ### FST_ERR_CTP_INVALID_PARSE_TYPE
 
-The provided parse type is not supported. Accepted values are 'string' or 'buffer'.
+The provided parse type is not supported. Accepted values are `string` or `buffer`.
 
 <a id="FST_ERR_CTP_BODY_TOO_LARGE"></a>
 ### FST_ERR_CTP_BODY_TOO_LARGE
@@ -66,12 +66,12 @@ The hook callback must be a function.
 <a id="FST_ERR_LOG_INVALID_DESTINATION"></a>
 ### FST_ERR_LOG_INVALID_DESTINATION
 
-Logger acceptes either a `stream` or a `file` as the destination.
+Logger acceptes either a `'stream'` or a `'file'` as the destination.
 
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 ### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 
-Reply payload can either be a `string` or a `Buffer`.
+Reply payload can either be a `'string'` or a `'Buffer'`.
 
 <a id="FST_ERR_SCH_MISSING_ID"></a>
 ### FST_ERR_SCH_MISSING_ID
@@ -81,9 +81,9 @@ The schema provided does not have `$id` property.
 <a id="FST_ERR_SCH_ALREADY_PRESENT"></a>
 ### FST_ERR_SCH_ALREADY_PRESENT
 
-A schema with the same `id` already exists.
+A schema with the same `$id` already exists.
 
 <a id="FST_ERR_SCH_NOT_PRESENT"></a>
 ### FST_ERR_SCH_NOT_PRESENT
 
-No schema with the provided `id` exists.
+No schema with the provided `$id` exists.

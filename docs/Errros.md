@@ -6,7 +6,7 @@
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>
 ### FST_ERR_CTP_ALREADY_PRESENT
 
-The parser for this type was already registered.
+The parser for this content type was already registered.
 
 <a id="FST_ERR_CTP_INVALID_TYPE"></a>
 ### FST_ERR_CTP_INVALID_TYPE
@@ -21,7 +21,7 @@ The content type cannot be an empty string.
 <a id="FST_ERR_CTP_INVALID_HANDLER"></a>
 ### FST_ERR_CTP_INVALID_HANDLER
 
-The content type handler should be a function.
+An invalid handler was passed for the content type.
 
 <a id="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
 ### FST_ERR_CTP_INVALID_PARSE_TYPE

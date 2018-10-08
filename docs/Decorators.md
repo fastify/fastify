@@ -64,24 +64,19 @@ As an example, the following will throw:
 ````js
 const server = require('fastify')()
 
-server.register(require('point-of-view'), {
-  engine: {
-    marko: require('marko')
-  }
-})
-
-// point-of-view adds a view decorator to
-// the current (root) instance. This throws
-server.register(require('point-of-view'), {
-  engine: {
-    pug: require('pug')
-  }
+server.decorateReply('view', function (template, args) {
+  // Amazing vew rendering engine.
 })
 
 server.get('/', (req, reply) => {
-  reply.view('/index.marko', { hello: 'world' })
+  reply.view('/index.html', { hello: 'world' })
 })
 
+// Somewhere else in our codebase, we define another
+// view decorator. This throws.
+server.decorateReply('view', function (template, args) {
+  // another rendering engine
+})
 
 server.listen(3000)
 ```
@@ -92,24 +87,20 @@ But this will not:
 ```js
 const server = require('fastify')()
 
-server.register(require('point-of-view'), {
-  engine: {
-    marko: require('marko')
-  }
+server.decorateReply('view', function (template, args) {
+  // Amazing vew rendering engine.
 })
 
 server.register(async function (server, opts) {
-  // point-of-view adds a view decorator to
-  // the current encapsulated plugin. This will not
-  // throw
-  server.register(require('point-of-view'), {
-    engine: {
-      pug: require('pug')
-    }
+  // We add a view decorator to the current encapsulated
+  // plugin. This will not throw as view was defined
+  // outside of this encapsulated plugin
+  server.decorateReply('view', function (template, args) {
+    // another rendering engine
   })
 
   server.get('/', (req, reply) => {
-    reply.view('/index.marko', { hello: 'world' })
+    reply.view('/index.page', { hello: 'world' })
   })
 }, { prefix: '/bar' })
 

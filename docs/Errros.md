@@ -71,7 +71,7 @@ Logger acceptes either a `'stream'` or a `'file'` as the destination.
 <a id="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 ### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 
-Reply payload can either be a `'string'` or a `'Buffer'`.
+Reply payload can either be a `string` or a `Buffer`.
 
 <a id="FST_ERR_SCH_MISSING_ID"></a>
 ### FST_ERR_SCH_MISSING_ID

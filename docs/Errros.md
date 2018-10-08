@@ -31,7 +31,7 @@ The provided parse type is not supported. Accepted values are 'string' or 'buffe
 <a id="FST_ERR_CTP_BODY_TOO_LARGE"></a>
 ### FST_ERR_CTP_BODY_TOO_LARGE
 
-Request body is too large.
+Request body is larger than the provided limit.
 
 <a id="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 ### FST_ERR_CTP_INVALID_MEDIA_TYPE

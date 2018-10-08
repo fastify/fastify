@@ -57,7 +57,7 @@ Note: using an arrow function will break the binding of `this` to the Fastify `r
 <a name="decorators-encapsulation"></a>
 #### Decorators and encapsulation
 
-Decorators are not *overwritable* within the same encapsulated plugin. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate` will throw an exception.
+Decorators are not *overwritable* within the same encapsulated plugin. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate`, `decorateRequest` and `decorateReply` will throw an exception.
 
 As an example, the following will throw:
 
@@ -93,8 +93,8 @@ server.decorateReply('view', function (template, args) {
 
 server.register(async function (server, opts) {
   // We add a view decorator to the current encapsulated
-  // plugin. This will not throw as view was defined
-  // outside of this encapsulated plugin
+  // plugin. This will not throw as outside of this encapsulated
+  // plugin view is the old one, while inside it is the new one.
   server.decorateReply('view', function (template, args) {
     // another rendering engine
   })

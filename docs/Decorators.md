@@ -57,7 +57,7 @@ Note: using an arrow function will break the binding of `this` to the Fastify `r
 <a name="decorators-encapsulation"></a>
 #### Decorators and encapsulation
 
-Decorators are not *overwritable* within the same encapsulated plugin. If you try to declare a decorator that was previously declared *(in other words, use the same name)*, `decorate`, `decorateRequest` and `decorateReply` will throw an exception.
+If you define a decorator (using decorate, decorateRequest or decorateReply) with the same name more than once in the same **encapsulated** plugin, fastify will throw an exception.
 
 As an example, the following will throw:
 

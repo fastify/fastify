@@ -54,18 +54,20 @@ test('hooks should throw on unexisting handler', t => {
 
 test('should throw on wrong parameters', t => {
   const hooks = new Hooks()
-  t.plan(2)
+  t.plan(4)
   try {
     hooks.add(null, noop)
     t.fail()
   } catch (e) {
-    t.is(e.message, 'The hook name must be a string')
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
+    t.is(e.message, 'FST_ERR_HOOK_INVALID_TYPE: The hook name must be a string')
   }
 
   try {
     hooks.add('', null)
     t.fail()
   } catch (e) {
-    t.is(e.message, 'The hook callback must be a function')
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
+    t.is(e.message, 'FST_ERR_HOOK_INVALID_HANDLER: The hook callback must be a function')
   }
 })

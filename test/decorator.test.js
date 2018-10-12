@@ -53,7 +53,7 @@ test('decorate should throw if a declared dependency is not present', t => {
       instance.decorate('test', () => {}, ['dependency'])
       t.fail()
     } catch (e) {
-      t.is(e.message, 'Fastify decorator: missing dependency: \'dependency\'.')
+      t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'dependency\'.')
     }
     next()
   })

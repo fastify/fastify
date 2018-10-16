@@ -6,11 +6,14 @@ about: Responsible Disclosure
 ## 👮 [Responsible Disclosure](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
 
 Do not open issues that might have security implications. It is critical that security related issues
-are reported privately so we have time to address them before they become public knowledge. Please
-notify all security related issues via the following channels:
+are reported privately so we have time to address them before they become public knowledge.
 
-a) [node-security-wg](https://github.com/nodejs/security-wg)
+Individuals who find potential vulnerabilities in a package are invited
+to complete a vulnerability report on the dedicated HackerOne organization:
 
-b) [hackerone](https://www.hackerone.com/)
+[https://hackerone.com/nodejs-ecosystem](https://hackerone.com/nodejs-ecosystem)
 
-c) contact core members [Matteo](mailto:matteo.collina@gmail.com) or [Tomas](https://twitter.com/delvedor)
+Vulnerabilities can also be reported by emailing security-ecosystem@nodejs.org or Fastify core members: 
+
+- [Matteo Collina](mailto:matteo.collina@gmail.com)
+- [Tomas Della Vedova](https://twitter.com/delvedor)

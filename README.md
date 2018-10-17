@@ -8,6 +8,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master) [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/fastify/fastify.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/fastify/fastify/context:javascript)
 
 </div>
 

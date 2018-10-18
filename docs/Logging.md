@@ -25,7 +25,7 @@ fastify.get('/', options, function (request, reply) {
 ```
 
 If you want to pass some options to the logger, just pass the logger option to Fastify.
-You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
 
 ```js
 const split = require('split2')

@@ -582,10 +582,14 @@ test('undefined payload should be sent as-is', t => {
   })
 })
 
-test('reply.send(new NotFound()) should invoke the 404 handler', t => {
+test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
   t.plan(9)
 
   const fastify = require('../..')()
+
+  fastify.setNotFoundHandler((req, reply) => {
+    t.fail('Should not be called')
+  })
 
   fastify.get('/not-found', function (req, reply) {
     reply.send(new NotFound())
@@ -594,10 +598,6 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
   fastify.register(function (instance, options, next) {
     instance.get('/not-found', function (req, reply) {
       reply.send(new NotFound())
-    })
-
-    instance.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('Custom not found response')
     })
 
     next()
@@ -628,42 +628,12 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.deepEqual(body.toString(), 'Custom not found response')
-    })
-  })
-})
-
-test('reply.send(new NotFound()) should log a warning and send a basic response if called inside a 404 handler', t => {
-  t.plan(6)
-
-  const fastify = require('../..')()
-
-  fastify.get('/not-found', function (req, reply) {
-    reply.send(new NotFound())
-  })
-
-  fastify.setNotFoundHandler(function (req, reply) {
-    reply.res.log.warn = function mockWarn (message) {
-      t.equal(message, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
-    }
-
-    reply.send(new NotFound())
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.deepEqual(body.toString(), '404 Not Found')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.deepEqual(JSON.parse(body), {
+        error: 'Not Found',
+        message: 'Not Found',
+        statusCode: 404
+      })
     })
   })
 })
@@ -899,8 +869,8 @@ test('Content type and charset set previously', t => {
 
   const fastify = require('../../')()
 
-  fastify.addHook('onRequest', function (req, res, next) {
-    res.setHeader('content-type', 'application/json; charset=utf-16')
+  fastify.addHook('onRequest', function (req, reply, next) {
+    reply.header('content-type', 'application/json; charset=utf-16')
     next()
   })
 

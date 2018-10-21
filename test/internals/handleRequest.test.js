@@ -68,7 +68,7 @@ test('handler function - invalid schema', t => {
   const request = {
     body: { hello: 'world' }
   }
-  internals.handler(new Reply(res, context, request))
+  internals.handler(request, new Reply(res, context, request))
 })
 
 test('handler function - reply', t => {
@@ -93,7 +93,7 @@ test('handler function - reply', t => {
     onSend: []
   }
   buildSchema(context, schemaCompiler)
-  internals.handler(new Reply(res, context, {}))
+  internals.handler({}, new Reply(res, context, {}))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {
@@ -206,9 +206,10 @@ test('request should respond with an error if an unserialized payload is sent in
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.strictDeepEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
-      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
+      message: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
       statusCode: 500
     })
   })

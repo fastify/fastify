@@ -5,6 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
+const symbols = require('../lib/symbols.js')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -52,7 +53,7 @@ test('decorate should throw if a declared dependency is not present', t => {
       instance.decorate('test', () => {}, ['dependency'])
       t.fail()
     } catch (e) {
-      t.is(e.message, 'Fastify decorator: missing dependency: \'dependency\'.')
+      t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'dependency\'.')
     }
     next()
   })
@@ -86,7 +87,7 @@ test('decorateReply inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance._Reply.prototype.test)
+    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -229,7 +230,7 @@ test('decorateRequest inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance._Request.prototype.test)
+    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')

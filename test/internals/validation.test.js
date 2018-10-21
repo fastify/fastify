@@ -136,3 +136,36 @@ test('build schema - headers schema', t => {
   validation.build(opts, schema => ajv.compile(schema), new Schemas())
   t.is(typeof opts[symbols.headersSchema], 'function')
 })
+
+test('build schema - headers are lowercase', t => {
+  t.plan(1)
+  const opts = {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          'Content-Type': { type: 'string' }
+        }
+      }
+    }
+  }
+  validation.build(opts, schema => {
+    t.ok(schema.properties['content-type'], 'lowercase content-type exists')
+    return () => {}
+  }, new Schemas())
+})
+
+test('build schema - headers are not lowercased in case of custom object', t => {
+  t.plan(1)
+
+  class Headers {}
+  const opts = {
+    schema: {
+      headers: new Headers()
+    }
+  }
+  validation.build(opts, schema => {
+    t.type(schema, Headers)
+    return () => {}
+  }, new Schemas())
+})

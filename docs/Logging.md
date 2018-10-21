@@ -25,7 +25,23 @@ fastify.get('/', options, function (request, reply) {
 ```
 
 If you want to pass some options to the logger, just pass the logger option to Fastify.
-You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/API.md#pinooptions-stream). if you want to specify a file desintation, use:
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    level: 'info',
+    file: '/path/to/file' // will use pino.destination()
+  }
+})
+
+fastify.get('/', options, function (request, reply) {
+  request.log.info('Some info about the current request')
+  reply.send({ hello: 'world' })
+})
+```
+
+If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
 
 ```js
 const split = require('split2')
@@ -46,17 +62,7 @@ fastify.get('/', options, function (request, reply) {
 
 <a name="logging-request-id" />
 
-By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) options for customizing that header name.
-Additionally, `genReqId` option can be used for generating the request id by yourself. It will received the incoming request as a parameter.
-
-```js
-let i = 0
-const fastify = require('fastify')({
-  logger: {
-    genReqId: function (req) { return i++ }
-  }
-})
-```
+By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Server.md#gen-request-id) for customization options.
 
 The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. This behavior can be customized by specifying custom serializers.
 ```js

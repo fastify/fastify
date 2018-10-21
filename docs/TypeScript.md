@@ -44,6 +44,122 @@ server.get('/ping', opts, (request, reply) => {
 })
 ```
 
+<a id="generic-parameters"></a>
+## Generic Parameters
+Since you can validate the querystring, params, body, and headers, you can also override the default types of those values on the request interface:
+
+```ts
+import * as fastify from 'fastify'
+
+const server = fastify({})
+
+interface Query {
+  foo?: number
+}
+
+interface Params {
+  bar?: string
+}
+
+interface Body {
+  baz?: string
+}
+
+interface Headers {
+  a?: string
+}
+
+const opts: fastify.RouteShorthandOptions = {
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'number'
+        }
+      }
+    },
+    params: {
+      type: 'object',
+      properties: {
+        bar: {
+          type: 'string'
+        }
+      }
+    },
+    body: {
+      type: 'object',
+      properties: {
+        baz: {
+          type: 'string'
+        }
+      }
+    },
+    headers: {
+      type: 'object',
+      properties: {
+        a: {
+          type: 'string'
+        }
+      }
+    }
+  }
+}
+
+server.get<Query, Params, Body, Headers>('/ping/:bar', opts, (request, reply) => {
+  console.log(request.query) // this is of type Query!
+  console.log(request.params) // this is of type Params!
+  console.log(request.body) // this is of type Body!
+  console.log(request.headers) // this is of type Headers!
+  reply.code(200).send({ pong: 'it worked!' })
+})
+```
+
+All generic types are optional, so you can also pass types for the parts you validate with schemas:
+
+```ts
+import * as fastify from 'fastify'
+
+const server = fastify({})
+
+interface Params {
+  bar?: string
+}
+
+const opts: fastify.RouteShorthandOptions = {
+  schema: {
+    params: {
+      type: 'object',
+      properties: {
+        bar: {
+          type: 'string'
+        }
+      }
+    },
+  }
+}
+
+server.get<fastify.DefaultQuery, Params, unknown>('/ping/:bar', opts, (request, reply) => {
+  console.log(request.query) // this is of type fastify.DefaultQuery!
+  console.log(request.params) // this is of type Params!
+  console.log(request.body) // this is of type unknown!
+  console.log(request.headers) // this is of type fastify.DefaultHeader because typescript will use the default type value!
+  reply.code(200).send({ pong: 'it worked!' })
+})
+
+// Given that you haven't validated the querystring, body, or headers, it would be best
+// to type those params as 'unknown'. However, it's up to you. The example below is the
+// best way to prevent you from shooting yourself in the foot. In other words, don't
+// use values you haven't validated.
+server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, reply) => {
+  console.log(request.query) // this is of type unknown!
+  console.log(request.params) // this is of type Params!
+  console.log(request.body) // this is of type unknown!
+  console.log(request.headers) // this is of type unknown!
+  reply.code(200).send({ pong: 'it worked!' })
+})
+```
+
 <a id="http-prototypes"></a>
 ## HTTP Prototypes
 By default, fastify will determine which version of http is being used based on the options you pass to it. If for any

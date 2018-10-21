@@ -128,3 +128,22 @@ Queue.prototype.run = function run () {
     }
   })
 }
+
+test('The logger should error if both stream and file destination are given', t => {
+  t.plan(2)
+
+  const stream = require('stream').Writable
+
+  try {
+    Fastify({
+      logger: {
+        level: 'info',
+        stream: stream,
+        file: '/test'
+      }
+    })
+  } catch (err) {
+    t.is(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
+    t.is(err.message, 'FST_ERR_LOG_INVALID_DESTINATION: Cannot specify both logger.stream and logger.file options')
+  }
+})

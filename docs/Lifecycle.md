@@ -14,13 +14,13 @@ Incoming Request
                   │
         4**/5** ◀─┴─▶ run Middlewares
                         │
-              4**/5** ◀─┴─▶ Parsing
-                             │
-                       415 ◀─┴─▶ Validation
+              4**/5** ◀─┴─▶ preValidation Hook
+                              │
+                    4**/5** ◀─┴─▶ Parsing
                                    │
-                             400 ◀─┴─▶ preHandler Hook
+                             415 ◀─┴─▶ Validation
                                          │
-                               4**/5** ◀─┴─▶ beforeHandler
+                                   400 ◀─┴─▶ preHandler Hook
                                                │
                                      4**/5** ◀─┴─▶ User Handler
                                                      │

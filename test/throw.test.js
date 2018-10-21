@@ -123,7 +123,7 @@ test('Should throw on duplicate decorator encapsulation', t => {
 })
 
 test('Should throw on duplicate request decorator', t => {
-  t.plan(1)
+  t.plan(2)
 
   const fooObj = {}
   const fastify = Fastify()
@@ -133,12 +133,13 @@ test('Should throw on duplicate request decorator', t => {
     fastify.decorateRequest('foo', fooObj)
     t.fail()
   } catch (e) {
-    t.ok(/has already been added/.test(e.message))
+    t.is(e.code, 'FST_ERR_DEC_ALREADY_PRESENT')
+    t.is(e.message, `FST_ERR_DEC_ALREADY_PRESENT: The decorator 'foo' has already been added!`)
   }
 })
 
 test('Should throw if request decorator dependencies are not met', t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify()
   const fooObj = {}
@@ -147,7 +148,8 @@ test('Should throw if request decorator dependencies are not met', t => {
     fastify.decorateRequest('bar', fooObj, ['world'])
     t.fail()
   } catch (e) {
-    t.ok(/missing dependency/.test(e.message))
+    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.is(e.message, `FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency 'world'.`)
   }
 })
 

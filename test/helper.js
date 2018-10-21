@@ -76,6 +76,7 @@ module.exports.payloadMethod = function (method, t) {
   fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
+      return
     }
 
     fastify.server.unref()
@@ -267,7 +268,7 @@ module.exports.payloadMethod = function (method, t) {
 
       // Node errors for OPTIONS requests with a stream body and no Content-Length header
       if (upMethod !== 'OPTIONS') {
-        var chunk = Buffer.allocUnsafe(1024 * 1024 + 1)
+        var chunk = Buffer.alloc(1024 * 1024 + 1, 0)
         const largeStream = new stream.Readable({
           read () {
             this.push(chunk)

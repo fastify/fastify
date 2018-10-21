@@ -344,6 +344,12 @@ function build (options) {
   }
 
   function listen (port, address, backlog, cb) {
+    /* Deal with listen (cb) */
+    if (typeof port === 'function') {
+      cb = port
+      port = 0
+    }
+
     /* Deal with listen (port, cb) */
     if (typeof address === 'function') {
       cb = address

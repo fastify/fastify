@@ -330,6 +330,8 @@ fastify.listen(3000, '0.0.0.0', (err, address) => {
 })
 ```
 
+If the `port` is omitted (or is set to zero), a random available port is automatically chosen (later available via `fastify.server.address().port`).
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also has shorthand functions, check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md).

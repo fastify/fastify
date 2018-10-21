@@ -603,3 +603,31 @@ test('should register empty values', t => {
     t.notOk(fastify.test)
   })
 })
+
+test('nested plugins can override things', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  const rootFunc = () => {}
+  fastify.decorate('test', rootFunc)
+  fastify.decorateRequest('test', rootFunc)
+  fastify.decorateReply('test', rootFunc)
+
+  fastify.register((instance, opts, next) => {
+    const func = () => {}
+    instance.decorate('test', func)
+    instance.decorateRequest('test', func)
+    instance.decorateReply('test', func)
+
+    t.equal(instance.test, func)
+    t.equal(instance[symbols.kRequest].prototype.test, func)
+    t.equal(instance[symbols.kReply].prototype.test, func)
+    next()
+  })
+
+  fastify.ready(() => {
+    t.equal(fastify.test, rootFunc)
+    t.equal(fastify[symbols.kRequest].prototype.test, rootFunc)
+    t.equal(fastify[symbols.kReply].prototype.test, rootFunc)
+  })
+})

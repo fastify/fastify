@@ -72,7 +72,7 @@ fastify.addContentTypeParser('*', function (req, done) {
 
 In this way, all of the requests that do not have a corresponding content type parser will be handled by the specified function.
 
-This is also useful for piping the request stream. You can define a content parser like
+This is also useful for piping the request stream. You can define a content parser like:
 
 ```js
 fastify.addContentTypeParser('*', function (req, done) {
@@ -107,4 +107,4 @@ fastify.route({
 })
  ```
 
-For piping file uploads you may want to checkout [this plugin](https://github.com/fastify/fastify-multipart)
+For piping file uploads you may want to checkout [this plugin](https://github.com/fastify/fastify-multipart).

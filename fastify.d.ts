@@ -393,6 +393,7 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
+    listen(callback: (err: Error, address: string) => void): void
     listen(port: number, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void

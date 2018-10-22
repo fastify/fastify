@@ -30,6 +30,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
 - [`fastify-reply-from`](https://github.com/fastify/fastify-reply-from) Plugin to forward the current http request to another server.
+- [`fastify-routes`](https://github.com/fastify/fastify-routes) Plugin that provides a `Map` of routes.
 - [`fastify-sensible`](https://github.com/fastify/fastify-sensible) Defaults for Fastify that everyone can agree on. It adds some useful decorators such as http errors and assertions, but also more request and reply methods.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.
@@ -42,6 +43,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
+- [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for development servers which require babel transformations of JavaScript sources.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](http://bookshelfjs.org/) orm support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
@@ -63,18 +65,19 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from a directory and inject the fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
+- [`fastify-metrics`](https://gitlab.com/m03geek/fastify-metrics) Plugin for exporting [Prometheus](https://prometheus.io) metrics.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.
 - [`fastify-nuxt`](https://github.com/lyquocnam/fastify-nuxt) VueJS server side rendering support for Fastify with [`NuxtJS`](https://nuxtjs.org/)
+- [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+ documentation from routes schemas for Fastify.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
-- [`fastify-routes`](https://github.com/cemremengu/fastify-routes) Fastify plugin that provides a Map of roues.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.

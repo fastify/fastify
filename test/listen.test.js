@@ -6,6 +6,16 @@ const fs = require('fs')
 const test = require('tap').test
 const Fastify = require('..')
 
+test('listen accepts a callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.listen((err) => {
+    t.is(fastify.server.address().address, '127.0.0.1')
+    t.error(err)
+  })
+})
+
 test('listen accepts a port and a callback', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -176,11 +186,21 @@ if (os.platform() !== 'win32') {
   })
 }
 
-test('listen without callback', t => {
+test('listen without callback (port zero)', t => {
   t.plan(1)
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
   fastify.listen(0)
+    .then(() => {
+      t.is(fastify.server.address().address, '127.0.0.1')
+    })
+})
+
+test('listen without callback (port not given)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.listen()
     .then(() => {
       t.is(fastify.server.address().address, '127.0.0.1')
     })

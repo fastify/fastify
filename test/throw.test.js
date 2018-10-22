@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('tap')
 const Fastify = require('..')
 
 test('Fastify should throw on wrong options', t => {
@@ -101,7 +101,7 @@ test('Should throw on duplicate decorator', t => {
   }
 })
 
-test('Should throw on duplicate decorator encapsulation', t => {
+test('Should not throw on duplicate decorator encapsulation', t => {
   t.plan(1)
 
   const fastify = Fastify()
@@ -110,12 +110,9 @@ test('Should throw on duplicate decorator encapsulation', t => {
   fastify.decorate('foo2', foo2Obj)
 
   fastify.register(function (fastify, opts, next) {
-    try {
+    t.notThrow(() => {
       fastify.decorate('foo2', foo2Obj)
-      t.fail()
-    } catch (e) {
-      t.pass()
-    }
+    })
     next()
   })
 

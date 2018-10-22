@@ -31,6 +31,14 @@ const cors = require('cors')
       key: readFileSync('path/to/key.pem')
     }
   })
+  const h2AllowH1SecureServer = fastify({
+    http2: true,
+    https: {
+      allowHTTP1: true,
+      cert: readFileSync('path/to/cert.pem'),
+      key: readFileSync('path/to/key.pem')
+    }
+  })
   // logger true
   const logAllServer = fastify({ logger: true })
   logAllServer.addHook('onRequest', (req, res, next) => {

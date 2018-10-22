@@ -500,7 +500,7 @@ test('middlewares should support encapsulation with prefix', t => {
 
       sget({
         method: 'GET',
-        url: 'http://localhost:' + instance.server.address().port + '/local'
+        url: 'http://localhost:' + instance.server.address().port + '/local/'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 500)

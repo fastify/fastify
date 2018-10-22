@@ -167,7 +167,7 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify[kRoutePrefix] = ''
+  fastify[kRoutePrefix] = '/'
   fastify[kLogLevel] = ''
 
   Object.defineProperty(fastify, 'prefix', {
@@ -486,6 +486,10 @@ function build (options) {
       pluginPrefix = '/' + pluginPrefix
     }
 
+    if (!pluginPrefix.endsWith('/')) {
+      pluginPrefix += '/'
+    }
+
     return instancePrefix + pluginPrefix
   }
 
@@ -574,10 +578,7 @@ function build (options) {
     _fastify.after(function afterRouteAdded (notHandledErr, done) {
       const prefix = _fastify[kRoutePrefix]
       var path = opts.url || opts.path
-      if (path === '/' && prefix.length > 0) {
-        // Ensure that '/prefix' + '/' gets registered as '/prefix'
-        path = ''
-      } else if (path[0] === '/' && prefix.endsWith('/')) {
+      if (path[0] === '/') {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
         path = path.slice(1)
       }
@@ -713,8 +714,7 @@ function build (options) {
   function use (url, fn) {
     throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
-      const prefix = this[kRoutePrefix]
-      url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
+      url = buildRoutePrefix(this[kRoutePrefix], url)
     }
     return this.after((err, done) => {
       addMiddleware(this, [url, fn])
@@ -829,7 +829,7 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     const _fastify = this
-    const prefix = this[kRoutePrefix] || '/'
+    const prefix = this[kRoutePrefix]
 
     if (this[kCanSetNotFoundHandler] === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)

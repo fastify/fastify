@@ -86,7 +86,7 @@ test('encapsulated 500', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/test'
+    url: '/test/'
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 500)

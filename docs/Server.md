@@ -360,21 +360,22 @@ Function to add a specific hook in the lifecycle of Fastify, check [here](https:
 
 <a name="prefix"></a>
 #### prefix
-The full path that will be prefixed to a route.
+The full path that will be prefixed to a route. It always ends with a
+`/`.
 
 Example:
 
 ```js
 fastify.register(function (instance, opts, next) {
   instance.get('/foo', function (request, reply) {
-    // Will log "prefix: /v1"
+    // Will log "prefix: /v1/"
     request.log.info('prefix: %s', instance.prefix)
     reply.send({ prefix: instance.prefix })
   })
 
   instance.register(function (instance, opts, next) {
     instance.get('/bar', function (request, reply) {
-      // Will log "prefix: /v1/v2"
+      // Will log "prefix: /v1/v2/"
       request.log.info('prefix: %s', instance.prefix)
       reply.send({ prefix: instance.prefix })
     })
@@ -384,6 +385,12 @@ fastify.register(function (instance, opts, next) {
 
   next()
 }, { prefix: '/v1' })
+
+fastify.get('/', function (request, reply) {
+  // Will log "prefix: /"
+  request.log.info('prefix: %s', instance.prefix)
+  reply.send({ prefix: instance.prefix })
+})
 ```
 
 <a name="log"></a>

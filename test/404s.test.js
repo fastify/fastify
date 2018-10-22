@@ -205,7 +205,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
         t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
       } catch (err) {
         t.type(err, Error)
-        t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
+        t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix/\'')
       }
 
       next()
@@ -255,7 +255,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
           t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
         } catch (err) {
           t.type(err, Error)
-          t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
+          t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix/\'')
         }
         next()
       })
@@ -288,7 +288,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
           t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
         } catch (err) {
           t.type(err, Error)
-          t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix\'')
+          t.strictEqual(err.message, 'Not found handler already set for Fastify instance with prefix: \'/prefix/\'')
         }
         next()
       })
@@ -375,7 +375,7 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'PUT',
-        url: 'http://localhost:' + fastify.server.address().port + '/test',
+        url: 'http://localhost:' + fastify.server.address().port + '/test/',
         body: JSON.stringify({ hello: 'world' }),
         headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
@@ -401,7 +401,7 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'PUT',
-        url: 'http://localhost:' + fastify.server.address().port + '/test2',
+        url: 'http://localhost:' + fastify.server.address().port + '/test2/',
         body: JSON.stringify({ hello: 'world' }),
         headers: { 'Content-Type': 'application/json' }
       }, (err, response, body) => {
@@ -791,7 +791,7 @@ test('run hooks and middleware with encapsulated 404', t => {
 
     sget({
       method: 'PUT',
-      url: 'http://localhost:' + fastify.server.address().port + '/test',
+      url: 'http://localhost:' + fastify.server.address().port + '/test/',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {
@@ -853,7 +853,7 @@ test('run middlewares with encapsulated 404', t => {
     })
 
     next()
-  }, { prefix: '/test' })
+  }, { prefix: '/test/' })
 
   t.tearDown(fastify.close.bind(fastify))
 
@@ -862,7 +862,7 @@ test('run middlewares with encapsulated 404', t => {
 
     sget({
       method: 'PUT',
-      url: 'http://localhost:' + fastify.server.address().port + '/test',
+      url: 'http://localhost:' + fastify.server.address().port + '/test/',
       body: JSON.stringify({ hello: 'world' }),
       headers: { 'Content-Type': 'application/json' }
     }, (err, response, body) => {

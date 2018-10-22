@@ -150,6 +150,28 @@ test('Prefix should support /', t => {
 
   fastify.inject({
     method: 'GET',
+    url: '/v1/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('Prefix should support / - ignore trailing slashes', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    ignoreTrailingSlash: true
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { prefix: '/v1' })
+
+  fastify.inject({
+    method: 'GET',
     url: '/v1'
   }, (err, res) => {
     t.error(err)
@@ -170,7 +192,7 @@ test('Prefix without /', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/v1'
+    url: '/v1/'
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -246,7 +268,7 @@ test('Prefix works multiple levels deep', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/v1/v2/v3'
+    url: '/v1/v2/v3/'
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { hello: 'world' })
@@ -283,7 +305,7 @@ test('Different register - encapsulation check', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/v1/v2'
+    url: '/v1/v2/'
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { route: '/v1/v2' })
@@ -291,7 +313,7 @@ test('Different register - encapsulation check', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/v3/v4'
+    url: '/v3/v4/'
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), { route: '/v3/v4' })
@@ -299,8 +321,12 @@ test('Different register - encapsulation check', t => {
 })
 
 test('Can retrieve prefix within encapsulated instances', t => {
-  t.plan(4)
+  t.plan(6)
   const fastify = Fastify()
+
+  fastify.get('/zero', function (req, reply) {
+    reply.send(this.prefix)
+  })
 
   fastify.register(function (instance, opts, next) {
     instance.get('/one', function (req, reply) {
@@ -319,10 +345,18 @@ test('Can retrieve prefix within encapsulated instances', t => {
 
   fastify.inject({
     method: 'GET',
+    url: '/zero'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.payload, '/')
+  })
+
+  fastify.inject({
+    method: 'GET',
     url: '/v1/one'
   }, (err, res) => {
     t.error(err)
-    t.is(res.payload, '/v1')
+    t.is(res.payload, '/v1/')
   })
 
   fastify.inject({
@@ -330,6 +364,6 @@ test('Can retrieve prefix within encapsulated instances', t => {
     url: '/v1/v2/two'
   }, (err, res) => {
     t.error(err)
-    t.is(res.payload, '/v1/v2')
+    t.is(res.payload, '/v1/v2/')
   })
 })

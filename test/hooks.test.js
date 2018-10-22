@@ -430,7 +430,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/v1/foo')
     t.strictEqual(route.path, '/v1/foo')
-    t.strictEqual(route.prefix, '/v1')
+    t.strictEqual(route.prefix, '/v1/')
   })
 
   fastify.register((instance, opts, next) => {
@@ -438,7 +438,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/v1/foo')
       t.strictEqual(route.path, '/v1/foo')
-      t.strictEqual(route.prefix, '/v1')
+      t.strictEqual(route.prefix, '/v1/')
     })
     instance.get('/foo', opts, function (req, reply) {
       reply.send()

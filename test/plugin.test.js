@@ -382,7 +382,7 @@ test('nested plugins', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1/'
     }, (err, response, body) => {
       t.error(err)
       t.deepEqual(body.toString(), 'I am child 1')
@@ -390,7 +390,7 @@ test('nested plugins', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2/'
     }, (err, response, body) => {
       t.error(err)
       t.deepEqual(body.toString(), 'I am child 2')

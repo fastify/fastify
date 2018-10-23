@@ -129,7 +129,7 @@ declare namespace fastify {
     maxParamLength?: number,
   }
   interface ServerOptionsAsSecure extends ServerOptions {
-    https: tls.TlsOptions
+    https: http2.SecureServerOptions
   }
   interface ServerOptionsAsHttp extends ServerOptions {
     http2?: false

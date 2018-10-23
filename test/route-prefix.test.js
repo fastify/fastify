@@ -333,3 +333,32 @@ test('Can retrieve prefix within encapsulated instances', t => {
     t.is(res.payload, '/v1/v2')
   })
 })
+
+test('matches both /prefix and /prefix/ with a / route', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})

@@ -16,6 +16,6 @@ jobs:
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
-  - script: curl -X POST --header 'Content-Type: application/json' "https://circleci.com/api/v1.1/project/github/fastify/website?circle-token=$CIRCLECI_TOKEN"
+  - script: ./tools/website.sh
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     displayName: 'Trigger Website build'

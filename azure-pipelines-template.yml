@@ -22,5 +22,3 @@ jobs:
     displayName: 'Install dependencies'
   - script: npm run coveralls -- -c
     displayName: 'Run tests'
-  - script: ./tools/website.sh
-    displayName: 'Trigger Website build'

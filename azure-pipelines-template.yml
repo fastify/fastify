@@ -18,7 +18,7 @@ jobs:
     inputs:
       versionSpec: $(node_version)
     displayName: 'Install Node.js'
-  - script: npm i
+  - bash: npm i
     displayName: 'Install dependencies'
-  - script: npm run coveralls -- -c
+  - bash: npm run coveralls -- -c
     displayName: 'Run tests'

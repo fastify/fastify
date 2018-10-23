@@ -1,0 +1,26 @@
+jobs:
+- job: ${{ parameters.name }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  strategy:
+    matrix:
+      node_10_x:
+        node_version: 10.x
+      node_9_x:
+        node_version: 9.x
+      node_8_x:
+        node_version: 8.x
+      node_6_x:
+        node_version: 6.x
+    maxParallel: 4
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: $(node_version)
+    displayName: 'Install Node.js'
+  - script: npm i
+    displayName: 'Install dependencies'
+  - script: npm run coveralls -- -c
+    displayName: 'Run tests'
+  - script: ./tools/website.sh
+    displayName: 'Trigger Website build'

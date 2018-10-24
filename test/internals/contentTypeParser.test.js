@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-return */
 'use strict'
 
 const t = require('tap')

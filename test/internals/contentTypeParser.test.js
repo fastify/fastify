@@ -18,12 +18,9 @@ test('rawBody function', t => {
     }
   }
   const res = {}
-  res.end = () => {
-    return
-  }
-  res.writeHead = () => {
-    return
-  }
+  res.end = () => {}
+  res.writeHead = () => {}
+
   res.log = { error: () => {}, info: () => {} }
   const context = {
     Reply: Reply,

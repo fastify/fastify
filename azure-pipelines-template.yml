@@ -20,5 +20,9 @@ jobs:
     displayName: 'Install Node.js'
   - bash: npm i
     displayName: 'Install dependencies'
+  - bash: npm run lint
+    displayName: Run linter
   - bash: npm run coveralls -- -c
     displayName: 'Run tests'
+  - bash: npm run typescript
+    displayName: Check types

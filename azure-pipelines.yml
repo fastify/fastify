@@ -16,5 +16,5 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - script: ./tools/website.sh
+  - bash: ./tools/website.sh
     displayName: Trigger Website build

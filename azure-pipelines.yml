@@ -18,3 +18,4 @@ jobs:
   steps:
   - bash: ./tools/website.sh
     displayName: Trigger Website build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

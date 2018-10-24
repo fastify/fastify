@@ -1,9 +1,9 @@
 'use strict'
 
 const sget = require('simple-get').concat
-const sleep = require('then-sleep')
 const Fastify = require('..')
 const fs = require('fs')
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 function asyncHookTest (t) {
   const test = t.test

@@ -676,10 +676,9 @@ function build (options) {
 
   function defaultErrorHandler (error, request, reply) {
     var res = reply.res
-    var statusCode = res.statusCode ? res.statusCode : 500
-    if (statusCode >= 500) {
+    if (res.statusCode >= 500) {
       res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
-    } else if (statusCode >= 400) {
+    } else if (res.statusCode >= 400) {
       res.log.info({ res: res, err: error }, error && error.message)
     }
     reply.send(error)

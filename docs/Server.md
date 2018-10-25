@@ -436,12 +436,27 @@ fastify.register(function (instance, options, next) {
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
+*Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
+  // Log error
   // Send error response
 })
+```
+
+Fastify is provided with a default function that is called if no error handler is set and that logs the error with respect to its `statusCode`:
+
+```js
+var statusCode = error.statusCode
+if (statusCode >= 500) {
+  log.error(error)
+} else if (statusCode >= 400) {
+  log.info(error)
+} else {
+  log.error(error)
+}
 ```
 
 <a name="print-routes"></a>

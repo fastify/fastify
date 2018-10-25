@@ -674,6 +674,16 @@ function build (options) {
     return _fastify
   }
 
+  function defaultErrorHandler (error, request, reply) {
+    var res = reply.res
+    if (res.statusCode >= 500) {
+      res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
+    } else if (res.statusCode >= 400) {
+      res.log.info({ res: res, err: error }, error && error.message)
+    }
+    reply.send(error)
+  }
+
   function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel) {
     this.schema = schema
     this.handler = handler
@@ -685,7 +695,7 @@ function build (options) {
     this.preHandler = null
     this.onResponse = null
     this.config = config
-    this.errorHandler = errorHandler
+    this.errorHandler = errorHandler || defaultErrorHandler
     this._middie = null
     this._parserOptions = {
       limit: bodyLimit || null

@@ -73,16 +73,23 @@ test('should trigger the onSend hook', t => {
   })
 })
 
-test('should trigger the onSend hook only once if pumping the stream fails', t => {
-  t.plan(4)
+test('should trigger the onSend hook only twice if pumping the stream fails, first with the stream, second with the serialized error', t => {
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
     reply.send(fs.createReadStream('not-existing-file', 'utf8'))
   })
 
+  let counter = 0
   fastify.addHook('onSend', (req, reply, payload, next) => {
-    t.ok(payload._readableState)
+    if (counter === 0) {
+      t.ok(payload._readableState)
+    } else if (counter === 1) {
+      const error = JSON.parse(payload)
+      t.strictEqual(error.statusCode, 500)
+    }
+    counter++
     next()
   })
 

@@ -230,6 +230,14 @@ Now your clients will have access to the following routes:
 You can do this as many times as you want, it works also for nested `register` and routes parameter are supported as well.
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
 
+#### Handling of / route inside prefixed plugins
+
+The `/` route has a different behavior depending if the prefix ends with
+`/` or not. As an example, if we consider a prefix `/something/`,
+adding a `/` route will only match `/something/`. If we consider a
+prefix `/something`, adding a `/` route will match both `/something` 
+and `/something/`.
+
 <a name="custom-log-level"></a>
 ### Custom Log Level
 It could happen that you need different log levels in your routes, with Fastify achieve this is very straightforward.<br/>

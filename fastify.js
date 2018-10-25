@@ -649,6 +649,7 @@ function build (options) {
         const onRequest = _fastify[kHooks].onRequest
         const onResponse = _fastify[kHooks].onResponse
         const onSend = _fastify[kHooks].onSend
+        const onError = _fastify[kHooks].onError
         const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
         const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
 
@@ -656,6 +657,7 @@ function build (options) {
         context.preValidation = preValidation.length ? preValidation : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
+        context.onError = onError.length ? onError : null
         context.onResponse = onResponse.length ? onResponse : null
 
         context._middie = buildMiddie(_fastify[kMiddlewares])
@@ -692,6 +694,7 @@ function build (options) {
     this.contentTypeParser = contentTypeParser
     this.onRequest = null
     this.onSend = null
+    this.onError = null
     this.preHandler = null
     this.onResponse = null
     this.config = config
@@ -828,7 +831,7 @@ function build (options) {
     req.log.info({ req }, 'incoming request')
 
     var request = new Request(null, req, null, req.headers, req.log)
-    var reply = new Reply(res, { onSend: [] }, request, res.log)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     request.log.warn(fourOhFour.prettyPrint())
@@ -906,12 +909,14 @@ function build (options) {
       const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
       const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
       const onSend = this[kHooks].onSend
+      const onError = this[kHooks].onError
       const onResponse = this[kHooks].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
       context.preValidation = preValidation.length ? preValidation : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null
+      context.onError = onError.length ? onError : null
       context.onResponse = onResponse.length ? onResponse : null
 
       context._middie = buildMiddie(this[kMiddlewares])

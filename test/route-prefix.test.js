@@ -426,7 +426,7 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
 test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
-    ignoreTrailingSlash: true
+    ignoreTrailingSlash: false
   })
 
   fastify.register(function (fastify, opts, next) {

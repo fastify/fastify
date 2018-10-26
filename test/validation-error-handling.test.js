@@ -8,7 +8,8 @@ const schema = {
   body: {
     type: 'object',
     properties: {
-      name: { type: 'string' }
+      name: { type: 'string' },
+      work: { type: 'string' }
     },
     required: ['name']
   }
@@ -111,18 +112,7 @@ test('should be able to attach validation to request', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), [
-      {
-        keyword: 'required',
-        dataPath: '',
-        schemaPath: '#/required',
-        params: {
-          missingProperty: 'name'
-        },
-        message: 'should have required property \'name\''
-      }
-    ]
-    )
+    t.deepEqual(res.payload, "body should have required property 'name'")
     t.strictEqual(res.statusCode, 400)
   })
 })

@@ -102,7 +102,7 @@ test('should be able to attach validation to request', t => {
   const fastify = Fastify()
 
   fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
-    reply.code(400).send(req.validation.validation)
+    reply.code(400).send(req.validationError.validation)
   })
 
   fastify.inject({
@@ -132,7 +132,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
 
   fastify.post('/', { schema, attachValidation: false }, function (req, reply) {
     t.fail('should not be here')
-    reply.code(200).send(req.validation.validation)
+    reply.code(200).send(req.validationError.validation)
   })
 
   fastify.inject({
@@ -158,7 +158,7 @@ test('Attached validation error should take precendence over setErrorHandler', t
   const fastify = Fastify()
 
   fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
-    reply.code(400).send('Attached: ' + req.validation)
+    reply.code(400).send('Attached: ' + req.validationError)
   })
 
   fastify.setErrorHandler(function (error, request, reply) {

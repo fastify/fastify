@@ -69,6 +69,7 @@ test('should be able to use setErrorHandler specify custom validation error', t 
   const fastify = Fastify()
 
   fastify.post('/', { schema }, function (req, reply) {
+    t.fail('should not be here')
     reply.code(200).send(req.body.name)
   })
 
@@ -124,6 +125,33 @@ test('should be able to attach validation to request', t => {
   })
 })
 
+test('should respect when attachValidation is explicitly set to false', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', { schema, attachValidation: false }, function (req, reply) {
+    t.fail('should not be here')
+    reply.code(200).send(req.validation.validation)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: "body should have required property 'name'"
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})
+
 test('Attached validation error should take precendence over setErrorHandler', t => {
   t.plan(3)
 
@@ -134,6 +162,7 @@ test('Attached validation error should take precendence over setErrorHandler', t
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
+    t.fail('should not be here')
     if (error.validation) {
       reply.status(422).send(new Error('validation failed'))
     }

@@ -116,3 +116,31 @@ test('should be able to attach validation to request', t => {
     t.strictEqual(res.statusCode, 400)
   })
 })
+
+test('Attached validation error should take precendence over setErrorHandler', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
+    reply.code(400).send('Attached: ' + req.validation)
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    if (error.validation) {
+      reply.status(422).send(new Error('validation failed'))
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.payload, "Attached: body should have required property 'name'")
+    t.strictEqual(res.statusCode, 400)
+  })
+})

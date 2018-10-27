@@ -166,6 +166,7 @@ declare namespace fastify {
     Body = DefaultBody
   > {
     schema?: RouteSchema
+    attachValidation?: boolean
     beforeHandler?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>

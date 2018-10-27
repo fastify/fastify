@@ -101,7 +101,7 @@ test('should be able to attach validation to request', t => {
   const fastify = Fastify()
 
   fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
-    reply.code(400).send('Attached: ' + req.validation)
+    reply.code(400).send(req.validation.validation)
   })
 
   fastify.inject({
@@ -112,7 +112,14 @@ test('should be able to attach validation to request', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, "Attached: body should have required property 'name'")
+
+    t.deepEqual(JSON.parse(res.payload), [{
+      keyword: 'required',
+      dataPath: '',
+      schemaPath: '#/required',
+      params: { missingProperty: 'name' },
+      message: 'should have required property \'name\''
+    }])
     t.strictEqual(res.statusCode, 400)
   })
 })
@@ -140,7 +147,7 @@ test('Attached validation error should take precendence over setErrorHandler', t
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, "Attached: body should have required property 'name'")
+    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name'")
     t.strictEqual(res.statusCode, 400)
   })
 })

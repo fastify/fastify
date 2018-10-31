@@ -227,6 +227,19 @@ and fail to satisfy it, the route will immediately return a response with the fo
 }
 ```
 
+If you want to handle errors inside the route, you can specify the `attachValidation` option for your route. If there is a validation error, the `validationError` property of the request will contain the `Error` object with the raw `validation` result as shown below
+
+```js
+const fastify = Fastify()
+
+fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
+  if (req.validation) {
+    // `req.validationError.validation` contains the raw validation error
+    reply.code(400).send(req.validationError)
+  }
+})
+```
+
 You can also use [setErrorHandler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) to define a custom response for validation errors such as
 
 ```js

@@ -58,7 +58,8 @@ test('handler function - invalid schema', t => {
     Reply: Reply,
     Request: Request,
     preHandler: [],
-    onSend: []
+    onSend: [],
+    attachValidation: false
   }
   const schemas = new Schemas()
   buildSchema(context, schemaCompiler, schemas)

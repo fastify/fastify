@@ -103,7 +103,7 @@
     "standard": "^12.0.0",
     "tap": "^12.0.0",
     "typescript": "^3.0.1",
-    "typescript-eslint-parser": "^20.0.0",
+    "typescript-eslint-parser": "^20.1.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {

@@ -6,7 +6,10 @@ environment:
     - nodejs_version: 8
       platform: x64
       msvs_toolset: 12
-    - nodejs_version: 9
+    - nodejs_version: 10
+      platform: x64
+      msvs_toolset: 12
+    - nodejs_version: 11
       platform: x64
       msvs_toolset: 12
 

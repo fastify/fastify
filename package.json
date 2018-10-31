@@ -70,7 +70,7 @@
     "node": ">=6"
   },
   "devDependencies": {
-    "@types/node": "^10.12.0",
+    "@types/node": "^10.12.1",
     "JSONStream": "^1.3.5",
     "autocannon": "^3.1.0",
     "branch-comparer": "^0.4.0",
@@ -104,8 +104,8 @@
     "standard": "^12.0.0",
     "tap": "^12.0.0",
     "then-sleep": "^1.0.1",
-    "typescript": "^3.1.3",
-    "typescript-eslint-parser": "^20.0.0",
+    "typescript": "^3.1.4",
+    "typescript-eslint-parser": "^20.1.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {

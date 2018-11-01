@@ -79,7 +79,7 @@
     "coveralls": "^3.0.2",
     "dns-prefetch-control": "^0.1.0",
     "eslint-import-resolver-node": "^0.3.2",
-    "eslint-plugin-typescript": "^0.12.0",
+    "eslint-plugin-typescript": "^0.13.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.2.1",
     "form-data": "^2.3.2",

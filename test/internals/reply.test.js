@@ -7,7 +7,7 @@ const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
 const {
-  kErrorHandlerCalled,
+  kReplyErrorHandlerCalled,
   kReplyHeaders,
   kReplySerializer,
   kReplyIsError
@@ -21,7 +21,7 @@ test('Once called, Reply should return an object with methods', t => {
   const reply = new Reply(response, context, request)
   t.is(typeof reply, 'object')
   t.is(typeof reply[kReplyIsError], 'boolean')
-  t.is(typeof reply[kErrorHandlerCalled], 'boolean')
+  t.is(typeof reply[kReplyErrorHandlerCalled], 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.status, 'function')

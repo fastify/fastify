@@ -18,4 +18,6 @@ jobs:
   steps:
   - bash: ./tools/website.sh
     displayName: Trigger Website build
+    env:
+    - CIRCLECI_TOKEN: $(CIRCLECI_TOKEN)
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

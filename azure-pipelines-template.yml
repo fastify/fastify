@@ -26,5 +26,7 @@ jobs:
     displayName: Run linter
   - bash: npm run coveralls -- -c
     displayName: Run tests
+    env:
+    - TAP_COLORS: $(TAP_COLORS)
   - bash: npm run typescript
     displayName: Check types

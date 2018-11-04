@@ -24,9 +24,7 @@ jobs:
     displayName: Install dependencies
   - bash: npm run lint
     displayName: Run linter
-  - bash: npm run coveralls -- -c
+  - bash: npm run coveralls
     displayName: Run tests
-    env:
-      TAP_COLORS: $(TAP_COLORS)
   - bash: npm run typescript
     displayName: Check types

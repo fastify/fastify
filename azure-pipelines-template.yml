@@ -4,6 +4,8 @@ jobs:
     vmImage: ${{ parameters.vmImage }}
   strategy:
     matrix:
+      node_11_x:
+        node_version: 11.x
       node_10_x:
         node_version: 10.x
       node_9_x:
@@ -12,17 +14,19 @@ jobs:
         node_version: 8.x
       node_6_x:
         node_version: 6.x
-    maxParallel: 4
+    maxParallel: 5
   steps:
+  - bash: echo $TAP_COLOR
+    displayName: Output tap color setting
   - task: NodeTool@0
     inputs:
       versionSpec: $(node_version)
-    displayName: 'Install Node.js'
+    displayName: Install Node.js
   - bash: npm i
-    displayName: 'Install dependencies'
+    displayName: Install dependencies
   - bash: npm run lint
     displayName: Run linter
   - bash: npm run coveralls -- -c
-    displayName: 'Run tests'
+    displayName: Run tests
   - bash: npm run typescript
     displayName: Check types

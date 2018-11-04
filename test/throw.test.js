@@ -6,7 +6,7 @@ const Fastify = require('..')
 test('Fastify should throw on wrong options', t => {
   t.plan(2)
   try {
-    const f = require('..')('lol') // eslint-disable-line
+    Fastify('lol')
     t.fail()
   } catch (e) {
     t.is(e.message, 'Options must be an object')

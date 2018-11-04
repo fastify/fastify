@@ -1,5 +1,7 @@
 'use strict'
 
+console.error(process.env.TAP_COLORS, '###############################')
+
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat

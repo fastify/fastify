@@ -16,7 +16,7 @@ jobs:
         node_version: 6.x
     maxParallel: 5
   steps:
-  - bash: echo $TAP_COLOR
+  - bash: echo $TAP_COLORS
     displayName: Output tap color setting
   - task: NodeTool@0
     inputs:

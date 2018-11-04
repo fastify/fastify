@@ -16,8 +16,6 @@ jobs:
         node_version: 6.x
     maxParallel: 5
   steps:
-  - bash: echo $TAP_COLORS
-    displayName: Output tap color setting
   - task: NodeTool@0
     inputs:
       versionSpec: $(node_version)
@@ -26,7 +24,7 @@ jobs:
     displayName: Install dependencies
   - bash: npm run lint
     displayName: Run linter
-  - bash: npm run coveralls -- -c
+  - bash: echo $TAP_COLORS && npm run coveralls -- -c
     displayName: Run tests
   - bash: npm run typescript
     displayName: Check types

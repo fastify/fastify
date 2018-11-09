@@ -23,9 +23,9 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 
 declare namespace fastify {
 
-  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: Error) => void) => void
+  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: FastifyError) => void) => void
 
-  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
+  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: FastifyError) => void) => void
 
   type DefaultQuery = { [k: string]: any }
   type DefaultParams = { [k: string]: any }
@@ -33,6 +33,27 @@ declare namespace fastify {
   type DefaultBody = any
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
+
+  interface ValidationResult {
+    keyword: string;
+    dataPath: string;
+    schemaPath: string;
+    params: {
+      [type: string]: string;
+    },
+    message: string;
+  }
+
+  /**
+   * Fastify custom error
+   */
+  interface FastifyError extends Error {
+    statusCode?: number;
+    /**
+     * Validation errors
+     */
+    validation?: Array<ValidationResult>;
+  }
 
   type FastifyMiddleware<
   HttpServer,
@@ -46,7 +67,7 @@ declare namespace fastify {
     this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>,
     req: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
     reply: FastifyReply<HttpResponse>,
-    done: (err?: Error) => void,
+    done: (err?: FastifyError) => void,
   ) => void
 
   type RequestHandler<
@@ -458,7 +479,7 @@ declare namespace fastify {
      * Extends the standard server error. Return an object with the properties you'd
      * like added to the error
      */
-    extendServerError(extendFn: (error: Error) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    extendServerError(extendFn: (error: FastifyError) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Determines if the given named decorator is available
@@ -490,12 +511,12 @@ declare namespace fastify {
      * Hook that is fired after a request is processed, but before the "onResponse"
      * hook
      */
-    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: FastifyError, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
      /**
      * Hook that is called when a response is about to be sent to a client
      */
-    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.ServerResponse, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.ServerResponse, next: (err?: FastifyError) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Adds a hook that is triggered when server.close is called. Useful for closing connections
@@ -513,7 +534,7 @@ declare namespace fastify {
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void
+    inject(opts: HTTPInjectOptions | string, cb: (err: FastifyError, res: HTTPInjectResponse) => void): void
 
     /**
      * Useful for testing http requests without running a sever
@@ -528,7 +549,7 @@ declare namespace fastify {
     /**
      * Set a function that will be called whenever an error happens
      */
-    setErrorHandler(handler: (error: Error, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set the schema compiler for all routes.

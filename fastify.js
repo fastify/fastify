@@ -571,16 +571,25 @@ function build (options) {
 
     validateBodyLimitOption(opts.bodyLimit)
 
-    _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      const prefix = _fastify[kRoutePrefix]
+    const prefix = _fastify[kRoutePrefix]
+
+    _fastify.after(function (notHandledErr, done) {
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
         // Ensure that '/prefix' + '/' gets registered as '/prefix'
-        path = ''
+        afterRouteAdded('', notHandledErr, done)
       } else if (path[0] === '/' && prefix.endsWith('/')) {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
         path = path.slice(1)
       }
+
+      afterRouteAdded(path, notHandledErr, done)
+    })
+
+    // chainable api
+    return _fastify
+
+    function afterRouteAdded (path, notHandledErr, done) {
       const url = prefix + path
 
       opts.url = url
@@ -668,10 +677,7 @@ function build (options) {
       })
 
       done(notHandledErr)
-    })
-
-    // chainable api
-    return _fastify
+    }
   }
 
   function defaultErrorHandler (error, request, reply) {

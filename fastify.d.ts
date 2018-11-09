@@ -534,7 +534,7 @@ declare namespace fastify {
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: HTTPInjectOptions | string, cb: (err: FastifyError, res: HTTPInjectResponse) => void): void
+    inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void
 
     /**
      * Useful for testing http requests without running a sever

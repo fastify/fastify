@@ -6,6 +6,12 @@ const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
+const {
+  kReplyErrorHandlerCalled,
+  kReplyHeaders,
+  kReplySerializer,
+  kReplyIsError
+} = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(12)
@@ -14,14 +20,14 @@ test('Once called, Reply should return an object with methods', t => {
   function request () {}
   const reply = new Reply(response, context, request)
   t.is(typeof reply, 'object')
-  t.is(typeof reply._isError, 'boolean')
-  t.is(typeof reply._errorHandlerCalled, 'boolean')
+  t.is(typeof reply[kReplyIsError], 'boolean')
+  t.is(typeof reply[kReplyErrorHandlerCalled], 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
-  t.is(typeof reply._headers, 'object')
+  t.is(typeof reply[kReplyHeaders], 'object')
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
@@ -42,9 +48,9 @@ test('reply.send throw with circular JSON', t => {
 test('reply.serializer should set a custom serializer', t => {
   t.plan(2)
   const reply = new Reply(null, null, null)
-  t.equal(reply._serializer, null)
+  t.equal(reply[kReplySerializer], null)
   reply.serializer('serializer')
-  t.equal(reply._serializer, 'serializer')
+  t.equal(reply[kReplySerializer], 'serializer')
 })
 
 test('reply.serialize should serialize payload', t => {

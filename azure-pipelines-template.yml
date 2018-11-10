@@ -15,6 +15,8 @@ jobs:
       node_6_x:
         node_version: 6.x
     maxParallel: 5
+  env:
+    COVERALLS_REPO_TOKEN: $(COVERALLS_REPO_TOKEN)
   steps:
   - task: NodeTool@0
     inputs:

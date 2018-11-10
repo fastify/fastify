@@ -15,8 +15,6 @@ jobs:
       node_6_x:
         node_version: 6.x
     maxParallel: 5
-  env:
-    COVERALLS_REPO_TOKEN: $(COVERALLS_REPO_TOKEN)
   steps:
   - task: NodeTool@0
     inputs:
@@ -26,6 +24,8 @@ jobs:
     displayName: Install dependencies
   - bash: npm run lint
     displayName: Run linter
+    env:
+      COVERALLS_REPO_TOKEN: $(COVERALLS_REPO_TOKEN)
   - bash: npm run coveralls
     displayName: Run tests
   - bash: npm run typescript

@@ -24,9 +24,9 @@ jobs:
     displayName: Install dependencies
   - bash: npm run lint
     displayName: Run linter
+  - bash: npm run coveralls
     env:
       COVERALLS_REPO_TOKEN: $(COVERALLS_REPO_TOKEN)
-  - bash: npm run coveralls
     displayName: Run tests
   - bash: npm run typescript
     displayName: Check types

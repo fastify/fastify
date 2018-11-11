@@ -727,7 +727,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.deepEqual(JSON.parse(payload), thePayload)
-      t.strictEqual(reply._headers['content-type'], 'application/json; charset=utf-8')
+      t.strictEqual(reply[symbols.kReplyHeaders]['content-type'], 'application/json; charset=utf-8')
       next()
     })
 
@@ -741,7 +741,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   fastify.register((instance, opts, next) => {
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, 'some text')
-      t.strictEqual(reply._headers['content-type'], 'text/plain; charset=utf-8')
+      t.strictEqual(reply[symbols.kReplyHeaders]['content-type'], 'text/plain; charset=utf-8')
       next()
     })
 
@@ -757,7 +757,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
+      t.strictEqual(reply[symbols.kReplyHeaders]['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -779,7 +779,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, thePayload)
-      t.strictEqual(reply._headers['content-type'], 'application/octet-stream')
+      t.strictEqual(reply[symbols.kReplyHeaders]['content-type'], 'application/octet-stream')
       next()
     })
 
@@ -795,7 +795,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, next) {
       t.strictEqual(payload, serializedPayload)
-      t.strictEqual(reply._headers['content-type'], 'text/custom')
+      t.strictEqual(reply[symbols.kReplyHeaders]['content-type'], 'text/custom')
       next()
     })
 
@@ -1784,7 +1784,7 @@ test('If the content type has been set inside an hook it should not be changed',
   })
 
   fastify.get('/', (request, reply) => {
-    t.ok(reply._headers['content-type'])
+    t.ok(reply[symbols.kReplyHeaders]['content-type'])
     reply.send('hello')
   })
 

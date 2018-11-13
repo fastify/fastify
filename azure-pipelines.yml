@@ -8,16 +8,3 @@ jobs:
   parameters:
     name: Windows
     vmImage: vs2017-win2016
-
-- job: TriggerWebsiteBuild
-  dependsOn:
-  - Linux
-  - Windows
-  pool:
-    vmImage: ubuntu-16.04
-  steps:
-  - bash: ./tools/website.sh
-    displayName: Trigger Website build
-    env:
-      CIRCLECI_TOKEN: $(CIRCLECI_TOKEN)
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

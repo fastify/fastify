@@ -21,7 +21,7 @@ jobs:
       versionSpec: $(node_version)
     displayName: Install Node.js
   - bash: npm -v
-    displayName: Print npm version    
+    displayName: Print npm version
   - bash: npm i
     displayName: Install dependencies
   - bash: npm run lint

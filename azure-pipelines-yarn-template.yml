@@ -20,7 +20,7 @@ jobs:
     inputs:
       versionSpec: $(node_version)
     displayName: Install Node.js
-  - bash: npm i
+  - bash: yarn install
     displayName: Install dependencies
   - bash: yarn lint
     displayName: Run linter

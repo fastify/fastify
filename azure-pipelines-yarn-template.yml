@@ -20,11 +20,7 @@ jobs:
     inputs:
       versionSpec: $(node_version)
     displayName: Install Node.js
-  - bash: alias npm="yarn"
-    displayName: Use npm as alias for yarn
-  - bash: npm -v
-    displayName: Print yarn version
   - bash: yarn install --ignore-engines
     displayName: Install dependencies
-  - bash: yarn lint
+  - bash: yarn lint:standard && yarn lint:typescript
     displayName: Run linter

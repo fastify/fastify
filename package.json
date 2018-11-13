@@ -5,7 +5,8 @@
   "main": "fastify.js",
   "typings": "fastify.d.ts",
   "scripts": {
-    "lint": "standard --verbose | snazzy && npm run lint:typescript",
+    "lint": "npm run lint:standard && npm run lint:typescript",
+    "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
     "typescript": "tsc --project ./test/types/tsconfig.json",

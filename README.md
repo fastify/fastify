@@ -29,8 +29,13 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 
 ### Install
 
+Install with npm:
 ```
 npm i fastify --save
+```
+Install with yarn:
+```
+yarn add fastify
 ```
 
 ### Example

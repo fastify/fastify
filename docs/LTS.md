@@ -33,6 +33,6 @@ A "month" is to be a period of 30 consecutive days.
 
 | CI             | Name    | Version        |
 | :------------- | :------ | :------------- |
-| Travis         | Linux   | Linux (ubuntu) |
-| Azure pipeline | Linux   | Linux (ubuntu) |
+| Travis         | Linux   | Ubuntu 14.04   |
+| Azure pipeline | Linux   | Ubuntu 16.04   |
 | Azure pipeline | Windows | vs2017-win2016 |

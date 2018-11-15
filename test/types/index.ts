@@ -116,6 +116,12 @@ server.addHook('onSend', function (req, reply, payload, next) {
   next()
 })
 
+server.addHook('onError', function (req, reply, error, next) {
+  this.log.debug('`this` is not `any`')
+  console.log(`${req.req.method} ${req.req.url}`)
+  next()
+})
+
 server.addHook('onClose', (instance, done) => {
   done()
 })

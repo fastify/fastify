@@ -10,6 +10,7 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 - `'onRequest'`
 - `'preValidation'`
 - `'preHandler'`
+- `'onError'`
 - `'onSend'`
 - `'onResponse'`
 
@@ -26,6 +27,11 @@ fastify.addHook('preValidation', (request, reply, next) => {
 })
 
 fastify.addHook('preHandler', (request, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('onError', (request, reply, error, next) => {
   // some code
   next()
 })
@@ -70,6 +76,11 @@ fastify.addHook('preHandler', async (request, reply) => {
     throw new Error('some errors occurred.')
   }
   return
+})
+
+fastify.addHook('onError', async (request, reply, error) => {
+  // useful for custom error logging
+  // you should not use this hook to update the error
 })
 
 fastify.addHook('onSend', async (request, reply, payload) => {
@@ -120,6 +131,27 @@ fastify.addHook('preHandler', (request, reply, next) => {
 ```
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+
+#### The `onError` Hook
+
+This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
+It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back and error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
+**Notice:** unlike the other hooks, pass an error to the `next` function is not supported.
+
+```js
+fastify.addHook('onError', (request, reply, error, next) => {
+  // apm stands for Application Performance Monitoring
+  apm.sendError(error)
+  next()
+})
+
+// Or async
+fastify.addHook('onError', async (request, reply, error) => {
+  // apm stands for Application Performance Monitoring
+  apm.sendError(error)
+})
+```
 
 #### The `onSend` Hook
 

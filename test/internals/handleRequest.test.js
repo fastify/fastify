@@ -61,7 +61,8 @@ test('handler function - invalid schema', t => {
     Reply: Reply,
     Request: Request,
     preHandler: [],
-    onSend: []
+    onSend: [],
+    onError: []
   }
   const schemas = new Schemas()
   buildSchema(context, schemaCompiler, schemas)
@@ -90,7 +91,8 @@ test('handler function - reply', t => {
     Reply: Reply,
     Request: Request,
     preHandler: [],
-    onSend: []
+    onSend: [],
+    onError: []
   }
   buildSchema(context, schemaCompiler)
   internals.handler({}, new Reply(res, context, {}))

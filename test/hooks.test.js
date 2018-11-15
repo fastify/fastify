@@ -1974,6 +1974,134 @@ test('preValidation hook should support encapsulation / 3', t => {
   })
 })
 
+test('onError hook', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const err = new Error('kaboom')
+
+  fastify.addHook('onError', (request, reply, error, next) => {
+    t.match(error, err)
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      message: 'kaboom',
+      statusCode: 500
+    })
+  })
+})
+
+test('reply.send should throw if called inside the onError hook', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const err = new Error('kaboom')
+
+  fastify.addHook('onError', (request, reply, error, next) => {
+    try {
+      reply.send()
+      t.fail('Should throw')
+    } catch (err) {
+      t.is(err.message, 'You cannot use `send` inside the `onError` hook')
+    }
+    next()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send(err)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      message: 'kaboom',
+      statusCode: 500
+    })
+  })
+})
+
+test('onError hook with setErrorHandler', t => {
+  t.test('Send error', t => {
+    t.plan(3)
+
+    const fastify = Fastify()
+
+    const err = new Error('ouch')
+
+    fastify.setErrorHandler((_, req, reply) => {
+      reply.send(err)
+    })
+
+    fastify.addHook('onError', (request, reply, error, next) => {
+      t.match(error, err)
+      next()
+    })
+
+    fastify.get('/', (req, reply) => {
+      reply.send(new Error('kaboom'))
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(res.payload), {
+        error: 'Internal Server Error',
+        message: 'ouch',
+        statusCode: 500
+      })
+    })
+  })
+
+  t.test('Hide error', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+
+    fastify.setErrorHandler((_, req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    fastify.addHook('onError', (request, reply, error, next) => {
+      t.fail('Should not be called')
+    })
+
+    fastify.get('/', (req, reply) => {
+      reply.send(new Error('kaboom'))
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.deepEqual(
+        JSON.parse(res.payload),
+        { hello: 'world' }
+      )
+    })
+  })
+  t.end()
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

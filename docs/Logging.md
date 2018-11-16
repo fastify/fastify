@@ -98,3 +98,34 @@ fastify.get('/', function (request, reply) {
 ```
 
 *The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).*
+
+## Log Redaction
+
+[Pino](https://getpino.io) supports low-overhead log redaction, to
+filter out some of properties. As an example, if logging all the HTTP
+headers is needed, we must redact and filter out the `Authorization`
+headers, as in the following example:
+
+```js
+const fastify = Fastify({
+  logger: {
+    stream: stream,
+    redact: ['req.headers.authorization'],
+    level: 'info',
+    serializers: {
+      req(req) {
+        return {
+          method: req.method,
+          url: req.url,
+          headers: req.headers,
+          hostname: req.hostname,
+          remoteAddress: req.ip,
+          remotePort: req.connection.remotePort
+        }
+      }
+    }
+  }
+})
+```
+
+See https://getpino.io/#/docs/redaction for more details.

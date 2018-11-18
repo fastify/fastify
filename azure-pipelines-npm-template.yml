@@ -8,8 +8,6 @@ jobs:
         node_version: 11.x
       node_10_x:
         node_version: 10.x
-      node_9_x:
-        node_version: 9.x
       node_8_x:
         node_version: 8.x
       node_6_x:
@@ -22,5 +20,5 @@ jobs:
     displayName: Install Node.js
   - bash: npm i
     displayName: Install dependencies
-  - bash: npm run lint
-    displayName: Run linter
+  - bash: npm test
+    displayName: Run tests

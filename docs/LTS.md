@@ -31,8 +31,8 @@ A "month" is to be a period of 30 consecutive days.
 
 ### CI tested operating systems
 
-| CI             | Name    | Version        |
-| :------------- | :------ | :------------- |
-| Travis         | Linux   | Ubuntu 14.04   |
-| Azure pipeline | Linux   | Ubuntu 16.04   |
-| Azure pipeline | Windows | vs2017-win2016 |
+| CI             | Name    | Version        | Package Manager |
+| :------------- | :------ | :------------- | :-------------- |
+| Travis         | Linux   | Ubuntu 14.04   | npm             |
+| Azure pipeline | Linux   | Ubuntu 16.04   | yarn            |
+| Azure pipeline | Windows | vs2017-win2016 | npm             |

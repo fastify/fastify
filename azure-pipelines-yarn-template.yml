@@ -8,8 +8,6 @@ jobs:
         node_version: 11.x
       node_10_x:
         node_version: 10.x
-      node_9_x:
-        node_version: 9.x
       node_8_x:
         node_version: 8.x
       node_6_x:
@@ -20,7 +18,7 @@ jobs:
     inputs:
       versionSpec: $(node_version)
     displayName: Install Node.js
-  - bash: yarn install --ignore-engines
+  - bash: yarn install
     displayName: Install dependencies
-  - bash: yarn lint:standard && yarn lint:typescript
-    displayName: Run linter
+  - bash: yarn test
+    displayName: Run tests

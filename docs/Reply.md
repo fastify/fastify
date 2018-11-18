@@ -76,7 +76,7 @@ reply.redirect('/home')
 ```
 
 <a name="type"></a>
-### .type(contentType, type)
+### .type(contentType)
 Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
 

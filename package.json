@@ -5,13 +5,14 @@
   "main": "fastify.js",
   "typings": "fastify.d.ts",
   "scripts": {
-    "lint": "standard --verbose | snazzy && npm run lint:typescript",
+    "lint": "npm run lint:standard && npm run lint:typescript",
+    "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
     "typescript": "tsc --project ./test/types/tsconfig.json",
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
-    "coveralls": "npm run unit --  --cov",
+    "coveralls": "npm run unit -- --cov",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
   },

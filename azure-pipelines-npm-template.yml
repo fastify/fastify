@@ -1,0 +1,24 @@
+jobs:
+- job: ${{ parameters.name }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  strategy:
+    matrix:
+      node_11_x:
+        node_version: 11.x
+      node_10_x:
+        node_version: 10.x
+      node_8_x:
+        node_version: 8.x
+      node_6_x:
+        node_version: 6.x
+    maxParallel: 5
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: $(node_version)
+    displayName: Install Node.js
+  - bash: npm i
+    displayName: Install dependencies
+  - bash: npm test
+    displayName: Run tests

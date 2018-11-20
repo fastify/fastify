@@ -101,8 +101,8 @@ fastify.get('/', function (request, reply) {
 
 ## Log Redaction
 
-[Pino](https://getpino.io) supports low-overhead log redaction, to
-obscure values of specific properties in recorded logs.
+[Pino](https://getpino.io) supports low-overhead log redaction for
+obscuring values of specific properties in recorded logs.
 As an example, we might want to log all the HTTP headers minus the
 `Authorization` header for security concerns:
 

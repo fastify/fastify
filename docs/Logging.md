@@ -102,9 +102,9 @@ fastify.get('/', function (request, reply) {
 ## Log Redaction
 
 [Pino](https://getpino.io) supports low-overhead log redaction, to
-filter out some of properties. As an example, if logging all the HTTP
-headers is needed, we must redact and filter out the `Authorization`
-headers, as in the following example:
+obscure values of specific properties in recorded logs.
+As an example, we might want to log all the HTTP headers minus the
+`Authorization` header for security concerns:
 
 ```js
 const fastify = Fastify({
@@ -113,7 +113,7 @@ const fastify = Fastify({
     redact: ['req.headers.authorization'],
     level: 'info',
     serializers: {
-      req(req) {
+      req (req) {
         return {
           method: req.method,
           url: req.url,

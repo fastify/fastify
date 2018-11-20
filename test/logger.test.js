@@ -995,7 +995,7 @@ test('should redact the authorization header if so specified', t => {
   stream.once('data', listenAtLogLine => {
     t.ok(listenAtLogLine, 'listen at log message is ok')
     stream.once('data', line => {
-      t.equal(line.req.headers.authorization, '[Redacted]', 'authoriztion is redacted')
+      t.equal(line.req.headers.authorization, '[Redacted]', 'authorization is redacted')
     })
   })
   fastify.listen(0, err => {

@@ -120,7 +120,7 @@
     "middie": "^3.1.0",
     "pino": "^4.17.3",
     "proxy-addr": "^2.0.3",
-    "tiny-lru": "^1.6.1"
+    "tiny-lru": "^2.0.0"
   },
   "greenkeeper": {
     "ignore": [

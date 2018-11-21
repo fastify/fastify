@@ -316,5 +316,111 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictEqual(response.statusCode, 413)
       })
     })
+
+    test(`${upMethod} should fail with empty body and application/json content-type`, t => {
+      if (upMethod === 'OPTIONS') return t.end()
+
+      t.plan(12)
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: null
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: null
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: undefined
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: undefined
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+    })
   })
 }

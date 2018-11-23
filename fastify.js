@@ -17,6 +17,7 @@ const {
   kLogLevel,
   kHooks,
   kSchemas,
+  kRoutes,
   kContentTypeParser,
   kReply,
   kRequest,
@@ -190,6 +191,9 @@ function build (options) {
   // hooks
   fastify.addHook = addHook
   fastify[kHooks] = new Hooks()
+
+  // routes
+  fastify[kRoutes] = new Map()
 
   // schemas
   fastify.addSchema = addSchema
@@ -574,6 +578,25 @@ function build (options) {
     validateBodyLimitOption(opts.bodyLimit)
 
     const prefix = _fastify[kRoutePrefix]
+
+    if (typeof opts.method === 'string') {
+      const routeKey = opts.method.toLowerCase()
+      const routeItem = {
+        method: opts.method,
+        schema: opts.schema,
+        url: prefix + (opts.url || opts.path),
+        logLevel: opts.logLevel || _fastify[kLogLevel],
+        prefix: prefix,
+        bodyLimit: opts.bodyLimit
+      }
+
+      if (_fastify[kRoutes].has(opts.url)) {
+        let current = _fastify[kRoutes].get(opts.url)
+        _fastify[kRoutes].set(routeItem.url, Object.assign(current, { [routeKey]: routeItem }))
+      } else {
+        _fastify[kRoutes].set(routeItem.url, { [routeKey]: routeItem })
+      }
+    }
 
     _fastify.after(function (notHandledErr, done) {
       var path = opts.url || opts.path

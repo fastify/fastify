@@ -8,9 +8,19 @@ const fp = require('fastify-plugin')
 test('should return valid json', t => {
   t.plan(1)
   const fastify = Fastify()
+
+  const routeA = function (fastify, opts, next) {
+    fastify.post('/hello/:world', {
+      bodyLimit: 2000,
+      logLevel: 'info',
+      schema: {}
+    }, function (request, reply) { reply.send({ hello: 'world' }) })
+
+    next()
+  }
+
   fastify
-    .get('/', (request, reply) => reply.send({ text: '/' }))
-    .post('/test', (request, reply) => reply.send({ text: 'test' }))
+    .register(routeA, { prefix: '/v1' })
     .use(function helloWorld (instance, req, res) {})
     .use('/abc', function routeABC (instance, req, res) {})
     .addHook('onRequest', function onRequestHook (req, res, next) {})
@@ -39,6 +49,19 @@ test('should return valid json', t => {
           preValidation: [],
           onError: []
         },
-        plugins: ['cemre'] }))
+        plugins: ['cemre'],
+        routes: {
+          '/v1/hello/:world': {
+            'post': {
+              'method': 'POST',
+              'schema': {},
+              'url': '/v1/hello/:world',
+              'logLevel': 'info',
+              'prefix': '/v1',
+              'bodyLimit': 2000
+            }
+          }
+        }
+      }))
   })
 })

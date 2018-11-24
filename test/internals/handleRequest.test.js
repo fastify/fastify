@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-return */
 'use strict'
 
 const t = require('tap')
@@ -44,9 +43,7 @@ test('handler function - invalid schema', t => {
     t.equal(res.statusCode, 400)
     t.pass()
   }
-  res.writeHead = () => {
-    return
-  }
+  res.writeHead = () => {}
   res.log = { error: () => {}, info: () => {} }
   const context = {
     schema: {
@@ -62,7 +59,8 @@ test('handler function - invalid schema', t => {
     Request: Request,
     preHandler: [],
     onSend: [],
-    onError: []
+    onError: [],
+    attachValidation: false
   }
   const schemas = new Schemas()
   buildSchema(context, schemaCompiler, schemas)
@@ -79,9 +77,7 @@ test('handler function - reply', t => {
     t.equal(res.statusCode, 204)
     t.pass()
   }
-  res.writeHead = () => {
-    return
-  }
+  res.writeHead = () => {}
   const context = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')

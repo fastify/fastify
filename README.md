@@ -5,7 +5,7 @@
 <div align="center">
 
 [![Build Status](https://travis-ci.org/fastify/fastify.svg?branch=master)](https://travis-ci.org/fastify/fastify)
-[![Build status](https://ci.appveyor.com/api/projects/status/xduljw5nsu1ya72x/branch/master?svg=true)](https://ci.appveyor.com/project/mcollina/fastify/branch/master) [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
+[![Build Status](https://dev.azure.com/fastify/fastify/_apis/build/status/fastify.fastify)](https://dev.azure.com/fastify/fastify/_build/latest?definitionId=1) [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
 
@@ -29,8 +29,13 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 
 ### Install
 
+Install with npm:
 ```
 npm i fastify --save
+```
+Install with yarn:
+```
+yarn add fastify
 ```
 
 ### Example
@@ -97,10 +102,9 @@ fastify generate
 
 For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
 
-#### Note
-
-`.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration).
-See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server.md#listen) for more information.
+> ## Note
+> `.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration). If you are running Fastify in a container (Docker, [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/). 
+> See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server.md#listen) for more information.
 
 ### Core features
 

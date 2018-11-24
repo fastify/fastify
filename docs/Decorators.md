@@ -61,7 +61,7 @@ If you define a decorator (using decorate, decorateRequest or decorateReply) wit
 
 As an example, the following will throw:
 
-````js
+```js
 const server = require('fastify')()
 
 server.decorateReply('view', function (template, args) {

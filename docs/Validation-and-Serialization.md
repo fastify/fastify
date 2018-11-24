@@ -202,6 +202,54 @@ fastify.post('/the/url', { schema }, handler)
 
 *If you need a custom serializer in a very specific part of your code, you can set one with `reply.serializer(...)`.*
 
+### Error Handling
+When schema validation fails for a request, Fastify will automtically return a  status 400 response including the result from the validator in the payload. As an example, if you have the following schema for your route
+
+```js
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' }
+    },
+    required: ['name']
+  }
+}
+```
+
+and fail to satisfy it, the route will immediately return a response with the following payload
+
+```js
+{ 
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "body should have required property 'name'" 
+}
+```
+
+If you want to handle errors inside the route, you can specify the `attachValidation` option for your route. If there is a validation error, the `validationError` property of the request will contain the `Error` object with the raw `validation` result as shown below
+
+```js
+const fastify = Fastify()
+
+fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
+  if (req.validation) {
+    // `req.validationError.validation` contains the raw validation error
+    reply.code(400).send(req.validationError)
+  }
+})
+```
+
+You can also use [setErrorHandler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) to define a custom response for validation errors such as
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  if (error.validation) {
+     reply.status(422).send(new Error('validation failed'))
+  }
+})
+```
+
 <a name="resources"></a>
 ### Resources
 - [JSON Schema](http://json-schema.org/)

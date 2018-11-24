@@ -597,6 +597,10 @@ function build (options) {
       opts.prefix = prefix
       opts.logLevel = opts.logLevel || _fastify[kLogLevel]
 
+      if (opts.attachValidation == null) {
+        opts.attachValidation = false
+      }
+
       // run 'onRoute' hooks
       for (var h of onRouteHooks) {
         h.call(_fastify, opts)
@@ -614,7 +618,8 @@ function build (options) {
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
-        opts.logLevel
+        opts.logLevel,
+        opts.attachValidation
       )
 
       try {
@@ -692,7 +697,7 @@ function build (options) {
     reply.send(error)
   }
 
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel) {
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, attachValidation) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
@@ -711,6 +716,7 @@ function build (options) {
     }
     this.logLevel = logLevel
     this[kFourOhFourContext] = null
+    this.attachValidation = attachValidation
   }
 
   function inject (opts, cb) {

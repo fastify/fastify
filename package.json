@@ -16,6 +16,11 @@
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fastify/fastify.git"
@@ -90,9 +95,9 @@
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.1.0",
     "http-errors": "^1.7.1",
+    "husky": "^1.2.0",
     "ienoopen": "^1.0.0",
     "joi": "~11.4.0",
-    "pre-commit": "^1.2.2",
     "proxyquire": "^2.0.1",
     "pump": "^3.0.0",
     "semver": "^5.5.0",

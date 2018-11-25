@@ -9,6 +9,7 @@ const pino = require('pino')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
+const sget = require('simple-get').concat
 
 const files = []
 let count = 0
@@ -961,6 +962,55 @@ test('should not log the error if error handler is defined', t => {
           t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
         })
       })
+    })
+  })
+})
+
+test('should redact the authorization header if so specified', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream: stream,
+      redact: ['req.headers.authorization'],
+      level: 'info',
+      serializers: {
+        req (req) {
+          return {
+            method: req.method,
+            url: req.url,
+            headers: req.headers,
+            hostname: req.hostname,
+            remoteAddress: req.ip,
+            remotePort: req.connection.remotePort
+          }
+        }
+      }
+    }
+  })
+  fastify.get('/', function (req, reply) {
+    t.is(req.headers.authorization, 'Bearer abcde')
+    reply.send({ hello: 'world' })
+  })
+  stream.once('data', listenAtLogLine => {
+    t.ok(listenAtLogLine, 'listen at log message is ok')
+    stream.once('data', line => {
+      t.equal(line.req.headers.authorization, '[Redacted]', 'authorization is redacted')
+    })
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'authorization': 'Bearer abcde'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
     })
   })
 })

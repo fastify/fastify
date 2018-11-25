@@ -86,6 +86,9 @@ function build (options) {
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'
+  if (options.querystringParser && typeof options.querystringParser !== 'function') {
+    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+  }
   const querystringParser = options.querystringParser || querystring.parse
 
   let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
@@ -295,7 +298,7 @@ function build (options) {
     req.log.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
-    var query = queryPrefix > -1 ? querystringParser(req.url.slice(queryPrefix + 1)) : {}
+    var query = queryPrefix !== -1 ? querystringParser(req.url.slice(queryPrefix + 1)) : {}
     var request = new context.Request(params, req, query, req.headers, req.log)
     var reply = new context.Reply(res, context, request, res.log)
 

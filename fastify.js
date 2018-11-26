@@ -298,7 +298,7 @@ function build (options) {
     req.log.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
-    var query = queryPrefix !== -1 ? querystringParser(req.url.slice(queryPrefix + 1)) : {}
+    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
     var request = new context.Request(params, req, query, req.headers, req.log)
     var reply = new context.Reply(res, context, request, res.log)
 

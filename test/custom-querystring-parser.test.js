@@ -46,16 +46,18 @@ test('Custom querystring parser', t => {
   })
 })
 
-test('Custom querystring parser should not be called if there is nothing to parse', t => {
-  t.plan(5)
+test('Custom querystring parser should be called also if there is nothing to parse', t => {
+  t.plan(9)
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.fail('Should not be called')
+      t.strictEqual(str, '')
+      return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
+    t.deepEqual(req.query, {})
     reply.send({ hello: 'world' })
   })
 
@@ -92,9 +94,7 @@ test('Querystring without value', t => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.deepEqual(req.query, {
-      foo: ''
-    })
+    t.deepEqual(req.query, { foo: '' })
     reply.send({ hello: 'world' })
   })
 

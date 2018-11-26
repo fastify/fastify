@@ -9,7 +9,9 @@
     "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
+    "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tap-junit > test/junit-testresults.xml",
     "typescript": "tsc --project ./test/types/tsconfig.json",
+    "test:report": "npm run lint && npm run unit:report && npm run typescript",
     "test": "npm run lint && npm run unit && npm run typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit -- --cov",
@@ -103,6 +105,7 @@
     "split2": "^3.0.0",
     "standard": "^12.0.0",
     "tap": "^12.0.0",
+    "tap-junit":"2.1.0",
     "typescript": "^3.0.1",
     "typescript-eslint-parser": "^20.1.0",
     "x-xss-protection": "^1.1.0"

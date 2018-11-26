@@ -211,6 +211,19 @@ will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 + Default: `10000`
 
+<a name="factory-querystring-parser"></a>
+### `querystringParser`
+
+The default query string parser that Fastify uses is the Node.js's core `querystring` module.<br/>
+You can change this default setting by passing the option `querystringParser` and use a custom one, such as [`qs`](https://www.npmjs.com/package/qs).
+
+```js
+const qs = require('qs')
+const fastify = require('fastify')({
+  querystringParser: str => qs.parse(str)
+})
+```
+
 ## Instance
 
 ### Server Methods

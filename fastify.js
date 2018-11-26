@@ -4,7 +4,7 @@ const FindMyWay = require('find-my-way')
 const Avvio = require('avvio')
 const http = require('http')
 const https = require('https')
-const urlUtil = require('url')
+const querystring = require('querystring')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
@@ -86,6 +86,10 @@ function build (options) {
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'
+  if (options.querystringParser && typeof options.querystringParser !== 'function') {
+    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+  }
+  const querystringParser = options.querystringParser || querystring.parse
 
   let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
 
@@ -293,7 +297,9 @@ function build (options) {
 
     req.log.info({ req }, 'incoming request')
 
-    var request = new context.Request(params, req, urlUtil.parse(req.url, true).query, req.headers, req.log)
+    var queryPrefix = req.url.indexOf('?')
+    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
+    var request = new context.Request(params, req, query, req.headers, req.log)
     var reply = new context.Reply(res, context, request, res.log)
 
     if (hasLogger === true || context.onResponse !== null) {

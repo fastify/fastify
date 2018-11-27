@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 const schema = {
@@ -98,9 +98,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -109,9 +109,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head params schema', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -120,9 +120,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head params schema error', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -131,9 +131,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head querystring schema', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -142,9 +142,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head querystring schema error', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
@@ -153,9 +153,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request head missing schema', t => {
     t.plan(2)
-    request({
+    sget({
       method: 'HEAD',
-      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
 
 const opts = {
@@ -56,7 +56,7 @@ test('wrong object for schema - output', t => {
   t.plan(1)
   try {
     fastify.get('/wrong-object-for-schema', opts, function (req, reply) {
-      // will send { hello: null }
+      // will send { }
       reply.code(201).send({ hello: 'world' })
     })
     t.pass()
@@ -78,15 +78,27 @@ test('empty response', t => {
   }
 })
 
+test('unlisted response code', t => {
+  t.plan(1)
+  try {
+    fastify.get('/400', opts, function (req, reply) {
+      reply.code(400).send({ hello: 'DOOM' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
   test('shorthand - string get ok', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/string'
+      url: 'http://localhost:' + fastify.server.address().port + '/string'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -97,9 +109,9 @@ fastify.listen(0, err => {
 
   test('shorthand - number get ok', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/number'
+      url: 'http://localhost:' + fastify.server.address().port + '/number'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 201)
@@ -110,14 +122,38 @@ fastify.listen(0, err => {
 
   test('shorthand - wrong-object-for-schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
+      url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 201)
       t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: null })
+      t.deepEqual(JSON.parse(body), {})
+    })
+  })
+
+  test('shorthand - empty', t => {
+    t.plan(2)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/empty'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 204)
+    })
+  })
+
+  test('shorthand - 400', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/400'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'DOOM' })
     })
   })
 })

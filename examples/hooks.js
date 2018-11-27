@@ -18,7 +18,7 @@ const opts = {
 }
 
 fastify
-  .addHook('onRequest', function (req, res, next) {
+  .addHook('onRequest', function (request, reply, next) {
     console.log('onRequest')
     next()
   })
@@ -26,9 +26,16 @@ fastify
     console.log('preHandler')
     next()
   })
-  .addHook('onResponse', function (res, next) {
+  .addHook('onSend', function (request, reply, payload, next) {
+    console.log('onSend')
+    next()
+  })
+  .addHook('onResponse', function (request, reply, next) {
     console.log('onResponse')
     next()
+  })
+  .addHook('onRoute', function (routeOptions) {
+    console.log('onRoute')
   })
 
 fastify.get('/', opts, function (req, reply) {

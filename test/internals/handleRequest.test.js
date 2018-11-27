@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-return */
 'use strict'
 
 const t = require('tap')
@@ -7,29 +6,34 @@ const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
-const Hooks = require('../../lib/hooks')
+const Schemas = require('../../lib/schemas')
+const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
 function schemaCompiler (schema) {
   const validateFuncion = ajv.compile(schema)
-  return function (body) {
+  var fn = function (body) {
     const isOk = validateFuncion(body)
     if (isOk) return
-    return { error: new Error('Invalid body') }
+    return false
   }
+  fn.errors = []
+  return fn
 }
 
 test('Request object', t => {
-  t.plan(6)
-  const req = new Request('params', 'req', 'body', 'query', 'log')
+  t.plan(8)
+  const req = new Request('params', 'req', 'query', 'headers', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
-  t.deepEqual(req.req, 'req')
-  t.equal(req.body, 'body')
+  t.deepEqual(req.raw, 'req')
+  t.deepEqual(req.req, req.raw)
   t.equal(req.query, 'query')
+  t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')
+  t.strictDeepEqual(req.body, null)
 })
 
 test('handler function - invalid schema', t => {
@@ -39,10 +43,9 @@ test('handler function - invalid schema', t => {
     t.equal(res.statusCode, 400)
     t.pass()
   }
-  res.setHeader = (key, value) => {
-    return
-  }
-  const handle = {
+  res.writeHead = () => {}
+  res.log = { error: () => {}, info: () => {} }
+  const context = {
     schema: {
       body: {
         type: 'object',
@@ -54,10 +57,17 @@ test('handler function - invalid schema', t => {
     handler: () => {},
     Reply: Reply,
     Request: Request,
-    hooks: new Hooks()
+    preHandler: [],
+    onSend: [],
+    onError: [],
+    attachValidation: false
   }
-  buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: { error: () => {} } }, res, { hello: 'world' }, null)
+  const schemas = new Schemas()
+  buildSchema(context, schemaCompiler, schemas)
+  const request = {
+    body: { hello: 'world' }
+  }
+  internals.handler(request, new Reply(res, context, request))
 })
 
 test('handler function - reply', t => {
@@ -67,31 +77,138 @@ test('handler function - reply', t => {
     t.equal(res.statusCode, 204)
     t.pass()
   }
-  res.getHeader = (key) => {
-    return false
-  }
-  res.setHeader = (key, value) => {
-    return
-  }
-  const handle = {
+  res.writeHead = () => {}
+  const context = {
     handler: (req, reply) => {
       t.is(typeof reply, 'object')
-      reply.send(null)
+      reply.code(204)
+      reply.send(undefined)
     },
     Reply: Reply,
     Request: Request,
-    preHandler: new Hooks().preHandler
+    preHandler: [],
+    onSend: [],
+    onError: []
   }
-  buildSchema(handle, schemaCompiler)
-  internals.handler(handle, null, { log: null }, res, null, null)
+  buildSchema(context, schemaCompiler)
+  internals.handler({}, new Reply(res, context, {}))
 })
 
-test('jsonBody and jsonBodyParsed should be functions', t => {
-  t.plan(4)
+test('request should be defined in onSend Hook on post request with content type application/json', t => {
+  t.plan(8)
+  const fastify = require('../..')()
 
-  t.is(typeof internals.jsonBody, 'function')
-  t.is(internals.jsonBody.length, 4)
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    t.ok(request)
+    t.ok(request.raw)
+    t.ok(request.id)
+    t.ok(request.params)
+    t.ok(request.query)
+    done()
+  })
+  fastify.post('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      // a 400 error is expected because of no body
+      t.strictEqual(response.statusCode, 400)
+    })
+  })
+})
 
-  t.is(typeof internals.jsonBodyParsed, 'function')
-  t.is(internals.jsonBodyParsed.length, 6)
+test('request should be defined in onSend Hook on post request with content type application/x-www-form-urlencoded', t => {
+  t.plan(7)
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    t.ok(request)
+    t.ok(request.raw)
+    t.ok(request.params)
+    t.ok(request.query)
+    done()
+  })
+  fastify.post('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      // a 415 error is expected because of missing content type parser
+      t.strictEqual(response.statusCode, 415)
+    })
+  })
+})
+
+test('request should be defined in onSend Hook on options request with content type application/x-www-form-urlencoded', t => {
+  t.plan(7)
+  const fastify = require('../..')()
+
+  fastify.addHook('onSend', (request, reply, payload, done) => {
+    t.ok(request)
+    t.ok(request.raw)
+    t.ok(request.params)
+    t.ok(request.query)
+    done()
+  })
+  fastify.options('/', (request, reply) => {
+    reply.send(200)
+  })
+  fastify.listen(0, err => {
+    fastify.server.unref()
+    t.error(err)
+    sget({
+      method: 'OPTIONS',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      // Body parsing skipped, so no body sent
+      t.strictEqual(response.statusCode, 200)
+    })
+  })
+})
+
+test('request should respond with an error if an unserialized payload is sent inside an an async handler', t => {
+  t.plan(3)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', (request, reply) => {
+    reply.type('text/html')
+    return Promise.resolve(request.headers)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.strictDeepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
+      message: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      statusCode: 500
+    })
+  })
 })

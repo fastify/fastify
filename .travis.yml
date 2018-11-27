@@ -1,14 +1,13 @@
 language: node_js
 
 node_js:
+  - "11"
+  - "10"
   - "8"
-  - "7"
   - "6"
-  - "4"
-
 
 script:
-  - npm run coveralls
+  - npm run lint && npm run coveralls -- -c && npm run typescript
 
 after_script:
   - ./tools/website.sh

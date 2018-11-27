@@ -66,18 +66,19 @@ test('checkExistence should check the prototype as well', t => {
 })
 
 test('checkDependencies should throw if a dependency is not present', t => {
-  t.plan(1)
+  t.plan(2)
   const instance = {}
   try {
     decorator.dependencies(instance, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
+    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
   }
 })
 
 test('decorate should internally call checkDependencies', t => {
-  t.plan(1)
+  t.plan(2)
   function build () {
     server.add = decorator.add
     return server
@@ -90,6 +91,32 @@ test('decorate should internally call checkDependencies', t => {
     server.add('method', () => {}, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
+    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
   }
+})
+
+test('decorate should recognize getter/setter objects', t => {
+  t.plan(6)
+
+  const one = {}
+  decorator.add.call(one, 'foo', {
+    getter: () => this._a,
+    setter: (val) => {
+      t.pass()
+      this._a = val
+    }
+  })
+  t.is(one.hasOwnProperty('foo'), true)
+  t.is(one.foo, undefined)
+  one.foo = 'a'
+  t.is(one.foo, 'a')
+
+  // getter only
+  const two = {}
+  decorator.add.call(two, 'foo', {
+    getter: () => 'a getter'
+  })
+  t.is(two.hasOwnProperty('foo'), true)
+  t.is(two.foo, 'a getter')
 })

@@ -1,10 +1,29 @@
 'use strict'
 
-const request = require('request')
+const sget = require('simple-get').concat
+const stream = require('stream')
+const symbols = require('../lib/symbols')
 
-module.exports.payloadMethod = function (method, t) {
+/**
+ * @param method HTTP request method
+ * @param t tap instance
+ * @param isSetErrorHandler true: using setErrorHandler
+ */
+module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
   const test = t.test
   const fastify = require('..')()
+
+  if (isSetErrorHandler) {
+    fastify.setErrorHandler(function (err, request, reply) {
+      t.type(request, 'object')
+      t.type(request, fastify[symbols.kRequest])
+      reply
+        .code(err.statusCode)
+        .type('application/json; charset=utf-8')
+        .send(err)
+    })
+  }
+
   const upMethod = method.toUpperCase()
   const loMethod = method.toLowerCase()
 
@@ -60,18 +79,31 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
+  test(`${upMethod} with bodyLimit option`, t => {
+    t.plan(1)
+    try {
+      fastify[loMethod]('/with-limit', { bodyLimit: 1 }, function (req, reply) {
+        reply.send(req.body)
+      })
+      t.pass()
+    } catch (e) {
+      t.fail()
+    }
+  })
+
   fastify.listen(0, function (err) {
     if (err) {
       t.error(err)
+      return
     }
 
     fastify.server.unref()
 
     test(`${upMethod} - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: {
           hello: 'world'
         },
@@ -83,27 +115,43 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
+    test(`${upMethod} - correctly replies with very large body`, t => {
+      t.plan(3)
+
+      const largeString = 'world'.repeat(13200)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: { hello: largeString },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: largeString })
+      })
+    })
+
     test(`${upMethod} - correctly replies if the content type has the charset`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: JSON.stringify({ hello: 'world' }),
         headers: {
-          'content-type': 'application/json;charset=utf-8'
+          'content-type': 'application/json; charset=utf-8'
         }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, JSON.stringify({ hello: 'world' }))
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
     test(`${upMethod} without schema - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: {
           hello: 'world'
         },
@@ -117,9 +165,9 @@ module.exports.payloadMethod = function (method, t) {
 
     test(`${upMethod} with body and querystring - correctly replies`, t => {
       t.plan(3)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
+        url: 'http://localhost:' + fastify.server.address().port + '/with-query?foo=hello',
         body: {
           hello: 'world'
         },
@@ -131,13 +179,38 @@ module.exports.payloadMethod = function (method, t) {
       })
     })
 
+    test(`${upMethod} with no body - correctly replies`, t => {
+      t.plan(6)
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
+        headers: { 'Content-Length': '0' },
+        timeout: 500
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.strictEqual(JSON.parse(body.toString()), null)
+      })
+
+      // Must use inject to make a request without a Content-Length header
+      fastify.inject({
+        method: upMethod,
+        url: '/missing'
+      }, (err, res) => {
+        t.error(err)
+        t.strictEqual(res.statusCode, 200)
+        t.strictEqual(JSON.parse(res.payload), null)
+      })
+    })
+
     test(`${upMethod} returns 415 - incorrect media type if body is not json`, t => {
       t.plan(2)
-      request({
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+        url: 'http://localhost:' + fastify.server.address().port + '/missing',
         body: 'hello world',
-        timeout: 200
+        timeout: 500
       }, (err, response, body) => {
         t.error(err)
         if (upMethod === 'OPTIONS') {
@@ -151,14 +224,14 @@ module.exports.payloadMethod = function (method, t) {
     if (loMethod === 'options') {
       test(`OPTIONS returns 415 - should return 415 if Content-Type is not json`, t => {
         t.plan(2)
-        request({
+        sget({
           method: upMethod,
-          uri: 'http://localhost:' + fastify.server.address().port + '/missing',
+          url: 'http://localhost:' + fastify.server.address().port + '/missing',
           body: 'hello world',
           headers: {
             'Content-Type': 'text/plain'
           },
-          timeout: 200
+          timeout: 500
         }, (err, response, body) => {
           t.error(err)
           t.strictEqual(response.statusCode, 415)
@@ -166,19 +239,187 @@ module.exports.payloadMethod = function (method, t) {
       })
     }
 
-    test(`${upMethod} returns 422 - Unprocessable Entity`, t => {
-      t.plan(2)
-      request({
+    test(`${upMethod} returns 400 - Bad Request`, t => {
+      t.plan(4)
+
+      sget({
         method: upMethod,
-        uri: 'http://localhost:' + fastify.server.address().port,
+        url: 'http://localhost:' + fastify.server.address().port,
         body: 'hello world',
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 200
+        timeout: 500
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 422)
+        t.strictEqual(response.statusCode, 400)
+      })
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': '0'
+        },
+        timeout: 500
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+      })
+    })
+
+    test(`${upMethod} returns 413 - Payload Too Large`, t => {
+      t.plan(upMethod === 'OPTIONS' ? 4 : 6)
+
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': 1024 * 1024 + 1
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 413)
+      })
+
+      // Node errors for OPTIONS requests with a stream body and no Content-Length header
+      if (upMethod !== 'OPTIONS') {
+        var chunk = Buffer.alloc(1024 * 1024 + 1, 0)
+        const largeStream = new stream.Readable({
+          read () {
+            this.push(chunk)
+            chunk = null
+          }
+        })
+        sget({
+          method: upMethod,
+          url: 'http://localhost:' + fastify.server.address().port,
+          headers: { 'Content-Type': 'application/json' },
+          body: largeStream,
+          timeout: 500
+        }, (err, response, body) => {
+          t.error(err)
+          t.strictEqual(response.statusCode, 413)
+        })
+      }
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}/with-limit`,
+        headers: { 'Content-Type': 'application/json' },
+        body: {},
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 413)
+      })
+    })
+
+    test(`${upMethod} should fail with empty body and application/json content-type`, t => {
+      if (upMethod === 'OPTIONS') return t.end()
+
+      t.plan(12)
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: null
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: null
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      fastify.inject({
+        method: `${upMethod}`,
+        url: '/',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: undefined
+      }, (err, res) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(res.payload), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
+      })
+
+      sget({
+        method: upMethod,
+        url: `http://localhost:${fastify.server.address().port}`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        payload: undefined
+      }, (err, res, body) => {
+        t.error(err)
+        t.strictDeepEqual(JSON.parse(body.toString()), {
+          error: 'Bad Request',
+          code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
+          message: `FST_ERR_CTP_EMPTY_JSON_BODY: Body cannot be empty when content-type is set to 'application/json'`,
+          statusCode: 400
+        })
       })
     })
   })

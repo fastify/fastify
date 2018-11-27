@@ -5,6 +5,7 @@ const test = t.test
 const Stream = require('stream')
 const util = require('util')
 const Fastify = require('..')
+const FormData = require('form-data')
 
 test('inject should exist', t => {
   t.plan(2)
@@ -14,7 +15,7 @@ test('inject should exist', t => {
 })
 
 test('should wait for the ready event', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
@@ -29,15 +30,16 @@ test('should wait for the ready event', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
@@ -48,15 +50,16 @@ test('inject get request', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request - code check', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
@@ -67,15 +70,16 @@ test('inject get request - code check', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 201)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request - headers check', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -85,7 +89,8 @@ test('inject get request - headers check', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual('', res.payload)
     t.strictEqual(res.headers['content-type'], 'text/plain')
     t.strictEqual(res.headers['content-length'], '0')
@@ -93,7 +98,7 @@ test('inject get request - headers check', t => {
 })
 
 test('inject get request - querystring', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -103,15 +108,16 @@ test('inject get request - querystring', t => {
   fastify.inject({
     method: 'GET',
     url: '/?hello=world'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request - params', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/:hello', (req, reply) => {
@@ -121,15 +127,16 @@ test('inject get request - params', t => {
   fastify.inject({
     method: 'GET',
     url: '/world'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request - wildcard', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/test/*', (req, reply) => {
@@ -139,34 +146,36 @@ test('inject get request - wildcard', t => {
   fastify.inject({
     method: 'GET',
     url: '/test/wildcard'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual({ '*': 'wildcard' }, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 16)
+    t.strictEqual(res.headers['content-length'], '16')
   })
 })
 
 test('inject get request - headers', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
-    reply.send(req.req.headers)
+    reply.send(req.headers)
   })
 
   fastify.inject({
     method: 'GET',
     url: '/',
     headers: { hello: 'world' }
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.strictEqual('world', JSON.parse(res.payload).hello)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 59)
+    t.strictEqual(res.headers['content-length'], '69')
   })
 })
 
 test('inject post request', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
@@ -178,15 +187,16 @@ test('inject post request', t => {
     method: 'POST',
     url: '/',
     payload: payload
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual(payload, JSON.parse(res.payload))
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject post request - send stream', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.post('/', (req, reply) => {
@@ -198,15 +208,16 @@ test('inject post request - send stream', t => {
     url: '/',
     headers: { 'content-type': 'application/json' },
     payload: getStream()
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual('{"hello":"world"}', res.payload)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], 17)
+    t.strictEqual(res.headers['content-length'], '17')
   })
 })
 
 test('inject get request - reply stream', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -216,10 +227,132 @@ test('inject get request - reply stream', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, res => {
+  }, (err, res) => {
+    t.error(err)
     t.deepEqual('{"hello":"world"}', res.payload)
     t.strictEqual(res.statusCode, 200)
   })
+})
+
+test('inject promisify - waiting for ready event', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  const injectParams = {
+    method: 'GET',
+    url: '/'
+  }
+  fastify.inject(injectParams)
+    .then(res => {
+      t.strictEqual(res.statusCode, 200)
+    })
+    .catch(t.fail)
+})
+
+test('inject promisify - after the ready event', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    const injectParams = {
+      method: 'GET',
+      url: '/'
+    }
+    fastify.inject(injectParams)
+      .then(res => {
+        t.strictEqual(res.statusCode, 200)
+      })
+      .catch(t.fail)
+  })
+})
+
+test('inject promisify - when the server is up', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    // setTimeout because the ready event don't set "started" flag
+    // in this iteration of the 'event loop'
+    setTimeout(() => {
+      const injectParams = {
+        method: 'GET',
+        url: '/'
+      }
+      fastify.inject(injectParams)
+        .then(res => {
+          t.strictEqual(res.statusCode, 200)
+        })
+        .catch(t.fail)
+    }, 10)
+  })
+})
+
+test('should reject in error case', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const error = new Error('DOOM!')
+  fastify.register((instance, opts, next) => {
+    setTimeout(next, 500, error)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  })
+    .catch(e => {
+      t.strictEqual(e, error)
+    })
+})
+
+test('inject a multipart request using form-body', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('*', function (req, done) {
+    var body = ''
+    req.on('data', d => {
+      body += d
+    })
+    req.on('end', () => {
+      done(null, body)
+    })
+  })
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  const form = new FormData()
+  form.append('my_field', 'my value')
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: form
+  })
+    .then(response => {
+      t.equal(response.statusCode, 200)
+      t.ok(/Content-Disposition: form-data; name="my_field"/.test(response.payload))
+    })
 })
 
 // https://github.com/hapijs/shot/blob/master/test/index.js#L836
@@ -237,3 +370,24 @@ function getStream () {
 
   return new Read()
 }
+
+test('should error the promise if ready errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts) => {
+    return Promise.reject(new Error('kaboom'))
+  }).after(function () {
+    t.pass('after is called')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }).then(() => {
+    t.fail('this should not be called')
+  }).catch(err => {
+    t.ok(err)
+    t.strictequal(err.message, 'kaboom')
+  })
+})

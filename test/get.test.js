@@ -2,9 +2,8 @@
 
 const t = require('tap')
 const test = t.test
-const request = require('request')
+const sget = require('simple-get').concat
 const fastify = require('..')()
-const safeStringify = require('fast-safe-stringify')
 
 const schema = {
   schema: {
@@ -16,6 +15,16 @@ const schema = {
             type: 'string'
           }
         }
+      }
+    }
+  }
+}
+
+const nullSchema = {
+  schema: {
+    response: {
+      '2xx': {
+        type: 'null'
       }
     }
   }
@@ -65,11 +74,39 @@ const paramsSchema = {
   }
 }
 
+const headersSchema = {
+  schema: {
+    headers: {
+      type: 'object',
+      properties: {
+        'x-test': {
+          type: 'number'
+        },
+        'Y-Test': {
+          type: 'number'
+        }
+      }
+    }
+  }
+}
+
 test('shorthand - get', t => {
   t.plan(1)
   try {
     fastify.get('/', schema, function (req, reply) {
       reply.code(200).send({ hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
+test('shorthand - get (return null)', t => {
+  t.plan(1)
+  try {
+    fastify.get('/null', nullSchema, function (req, reply) {
+      reply.code(200).send(null)
     })
     t.pass()
   } catch (e) {
@@ -101,6 +138,18 @@ test('shorthand - get, querystring schema', t => {
   }
 })
 
+test('shorthand - get, headers schema', t => {
+  t.plan(1)
+  try {
+    fastify.get('/headers', headersSchema, function (req, reply) {
+      reply.code(200).send(req.headers)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('missing schema - get', t => {
   t.plan(1)
   try {
@@ -113,24 +162,16 @@ test('missing schema - get', t => {
   }
 })
 
-test('wrong object for schema - get', t => {
-  t.plan(1)
-  try {
-    fastify.get('/wrong-object-for-schema', numberSchema, function (req, reply) {
-      // will send { hello: null }
-      reply.code(200).send({ hello: 'world' })
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
-})
-
 test('custom serializer - get', t => {
   t.plan(1)
+
+  function customSerializer (data) {
+    return JSON.stringify(data)
+  }
+
   try {
     fastify.get('/custom-serializer', numberSchema, function (req, reply) {
-      reply.code(200).serializer(safeStringify).send({ hello: 'world' })
+      reply.code(200).serializer(customSerializer).send({ hello: 'world' })
     })
     t.pass()
   } catch (e) {
@@ -150,15 +191,27 @@ test('empty response', t => {
   }
 })
 
+test('send a falsy boolean', t => {
+  t.plan(1)
+  try {
+    fastify.get('/boolean', function (req, reply) {
+      reply.code(200).send(false)
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
   test('shorthand - request get', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -169,9 +222,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request get params schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -182,21 +235,52 @@ fastify.listen(0, err => {
 
   test('shorthand - request get params schema error', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
+      url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: JSON.stringify([{
-          keyword: 'type',
-          dataPath: '.test',
-          schemaPath: '#/properties/test/type',
-          params: { type: 'integer' },
-          message: 'should be integer'
-        }]),
+        message: 'params.test should be integer',
+        statusCode: 400
+      })
+    })
+  })
+
+  test('shorthand - request get headers schema', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      headers: {
+        'x-test': '1',
+        'Y-Test': '3'
+      },
+      json: true,
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body['x-test'], 1)
+      t.strictEqual(body['y-test'], 3)
+    })
+  })
+
+  test('shorthand - request get headers schema error', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      headers: {
+        'x-test': 'abc'
+      },
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(body), {
+        error: 'Bad Request',
+        message: "headers['x-test'] should be number",
         statusCode: 400
       })
     })
@@ -204,9 +288,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request get querystring schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -217,21 +301,15 @@ fastify.listen(0, err => {
 
   test('shorthand - request get querystring schema error', t => {
     t.plan(3)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
+      url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 400)
       t.deepEqual(JSON.parse(body), {
         error: 'Bad Request',
-        message: JSON.stringify([{
-          keyword: 'type',
-          dataPath: '.hello',
-          schemaPath: '#/properties/hello/type',
-          params: { type: 'integer' },
-          message: 'should be integer'
-        }]),
+        message: 'querystring.hello should be integer',
         statusCode: 400
       })
     })
@@ -239,9 +317,9 @@ fastify.listen(0, err => {
 
   test('shorthand - request get missing schema', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/missing'
+      url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -250,24 +328,11 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - request get missing schema', t => {
-    t.plan(4)
-    request({
-      method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: null })
-    })
-  })
-
   test('shorthand - custom serializer', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
+      url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
@@ -278,15 +343,38 @@ fastify.listen(0, err => {
 
   test('shorthand - empty response', t => {
     t.plan(4)
-    request({
+    sget({
       method: 'GET',
-      uri: 'http://localhost:' + fastify.server.address().port + '/empty'
+      url: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
-      console.log(body)
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '0')
-      t.deepEqual(body, '')
+      t.deepEqual(body.toString(), '')
+    })
+  })
+
+  test('shorthand - send a falsy boolean', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/boolean'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'false')
+    })
+  })
+
+  test('shorthand - send null value', t => {
+    t.plan(3)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/null'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'null')
     })
   })
 })

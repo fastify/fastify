@@ -1,25 +1,55 @@
 'use strict'
 
 const FindMyWay = require('find-my-way')
-const avvio = require('avvio')
+const Avvio = require('avvio')
 const http = require('http')
 const https = require('https')
+const querystring = require('querystring')
 const Middie = require('middie')
-const runHooks = require('fastseries')()
-var shot = null
-try { shot = require('shot') } catch (e) { }
+const lightMyRequest = require('light-my-request')
+const abstractLogging = require('abstract-logging')
+const proxyAddr = require('proxy-addr')
+
+const {
+  kChildren,
+  kBodyLimit,
+  kRoutePrefix,
+  kLogLevel,
+  kHooks,
+  kSchemas,
+  kContentTypeParser,
+  kReply,
+  kRequest,
+  kMiddlewares,
+  kCanSetNotFoundHandler,
+  kFourOhFourLevelInstance,
+  kFourOhFourContext
+} = require('./lib/symbols.js')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
-const isValidLogger = require('./lib/validation').isValidLogger
-const schemaCompiler = require('./lib/validation').schemaCompiler
+const validation = require('./lib/validation')
+const isValidLogger = validation.isValidLogger
+const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
-const ContentTypeParser = require('./lib/ContentTypeParser')
-const Hooks = require('./lib/hooks')
+const ContentTypeParser = require('./lib/contentTypeParser')
+const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
+const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
+const pluginUtils = require('./lib/pluginUtils')
+const reqIdGenFactory = require('./lib/reqIdGenFactory')
+
+const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
+
+function validateBodyLimitOption (bodyLimit) {
+  if (bodyLimit === undefined) return
+  if (!Number.isInteger(bodyLimit) || bodyLimit <= 0) {
+    throw new TypeError(`'bodyLimit' option must be an integer > 0. Got '${bodyLimit}'`)
+  }
+}
 
 function build (options) {
   options = options || {}
@@ -27,56 +57,108 @@ function build (options) {
     throw new TypeError('Options must be an object')
   }
 
-  var logger
+  var log
+  var hasLogger = true
   if (isValidLogger(options.logger)) {
-    logger = loggerUtils.createLogger({ logger: options.logger, serializers: loggerUtils.serializers })
+    log = loggerUtils.createLogger({
+      logger: options.logger,
+      serializers: Object.assign({}, loggerUtils.serializers, options.logger.serializers)
+    })
+  } else if (!options.logger) {
+    hasLogger = false
+    log = Object.create(abstractLogging)
+    log.child = () => log
   } else {
-    options.logger = options.logger || {}
-    options.logger.level = options.logger.level || 'fatal'
-    options.logger.serializers = options.logger.serializers || loggerUtils.serializers
-    logger = loggerUtils.createLogger(options.logger)
+    options.logger = typeof options.logger === 'object' ? options.logger : {}
+    options.logger.level = options.logger.level || 'info'
+    options.logger.serializers = Object.assign({}, loggerUtils.serializers, options.logger.serializers)
+    log = loggerUtils.createLogger(options.logger)
   }
 
-  const router = FindMyWay({ defaultRoute: defaultRoute })
-  const map = new Map()
+  const fastify = {
+    [kChildren]: []
+  }
+  const router = FindMyWay({
+    defaultRoute: defaultRoute,
+    ignoreTrailingSlash: options.ignoreTrailingSlash,
+    maxParamLength: options.maxParamLength,
+    caseSensitive: options.caseSensitive
+  })
+
+  const requestIdHeader = options.requestIdHeader || 'request-id'
+  if (options.querystringParser && typeof options.querystringParser !== 'function') {
+    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+  }
+  const querystringParser = options.querystringParser || querystring.parse
+
+  let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+
+  if (options.logger && options.logger.genReqId) {
+    process.emitWarning(`Using 'genReqId' in logger options is deprecated. Use fastify options instead. See: https://www.fastify.io/docs/latest/Server/#gen-request-id`)
+    genReqId = options.logger.genReqId
+  }
+
+  fastify.printRoutes = router.prettyPrint.bind(router)
+
+  const setupResponseListeners = Reply.setupResponseListeners
 
   // logger utils
-  const customGenReqId = options.logger ? options.logger.genReqId : null
-  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory()
-  const now = loggerUtils.now
-  const OnResponseState = loggerUtils.OnResponseState
-  const onResponseIterator = loggerUtils.onResponseIterator
-  const onResponseCallback = loggerUtils.onResponseCallback
+  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
+  const proxyFn = getTrustProxyFn()
 
-  const app = avvio(fastify, {})
+  const avvio = Avvio(fastify, {
+    autostart: false,
+    timeout: Number(options.pluginTimeout) || 10000
+  })
   // Override to allow the plugin incapsulation
-  app.override = override
+  avvio.override = override
 
   var listening = false
+  var closing = false
   // true when Fastify is ready to go
   var started = false
-  app.on('start', () => {
+  avvio.on('start', () => {
     started = true
   })
 
-  var server
-  if (options.https) {
-    server = https.createServer(options.https, fastify)
-  } else {
-    server = http.createServer(fastify)
+  function throwIfAlreadyStarted (msg) {
+    if (started) throw new Error(msg)
   }
 
-  fastify.onClose((instance, done) => {
-    if (listening) {
-      instance.server.close(done)
+  var server
+  const httpHandler = router.lookup.bind(router)
+  if (options.serverFactory) {
+    server = options.serverFactory(httpHandler, options)
+  } else if (options.https) {
+    if (options.http2) {
+      server = http2().createSecureServer(options.https, httpHandler)
     } else {
-      done(null)
+      server = https.createServer(options.https, httpHandler)
     }
+  } else if (options.http2) {
+    server = http2().createServer(httpHandler)
+  } else {
+    server = http.createServer(httpHandler)
+  }
+
+  avvio.once('preReady', () => {
+    fastify.onClose((instance, done) => {
+      closing = true
+      if (listening) {
+        instance.server.close(done)
+      } else {
+        done(null)
+      }
+    })
   })
 
-  if (Number(process.versions.node[0]) >= 6) {
+  if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
     server.on('clientError', handleClientError)
   }
+
+  // body limit option
+  validateBodyLimitOption(options.bodyLimit)
+  fastify[kBodyLimit] = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -89,191 +171,328 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify._RoutePrefix = new RoutePrefix()
+  fastify[kRoutePrefix] = ''
+  fastify[kLogLevel] = ''
+
+  Object.defineProperty(fastify, 'prefix', {
+    get: function () {
+      return this[kRoutePrefix]
+    }
+  })
+
+  Object.defineProperty(fastify, 'basePath', {
+    get: function () {
+      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
+      return this[kRoutePrefix]
+    }
+  })
 
   // expose logger instance
-  fastify.logger = logger
+  fastify.log = log
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks(fastify)
+  fastify[kHooks] = new Hooks()
+
+  // schemas
+  fastify.addSchema = addSchema
+  fastify[kSchemas] = new Schemas()
+  fastify.getSchemas = fastify[kSchemas].getSchemas.bind(fastify[kSchemas])
+
+  const onRouteHooks = []
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser()
+  fastify[kContentTypeParser] = new ContentTypeParser(fastify[kBodyLimit])
 
-  fastify.schemaCompiler = schemaCompiler
+  fastify.setSchemaCompiler = setSchemaCompiler
+  fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
   fastify.register = fastify.use
   fastify.listen = listen
   fastify.server = server
+  fastify[pluginUtils.registeredPlugins] = []
 
   // extend server methods
   fastify.decorate = decorator.add
   fastify.hasDecorator = decorator.exist
   fastify.decorateReply = decorator.decorateReply
   fastify.decorateRequest = decorator.decorateRequest
-  fastify.extendServerError = decorator.extendServerError
+  fastify.hasRequestDecorator = decorator.existRequest
+  fastify.hasReplyDecorator = decorator.existReply
 
-  fastify._Reply = Reply
-  fastify._Request = Request
+  fastify[kReply] = Reply.buildReply(Reply)
+  fastify[kRequest] = Request.buildRequest(Request)
 
   // middleware support
   fastify.use = use
-  fastify._middie = Middie(onRunMiddlewares)
-  fastify._middlewares = []
+  fastify[kMiddlewares] = []
 
-  // exposes the routes map
-  fastify[Symbol.iterator] = iterator
-
-  // fake http injection (for testing purposes)
+  // fake http injection
   fastify.inject = inject
+
+  var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
+  fastify[kCanSetNotFoundHandler] = true
+  fastify[kFourOhFourLevelInstance] = fastify
+  fastify[kFourOhFourContext] = null
+  fastify.setNotFoundHandler = setNotFoundHandler
+  fastify.setNotFoundHandler() // Set the default 404 handler
+
+  fastify.setErrorHandler = setErrorHandler
 
   return fastify
 
-  function fastify (req, res) {
-    req.id = genReqId()
-    req.log = res.log = logger.child({ req: req })
-
-    res._startTime = now()
-    res._context = null
-    res.on('finish', onResFinished)
-    res.on('error', onResFinished)
-
-    router.lookup(req, res)
+  function getTrustProxyFn () {
+    const tp = options.trustProxy
+    if (typeof tp === 'function') {
+      return tp
+    }
+    if (tp === true) {
+      // Support plain true/false
+      return function () { return true }
+    }
+    if (typeof tp === 'number') {
+      // Support trusting hop count
+      return function (a, i) { return i < tp }
+    }
+    if (typeof tp === 'string') {
+      // Support comma-separated tps
+      const vals = tp.split(',').map(it => it.trim())
+      return proxyAddr.compile(vals)
+    }
+    return proxyAddr.compile(tp || [])
   }
 
-  function onResFinished (err) {
-    this.removeListener('finish', onResFinished)
-    this.removeListener('error', onResFinished)
-
-    var ctx = this._context
-
-    if (ctx !== null && ctx.onResponse.length > 0) {
-      // deferring this with setImmediate will
-      // slow us by 10%
-      runHooks(new OnResponseState(err, this),
-        onResponseIterator,
-        ctx.onResponse,
-        wrapOnResponseCallback)
-    } else {
-      onResponseCallback(err, this)
+  function _handleTrustProxy (req) {
+    req.ip = proxyAddr(req, proxyFn)
+    req.ips = proxyAddr.all(req, proxyFn)
+    if (req.ip !== undefined) {
+      req.hostname = req.headers['x-forwarded-host']
     }
   }
 
-  function wrapOnResponseCallback (err) {
-    onResponseCallback(this.err || err, this.res)
+  function _ipAsRemoteAddress (req) {
+    req.ip = req.connection.remoteAddress
   }
 
-  function listen (port, address, cb) {
-    const hasAddress = arguments.length === 3
-    const _cb = (hasAddress) ? cb : address
+  function routeHandler (req, res, params, context) {
+    if (closing === true) {
+      res.writeHead(503, {
+        'Content-Type': 'application/json',
+        'Content-Length': '80',
+        'Connection': 'close'
+      })
+      res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
+      setImmediate(() => req.destroy())
+      return
+    }
+
+    req.id = genReqId(req)
+    handleTrustProxy(req)
+    req.hostname = req.hostname || req.headers['host']
+    req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
+    req.originalUrl = req.url
+
+    req.log.info({ req }, 'incoming request')
+
+    var queryPrefix = req.url.indexOf('?')
+    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
+    var request = new context.Request(params, req, query, req.headers, req.log)
+    var reply = new context.Reply(res, context, request, res.log)
+
+    if (hasLogger === true || context.onResponse !== null) {
+      setupResponseListeners(reply)
+    }
+
+    if (context.onRequest !== null) {
+      hookRunner(
+        context.onRequest,
+        hookIterator,
+        request,
+        reply,
+        middlewareCallback
+      )
+    } else {
+      middlewareCallback(null, request, reply)
+    }
+  }
+
+  function listenPromise (port, address, backlog) {
+    if (listening) {
+      return Promise.reject(new Error('Fastify is already listening'))
+    }
+
+    return fastify.ready().then(() => {
+      var errEventHandler
+      var errEvent = new Promise((resolve, reject) => {
+        errEventHandler = (err) => {
+          listening = false
+          reject(err)
+        }
+        server.once('error', errEventHandler)
+      })
+      var listen = new Promise((resolve, reject) => {
+        server.listen(port, address, backlog, () => {
+          server.removeListener('error', errEventHandler)
+          resolve(logServerAddress(server.address(), options.https))
+        })
+        // we set it afterwards because listen can throw
+        listening = true
+      })
+
+      return Promise.race([
+        errEvent, // e.g invalid port range error is always emitted before the server listening
+        listen
+      ])
+    })
+  }
+
+  function listen (port, address, backlog, cb) {
+    /* Deal with listen (cb) */
+    if (typeof port === 'function') {
+      cb = port
+      port = 0
+    }
+
+    /* Deal with listen (port, cb) */
+    if (typeof address === 'function') {
+      cb = address
+      address = undefined
+    }
+
+    // This will listen to what localhost is.
+    // It can be 127.0.0.1 or ::1, depending on the operating system.
+    // Fixes https://github.com/fastify/fastify/issues/1022.
+    address = address || 'localhost'
+
+    /* Deal with listen (port, address, cb) */
+    if (typeof backlog === 'function') {
+      cb = backlog
+      backlog = undefined
+    }
+
+    if (cb === undefined) return listenPromise(port, address, backlog)
+
     fastify.ready(function (err) {
-      if (err) return _cb(err)
+      if (err != null) return cb(err)
+
       if (listening) {
-        return _cb(new Error('Fastify is already listening'))
+        return cb(new Error('Fastify is already listening'), null)
       }
 
-      server.on('error', wrap)
-      if (hasAddress) {
-        server.listen(port, address, wrap)
+      server.once('error', wrap)
+      if (backlog) {
+        server.listen(port, address, backlog, wrap)
       } else {
-        server.listen(port, wrap)
+        server.listen(port, address, wrap)
       }
+
       listening = true
     })
 
     function wrap (err) {
       server.removeListener('error', wrap)
-      if (_cb) {
-        _cb(err)
+      if (!err) {
+        address = logServerAddress(server.address(), options.https)
+        cb(null, address)
       } else {
-        // this will crash the process
-        // it will go to 'uncaughtException'
-        throw err
+        listening = false
+        cb(err, null)
       }
     }
   }
 
-  function startHooks (req, res, params, store) {
-    res._context = store
-    runHooks(
-      new State(req, res, params, store),
-      hookIterator,
-      store.onRequest,
-      middlewareCallback
-    )
-  }
-
-  function middlewareCallback (err) {
-    if (err) {
-      const reply = new Reply(this.req, this.res, this.store)
-      reply.send(err)
-      return
+  function logServerAddress (address, isHttps) {
+    const isUnixSocket = typeof address === 'string'
+    if (!isUnixSocket) {
+      if (address.address.indexOf(':') === -1) {
+        address = address.address + ':' + address.port
+      } else {
+        address = '[' + address.address + ']:' + address.port
+      }
     }
-    this.store._middie.run(this.req, this.res, this)
+    address = (isUnixSocket ? '' : ('http' + (isHttps ? 's' : '') + '://')) + address
+    fastify.log.info('Server listening at ' + address)
+    return address
   }
 
-  function onRunMiddlewares (err, req, res, ctx) {
-    if (err) {
-      const reply = new Reply(req, res, ctx.store)
+  function middlewareCallback (err, request, reply) {
+    if (reply.sent === true) return
+    if (err != null) {
       reply.send(err)
       return
     }
 
-    handleRequest(req, res, ctx.params, ctx.store)
+    if (reply.context._middie !== null) {
+      reply.context._middie.run(request.raw, reply.res, reply)
+    } else {
+      onRunMiddlewares(null, null, null, reply)
+    }
   }
 
-  function State (req, res, params, store) {
-    this.req = req
-    this.res = res
-    this.params = params
-    this.store = store
-  }
-
-  function hookIterator (fn, cb) {
-    fn(this.req, this.res, cb)
-  }
-
-  function override (instance, fn, opts) {
-    if (fn[Symbol.for('skip-override')]) {
-      return instance
+  function onRunMiddlewares (err, req, res, reply) {
+    if (err != null) {
+      reply.send(err)
+      return
     }
 
-    const middlewares = Object.assign([], instance._middlewares)
-    instance = Object.create(instance)
-    instance._Reply = Reply.buildReply(instance._Reply)
-    instance._Request = Request.buildRequest(instance._Request)
-    instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
-    instance._RoutePrefix = buildRoutePrefix(instance._RoutePrefix, opts)
-    instance._middlewares = []
-    instance._middie = Middie(onRunMiddlewares)
+    if (reply.context.preValidation !== null) {
+      hookRunner(
+        reply.context.preValidation,
+        hookIterator,
+        reply.request,
+        reply,
+        handleRequest
+      )
+    } else {
+      handleRequest(null, reply.request, reply)
+    }
+  }
 
-    for (var i = 0; i < middlewares.length; i++) {
-      instance.use.apply(instance, middlewares[i])
+  function override (old, fn, opts) {
+    const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+    if (shouldSkipOverride) {
+      return old
+    }
+
+    const instance = Object.create(old)
+    old[kChildren].push(instance)
+    instance[kChildren] = []
+    instance[kReply] = Reply.buildReply(instance[kReply])
+    instance[kRequest] = Request.buildRequest(instance[kRequest])
+    instance[kContentTypeParser] = ContentTypeParser.buildContentTypeParser(instance[kContentTypeParser])
+    instance[kHooks] = buildHooks(instance[kHooks])
+    instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
+    instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
+    instance[kMiddlewares] = old[kMiddlewares].slice()
+    instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
+
+    if (opts.prefix) {
+      instance[kCanSetNotFoundHandler] = true
+      instance[kFourOhFourLevelInstance] = instance
     }
 
     return instance
   }
 
-  function RoutePrefix () {
-    this.prefix = ''
-  }
-
-  function buildRoutePrefix (r, opts) {
-    const _RoutePrefix = Object.create(opts)
-    const R = _RoutePrefix
-    R.prefix = r.prefix
-    if (typeof opts.prefix === 'string') {
-      if (opts.prefix[0] !== '/') {
-        opts.prefix = '/' + opts.prefix
-      }
-      R.prefix += opts.prefix
+  function buildRoutePrefix (instancePrefix, pluginPrefix) {
+    if (!pluginPrefix) {
+      return instancePrefix
     }
-    return R
+
+    // Ensure that there is a '/' between the prefixes
+    if (instancePrefix.endsWith('/')) {
+      if (pluginPrefix[0] === '/') {
+        // Remove the extra '/' to avoid: '/first//second'
+        pluginPrefix = pluginPrefix.slice(1)
+      }
+    } else if (pluginPrefix[0] !== '/') {
+      pluginPrefix = '/' + pluginPrefix
+    }
+
+    return instancePrefix + pluginPrefix
   }
 
   // Shorthand methods
@@ -309,32 +528,35 @@ function build (options) {
     return _route(this, supportedMethods, url, opts, handler)
   }
 
-  function _route (self, method, url, options, handler) {
+  function _route (_fastify, method, url, options, handler) {
     if (!handler && typeof options === 'function') {
       handler = options
       options = {}
+    } else if (handler && typeof handler === 'function') {
+      if (Object.prototype.toString.call(options) !== '[object Object]') {
+        throw new Error(`Options for ${method}:${url} route must be an object`)
+      } else if (options.handler) {
+        if (typeof options.handler === 'function') {
+          throw new Error(`Duplicate handler for ${method}:${url} route is not allowed!`)
+        } else {
+          throw new Error(`Handler for ${method}:${url} route must be a function`)
+        }
+      }
     }
-    return route.call(self, {
+
+    options = Object.assign({}, options, {
       method,
       url,
-      handler,
-      schema: options.schema || {},
-      Reply: self._Reply,
-      Request: self._Request,
-      contentTypeParser: self._contentTypeParser,
-      onRequest: self._hooks.onRequest,
-      preHandler: self._hooks.preHandler,
-      RoutePrefix: self._RoutePrefix,
-      beforeHandler: options.beforeHandler,
-      onResponse: options.onResponse,
-      config: options.config,
-      middie: self._middie,
-      schemaCompiler: options.schemaCompiler
+      handler: handler || (options && options.handler)
     })
+
+    return _fastify.route(options)
   }
 
   // Route management
   function route (opts) {
+    throwIfAlreadyStarted('Cannot add route when fastify instance is already started!')
+
     const _fastify = this
 
     if (Array.isArray(opts.method)) {
@@ -353,165 +575,421 @@ function build (options) {
       throw new Error(`Missing handler function for ${opts.method}:${opts.url} route.`)
     }
 
-    _fastify._RoutePrefix = opts.RoutePrefix || _fastify._RoutePrefix
+    validateBodyLimitOption(opts.bodyLimit)
 
-    _fastify.after((notHandledErr, done) => {
-      const path = opts.url || opts.path
-      const prefix = _fastify._RoutePrefix.prefix
-      const url = prefix + (path === '/' && prefix.length > 0 ? '' : path)
+    const prefix = _fastify[kRoutePrefix]
 
-      const config = opts.config || {}
-      config.url = url
-
-      const store = new Store(
-        opts.schema,
-        opts.handler,
-        opts.Reply || _fastify._Reply,
-        opts.Request || _fastify._Request,
-        opts.contentTypeParser || _fastify._contentTypeParser,
-        opts.onRequest || _fastify._hooks.onRequest,
-        [],
-        opts.onResponse || _fastify._hooks.onResponse,
-        config,
-        opts.middie || _fastify._middie
-      )
-
-      buildSchema(store, opts.schemaCompiler || _fastify.schemaCompiler)
-
-      store.preHandler.push.apply(store.preHandler, (opts.preHandler || _fastify._hooks.preHandler))
-      if (opts.beforeHandler) {
-        opts.beforeHandler = Array.isArray(opts.beforeHandler) ? opts.beforeHandler : [opts.beforeHandler]
-        store.preHandler.push.apply(store.preHandler, opts.beforeHandler)
+    _fastify.after(function (notHandledErr, done) {
+      var path = opts.url || opts.path
+      if (path === '/' && prefix.length > 0) {
+        // Ensure that '/prefix' + '/' gets registered as '/prefix'
+        afterRouteAdded('', notHandledErr, done)
+      } else if (path[0] === '/' && prefix.endsWith('/')) {
+        // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
+        path = path.slice(1)
       }
 
-      if (map.has(url)) {
-        if (map.get(url)[opts.method]) {
-          return done(new Error(`${opts.method} already set for ${url}`))
-        }
-
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            map.get(url)[opts.method[i]] = store
-          }
-        } else {
-          map.get(url)[opts.method] = store
-        }
-        router.on(opts.method, url, startHooks, store)
-      } else {
-        const node = {}
-        if (Array.isArray(opts.method)) {
-          for (i = 0; i < opts.method.length; i++) {
-            node[opts.method[i]] = store
-          }
-        } else {
-          node[opts.method] = store
-        }
-        map.set(url, node)
-        router.on(opts.method, url, startHooks, store)
-      }
-      done()
+      afterRouteAdded(path, notHandledErr, done)
     })
 
     // chainable api
     return _fastify
+
+    function afterRouteAdded (path, notHandledErr, done) {
+      const url = prefix + path
+
+      opts.url = url
+      opts.path = url
+      opts.prefix = prefix
+      opts.logLevel = opts.logLevel || _fastify[kLogLevel]
+
+      if (opts.attachValidation == null) {
+        opts.attachValidation = false
+      }
+
+      // run 'onRoute' hooks
+      for (var h of onRouteHooks) {
+        h.call(_fastify, opts)
+      }
+
+      const config = opts.config || {}
+      config.url = url
+
+      const context = new Context(
+        opts.schema,
+        opts.handler.bind(_fastify),
+        _fastify[kReply],
+        _fastify[kRequest],
+        _fastify[kContentTypeParser],
+        config,
+        _fastify._errorHandler,
+        opts.bodyLimit,
+        opts.logLevel,
+        opts.attachValidation
+      )
+
+      try {
+        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[kSchemas])
+      } catch (error) {
+        done(error)
+        return
+      }
+
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
+        }
+      }
+
+      try {
+        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
+      } catch (err) {
+        done(err)
+        return
+      }
+
+      // It can happen that a user register a plugin with some hooks/middlewares *after*
+      // the route registration. To be sure to load also that hoooks/middlwares,
+      // we must listen for the avvio's preReady event, and update the context object accordingly.
+      avvio.once('preReady', () => {
+        const onRequest = _fastify[kHooks].onRequest
+        const onResponse = _fastify[kHooks].onResponse
+        const onSend = _fastify[kHooks].onSend
+        const onError = _fastify[kHooks].onError
+        const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
+        const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
+
+        context.onRequest = onRequest.length ? onRequest : null
+        context.preValidation = preValidation.length ? preValidation : null
+        context.preHandler = preHandler.length ? preHandler : null
+        context.onSend = onSend.length ? onSend : null
+        context.onError = onError.length ? onError : null
+        context.onResponse = onResponse.length ? onResponse : null
+
+        context._middie = buildMiddie(_fastify[kMiddlewares])
+
+        // Must store the 404 Context in 'preReady' because it is only guaranteed to
+        // be available after all of the plugins and routes have been loaded.
+        const _404Context = Object.assign({}, _fastify[kFourOhFourContext])
+        _404Context.onSend = context.onSend
+        context[kFourOhFourContext] = _404Context
+      })
+
+      done(notHandledErr)
+    }
   }
 
-  function Store (schema, handler, Reply, Request, contentTypeParser, onRequest, preHandler, onResponse, config, middie) {
+  function defaultErrorHandler (error, request, reply) {
+    var res = reply.res
+    if (res.statusCode >= 500) {
+      res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
+    } else if (res.statusCode >= 400) {
+      res.log.info({ res: res, err: error }, error && error.message)
+    }
+    reply.send(error)
+  }
+
+  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, attachValidation) {
     this.schema = schema
     this.handler = handler
     this.Reply = Reply
     this.Request = Request
     this.contentTypeParser = contentTypeParser
-    this.onRequest = onRequest
-    this.preHandler = preHandler
-    this.onResponse = onResponse
+    this.onRequest = null
+    this.onSend = null
+    this.onError = null
+    this.preHandler = null
+    this.onResponse = null
     this.config = config
-    this._middie = middie
-  }
-
-  function iterator () {
-    var entries = map.entries()
-    var it = {}
-    it.next = function () {
-      var next = entries.next()
-
-      if (next.done) {
-        return {
-          value: null,
-          done: true
-        }
-      }
-
-      var value = {}
-      var methods = {}
-
-      value[next.value[0]] = methods
-
-      // out methods are saved Uppercase,
-      // so we lowercase them for a better usability
-      for (var method in next.value[1]) {
-        methods[method.toLowerCase()] = next.value[1][method]
-      }
-
-      return {
-        value: value,
-        done: false
-      }
+    this.errorHandler = errorHandler || defaultErrorHandler
+    this._middie = null
+    this._parserOptions = {
+      limit: bodyLimit || null
     }
-    return it
+    this.logLevel = logLevel
+    this[kFourOhFourContext] = null
+    this.attachValidation = attachValidation
   }
 
   function inject (opts, cb) {
-    if (!shot) throw new Error('"shot" library is not installed: "npm install shot --save-dev"')
-
     if (started) {
-      shot.inject(this, opts, cb)
-      return
+      return lightMyRequest(httpHandler, opts, cb)
     }
 
-    this.ready(err => {
-      if (err) throw err
-      shot.inject(this, opts, cb)
-    })
+    if (cb) {
+      this.ready(err => {
+        if (err) throw err
+        return lightMyRequest(httpHandler, opts, cb)
+      })
+    } else {
+      return this.ready()
+        .then(() => lightMyRequest(httpHandler, opts))
+    }
   }
 
   function use (url, fn) {
+    throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
-      const prefix = this._RoutePrefix.prefix
+      const prefix = this[kRoutePrefix]
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
-    this._middlewares.push([url, fn])
-    this._middie.use(url, fn)
-    return this
+    return this.after((err, done) => {
+      addMiddleware(this, [url, fn])
+      done(err)
+    })
+  }
+
+  function addMiddleware (instance, middleware) {
+    instance[kMiddlewares].push(middleware)
+    instance[kChildren].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
-    this._hooks.add(name, fn)
+    throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
+
+    if (name === 'onClose') {
+      this[kHooks].validate(name, fn)
+      this.onClose(fn)
+    } else if (name === 'onRoute') {
+      this[kHooks].validate(name, fn)
+      onRouteHooks.push(fn)
+    } else {
+      this.after((err, done) => {
+        _addHook(this, name, fn)
+        done(err)
+      })
+    }
     return this
   }
 
-  function addContentTypeParser (contentType, fn) {
-    this._contentTypeParser.add(contentType, fn)
+  function _addHook (instance, name, fn) {
+    instance[kHooks].add(name, fn.bind(instance))
+    instance[kChildren].forEach(child => _addHook(child, name, fn))
+  }
+
+  function addSchema (name, schema) {
+    throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
+    this[kSchemas].add(name, schema)
+    return this
+  }
+
+  function addContentTypeParser (contentType, opts, parser) {
+    throwIfAlreadyStarted('Cannot call "addContentTypeParser" when fastify instance is already started!')
+
+    if (typeof opts === 'function') {
+      parser = opts
+      opts = {}
+    }
+
+    if (!opts) {
+      opts = {}
+    }
+
+    if (!opts.bodyLimit) {
+      opts.bodyLimit = this[kBodyLimit]
+    }
+
+    if (Array.isArray(contentType)) {
+      contentType.forEach((type) => this[kContentTypeParser].add(type, opts, parser))
+    } else {
+      this[kContentTypeParser].add(contentType, opts, parser)
+    }
+
     return this
   }
 
   function hasContentTypeParser (contentType, fn) {
-    return this._contentTypeParser.hasParser(contentType)
+    return this[kContentTypeParser].hasParser(contentType)
   }
 
-  function handleClientError (e, socket) {
+  function handleClientError (err, socket) {
     const body = JSON.stringify({
       error: http.STATUS_CODES['400'],
       message: 'Client Error',
       statusCode: 400
     })
-    logger.error(e, 'client error')
-    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: 'application/json'\r\n\r\n${body}`)
+    log.error({ err }, 'client error')
+    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 
-  function defaultRoute (req, res, params) {
-    const reply = new Reply(req, res, null)
-    reply.code(404).send(new Error('Not found'))
+  function defaultRoute (req, res) {
+    if (req.headers['accept-version'] !== undefined) {
+      req.headers['accept-version'] = undefined
+    }
+    fourOhFour.lookup(req, res)
+  }
+
+  function basic404 (req, reply) {
+    reply.code(404).send(new Error('Not Found'))
+  }
+
+  function fourOhFourFallBack (req, res) {
+    // if this happen, we have a very bad bug
+    // we might want to do some hard debugging
+    // here, let's print out as much info as
+    // we can
+    req.id = genReqId(req)
+    req.log = res.log = log.child({ reqId: req.id })
+    req.originalUrl = req.url
+
+    req.log.info({ req }, 'incoming request')
+
+    var request = new Request(null, req, null, req.headers, req.log)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
+
+    request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    request.log.warn(fourOhFour.prettyPrint())
+    reply.code(404).send(new Error('Not Found'))
+  }
+
+  function setNotFoundHandler (opts, handler) {
+    throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
+
+    const _fastify = this
+    const prefix = this[kRoutePrefix] || '/'
+
+    if (this[kCanSetNotFoundHandler] === false) {
+      throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
+    }
+
+    if (typeof opts === 'object') {
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
+        }
+      }
+    }
+
+    if (typeof opts === 'function') {
+      handler = opts
+      opts = undefined
+    }
+    opts = opts || {}
+
+    if (handler) {
+      this[kFourOhFourLevelInstance][kCanSetNotFoundHandler] = false
+      handler = handler.bind(this)
+    } else {
+      handler = basic404
+    }
+
+    this.after((notHandledErr, done) => {
+      _setNotFoundHandler.call(this, prefix, opts, handler)
+      done(notHandledErr)
+    })
+  }
+
+  function _setNotFoundHandler (prefix, opts, handler) {
+    const context = new Context(
+      opts.schema,
+      handler,
+      this[kReply],
+      this[kRequest],
+      this[kContentTypeParser],
+      opts.config || {},
+      this._errorHandler,
+      this[kBodyLimit],
+      this[kLogLevel]
+    )
+
+    avvio.once('preReady', () => {
+      const context = this[kFourOhFourContext]
+
+      const onRequest = this[kHooks].onRequest
+      const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
+      const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
+      const onSend = this[kHooks].onSend
+      const onError = this[kHooks].onError
+      const onResponse = this[kHooks].onResponse
+
+      context.onRequest = onRequest.length ? onRequest : null
+      context.preValidation = preValidation.length ? preValidation : null
+      context.preHandler = preHandler.length ? preHandler : null
+      context.onSend = onSend.length ? onSend : null
+      context.onError = onError.length ? onError : null
+      context.onResponse = onResponse.length ? onResponse : null
+
+      context._middie = buildMiddie(this[kMiddlewares])
+    })
+
+    if (this[kFourOhFourContext] !== null && prefix === '/') {
+      Object.assign(this[kFourOhFourContext], context) // Replace the default 404 handler
+      return
+    }
+
+    this[kFourOhFourLevelInstance][kFourOhFourContext] = context
+
+    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
+    fourOhFour.all(prefix || '/', routeHandler, context)
+  }
+
+  function setSchemaCompiler (schemaCompiler) {
+    throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
+
+    this._schemaCompiler = schemaCompiler
+    return this
+  }
+
+  function setErrorHandler (func) {
+    throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
+
+    this._errorHandler = func
+    return this
+  }
+
+  function buildMiddie (middlewares) {
+    if (!middlewares.length) {
+      return null
+    }
+
+    const middie = Middie(onRunMiddlewares)
+    for (var i = 0; i < middlewares.length; i++) {
+      middie.use.apply(middie, middlewares[i])
+    }
+
+    return middie
+  }
+
+  function beforeHandlerWarning () {
+    if (beforeHandlerWarning.called) return
+    beforeHandlerWarning.called = true
+    process.emitWarning('The route option `beforeHandler` has been deprecated, use `preHandler` instead')
+  }
+}
+
+function http2 () {
+  try {
+    return require('http2')
+  } catch (err) {
+    console.error('http2 is available only from node >= 8.8.1')
   }
 }
 

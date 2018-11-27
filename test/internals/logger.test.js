@@ -3,14 +3,9 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
+const split = require('split2')
+const proxyquire = require('proxyquire')
 const loggerUtils = require('../../lib/logger')
-
-test('gen id factory', t => {
-  t.plan(2)
-  const genReqId = loggerUtils.reqIdGenFactory()
-  t.is(typeof genReqId, 'function')
-  t.is(typeof genReqId({}), 'number')
-})
 
 test('time resolution', t => {
   t.plan(2)
@@ -23,8 +18,8 @@ test('The logger should add a unique id for every request', t => {
 
   const fastify = Fastify()
   fastify.get('/', (req, reply) => {
-    t.ok(req.req.id)
-    reply.send({ id: req.req.id })
+    t.ok(req.raw.id)
+    reply.send({ id: req.raw.id })
   })
 
   fastify.listen(0, err => {
@@ -43,13 +38,73 @@ test('The logger should add a unique id for every request', t => {
     fastify.inject({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
-    }, res => {
+    }, (err, res) => {
+      t.error(err)
       const payload = JSON.parse(res.payload)
       t.ok(ids.indexOf(payload.id) === -1, 'the id should not be duplicated')
       ids.push(payload.id)
       done()
     })
   }
+})
+
+test('The logger should reuse request id header for req.id', t => {
+  const fastify = Fastify()
+  fastify.get('/', (req, reply) => {
+    t.ok(req.raw.id)
+    reply.send({ id: req.raw.id })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'Request-Id': 'request-id-1'
+      }
+    }, (err, res) => {
+      t.error(err)
+      const payload = JSON.parse(res.payload)
+      t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
+      fastify.close()
+      t.end()
+    })
+  })
+})
+
+test('The logger should add a timestamp if logging to stdout', t => {
+  t.plan(5)
+
+  const stream = split(JSON.parse)
+  const stub = Object.create(loggerUtils)
+  stub.createLogger = function (opts) {
+    return loggerUtils.createLogger(opts, stream)
+  }
+
+  const Fastify = proxyquire('../..', {
+    './lib/logger': stub
+  })
+  const fastify = Fastify({ logger: true })
+
+  stream.once('data', (line) => {
+    t.equal(line.msg, 'incoming request')
+    stream.once('data', (line) => {
+      t.equal(line.msg, 'Not Found')
+      stream.once('data', (line) => {
+        t.equal(line.msg, 'request completed')
+        t.ok(line.responseTime, 'responseTime exists')
+      })
+    })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, function (err, res) {
+    t.error(err)
+  })
 })
 
 function Queue () {
@@ -73,3 +128,22 @@ Queue.prototype.run = function run () {
     }
   })
 }
+
+test('The logger should error if both stream and file destination are given', t => {
+  t.plan(2)
+
+  const stream = require('stream').Writable
+
+  try {
+    Fastify({
+      logger: {
+        level: 'info',
+        stream: stream,
+        file: '/test'
+      }
+    })
+  } catch (err) {
+    t.is(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
+    t.is(err.message, 'FST_ERR_LOG_INVALID_DESTINATION: Cannot specify both logger.stream and logger.file options')
+  }
+})

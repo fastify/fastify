@@ -1,13 +1,30 @@
 'use strict'
 
 const FindMyWay = require('find-my-way')
-const avvio = require('avvio')
+const Avvio = require('avvio')
 const http = require('http')
 const https = require('https')
+const querystring = require('querystring')
 const Middie = require('middie')
 const lightMyRequest = require('light-my-request')
 const abstractLogging = require('abstract-logging')
 const proxyAddr = require('proxy-addr')
+
+const {
+  kChildren,
+  kBodyLimit,
+  kRoutePrefix,
+  kLogLevel,
+  kHooks,
+  kSchemas,
+  kContentTypeParser,
+  kReply,
+  kRequest,
+  kMiddlewares,
+  kCanSetNotFoundHandler,
+  kFourOhFourLevelInstance,
+  kFourOhFourContext
+} = require('./lib/symbols.js')
 
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
@@ -19,14 +36,13 @@ const isValidLogger = validation.isValidLogger
 const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
-const Hooks = require('./lib/hooks')
+const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
 const Schemas = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
-const runHooks = require('./lib/hookRunner').hookRunner
+const reqIdGenFactory = require('./lib/reqIdGenFactory')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
-const childrenKey = Symbol('fastify.children')
 
 function validateBodyLimitOption (bodyLimit) {
   if (bodyLimit === undefined) return
@@ -34,8 +50,6 @@ function validateBodyLimitOption (bodyLimit) {
     throw new TypeError(`'bodyLimit' option must be an integer > 0. Got '${bodyLimit}'`)
   }
 }
-
-function noop () { }
 
 function build (options) {
   options = options || {}
@@ -62,7 +76,7 @@ function build (options) {
   }
 
   const fastify = {
-    [childrenKey]: []
+    [kChildren]: []
   }
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -72,30 +86,38 @@ function build (options) {
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'
+  if (options.querystringParser && typeof options.querystringParser !== 'function') {
+    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+  }
+  const querystringParser = options.querystringParser || querystring.parse
+
+  let genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+
+  if (options.logger && options.logger.genReqId) {
+    process.emitWarning(`Using 'genReqId' in logger options is deprecated. Use fastify options instead. See: https://www.fastify.io/docs/latest/Server/#gen-request-id`)
+    genReqId = options.logger.genReqId
+  }
 
   fastify.printRoutes = router.prettyPrint.bind(router)
 
+  const setupResponseListeners = Reply.setupResponseListeners
+
   // logger utils
-  const customGenReqId = options.logger ? options.logger.genReqId : null
   const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
-  const genReqId = customGenReqId || loggerUtils.reqIdGenFactory(requestIdHeader)
-  const now = loggerUtils.now
-  const onResponseIterator = loggerUtils.onResponseIterator
-  const onResponseCallback = hasLogger ? loggerUtils.onResponseCallback : noop
 
-  const app = avvio(fastify, {
+  const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || 0
+    timeout: Number(options.pluginTimeout) || 10000
   })
   // Override to allow the plugin incapsulation
-  app.override = override
+  avvio.override = override
 
   var listening = false
   var closing = false
   // true when Fastify is ready to go
   var started = false
-  app.on('start', () => {
+  avvio.on('start', () => {
     started = true
   })
 
@@ -119,7 +141,7 @@ function build (options) {
     server = http.createServer(httpHandler)
   }
 
-  app.once('preReady', () => {
+  avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
       closing = true
       if (listening) {
@@ -136,7 +158,7 @@ function build (options) {
 
   // body limit option
   validateBodyLimitOption(options.bodyLimit)
-  fastify._bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
+  fastify[kBodyLimit] = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // shorthand methods
   fastify.delete = _delete
@@ -149,12 +171,19 @@ function build (options) {
   fastify.all = _all
   // extended route
   fastify.route = route
-  fastify._routePrefix = ''
-  fastify._logLevel = ''
+  fastify[kRoutePrefix] = ''
+  fastify[kLogLevel] = ''
+
+  Object.defineProperty(fastify, 'prefix', {
+    get: function () {
+      return this[kRoutePrefix]
+    }
+  })
 
   Object.defineProperty(fastify, 'basePath', {
     get: function () {
-      return this._routePrefix
+      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
+      return this[kRoutePrefix]
     }
   })
 
@@ -163,19 +192,19 @@ function build (options) {
 
   // hooks
   fastify.addHook = addHook
-  fastify._hooks = new Hooks()
+  fastify[kHooks] = new Hooks()
 
   // schemas
   fastify.addSchema = addSchema
-  fastify._schemas = new Schemas()
-  fastify.getSchemas = fastify._schemas.getSchemas.bind(fastify._schemas)
+  fastify[kSchemas] = new Schemas()
+  fastify.getSchemas = fastify[kSchemas].getSchemas.bind(fastify[kSchemas])
 
   const onRouteHooks = []
 
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify._contentTypeParser = new ContentTypeParser(fastify._bodyLimit)
+  fastify[kContentTypeParser] = new ContentTypeParser(fastify[kBodyLimit])
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())
@@ -194,20 +223,20 @@ function build (options) {
   fastify.hasRequestDecorator = decorator.existRequest
   fastify.hasReplyDecorator = decorator.existReply
 
-  fastify._Reply = Reply.buildReply(Reply)
-  fastify._Request = Request.buildRequest(Request)
+  fastify[kReply] = Reply.buildReply(Reply)
+  fastify[kRequest] = Request.buildRequest(Request)
 
   // middleware support
   fastify.use = use
-  fastify._middlewares = []
+  fastify[kMiddlewares] = []
 
   // fake http injection
   fastify.inject = inject
 
   var fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
-  fastify._canSetNotFoundHandler = true
-  fastify._404LevelInstance = fastify
-  fastify._404Context = null
+  fastify[kCanSetNotFoundHandler] = true
+  fastify[kFourOhFourLevelInstance] = fastify
+  fastify[kFourOhFourContext] = null
   fastify.setNotFoundHandler = setNotFoundHandler
   fastify.setNotFoundHandler() // Set the default 404 handler
 
@@ -265,45 +294,28 @@ function build (options) {
     req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
-    res._startTime = hasLogger ? now() : undefined
-    res._context = context
 
     req.log.info({ req }, 'incoming request')
 
+    var queryPrefix = req.url.indexOf('?')
+    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
+    var request = new context.Request(params, req, query, req.headers, req.log)
+    var reply = new context.Reply(res, context, request, res.log)
+
     if (hasLogger === true || context.onResponse !== null) {
-      res.on('finish', onResFinished)
-      res.on('error', onResFinished)
+      setupResponseListeners(reply)
     }
 
     if (context.onRequest !== null) {
-      runHooks(
+      hookRunner(
         context.onRequest,
         hookIterator,
-        new State(req, res, params, context),
+        request,
+        reply,
         middlewareCallback
       )
     } else {
-      middlewareCallback(null, new State(req, res, params, context))
-    }
-  }
-
-  function onResFinished (err) {
-    this.removeListener('finish', onResFinished)
-    this.removeListener('error', onResFinished)
-
-    var ctx = this._context
-
-    if (ctx && ctx.onResponse !== null) {
-      // deferring this with setImmediate will
-      // slow us by 10%
-      runHooks(
-        ctx.onResponse,
-        onResponseIterator,
-        this,
-        onResponseCallback
-      )
-    } else {
-      onResponseCallback(err, this)
+      middlewareCallback(null, request, reply)
     }
   }
 
@@ -364,7 +376,7 @@ function build (options) {
     if (cb === undefined) return listenPromise(port, address, backlog)
 
     fastify.ready(function (err) {
-      if (err) return cb(err)
+      if (err != null) return cb(err)
 
       if (listening) {
         return cb(new Error('Fastify is already listening'), null)
@@ -406,44 +418,37 @@ function build (options) {
     return address
   }
 
-  function State (req, res, params, context) {
-    this.req = req
-    this.res = res
-    this.params = params
-    this.context = context
-  }
-
-  function hookIterator (fn, state, next) {
-    if (state.res.finished === true) return undefined
-    return fn(state.req, state.res, next)
-  }
-
-  function middlewareCallback (err, state) {
-    if (state.res.finished === true) return
-    if (err) {
-      const req = state.req
-      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
-      const reply = new state.context.Reply(state.res, state.context, request)
+  function middlewareCallback (err, request, reply) {
+    if (reply.sent === true) return
+    if (err != null) {
       reply.send(err)
       return
     }
 
-    if (state.context._middie !== null) {
-      state.context._middie.run(state.req, state.res, state)
+    if (reply.context._middie !== null) {
+      reply.context._middie.run(request.raw, reply.res, reply)
     } else {
-      onRunMiddlewares(null, state.req, state.res, state)
+      onRunMiddlewares(null, null, null, reply)
     }
   }
 
-  function onRunMiddlewares (err, req, res, state) {
-    if (err) {
-      const request = new state.context.Request(state.params, req, null, req.headers, req.log)
-      const reply = new state.context.Reply(res, state.context, request)
+  function onRunMiddlewares (err, req, res, reply) {
+    if (err != null) {
       reply.send(err)
       return
     }
 
-    handleRequest(req, res, state.params, state.context)
+    if (reply.context.preValidation !== null) {
+      hookRunner(
+        reply.context.preValidation,
+        hookIterator,
+        reply.request,
+        reply,
+        handleRequest
+      )
+    } else {
+      handleRequest(null, reply.request, reply)
+    }
   }
 
   function override (old, fn, opts) {
@@ -453,20 +458,20 @@ function build (options) {
     }
 
     const instance = Object.create(old)
-    old[childrenKey].push(instance)
-    instance[childrenKey] = []
-    instance._Reply = Reply.buildReply(instance._Reply)
-    instance._Request = Request.buildRequest(instance._Request)
-    instance._contentTypeParser = ContentTypeParser.buildContentTypeParser(instance._contentTypeParser)
-    instance._hooks = Hooks.buildHooks(instance._hooks)
-    instance._routePrefix = buildRoutePrefix(instance._routePrefix, opts.prefix)
-    instance._logLevel = opts.logLevel || instance._logLevel
-    instance._middlewares = old._middlewares.slice()
+    old[kChildren].push(instance)
+    instance[kChildren] = []
+    instance[kReply] = Reply.buildReply(instance[kReply])
+    instance[kRequest] = Request.buildRequest(instance[kRequest])
+    instance[kContentTypeParser] = ContentTypeParser.buildContentTypeParser(instance[kContentTypeParser])
+    instance[kHooks] = buildHooks(instance[kHooks])
+    instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
+    instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
+    instance[kMiddlewares] = old[kMiddlewares].slice()
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
-      instance._canSetNotFoundHandler = true
-      instance._404LevelInstance = instance
+      instance[kCanSetNotFoundHandler] = true
+      instance[kFourOhFourLevelInstance] = instance
     }
 
     return instance
@@ -572,22 +577,31 @@ function build (options) {
 
     validateBodyLimitOption(opts.bodyLimit)
 
-    _fastify.after(function afterRouteAdded (notHandledErr, done) {
-      const prefix = _fastify._routePrefix
+    const prefix = _fastify[kRoutePrefix]
+
+    _fastify.after(function (notHandledErr, done) {
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
         // Ensure that '/prefix' + '/' gets registered as '/prefix'
-        path = ''
+        afterRouteAdded('', notHandledErr, done)
       } else if (path[0] === '/' && prefix.endsWith('/')) {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
         path = path.slice(1)
       }
+
+      afterRouteAdded(path, notHandledErr, done)
+    })
+
+    // chainable api
+    return _fastify
+
+    function afterRouteAdded (path, notHandledErr, done) {
       const url = prefix + path
 
       opts.url = url
       opts.path = url
       opts.prefix = prefix
-      opts.logLevel = opts.logLevel || _fastify._logLevel
+      opts.logLevel = opts.logLevel || _fastify[kLogLevel]
 
       if (opts.attachValidation == null) {
         opts.attachValidation = false
@@ -604,9 +618,9 @@ function build (options) {
       const context = new Context(
         opts.schema,
         opts.handler.bind(_fastify),
-        _fastify._Reply,
-        _fastify._Request,
-        _fastify._contentTypeParser,
+        _fastify[kReply],
+        _fastify[kRequest],
+        _fastify[kContentTypeParser],
         config,
         _fastify._errorHandler,
         opts.bodyLimit,
@@ -615,19 +629,29 @@ function build (options) {
       )
 
       try {
-        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify._schemas)
+        buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[kSchemas])
       } catch (error) {
         done(error)
         return
       }
 
-      if (opts.beforeHandler) {
-        if (Array.isArray(opts.beforeHandler)) {
-          opts.beforeHandler.forEach((h, i) => {
-            opts.beforeHandler[i] = h.bind(_fastify)
-          })
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
         } else {
-          opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
         }
       }
 
@@ -641,31 +665,42 @@ function build (options) {
       // It can happen that a user register a plugin with some hooks/middlewares *after*
       // the route registration. To be sure to load also that hoooks/middlwares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
-      app.once('preReady', () => {
-        const onRequest = _fastify._hooks.onRequest
-        const onResponse = _fastify._hooks.onResponse
-        const onSend = _fastify._hooks.onSend
-        const preHandler = _fastify._hooks.preHandler.concat(opts.beforeHandler || [])
+      avvio.once('preReady', () => {
+        const onRequest = _fastify[kHooks].onRequest
+        const onResponse = _fastify[kHooks].onResponse
+        const onSend = _fastify[kHooks].onSend
+        const onError = _fastify[kHooks].onError
+        const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
+        const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
+        context.preValidation = preValidation.length ? preValidation : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
+        context.onError = onError.length ? onError : null
         context.onResponse = onResponse.length ? onResponse : null
 
-        context._middie = buildMiddie(_fastify._middlewares)
+        context._middie = buildMiddie(_fastify[kMiddlewares])
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        const _404Context = Object.assign({}, _fastify._404Context)
+        const _404Context = Object.assign({}, _fastify[kFourOhFourContext])
         _404Context.onSend = context.onSend
-        context._404Context = _404Context
+        context[kFourOhFourContext] = _404Context
       })
 
       done(notHandledErr)
-    })
+    }
+  }
 
-    // chainable api
-    return _fastify
+  function defaultErrorHandler (error, request, reply) {
+    var res = reply.res
+    if (res.statusCode >= 500) {
+      res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
+    } else if (res.statusCode >= 400) {
+      res.log.info({ res: res, err: error }, error && error.message)
+    }
+    reply.send(error)
   }
 
   function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, attachValidation) {
@@ -676,16 +711,17 @@ function build (options) {
     this.contentTypeParser = contentTypeParser
     this.onRequest = null
     this.onSend = null
+    this.onError = null
     this.preHandler = null
     this.onResponse = null
     this.config = config
-    this.errorHandler = errorHandler
+    this.errorHandler = errorHandler || defaultErrorHandler
     this._middie = null
     this._parserOptions = {
       limit: bodyLimit || null
     }
     this.logLevel = logLevel
-    this._404Context = null
+    this[kFourOhFourContext] = null
     this.attachValidation = attachValidation
   }
 
@@ -708,7 +744,7 @@ function build (options) {
   function use (url, fn) {
     throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
-      const prefix = this._routePrefix
+      const prefix = this[kRoutePrefix]
       url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
     }
     return this.after((err, done) => {
@@ -718,18 +754,18 @@ function build (options) {
   }
 
   function addMiddleware (instance, middleware) {
-    instance._middlewares.push(middleware)
-    instance[childrenKey].forEach(child => addMiddleware(child, middleware))
+    instance[kMiddlewares].push(middleware)
+    instance[kChildren].forEach(child => addMiddleware(child, middleware))
   }
 
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
     if (name === 'onClose') {
-      this._hooks.validate(name, fn)
+      this[kHooks].validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onRoute') {
-      this._hooks.validate(name, fn)
+      this[kHooks].validate(name, fn)
       onRouteHooks.push(fn)
     } else {
       this.after((err, done) => {
@@ -741,13 +777,13 @@ function build (options) {
   }
 
   function _addHook (instance, name, fn) {
-    instance._hooks.add(name, fn.bind(instance))
-    instance[childrenKey].forEach(child => _addHook(child, name, fn))
+    instance[kHooks].add(name, fn.bind(instance))
+    instance[kChildren].forEach(child => _addHook(child, name, fn))
   }
 
   function addSchema (name, schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this._schemas.add(name, schema)
+    this[kSchemas].add(name, schema)
     return this
   }
 
@@ -764,20 +800,20 @@ function build (options) {
     }
 
     if (!opts.bodyLimit) {
-      opts.bodyLimit = this._bodyLimit
+      opts.bodyLimit = this[kBodyLimit]
     }
 
     if (Array.isArray(contentType)) {
-      contentType.forEach((type) => this._contentTypeParser.add(type, opts, parser))
+      contentType.forEach((type) => this[kContentTypeParser].add(type, opts, parser))
     } else {
-      this._contentTypeParser.add(contentType, opts, parser)
+      this[kContentTypeParser].add(contentType, opts, parser)
     }
 
     return this
   }
 
   function hasContentTypeParser (contentType, fn) {
-    return this._contentTypeParser.hasParser(contentType)
+    return this[kContentTypeParser].hasParser(contentType)
   }
 
   function handleClientError (err, socket) {
@@ -812,14 +848,11 @@ function build (options) {
 
     req.log.info({ req }, 'incoming request')
 
-    res._startTime = now()
-    res.on('finish', onResFinished)
-    res.on('error', onResFinished)
+    var request = new Request(null, req, null, req.headers, req.log)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
 
-    req.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
-    req.log.warn(fourOhFour.prettyPrint())
-    const request = new Request(null, req, null, req.headers, req.log)
-    const reply = new Reply(res, { onSend: [] }, request)
+    request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
+    request.log.warn(fourOhFour.prettyPrint())
     reply.code(404).send(new Error('Not Found'))
   }
 
@@ -827,19 +860,31 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     const _fastify = this
-    const prefix = this._routePrefix || '/'
+    const prefix = this[kRoutePrefix] || '/'
 
-    if (this._canSetNotFoundHandler === false) {
+    if (this[kCanSetNotFoundHandler] === false) {
       throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
     }
 
-    if (typeof opts === 'object' && opts.beforeHandler) {
-      if (Array.isArray(opts.beforeHandler)) {
-        opts.beforeHandler.forEach((h, i) => {
-          opts.beforeHandler[i] = h.bind(_fastify)
-        })
-      } else {
-        opts.beforeHandler = opts.beforeHandler.bind(_fastify)
+    if (typeof opts === 'object') {
+      if (opts.preHandler == null && opts.beforeHandler != null) {
+        beforeHandlerWarning()
+        opts.preHandler = opts.beforeHandler
+      }
+      if (opts.preHandler) {
+        if (Array.isArray(opts.preHandler)) {
+          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preHandler = opts.preHandler.bind(_fastify)
+        }
+      }
+
+      if (opts.preValidation) {
+        if (Array.isArray(opts.preValidation)) {
+          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preValidation = opts.preValidation.bind(_fastify)
+        }
       }
     }
 
@@ -850,7 +895,7 @@ function build (options) {
     opts = opts || {}
 
     if (handler) {
-      this._404LevelInstance._canSetNotFoundHandler = false
+      this[kFourOhFourLevelInstance][kCanSetNotFoundHandler] = false
       handler = handler.bind(this)
     } else {
       handler = basic404
@@ -866,37 +911,41 @@ function build (options) {
     const context = new Context(
       opts.schema,
       handler,
-      this._Reply,
-      this._Request,
-      this._contentTypeParser,
+      this[kReply],
+      this[kRequest],
+      this[kContentTypeParser],
       opts.config || {},
       this._errorHandler,
-      this._bodyLimit,
-      this._logLevel
+      this[kBodyLimit],
+      this[kLogLevel]
     )
 
-    app.once('preReady', () => {
-      const context = this._404Context
+    avvio.once('preReady', () => {
+      const context = this[kFourOhFourContext]
 
-      const onRequest = this._hooks.onRequest
-      const preHandler = this._hooks.preHandler.concat(opts.beforeHandler || [])
-      const onSend = this._hooks.onSend
-      const onResponse = this._hooks.onResponse
+      const onRequest = this[kHooks].onRequest
+      const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
+      const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
+      const onSend = this[kHooks].onSend
+      const onError = this[kHooks].onError
+      const onResponse = this[kHooks].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
+      context.preValidation = preValidation.length ? preValidation : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null
+      context.onError = onError.length ? onError : null
       context.onResponse = onResponse.length ? onResponse : null
 
-      context._middie = buildMiddie(this._middlewares)
+      context._middie = buildMiddie(this[kMiddlewares])
     })
 
-    if (this._404Context !== null && prefix === '/') {
-      Object.assign(this._404Context, context) // Replace the default 404 handler
+    if (this[kFourOhFourContext] !== null && prefix === '/') {
+      Object.assign(this[kFourOhFourContext], context) // Replace the default 404 handler
       return
     }
 
-    this._404LevelInstance._404Context = context
+    this[kFourOhFourLevelInstance][kFourOhFourContext] = context
 
     fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
     fourOhFour.all(prefix || '/', routeHandler, context)
@@ -927,6 +976,12 @@ function build (options) {
     }
 
     return middie
+  }
+
+  function beforeHandlerWarning () {
+    if (beforeHandlerWarning.called) return
+    beforeHandlerWarning.called = true
+    process.emitWarning('The route option `beforeHandler` has been deprecated, use `preHandler` instead')
   }
 }
 

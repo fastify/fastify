@@ -8,22 +8,22 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 function asyncHookTest (t) {
   const test = t.test
   test('async hooks', t => {
-    t.plan(19)
+    t.plan(21)
 
     const fastify = Fastify()
-    fastify.addHook('onRequest', async function (req, res) {
+    fastify.addHook('onRequest', async function (request, reply) {
       await sleep(1)
-      req.raw = 'the request is coming'
-      res.raw = 'the reply has come'
-      if (req.method === 'DELETE') {
+      request.test = 'the request is coming'
+      reply.test = 'the reply has come'
+      if (request.raw.method === 'DELETE') {
         throw new Error('some error')
       }
     })
 
     fastify.addHook('preHandler', async function (request, reply) {
       await sleep(1)
-      request.test = 'the request is coming'
-      reply.test = 'the reply has come'
+      t.is(request.test, 'the request is coming')
+      t.is(reply.test, 'the reply has come')
       if (request.raw.method === 'HEAD') {
         throw new Error('some error')
       }
@@ -34,14 +34,12 @@ function asyncHookTest (t) {
       t.ok('onSend called')
     })
 
-    fastify.addHook('onResponse', async function (res) {
+    fastify.addHook('onResponse', async function (request, reply) {
       await sleep(1)
       t.ok('onResponse called')
     })
 
     fastify.get('/', function (request, reply) {
-      t.is(request.raw.raw, 'the request is coming')
-      t.is(reply.res.raw, 'the reply has come')
       t.is(request.test, 'the request is coming')
       t.is(reply.test, 'the reply has come')
       reply.code(200).send({ hello: 'world' })
@@ -127,14 +125,14 @@ function asyncHookTest (t) {
   })
 
   test('onRequest hooks should be able to block a request', t => {
-    t.plan(4)
+    t.plan(5)
     const fastify = Fastify()
 
-    fastify.addHook('onRequest', async (req, res) => {
-      res.end('hello')
+    fastify.addHook('onRequest', async (req, reply) => {
+      reply.send('hello')
     })
 
-    fastify.addHook('onRequest', async (req, res) => {
+    fastify.addHook('onRequest', async (req, reply) => {
       t.fail('this should not be called')
     })
 
@@ -143,10 +141,10 @@ function asyncHookTest (t) {
     })
 
     fastify.addHook('onSend', async (req, reply, payload) => {
-      t.fail('this should not be called')
+      t.ok('called')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 
@@ -180,7 +178,41 @@ function asyncHookTest (t) {
       t.equal(payload, 'hello')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
+
+  test('preValidation hooks should be able to block a request', t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.addHook('preValidation', async (req, reply) => {
+      reply.send('hello')
+    })
+
+    fastify.addHook('preValidation', async (req, reply) => {
+      t.fail('this should not be called')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      t.equal(payload, 'hello')
+    })
+
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 
@@ -199,11 +231,11 @@ function asyncHookTest (t) {
   })
 
   test('onRequest hooks should be able to block a request (last hook)', t => {
-    t.plan(4)
+    t.plan(5)
     const fastify = Fastify()
 
-    fastify.addHook('onRequest', async (req, res) => {
-      res.end('hello')
+    fastify.addHook('onRequest', async (req, reply) => {
+      reply.send('hello')
     })
 
     fastify.addHook('preHandler', async (req, reply) => {
@@ -211,10 +243,10 @@ function asyncHookTest (t) {
     })
 
     fastify.addHook('onSend', async (req, reply, payload) => {
-      t.fail('this should not be called')
+      t.ok('called')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 
@@ -244,7 +276,7 @@ function asyncHookTest (t) {
       t.equal(payload, 'hello')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 
@@ -263,14 +295,16 @@ function asyncHookTest (t) {
   })
 
   test('onRequest respond with a stream', t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify()
 
-    fastify.addHook('onRequest', async (req, res) => {
+    fastify.addHook('onRequest', async (req, reply) => {
       return new Promise((resolve, reject) => {
         const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
-        stream.pipe(res)
-        res.once('finish', resolve)
+        // stream.pipe(res)
+        // res.once('finish', resolve)
+        reply.send(stream)
+        reply.res.once('finish', () => resolve())
       })
     })
 
@@ -283,10 +317,10 @@ function asyncHookTest (t) {
     })
 
     fastify.addHook('onSend', async (req, reply, payload) => {
-      t.fail('this should not be called')
+      t.ok('called')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 
@@ -335,7 +369,7 @@ function asyncHookTest (t) {
       t.is(typeof payload.pipe, 'function')
     })
 
-    fastify.addHook('onResponse', async (res) => {
+    fastify.addHook('onResponse', async (request, reply) => {
       t.ok('called')
     })
 

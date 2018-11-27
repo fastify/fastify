@@ -6,6 +6,12 @@ const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
+const {
+  kReplyErrorHandlerCalled,
+  kReplyHeaders,
+  kReplySerializer,
+  kReplyIsError
+} = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(12)
@@ -14,14 +20,14 @@ test('Once called, Reply should return an object with methods', t => {
   function request () {}
   const reply = new Reply(response, context, request)
   t.is(typeof reply, 'object')
-  t.is(typeof reply._isError, 'boolean')
-  t.is(typeof reply._customError, 'boolean')
+  t.is(typeof reply[kReplyIsError], 'boolean')
+  t.is(typeof reply[kReplyErrorHandlerCalled], 'boolean')
   t.is(typeof reply.send, 'function')
   t.is(typeof reply.code, 'function')
   t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
-  t.is(typeof reply._headers, 'object')
+  t.is(typeof reply[kReplyHeaders], 'object')
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
@@ -42,9 +48,9 @@ test('reply.send throw with circular JSON', t => {
 test('reply.serializer should set a custom serializer', t => {
   t.plan(2)
   const reply = new Reply(null, null, null)
-  t.equal(reply._serializer, null)
+  t.equal(reply[kReplySerializer], null)
   reply.serializer('serializer')
-  t.equal(reply._serializer, 'serializer')
+  t.equal(reply[kReplySerializer], 'serializer')
 })
 
 test('reply.serialize should serialize payload', t => {
@@ -53,6 +59,17 @@ test('reply.serialize should serialize payload', t => {
   const context = {}
   const reply = new Reply(response, context, null)
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
+})
+
+test('reply.serialize should serialize payload with a custom serializer', t => {
+  t.plan(2)
+  let customSerializerCalled = false
+  const response = { statusCode: 200 }
+  const context = {}
+  const reply = new Reply(response, context, null)
+  reply.serializer((x) => (customSerializerCalled = true) && JSON.stringify(x))
+  t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
+  t.equal(customSerializerCalled, true, 'custom serializer not called')
 })
 
 test('reply.serialize should serialize payload with Fastify instance', t => {
@@ -571,10 +588,14 @@ test('undefined payload should be sent as-is', t => {
   })
 })
 
-test('reply.send(new NotFound()) should invoke the 404 handler', t => {
+test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
   t.plan(9)
 
   const fastify = require('../..')()
+
+  fastify.setNotFoundHandler((req, reply) => {
+    t.fail('Should not be called')
+  })
 
   fastify.get('/not-found', function (req, reply) {
     reply.send(new NotFound())
@@ -583,10 +604,6 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
   fastify.register(function (instance, options, next) {
     instance.get('/not-found', function (req, reply) {
       reply.send(new NotFound())
-    })
-
-    instance.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('Custom not found response')
     })
 
     next()
@@ -617,42 +634,12 @@ test('reply.send(new NotFound()) should invoke the 404 handler', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.deepEqual(body.toString(), 'Custom not found response')
-    })
-  })
-})
-
-test('reply.send(new NotFound()) should log a warning and send a basic response if called inside a 404 handler', t => {
-  t.plan(6)
-
-  const fastify = require('../..')()
-
-  fastify.get('/not-found', function (req, reply) {
-    reply.send(new NotFound())
-  })
-
-  fastify.setNotFoundHandler(function (req, reply) {
-    reply.res.log.warn = function mockWarn (message) {
-      t.equal(message, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
-    }
-
-    reply.send(new NotFound())
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/not-found'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.deepEqual(body.toString(), '404 Not Found')
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.deepEqual(JSON.parse(body), {
+        error: 'Not Found',
+        message: 'Not Found',
+        statusCode: 404
+      })
     })
   })
 })
@@ -888,8 +875,8 @@ test('Content type and charset set previously', t => {
 
   const fastify = require('../../')()
 
-  fastify.addHook('onRequest', function (req, res, next) {
-    res.setHeader('content-type', 'application/json; charset=utf-16')
+  fastify.addHook('onRequest', function (req, reply, next) {
+    reply.header('content-type', 'application/json; charset=utf-16')
     next()
   })
 

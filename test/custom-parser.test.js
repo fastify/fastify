@@ -673,6 +673,113 @@ test('Should get the body as string', t => {
   })
 })
 
+test('Should return defined body with no custom parser defined and content type = \'text/plain\'', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'hello world',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'hello world')
+      fastify.close()
+    })
+  })
+})
+
+test('Should have typeof body string with no custom parser defined, no body defined and content type = \'text/plain\'', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(typeof (body.toString()), 'string')
+      fastify.close()
+    })
+  })
+})
+
+test('Should have typeof body string with no custom parser defined, null body and content type = \'text/plain\'', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: null,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(typeof (body.toString()), 'string')
+      fastify.close()
+    })
+  })
+})
+
+test('Should have typeof body string with no custom parser defined, undefined body and content type = \'text/plain\'', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: undefined,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(typeof (body.toString()), 'string')
+      fastify.close()
+    })
+  })
+})
+
 test('Should get the body as string', t => {
   t.plan(6)
   const fastify = Fastify()

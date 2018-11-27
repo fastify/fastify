@@ -8,6 +8,29 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 
 const jsonParser = require('fast-json-body')
+// Adapted from https://github.com/delvedor/fast-json-body/blob/master/json-body.js
+function plainTextParser (request, callback) {
+  var body = ''
+  request.on('error', onError)
+  request.on('data', onData)
+  request.on('end', onEnd)
+  function onError (err) {
+    callback(err, null)
+  }
+  function onData (chunk) {
+    body += chunk
+  }
+  function onEnd () {
+    setImmediate(parse, body)
+  }
+  function parse (json) {
+    try {
+      callback(null, body)
+    } catch (err) {
+      callback(err, null)
+    }
+  }
+}
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./custom-parser-async')
 }
@@ -538,6 +561,40 @@ test('Can override the default json parser', t => {
   })
 })
 
+test('Can override the default plain text parser', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('text/plain', function (req, done) {
+    t.ok('called')
+    plainTextParser(req, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'hello world',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'hello world')
+      fastify.close()
+    })
+  })
+})
+
 test('Can\'t override the json parser multiple times', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -557,6 +614,28 @@ test('Can\'t override the json parser multiple times', t => {
     })
   } catch (err) {
     t.is(err.message, 'FST_ERR_CTP_ALREADY_PRESENT: Content type parser \'application/json\' already present.')
+  }
+})
+
+test('Can\'t override the plain text parser multiple times', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('text/plain', function (req, done) {
+    plainTextParser(req, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  try {
+    fastify.addContentTypeParser('text/plain', function (req, done) {
+      t.ok('called')
+      plainTextParser(req, function (err, body) {
+        done(err, body)
+      })
+    })
+  } catch (err) {
+    t.is(err.message, 'FST_ERR_CTP_ALREADY_PRESENT: Content type parser \'text/plain\' already present.')
   }
 })
 
@@ -599,6 +678,46 @@ test('Should get the body as string', t => {
   })
 })
 
+
+test('Should get the body as string', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, function (req, body, done) {
+    t.ok('called')
+    t.ok(typeof body === 'string')
+    try {
+      var plainText = body
+      done(null, plainText)
+    } catch (err) {
+      err.statusCode = 400
+      done(err, undefined)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'hello world',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'hello world')
+      fastify.close()
+    })
+  })
+})
+
 test('Should get the body as buffer', t => {
   t.plan(6)
   const fastify = Fastify()
@@ -633,6 +752,45 @@ test('Should get the body as buffer', t => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
+test('Should get the body as buffer', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('text/plain', { parseAs: 'buffer' }, function (req, body, done) {
+    t.ok('called')
+    t.ok(body instanceof Buffer)
+    try {
+      var plainText = body
+      done(null, plainText)
+    } catch (err) {
+      err.statusCode = 400
+      done(err, undefined)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'hello world',
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'hello world')
       fastify.close()
     })
   })

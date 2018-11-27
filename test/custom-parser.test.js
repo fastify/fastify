@@ -8,9 +8,10 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 
 const jsonParser = require('fast-json-body')
-// Adapted from https://github.com/delvedor/fast-json-body/blob/master/json-body.js
+
 function plainTextParser (request, callback) {
   var body = ''
+  request.setEncoding('utf8')
   request.on('error', onError)
   request.on('data', onData)
   request.on('end', onEnd)
@@ -31,6 +32,7 @@ function plainTextParser (request, callback) {
     }
   }
 }
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./custom-parser-async')
 }

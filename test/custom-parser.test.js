@@ -24,12 +24,8 @@ function plainTextParser (request, callback) {
   function onEnd () {
     setImmediate(parse, body)
   }
-  function parse (json) {
-    try {
-      callback(null, body)
-    } catch (err) {
-      callback(err, null)
-    }
+  function parse (body) {
+    callback(null, body)
   }
 }
 

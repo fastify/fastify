@@ -22,9 +22,6 @@ function plainTextParser (request, callback) {
     body += chunk
   }
   function onEnd () {
-    setImmediate(parse, body)
-  }
-  function parse (body) {
     callback(null, body)
   }
 }

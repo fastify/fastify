@@ -720,7 +720,7 @@ test('Should have typeof body string with no custom parser defined, no body defi
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof (body.toString()), 'string')
+      t.strictEqual(typeof body, 'object')
       fastify.close()
     })
   })
@@ -747,7 +747,7 @@ test('Should have typeof body string with no custom parser defined, null body an
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof (body.toString()), 'string')
+      t.strictEqual(typeof body, 'object')
       fastify.close()
     })
   })
@@ -774,7 +774,7 @@ test('Should have typeof body string with no custom parser defined, undefined bo
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof (body.toString()), 'string')
+      t.strictEqual(typeof body, 'object')
       fastify.close()
     })
   })

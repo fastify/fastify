@@ -678,7 +678,6 @@ test('Should get the body as string', t => {
   })
 })
 
-
 test('Should get the body as string', t => {
   t.plan(6)
   const fastify = Fastify()

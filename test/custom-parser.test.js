@@ -700,7 +700,7 @@ test('Should return defined body with no custom parser defined and content type 
   })
 })
 
-test('Should have typeof body string with no custom parser defined, no body defined and content type = \'text/plain\'', t => {
+test('Should have typeof body object with no custom parser defined, no body defined and content type = \'text/plain\'', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -726,7 +726,7 @@ test('Should have typeof body string with no custom parser defined, no body defi
   })
 })
 
-test('Should have typeof body string with no custom parser defined, null body and content type = \'text/plain\'', t => {
+test('Should have typeof body object with no custom parser defined, null body and content type = \'text/plain\'', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -753,7 +753,7 @@ test('Should have typeof body string with no custom parser defined, null body an
   })
 })
 
-test('Should have typeof body string with no custom parser defined, undefined body and content type = \'text/plain\'', t => {
+test('Should have typeof body object with no custom parser defined, undefined body and content type = \'text/plain\'', t => {
   t.plan(4)
   const fastify = Fastify()
 

@@ -112,7 +112,7 @@
   "dependencies": {
     "@types/pino": "^4.16.0",
     "abstract-logging": "^1.0.0",
-    "ajv": "^6.5.4",
+    "ajv": "6.5.5",
     "avvio": "^6.0.0",
     "end-of-stream": "^1.4.1",
     "fast-json-stringify": "^1.9.1",

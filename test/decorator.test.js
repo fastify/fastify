@@ -5,6 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
+const symbols = require('../lib/symbols.js')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -52,7 +53,7 @@ test('decorate should throw if a declared dependency is not present', t => {
       instance.decorate('test', () => {}, ['dependency'])
       t.fail()
     } catch (e) {
-      t.is(e.message, 'Fastify decorator: missing dependency: \'dependency\'.')
+      t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'dependency\'.')
     }
     next()
   })
@@ -86,7 +87,7 @@ test('decorateReply inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance._Reply.prototype.test)
+    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -229,7 +230,7 @@ test('decorateRequest inside register', t => {
 
   fastify.register((instance, opts, next) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance._Request.prototype.test)
+    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')
@@ -619,14 +620,14 @@ test('nested plugins can override things', t => {
     instance.decorateReply('test', func)
 
     t.equal(instance.test, func)
-    t.equal(instance._Request.prototype.test, func)
-    t.equal(instance._Reply.prototype.test, func)
+    t.equal(instance[symbols.kRequest].prototype.test, func)
+    t.equal(instance[symbols.kReply].prototype.test, func)
     next()
   })
 
   fastify.ready(() => {
     t.equal(fastify.test, rootFunc)
-    t.equal(fastify._Request.prototype.test, rootFunc)
-    t.equal(fastify._Reply.prototype.test, rootFunc)
+    t.equal(fastify[symbols.kRequest].prototype.test, rootFunc)
+    t.equal(fastify[symbols.kReply].prototype.test, rootFunc)
   })
 })

@@ -77,8 +77,8 @@ test('onRequest hook error handling with external done', t => {
   const fastify = Fastify()
   const err = new Error('winter is coming')
 
-  fastify.addHook('onRequest', (req, res, done) => {
-    res.statusCode = 400
+  fastify.addHook('onRequest', (req, reply, done) => {
+    reply.code(400)
     done(err)
   })
 
@@ -350,7 +350,7 @@ test('should set the status code and the headers from the error object (from cus
 
 // Issue 595 https://github.com/fastify/fastify/issues/595
 test('\'*\' should throw an error due to serializer can not handle the payload type', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -359,7 +359,8 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
       reply.send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
+      t.is(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -372,7 +373,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
 })
 
 test('should throw an error if the custom serializer does not serialize the payload to a valid type', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -383,7 +384,8 @@ test('should throw an error if the custom serializer does not serialize the payl
         .send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.strictEqual(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
+      t.is(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 

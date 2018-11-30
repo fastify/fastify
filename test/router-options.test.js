@@ -58,3 +58,542 @@ test('Should honor maxParamLength option', t => {
     t.strictEqual(res.statusCode, 404)
   })
 })
+
+test('preHandler', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      req.body.preHandler = true
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { preHandler: true, hello: 'world' })
+  })
+})
+
+test('preHandler option should be called after preHandler hook', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    req.body.check = 'a'
+    next()
+  })
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      req.body.check += 'b'
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { check: 'ab', hello: 'world' })
+  })
+})
+
+test('preHandler option should be unique per route', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      req.body.hello = 'earth'
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.post('/no', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'earth' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/no',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preHandler option should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      done(new Error('kaboom'))
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.equal(res.statusCode, 500)
+    t.deepEqual(payload, {
+      message: 'kaboom',
+      error: 'Internal Server Error',
+      statusCode: 500
+    })
+  })
+})
+
+test('preHandler option should handle errors with custom status code', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      reply.code(401)
+      done(new Error('go away'))
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(payload, {
+      message: 'go away',
+      error: 'Unauthorized',
+      statusCode: 401
+    })
+  })
+})
+
+test('preHandler option could accept an array of functions', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preHandler: [
+      (req, reply, done) => {
+        req.body.preHandler = 'a'
+        done()
+      },
+      (req, reply, done) => {
+        req.body.preHandler += 'b'
+        done()
+      }
+    ]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { preHandler: 'ab', hello: 'world' })
+  })
+})
+
+test('preHandler option does not interfere with preHandler hook', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    req.body.check = 'a'
+    next()
+  })
+
+  fastify.post('/', {
+    preHandler: (req, reply, done) => {
+      req.body.check += 'b'
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.post('/no', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'post',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { check: 'ab', hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'post',
+    url: '/no',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { check: 'a', hello: 'world' })
+  })
+})
+
+test('preHandler option should keep the context', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preHandler: function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      this.foo += 1
+      req.body.foo = this.foo
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { foo: 43, hello: 'world' })
+  })
+})
+
+test('preHandler option should keep the context (array)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preHandler: [function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      this.foo += 1
+      req.body.foo = this.foo
+      done()
+    }]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { foo: 43, hello: 'world' })
+  })
+})
+
+test('Backwards compatibility with beforeHandler option (should emit a warning)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  process.on('warning', warn => {
+    t.strictEqual(
+      warn.message,
+      'The route option `beforeHandler` has been deprecated, use `preHandler` instead'
+    )
+  })
+
+  fastify.post('/', {
+    beforeHandler: (req, reply, done) => {
+      req.body.preHandler = true
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { preHandler: true, hello: 'world' })
+  })
+})
+
+test('preValidation option', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preValidation: (req, reply, done) => {
+      req.preValidation = true
+      done()
+    }
+  }, (req, reply) => {
+    t.true(req.preValidation)
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should be called before preHandler hook', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    t.true(req.called)
+    next()
+  })
+
+  fastify.post('/', {
+    preValidation: (req, reply, done) => {
+      req.called = true
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should be unique per route', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preValidation: (req, reply, done) => {
+      req.hello = { hello: 'earth' }
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.hello || req.body)
+  })
+
+  fastify.post('/no', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'earth' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/no',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preValidation: (req, reply, done) => {
+      done(new Error('kaboom'))
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.equal(res.statusCode, 500)
+    t.deepEqual(payload, {
+      message: 'kaboom',
+      error: 'Internal Server Error',
+      statusCode: 500
+    })
+  })
+})
+
+test('preValidation option should handle errors with custom status code', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preValidation: (req, reply, done) => {
+      reply.code(401)
+      done(new Error('go away'))
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(payload, {
+      message: 'go away',
+      error: 'Unauthorized',
+      statusCode: 401
+    })
+  })
+})
+
+test('preValidation option could accept an array of functions', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preValidation: [
+      (req, reply, done) => {
+        t.ok('called')
+        done()
+      },
+      (req, reply, done) => {
+        t.ok('called')
+        done()
+      }
+    ]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should keep the context', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preValidation: function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preValidation option should keep the context (array)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.decorate('foo', 42)
+
+  fastify.post('/', {
+    preValidation: [function (req, reply, done) {
+      t.strictEqual(this.foo, 42)
+      done()
+    }]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})

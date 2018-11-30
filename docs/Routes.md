@@ -23,7 +23,8 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `beforeHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#before-handler) called just before the request handler, useful if you need to perform authentication at route level for example, it could also be and array of functions.
+* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be and array of functions.
+* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the request handler, it could also be and array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
@@ -229,6 +230,14 @@ Now your clients will have access to the following routes:
 
 You can do this as many times as you want, it works also for nested `register` and routes parameter are supported as well.
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
+
+#### Handling of / route inside prefixed plugins
+
+The `/` route has a different behavior depending if the prefix ends with
+`/` or not. As an example, if we consider a prefix `/something/`,
+adding a `/` route will only match `/something/`. If we consider a
+prefix `/something`, adding a `/` route will match both `/something` 
+and `/something/`.
 
 <a name="custom-log-level"></a>
 ### Custom Log Level

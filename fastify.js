@@ -663,7 +663,7 @@ function build (options) {
       }
 
       // It can happen that a user register a plugin with some hooks/middlewares *after*
-      // the route registration. To be sure to load also that hoooks/middlwares,
+      // the route registration. To be sure to load also that hooks/middlewares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
       avvio.once('preReady', () => {
         const onRequest = _fastify[kHooks].onRequest

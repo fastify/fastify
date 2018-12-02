@@ -116,27 +116,25 @@ For more information, see the [Fastify CLI documentation](https://github.com/fas
 
 ### Benchmarks
 
-__Machine:__ Intel Xeon E5-2686 v4 @ 2.30GHz (4 cores, 8 threads), 16GiB RAM (Amazon EC2 m4.xlarge)
+__Machine:__ MacBook Pro (Late 2016 | 2,7 GHz Intel Core i7 | 16 GB 2133 MHz LPDDR3)
 
-__Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the second average
+__Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the second average
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| hapi               | 17.5.1                     | &#10003;     | 22,139        |
-| Express            | 4.16.3                     | &#10003;     | 22,265        |
-| Restify            | 7.1.0                      | &#10003;     | 23,604        |
-| Koa                | 2.5.1                      | &#10007;     | 25,378        |
-| **Fastify**        | **1.6.0**                  | **&#10003;** | **37,433**    |
+| hapi               | 17.8.1                     | &#10003;     | 26,497        |
+| Express            | 4.16.4                     | &#10003;     | 26,481        |
+| Restify            | 7.2.3                      | &#10003;     | 22,968        |
+| Koa                | 2.6.2                      | &#10007;     | 35,796        |
+| **Fastify**        | **1.13.1**                 | **&#10003;** | **45,846**    |
 | -                  |                            |              |               |
-| `http.Server`      | 8.11.2                      | &#10007;     | 29,855\*     |
+| `http.Server`      | 10.13.0	                  | &#10007;     | 43,542\*      |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
 overhead. The overhead that each framework has on your application
 depends on your application, you should __always__ benchmark if performance
 matters to you.
-
-\* Node.js core is slower than Fastify because of https://github.com/nodejs/node/issues/20798. The problem has already been solved in Node.js 10.
 
 ## Documentation
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>

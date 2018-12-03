@@ -51,7 +51,7 @@ const cors = require('cors')
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
     maxParamLength: 200,
-    querystringParser: (str: string) => ({ str: str, strArray: [str], notFound: undefined })
+    querystringParser: (str: string) => ({ str: str, strArray: [str] })
   })
 
   // custom types

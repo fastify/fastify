@@ -127,7 +127,7 @@ declare namespace fastify {
     logger?: pino.LoggerOptions | boolean,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
-    querystringParser?: (str: string) => { [key: string]: string | string[] | undefined },
+    querystringParser?: (str: string) => { [key: string]: string | string[] },
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

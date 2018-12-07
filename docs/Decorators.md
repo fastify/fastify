@@ -65,7 +65,7 @@ As an example, the following will throw:
 const server = require('fastify')()
 
 server.decorateReply('view', function (template, args) {
-  // Amazing vew rendering engine.
+  // Amazing view rendering engine.
 })
 
 server.get('/', (req, reply) => {
@@ -88,7 +88,7 @@ But this will not:
 const server = require('fastify')()
 
 server.decorateReply('view', function (template, args) {
-  // Amazing vew rendering engine.
+  // Amazing view rendering engine.
 })
 
 server.register(async function (server, opts) {

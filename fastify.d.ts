@@ -513,7 +513,7 @@ declare namespace fastify {
      * Hook that is fired after a request is processed, but before the "onResponse"
      * hook
      */
-    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: FastifyError, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired if `reply.send` is invoked with an Error

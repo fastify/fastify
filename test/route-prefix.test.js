@@ -298,18 +298,18 @@ test('Different register - encapsulation check', t => {
   })
 })
 
-test('Can retrieve basePath within encapsulated instances', t => {
+test('Can retrieve prefix within encapsulated instances', t => {
   t.plan(4)
   const fastify = Fastify()
 
   fastify.register(function (instance, opts, next) {
     instance.get('/one', function (req, reply) {
-      reply.send(instance.basePath)
+      reply.send(instance.prefix)
     })
 
     instance.register(function (instance, opts, next) {
       instance.get('/two', function (req, reply) {
-        reply.send(instance.basePath)
+        reply.send(instance.prefix)
       })
       next()
     }, { prefix: '/v2' })
@@ -331,5 +331,125 @@ test('Can retrieve basePath within encapsulated instances', t => {
   }, (err, res) => {
     t.error(err)
     t.is(res.payload, '/v1/v2')
+  })
+})
+
+test('matches both /prefix and /prefix/ with a / route', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('prefix "/prefix/" does not match "/prefix" with a / route', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }, { prefix: '/prefix/' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: true', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreTrailingSlash: true
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: false', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreTrailingSlash: false
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.get('/', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })

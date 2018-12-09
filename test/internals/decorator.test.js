@@ -66,18 +66,19 @@ test('checkExistence should check the prototype as well', t => {
 })
 
 test('checkDependencies should throw if a dependency is not present', t => {
-  t.plan(1)
+  t.plan(2)
   const instance = {}
   try {
     decorator.dependencies(instance, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
+    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
   }
 })
 
 test('decorate should internally call checkDependencies', t => {
-  t.plan(1)
+  t.plan(2)
   function build () {
     server.add = decorator.add
     return server
@@ -90,7 +91,8 @@ test('decorate should internally call checkDependencies', t => {
     server.add('method', () => {}, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Fastify decorator: missing dependency: \'test\'.')
+    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
   }
 })
 

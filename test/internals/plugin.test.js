@@ -5,6 +5,7 @@ const test = t.test
 
 const pluginUtilsPublic = require('../../lib/pluginUtils.js')
 const pluginUtils = require('../../lib/pluginUtils')[Symbol.for('internals')]
+const symbols = require('../../lib/symbols.js')
 
 test(`shouldSkipOverride should check the 'skip-override' symbol`, t => {
   t.plan(2)
@@ -42,8 +43,8 @@ test('checkDecorators should check if the given decorator is present in the inst
 
   function context () {}
   context.plugin = true
-  context._Reply = { prototype: { plugin: true } }
-  context._Request = { prototype: { plugin: true } }
+  context[symbols.kReply] = { prototype: { plugin: true } }
+  context[symbols.kRequest] = { prototype: { plugin: true } }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)
@@ -68,8 +69,8 @@ test('checkDecorators should check if the given decorator is present in the inst
 
   function context () {}
   context.plugin = true
-  context._Reply = { prototype: { plugin: true } }
-  context._Request = { prototype: {} }
+  context[symbols.kReply] = { prototype: { plugin: true } }
+  context[symbols.kRequest] = { prototype: {} }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)

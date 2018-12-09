@@ -154,6 +154,22 @@ The header name used to know the request id. See [the request id](https://github
 
 + Default: `'request-id'`
 
+<a name="factory-gen-request-id"></a>
+### `genReqId`
+
+Function for generating the request id. It will receive the incoming request as a parameter.
+
++ Default: `value of 'request-id' if provided or monotonically increasing integers`
+
+Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
+
+```js
+let i = 0
+const fastify = require('fastify')({
+  genReqId: function (req) { return i++ }
+})
+```
+
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
 
@@ -189,11 +205,24 @@ fastify.get('/', (request, reply) => {
 <a name="plugin-timeout"></a>
 ### `pluginTimeout`
 
-The maximum amount of time in milliseconds in which a plugin can load.
+The maximum amount of time in *milliseconds* in which a plugin can load.
 If not, [`ready`](https://github.com/fastify/fastify/blob/master/docs/Server.md#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
-+ Default: `0` (disabled)
++ Default: `10000`
+
+<a name="factory-querystring-parser"></a>
+### `querystringParser`
+
+The default query string parser that Fastify uses is the Node.js's core `querystring` module.<br/>
+You can change this default setting by passing the option `querystringParser` and use a custom one, such as [`qs`](https://www.npmjs.com/package/qs).
+
+```js
+const qs = require('qs')
+const fastify = require('fastify')({
+  querystringParser: str => qs.parse(str)
+})
+```
 
 ## Instance
 
@@ -342,8 +371,8 @@ Function to add middlewares to Fastify, check [here](https://github.com/fastify/
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
 
-<a name="base-path"></a>
-#### basepath
+<a name="prefix"></a>
+#### prefix
 The full path that will be prefixed to a route.
 
 Example:
@@ -351,16 +380,16 @@ Example:
 ```js
 fastify.register(function (instance, opts, next) {
   instance.get('/foo', function (request, reply) {
-    // Will log "basePath: /v1"
-    request.log.info('basePath: %s', instance.basePath)
-    reply.send({basePath: instance.basePath})
+    // Will log "prefix: /v1"
+    request.log.info('prefix: %s', instance.prefix)
+    reply.send({ prefix: instance.prefix })
   })
 
   instance.register(function (instance, opts, next) {
     instance.get('/bar', function (request, reply) {
-      // Will log "basePath: /v1/v2"
-      request.log.info('basePath: %s', instance.basePath)
-      reply.send({basePath: instance.basePath})
+      // Will log "prefix: /v1/v2"
+      request.log.info('prefix: %s', instance.prefix)
+      reply.send({ prefix: instance.prefix })
     })
 
     next()
@@ -392,21 +421,25 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 
 `fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md#lifecycle).
 
-You can also register [beforeHandler](https://www.fastify.io/docs/latest/Hooks/#beforehandler) hook for the 404 handler.
+You can also register a [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [preHandler](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hook for the 404 handler.
 
 ```js
 fastify.setNotFoundHandler({
-  beforeHandler: (req, reply, next) => {
-    req.body.beforeHandler = true
+  preValidation: (req, reply, next) => {
+    // your code
+    next()
+  } ,
+  preHandler: (req, reply, next) => {
+    // your code
     next()
   }  
 }, function (request, reply) {
-    // Default not found handler with beforeHandler hook
+    // Default not found handler with preValidation and preHandler hooks
 })
 
 fastify.register(function (instance, options, next) {
   instance.setNotFoundHandler(function (request, reply) {
-    // Handle not found request without beforeHandler hook
+    // Handle not found request without preValidation and preHandler hooks
     // to URLs that begin with '/v1'
   })
   next()
@@ -416,12 +449,27 @@ fastify.register(function (instance, options, next) {
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
+*Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
+  // Log error
   // Send error response
 })
+```
+
+Fastify is provided with a default function that is called if no error handler is set and that logs the error with respect to its `statusCode`:
+
+```js
+var statusCode = error.statusCode
+if (statusCode >= 500) {
+  log.error(error)
+} else if (statusCode >= 400) {
+  log.info(error)
+} else {
+  log.error(error)
+}
 ```
 
 <a name="print-routes"></a>

@@ -1,9 +1,11 @@
 <h1 align="center">Fastify</h1>
 
 ## Ecosystem
+
 Plugins maintained by the fastify team are listed under [Core](#core) while plugins maintained by the community are listed in the [Community](#community) section.
 
 #### [Core](#core)
+
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header.
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
@@ -36,10 +38,11 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
-- [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of *"Service Unavailable"* plugin for Fastify.
+- [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
+- [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
 
 #### [Community](#community)
+
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
@@ -47,6 +50,8 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](http://bookshelfjs.org/) orm support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
+- [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
+- [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
 - [`fastify-datastore`](https://github.com/now-ims/now-fastify-datastore) Fastify plugin for [Google Cloud Datastore](https://cloud.google.com/nodejs/docs/reference/datastore/1.4.x/).
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
@@ -56,6 +61,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
 - [`fastify-firestore`](https://github.com/now-ims/fastify-firestore) Fastify plugin for [Google Cloud Firestore](https://cloud.google.com/nodejs/docs/reference/firestore/0.13.x/).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
+- [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT authentication for fastify-based web apps.
@@ -78,6 +84,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
+- [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
@@ -88,7 +95,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser) Parse XML payload / request body into JS / JSON object.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue) [Nuxt.js](https://nuxtjs.org) plugin for fastify. Controll the routes nuxt should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web Application Messaging Protocol router for fastify.
-- [`fast-water`](https://github.com/tswayne/fast-water) A fastify plugin for waterline.  Decorates fastify with waterline models.
+- [`fast-water`](https://github.com/tswayne/fast-water) A fastify plugin for waterline. Decorates fastify with waterline models.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.

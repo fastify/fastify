@@ -479,12 +479,6 @@ declare namespace fastify {
     decorateRequest(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Extends the standard server error. Return an object with the properties you'd
-     * like added to the error
-     */
-    extendServerError(extendFn: (error: FastifyError) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
      * Determines if the given named decorator is available
      */
     hasDecorator(name: string): boolean
@@ -558,6 +552,11 @@ declare namespace fastify {
      * Set the 404 handler
      */
     setNotFoundHandler(handler: (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+
+    /**
+     * Set a function that will be called whenever an error happens
+     */
+    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set the schema compiler for all routes.

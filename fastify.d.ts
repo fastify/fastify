@@ -524,7 +524,7 @@ declare namespace fastify {
     /**
      * Hook that is fired if `reply.send` is invoked with an Error
      */
-    addHook(name: 'onError', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, error: Error, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onError', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, error: FastifyError, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
      /**
      * Hook that is called when a response is about to be sent to a client
@@ -558,11 +558,6 @@ declare namespace fastify {
      * Set the 404 handler
      */
     setNotFoundHandler(handler: (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
-
-    /**
-     * Set a function that will be called whenever an error happens
-     */
-    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set the schema compiler for all routes.

@@ -53,3 +53,8 @@ fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
 // Multiple paths
 fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 ```
+
+<a name="express-middleware"></a>
+#### Express middleware compatibility
+
+Fastify provides Express middleware compatibility similar to [connect](https://github.com/senchalabs/connect). Since Express modifies the prototype of the node core Request and Response objects heavily, Fastify cannot guarantee full middleware compatibility.

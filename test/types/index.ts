@@ -340,7 +340,14 @@ server.setNotFoundHandler((req, reply) => {
 })
 
 server.setErrorHandler((err, request, reply) => {
-  reply.send(err)
+  if (err.statusCode) {
+    reply.code(err.statusCode)
+  }
+  if (err.validation) {
+    reply.send(err.validation)
+  } else {
+    reply.send(err)
+  }
 })
 
 server.listen(3000, err => {

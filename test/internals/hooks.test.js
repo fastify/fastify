@@ -3,25 +3,31 @@
 const t = require('tap')
 const test = t.test
 
-const Hooks = require('../../lib/hooks')
+const { Hooks } = require('../../lib/hooks')
 const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {
-  t.plan(5)
+  t.plan(7)
   const hooks = new Hooks()
   t.is(typeof hooks, 'object')
   t.ok(Array.isArray(hooks.onRequest))
   t.ok(Array.isArray(hooks.onSend))
+  t.ok(Array.isArray(hooks.preValidation))
   t.ok(Array.isArray(hooks.preHandler))
   t.ok(Array.isArray(hooks.onResponse))
+  t.ok(Array.isArray(hooks.onError))
 })
 
 test('hooks.add should add a hook to the given hook', t => {
-  t.plan(8)
+  t.plan(12)
   const hooks = new Hooks()
   hooks.add('onRequest', noop)
   t.is(hooks.onRequest.length, 1)
   t.is(typeof hooks.onRequest[0], 'function')
+
+  hooks.add('preValidation', noop)
+  t.is(hooks.preValidation.length, 1)
+  t.is(typeof hooks.preValidation[0], 'function')
 
   hooks.add('preHandler', noop)
   t.is(hooks.preHandler.length, 1)
@@ -34,6 +40,10 @@ test('hooks.add should add a hook to the given hook', t => {
   hooks.add('onSend', noop)
   t.is(hooks.onSend.length, 1)
   t.is(typeof hooks.onSend[0], 'function')
+
+  hooks.add('onError', noop)
+  t.is(hooks.onError.length, 1)
+  t.is(typeof hooks.onError[0], 'function')
 })
 
 test('hooks should throw on unexisting handler', t => {
@@ -49,18 +59,20 @@ test('hooks should throw on unexisting handler', t => {
 
 test('should throw on wrong parameters', t => {
   const hooks = new Hooks()
-  t.plan(2)
+  t.plan(4)
   try {
     hooks.add(null, noop)
     t.fail()
   } catch (e) {
-    t.is(e.message, 'The hook name must be a string')
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
+    t.is(e.message, 'FST_ERR_HOOK_INVALID_TYPE: The hook name must be a string')
   }
 
   try {
     hooks.add('', null)
     t.fail()
   } catch (e) {
-    t.is(e.message, 'The hook callback must be a function')
+    t.is(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
+    t.is(e.message, 'FST_ERR_HOOK_INVALID_HANDLER: The hook callback must be a function')
   }
 })

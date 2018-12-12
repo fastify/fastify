@@ -41,7 +41,7 @@ const cors = require('cors')
   })
   // logger true
   const logAllServer = fastify({ logger: true })
-  logAllServer.addHook('onRequest', (req, res, next) => {
+  logAllServer.addHook('onRequest', (req, reply, next) => {
     console.log('can access req', req.headers)
     next()
   })
@@ -50,7 +50,8 @@ const cors = require('cors')
   const otherServer = fastify({
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
-    maxParamLength: 200
+    maxParamLength: 200,
+    querystringParser: (str: string) => ({ str: str, strArray: [str] })
   })
 
   // custom types
@@ -103,22 +104,28 @@ server.addHook('preHandler', function (req, reply, next) {
   }
 })
 
-server.addHook('onRequest', function (req, res, next) {
+server.addHook('onRequest', function (req, reply, next) {
   this.log.debug('`this` is not `any`')
-  console.log(`${req.method} ${req.url}`)
+  console.log(`${req.raw.method} ${req.raw.url}`)
   next()
 })
 
-server.addHook('onResponse', function (res, next) {
+server.addHook('onResponse', function (req, reply, next) {
   this.log.debug('`this` is not `any`')
-  this.log.debug({ code: res.statusCode }, 'res has a statusCode')
+  this.log.debug({ code: reply.res.statusCode }, 'res has a statusCode')
   setTimeout(function () {
-    console.log('response is finished after 100ms?', res.finished)
+    console.log('response is finished after 100ms?', reply.res.finished)
     next()
   }, 100)
 })
 
 server.addHook('onSend', function (req, reply, payload, next) {
+  this.log.debug('`this` is not `any`')
+  console.log(`${req.req.method} ${req.req.url}`)
+  next()
+})
+
+server.addHook('onError', function (req, reply, error, next) {
   this.log.debug('`this` is not `any`')
   console.log(`${req.req.method} ${req.req.url}`)
   next()
@@ -152,9 +159,15 @@ const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRe
       }
     }
   },
-  beforeHandler: [
+  preValidation: [
     (request, reply, next) => {
-      request.log.info(`before handler for "${request.raw.url}" ${request.id}`)
+      request.log.info(`pre validation for "${request.raw.url}" ${request.id}`)
+      next()
+    }
+  ],
+  preHandler: [
+    (request, reply, next) => {
+      request.log.info(`pre handler for "${request.raw.url}" ${request.id}`)
       next()
     }
   ],
@@ -172,8 +185,12 @@ server
     handler: (req, reply) => {
       reply.send({ hello: 'route' })
     },
-    beforeHandler: (req, reply, done) => {
-      req.log.info(`before handler for "${req.req.url}" ${req.id}`)
+    preValidation: (req, reply, done) => {
+      req.log.info(`pre validation for "${req.req.url}" ${req.id}`)
+      done()
+    },
+    preHandler: (req, reply, done) => {
+      req.log.info(`pre handler for "${req.req.url}" ${req.id}`)
       done()
     }
   })
@@ -323,7 +340,14 @@ server.setNotFoundHandler((req, reply) => {
 })
 
 server.setErrorHandler((err, request, reply) => {
-  reply.send(err)
+  if (err.statusCode) {
+    reply.code(err.statusCode)
+  }
+  if (err.validation) {
+    reply.send(err.validation)
+  } else {
+    reply.send(err)
+  }
 })
 
 server.listen(3000, err => {

@@ -24,9 +24,9 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 // eslint-disable-next-line no-redeclare
 declare namespace fastify {
 
-  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: Error) => void) => void
+  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: FastifyError) => void) => void
 
-  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
+  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: FastifyError) => void) => void
 
   type DefaultQuery = { [k: string]: any }
   type DefaultParams = { [k: string]: any }
@@ -34,6 +34,27 @@ declare namespace fastify {
   type DefaultBody = any
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
+
+  interface ValidationResult {
+    keyword: string;
+    dataPath: string;
+    schemaPath: string;
+    params: {
+      [type: string]: string;
+    },
+    message: string;
+  }
+
+  /**
+   * Fastify custom error
+   */
+  interface FastifyError extends Error {
+    statusCode?: number;
+    /**
+     * Validation errors
+     */
+    validation?: Array<ValidationResult>;
+  }
 
   type FastifyMiddleware<
   HttpServer,
@@ -128,6 +149,7 @@ declare namespace fastify {
     logger?: pino.LoggerOptions | boolean,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
+    querystringParser?: (str: string) => { [key: string]: string | string[] },
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions
@@ -168,7 +190,10 @@ declare namespace fastify {
   > {
     schema?: RouteSchema
     attachValidation?: boolean
-    beforeHandler?:
+    preValidation?:
+      | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
+      | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
+    preHandler?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
     schemaCompiler?: SchemaCompiler
@@ -456,12 +481,6 @@ declare namespace fastify {
     decorateRequest(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Extends the standard server error. Return an object with the properties you'd
-     * like added to the error
-     */
-    extendServerError(extendFn: (error: Error) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
      * Determines if the given named decorator is available
      */
     hasDecorator(name: string): boolean
@@ -479,10 +498,15 @@ declare namespace fastify {
     /**
      * Add a hook that is triggered when a request is initially received
      */
-    addHook(name: 'onRequest', hook: Middleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRequest', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Hook that is fired before a request is processed, but after the "onRequest"
+     * Add a hook that is triggered after the onRequest hook and middlewares, but before the validation
+     */
+    addHook(name: 'preValidation', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Hook that is fired before a request is processed, but after the "preValidation"
      * hook
      */
     addHook(name: 'preHandler', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
@@ -493,10 +517,15 @@ declare namespace fastify {
      */
     addHook(name: 'onSend', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
+    /**
+     * Hook that is fired if `reply.send` is invoked with an Error
+     */
+    addHook(name: 'onError', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, error: FastifyError, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
      /**
      * Hook that is called when a response is about to be sent to a client
      */
-    addHook(name: 'onResponse', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, res: http.ServerResponse, next: (err?: Error) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onResponse', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Adds a hook that is triggered when server.close is called. Useful for closing connections
@@ -529,7 +558,7 @@ declare namespace fastify {
     /**
      * Set a function that will be called whenever an error happens
      */
-    setErrorHandler(handler: (error: Error, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set the schema compiler for all routes.

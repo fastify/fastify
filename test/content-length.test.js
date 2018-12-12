@@ -27,7 +27,8 @@ test('default 413 with bodyLimit option', t => {
     t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Payload Too Large',
-      message: 'Request body is too large',
+      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+      message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large',
       statusCode: 413
     })
   })
@@ -57,14 +58,15 @@ test('default 413 with wrong content-length', t => {
     t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
-      message: 'Request body size did not match Content-Length',
+      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+      message: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH: Request body size did not match Content-Length',
       statusCode: 400
     })
   })
 })
 
 test('custom 413 with bodyLimit option', t => {
-  t.plan(6)
+  t.plan(4)
 
   const fastify = Fastify({
     bodyLimit: 10
@@ -75,8 +77,6 @@ test('custom 413 with bodyLimit option', t => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.type(request, 'object')
-    t.type(request, fastify._Request)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -95,14 +95,15 @@ test('custom 413 with bodyLimit option', t => {
     t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Payload Too Large',
-      message: 'Request body is too large',
+      code: 'FST_ERR_CTP_BODY_TOO_LARGE',
+      message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large',
       statusCode: 413
     })
   })
 })
 
 test('custom 413 with wrong content-length', t => {
-  t.plan(6)
+  t.plan(4)
 
   const fastify = Fastify()
 
@@ -111,8 +112,6 @@ test('custom 413 with wrong content-length', t => {
   })
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.type(request, 'object')
-    t.type(request, fastify._Request)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -134,7 +133,8 @@ test('custom 413 with wrong content-length', t => {
     t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
-      message: 'Request body size did not match Content-Length',
+      code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
+      message: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH: Request body size did not match Content-Length',
       statusCode: 400
     })
   })

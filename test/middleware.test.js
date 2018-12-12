@@ -10,6 +10,7 @@ const helmet = require('helmet')
 const serveStatic = require('serve-static')
 const fs = require('fs')
 const path = require('path')
+const symbols = require('../lib/symbols.js')
 
 test('use a middleware', t => {
   t.plan(7)
@@ -157,7 +158,7 @@ test('middlewares should support encapsulation / 1', t => {
   const instance = fastify()
 
   instance.register((i, opts, done) => {
-    t.ok(i._middlewares.length === 0)
+    t.ok(i[symbols.kMiddlewares].length === 0)
     i.use(function (req, res, next) {
       t.fail('this should not be called')
       next()
@@ -166,13 +167,13 @@ test('middlewares should support encapsulation / 1', t => {
   })
 
   instance.get('/', function (request, reply) {
-    t.ok(instance._middlewares.length === 0)
+    t.ok(instance[symbols.kMiddlewares].length === 0)
     reply.send({ hello: 'world' })
   })
 
   instance.listen(0, err => {
     t.error(err)
-    t.ok(instance._middlewares.length === 0)
+    t.ok(instance[symbols.kMiddlewares].length === 0)
     t.tearDown(instance.server.close.bind(instance.server))
 
     sget({
@@ -713,7 +714,7 @@ test('res.end should block middleware execution', t => {
     t.fail('this should not be called')
   })
 
-  instance.addHook('onResponse', (res, next) => {
+  instance.addHook('onResponse', (request, reply, next) => {
     t.ok('called')
     next()
   })
@@ -760,7 +761,7 @@ test('middlewares should be able to respond with a stream', t => {
     t.fail('this should not be called')
   })
 
-  instance.addHook('onResponse', (res, next) => {
+  instance.addHook('onResponse', (request, reply, next) => {
     t.ok('called')
     next()
   })

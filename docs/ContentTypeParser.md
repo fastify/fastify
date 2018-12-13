@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Content Type Parser
-Natively, Fastify only supports the `'application/json'` content type. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON parser can be changed.*
+Natively, Fastify only supports `'application/json'` and `'text/plain'` content types. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON and/or plain text parser can be changed.*
 
 As with the other APIs, `addContentTypeParser` is encapsulated in the scope in which it is declared. This means that if you declare it in the root scope it will be available everywhere, while if you declare it inside a register it will be available only in that scope and its children.
 

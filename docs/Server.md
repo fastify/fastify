@@ -428,7 +428,7 @@ fastify.setNotFoundHandler({
   preValidation: (req, reply, next) => {
     // your code
     next()
-  } ,
+  },
   preHandler: (req, reply, next) => {
     // your code
     next()

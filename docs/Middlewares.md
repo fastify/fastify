@@ -53,3 +53,7 @@ fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
 // Multiple paths
 fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 ```
+
+<a name="express-middleware"></a>
+#### Express middleware compatibility
+Express modifies the prototype of the node core Request and Response objects heavily so Fastify cannot guarantee full middleware compatibility. Express specific functionality such as `res.sendFile()`, `res.end()`, `res.send()` or `express.Router()` instances will not work with Fastify. For example, [cors](https://github.com/expressjs/cors) is compatible while [passport](https://github.com/jaredhanson/passport) is not.

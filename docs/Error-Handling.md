@@ -7,3 +7,7 @@ Uncaught errors are likely to cause memory leaks, file descriptor leaks and othe
 Fastify follows an all-or-nothing approach and aims to be lean and optimal as much as possible. Thus, the developer is responsible for making sure that the errors are handled properly. Most of the errors are usually a result of unexpected input data, so we recommend specifying a [JSON.schema validation](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) for your input data.
 
 Note that, while Fastify doesn't catch uncaught errors for you, if routes are declared as `async`, the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [setErrorHandler](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
+
+### Error Codes
+
+You can find Fastify error codes [here](https://github.com/fastify/fastify/blob/master/docs/Errors.md).

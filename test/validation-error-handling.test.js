@@ -198,7 +198,11 @@ test('should handle response validation error', t => {
   const fastify = Fastify()
 
   fastify.get('/', { schema: { response } }, function (req, reply) {
-    reply.code(200).send({ work: 'actor' })
+    try {
+      reply.code(200).send({ work: 'actor' })
+    } catch (error) {
+      reply.code(500).send(error)
+    }
   })
 
   fastify.inject({

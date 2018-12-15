@@ -10,4 +10,4 @@ Note that, while Fastify doesn't catch uncaught errors for you, if routes are de
 
 ### Error Codes
 
-You can find Fastify error codes [here](https://github.com/fastify/fastify/blob/master/docs/Errors.md).
+You can find Fastify error codes [here](https://github.com/fastify/fastify/blob/master/docs/Error-Codes.md).

@@ -214,3 +214,33 @@ test('should handle response validation error', t => {
     t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
   })
 })
+
+test('should handle response validation error with promises', t => {
+  t.plan(2)
+
+  const response = {
+    200: {
+      type: 'object',
+      required: ['name', 'work'],
+      properties: {
+        name: { type: 'string' },
+        work: { type: 'string' }
+      }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { response } }, function (req, reply) {
+    return Promise.resolve({ work: 'actor' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    payload: { },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+  })
+})

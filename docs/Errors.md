@@ -80,6 +80,11 @@ The hook callback must be a function.
 
 Logger acceptes either a `'stream'` or a `'file'` as the destination.
 
+<a id="FST_ERR_REP_ALREADY_SENT"></a>
+### FST_ERR_REP_ALREADY_SENT
+
+A response was already sent.
+
 <a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 

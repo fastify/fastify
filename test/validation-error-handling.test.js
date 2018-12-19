@@ -180,3 +180,67 @@ test('Attached validation error should take precendence over setErrorHandler', t
     t.strictEqual(res.statusCode, 400)
   })
 })
+
+test('should handle response validation error', t => {
+  t.plan(2)
+
+  const response = {
+    200: {
+      type: 'object',
+      required: ['name', 'work'],
+      properties: {
+        name: { type: 'string' },
+        work: { type: 'string' }
+      }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { response } }, function (req, reply) {
+    try {
+      reply.code(200).send({ work: 'actor' })
+    } catch (error) {
+      reply.code(500).send(error)
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    payload: { },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+  })
+})
+
+test('should handle response validation error with promises', t => {
+  t.plan(2)
+
+  const response = {
+    200: {
+      type: 'object',
+      required: ['name', 'work'],
+      properties: {
+        name: { type: 'string' },
+        work: { type: 'string' }
+      }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { response } }, function (req, reply) {
+    return Promise.resolve({ work: 'actor' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    payload: { },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+  })
+})

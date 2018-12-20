@@ -136,7 +136,7 @@ fastify.addHook('preHandler', (request, reply, next) => {
 
 This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
 It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
-This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back and error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back an error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
 **Notice:** unlike the other hooks, pass an error to the `next` function is not supported.
 
 ```js

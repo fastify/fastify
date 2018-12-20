@@ -134,6 +134,7 @@ declare namespace fastify {
     header(name: string, value: any): FastifyReply<HttpResponse>
     headers(headers: { [key: string]: any }): FastifyReply<HttpResponse>
     type(contentType: string): FastifyReply<HttpResponse>
+    redirect(url: string): FastifyReply<HttpResponse>
     redirect(statusCode: number, url: string): FastifyReply<HttpResponse>
     serialize(payload: any): string
     serializer(fn: Function): FastifyReply<HttpResponse>

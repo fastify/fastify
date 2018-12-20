@@ -17,7 +17,7 @@ There are a few basic ground-rules for contributors:
 1. All integrated CI services must be green, unless an agreement has been reached in the conversation about the exception, before a pull-request can be merged.
 1. Breaking changes or significant new features must be merged by a core member. Small pull-requests, e.g. documentation typo corrections, may be merged by any member with commit access.
 
-## Fastify v1.x
+### Fastify v1.x
 
 Code for Fastify's **v1.x** is at - [Branch 1.x](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
 

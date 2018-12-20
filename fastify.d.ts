@@ -129,15 +129,15 @@ declare namespace fastify {
    * Response object that is used to build and send a http response
    */
   interface FastifyReply<HttpResponse> {
-    code: (statusCode: number) => FastifyReply<HttpResponse>
-    status: (statusCode: number) => FastifyReply<HttpResponse>
-    header: (name: string, value: any) => FastifyReply<HttpResponse>
-    headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
-    type: (contentType: string) => FastifyReply<HttpResponse>
-    redirect: (statusCode: number, url: string) => FastifyReply<HttpResponse>
-    serialize: (payload: any) => string
-    serializer: (fn: Function) => FastifyReply<HttpResponse>
-    send: (payload?: any) => FastifyReply<HttpResponse>
+    code(statusCode: number): FastifyReply<HttpResponse>
+    status(statusCode: number): FastifyReply<HttpResponse>
+    header(name: string, value: any): FastifyReply<HttpResponse>
+    headers(headers: { [key: string]: any }): FastifyReply<HttpResponse>
+    type(contentType: string): FastifyReply<HttpResponse>
+    redirect(statusCode: number, url: string): FastifyReply<HttpResponse>
+    serialize(payload: any): string
+    serializer(fn: Function): FastifyReply<HttpResponse>
+    send(payload?: any): FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
     context: FastifyContext

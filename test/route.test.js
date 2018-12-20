@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('route', t => {
-  t.plan(9)
+  t.plan(10)
   const test = t.test
   const fastify = Fastify()
 
@@ -51,6 +51,19 @@ test('route', t => {
       t.pass()
     } catch (e) {
       t.fail()
+    }
+  })
+
+  test('invalid handler attribute - route', t => {
+    // Unique test case where a valid handler function is passed in
+    // the handler argument, but the options object contains a handler
+    // property that is not a function. Will throw an error on line 537 in fastify.js
+    t.plan(1)
+    try {
+      fastify.get('/', { handler: 'not a function' }, () => {})
+      t.fail()
+    } catch (e) {
+      t.pass()
     }
   })
 

@@ -60,6 +60,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload) Fastify plugin for uploading files.
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
 - [`fastify-firestore`](https://github.com/now-ims/fastify-firestore) Fastify plugin for [Google Cloud Firestore](https://cloud.google.com/nodejs/docs/reference/firestore/0.13.x/).
+- [`fastify-gql`](https://github.com/mcollina/fastify-gql) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).

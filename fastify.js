@@ -989,7 +989,7 @@ function http2 () {
   try {
     return require('http2')
   } catch (err) {
-    console.error('http2 is available only from node >= 8.8.1')
+    throw new Error('http2 is available only from node >= 8.8.1')
   }
 }
 

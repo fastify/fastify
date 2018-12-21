@@ -55,9 +55,6 @@ test('route', t => {
   })
 
   test('invalid handler attribute - route', t => {
-    // Unique test case where a valid handler function is passed in
-    // the handler argument, but the options object contains a handler
-    // property that is not a function. Will throw an error on line 537 in fastify.js
     t.plan(1)
     try {
       fastify.get('/', { handler: 'not a function' }, () => {})

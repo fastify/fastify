@@ -4,7 +4,7 @@
 
 _Fastify_ offers **experimental support** for HTTP2 starting from Node
 8.8.0, which includes HTTP2 without a flag. _Fastify_ supports HTTP2
-both over HTTPS or over plaintext.
+both over HTTPS or over plaintext. _Fastify_ will throw an `http2 is available only from node >= 8.8.1` error if HTTP2 is enabled on an invalid version of `Node.js`.
 
 Currently none of the HTTP2-specific APIs are available through
 _Fastify_, but Node's `req` and `res` can be access through our

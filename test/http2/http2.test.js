@@ -8,6 +8,7 @@ if (semver.gt(process.versions.node, '8.8.0')) {
   require('./secure')
   require('./secure-with-fallback')
   require('./unknown-http-method')
+  require('./missing-http2-module')
 } else {
   tap.pass('Skip because Node version < 8.8')
   tap.end()

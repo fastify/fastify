@@ -85,6 +85,11 @@ Logger acceptes either a `'stream'` or a `'file'` as the destination.
 
 A response was already sent.
 
+<a id="FST_ERR_SEND_INSIDE_ONERR"></a>
+#### FST_ERR_SEND_INSIDE_ONERR
+
+You cannot use `send` inside the `onError` hook.
+
 <a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 
@@ -104,3 +109,8 @@ A schema with the same `$id` already exists.
 #### FST_ERR_SCH_NOT_PRESENT
 
 No schema with the provided `$id` exists.
+
+<a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
+#### FST_ERR_PROMISE_NOT_FULLFILLED
+
+Promise may not be fulfilled with 'undefined' when statusCode is not 204.

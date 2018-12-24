@@ -16,9 +16,33 @@ Example:
 const schema = {
   body: {
     type: 'object',
-    properties: {
+    required: ['requiredKey'],
+      properties: {
       someKey: { type: 'string' },
-      someOtherKey: { type: 'number' }
+      someOtherKey: { type: 'number' },
+      requiredKey: {
+        type: 'array',
+        maxItems: 3,
+        items: { type: 'integer' }
+      },
+      nullableKey: {
+        nullable: true,
+        type: 'number'
+      },
+      multipleTypesKey: { type: ['boolean', 'number'] },
+      multipleRestrictedTypesKey: {
+        oneOf: [
+          { type: 'string', maxLength: 5 },
+          { type: 'number', minimum: 10 }
+        ]
+      },
+      enumKey: {
+        type: 'string',
+        enum: ['John', 'Foo']
+      },
+      notTypeKey: {
+        not: { type: 'array' }
+      }
     }
   },
 

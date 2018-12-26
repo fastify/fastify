@@ -13,59 +13,67 @@ The route validation internally relies upon [Ajv](https://www.npmjs.com/package/
 
 Example:
 ```js
-const schema = {
-  body: {
-    type: 'object',
-    required: ['requiredKey'],
-      properties: {
-      someKey: { type: 'string' },
-      someOtherKey: { type: 'number' },
-      requiredKey: {
-        type: 'array',
-        maxItems: 3,
-        items: { type: 'integer' }
-      },
-      nullableKey: {
-        nullable: true,
-        type: 'number'
-      },
-      multipleTypesKey: { type: ['boolean', 'number'] },
-      multipleRestrictedTypesKey: {
-        oneOf: [
-          { type: 'string', maxLength: 5 },
-          { type: 'number', minimum: 10 }
-        ]
-      },
-      enumKey: {
-        type: 'string',
-        enum: ['John', 'Foo']
-      },
-      notTypeKey: {
-        not: { type: 'array' }
-      }
-    }
-  },
-
-  querystring: {
-    name: { type: 'string' },
-    excitement: { type: 'integer' }
-  },
-
-  params: {
-    type: 'object',
-    properties: {
-      par1: { type: 'string' },
-      par2: { type: 'number' }
-    }
-  },
-
-  headers: {
-    type: 'object',
-    properties: {
-      'x-foo': { type: 'string' }
+const bodyJsonSchema = {
+  type: 'object',
+  required: ['requiredKey'],
+  properties: {
+    someKey: { type: 'string' },
+    someOtherKey: { type: 'number' },
+    requiredKey: {
+      type: 'array',
+      maxItems: 3,
+      items: { type: 'integer' }
     },
-    required: ['x-foo']
+    nullableKey: {
+      nullable: true,
+      type: 'number'
+    },
+    multipleTypesKey: { type: ['boolean', 'number'] },
+    multipleRestrictedTypesKey: {
+      oneOf: [
+        { type: 'string', maxLength: 5 },
+        { type: 'number', minimum: 10 }
+      ]
+    },
+    enumKey: {
+      type: 'string',
+      enum: ['John', 'Foo']
+    },
+    notTypeKey: {
+      not: { type: 'array' }
+    }
   }
+}
+
+const queryStringJsonSchema = {
+  name: { type: 'string' },
+  excitement: { type: 'integer' }
+}
+
+const paramsJsonSchema = {
+  type: 'object',
+  properties: {
+    par1: { type: 'string' },
+    par2: { type: 'number' }
+  }
+}
+
+const headersJsonSchema = {
+  type: 'object',
+  properties: {
+    'x-foo': { type: 'string' }
+  },
+  required: ['x-foo']
+}
+
+const schema = {
+  body: bodyJsonSchema,
+
+  querystring: queryStringJsonSchema,
+
+  params: paramsJsonSchema,
+
+  headers: headersJsonSchema
 }
 
 fastify.post('/the/url', { schema }, handler)

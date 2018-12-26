@@ -279,9 +279,47 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
+<a name="json_schema_example"></a>
+### JSON Schema
+To define [JSON Schema](http://json-schema.org/) in a easier way, you can use [fluent-schema](https://github.com/fastify/fluent-schema)
+and pass the generated schema as configuration for fastify.
+
+Examples:
+```js
+const { FluentSchema, FORMATS } = require('fluent-schema')
+
+const subSchema = FluentSchema().prop('nick', stringMaxLength)
+const stringMaxLength = FluentSchema().asString().maxLength(5)
+
+const jsonSchema = FluentSchema()
+  .prop('someKey', FluentSchema().asString())
+  .prop('someObject', subSchema)
+  .prop('someOtherKey', FluentSchema().asNumber())
+  .prop('requiredKey', FluentSchema().asArray().minItems(3).items(FluentSchema().asInteger()))
+  .required()
+  .prop('nullableKey')
+  .oneOf([FluentSchema().asString(), FluentSchema().asNull()])
+  .prop('multipleTypesKey')
+  .oneOf([FluentSchema().asBoolean(), FluentSchema().asNumber(), stringMaxLength])
+  .prop('multipleRestrictedTypesKey')
+  .oneOf([stringMaxLength, FluentSchema().asNumber().minimum(10)])
+  .prop('enumKey', FluentSchema().enum(['John', 'Foo']))
+  .prop('dateKey', FluentSchema().asString().format(FORMATS.DATE))
+
+const schema = { 
+  body: jsonSchema.valueOf(), 
+  params: jsonSchema.valueOf() 
+}
+
+fastify.post('/the/url', { schema }, (request, reply) => {
+  reply.send({ hello: 'world' })
+})
+```
+
 <a name="resources"></a>
 ### Resources
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
+- [fluent-schema documentation](https://github.com/fastify/fluent-schema)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

@@ -24,10 +24,7 @@ const bodyJsonSchema = {
       maxItems: 3,
       items: { type: 'integer' }
     },
-    nullableKey: {
-      nullable: true,
-      type: 'number'
-    },
+    nullableKey: { type: ['number', 'null'] },
     multipleTypesKey: { type: ['boolean', 'number'] },
     multipleRestrictedTypesKey: {
       oneOf: [

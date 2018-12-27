@@ -11,6 +11,7 @@ script:
 
 after_script:
   - ./tools/website.sh
+  - npm run license-checker
 
 notifications:
   email:

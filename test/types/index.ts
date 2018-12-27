@@ -268,6 +268,36 @@ server
   .all('/all/with-opts', opts, function (req, reply) {
     reply.send(req.headers)
   })
+  .route({
+    method: 'GET',
+    url: '/headers',
+    preHandler: (_req, reply, done) => {
+      reply.header('E-tag', 'xB6392T=')
+      done()
+    },
+    handler: (req, reply) => {
+      const lastModified = req.headers['last-modified']
+
+      if (reply.hasHeader('E-tag') && lastModified === reply.getHeader('E-tag')) {
+        reply.status(304).send()
+        return
+      }
+
+      reply.status(200).send({ hello: 'world' })
+    }
+  })
+  .register((instance, _opts, done) => {
+    instance.setNotFoundHandler((req, reply) => {
+      reply
+        .status(404)
+        .type('text/plain')
+        .send('Route not found.')
+    })
+    done()
+  })
+  .get('/deprecatedpath/*', (req, reply) => {
+    reply.callNotFound()
+  })
 
 // Generics example
 interface Query {

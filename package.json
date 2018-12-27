@@ -15,7 +15,7 @@
     "coveralls": "npm run unit -- --cov",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
     "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
-    "license-checker": "license-checker --production"
+    "license-checker": "./tools/license-checker.sh"
   },
   "repository": {
     "type": "git",

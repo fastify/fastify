@@ -268,6 +268,12 @@ server
   .all('/all/with-opts', opts, function (req, reply) {
     reply.send(req.headers)
   })
+  .get('/redirect', function (req, reply) {
+    reply.redirect('/')
+  })
+  .get('/redirect', function (req, reply) {
+    reply.redirect(302, '/')
+  })
 
 // Generics example
 interface Query {

@@ -52,7 +52,7 @@ fastify.get('/', (request, reply) => {
 })
 
 // Run the server!
-fastify.(3000, (err, address) => {
+fastify.listen(3000, (err, address) => {
   if (err) throw err
   fastify.log.info(`server listening on ${address}`)
 })
@@ -209,7 +209,7 @@ Past Sponsors:
 
 Licensed under [MIT](./LICENSE).
 
-The `fastify` CI guarantees the accepted dependencies licenses are:
+The `fastify` CI guarantees that the accepted dependencies licenses are:
 - MIT
 - ISC
 - BSD-3-Clause

@@ -209,9 +209,8 @@ Past Sponsors:
 
 Licensed under [MIT](./LICENSE).
 
-The `fastify` CI guarantees that the accepted dependencies licenses are:
+`fastify` team cares about licence. We list all dependencies licences in order to stay as "open" as possibile:
 - MIT
 - ISC
 - BSD-3-Clause
 - BSD-2-Clause
-- Apache-2.0

@@ -905,7 +905,7 @@ test('.status() is an alias for .code()', t => {
 })
 
 test('reply.header setting multiple cookies as multiple Set-Cookie headers', t => {
-  t.plan(4)
+  t.plan(7)
 
   const fastify = require('../../')()
 
@@ -914,7 +914,7 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
       .header('set-cookie', 'one')
       .header('set-cookie', 'two')
       .header('set-cookie', 'three')
-      .header('set-cookie', 'four')
+      .header('set-cookie', ['four', 'five', 'six'])
       .send({})
   })
 
@@ -928,7 +928,13 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
     }, (err, response, body) => {
       t.error(err)
       t.ok(response.headers['set-cookie'])
-      t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four'])
+      t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
     })
+  })
+
+  fastify.inject('/headers', (error, response) => {
+    t.error(error)
+    t.ok(response.headers['set-cookie'])
+    t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
   })
 })

@@ -8,6 +8,7 @@ node_js:
 
 script:
   - npm run lint && npm run coveralls -- -c && npm run typescript
+  - npm run license-checker
 
 after_script:
   - ./tools/website.sh

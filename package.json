@@ -14,7 +14,8 @@
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit -- --cov",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
-    "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\""
+    "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
+    "license-checker": "license-checker --production --onlyAllow='MIT;ISC;BSD-3-Clause;BSD-2-Clause'"
   },
   "repository": {
     "type": "git",
@@ -92,6 +93,7 @@
     "http-errors": "^1.7.1",
     "ienoopen": "^1.0.0",
     "joi": "~11.4.0",
+    "license-checker": "^24.1.0",
     "lolex": "^2.7.4",
     "pre-commit": "^1.2.2",
     "proxyquire": "^2.1.0",

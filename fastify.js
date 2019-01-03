@@ -826,7 +826,13 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    log.error({ err }, 'client error')
+    if(err.code == 'ECONNRESET') {
+      // chrome browser keep-alive socket connection
+      // so after 2 min of any https request server socket will timeout
+      log.debug({ err }, 'server socket timeout')
+    } else {
+      log.error({ err }, 'client error')
+    }
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 

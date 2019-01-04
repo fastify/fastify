@@ -391,3 +391,24 @@ test('should error the promise if ready errors', t => {
     t.strictequal(err.message, 'kaboom')
   })
 })
+
+test('should throw error if callback specified and if ready errors', { only: true }, t => {
+  t.plan(2)
+  const fastify = Fastify()
+  const error = new Error('kaboom')
+
+  fastify.register((instance, opts) => {
+    return Promise.reject(error)
+  })
+  // }).after(function () {
+  //   t.pass('after is called')
+  // })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, err => {
+    t.ok(err)
+    t.strictEqual(err, error)
+  })
+})

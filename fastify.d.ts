@@ -147,7 +147,7 @@ declare namespace fastify {
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
-    logger?: boolean,
+    logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
     querystringParser?: (str: string) => { [key: string]: string | string[] },

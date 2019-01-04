@@ -32,14 +32,8 @@ test('should emit warning if preHandler is used', t => {
   })
 
   const fastify = Fastify()
-  fastify.get('/', {
-    beforeHandler (req, reply, cb) {
-      cb()
-    }
-  }, () => {})
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  })
+  fastify.setNotFoundHandler({
+    beforeHandler: (req, reply, done) => done()
+  }, () => {})
 })

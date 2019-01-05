@@ -548,13 +548,13 @@ function build (options) {
       }
     }
 
-    options = Object.assign({}, options, {
+    const opt = Object.assign({}, options, {
       method,
       url,
       handler: handler || (options && options.handler)
     })
 
-    return _fastify.route(options)
+    return _fastify.route(opt)
   }
 
   // Route management
@@ -616,7 +616,7 @@ function build (options) {
         h.call(_fastify, opts)
       }
 
-      const config = opts.config || {}
+      const config = Object.assign({}, opts.config)
       config.url = url
 
       const context = new Context(

@@ -553,7 +553,7 @@ function build (options) {
       url,
       handler: handler || (options && options.handler)
     })
-
+    options.config && (opt.config = JSON.parse(JSON.stringify(options.config)))
     return _fastify.route(opt)
   }
 

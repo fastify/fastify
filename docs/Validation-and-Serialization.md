@@ -50,7 +50,7 @@ fastify.post('/the/url', { schema }, handler)
 
 <a name="shared-schema"></a>
 #### Adding a shared schema
-Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. *(Note that this API is not encapsulated)*
+Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. As usual this API is encapsulated.
 ```js
 const fastify = require('fastify')()
 

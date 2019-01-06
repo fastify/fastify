@@ -218,13 +218,13 @@ test('Use the same schema across multiple routes', t => {
   })
 })
 
-test('Encapsulation should not intervene', t => {
+test('Encapsulation should intervene', t => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
     instance.addSchema({
-      $id: 'test',
+      $id: 'encapsulation',
       type: 'object',
       properties: {
         id: { type: 'number' }
@@ -238,7 +238,7 @@ test('Encapsulation should not intervene', t => {
       method: 'GET',
       url: '/:id',
       schema: {
-        params: 'test#'
+        params: 'encapsulation#'
       },
       handler: (req, reply) => {
         reply.send(typeof req.params.id)
@@ -247,12 +247,28 @@ test('Encapsulation should not intervene', t => {
     next()
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/123'
-  }, (err, res) => {
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_NOT_PRESENT')
+    t.is(err.message, 'FST_ERR_SCH_NOT_PRESENT: Schema with id \'encapsulation\' does not exist!')
+  })
+})
+
+test('Encapsulation isolation', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema({ $id: 'id' })
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema({ $id: 'id' })
+    next()
+  })
+
+  fastify.ready(err => {
     t.error(err)
-    t.strictEqual(res.payload, 'number')
   })
 })
 

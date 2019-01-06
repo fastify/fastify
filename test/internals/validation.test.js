@@ -7,7 +7,7 @@ const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
 const validation = require('../../lib/validation')
-const Schemas = require('../../lib/schemas')
+const { Schemas } = require('../../lib/schemas')
 const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {

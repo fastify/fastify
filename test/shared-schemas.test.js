@@ -272,6 +272,49 @@ test('Encapsulation isolation', t => {
   })
 })
 
+test('Encapsulation isolation for getSchemas', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  let pluginDeepOneSide
+  let pluginDeepOne
+  let pluginDeepTwo
+
+  const schemas = {
+    z: { $id: 'z', my: 'schema' },
+    a: { $id: 'a', my: 'schema' },
+    b: { $id: 'b', my: 'schema' },
+    c: { $id: 'c', my: 'schema', properties: { a: 'a', b: 1 } }
+  }
+
+  fastify.addSchema(schemas.z)
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema(schemas.a)
+    pluginDeepOneSide = instance
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema(schemas.b)
+    instance.register((subinstance, opts, next) => {
+      subinstance.addSchema(schemas.c)
+      pluginDeepTwo = subinstance
+      next()
+    })
+    pluginDeepOne = instance
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.deepEqual(fastify.getSchemas(), { z: schemas.z })
+    t.deepEqual(pluginDeepOneSide.getSchemas(), { z: schemas.z, a: schemas.a })
+    t.deepEqual(pluginDeepOne.getSchemas(), { z: schemas.z, b: schemas.b })
+    t.deepEqual(pluginDeepTwo.getSchemas(), { z: schemas.z, b: schemas.b, c: schemas.c })
+  })
+})
+
 test('JSON Schema validation keywords', t => {
   t.plan(2)
   const fastify = Fastify()

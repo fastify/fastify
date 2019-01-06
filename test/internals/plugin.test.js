@@ -106,6 +106,7 @@ test('checkDependencies should check if the given dependency is present in the i
   t.plan(1)
 
   fn[Symbol.for('plugin-meta')] = {
+    name: 'test-plugin',
     dependencies: ['plugin']
   }
 
@@ -116,7 +117,7 @@ test('checkDependencies should check if the given dependency is present in the i
     pluginUtils.checkDependencies.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `The dependency 'plugin' is not registered`)
+    t.is(err.message, `The dependency 'plugin' of plugin 'test-plugin' is not registered`)
   }
 
   function fn () {}

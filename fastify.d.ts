@@ -54,10 +54,7 @@ declare namespace fastify {
     validation?: Array<ValidationResult>;
   }
 
-  /**
-   * Pino logger
-   */
-  interface PinoLogger {
+  interface Logger {
     fatal(msg: string, ...args: any[]): void;
     fatal(obj: {}, msg?: string, ...args: any[]): void;
     error(msg: string, ...args: any[]): void;
@@ -138,7 +135,7 @@ declare namespace fastify {
 
     raw: HttpRequest
     req: HttpRequest
-    log: PinoLogger
+    log: Logger
   }
 
   /**
@@ -286,7 +283,7 @@ declare namespace fastify {
    */
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     server: HttpServer
-    log: PinoLogger
+    log: Logger
 
     /**
      * Adds a route to the server

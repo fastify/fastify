@@ -127,9 +127,32 @@ fastify.route({
 ```
 
 <a name="get-shared-schema"></a>
-#### Retrieving a copy of all shared schemas
+#### Retrieving a copy of shared schemas
 
-The function `getSchemas` returns all shared schemas that were added by `addSchema` method.
+The function `getSchemas` returns the shared schemas available in the selected scope:
+```js
+fastify.addSchema({ $id: 'one', my: 'hello' })
+fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
+
+fastify.register((instance, opts, next) => {
+  instance.addSchema({ $id: 'two', my: 'ciao' })
+  instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
+
+  instance.register((subinstance, opts, next) => {
+    subinstance.addSchema({ $id: 'three', my: 'hola' })
+    subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
+    next()
+  })
+  next()
+})
+```
+This example will returns:
+
+|  URL  | Schemas |
+|-------|---------|
+| /     | one             |
+| /sub  | one, two        |
+| /deep | one, two, three |
 
 <a name="schema-compiler"></a>
 #### Schema Compiler

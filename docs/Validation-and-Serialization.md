@@ -70,6 +70,33 @@ fastify.route({
   },
   handler: () => {}
 })
+
+fastify.register((instance, opts, next) => {
+
+  /**
+   * In children's scope can use schemas defined in upper scope like 'greetings'.
+   * Parent scope can't use the children schemas.
+   */
+  instance.addSchema({
+    $id: 'framework',
+    type: 'object',
+    properties: {
+      fastest: { type: 'string' },
+      hi: 'greetings#'
+    }
+  })
+
+  instance.route({
+    method: 'POST',
+    url: '/sub',
+    schema: {
+      body: 'framework#'
+    },
+    handler: () => {}
+  })
+
+  next()
+})
 ```
 You can use the shared schema everywhere, as top level schema or nested inside other schemas:
 ```js

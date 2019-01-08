@@ -149,7 +149,7 @@ tap.test('GET `/` route', async (t) => {
 })
 ```
 
-### How to inspect `fastify.js` while testing
+### How to inspect tap tests
 1. Isolate your test by passing the `{only: true}` option
 ```javascript
 test('should ...', {only: true}, t => ...)

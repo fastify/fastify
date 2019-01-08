@@ -68,7 +68,7 @@ declare namespace fastify {
     trace(msg: string, ...args: any[]): void;
     trace(obj: {}, msg?: string, ...args: any[]): void;
   }
-  
+
   type FastifyMiddleware<
   HttpServer,
   HttpRequest,

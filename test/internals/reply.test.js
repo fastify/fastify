@@ -943,12 +943,12 @@ test('should throw error when passing falsy value to reply.sent', t => {
   t.plan(3)
   const fastify = require('../..')()
 
-  fastify.get('/', async function (req, reply) {
+  fastify.get('/', function (req, reply) {
     try {
       reply.sent = false
     } catch (err) {
       t.strictEqual(err.message, 'FST_ERR_REP_SENT_VALUE: The only possible value for reply.sent is true.')
-      return {}
+      reply.send()
     }
   })
 
@@ -962,7 +962,7 @@ test('should throw error when attempting to set reply.sent more than once', t =>
   t.plan(3)
   const fastify = require('../..')()
 
-  fastify.get('/', async function (req, reply) {
+  fastify.get('/', function (req, reply) {
     reply.sent = true
     try {
       reply.sent = true

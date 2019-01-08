@@ -392,7 +392,7 @@ test('should error the promise if ready errors', t => {
   })
 })
 
-test('should throw error if callback specified and if ready errors', { only: true }, t => {
+test('should throw error if callback specified and if ready errors', t => {
   t.plan(2)
   const fastify = Fastify()
   const error = new Error('kaboom')
@@ -400,9 +400,6 @@ test('should throw error if callback specified and if ready errors', { only: tru
   fastify.register((instance, opts) => {
     return Promise.reject(error)
   })
-  // }).after(function () {
-  //   t.pass('after is called')
-  // })
 
   fastify.inject({
     method: 'GET',

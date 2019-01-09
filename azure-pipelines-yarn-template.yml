@@ -18,9 +18,9 @@ jobs:
     displayName: Install Node.js
   - bash: yarn install
     displayName: Install dependencies
-  - bash: yarn test:out
+  - bash: yarn test:report
     displayName: Run tests
-  - bash: yarn test:junit
+  - bash: yarn unit:junit
     condition: succeededOrFailed()
     displayName: Generate Junit file
   - task: PublishTestResults@2

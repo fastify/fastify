@@ -2015,7 +2015,7 @@ test('reply.send should throw if called inside the onError hook', t => {
       reply.send()
       t.fail('Should throw')
     } catch (err) {
-      t.is(err.message, 'You cannot use `send` inside the `onError` hook')
+      t.is(err.code, 'FST_ERR_SEND_INSIDE_ONERR')
     }
     next()
   })

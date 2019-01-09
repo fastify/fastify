@@ -133,6 +133,9 @@ declare namespace fastify {
     status: (statusCode: number) => FastifyReply<HttpResponse>
     header: (name: string, value: any) => FastifyReply<HttpResponse>
     headers: (headers: { [key: string]: any }) => FastifyReply<HttpResponse>
+    getHeader: (name: string) => string | undefined
+    hasHeader: (name: string) => boolean
+    callNotFound: () => void
     type: (contentType: string) => FastifyReply<HttpResponse>
     redirect: (statusCode: number, url: string) => FastifyReply<HttpResponse>
     serialize: (payload: any) => string

@@ -102,6 +102,10 @@ fastify generate
 
 For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
 
+### Fastify v1.x
+
+Code for Fastify's **v1.x** is in [Branch 1.x](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
+
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration). If you are running Fastify in a container (Docker, [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/). 
 > See [the documentation](https://github.com/fastify/fastify/blob/master/docs/Server.md#listen) for more information.
@@ -148,7 +152,7 @@ matters to you.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md"><code><b>Lifecycle</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Reply.md"><code><b>Reply</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Request.md"><code><b>Request</b></code></a>
-* <a href="https://github.com/fastify/fastify/blob/master/docs/Error-Handling.md"><code><b>Error Handling</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Errors.md"><code><b>Errors</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Plugins.md"><code><b>Plugins</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Testing.md"><code><b>Testing</b></code></a>
@@ -204,3 +208,9 @@ Past Sponsors:
 ## License
 
 Licensed under [MIT](./LICENSE).
+
+For your convenience, here is a list of all the licenses of our production dependencies:
+- MIT
+- ISC
+- BSD-3-Clause
+- BSD-2-Clause

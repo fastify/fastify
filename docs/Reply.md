@@ -2,7 +2,8 @@
 
 ## Reply
 The second parameter of the handler function is `Reply`.
-Reply is a core Fastify object that exposes the following functions:
+Reply is a core Fastify object that exposes the following functions
+and properties:
 
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
@@ -112,9 +113,35 @@ reply
 
 See [`.send()`](#send) for more information on sending different types of values.
 
+<a name="sent"></a>
+### .sent
+
+As the name suggests, `.sent` is a property to indicate if
+a response has been sent via `reply.send()`.
+
+In case a route handler is defined as an async function or it
+returns a promise, it is possible to set `reply.sent = true`
+to indicate that the automatic invocation of `reply.send()` once the
+handler promise resolve should be skipped. By setting `reply.sent =
+true`, an application claims full responsibility of the low-level
+request and response. Moreover, hooks will not be invoked.
+
+As an example:
+
+```js
+app.get('/', (req, reply) => {
+  reply.sent = true
+  reply.res.end('hello world')
+
+  return Promise.resolve('this will be skipped')
+})
+```
+
+If the handler rejects, the error will be logged.
+
 <a name="send"></a>
 ### .send(data)
- As the name suggests, `.send()` is the function that sends the payload to the end user.
+As the name suggests, `.send()` is the function that sends the payload to the end user.
 
 <a name="send-object"></a>
 #### Objects

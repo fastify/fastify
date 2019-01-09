@@ -26,6 +26,10 @@ const {
   kFourOhFourContext
 } = require('./lib/symbols.js')
 
+const {
+  codes: { FST_ERR_HTTP2_INVALID_VERSION }
+} = require('./lib/errors')
+
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -822,7 +826,7 @@ function build (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    log.error({ err }, 'client error')
+    log.debug({ err }, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 
@@ -989,7 +993,7 @@ function http2 () {
   try {
     return require('http2')
   } catch (err) {
-    console.error('http2 is available only from node >= 8.8.1')
+    throw new FST_ERR_HTTP2_INVALID_VERSION()
   }
 }
 

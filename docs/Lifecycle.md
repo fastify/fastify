@@ -14,21 +14,23 @@ Incoming Request
                   │
         4**/5** ◀─┴─▶ run Middlewares
                         │
-              4**/5** ◀─┴─▶ preValidation Hook
+              4**/5** ◀─┴─▶ preParsing Hook
                               │
                     4**/5** ◀─┴─▶ Parsing
                                    │
-                             415 ◀─┴─▶ Validation
-                                         │
-                                   400 ◀─┴─▶ preHandler Hook
-                                               │
-                                     4**/5** ◀─┴─▶ User Handler
-                                                     │
-                                                     └─▶ Reply
-                                                           │
-                                                           └─▶ onSend Hook
-                                                                  │
-                                                        4**/5** ◀─┴─▶ Outgoing Response
-                                                                        │
-                                                                        └─▶ onResponse Hook
+                         4**/5** ◀─┴─▶ preValidation Hook
+                                        │
+                                  415 ◀─┴─▶ Validation
+                                              │
+                                        400 ◀─┴─▶ preHandler Hook
+                                                    │
+                                          4**/5** ◀─┴─▶ User Handler
+                                                          │
+                                                          └─▶ Reply
+                                                                │
+                                                                └─▶ onSend Hook
+                                                                       │
+                                                             4**/5** ◀─┴─▶ Outgoing Response
+                                                                             │
+                                                                           └─▶ onResponse Hook
 ```

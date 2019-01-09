@@ -57,6 +57,7 @@ test('handler function - invalid schema', t => {
     handler: () => {},
     Reply: Reply,
     Request: Request,
+    preValidation: [],
     preHandler: [],
     onSend: [],
     onError: [],
@@ -86,6 +87,7 @@ test('handler function - reply', t => {
     },
     Reply: Reply,
     Request: Request,
+    preValidation: [],
     preHandler: [],
     onSend: [],
     onError: []

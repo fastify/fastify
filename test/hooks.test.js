@@ -13,7 +13,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 
 test('hooks', t => {
-  t.plan(28)
+  t.plan(35)
   const fastify = Fastify()
 
   try {
@@ -32,7 +32,20 @@ test('hooks', t => {
   }
 
   try {
+    fastify.addHook('preParsing', function (request, reply, next) {
+      request.preParsing = true
+      t.is(request.test, 'the request is coming')
+      t.is(reply.test, 'the reply has come')
+      next()
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+
+  try {
     fastify.addHook('preValidation', function (request, reply, next) {
+      t.is(request.preParsing, true)
       t.is(request.test, 'the request is coming')
       t.is(reply.test, 'the reply has come')
       next()
@@ -1796,8 +1809,8 @@ test('If the content type has been set inside an hook it should not be changed',
   })
 })
 
-test('request in onRequest, preValidation and onResponse', t => {
-  t.plan(14)
+test('request in onRequest, preParsing, preValidation and onResponse', t => {
+  t.plan(18)
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (request, reply, next) {
@@ -1814,8 +1827,22 @@ test('request in onRequest, preValidation and onResponse', t => {
     next()
   })
 
-  fastify.addHook('preValidation', function (request, reply, next) {
+  fastify.addHook('preParsing', function (request, reply, next) {
     t.deepEqual(request.body, null)
+    t.deepEqual(request.query, { key: 'value' })
+    t.deepEqual(request.params, { greeting: 'hello' })
+    t.deepEqual(request.headers, {
+      'content-length': '17',
+      'content-type': 'application/json',
+      'host': 'localhost:80',
+      'user-agent': 'lightMyRequest',
+      'x-custom': 'hello'
+    })
+    next()
+  })
+
+  fastify.addHook('preValidation', function (request, reply, next) {
+    t.deepEqual(request.body, { hello: 'world' })
     t.deepEqual(request.query, { key: 'value' })
     t.deepEqual(request.params, { greeting: 'hello' })
     t.deepEqual(request.headers, {

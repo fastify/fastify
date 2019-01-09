@@ -23,6 +23,7 @@ jobs:
   - bash: npm run test:out
     displayName: Run tests
   - bash: npm run test:junit
+    condition: succeededOrFailed()
     displayName: Generate Junit file
   - task: PublishTestResults@2
     displayName: "Publish Test Results"

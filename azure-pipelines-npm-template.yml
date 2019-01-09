@@ -22,9 +22,9 @@ jobs:
     displayName: Install dependencies
   - bash: npm run test:report
     displayName: Run tests
-  - bash: npm run unit:junit
+  - task: GenerateJunitFiles@2
     condition: succeededOrFailed()
-    displayName: Generate Junit file
+    bash: npm run unit:junit
   - task: PublishTestResults@2
     displayName: "Publish Test Results"
     condition: succeededOrFailed()

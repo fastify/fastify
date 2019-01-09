@@ -20,8 +20,10 @@ jobs:
     displayName: Install Node.js
   - bash: npm i
     displayName: Install dependencies
-  - bash: npm run test:report
+  - bash: npm run test:out
     displayName: Run tests
+  - bash: npm run test:junit
+    displayName: Generate Junit file
   - task: PublishTestResults@2
     displayName: "Publish Test Results"
     condition: succeededOrFailed()

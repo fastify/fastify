@@ -50,7 +50,8 @@ const cors = require('cors')
   const otherServer = fastify({
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
-    maxParamLength: 200
+    maxParamLength: 200,
+    querystringParser: (str: string) => ({ str: str, strArray: [str] })
   })
 
   // custom types
@@ -339,7 +340,14 @@ server.setNotFoundHandler((req, reply) => {
 })
 
 server.setErrorHandler((err, request, reply) => {
-  reply.send(err)
+  if (err.statusCode) {
+    reply.code(err.statusCode)
+  }
+  if (err.validation) {
+    reply.send(err.validation)
+  } else {
+    reply.send(err)
+  }
 })
 
 server.listen(3000, err => {

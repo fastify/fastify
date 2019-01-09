@@ -21,11 +21,12 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp): fastify.Fast
 declare function fastify(opts?: fastify.ServerOptionsAsHttp2): fastify.FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>;
 declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>;
 
+// eslint-disable-next-line no-redeclare
 declare namespace fastify {
 
-  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: Error) => void) => void
+  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: FastifyError) => void) => void
 
-  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: Error) => void) => void
+  type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: FastifyError) => void) => void
 
   type DefaultQuery = { [k: string]: any }
   type DefaultParams = { [k: string]: any }
@@ -33,6 +34,27 @@ declare namespace fastify {
   type DefaultBody = any
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
+
+  interface ValidationResult {
+    keyword: string;
+    dataPath: string;
+    schemaPath: string;
+    params: {
+      [type: string]: string;
+    },
+    message: string;
+  }
+
+  /**
+   * Fastify custom error
+   */
+  interface FastifyError extends Error {
+    statusCode?: number;
+    /**
+     * Validation errors
+     */
+    validation?: Array<ValidationResult>;
+  }
 
   type FastifyMiddleware<
   HttpServer,
@@ -127,6 +149,7 @@ declare namespace fastify {
     logger?: pino.LoggerOptions | boolean,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
+    querystringParser?: (str: string) => { [key: string]: string | string[] },
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions
@@ -458,12 +481,6 @@ declare namespace fastify {
     decorateRequest(name: string, decoration: any, dependencies?: Array<string>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Extends the standard server error. Return an object with the properties you'd
-     * like added to the error
-     */
-    extendServerError(extendFn: (error: Error) => Object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
      * Determines if the given named decorator is available
      */
     hasDecorator(name: string): boolean
@@ -503,7 +520,7 @@ declare namespace fastify {
     /**
      * Hook that is fired if `reply.send` is invoked with an Error
      */
-    addHook(name: 'onError', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, error: Error, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onError', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, error: FastifyError, done: () => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
      /**
      * Hook that is called when a response is about to be sent to a client
@@ -541,7 +558,7 @@ declare namespace fastify {
     /**
      * Set a function that will be called whenever an error happens
      */
-    setErrorHandler(handler: (error: Error, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set the schema compiler for all routes.

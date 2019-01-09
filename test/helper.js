@@ -222,14 +222,14 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     })
 
     if (loMethod === 'options') {
-      test(`OPTIONS returns 415 - should return 415 if Content-Type is not json`, t => {
+      test(`OPTIONS returns 415 - should return 415 if Content-Type is not json or plain text`, t => {
         t.plan(2)
         sget({
           method: upMethod,
           url: 'http://localhost:' + fastify.server.address().port + '/missing',
           body: 'hello world',
           headers: {
-            'Content-Type': 'text/plain'
+            'Content-Type': 'text/xml'
           },
           timeout: 500
         }, (err, response, body) => {

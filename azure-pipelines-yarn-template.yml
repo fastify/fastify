@@ -22,7 +22,6 @@ jobs:
     displayName: Run tests
   - bash: yarn unit:junit
     condition: succeededOrFailed()
-    displayName: Generate Junit file
   - task: PublishTestResults@2
     displayName: "Publish Test Results"
     condition: succeededOrFailed()

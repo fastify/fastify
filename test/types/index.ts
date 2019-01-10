@@ -504,3 +504,16 @@ server.after(function (err: Error, context: fastify.FastifyInstance<http2.Http2S
     logger: process.env.NODE_ENV === 'dev'
   })
 }
+
+server.log.debug('Should log debug message', [])
+server.log.debug({ log: 'object' }, 'Should log debug message', [])
+server.log.error('Should log error message', [])
+server.log.error({ log: 'object' }, 'Should log error message', [])
+server.log.fatal('Should log fatal message', [])
+server.log.fatal({ log: 'object' }, 'Should log fatal message', [])
+server.log.info('Should log info message', [])
+server.log.info({ log: 'object' }, 'Should log info message', [])
+server.log.trace('Should log trace message', [])
+server.log.trace({ log: 'object' }, 'Should log trace message', [])
+server.log.warn('Should log warn message', [])
+server.log.warn({ log: 'object' }, 'Should log warn message', [])

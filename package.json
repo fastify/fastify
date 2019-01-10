@@ -112,7 +112,6 @@
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {
-    "@types/pino": "^4.16.0",
     "abstract-logging": "^1.0.0",
     "ajv": "^6.6.0",
     "avvio": "^6.0.0",
@@ -130,8 +129,7 @@
     "ignore": [
       "boom",
       "joi",
-      "@types/node",
-      "@types/pino"
+      "@types/node"
     ]
   }
 }

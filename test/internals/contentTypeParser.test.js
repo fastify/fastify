@@ -8,13 +8,19 @@ const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
 test('rawBody function', t => {
-  t.plan(1)
+  t.plan(2)
   const body = Buffer.from('你好 世界')
   const parser = {
     asString: true,
     asBuffer: false,
-    fn (req, bodyInString) {
+    fn (req, bodyInString, done) {
       t.equal(bodyInString, body.toString())
+      t.is(typeof done, 'function')
+      return {
+        then (cb) {
+          cb()
+        }
+      }
     }
   }
   const res = {}
@@ -36,11 +42,14 @@ test('rawBody function', t => {
   rs.headers = { 'content-length': body.length }
   const request = new Request('params', rs, 'query', { 'content-length': body.length }, 'log')
   const reply = new Reply(res, context, {})
+  const done = () => {}
+
   internals.rawBody(
     request,
     reply,
     reply.context._parserOptions,
-    parser
+    parser,
+    done
   )
   rs.emit('data', body.toString())
   rs.emit('end')

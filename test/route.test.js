@@ -6,7 +6,7 @@ const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('route', t => {
-  t.plan(9)
+  t.plan(10)
   const test = t.test
   const fastify = Fastify()
 
@@ -51,6 +51,16 @@ test('route', t => {
       t.pass()
     } catch (e) {
       t.fail()
+    }
+  })
+
+  test('invalid handler attribute - route', t => {
+    t.plan(1)
+    try {
+      fastify.get('/', { handler: 'not a function' }, () => {})
+      t.fail()
+    } catch (e) {
+      t.pass()
     }
   })
 

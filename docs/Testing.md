@@ -148,3 +148,19 @@ tap.test('GET `/` route', async (t) => {
   t.deepEqual(response.body, { hello: 'world' })
 })
 ```
+
+### How to inspect tap tests
+1. Isolate your test by passing the `{only: true}` option
+```javascript
+test('should ...', {only: true}, t => ...)
+```
+2. Run `tap` using `npx`
+```bash
+> npx tap -O -T --node-arg=--inspect-brk test/<test-file.test.js>
+```
+- `-O` specifies to run tests with the `only` option enabled
+- `-T` specifies not to timeout (while you're debugging)
+- `--node-arg=--inspect-brk` will launch the node debugger
+3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No modification should be necessary.
+
+Now you should be able to step through your test file (and the rest of `fastify`) in your code editor.

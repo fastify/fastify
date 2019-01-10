@@ -736,8 +736,8 @@ function build (options) {
 
     if (cb) {
       this.ready(err => {
-        if (err) throw err
-        return lightMyRequest(httpHandler, opts, cb)
+        if (err) cb(err, null)
+        else lightMyRequest(httpHandler, opts, cb)
       })
     } else {
       return this.ready()

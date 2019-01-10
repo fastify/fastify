@@ -643,6 +643,7 @@ function build (options) {
         beforeHandlerWarning()
         opts.preHandler = opts.beforeHandler
       }
+
       if (opts.preHandler) {
         if (Array.isArray(opts.preHandler)) {
           opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))

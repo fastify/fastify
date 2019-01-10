@@ -8,6 +8,7 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 
 By using the hooks you can interact directly inside the lifecycle of Fastify. There are four different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
+- `'preParsing'`
 - `'preValidation'`
 - `'preHandler'`
 - `'onError'`
@@ -17,6 +18,11 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 Example:
 ```js
 fastify.addHook('onRequest', (request, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('preParsing', (request, reply, next) => {
   // some code
   next()
 })
@@ -49,6 +55,16 @@ fastify.addHook('onResponse', (request, reply, next) => {
 Or `async/await`
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return
+})
+
+fastify.addHook('preParsing', async (request, reply) => {
   // some code
   await asyncMethod()
   // error occurred

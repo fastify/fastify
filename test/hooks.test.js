@@ -1175,6 +1175,47 @@ test('preValidation hooks should be able to block a request', t => {
   })
 })
 
+test('preParsing hooks should be able to block a request', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', (req, reply, next) => {
+    reply.send('hello')
+    next()
+  })
+
+  fastify.addHook('preParsing', (req, reply, next) => {
+    t.fail('this should not be called')
+  })
+
+  fastify.addHook('preHandler', (req, reply, next) => {
+    t.fail('this should not be called')
+  })
+
+  fastify.addHook('onSend', (req, reply, payload, next) => {
+    t.ok('called')
+    next()
+  })
+
+  fastify.addHook('onResponse', (request, reply, next) => {
+    t.ok('called')
+    next()
+  })
+
+  fastify.get('/', function (request, reply) {
+    t.fail('we should not be here')
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.is(res.payload, 'hello')
+  })
+})
+
 test('preHandler hooks should be able to block a request', t => {
   t.plan(5)
   const fastify = Fastify()
@@ -2127,6 +2168,123 @@ test('onError hook with setErrorHandler', t => {
     })
   })
   t.end()
+})
+
+test('preParsing hook should support encapsulation / 1', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('preParsing', (req, reply, next) => {
+      t.strictEqual(req.raw.url, '/plugin')
+      next()
+    })
+
+    instance.get('/plugin', (request, reply) => {
+      reply.send()
+    })
+
+    next()
+  })
+
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject('/plugin', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
+test('preParsing hook should support encapsulation / 2', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  var pluginInstance
+
+  fastify.addHook('preParsing', function a () {})
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('preParsing', function b () {})
+    pluginInstance = instance
+    next()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(fastify[symbols.kHooks].preParsing.length, 1)
+    t.is(pluginInstance[symbols.kHooks].preParsing.length, 2)
+  })
+})
+
+test('preParsing hook should support encapsulation / 3', t => {
+  t.plan(20)
+  const fastify = Fastify()
+  fastify.decorate('hello', 'world')
+
+  fastify.addHook('preParsing', function (req, reply, next) {
+    t.ok(this.hello)
+    t.ok(this.hello2)
+    req.first = true
+    next()
+  })
+
+  fastify.decorate('hello2', 'world')
+
+  fastify.get('/first', (req, reply) => {
+    t.ok(req.first)
+    t.notOk(req.second)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.decorate('hello3', 'world')
+    instance.addHook('preParsing', function (req, reply, next) {
+      t.ok(this.hello)
+      t.ok(this.hello2)
+      t.ok(this.hello3)
+      req.second = true
+      next()
+    })
+
+    instance.get('/second', (req, reply) => {
+      t.ok(req.first)
+      t.ok(req.second)
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
 })
 
 if (semver.gt(process.versions.node, '8.0.0')) {

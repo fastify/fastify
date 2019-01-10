@@ -96,7 +96,7 @@
     "http-errors": "^1.7.1",
     "ienoopen": "^1.0.0",
     "joi": "~11.4.0",
-    "license-checker": "^24.1.0",
+    "license-checker": "^25.0.0",
     "lolex": "^2.7.4",
     "pre-commit": "^1.2.2",
     "proxyquire": "^2.1.0",

@@ -18,5 +18,19 @@ jobs:
     displayName: Install Node.js
   - bash: yarn install
     displayName: Install dependencies
-  - bash: yarn test
+  - bash: yarn test:report
     displayName: Run tests
+  - bash: yarn unit:junit
+    condition: succeededOrFailed()
+  - task: PublishTestResults@2
+    displayName: "Publish Test Results"
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: "**test/junit-testresults.xml"
+      testRunTitle: TestRun ${{ parameters.name }} $(node_version)
+  - task: PublishCodeCoverageResults@1
+    displayName: "Publish code coverage results"
+    condition: succeededOrFailed()
+    inputs:
+      codeCoverageTool: "cobertura"
+      summaryFileLocation: "**/coverage/cobertura-coverage.xml"

@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
@@ -34,6 +35,14 @@ test('Request object', t => {
   t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')
   t.strictDeepEqual(req.body, null)
+})
+
+test('handleRequest function - sent reply', t => {
+  t.plan(1)
+  const request = {}
+  const reply = { sent: true }
+  const res = handleRequest(null, request, reply)
+  t.equal(res, undefined)
 })
 
 test('handler function - invalid schema', t => {

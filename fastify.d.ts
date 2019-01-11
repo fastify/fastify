@@ -170,6 +170,7 @@ declare namespace fastify {
     body?: JSONSchema
     querystring?: JSONSchema
     params?: JSONSchema
+    headers?: JSONSchema
     response?: {
       [code: number]: JSONSchema,
       [code: string]: JSONSchema

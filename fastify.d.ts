@@ -517,7 +517,12 @@ declare namespace fastify {
     addHook(name: 'onRequest', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
-     * Add a hook that is triggered after the onRequest hook and middlewares, but before the validation
+     * Add a hook that is triggered after the onRequest hook and middlewares, but before body parsing
+     */
+    addHook(name: 'preParsing', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Add a hook that is triggered after the onRequest, middlewares, and body parsing, but before the validation
      */
     addHook(name: 'preValidation', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 

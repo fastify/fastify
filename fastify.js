@@ -442,9 +442,9 @@ function build (options) {
       return
     }
 
-    if (reply.context.preValidation !== null) {
+    if (reply.context.preParsing !== null) {
       hookRunner(
-        reply.context.preValidation,
+        reply.context.preParsing,
         hookIterator,
         reply.request,
         reply,
@@ -643,6 +643,7 @@ function build (options) {
         beforeHandlerWarning()
         opts.preHandler = opts.beforeHandler
       }
+
       if (opts.preHandler) {
         if (Array.isArray(opts.preHandler)) {
           opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
@@ -656,6 +657,14 @@ function build (options) {
           opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
         } else {
           opts.preValidation = opts.preValidation.bind(_fastify)
+        }
+      }
+
+      if (opts.preParsing) {
+        if (Array.isArray(opts.preParsing)) {
+          opts.preParsing = opts.preParsing.map(hook => hook.bind(_fastify))
+        } else {
+          opts.preParsing = opts.preParsing.bind(_fastify)
         }
       }
 
@@ -674,10 +683,12 @@ function build (options) {
         const onResponse = _fastify[kHooks].onResponse
         const onSend = _fastify[kHooks].onSend
         const onError = _fastify[kHooks].onError
+        const preParsing = _fastify[kHooks].preParsing.concat(opts.preParsing || [])
         const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
         const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
+        context.preParsing = preParsing.length ? preParsing : null
         context.preValidation = preValidation.length ? preValidation : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
@@ -928,6 +939,7 @@ function build (options) {
       const context = this[kFourOhFourContext]
 
       const onRequest = this[kHooks].onRequest
+      const preParsing = this[kHooks].preParsing.concat(opts.preParsing || [])
       const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
       const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
       const onSend = this[kHooks].onSend
@@ -935,6 +947,7 @@ function build (options) {
       const onResponse = this[kHooks].onResponse
 
       context.onRequest = onRequest.length ? onRequest : null
+      context.preParsing = preParsing.length ? preParsing : null
       context.preValidation = preValidation.length ? preValidation : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null

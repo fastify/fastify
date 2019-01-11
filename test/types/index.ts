@@ -46,6 +46,14 @@ const cors = require('cors')
     next()
   })
 
+  logAllServer.addHook('preParsing', (req, reply, next) => {
+    next()
+  })
+
+  logAllServer.addHook('preValidation', (req, reply, next) => {
+    next()
+  })
+
   // other simple options
   const otherServer = fastify({
     ignoreTrailingSlash: true,

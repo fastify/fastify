@@ -5,7 +5,7 @@ const test = t.test
 const { kReplySentOverwritten } = require('../lib/symbols')
 const wrapThenable = require('../lib/wrapThenable')
 
-test('should resolve immediately when reply.sentOverwritten is true', t => {
+test('should resolve immediately when reply[kReplySentOverwritten] is true', t => {
   t.plan(1)
   const reply = {}
   reply[kReplySentOverwritten] = true

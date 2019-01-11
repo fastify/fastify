@@ -29,7 +29,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`fastify-postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server.
 - [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
-- [`fastify-react`](https://github.com/fastify/fastify-react) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
+- [`fastify-nextjs`](https://github.com/fastify/fastify-nextjs) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
 - [`fastify-reply-from`](https://github.com/fastify/fastify-reply-from) Plugin to forward the current http request to another server.
 - [`fastify-routes`](https://github.com/fastify/fastify-routes) Plugin that provides a `Map` of routes.

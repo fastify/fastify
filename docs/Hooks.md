@@ -47,7 +47,7 @@ fastify.addHook('onSend', (request, reply, payload, next) => {
   next()
 })
 
-fastify.addHook('onResponse', (request, reply, next) => {
+fastify.addHook('onResponse', (request, next) => {
   // some code
   next()
 })
@@ -109,7 +109,7 @@ fastify.addHook('onSend', async (request, reply, payload) => {
   return
 })
 
-fastify.addHook('onResponse', async (request, reply) => {
+fastify.addHook('onResponse', async (request) => {
   // some code
   await asyncMethod()
   // error occurred

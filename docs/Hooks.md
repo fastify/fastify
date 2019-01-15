@@ -6,7 +6,7 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 
 ## Request/Response Hooks
 
-By using the hooks you can interact directly inside the lifecycle of Fastify. There are four different Hooks that you can use *(in order of execution)*:
+By using the hooks you can interact directly inside the lifecycle of Fastify. There are seven different Hooks that you can use *(in order of execution)*:
 - `'onRequest'`
 - `'preParsing'`
 - `'preValidation'`

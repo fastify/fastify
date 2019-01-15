@@ -7,7 +7,7 @@ const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').build
-const Schemas = require('../../lib/schemas')
+const { Schemas } = require('../../lib/schemas')
 const sget = require('simple-get').concat
 
 const Ajv = require('ajv')

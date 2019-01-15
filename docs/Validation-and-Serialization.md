@@ -50,7 +50,7 @@ fastify.post('/the/url', { schema }, handler)
 
 <a name="shared-schema"></a>
 #### Adding a shared schema
-Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. *(Note that this API is not encapsulated)*
+Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. As usual, this API is encapsulated.
 ```js
 const fastify = require('fastify')()
 
@@ -69,6 +69,33 @@ fastify.route({
     body: 'greetings#'
   },
   handler: () => {}
+})
+
+fastify.register((instance, opts, next) => {
+
+  /**
+   * In children's scope can use schemas defined in upper scope like 'greetings'.
+   * Parent scope can't use the children schemas.
+   */
+  instance.addSchema({
+    $id: 'framework',
+    type: 'object',
+    properties: {
+      fastest: { type: 'string' },
+      hi: 'greetings#'
+    }
+  })
+
+  instance.route({
+    method: 'POST',
+    url: '/sub',
+    schema: {
+      body: 'framework#'
+    },
+    handler: () => {}
+  })
+
+  next()
 })
 ```
 You can use the shared schema everywhere, as top level schema or nested inside other schemas:
@@ -100,9 +127,32 @@ fastify.route({
 ```
 
 <a name="get-shared-schema"></a>
-#### Retrieving a copy of all shared schemas
+#### Retrieving a copy of shared schemas
 
-The function `getSchemas` returns all shared schemas that were added by `addSchema` method.
+The function `getSchemas` returns the shared schemas available in the selected scope:
+```js
+fastify.addSchema({ $id: 'one', my: 'hello' })
+fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
+
+fastify.register((instance, opts, next) => {
+  instance.addSchema({ $id: 'two', my: 'ciao' })
+  instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
+
+  instance.register((subinstance, opts, next) => {
+    subinstance.addSchema({ $id: 'three', my: 'hola' })
+    subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
+    next()
+  })
+  next()
+})
+```
+This example will returns:
+
+|  URL  | Schemas |
+|-------|---------|
+| /     | one             |
+| /sub  | one, two        |
+| /deep | one, two, three |
 
 <a name="schema-compiler"></a>
 #### Schema Compiler

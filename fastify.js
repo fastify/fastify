@@ -41,7 +41,7 @@ const buildSchemaCompiler = validation.buildSchemaCompiler
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
-const Schemas = require('./lib/schemas')
+const { Schemas, buildSchemas } = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -471,6 +471,8 @@ function build (options) {
     instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
     instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
     instance[kMiddlewares] = old[kMiddlewares].slice()
+    instance[kSchemas] = buildSchemas(old[kSchemas])
+    instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
     instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
     if (opts.prefix) {
@@ -799,6 +801,7 @@ function build (options) {
   function addSchema (name, schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
     this[kSchemas].add(name, schema)
+    this[kChildren].forEach(child => child.addSchema(name, schema))
     return this
   }
 

@@ -233,6 +233,10 @@ server
     const stream = fs.createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')
     reply.code(200).send(stream)
   })
+  .get('/redirect', function (req, reply) {
+    reply.redirect('/other')
+    reply.redirect(301, '/something')
+  })
   .post('/', opts, function (req, reply) {
     reply
       .headers({ 'Content-Type': 'application/json' })

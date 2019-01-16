@@ -146,27 +146,41 @@ server.addHook('onClose', (instance, done) => {
 server.addHook('onRoute', (opts) => {
 })
 
-const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'string'
-          }
+const schema: fastify.RouteSchema = {
+  body: {
+    type: 'object'
+  },
+  querystring: {
+    type: 'object'
+  },
+  params: {
+    type: 'object'
+  },
+  headers: {
+    type: 'object'
+  },
+  response: {
+    200: {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
         }
-      },
-      '2xx': {
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'string'
-          }
+      }
+    },
+    '2xx': {
+      type: 'object',
+      properties: {
+        hello: {
+          type: 'string'
         }
       }
     }
-  },
+  }
+}
+
+const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+  schema,
   preValidation: [
     (request, reply, next) => {
       request.log.info(`pre validation for "${request.raw.url}" ${request.id}`)

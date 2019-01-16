@@ -17,6 +17,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-cors`](https://github.com/fastify/fastify-cors) Enables the use of CORS in a Fastify application.
+- [`fastify-csrf`](https://github.com/Tarang11/fastify-csrf) a csrf plugin for Fastify.
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
 - [`fastify-elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
@@ -101,4 +102,3 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
-- [`fastify-csrf`](https://github.com/Tarang11/fastify-csrf) a csrf plugin for Fastify.

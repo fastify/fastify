@@ -456,6 +456,7 @@ declare namespace fastify {
      * Call this function to close the server instance and run the "onClose" callback
      */
     close(closeListener: () => void): void
+    close<T = any>(): Promise<T>
 
     /**
      * Apply the given middleware to all incoming requests

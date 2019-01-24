@@ -230,6 +230,50 @@ function asyncHookTest (t) {
     })
   })
 
+  test('preSerialization hooks should be able to modify the payload', t => {
+    t.plan(3)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', async (req, reply, payload) => {
+      return { hello: 'another world' }
+    })
+
+    fastify.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+    })
+  })
+
+  test('preSerialization hooks should handle errors', t => {
+    t.plan(3)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', async (req, reply, payload) => {
+      throw new Error('kaboom')
+    })
+
+    fastify.get('/', function (request, reply) {
+      reply.send({ hello: 'world' })
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 500)
+      t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
+    })
+  })
+
   test('onRequest hooks should be able to block a request (last hook)', t => {
     t.plan(5)
     const fastify = Fastify()

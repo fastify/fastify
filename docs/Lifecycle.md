@@ -28,9 +28,11 @@ Incoming Request
                                                           │
                                                           └─▶ Reply
                                                                 │
-                                                                └─▶ onSend Hook
-                                                                       │
-                                                             4**/5** ◀─┴─▶ Outgoing Response
-                                                                             │
-                                                                           └─▶ onResponse Hook
+                                                      4**/5** ◀─┴─▶ preSerialization Hook
+                                                                      │
+                                                                      └─▶ onSend Hook
+                                                                            │
+                                                                  4**/5** ◀─┴─▶ Outgoing Response
+                                                                                  │
+                                                                                  └─▶ onResponse Hook
 ```

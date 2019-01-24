@@ -597,3 +597,76 @@ test('preValidation option should keep the context (array)', t => {
     t.deepEqual(payload, { hello: 'world' })
   })
 })
+
+test('preSerialization option should be able to modify the payload', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/only', {
+    preSerialization: (req, reply, payload, done) => {
+      done(null, { hello: 'another world' })
+    }
+  }, (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/only'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+  })
+})
+
+test('preSerialization option should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/only', {
+    preSerialization: (req, reply, payload, done) => {
+      reply.code(501)
+      done(new Error('kaboom'))
+    }
+  }, (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/only'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { message: 'kaboom', error: 'Not Implemented', statusCode: 501 })
+  })
+})
+
+test('preValidation option could accept an array of functions', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/only', {
+    preSerialization: [
+      (req, reply, payload, done) => {
+        done(null, { hello: 'another world' })
+      },
+      (req, reply, payload, done) => {
+        payload.hello += ', mate'
+        done(null, payload)
+      }
+    ]
+  }, (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/only'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'another world, mate' })
+  })
+})

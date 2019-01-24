@@ -140,7 +140,7 @@ test('onSend hook stream', t => {
 })
 
 test('Destroying streams prematurely', t => {
-  t.plan(7)
+  t.plan(5)
 
   let fastify = null
   const logStream = split(JSON.parse)
@@ -161,10 +161,6 @@ test('Destroying streams prematurely', t => {
   logStream.once('data', line => {
     t.equal(line.level, 40)
     t.equal(line.err.message, 'premature close')
-    logStream.once('data', line => {
-      t.equal(line.level, 40)
-      t.equal(line.err.message, 'premature close')
-    })
   })
 
   fastify.get('/', function (request, reply) {

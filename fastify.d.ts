@@ -4,10 +4,9 @@
 
 /// <reference types="node" />
 
-import * as http from 'http'
-import * as http2 from 'http2'
-import * as https from 'https'
-import * as tls from 'tls'
+import * as http from 'http';
+import * as http2 from 'http2';
+import * as https from 'https';
 
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
@@ -528,6 +527,12 @@ declare namespace fastify {
      * Add a hook that is triggered after the onRequest, middlewares, and body parsing, but before the validation
      */
     addHook(name: 'preValidation', hook: FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Hook that is fired after a request is processed, but before the response is serialized
+     * hook
+     */
+    addHook(name: 'preSerialization', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired before a request is processed, but after the "preValidation"

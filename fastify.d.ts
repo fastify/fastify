@@ -4,9 +4,9 @@
 
 /// <reference types="node" />
 
-import * as http from 'http';
-import * as http2 from 'http2';
-import * as https from 'https';
+import * as http from 'http'
+import * as http2 from 'http2'
+import * as https from 'https'
 
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
@@ -81,6 +81,22 @@ declare namespace fastify {
     req: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
     reply: FastifyReply<HttpResponse>,
     done: (err?: Error) => void,
+  ) => void
+
+  type FastifyMiddlewareWithPayload<
+  HttpServer,
+  HttpRequest,
+  HttpResponse,
+  Query = DefaultQuery,
+  Params = DefaultParams,
+  Headers = DefaultHeaders,
+  Body = DefaultBody
+  > = (
+    this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>,
+    req: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
+    reply: FastifyReply<HttpResponse>,
+    payload: any,
+    done: (err?: Error, value?: any) => void,
   ) => void
 
   type RequestHandler<
@@ -213,7 +229,10 @@ declare namespace fastify {
     preHandler?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
-    schemaCompiler?: SchemaCompiler
+    preSerialization?:
+      FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
+      | Array<FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
+  schemaCompiler?: SchemaCompiler
     bodyLimit?: number
     logLevel?: string
     config?: any

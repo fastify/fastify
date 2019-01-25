@@ -197,7 +197,7 @@ fastify.addHook('preSerialization', (request, reply, payload, next) => {
 })
 
 // Or async
-fastify.addHook('onSend', async (request, reply, payload) => {
+fastify.addHook('preSerialization', async (request, reply, payload) => {
   return {wrapped: payload }
 })
 ```

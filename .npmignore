@@ -1,2 +1,6 @@
 .github
 tools/
+.travis.yml
+azure-pipelines-npm-template.yml
+azure-pipelines-yarn-template.yml
+azure-pipelines.yml

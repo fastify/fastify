@@ -127,6 +127,7 @@
     "middie": "^4.0.0",
     "pino": "^5.0.0",
     "proxy-addr": "^2.0.3",
+    "readable-stream": "^3.1.1",
     "tiny-lru": "^5.0.1"
   },
   "greenkeeper": {

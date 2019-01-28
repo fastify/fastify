@@ -12,6 +12,7 @@ const errors = require('http-errors')
 const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
+const split = require('split2')
 
 test('should respond with a stream', t => {
   t.plan(8)
@@ -139,11 +140,27 @@ test('onSend hook stream', t => {
 })
 
 test('Destroying streams prematurely', t => {
-  t.plan(3)
+  t.plan(4)
 
-  const fastify = Fastify()
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'warn'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
   const stream = require('stream')
   const http = require('http')
+
+  // Test that "premature close" errors are logged with level warn
+  logStream.once('data', line => {
+    t.equal(line.level, 40)
+  })
 
   fastify.get('/', function (request, reply) {
     t.pass('Received request')

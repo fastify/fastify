@@ -54,6 +54,8 @@ const cors = require('cors')
     next()
   })
 
+  logAllServer.addHook('preSerialization', async (req, reply, payload, next) => payload)
+
   // other simple options
   const otherServer = fastify({
     ignoreTrailingSlash: true,
@@ -125,6 +127,12 @@ server.addHook('onResponse', function (req, reply, next) {
     console.log('response is finished after 100ms?', reply.res.finished)
     next()
   }, 100)
+})
+
+server.addHook('preSerialization', function (req, reply, payload, next) {
+  this.log.debug('`this` is not `any`')
+  console.log(`${req.req.method} ${req.req.url}`)
+  next(undefined, payload)
 })
 
 server.addHook('onSend', function (req, reply, payload, next) {

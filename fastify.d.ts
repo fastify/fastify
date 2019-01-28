@@ -551,7 +551,7 @@ declare namespace fastify {
      * Hook that is fired after a request is processed, but before the response is serialized
      * hook
      */
-    addHook(name: 'preSerialization', hook: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>, payload: any, done: (err?: Error, value?: any) => void) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'preSerialization', hook: FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse>): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Hook that is fired before a request is processed, but after the "preValidation"

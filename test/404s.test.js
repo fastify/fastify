@@ -6,6 +6,7 @@ const fp = require('fastify-plugin')
 const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
+const split = require('split2')
 const Fastify = require('..')
 
 test('default 404', t => {
@@ -1661,5 +1662,44 @@ test('preValidation option', t => {
     t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should fail to invoke callNotFound inside a 404 handler', t => {
+  t.plan(5)
+
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'warn'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.callNotFound()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.callNotFound()
+  })
+
+  logStream.once('data', line => {
+    t.is(line.msg, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
+    t.is(line.level, 40)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 404)
+    t.is(res.payload, '404 Not Found')
   })
 })

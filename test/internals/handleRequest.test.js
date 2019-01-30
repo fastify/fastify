@@ -45,6 +45,14 @@ test('handleRequest function - sent reply', t => {
   t.equal(res, undefined)
 })
 
+test('handleRequest function - invoke with error', t => {
+  t.plan(1)
+  const request = {}
+  const reply = {}
+  reply.send = (err) => t.is(err.message, 'Kaboom')
+  handleRequest(new Error('Kaboom'), request, reply)
+})
+
 test('handler function - invalid schema', t => {
   t.plan(2)
   const res = {}
@@ -97,6 +105,30 @@ test('handler function - reply', t => {
     Reply: Reply,
     Request: Request,
     preValidation: [],
+    preHandler: [],
+    onSend: [],
+    onError: []
+  }
+  buildSchema(context, schemaCompiler)
+  internals.handler({}, new Reply(res, context, {}))
+})
+
+test('handler function - preValidationCallback with finished response', t => {
+  t.plan(0)
+  const res = {}
+  res.finished = true
+  res.end = () => {
+    t.fail()
+  }
+  res.writeHead = () => {}
+  const context = {
+    handler: (req, reply) => {
+      t.fail()
+      reply.send(undefined)
+    },
+    Reply: Reply,
+    Request: Request,
+    preValidation: null,
     preHandler: [],
     onSend: [],
     onError: []

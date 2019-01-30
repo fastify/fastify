@@ -44,6 +44,25 @@ server.get('/ping', opts, (request, reply) => {
 })
 ```
 
+<a id="jsdoc"></a>
+### JSDoc
+If you're using JS(not typescript) and want to have good stuff like autocompletion, you can use [**@type**](http://usejsdoc.org/tags-type.html):
+```js
+// hello-world.js
+module.exports = (
+  /** @type {import('fastify').FastifyInstance} */ fastify,
+) => {
+  // you have autocompletion in type follow editors like vscode 
+  fastify.route({
+    method: 'GET',
+    url: '/hello-world',
+    handler: (req, reply) => {
+      reply.send('Hello world');
+    },
+  });
+};
+```
+
 <a id="generic-parameters"></a>
 ## Generic Parameters
 Since you can validate the querystring, params, body, and headers, you can also override the default types of those values on the request interface:

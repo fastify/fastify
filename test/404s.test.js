@@ -1665,6 +1665,36 @@ test('preValidation option', t => {
   })
 })
 
+t.test('preValidation option could accept an array of functions', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler({
+    preValidation: [
+      (req, reply, done) => {
+        t.ok('called')
+        done()
+      },
+      (req, reply, done) => {
+        t.ok('called')
+        done()
+      }
+    ]
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/not-found',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
 test('Should fail to invoke callNotFound inside a 404 handler', t => {
   t.plan(5)
 

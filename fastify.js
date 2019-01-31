@@ -687,11 +687,13 @@ function build (options) {
         const onError = _fastify[kHooks].onError
         const preParsing = _fastify[kHooks].preParsing.concat(opts.preParsing || [])
         const preValidation = _fastify[kHooks].preValidation.concat(opts.preValidation || [])
+        const preSerialization = _fastify[kHooks].preSerialization.concat(opts.preSerialization || [])
         const preHandler = _fastify[kHooks].preHandler.concat(opts.preHandler || [])
 
         context.onRequest = onRequest.length ? onRequest : null
         context.preParsing = preParsing.length ? preParsing : null
         context.preValidation = preValidation.length ? preValidation : null
+        context.preSerialization = preSerialization.length ? preSerialization : null
         context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
         context.onError = onError.length ? onError : null
@@ -944,6 +946,7 @@ function build (options) {
       const onRequest = this[kHooks].onRequest
       const preParsing = this[kHooks].preParsing.concat(opts.preParsing || [])
       const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
+      const preSerialization = this[kHooks].preSerialization.concat(opts.preSerialization || [])
       const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
       const onSend = this[kHooks].onSend
       const onError = this[kHooks].onError
@@ -952,6 +955,7 @@ function build (options) {
       context.onRequest = onRequest.length ? onRequest : null
       context.preParsing = preParsing.length ? preParsing : null
       context.preValidation = preValidation.length ? preValidation : null
+      context.preSerialization = preSerialization.length ? preSerialization : null
       context.preHandler = preHandler.length ? preHandler : null
       context.onSend = onSend.length ? onSend : null
       context.onError = onError.length ? onError : null

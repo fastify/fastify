@@ -23,8 +23,9 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be and array of functions.
-* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the request handler, it could also be and array of functions.
+* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
+* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the request handler, it could also be an array of functions.
+* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the serialization, it could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).

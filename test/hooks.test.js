@@ -13,7 +13,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 
 test('hooks', t => {
-  t.plan(35)
+  t.plan(37)
   const fastify = Fastify()
 
   try {
@@ -56,6 +56,16 @@ test('hooks', t => {
   }
 
   try {
+    fastify.addHook('preSerialization', function (request, reply, payload, next) {
+      t.ok('preSerialization called')
+      next()
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+
+  try {
     fastify.addHook('onRequest', function (request, reply, next) {
       request.test = 'the request is coming'
       reply.test = 'the reply has come'
@@ -80,10 +90,19 @@ test('hooks', t => {
     next()
   })
 
-  fastify.get('/', function (req, reply) {
-    t.is(req.test, 'the request is coming')
-    t.is(reply.test, 'the reply has come')
-    reply.code(200).send(payload)
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: function (req, reply) {
+      t.is(req.test, 'the request is coming')
+      t.is(reply.test, 'the reply has come')
+      reply.code(200).send(payload)
+    },
+    response: {
+      200: {
+        type: 'object'
+      }
+    }
   })
 
   fastify.head('/', function (req, reply) {
@@ -2283,6 +2302,225 @@ test('preParsing hook should support encapsulation / 3', t => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('preSerialization hook should run before serialization and be able to modify the payload', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    payload.hello += '1'
+    payload.world = 'ok'
+
+    next(null, payload)
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send({ hello: 'world' })
+    },
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            hello: {
+              type: 'string'
+            },
+            world: {
+              type: 'string'
+            }
+          },
+          required: ['world'],
+          additionalProperties: false
+        }
+      }
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world1', world: 'ok' })
+    })
+  })
+})
+
+test('preSerialization hook should be able to throw errors which are not validated against schema response', t => {
+  const fastify = Fastify()
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    next(new Error('preSerialization aborted'))
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send({ hello: 'world' })
+    },
+    schema: {
+      response: {
+        500: {
+          type: 'object',
+          properties: {
+            world: {
+              type: 'string'
+            }
+          },
+          required: ['world'],
+          additionalProperties: false
+        }
+      }
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { error: 'Internal Server Error', message: 'preSerialization aborted', statusCode: 500 })
+      t.end()
+    })
+  })
+})
+
+test('preSerialization hook which returned error should still run onError hooks', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    next(new Error('preSerialization aborted'))
+  })
+
+  fastify.addHook('onError', function (req, reply, payload, next) {
+    t.pass()
+    next()
+  })
+
+  fastify.get('/first', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+  })
+})
+
+test('preSerialization hooks should run in the order in which they are defined', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    payload.hello += '2'
+
+    next(null, payload)
+  })
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    payload.hello += '1'
+
+    next(null, payload)
+  })
+
+  fastify.get('/first', (req, reply) => {
+    reply.send(payload)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world21' })
+    })
+  })
+})
+
+test('preSerialization hooks should support encapsulation', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.addHook('preSerialization', function (req, reply, payload, next) {
+    payload.hello += '1'
+
+    next(null, payload)
+  })
+
+  fastify.get('/first', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('preSerialization', function (req, reply, payload, next) {
+      payload.hello += '2'
+
+      next(null, payload)
+    })
+
+    instance.get('/second', (req, reply) => {
+      reply.send({ hello: 'world' })
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/first'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world1' })
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/second'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world12' })
     })
   })
 })

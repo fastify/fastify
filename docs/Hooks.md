@@ -11,6 +11,7 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 - `'preParsing'`
 - `'preValidation'`
 - `'preHandler'`
+- `'preSerialization'`
 - `'onError'`
 - `'onSend'`
 - `'onResponse'`
@@ -33,6 +34,11 @@ fastify.addHook('preValidation', (request, reply, next) => {
 })
 
 fastify.addHook('preHandler', (request, reply, next) => {
+  // some code
+  next()
+})
+
+fastify.addHook('preSerialization', (request, reply, payload, next) => {
   // some code
   next()
 })
@@ -92,6 +98,16 @@ fastify.addHook('preHandler', async (request, reply) => {
     throw new Error('some errors occurred.')
   }
   return
+})
+
+fastify.addHook('preSerialization', async (request, reply, payload) => {
+  // some code
+  await asyncMethod()
+  // error occurred
+  if (err) {
+    throw new Error('some errors occurred.')
+  }
+  return payload
 })
 
 fastify.addHook('onError', async (request, reply, error) => {
@@ -168,6 +184,25 @@ fastify.addHook('onError', async (request, reply, error) => {
   apm.sendError(error)
 })
 ```
+
+#### The `preSerialization` Hook
+
+If you are using the `preSerialization` hook, you can change (or replace) the payload before it is serialized. For example:
+
+```js
+fastify.addHook('preSerialization', (request, reply, payload, next) => {
+  var err = null;
+  var newPayload = {wrapped: payload }
+  next(err, newPayload)
+})
+
+// Or async
+fastify.addHook('preSerialization', async (request, reply, payload) => {
+  return {wrapped: payload }
+})
+```
+
+Note: the hook is NOT called if the payload is  a `string`, a `Buffer`, a `stream`, or `null`.
 
 #### The `onSend` Hook
 

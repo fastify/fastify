@@ -11,7 +11,7 @@ const schema = {
       name: { type: 'string' },
       work: { type: 'string' }
     },
-    required: ['name']
+    required: ['name', 'work']
   }
 }
 
@@ -27,7 +27,8 @@ test('should work with valid payload', t => {
   fastify.inject({
     method: 'POST',
     payload: {
-      name: 'michelangelo'
+      name: 'michelangelo',
+      work: 'sculptor, painter, architect and poet'
     },
     url: '/'
   }, (err, res) => {
@@ -57,7 +58,7 @@ test('should fail immediately with invalid payload', t => {
     t.deepEqual(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name'"
+      message: "body should have required property 'name', body should have required property 'work'"
     })
     t.strictEqual(res.statusCode, 400)
   })
@@ -120,6 +121,13 @@ test('should be able to attach validation to request', t => {
       schemaPath: '#/required',
       params: { missingProperty: 'name' },
       message: 'should have required property \'name\''
+    },
+    {
+      keyword: 'required',
+      dataPath: '',
+      schemaPath: '#/required',
+      params: { missingProperty: 'work' },
+      message: 'should have required property \'work\''
     }])
     t.strictEqual(res.statusCode, 400)
   })
@@ -146,7 +154,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
     t.deepEqual(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name'"
+      message: "body should have required property 'name', body should have required property 'work'"
     })
     t.strictEqual(res.statusCode, 400)
   })
@@ -176,7 +184,7 @@ test('Attached validation error should take precendence over setErrorHandler', t
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name'")
+    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name', body should have required property 'work'")
     t.strictEqual(res.statusCode, 400)
   })
 })

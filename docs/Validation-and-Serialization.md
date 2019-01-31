@@ -165,7 +165,8 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
 {
   removeAdditional: true, // remove additional properties
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
-  coerceTypes: true  // change data type of data to match type keyword
+  coerceTypes: true, // change data type of data to match type keyword
+  allErrors: true    // check for all errors
 }
 ```
 
@@ -178,7 +179,8 @@ const ajv = new Ajv({
   // the fastify defaults (if needed)
   removeAdditional: true,
   useDefaults: true,
-  coerceTypes: true
+  coerceTypes: true,
+  allErrors: true
   // any other options
   // ...
 })

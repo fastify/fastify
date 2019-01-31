@@ -670,3 +670,57 @@ test('preValidation option could accept an array of functions', t => {
     t.deepEqual(JSON.parse(res.payload), { hello: 'another world, mate' })
   })
 })
+
+test('preParsing option', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preParsing: (req, reply, done) => {
+      req.preParsing = true
+      done()
+    }
+  }, (req, reply) => {
+    t.true(req.preParsing)
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preParsing option should be called before preValidation hook', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preValidation', (req, reply, next) => {
+    t.true(req.called)
+    next()
+  })
+
+  fastify.post('/', {
+    preParsing: (req, reply, done) => {
+      req.called = true
+      done()
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})

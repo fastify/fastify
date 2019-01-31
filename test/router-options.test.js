@@ -643,7 +643,7 @@ test('preSerialization option should handle errors', t => {
   })
 })
 
-test('preValidation option could accept an array of functions', t => {
+test('preSerialization option could accept an array of functions', t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -710,6 +710,33 @@ test('preParsing option should be called before preValidation hook', t => {
       req.called = true
       done()
     }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    var payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preParsing option could accept an array of functions', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    preParsing: [function (req, reply, done) {
+      t.ok('called')
+      done()
+    }, function (req, reply, done) {
+      t.ok('called')
+      done()
+    }]
   }, (req, reply) => {
     reply.send(req.body)
   })

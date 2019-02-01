@@ -442,7 +442,7 @@ test('Use the same schema id in diferent places', t => {
 })
 
 test('Use shared schema and $ref with $id', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.addSchema({
@@ -475,11 +475,29 @@ test('Use shared schema and $ref with $id', t => {
   fastify.route({
     method: 'POST',
     url: '/',
-    schema: { body },
-    handler: () => {}
+    schema: {
+      body,
+      response: {
+        200: 'test#'
+      }
+    },
+    handler: (req, reply) => {
+      reply.send(req.body.test)
+    }
   })
 
-  fastify.ready(t.error)
+  const id = Date.now()
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      address: { city: 'New Node' },
+      test: { id }
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { id })
+  })
 })
 
 // https://github.com/fastify/fastify/issues/1043

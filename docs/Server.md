@@ -70,8 +70,8 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 
 + Default: `1048576` (1MiB)
 
-<a name="factory-proto-action"></a>
-### `protoAction`
+<a name="factory-on-proto-poisoning"></a>
+### `onProtoPoisoning`
 
 Defines what action the framework must take when parsing a JSON object
 with `__proto__`. This functionality is provided by

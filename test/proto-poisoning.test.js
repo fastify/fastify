@@ -5,7 +5,7 @@ const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test
 
-test('proto-poisoning', t => {
+test('proto-poisoning error', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -33,7 +33,7 @@ test('proto-poisoning', t => {
 test('proto-poisoning remove', t => {
   t.plan(4)
 
-  const fastify = Fastify({ protoAction: 'remove' })
+  const fastify = Fastify({ onProtoPoisoning: 'remove' })
   t.tearDown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
@@ -59,7 +59,7 @@ test('proto-poisoning remove', t => {
 test('proto-poisoning ignore', t => {
   t.plan(4)
 
-  const fastify = Fastify({ protoAction: 'ignore' })
+  const fastify = Fastify({ onProtoPoisoning: 'ignore' })
   t.tearDown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {

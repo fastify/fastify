@@ -119,6 +119,7 @@
     "abstract-logging": "^1.0.0",
     "ajv": "^6.6.0",
     "avvio": "^6.0.0",
+    "bourne": "^1.1.0",
     "fast-json-stringify": "^1.9.1",
     "find-my-way": "^1.15.4",
     "flatstr": "^1.0.8",

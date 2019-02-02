@@ -208,7 +208,7 @@ function build (options) {
   // custom parsers
   fastify.addContentTypeParser = addContentTypeParser
   fastify.hasContentTypeParser = hasContentTypeParser
-  fastify[kContentTypeParser] = new ContentTypeParser(fastify[kBodyLimit])
+  fastify[kContentTypeParser] = new ContentTypeParser(fastify[kBodyLimit], options.onProtoPoisoning)
 
   fastify.setSchemaCompiler = setSchemaCompiler
   fastify.setSchemaCompiler(buildSchemaCompiler())

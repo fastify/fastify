@@ -70,6 +70,19 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 
 + Default: `1048576` (1MiB)
 
+<a name="factory-on-proto-poisoning"></a>
+### `onProtoPoisoning`
+
+Defines what action the framework must take when parsing a JSON object
+with `__proto__`. This functionality is provided by
+[bourne](https://github.com/hapijs/bourne).
+See https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061
+for more details about prototype poisoning attacks.
+
+Possible values are `'error'`, `'remove'` and `'ignore'`.
+
++ Default: `'error'`
+
 <a name="factory-logger"></a>
 ### `logger`
 

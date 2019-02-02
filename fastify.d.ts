@@ -178,6 +178,7 @@ declare namespace fastify {
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
+    onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,

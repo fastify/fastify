@@ -800,10 +800,10 @@ function build (options) {
     instance[kChildren].forEach(child => _addHook(child, name, fn))
   }
 
-  function addSchema (name, schema) {
+  function addSchema (schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this[kSchemas].add(name, schema)
-    this[kChildren].forEach(child => child.addSchema(name, schema))
+    this[kSchemas].add(schema)
+    this[kChildren].forEach(child => child.addSchema(schema))
     return this
   }
 

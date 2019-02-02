@@ -441,6 +441,65 @@ test('Use the same schema id in diferent places', t => {
   })
 })
 
+test('Use shared schema and $ref with $id', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      id: { type: 'number' }
+    }
+  })
+
+  const body = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    $id: 'http://foo/user',
+    type: 'object',
+    definitions: {
+      address: {
+        $id: '#address',
+        type: 'object',
+        properties: {
+          city: { 'type': 'string' }
+        }
+      }
+    },
+    properties: {
+      test: 'test#',
+      address: { $ref: '#address' }
+    }
+  }
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body,
+      response: {
+        200: 'test#'
+      }
+    },
+    handler: (req, reply) => {
+      reply.send(req.body.test)
+    }
+  })
+
+  const id = Date.now()
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      address: { city: 'New Node' },
+      test: { id }
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { id })
+  })
+})
+
 // https://github.com/fastify/fastify/issues/1043
 test('The schema resolver should clean the $id key before passing it to the compiler', t => {
   t.plan(1)

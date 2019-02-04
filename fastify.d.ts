@@ -132,6 +132,15 @@ declare namespace fastify {
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
+    versioning? : {
+      storage() : {
+        get(version: String) : Function | null,
+        set(version: String, store: Function) : void,
+        del(version: String) : void,
+        empty() : void
+      },
+      deriveVersion<Context>(req: Object, ctx?: Context) : String,
+    }
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

@@ -115,7 +115,7 @@
     "bourne": "^1.1.0",
     "end-of-stream": "^1.4.1",
     "fast-json-stringify": "^1.8.0",
-    "find-my-way": "^1.16.0",
+    "find-my-way": "^1.18.0",
     "flatstr": "^1.0.9",
     "light-my-request": "^3.0.0",
     "middie": "^3.1.0",

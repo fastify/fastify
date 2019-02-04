@@ -237,6 +237,32 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="versioning"></a>
+### `versioning`
+
+By default you can version your routes with [semver versioning](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version), which is provided by `find-my-way`. There is still an option to provide custom versioning strategy. You can find more information in the [find-my-way](https://github.com/delvedor/find-my-way#versioned-routes) documentation.
+
+```js
+const versioning = {
+  storage: function () {
+    let versions = {}
+    return {
+      get: (version) => { return versions[version] || null },
+      set: (version, store) => { versions[version] = store },
+      del: (version) => { delete versions[version] },
+      empty: () => { versions = {} }
+    }
+  },
+  deriveVersion: (req, ctx) => {
+    return req.headers['accept']
+  }
+}
+
+const fastify = require('fastify')({
+  versioning
+})
+```
+
 ## Instance
 
 ### Server Methods
@@ -445,7 +471,7 @@ fastify.setNotFoundHandler({
   preHandler: (req, reply, next) => {
     // your code
     next()
-  }  
+  }
 }, function (request, reply) {
     // Default not found handler with preValidation and preHandler hooks
 })

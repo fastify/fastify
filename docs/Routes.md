@@ -285,6 +285,7 @@ fastify.listen(3000)
 
 <a name="version"></a>
 ### Version
+#### Default
 If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
 Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
@@ -310,3 +311,5 @@ fastify.inject({
 ```
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
+#### Custom
+It's possible to define a custom versioning logic. This can be done through the [`versioning`](https://github.com/fastify/fastify/blob/master/docs/Server.md#versioning) configuration, when creating a fastify server instance.

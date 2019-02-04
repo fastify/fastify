@@ -402,3 +402,77 @@ test('test log stream', t => {
     })
   })
 })
+
+test('Should register a versioned route with custome versioning strategy', t => {
+  t.plan(8)
+
+  const versioning = {
+    storage: function () {
+      let versions = {}
+      return {
+        get: (version) => { return versions[version] || null },
+        set: (version, store) => { versions[version] = store },
+        del: (version) => { delete versions[version] },
+        empty: () => { versions = {} }
+      }
+    },
+    deriveVersion: (req, ctx) => {
+      return req.headers['accept']
+    }
+  }
+
+  const fastify = Fastify({ versioning })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    version: 'application/vnd.example.api+json;version=2',
+    handler: (req, reply) => {
+      reply.send({ hello: 'from route v2' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    version: 'application/vnd.example.api+json;version=3',
+    handler: (req, reply) => {
+      reply.send({ hello: 'from route v3' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept': 'application/vnd.example.api+json;version=2'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'from route v2' })
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept': 'application/vnd.example.api+json;version=3'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'from route v3' })
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept': 'application/vnd.example.api+json;version=4'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})

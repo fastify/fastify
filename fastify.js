@@ -86,7 +86,8 @@ function build (options) {
     defaultRoute: defaultRoute,
     ignoreTrailingSlash: options.ignoreTrailingSlash,
     maxParamLength: options.maxParamLength,
-    caseSensitive: options.caseSensitive
+    caseSensitive: options.caseSensitive,
+    versioning: options.versioning
   })
 
   const requestIdHeader = options.requestIdHeader || 'request-id'

@@ -741,3 +741,87 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
 
   fastify.ready(t.error)
 })
+
+test('Shared schema should be pass to serializer unlocking the $ref in response', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const schemaAsset = {
+    '$id': 'http://example.com/asset.json',
+    '$schema': 'http://json-schema.org/draft-07/schema#',
+    'title': 'Physical Asset',
+    'description': 'A generic representation of a physical asset',
+    'type': 'object',
+    'required': [
+      'id',
+      'model',
+      'location'
+    ],
+    'properties': {
+      'id': {
+        'type': 'string',
+        'format': 'uuid'
+      },
+      'model': {
+        'type': 'string'
+      },
+      'location': { '$ref': 'http://example.com/point.json#' }
+    }
+  }
+
+  const schemaPoint = {
+    '$id': 'http://example.com/point.json',
+    '$schema': 'http://json-schema.org/draft-07/schema#',
+    'title': 'Longitude and Latitude Values',
+    'description': 'A geographical coordinate.',
+    'type': 'object',
+    'required': [
+      'latitude',
+      'longitude'
+    ],
+    'properties': {
+      'latitude': {
+        'type': 'number',
+        'minimum': -90,
+        'maximum': 90
+      },
+      'longitude': {
+        'type': 'number',
+        'minimum': -180,
+        'maximum': 180
+      },
+      'altitude': {
+        'type': 'number'
+      }
+    }
+  }
+
+  const schemaResponse = {
+    '$id': 'http://example.com/locations.json',
+    '$schema': 'http://json-schema.org/draft-07/schema#',
+    'title': 'List of Asset locations',
+    'type': 'array',
+    'items': { '$ref': 'http://example.com/asset.json#' },
+    'default': []
+  }
+
+  fastify.addSchema(schemaAsset)
+  fastify.addSchema(schemaPoint)
+
+  const response = [
+    { id: 'id1', model: 'mod', location: { latitude: 10, longitude: 10 } },
+    { id: 'id2', model: 'mod', location: { latitude: 10, longitude: 10 } }
+  ]
+  fastify.get('/', { schema: { response: { 200: schemaResponse } } }, (req, reply) => {
+    reply.send(response.map(i => ({ serializer: 'remove me', ...i })))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    response.forEach(_ => delete _.remove)
+    t.deepEqual(JSON.parse(res.payload), response)
+  })
+})

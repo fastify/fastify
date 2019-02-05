@@ -221,7 +221,7 @@ After this you should be good to go. Some types might not be available yet, so d
 ### Authoring Plugin Types
 Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `FastifyInstance` objects can be achieved as shown below.
 
-This code shows the typings for the `fastify-static`plugin.
+This code shows the typings for the `fastify-static` plugin.
 
 ```ts
 // require fastify typings

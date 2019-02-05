@@ -590,6 +590,44 @@ test('Can override the default plain text parser', t => {
   })
 })
 
+test('Can override the default json parser in a plugin', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addContentTypeParser('application/json', function (req, done) {
+      t.ok('called')
+      jsonParser(req, function (err, body) {
+        done(err, body)
+      })
+    })
+
+    instance.post('/', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), '{"hello":"world"}')
+      fastify.close()
+    })
+  })
+})
+
 test('Can\'t override the json parser multiple times', t => {
   t.plan(1)
   const fastify = Fastify()

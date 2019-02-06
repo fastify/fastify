@@ -8,6 +8,7 @@ const stream = require('stream')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
 const fs = require('fs')
+const split = require('split2')
 const symbols = require('../lib/symbols.js')
 
 const payload = { hello: 'world' }
@@ -560,6 +561,41 @@ test('onRoute hook should preserve handler function in options of shorthand rout
 
   fastify.ready(err => {
     t.error(err)
+  })
+})
+
+test('onResponse hook should log request error', t => {
+  t.plan(4)
+
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'error'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  logStream.once('data', line => {
+    t.equal(line.msg, 'request errored')
+    t.equal(line.level, 50)
+  })
+
+  fastify.addHook('onResponse', (request, reply, next) => {
+    next(new Error('kaboom'))
+  })
+
+  fastify.get('/root', (request, reply) => {
+    reply.send()
+  })
+
+  fastify.inject('/root', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
   })
 })
 

@@ -140,7 +140,7 @@ test('onSend hook stream', t => {
 })
 
 test('Destroying streams prematurely', t => {
-  t.plan(4)
+  t.plan(5)
 
   let fastify = null
   const logStream = split(JSON.parse)
@@ -159,6 +159,7 @@ test('Destroying streams prematurely', t => {
 
   // Test that "premature close" errors are logged with level warn
   logStream.once('data', line => {
+    t.equal(line.msg, 'response terminated with an error with headers already sent')
     t.equal(line.level, 40)
   })
 
@@ -175,6 +176,125 @@ test('Destroying streams prematurely', t => {
       }
     })
 
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    var port = fastify.server.address().port
+
+    http.get(`http://localhost:${port}`, function (response) {
+      t.strictEqual(response.statusCode, 200)
+      response.on('readable', function () {
+        response.destroy()
+      })
+      response.on('close', function () {
+        t.pass('Response closed')
+      })
+    })
+  })
+})
+
+test('Destroying streams prematurely should call close method', t => {
+  t.plan(6)
+
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'warn'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+  const stream = require('stream')
+  const http = require('http')
+
+  // Test that "premature close" errors are logged with level warn
+  logStream.once('data', line => {
+    t.equal(line.msg, 'response terminated with an error with headers already sent')
+    t.equal(line.level, 40)
+  })
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    var sent = false
+    var reallyLongStream = new stream.Readable({
+      read: function () {
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
+      }
+    })
+    reallyLongStream.destroy = undefined
+    reallyLongStream.close = () => t.ok('called')
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    var port = fastify.server.address().port
+
+    http.get(`http://localhost:${port}`, function (response) {
+      t.strictEqual(response.statusCode, 200)
+      response.on('readable', function () {
+        response.destroy()
+      })
+      response.on('close', function () {
+        t.pass('Response closed')
+      })
+    })
+  })
+})
+
+test('Destroying streams prematurely should call abort method', t => {
+  t.plan(6)
+
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'warn'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+  const stream = require('stream')
+  const http = require('http')
+
+  // Test that "premature close" errors are logged with level warn
+  logStream.once('data', line => {
+    t.equal(line.msg, 'response terminated with an error with headers already sent')
+    t.equal(line.level, 40)
+  })
+
+  fastify.get('/', function (request, reply) {
+    t.pass('Received request')
+
+    var sent = false
+    var reallyLongStream = new stream.Readable({
+      read: function () {
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
+      }
+    })
+    reallyLongStream.destroy = undefined
+    reallyLongStream.close = undefined
+    reallyLongStream.abort = () => t.ok('called')
     reply.send(reallyLongStream)
   })
 

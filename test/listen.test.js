@@ -334,19 +334,3 @@ test('listen logs the port as info', t => {
       t.ok(/http:\/\//.test(msgs[0]))
     })
 })
-
-test('listen logs IPv6 address correctly', t => {
-  t.plan(1)
-  const fastify = Fastify()
-  t.tearDown(fastify.close.bind(fastify))
-
-  const msgs = []
-  fastify.log.info = function (msg) {
-    msgs.push(msg)
-  }
-
-  fastify.listen(0, '::1')
-    .then(() => {
-      t.ok(/http:\/\/\[::1\]:/.test(msgs[0]))
-    })
-})

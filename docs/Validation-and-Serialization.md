@@ -98,6 +98,7 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
+
 You can use the shared schema everywhere, as top level schema or nested inside other schemas:
 ```js
 const fastify = require('fastify')()
@@ -301,6 +302,20 @@ fastify.setErrorHandler(function (error, request, reply) {
   }
 })
 ```
+
+### JSON Schema and Shared Schema support
+
+JSON Schema has some type of utilities in order to optimize your schemas that,
+in conjuction with the Fastify's shared schema, let you reuse all your schemas easily.
+
+| Use Case                          | Validator | Serializer |
+|-----------------------------------|-----------|------------|
+| shared schema                     | ✔️ | ✔️ |
+| `$ref` to `$id`                   | ✔ | ✔️ |
+| `$ref` to `/definitions`          | ✔️ | ✔️ |
+| `$ref` to shared schema `$id`          | ❌ | ✔️ |
+| `$ref` to shared schema `/definitions` | ❌ | ✔️ |
+
 
 <a name="resources"></a>
 ### Resources

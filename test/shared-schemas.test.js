@@ -825,7 +825,7 @@ test('Shared schema should be pass to serializer ($ref to shared schema /definit
       response: { 200: schemaResponse }
     }
   }, (req, reply) => {
-    reply.send(response.map(i => ({ serializer: 'remove me', ...i })))
+    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
   })
 
   fastify.inject({
@@ -921,7 +921,7 @@ test('Shared schema should be pass to serializer ($ref to shared schema $id)', t
       response: { 200: schemaResponse }
     }
   }, (req, reply) => {
-    reply.send(response.map(i => ({ serializer: 'remove me', ...i })))
+    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
   })
 
   fastify.inject({

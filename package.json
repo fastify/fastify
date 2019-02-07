@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",
-    "lint:typescript": "standard --parser typescript-eslint-parser --plugin typescript test/types/*.ts fastify.d.ts",
+    "lint:typescript": "standard --parser @typescript-eslint/parser --plugin @typescript-eslint/eslint-plugin test/types/*.ts fastify.d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
     "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
@@ -84,7 +84,6 @@
     "coveralls": "^3.0.2",
     "dns-prefetch-control": "^0.1.0",
     "eslint-import-resolver-node": "^0.3.2",
-    "eslint-plugin-typescript": "^0.14.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.5.0",
     "form-data": "^2.3.3",
@@ -112,7 +111,8 @@
     "tap-mocha-reporter": "^3.0.7",
     "then-sleep": "^1.0.1",
     "typescript": "^3.3.1",
-    "typescript-eslint-parser": "^22.0.0",
+    "@typescript-eslint/parser": "^1.2.0",
+    "@typescript-eslint/eslint-plugin": "^1.2.0",
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {

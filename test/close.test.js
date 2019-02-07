@@ -23,6 +23,25 @@ test('close callback', t => {
   })
 })
 
+test('close promise', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  fastify.addHook('onClose', onClose)
+  function onClose (instance) {
+    t.type(fastify, instance)
+    return Promise.resolve()
+  }
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+      t.ok('close callback')
+    })
+  })
+})
+
 test('inside register', t => {
   t.plan(5)
   const fastify = Fastify()

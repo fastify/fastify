@@ -94,7 +94,7 @@
     "hsts": "^2.1.0",
     "http-errors": "^1.7.1",
     "ienoopen": "^1.0.0",
-    "joi": "~11.4.0",
+    "joi": "^12.0.0",
     "license-checker": "^25.0.1",
     "lolex": "^3.0.0",
     "pre-commit": "^1.2.2",

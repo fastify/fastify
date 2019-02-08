@@ -204,65 +204,88 @@ When updating core types you should make a PR to this repository. Ensure you:
 <a id="plugin-types"></a>
 ### Plugin Types
 
-Typings for plugins are hosted in DefinitelyTyped. This means when using plugins you should install like so:
+Plugins maintained by and orginized under the fastify organization on GitHub should ship with typings just like fastify itself does.
+Some plugins already include typings but many do not. We are happy to accept contributions to those plugins without any typings, see [fastify-cors](https://github.com/fastify/fastify-cors) for an example of a plugin that comes with it's own typings.
 
-```
-npm install fastify-url-data @types/fastify-url-data
-```
+Typings for third-party-plugins may either be included with the plugin or hosted on DefinitelyTyped. Remember, if you author a plugin to either include typings or publish them on DefinitelyTyped! Information  of how to install typings from DefinitelyTyped can be found [here](https://github.com/DefinitelyTyped/DefinitelyTyped#npm).
 
-After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
+Some types might not be available yet, so don't be shy about contributing.
 
 <a id="authoring-plugin-types"></a>
 ### Authoring Plugin Types
-Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
+Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `FastifyInstance` objects can be achieved as shown below.
 
-This code demonstrates adding types for `fastify-url-data` to your application.
+This code shows the typings for the `fastify-static` plugin.
 
 ```ts
-// filename: custom-types.d.ts
+// require fastify typings
+import fastify = require("fastify");
+// require necessary http typings
+import { Server, IncomingMessage, ServerResponse } from "http";
 
-// Core typings and values
-import fastify = require('fastify');
-
-// Extra types that will be used for plugin typings
-import { UrlObject } from 'url';
-
-// Extend FastifyReply with the "fastify-url-data" plugin
-declare module 'fastify' {
-  interface FastifyRequest {
-    urlData (): UrlObject
-  }
+// extend fastify typings
+declare module "fastify" {
+    interface FastifyReply<HttpResponse> {
+        sendFile(filename: string): FastifyReply<HttpResponse>;
+    }
 }
 
-declare function urlData (): void
+// declare plugin type using fastify.Plugin
+declare const fastifyStatic: fastify.Plugin<Server, IncomingMessage, ServerResponse, {
+    root: string;
+    prefix?: string;
+    serve?: boolean;
+    decorateReply?: boolean;
+    schemaHide?: boolean;
+    setHeaders?: (...args: any[]) => void;
+    acceptRanges?: boolean;
+    cacheControl?: boolean;
+    dotfiles?: boolean;
+    etag?: boolean;
+    extensions?: string[];
+    immutable?: boolean;
+    index?: string[];
+    lastModified?: boolean;
+    maxAge?: string | number;
+}>;
 
-declare namespace urlData {}
-
-export = urlData;
+// export plugin type
+export = fastifyStatic;
 ```
 
-Now you can use `fastify-url-data` like so:
+Now you are good to go and could use the plugin like so:
 
 ```ts
-import * as fastify from 'fastify'
-import * as urlData from 'fastify-url-data'
+import * as Fastify from 'fastify'
+import * as fastifyStatic from 'fastify-static'
 
-/// <reference types="./custom-types.d.ts"/>
+const app = Fastify()
 
-const server = fastify();
-
-server.register(urlData)
-
-server.get('/data', (request, reply) => {
-  console.log(request.urlData().auth)
-  console.log(request.urlData().host)
-  console.log(request.urlData().port)
-  console.log(request.urlData().query)
-
-  reply.send({msg: 'ok'})
+// the options here are type-checked
+app.register(fastifyStatic, {
+  acceptRanges: true,
+  cacheControl: true,
+  decorateReply: true,
+  dotfiles: true,
+  etag: true,
+  extensions: ['.js'],
+  immutable: true,
+  index: ['1'],
+  lastModified: true,
+  maxAge: '',
+  prefix: '',
+  root: '',
+  schemaHide: true,
+  serve: true,
+  setHeaders: (res, pathName) => {
+    res.setHeader('some-header', pathName)
+  }
 })
 
-server.listen(3030)
+app.get('/file', (request, reply) => {
+  // using newly defined function on FastifyReply
+  reply.sendFile('some-file-name')
+})
 ```
 
-Remember, if you author typings for a plugin you should publish them to DefinitelyTyped!
+Adding typings to all our plugins is a community effort so feel free to contribute!

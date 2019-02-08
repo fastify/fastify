@@ -205,17 +205,11 @@ When updating core types you should make a PR to this repository. Ensure you:
 ### Plugin Types
 
 Plugins maintained by and orginized under the fastify organization on GitHub should ship with typings just like fastify itself does.
-Some plugins already include typings but many do not. We are happy to accept contributions to those plugins without any typings.
+Some plugins already include typings but many do not. We are happy to accept contributions to those plugins without any typings, see [fastify-cors](https://github.com/fastify/fastify-cors) for an example of a plugin that comes with it's own typings.
 
-Typings for third-party-plugins may either be included with the plugin or hosted on DefinitelyTyped. Remember, if you author a plugin to either include typings or publish them on DefinitelyTyped!
+Typings for third-party-plugins may either be included with the plugin or hosted on DefinitelyTyped. Remember, if you author a plugin to either include typings or publish them on DefinitelyTyped! Information  of how to install typings from DefinitelyTyped can be found [here](https://github.com/DefinitelyTyped/DefinitelyTyped#npm).
 
-Install a plugin with typings hosted on DefinitelyTyped like so:
-
-```
-npm install fastify-url-data && npm install -D @types/fastify-url-data
-```
-
-After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
+Some types might not be available yet, so don't be shy about contributing.
 
 <a id="authoring-plugin-types"></a>
 ### Authoring Plugin Types

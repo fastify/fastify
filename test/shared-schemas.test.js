@@ -441,7 +441,7 @@ test('Use the same schema id in diferent places', t => {
   })
 })
 
-test('Use shared schema and $ref with $id', t => {
+test('Use shared schema and $ref with $id ($ref to $id)', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -500,7 +500,7 @@ test('Use shared schema and $ref with $id', t => {
   })
 })
 
-test('Use shared schema and $ref with $id in response', t => {
+test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -740,4 +740,255 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
   })
 
   fastify.ready(t.error)
+})
+
+test('Shared schema should be pass to serializer ($ref to shared schema /definitions)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const schemaAsset = {
+    $id: 'http://example.com/asset.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'Physical Asset',
+    description: 'A generic representation of a physical asset',
+    type: 'object',
+    required: [
+      'id',
+      'model',
+      'location'
+    ],
+    properties: {
+      id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      model: {
+        type: 'string'
+      },
+      location: { $ref: 'http://example.com/point.json#' }
+    },
+    definitions: {
+      inner: {
+        $id: '#innerId',
+        type: 'string',
+        format: 'email'
+      }
+    }
+  }
+
+  const schemaPoint = {
+    $id: 'http://example.com/point.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'Longitude and Latitude Values',
+    description: 'A geographical coordinate.',
+    type: 'object',
+    required: [
+      'latitude',
+      'longitude'
+    ],
+    properties: {
+      email: { $ref: 'http://example.com/asset.json#/definitions/inner' },
+      latitude: {
+        type: 'number',
+        minimum: -90,
+        maximum: 90
+      },
+      longitude: {
+        type: 'number',
+        minimum: -180,
+        maximum: 180
+      },
+      altitude: {
+        type: 'number'
+      }
+    }
+  }
+
+  const schemaResponse = {
+    $id: 'http://example.com/locations.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'List of Asset locations',
+    type: 'array',
+    items: { $ref: 'http://example.com/asset.json#' },
+    default: []
+  }
+
+  fastify.addSchema(schemaAsset)
+  fastify.addSchema(schemaPoint)
+
+  const response = [
+    { id: 'id1', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
+    { id: 'id2', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
+  ]
+  fastify.get('/', {
+    schema: {
+      response: { 200: schemaResponse }
+    }
+  }, (req, reply) => {
+    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    response.forEach(_ => delete _.remove)
+    t.deepEqual(JSON.parse(res.payload), response)
+  })
+})
+
+test('Shared schema should be pass to serializer ($ref to shared schema $id)', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  const schemaAsset = {
+    $id: 'http://example.com/asset.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'Physical Asset',
+    description: 'A generic representation of a physical asset',
+    type: 'object',
+    required: [
+      'id',
+      'model',
+      'location'
+    ],
+    properties: {
+      id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      model: {
+        type: 'string'
+      },
+      location: { $ref: 'http://example.com/point.json#' }
+    },
+    definitions: {
+      inner: {
+        $id: '#innerId',
+        type: 'string',
+        format: 'email'
+      }
+    }
+  }
+
+  const schemaPoint = {
+    $id: 'http://example.com/point.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'Longitude and Latitude Values',
+    description: 'A geographical coordinate.',
+    type: 'object',
+    required: [
+      'latitude',
+      'longitude'
+    ],
+    properties: {
+      email: { $ref: 'http://example.com/asset.json#innerId' },
+      latitude: {
+        type: 'number',
+        minimum: -90,
+        maximum: 90
+      },
+      longitude: {
+        type: 'number',
+        minimum: -180,
+        maximum: 180
+      },
+      altitude: {
+        type: 'number'
+      }
+    }
+  }
+
+  const schemaResponse = {
+    $id: 'http://example.com/locations.json',
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    title: 'List of Asset locations',
+    type: 'array',
+    items: { $ref: 'http://example.com/asset.json#' },
+    default: []
+  }
+
+  fastify.addSchema(schemaAsset)
+  fastify.addSchema(schemaPoint)
+
+  const response = [
+    { id: 'id1', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
+    { id: 'id2', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
+  ]
+  fastify.get('/', {
+    schema: {
+      response: { 200: schemaResponse }
+    }
+  }, (req, reply) => {
+    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    response.forEach(_ => delete _.remove)
+    t.deepEqual(JSON.parse(res.payload), response)
+  })
+})
+
+test('Use shared schema and $ref to /definitions', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      id: { type: 'number' }
+    }
+  })
+
+  const body = {
+    type: 'object',
+    definitions: {
+      address: {
+        $id: '#otherId',
+        type: 'object',
+        properties: {
+          city: { 'type': 'string' }
+        }
+      }
+    },
+    properties: {
+      test: 'test#',
+      address: { $ref: '#/definitions/address' }
+    },
+    required: ['address', 'test']
+  }
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body,
+      response: {
+        200: body
+      }
+    },
+    handler: (req, reply) => {
+      req.body.removeThis = 'it should not be serialized'
+      reply.send(req.body)
+    }
+  })
+
+  const payload = {
+    address: { city: 'New Node' },
+    test: { id: Date.now() }
+  }
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), payload)
+  })
 })

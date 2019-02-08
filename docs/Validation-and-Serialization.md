@@ -98,6 +98,7 @@ fastify.register((instance, opts, next) => {
   next()
 })
 ```
+
 You can use the shared schema everywhere, as top level schema or nested inside other schemas:
 ```js
 const fastify = require('fastify')()
@@ -300,6 +301,131 @@ fastify.setErrorHandler(function (error, request, reply) {
      reply.status(422).send(new Error('validation failed'))
   }
 })
+```
+
+### JSON Schema and Shared Schema support
+
+JSON Schema has some type of utilities in order to optimize your schemas that,
+in conjuction with the Fastify's shared schema, let you reuse all your schemas easily.
+
+| Use Case                          | Validator | Serializer |
+|-----------------------------------|-----------|------------|
+| shared schema                     | ✔️ | ✔️ |
+| `$ref` to `$id`                   | ✔ | ✔️ |
+| `$ref` to `/definitions`          | ✔️ | ✔️ |
+| `$ref` to shared schema `$id`          | ❌ | ✔️ |
+| `$ref` to shared schema `/definitions` | ❌ | ✔️ |
+
+#### Examples
+
+```js
+// Usage of the Shared Schema feature
+fastify.addSchema({
+  $id: 'sharedAddress',
+  type: 'object',
+  properties: {
+    city: { 'type': 'string' }
+  }
+})
+
+const sharedSchema = {
+  type: 'object',
+  properties: {
+    home: 'sharedAddress#',
+    work: 'sharedAddress#'
+  }
+}
+```
+
+```js
+// Usage of $ref to $id in same JSON Schema
+const refToId = {
+  type: 'object',
+  definitions: {
+    foo: {
+      $id: '#address',
+      type: 'object',
+      properties: {
+        city: { 'type': 'string' }
+      }
+    }
+  },
+  properties: {
+    home: { $ref: '#address' },
+    work: { $ref: '#address' }
+  }
+}
+```
+
+
+```js
+// Usage of $ref to /definitions in same JSON Schema
+const refToDefinitions = {
+  type: 'object',
+  definitions: {
+    foo: {
+      $id: '#address',
+      type: 'object',
+      properties: {
+        city: { 'type': 'string' }
+      }
+    }
+  },
+  properties: {
+    home: { $ref: '#/definitions/foo' },
+    work: { $ref: '#/definitions/foo' }
+  }
+}
+```
+
+```js
+// Usage $ref to a shared schema $id as external schema
+fastify.addSchema({
+  $id: 'http://foo/common.json',
+  type: 'object',
+  definitions: {
+    foo: {
+      $id: '#address',
+      type: 'object',
+      properties: {
+        city: { 'type': 'string' }
+      }
+    }
+  }
+})
+
+const refToSharedSchemaId = {
+  type: 'object',
+  properties: {
+    home: { $ref: 'http://foo/common.json#address' },
+    work: { $ref: 'http://foo/common.json#address' }
+  }
+}
+```
+
+
+```js
+// Usage $ref to a shared schema /definitions as external schema
+fastify.addSchema({
+  $id: 'http://foo/common.json',
+  type: 'object',
+  definitions: {
+    foo: {
+      type: 'object',
+      properties: {
+        city: { 'type': 'string' }
+      }
+    }
+  }
+})
+
+const refToSharedSchemaDefinitions = {
+  type: 'object',
+  properties: {
+    home: { $ref: 'http://foo/common.json#/definitions/foo' },
+    work: { $ref: 'http://foo/common.json#/definitions/foo' }
+  }
+}
 ```
 
 <a name="resources"></a>

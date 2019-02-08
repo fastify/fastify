@@ -313,8 +313,8 @@ in conjuction with the Fastify's shared schema, let you reuse all your schemas e
 | shared schema                     | ✔️ | ✔️ |
 | `$ref` to `$id`                   | ✔ | ✔️ |
 | `$ref` to `/definitions`          | ✔️ | ✔️ |
-| `$ref` to shared schema `$id`          | ❌ | ✔️ |
-| `$ref` to shared schema `/definitions` | ❌ | ✔️ |
+| `$ref` to shared schema `$id`          | ✔ | ✔️ |
+| `$ref` to shared schema `/definitions` | ✔ | ✔️ |
 
 #### Examples
 

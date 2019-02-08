@@ -742,11 +742,11 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
   fastify.ready(t.error)
 })
 
-test('Shared schema should be pass to serializer ($ref to shared schema /definitions)', t => {
+test('Shared schema should be pass to serializer and validator ($ref to shared schema /definitions)', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  const schemaAsset = {
+  fastify.addSchema({
     $id: 'http://example.com/asset.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Physical Asset',
@@ -774,9 +774,9 @@ test('Shared schema should be pass to serializer ($ref to shared schema /definit
         format: 'email'
       }
     }
-  }
+  })
 
-  const schemaPoint = {
+  fastify.addSchema({
     $id: 'http://example.com/point.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Longitude and Latitude Values',
@@ -802,9 +802,9 @@ test('Shared schema should be pass to serializer ($ref to shared schema /definit
         type: 'number'
       }
     }
-  }
+  })
 
-  const schemaResponse = {
+  const schemaLocations = {
     $id: 'http://example.com/locations.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
@@ -813,36 +813,35 @@ test('Shared schema should be pass to serializer ($ref to shared schema /definit
     default: []
   }
 
-  fastify.addSchema(schemaAsset)
-  fastify.addSchema(schemaPoint)
-
-  const response = [
-    { id: 'id1', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
-    { id: 'id2', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
+  const locations = [
+    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
+    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
   ]
-  fastify.get('/', {
+  fastify.post('/', {
     schema: {
-      response: { 200: schemaResponse }
+      body: schemaLocations,
+      response: { 200: schemaLocations }
     }
   }, (req, reply) => {
-    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
+    reply.send(locations.map(i => Object.assign({ serializer: 'remove me' }, i)))
   })
 
   fastify.inject({
-    method: 'GET',
-    url: '/'
+    method: 'POST',
+    url: '/',
+    payload: locations
   }, (err, res) => {
     t.error(err)
-    response.forEach(_ => delete _.remove)
-    t.deepEqual(JSON.parse(res.payload), response)
+    locations.forEach(_ => delete _.remove)
+    t.deepEqual(JSON.parse(res.payload), locations)
   })
 })
 
-test('Shared schema should be pass to serializer ($ref to shared schema $id)', t => {
+test('Shared schema should be pass to serializer and validator ($ref to shared schema $id)', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  const schemaAsset = {
+  fastify.addSchema({
     $id: 'http://example.com/asset.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Physical Asset',
@@ -870,9 +869,9 @@ test('Shared schema should be pass to serializer ($ref to shared schema $id)', t
         format: 'email'
       }
     }
-  }
+  })
 
-  const schemaPoint = {
+  fastify.addSchema({
     $id: 'http://example.com/point.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'Longitude and Latitude Values',
@@ -898,9 +897,9 @@ test('Shared schema should be pass to serializer ($ref to shared schema $id)', t
         type: 'number'
       }
     }
-  }
+  })
 
-  const schemaResponse = {
+  const schemaLocations = {
     $id: 'http://example.com/locations.json',
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
@@ -909,29 +908,57 @@ test('Shared schema should be pass to serializer ($ref to shared schema $id)', t
     default: []
   }
 
-  fastify.addSchema(schemaAsset)
-  fastify.addSchema(schemaPoint)
-
-  const response = [
-    { id: 'id1', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
-    { id: 'id2', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
+  const locations = [
+    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } },
+    { id: '550e8400-e29b-41d4-a716-446655440000', model: 'mod', location: { latitude: 10, longitude: 10, email: 'foo@bar.it' } }
   ]
-  fastify.get('/', {
+
+  fastify.post('/', {
     schema: {
-      response: { 200: schemaResponse }
+      body: schemaLocations,
+      response: { 200: schemaLocations }
     }
   }, (req, reply) => {
-    reply.send(response.map(i => Object.assign({ serializer: 'remove me' }, i)))
+    reply.send(locations.map(i => Object.assign({ serializer: 'remove me' }, i)))
   })
 
   fastify.inject({
-    method: 'GET',
-    url: '/'
+    method: 'POST',
+    url: '/',
+    payload: locations
   }, (err, res) => {
     t.error(err)
-    response.forEach(_ => delete _.remove)
-    t.deepEqual(JSON.parse(res.payload), response)
+    locations.forEach(_ => delete _.remove)
+    t.deepEqual(JSON.parse(res.payload), locations)
   })
+})
+
+test('Use shared schema and $ref', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'http://example.com/ref-to-external-validator.json',
+    type: 'object',
+    properties: {
+      hello: { type: 'string' }
+    }
+  })
+
+  const body = {
+    type: 'array',
+    items: { $ref: 'http://example.com/ref-to-external-validator.json#' },
+    default: []
+  }
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: { body },
+    handler: (_, r) => { r.send('ok') }
+  })
+
+  fastify.ready(t.error)
 })
 
 test('Use shared schema and $ref to /definitions', t => {

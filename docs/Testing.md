@@ -12,6 +12,7 @@ To inject a fake http request, use the `inject` method:
 fastify.inject({
   method: String,
   url: String,
+  query: Object,
   payload: Object,
   headers: Object
 }, (error, response) => {
@@ -26,6 +27,7 @@ fastify
   .inject({
     method: String,
     url: String,
+    query: Object,
     payload: Object,
     headers: Object
   })

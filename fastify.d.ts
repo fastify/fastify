@@ -280,8 +280,8 @@ declare namespace fastify {
     url: string,
     method?: HTTPMethod,
     authority?: string,
-    headers?: object,
-    query?: object,
+    headers?: DefaultHeaders,
+    query?: DefaultQuery,
     remoteAddress?: string,
     payload?: string | object | Buffer | NodeJS.ReadableStream
     simulate?: {

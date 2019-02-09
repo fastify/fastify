@@ -51,6 +51,37 @@ fastify.post('/the/url', { schema }, handler)
 <a name="shared-schema"></a>
 #### Adding a shared schema
 Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. As usual, this API is encapsulated.
+
+There are two way to reuse your shared schema:
++ **`$ref-way`**: as described in the [standard](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8),
+you can refer to an external schema. To you it you have to `addSchema` with a valid `$id` absolute URI.
+
+```js
+fastify.addSchema({
+  $id: 'http://example.com/common.json',
+  type: 'object',
+  properties: {
+    hello: { type: 'string' }
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      type: 'array',
+      items: { $ref: 'http://example.com/common.json#/properties/hello' }
+    }
+  },
+  handler: () => {}
+})
+```
+
++ **`replace-way`**: this is a Fastify utils that let you to substitute some fields with a shared schema.
+To use it you have to `addSchema` with an `$id` with a relative URI fragment: a simple string that apply only
+to alphanumeric chars `[A-Za-z0-9]`.
+
 ```js
 const fastify = require('fastify')()
 

@@ -281,6 +281,7 @@ declare namespace fastify {
     method?: HTTPMethod,
     authority?: string,
     headers?: object,
+    query?: object,
     remoteAddress?: string,
     payload?: string | object | Buffer | NodeJS.ReadableStream
     simulate?: {

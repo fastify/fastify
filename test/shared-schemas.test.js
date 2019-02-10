@@ -315,6 +315,109 @@ test('Encapsulation isolation for getSchemas', t => {
   })
 })
 
+test('Encapsulation isolation for $ref to shared schema', t => {
+  t.plan(10)
+  const fastify = Fastify()
+
+  const commonSchemaAbsoluteUri = {
+    $id: 'http://example.com/asset.json',
+    type: 'object',
+    definitions: {
+      id: {
+        $id: '#uuid',
+        type: 'string',
+        format: 'uuid'
+      },
+      email: {
+        $id: '#email',
+        type: 'string',
+        format: 'email'
+      }
+    }
+  }
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema(commonSchemaAbsoluteUri)
+    instance.route({
+      method: 'POST',
+      url: '/id',
+      schema: {
+        body: {
+          type: 'object',
+          properties: { id: { $ref: 'http://example.com/asset.json#uuid' } },
+          required: ['id']
+        }
+      },
+      handler: (req, reply) => { reply.send('id is ok') }
+    })
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema(commonSchemaAbsoluteUri)
+    instance.route({
+      method: 'POST',
+      url: '/email',
+      schema: {
+        body: {
+          type: 'object',
+          properties: { email: { $ref: 'http://example.com/asset.json#/definitions/email' } },
+          required: ['email']
+        }
+      },
+      handler: (req, reply) => { reply.send('email is ok') }
+    })
+    next()
+  })
+
+  const requestId = { id: '550e8400-e29b-41d4-a716-446655440000' }
+  const requestEmail = { email: 'foo@bar.it' }
+
+  fastify.inject({
+    method: 'POST',
+    url: '/id',
+    payload: requestId
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/id',
+    payload: requestEmail
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 400)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'body should have required property \'id\'',
+      statusCode: 400
+    })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/email',
+    payload: requestEmail
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+  })
+  fastify.inject({
+    method: 'POST',
+    url: '/email',
+    payload: requestId
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 400)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'body should have required property \'email\'',
+      statusCode: 400
+    })
+  })
+})
+
 test('JSON Schema validation keywords', t => {
   t.plan(2)
   const fastify = Fastify()

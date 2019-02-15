@@ -33,6 +33,10 @@ jspm_packages
 # Optional npm cache directory
 .npm
 
+# Optional compressed files (npm generated package, zip, etc)
+/*.tgz
+/*.zip
+
 # Optional REPL history
 .node_repl_history
 

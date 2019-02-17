@@ -635,7 +635,7 @@ function build (options) {
       )
 
       try {
-        if (opts.schemaCompiler === undefined && _fastify._schemaCompiler === undefined) {
+        if (opts.schemaCompiler == null && _fastify._schemaCompiler == null) {
           const externalSchemas = _fastify[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
           _fastify.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
         }

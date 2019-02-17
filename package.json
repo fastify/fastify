@@ -121,7 +121,7 @@
     "avvio": "^6.0.1",
     "bourne": "^1.1.1",
     "fast-json-stringify": "^1.11.0",
-    "find-my-way": "^1.18.0",
+    "find-my-way": "^2.0.0",
     "flatstr": "^1.0.9",
     "light-my-request": "^3.2.0",
     "middie": "^4.0.1",

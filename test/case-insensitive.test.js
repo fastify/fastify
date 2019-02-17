@@ -60,3 +60,61 @@ test('case insensitive inject', t => {
     })
   })
 })
+
+test('case insensitive (parametric)', t => {
+  t.plan(5)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.get('/foo/:param', (req, reply) => {
+    t.strictEqual(req.params.param, 'bAr')
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), {
+        hello: 'world'
+      })
+    })
+  })
+})
+
+test('case insensitive (wildcard)', t => {
+  t.plan(5)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.get('/foo/*', (req, reply) => {
+    t.strictEqual(req.params['*'], 'bAr/baZ')
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), {
+        hello: 'world'
+      })
+    })
+  })
+})

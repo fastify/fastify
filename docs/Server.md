@@ -147,13 +147,12 @@ Internally Fastify uses the API of Node core http server, so if you are using a 
 
 By default, value equal to `true`, routes are registered as case sensitive. That is, `/foo` is not equivalent to `/Foo`. When set to `false`, routes are registered in a fashion such that `/foo` is equivalent to `/Foo` which is equivalent to `/FOO`.
 
-Setting `caseSensitive` to `false` will also result in
-all params (and all value matched by regexps) to be lowercased as well.
+By setting `caseSensitive` to `false`, all paths will be matched as lowercase, but the route parameters or wildcards will maintain their original letter casing.
 
 ```js
 fastify.get('/user/:username', (request, reply) => {
-  // Given the URL: /user/NodeJS
-  console.log(request.params.username) // -> 'nodejs'
+  // Given the URL: /USER/NodeJS
+  console.log(request.params.username) // -> 'NodeJS'
 })
 ```
 

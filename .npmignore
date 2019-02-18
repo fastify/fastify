@@ -1,11 +1,13 @@
+.editorconfig
+.gitattributes
+.gitignore
 .github
-tools/
+.nyc_output
 .travis.yml
+coverage/
+tools/
 azure-pipelines-npm-template.yml
 azure-pipelines-yarn-template.yml
 azure-pipelines.yml
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
-.editorconfig
-.gitattributes
-.gitignore

@@ -417,7 +417,7 @@ server.setErrorHandler((err, request, reply) => {
 server.listen(3000, err => {
   if (err) throw err
   const address = server.server.address()
-  if (typeof address === 'object') {
+  if (address && typeof address === 'object') {
     server.log.info(`server listening on ${address.port}`)
   } else {
     server.log.info(`server listening on ${address}`)

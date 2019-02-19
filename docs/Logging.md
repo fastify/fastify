@@ -71,6 +71,33 @@ const fastify = require('fastify')({
   }
 })
 ```
+For example, the response payload can be logged using the approach below
+
+```js
+const fastify = require('fastify')({
+  logger: {
+    prettyPrint: true,
+    serializers: {
+      res(res) {
+        // the default
+        return {
+          statusCode: res.statusCode
+        }
+      },
+      req(req) {
+        return {
+          method: req.method,
+          url: req.url,
+          path: req.path,
+          parameters: req.parameters,
+          body: req.body,
+          headers: req.headers,
+        };
+      },
+    },
+  },
+});
+```
 
 *This option will be ignored by any logger other than Pino.*
 
@@ -121,32 +148,6 @@ const fastify = Fastify({
     }
   }
 })
-```
-
-```js
-const fastify = require('fastify')({
-  logger: {
-    prettyPrint: true,
-    serializers: {
-      res(res) {
-        // the default
-        return {
-          statusCode: res.statusCode
-        }
-      },
-      req(req) {
-        return {
-          method: req.method,
-          url: req.url,
-          path: req.path,
-          parameters: req.parameters,
-          body: req.body,
-          headers: req.headers,
-        };
-      },
-    },
-  },
-});
 ```
 
 See https://getpino.io/#/docs/redaction for more details.

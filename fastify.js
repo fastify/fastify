@@ -284,11 +284,14 @@ function build (options) {
 
   function routeHandler (req, res, params, context) {
     if (closing === true) {
-      res.writeHead(503, {
+      const headers = {
         'Content-Type': 'application/json',
-        'Content-Length': '80',
-        'Connection': 'close'
-      })
+        'Content-Length': '80'
+      }
+      if (req.httpVersionMajor !== 2) {
+        headers.Connection = 'close'
+      }
+      res.writeHead(503, headers)
       res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
       setImmediate(() => req.destroy())
       return

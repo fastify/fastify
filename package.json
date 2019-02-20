@@ -134,7 +134,8 @@
     "ignore": [
       "boom",
       "joi",
-      "@types/node"
+      "@types/node",
+      "tap-mocha-reporter"
     ]
   }
 }

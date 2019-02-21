@@ -648,8 +648,9 @@ test('a decorator should addSchema to all the encapsulated tree', t => {
   fastify.register(fp(decorator))
 
   fastify.register(function (instance, opts, next) {
-    instance.register(async (subInstance) => {
+    instance.register((subInstance, opts, next) => {
       subInstance.decoratorAddSchema()
+      next()
     })
     next()
   })

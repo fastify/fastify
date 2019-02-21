@@ -45,6 +45,15 @@ test('listen accepts a port, address, and callback', t => {
   })
 })
 
+test('listen accepts an options and callback', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.listen({ port: 0, host: 'localhost' }, (err) => {
+    t.error(err)
+  })
+})
+
 test('listen accepts a port, address and a callback with (err, address)', t => {
   t.plan(2)
   const fastify = Fastify()

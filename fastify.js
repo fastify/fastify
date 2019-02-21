@@ -329,7 +329,39 @@ function build (options) {
     }
   }
 
-  function listenPromise (port, address, backlog) {
+  function normalizeListenArgs (args) {
+    if (args.length === 0) {
+      return { port: 0, host: 'localhost' }
+    }
+
+    const cb = typeof args[args.length - 1] === 'function' ? args.pop() : undefined
+    const options = { cb: cb }
+
+    const firstArg = args[0]
+    const argsLength = args.length
+    const lastArg = args[argsLength - 1]
+    /* Deal with listen (options) || (handle[, backlog]) */
+    if (typeof firstArg === 'object' && firstArg !== null) {
+      options.backlog = argsLength > 1 ? lastArg : undefined
+      Object.assign(options, firstArg)
+    } else if (typeof firstArg === 'string' && Number(firstArg) >= 0) {
+      /* Deal with listen (pipe[, backlog]) */
+      options.path = firstArg
+      options.backlog = argsLength > 1 ? lastArg : undefined
+    } else {
+      /* Deal with listen ([port[, host[, backlog]]]) */
+      options.port = argsLength >= 1 && firstArg ? firstArg : 0
+      // This will listen to what localhost is.
+      // It can be 127.0.0.1 or ::1, depending on the operating system.
+      // Fixes https://github.com/fastify/fastify/issues/1022.
+      options.host = argsLength >= 2 && args[1] ? args[1] : 'localhost'
+      options.backlog = argsLength >= 3 ? args[2] : undefined
+    }
+
+    return options
+  }
+
+  function listenPromise (listenOptions) {
     if (listening) {
       return Promise.reject(new Error('Fastify is already listening'))
     }
@@ -344,7 +376,7 @@ function build (options) {
         server.once('error', errEventHandler)
       })
       var listen = new Promise((resolve, reject) => {
-        server.listen(port, address, backlog, () => {
+        server.listen(listenOptions, () => {
           server.removeListener('error', errEventHandler)
           resolve(logServerAddress(server.address(), options.https))
         })
@@ -359,31 +391,12 @@ function build (options) {
     })
   }
 
-  function listen (port, address, backlog, cb) {
-    /* Deal with listen (cb) */
-    if (typeof port === 'function') {
-      cb = port
-      port = 0
-    }
+  function listen () {
+    const listenOptions = normalizeListenArgs(Array.from(arguments))
+    const cb = listenOptions.cb
+    delete listenOptions.cb
 
-    /* Deal with listen (port, cb) */
-    if (typeof address === 'function') {
-      cb = address
-      address = undefined
-    }
-
-    // This will listen to what localhost is.
-    // It can be 127.0.0.1 or ::1, depending on the operating system.
-    // Fixes https://github.com/fastify/fastify/issues/1022.
-    address = address || 'localhost'
-
-    /* Deal with listen (port, address, cb) */
-    if (typeof backlog === 'function') {
-      cb = backlog
-      backlog = undefined
-    }
-
-    if (cb === undefined) return listenPromise(port, address, backlog)
+    if (cb === undefined) return listenPromise(listenOptions)
 
     fastify.ready(function (err) {
       if (err != null) return cb(err)
@@ -393,11 +406,7 @@ function build (options) {
       }
 
       server.once('error', wrap)
-      if (backlog) {
-        server.listen(port, address, backlog, wrap)
-      } else {
-        server.listen(port, address, wrap)
-      }
+      server.listen(listenOptions, wrap)
 
       listening = true
     })
@@ -405,7 +414,7 @@ function build (options) {
     function wrap (err) {
       server.removeListener('error', wrap)
       if (!err) {
-        address = logServerAddress(server.address(), options.https)
+        const address = logServerAddress(server.address(), options.https)
         cb(null, address)
       } else {
         listening = false

@@ -344,7 +344,7 @@ function build (options) {
     if (typeof firstArg === 'object' && firstArg !== null) {
       options.backlog = argsLength > 1 ? lastArg : undefined
       Object.assign(options, firstArg)
-    } else if (typeof firstArg === 'string' && Number(firstArg) >= 0) {
+    } else if (typeof firstArg === 'string' && isNaN(firstArg)) {
       /* Deal with listen (pipe[, backlog]) */
       options.path = firstArg
       options.backlog = argsLength > 1 ? lastArg : undefined

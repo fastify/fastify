@@ -247,7 +247,83 @@ function build (options) {
 
   fastify.setErrorHandler = setErrorHandler
 
+  // Set fastify initial configuration options read-only object
+  fastify.initialConfig = getSecuredInitialConfig()
+
   return fastify
+
+  function getSecuredInitialConfig () {
+    // We clone the initial configuration options object
+    let rawOptions = Object.assign({}, options)
+
+    let initialConfig = filterInitialConfig(rawOptions)
+
+    return deepFreezeObject(initialConfig)
+
+    function deepFreezeObject (object) {
+      let properties = Object.getOwnPropertyNames(object)
+
+      for (const name of properties) {
+        let value = object[name]
+
+        if (typeof value !== 'object' || Buffer.isBuffer(value)) {
+          continue
+        }
+
+        object[name] = value && typeof value === 'object' ? deepFreezeObject(value) : value
+      }
+
+      return Object.freeze(object)
+    }
+
+    function filterInitialConfig (opts) {
+      let config = {}
+      let properties = Object.getOwnPropertyNames(opts)
+
+      for (const name of properties) {
+        if (name === 'https') {
+          let value = opts[name]
+
+          if (!value.hasOwnProperty('allowHTTP1')) {
+            config[name] = true
+            continue
+          }
+
+          config[name] = Object.assign({}, { allowHTTP1: value.allowHTTP1 })
+          continue
+        }
+
+        if (name === 'genReqId' || name === 'querystringParser' || name === 'versioning') {
+          config[name] = 'custom'
+          continue
+        }
+
+        if (name === 'serverFactory') {
+          config[name] = true
+          continue
+        }
+
+        if (name === 'trustProxy' && typeof opts[name] === 'function') {
+          config[name] = 'custom'
+          continue
+        }
+
+        if (name === 'logger') {
+          if (typeof opts[name] === 'object' && opts[name].hasOwnProperty('level')) {
+            config[name] = Object.assign({}, { level: opts[name].level })
+            continue
+          } else {
+            config[name] = typeof opts[name] !== 'boolean' ? 'custom' : opts[name]
+            continue
+          }
+        }
+
+        config[name] = opts[name]
+      }
+
+      return config
+    }
+  }
 
   function getTrustProxyFn () {
     const tp = options.trustProxy

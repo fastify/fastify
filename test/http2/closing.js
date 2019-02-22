@@ -24,7 +24,6 @@ fastify.listen(0, err => {
 
     const url = `http://127.0.0.1:${fastify.server.address().port}`
     http2.connect(url, function () {
-      fastify.close()
       this.request({
         ':method': 'GET',
         ':path': '/'
@@ -42,6 +41,7 @@ fastify.listen(0, err => {
         // we are not interested in this error that might
         // happen or not
       })
+      fastify.close()
     })
   })
 })

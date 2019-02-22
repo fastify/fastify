@@ -293,7 +293,10 @@ function build (options) {
       }
       res.writeHead(503, headers)
       res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
-      setImmediate(() => req.destroy())
+      if (req.httpVersionMajor !== 2) {
+        // This is not needed in HTTP/2
+        setImmediate(() => req.destroy())
+      }
       return
     }
 

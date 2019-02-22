@@ -631,3 +631,30 @@ test('nested plugins can override things', t => {
     t.equal(fastify[symbols.kReply].prototype.test, rootFunc)
   })
 })
+
+test('a decorator should addSchema to all the encapsulated tree', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  const decorator = function (instance, opts, next) {
+    instance.decorate('decoratorAddSchema', function (whereAddTheSchema) {
+      instance.addSchema({
+        $id: 'schema',
+        type: 'string'
+      })
+    })
+    next()
+  }
+
+  fastify.register(fp(decorator))
+
+  fastify.register(function (instance, opts, next) {
+    instance.register((subInstance, opts, next) => {
+      subInstance.decoratorAddSchema()
+      next()
+    })
+    next()
+  })
+
+  fastify.ready(t.error)
+})

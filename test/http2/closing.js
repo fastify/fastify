@@ -24,7 +24,6 @@ fastify.listen(0, err => {
 
     const url = `http://localhost:${fastify.server.address().port}`
     http2.connect(url, function () {
-      fastify.close()
       this.request({
         ':method': 'GET',
         ':path': '/'
@@ -32,6 +31,7 @@ fastify.listen(0, err => {
         t.strictEqual(headers[':status'], 503)
         this.destroy()
       })
+      fastify.close()
     })
   })
 })

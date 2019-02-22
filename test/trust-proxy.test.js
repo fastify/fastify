@@ -18,15 +18,15 @@ const sgetForwardedRequest = (app, forHeader, path) => {
 
 const testRequestValues = (t, req, options) => {
   if (options.ip) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
+    t.ok(req.ip, 'ip is defined')
+    t.equal(req.ip, options.ip, 'gets ip from x-forwarder-for')
   }
   if (options.hostname) {
-    t.ok(req.raw.hostname, 'hostname is defined')
-    t.equal(req.raw.hostname, options.hostname, 'gets hostname from x-forwarded-host')
+    t.ok(req.hostname, 'hostname is defined')
+    t.equal(req.hostname, options.hostname, 'gets hostname from x-forwarded-host')
   }
   if (options.ips) {
-    t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
+    t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarder-for')
   }
 }
 

@@ -271,15 +271,17 @@ function build (options) {
   }
 
   function _handleTrustProxy (req) {
-    req.ip = proxyAddr(req, proxyFn)
-    req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip !== undefined) {
-      req.hostname = req.headers['x-forwarded-host']
+    var ip = proxyAddr(req, proxyFn)
+    var ips = proxyAddr.all(req, proxyFn)
+    var hostname
+    if (ip !== undefined) {
+      hostname = req.headers['x-forwarded-host']
     }
+    return { ip: ip, ips: ips, hostname: hostname }
   }
 
   function _ipAsRemoteAddress (req) {
-    req.ip = req.connection.remoteAddress
+    return { ip: req.connection.remoteAddress }
   }
 
   function routeHandler (req, res, params, context) {
@@ -298,8 +300,9 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    handleTrustProxy(req)
-    req.hostname = req.hostname || req.headers['host']
+    var trustProxyResult = handleTrustProxy(req)
+    var hostname = trustProxyResult.hostname || req.hostname || req.headers['host']
+    // req.hostname = req.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 
@@ -307,7 +310,7 @@ function build (options) {
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, req.log)
+    var request = new context.Request(params, req, query, req.headers, req.log, trustProxyResult.ip, trustProxyResult.ips, hostname)
     var reply = new context.Reply(res, context, request, res.log)
 
     if (hasLogger === true || context.onResponse !== null) {

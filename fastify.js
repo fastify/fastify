@@ -259,9 +259,9 @@ function build (options) {
 
     let initialConfig = initialConfigValidation(rawOptions)
 
-    return deepFreezeObject (initialConfig)
+    return deepFreezeObject(initialConfig)
 
-    function deepFreezeObject(object) {
+    function deepFreezeObject (object) {
       let properties = Object.getOwnPropertyNames(object)
 
       for (const name of properties) {

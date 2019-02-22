@@ -257,25 +257,7 @@ function build (options) {
     // We clone the initial configuration options object
     let rawOptions = Object.assign({}, options)
 
-    let initialConfig = initialConfigValidation(rawOptions)
-
-    return deepFreezeObject(initialConfig)
-
-    function deepFreezeObject (object) {
-      let properties = Object.getOwnPropertyNames(object)
-
-      for (const name of properties) {
-        let value = object[name]
-
-        if (typeof value !== 'object' || Buffer.isBuffer(value)) {
-          continue
-        }
-
-        object[name] = value && typeof value === 'object' ? deepFreezeObject(value) : value
-      }
-
-      return Object.freeze(object)
-    }
+    return initialConfigValidation(rawOptions)
   }
 
   function getTrustProxyFn () {

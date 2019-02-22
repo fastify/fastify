@@ -91,19 +91,22 @@ test('Fastify.initialConfig should expose all options', t => {
 })
 
 test('Should throw if you try to modify Fastify.initialConfig', t => {
-  t.plan(1)
+  t.plan(4)
 
   const fastify = Fastify({ ignoreTrailingSlash: true })
   try {
     fastify.initialConfig.ignoreTrailingSlash = false
     t.fail()
   } catch (error) {
+    t.type(error, TypeError)
+    t.equal(error.message, "Cannot assign to read only property 'ignoreTrailingSlash' of object '#<Object>'")
+    t.ok(error.stack)
     t.pass()
   }
 })
 
 test('We must avoid shallow freezing and ensure that the whole object is freezed', t => {
-  t.plan(1)
+  t.plan(4)
 
   const fastify = Fastify({
     https: {
@@ -117,6 +120,9 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     fastify.initialConfig.https.allowHTTP1 = false
     t.fail()
   } catch (error) {
+    t.type(error, TypeError)
+    t.equal(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
+    t.ok(error.stack)
     t.pass()
   }
 })

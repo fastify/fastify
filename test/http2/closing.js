@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
 const http2 = require('http2')
+const semver = require('semver')
 
 let fastify
 try {
@@ -19,7 +20,8 @@ fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
 
-  test('http/2 request while fastify closing', t => {
+  // Skipped because there is likely a bug on Node 8.
+  test('http/2 request while fastify closing', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
     const url = `http://127.0.0.1:${fastify.server.address().port}`
     const session = http2.connect(url, function () {
       this.request({

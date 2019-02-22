@@ -39,6 +39,7 @@ Welcome to the team! We are happy to have you. Before you start, please complete
   - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
 2. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the collaborators in the [README.md](./README.md) and [package.json](./package.json) files. The collaborator lists are sorted alphabetically; make sure to add your name in the proper order.
 3. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
+4. The person that does the onboarding must add you to the  [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
 
 -----------------------------------------
 

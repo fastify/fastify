@@ -212,7 +212,6 @@ function build (options) {
   fastify[kContentTypeParser] = new ContentTypeParser(fastify[kBodyLimit], options.onProtoPoisoning)
 
   fastify.setSchemaCompiler = setSchemaCompiler
-  fastify.setSchemaCompiler(buildSchemaCompiler())
 
   // plugin
   fastify.register = fastify.use
@@ -642,6 +641,11 @@ function build (options) {
       )
 
       try {
+        if (opts.schemaCompiler == null && _fastify._schemaCompiler == null) {
+          const externalSchemas = _fastify[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
+          _fastify.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
+        }
+
         buildSchema(context, opts.schemaCompiler || _fastify._schemaCompiler, _fastify[kSchemas])
       } catch (error) {
         done(error)

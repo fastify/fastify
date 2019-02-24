@@ -45,7 +45,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
-const initialConfigValidation = require('./lib/initialConfigValidation')
+const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
@@ -249,16 +249,9 @@ function build (options) {
   fastify.setErrorHandler = setErrorHandler
 
   // Set fastify initial configuration options read-only object
-  fastify.initialConfig = getSecuredInitialConfig()
+  fastify.initialConfig = getSecuredInitialConfig(options)
 
   return fastify
-
-  function getSecuredInitialConfig () {
-    // We clone the initial configuration options object
-    let rawOptions = Object.assign({}, options)
-
-    return initialConfigValidation(rawOptions)
-  }
 
   function getTrustProxyFn () {
     const tp = options.trustProxy

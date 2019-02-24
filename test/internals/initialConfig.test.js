@@ -126,3 +126,18 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.pass()
   }
 })
+
+test('Return an error if options do not match the validation schema', t => {
+  t.plan(4)
+
+  try {
+    Fastify({ ignoreTrailingSlash: 'string instead of boolean' })
+
+    t.fail()
+  } catch (error) {
+    t.type(error, Error)
+    t.equal(error.message, 'should be boolean')
+    t.ok(error.stack)
+    t.pass()
+  }
+})

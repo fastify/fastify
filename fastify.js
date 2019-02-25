@@ -271,17 +271,11 @@ function build (options) {
   }
 
   function _handleTrustProxy (req) {
-    var ip = proxyAddr(req, proxyFn)
-    var ips = proxyAddr.all(req, proxyFn)
-    var hostname
-    if (ip !== undefined) {
-      hostname = req.headers['x-forwarded-host']
-    }
-    return { ip: ip, ips: ips, hostname: hostname }
+    return { ip: proxyAddr(req, proxyFn), ips: proxyAddr.all(req, proxyFn), get hostname () { return this.ip !== undefined ? req.headers['x-forwarded-host'] : req.hostname } }
   }
 
   function _ipAsRemoteAddress (req) {
-    return { ip: req.connection.remoteAddress }
+    return { ip: req.connection.remoteAddress, ips: undefined, hostname: undefined }
   }
 
   function routeHandler (req, res, params, context) {
@@ -301,8 +295,7 @@ function build (options) {
 
     req.id = genReqId(req)
     var trustProxyResult = handleTrustProxy(req)
-    var hostname = trustProxyResult.hostname || req.hostname || req.headers['host']
-    // req.hostname = req.hostname || req.headers['host']
+    var hostname = trustProxyResult.hostname || req.headers['host']
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 

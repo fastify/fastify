@@ -47,10 +47,47 @@ fastify.post('/the/url', { schema }, handler)
 
 ### Reuse
 
-TODO $ref + addSchema + encapsulation in action.
+**`$ref-way`**: refer to external schema.
 
 ```js
-TODO
+const addressSchema = S.object()
+  .id('#address')
+  .prop('line1').required()
+  .prop('line2')
+  .prop('country').required()
+  .prop('city').required()
+  .prop('zipcode').required()
+
+const commonSchemas = S.object()
+  .id('https://fastify/demo')
+  .definition('addressSchema', addressSchema.valueOf())
+  .definition('otherSchema', otherSchema.valueOf())
+
+fastify.addSchema(commonSchemas.valueOf())
+
+const bodyJsonSchema = S.object()
+  .prop('residence', S.ref('https://fastify/demo#address')).required()
+  .prop('office', S.ref('https://fastify/demo#/definitions/addressSchema')).required()
+
+const schema = { body: bodyJsonSchema.valueOf() }
+
+fastify.post('/the/url', { schema }, handler)
 ```
+
+
+**`replace-way`**: refer to a shared schema to replace before the validation process.
+
+```js
+const sharedAddressSchema = { ...addressSchema.valueOf(), '$id': 'sharedAddress' }
+fastify.addSchema(sharedAddressSchema)
+
+const bodyJsonSchema = { ...S.object().valueOf(), vacation: 'sharedAddress#' }
+
+const schema = { body: bodyJsonSchema }
+
+fastify.post('/the/url', { schema }, handler)
+```
+
+NB: you can mix up the usage `$ref-way` and the `replace-way` with `fastify.addSchema`.
 
 [fluent-schema-repo]: https://github.com/fastify/fluent-schema

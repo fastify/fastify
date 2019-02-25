@@ -271,7 +271,8 @@ function build (options) {
   }
 
   function _handleTrustProxy (req) {
-    return { ip: proxyAddr(req, proxyFn), ips: proxyAddr.all(req, proxyFn), get hostname () { return this.ip !== undefined ? req.headers['x-forwarded-host'] : req.hostname } }
+    var ip = proxyAddr(req, proxyFn)
+    return { ip: ip, ips: proxyAddr.all(req, proxyFn), hostname: ip !== undefined ? req.headers['x-forwarded-host'] : undefined }
   }
 
   function _ipAsRemoteAddress (req) {

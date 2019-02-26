@@ -47,6 +47,12 @@ fastify.post('/the/url', { schema }, handler)
 
 ### Reuse
 
+With `fluent-schema` you can manipulate your schemas in an easier and programmatic way and then reuse them
+thanks to the `addSchema()` method. You can refer to the schema in two different manners that are detailed
+in [Validation-and-Serialization.md](./Validation-and-Serialization.md#adding-a-shared-schema) document.
+
+Here some example usage:
+
 **`$ref-way`**: refer to external schema.
 
 ```js
@@ -57,19 +63,22 @@ const addressSchema = S.object()
   .prop('country').required()
   .prop('city').required()
   .prop('zipcode').required()
+  .valueOf()
 
 const commonSchemas = S.object()
   .id('https://fastify/demo')
-  .definition('addressSchema', addressSchema.valueOf())
-  .definition('otherSchema', otherSchema.valueOf())
+  .definition('addressSchema', addressSchema)
+  .definition('otherSchema', otherSchema) // you can add any schemas you need
+  .valueOf()
 
-fastify.addSchema(commonSchemas.valueOf())
+fastify.addSchema(commonSchemas)
 
 const bodyJsonSchema = S.object()
   .prop('residence', S.ref('https://fastify/demo#address')).required()
   .prop('office', S.ref('https://fastify/demo#/definitions/addressSchema')).required()
+  .valueOf()
 
-const schema = { body: bodyJsonSchema.valueOf() }
+const schema = { body: bodyJsonSchema }
 
 fastify.post('/the/url', { schema }, handler)
 ```
@@ -78,10 +87,26 @@ fastify.post('/the/url', { schema }, handler)
 **`replace-way`**: refer to a shared schema to replace before the validation process.
 
 ```js
-const sharedAddressSchema = { ...addressSchema.valueOf(), '$id': 'sharedAddress' }
+const sharedAddressSchema = {
+  $id: 'sharedAddress',
+  type: 'object',
+  required: ['line1', 'country', 'city', 'zipcode'],
+  properties: {
+    line1: { type: 'string' },
+    line2: { type: 'string' },
+    country: { type: 'string' },
+    city: { type: 'string' },
+    zipcode: { type: 'string' }
+  }
+}
 fastify.addSchema(sharedAddressSchema)
 
-const bodyJsonSchema = { ...S.object().valueOf(), vacation: 'sharedAddress#' }
+const bodyJsonSchema = {
+  type: 'object',
+  properties: {
+    vacation: 'sharedAddress#'
+  }
+}
 
 const schema = { body: bodyJsonSchema }
 

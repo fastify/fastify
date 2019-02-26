@@ -141,3 +141,20 @@ test('Return an error if options do not match the validation schema', t => {
     t.pass()
   }
 })
+
+test('Original options must not be frozen', t => {
+  t.plan(2)
+
+  const originalOptions = {
+    https: {
+      allowHTTP1: true,
+      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+    }
+  }
+
+  Fastify(originalOptions)
+
+  t.strictEqual(Object.isFrozen(originalOptions), false)
+  t.strictEqual(Object.isFrozen(originalOptions.https), false)
+})

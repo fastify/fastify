@@ -596,12 +596,16 @@ function build (options) {
       if (path === '/' && prefix.length > 0) {
         // Ensure that '/prefix' + '/' gets registered as '/prefix'
         afterRouteAdded('', notHandledErr, done)
+
+        if (!opts.prefixRootOnly) {
+          afterRouteAdded(path, notHandledErr, done)
+        }
       } else if (path[0] === '/' && prefix.endsWith('/')) {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
-        path = path.slice(1)
+        afterRouteAdded(path.slice(1), notHandledErr, done)
+      } else {
+        afterRouteAdded(path, notHandledErr, done)
       }
-
-      afterRouteAdded(path, notHandledErr, done)
     })
 
     // chainable api

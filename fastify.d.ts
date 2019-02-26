@@ -242,10 +242,11 @@ declare namespace fastify {
     preSerialization?:
       FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
-  schemaCompiler?: SchemaCompiler
+    schemaCompiler?: SchemaCompiler
     bodyLimit?: number
     logLevel?: string
     config?: any
+    prefixRootOnly?: boolean
   }
 
   /**

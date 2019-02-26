@@ -453,3 +453,39 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: fa
     t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
+
+test('matches only /prefix  with a / route - prefixRootOnly: true, ignoreTrailingSlash: false', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreTrailingSlash: false
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      prefixRootOnly: true,
+      handler: async ({ user }, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(JSON.parse(res.payload).statusCode, 404)
+  })
+})

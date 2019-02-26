@@ -143,7 +143,7 @@ test('Return an error if options do not match the validation schema', t => {
 })
 
 test('Original options must not be frozen', t => {
-  t.plan(2)
+  t.plan(4)
 
   const originalOptions = {
     https: {
@@ -153,8 +153,10 @@ test('Original options must not be frozen', t => {
     }
   }
 
-  Fastify(originalOptions)
+  const fastify = Fastify(originalOptions)
 
   t.strictEqual(Object.isFrozen(originalOptions), false)
   t.strictEqual(Object.isFrozen(originalOptions.https), false)
+  t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
+  t.strictEqual(Object.isFrozen(fastify.initialConfig.https), true)
 })

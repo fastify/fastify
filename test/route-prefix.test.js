@@ -465,7 +465,7 @@ test('matches only /prefix  with a / route - prefixRootOnly: true, ignoreTrailin
       method: 'GET',
       url: '/',
       prefixRootOnly: true,
-      handler: async ({ user }, reply) => {
+      handler: ({ user }, reply) => {
         reply.send({ hello: 'world' })
       }
     })

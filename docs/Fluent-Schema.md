@@ -6,13 +6,19 @@ The [Validation and Serialization](https://github.com/fastify/fastify/blob/maste
 has explained all the parameter accepted by Fastify to set a JSON Schema Validation, to validates
 the input, and a JSON Schema Serialization to optimize the output.
 
-To set up the schemas of our Fastify application, we can use [`fluent-schema`][fluent-schema-repo]
-to simplify this task.
+To set up the JSON schemas of our Fastify application, we can use [`fluent-schema`][fluent-schema-repo]
+to simplify this task and reuse constants values.
 
 ### Basic settings
 
 ```js
 const S = require('fluent-schema')
+
+// You can have an object like this, or query a db to get the values
+const MY_KEY = {
+  KEY1: 'ONE',
+  KEY2: 'TWO'
+}
 
 const bodyJsonSchema = S.object()
   .prop('someKey', S.string())
@@ -21,7 +27,7 @@ const bodyJsonSchema = S.object()
   .prop('nullableKey', S.mixed([S.TYPES.NUMBER, S.TYPES.NULL]))
   .prop('multipleTypesKey', S.mixed([S.TYPES.BOOLEAN, S.TYPES.NUMBER]))
   .prop('multipleRestrictedTypesKey', S.oneOf([S.string().maxLength(5), S.number().minimum(10)]))
-  .prop('enumKey', S.enum(['John', 'Foo']))
+  .prop('enumKey', S.enum(Object.values(MY_KEYS)))
   .prop('notTypeKey', S.not(S.array()))
 
 const queryStringJsonSchema = S.object()

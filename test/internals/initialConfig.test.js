@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const pino = require('pino')
+const deepClone = require('rfdc')({ circles: true, proto: false })
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -172,13 +173,7 @@ test('Original options must not be altered (test deep cloning)', t => {
     }
   }
 
-  const originalOptionsClone = {
-    https: {
-      allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
-    }
-  }
+  const originalOptionsClone = deepClone(originalOptions)
 
   const fastify = Fastify(originalOptions)
 

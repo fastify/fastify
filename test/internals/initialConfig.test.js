@@ -6,7 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const pino = require('pino')
-const deepClone = require('rfdc')({ circles: true, proto: false })
+const deepClone = require('rfdc')({ circles: false, proto: false })
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -163,7 +163,7 @@ test('Original options must not be frozen', t => {
 })
 
 test('Original options must not be altered (test deep cloning)', t => {
-  t.plan(2)
+  t.plan(3)
 
   const originalOptions = {
     https: {
@@ -181,5 +181,6 @@ test('Original options must not be altered (test deep cloning)', t => {
   t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
 
   // originalOptions must not have been altered
-  t.deepEqual(originalOptions, originalOptionsClone)
+  t.deepEqual(originalOptions.https.key, originalOptionsClone.https.key)
+  t.deepEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
 })

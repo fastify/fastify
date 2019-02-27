@@ -160,3 +160,31 @@ test('Original options must not be frozen', t => {
   t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
   t.strictEqual(Object.isFrozen(fastify.initialConfig.https), true)
 })
+
+test('Original options must not be altered (test deep cloning)', t => {
+  t.plan(2)
+
+  const originalOptions = {
+    https: {
+      allowHTTP1: true,
+      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+    }
+  }
+
+  const originalOptionsClone = {
+    https: {
+      allowHTTP1: true,
+      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+    }
+  }
+
+  const fastify = Fastify(originalOptions)
+
+  // initialConfig has been triggered
+  t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
+
+  // originalOptions must not have been altered
+  t.deepEqual(originalOptions, originalOptionsClone)
+})

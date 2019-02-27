@@ -6,7 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const pino = require('pino')
-const deepClone = require('rfdc')({ circles: false, proto: false })
+const deepClone = require('rfdc')({ circles: true, proto: false })
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)

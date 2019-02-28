@@ -108,7 +108,6 @@ function build (options) {
   const setupResponseListeners = Reply.setupResponseListeners
 
   // logger utils
-  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
 
   const avvio = Avvio(fastify, {
@@ -270,15 +269,6 @@ function build (options) {
     return proxyAddr.compile(tp || [])
   }
 
-  function _handleTrustProxy (req) {
-    var ip = proxyAddr(req, proxyFn)
-    return { ip: ip, ips: proxyAddr.all(req, proxyFn), hostname: ip !== undefined ? req.headers['x-forwarded-host'] : undefined }
-  }
-
-  function _ipAsRemoteAddress (req) {
-    return { ip: req.connection.remoteAddress, ips: undefined, hostname: undefined }
-  }
-
   function routeHandler (req, res, params, context) {
     if (closing === true) {
       const headers = {
@@ -295,8 +285,19 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    var trustProxyResult = handleTrustProxy(req)
-    var hostname = trustProxyResult.hostname || req.headers['host']
+
+    var hostname = req.headers['host']
+    var ip = req.connection.remoteAddress
+    var ips
+
+    if (options.trustProxy) {
+      ip = proxyAddr(req, proxyFn)
+      ips = proxyAddr.all(req, proxyFn)
+      if (ip !== undefined) {
+        hostname = req.headers['x-forwarded-host']
+      }
+    }
+
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 
@@ -304,7 +305,7 @@ function build (options) {
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, req.log, trustProxyResult.ip, trustProxyResult.ips, hostname)
+    var request = new context.Request(params, req, query, req.headers, req.log, ip, ips, hostname)
     var reply = new context.Reply(res, context, request, res.log)
 
     if (hasLogger === true || context.onResponse !== null) {

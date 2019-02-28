@@ -61,6 +61,8 @@ function build (options) {
     throw new TypeError('Options must be an object')
   }
 
+  const trustProxy = options.trustProxy
+
   var log
   var hasLogger = true
   if (isValidLogger(options.logger)) {
@@ -249,24 +251,23 @@ function build (options) {
   return fastify
 
   function getTrustProxyFn () {
-    const tp = options.trustProxy
-    if (typeof tp === 'function') {
-      return tp
+    if (typeof trustProxy === 'function') {
+      return trustProxy
     }
-    if (tp === true) {
+    if (trustProxy === true) {
       // Support plain true/false
       return function () { return true }
     }
-    if (typeof tp === 'number') {
+    if (typeof trustProxy === 'number') {
       // Support trusting hop count
-      return function (a, i) { return i < tp }
+      return function (a, i) { return i < trustProxy }
     }
-    if (typeof tp === 'string') {
+    if (typeof trustProxy === 'string') {
       // Support comma-separated tps
-      const vals = tp.split(',').map(it => it.trim())
+      const vals = trustProxy.split(',').map(it => it.trim())
       return proxyAddr.compile(vals)
     }
-    return proxyAddr.compile(tp || [])
+    return proxyAddr.compile(trustProxy || [])
   }
 
   function routeHandler (req, res, params, context) {
@@ -290,7 +291,7 @@ function build (options) {
     var ip = req.connection.remoteAddress
     var ips
 
-    if (options.trustProxy) {
+    if (trustProxy) {
       ip = proxyAddr(req, proxyFn)
       ips = proxyAddr.all(req, proxyFn)
       if (ip !== undefined) {

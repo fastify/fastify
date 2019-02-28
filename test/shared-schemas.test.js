@@ -1122,3 +1122,108 @@ test('Use shared schema and $ref to /definitions', t => {
     t.deepEqual(JSON.parse(res.payload), payload)
   })
 })
+
+test('Cross shared schema reference', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.addSchema({ $id: 'item', type: 'object', properties: { foo: { type: 'string' } } })
+  fastify.addSchema({
+    $id: 'itemList',
+    type: 'array',
+    items: 'item#'
+  })
+
+  fastify.post('/post', { schema: { body: 'itemList#', response: { 200: 'item#' } } }, () => { })
+  fastify.get('/get', { schema: { body: 'itemList#', response: { 200: 'item#' } } }, () => { })
+
+  fastify.ready(t.error)
+})
+
+test('Cross shared schema reference with unused shared schema', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.addSchema({ $id: 'item', type: 'object', properties: { foo: { type: 'string' } } })
+  fastify.addSchema({
+    $id: 'itemList',
+    type: 'array',
+    items: 'item#'
+  })
+
+  fastify.get('/get', { schema: { response: { 200: 'item#' } } }, () => { })
+  fastify.ready(t.error)
+})
+
+test('Cross shared schema reference with multiple references', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.addSchema({ $id: 'item', type: 'object', properties: { foo: { type: 'string' } } })
+
+  // This schema is not used
+  fastify.addSchema({
+    $id: 'itemList',
+    type: 'array',
+    items: 'item#'
+  })
+
+  const multipleRefReplaceWay = {
+    type: 'object',
+    properties: {
+      a: 'item#',
+      b: 'item#'
+    }
+  }
+
+  fastify.get('/get', { schema: { response: { 200: multipleRefReplaceWay } } }, () => { })
+  fastify.post('/post', { schema: { body: multipleRefReplaceWay, response: { 200: multipleRefReplaceWay } } }, () => { })
+
+  fastify.ready(t.error)
+})
+
+test('Cross shared schema reference with encapsulation references', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.addSchema({ $id: 'item', type: 'object', properties: { foo: { type: 'string' } } })
+  fastify.addSchema({
+    $id: 'itemList',
+    type: 'array',
+    items: 'item#'
+  })
+
+  fastify.register((instance, opts, next) => {
+    // this schema is not used
+    instance.addSchema({
+      $id: 'encapsulation',
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        item: 'item#',
+        secondItem: 'item#'
+      }
+    })
+
+    const multipleRefReplaceWay = {
+      type: 'object',
+      properties: {
+        a: 'itemList#',
+        b: 'item#',
+        c: 'item#',
+        d: 'item#'
+      }
+    }
+
+    instance.post('/post', { schema: { body: multipleRefReplaceWay, response: { 200: multipleRefReplaceWay } } }, () => { })
+    instance.post('/double', { schema: { response: { 200: 'encapsulation#' } } }, () => { })
+    instance.get('/get', { schema: { response: { 200: multipleRefReplaceWay } } }, () => { })
+    instance.get('/double-get', { schema: { body: multipleRefReplaceWay, response: { 200: multipleRefReplaceWay } } }, () => { })
+    next()
+  }, { prefix: '/foo' })
+
+  fastify.post('/post', { schema: { body: 'item#', response: { 200: 'item#' } } }, () => { })
+  fastify.get('/get', { schema: { body: 'item#', response: { 200: 'item#' } } }, () => { })
+
+  fastify.ready(t.error)
+})

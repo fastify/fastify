@@ -129,7 +129,7 @@
     "ajv": "^6.9.2",
     "avvio": "^6.1.0",
     "bourne": "^1.1.2",
-    "fast-json-stringify": "^1.11.1",
+    "fast-json-stringify": "^1.11.2",
     "find-my-way": "^2.0.0",
     "flatstr": "^1.0.9",
     "light-my-request": "^3.2.0",

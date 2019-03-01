@@ -44,6 +44,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 #### [Community](#community)
 
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
+- [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds 405 HTTP status to your routes
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for development servers which require babel transformations of JavaScript sources.

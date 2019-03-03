@@ -40,7 +40,7 @@ fastify.register(require('fastify-foo'), {
 })
 ```
 
-Functions in the `options` parameter are also supported and will be evaluated at the time the plugin is registered while giving access to the fastify instance via the first positional argument:
+The `options` parameter can also be a `Function` which will be evaluated at the time the plugin is registered while giving access to the fastify instance via the first positional argument:
 
 ```js
 fastify.register((fastify, opts, next) => {

@@ -53,7 +53,7 @@ fastify.register((fastify, opts, next) => {
 fastify.register(require('fastify-foo'), parent => parent.foo_bar)
 ```
 
-The fastify instance passed on to the function is the latest state of the **global fastify instance** allowing access to variables injected via `decorate` by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin f.e. utilizing an existing database connection to wrap around it.
+The fastify instance passed on to the function is the latest state of the **external fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin f.e. utilizing an existing database connection to wrap around it.
 
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option

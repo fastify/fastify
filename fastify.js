@@ -299,6 +299,10 @@ function build (options) {
       }
     }
 
+    req.hostname = hostname
+    req.ip = ip
+    req.ips = ips
+
     req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
 

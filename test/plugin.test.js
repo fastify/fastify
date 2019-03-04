@@ -82,7 +82,6 @@ test('fastify.register with fastify-plugin should provide access to external fas
 
     instance.register((i, o, n) => {
       i.decorate('test_2', () => {})
-      t.ok(i.test)
       n()
     })
 
@@ -98,14 +97,14 @@ test('fastify.register with fastify-plugin should provide access to external fas
     instance.register(fp((i, o, n) => {
       t.ok(i.test_2)
       n()
-    }), p => p.decorate('test_2', () => {}))
+    }), p => p.decorate('test_2', () => 'hello'))
 
     instance.register((i, o, n) => {
-      i.decorate('test_2', () => {})
+      i.decorate('test_2', () => 'world')
       n()
     }, p => p.get('/', (req, reply) => {
-      t.ok(instance.test_2)
-      reply.send({ hello: 'world' })
+      t.ok(p.test_2)
+      reply.send({ hello: p.test_2() })
     }))
 
     t.notOk(instance.test)
@@ -114,6 +113,7 @@ test('fastify.register with fastify-plugin should provide access to external fas
     // the decoration is added at the end
     instance.after(() => {
       t.ok(instance.test)
+      t.strictEqual(instance.test_2(), 'hello')
     })
 
     next()

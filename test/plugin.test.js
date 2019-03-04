@@ -100,17 +100,17 @@ test('fastify.register with fastify-plugin should provide access to external fas
       n()
     }), p => p.decorate('test_2', () => {}))
 
+    instance.register((i, o, n) => n(), p => p.get('/', (req, reply) => {
+      t.ok(instance.test)
+      reply.send({ hello: 'world' })
+    }))
+
     t.notOk(instance.test)
     t.notOk(instance.test_2)
 
     // the decoration is added at the end
     instance.after(() => {
       t.ok(instance.test)
-    })
-
-    instance.get('/', (req, reply) => {
-      t.ok(instance.test)
-      reply.send({ hello: 'world' })
     })
 
     next()

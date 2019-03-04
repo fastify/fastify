@@ -291,7 +291,7 @@ fastify.register(require('your-plugin'), parent => {
   return { connection: parent.db, otherOption: 'foo-bar' }
 })
 ```
-In the above example, the `parent` variable of the function passed in as the second argument of `register` is a reference to the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
+In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
 
 <a name="handle-errors"></a>
 ## Handle errors

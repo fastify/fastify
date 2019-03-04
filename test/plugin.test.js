@@ -63,13 +63,13 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
 })
 
 test('fastify.register with fastify-plugin should provide access to external fastify instance if opts argument is a function', t => {
-  t.plan(20)
+  t.plan(22)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
     instance.register(fp((i, o, n) => {
-      i.decorate('test', () => {})
-      t.ok(i.test)
+      i.decorate('global', () => {})
+      t.ok(i.global)
       n()
     }))
 
@@ -77,50 +77,52 @@ test('fastify.register with fastify-plugin should provide access to external fas
       t.notOk(p === instance || p === fastify)
       t.ok(instance.isPrototypeOf(p))
       t.ok(fastify.isPrototypeOf(p))
-      t.ok(p.test)
+      t.ok(p.global)
     })
 
     instance.register((i, o, n) => {
-      i.decorate('test_2', () => {})
+      i.decorate('local', () => {})
       n()
     })
 
-    instance.register((i, o, n) => n(), p => t.notOk(p.test_2))
+    instance.register((i, o, n) => n(), p => t.notOk(p.local))
 
     instance.register((i, o, n) => {
-      t.ok(i.test_2)
+      t.ok(i.local)
       n()
-    }, p => p.decorate('test_2', () => {}))
+    }, p => p.decorate('local', () => {}))
 
-    instance.register((i, o, n) => n(), p => t.notOk(p.test_2))
+    instance.register((i, o, n) => n(), p => t.notOk(p.local))
 
     instance.register(fp((i, o, n) => {
-      t.ok(i.test_2)
+      t.ok(i.global_2)
       n()
-    }), p => p.decorate('test_2', () => 'hello'))
+    }), p => p.decorate('global_2', () => 'hello'))
 
     instance.register((i, o, n) => {
-      i.decorate('test_2', () => 'world')
+      i.decorate('global_2', () => 'world')
       n()
     }, p => p.get('/', (req, reply) => {
-      t.ok(p.test_2)
-      reply.send({ hello: p.test_2() })
+      t.ok(p.global_2)
+      reply.send({ hello: p.global_2() })
     }))
 
-    t.notOk(instance.test)
-    t.notOk(instance.test_2)
+    t.notOk(instance.global)
+    t.notOk(instance.global_2)
+    t.notOk(instance.local)
 
     // the decoration is added at the end
     instance.after(() => {
-      t.ok(instance.test)
-      t.strictEqual(instance.test_2(), 'hello')
+      t.ok(instance.global)
+      t.strictEqual(instance.global_2(), 'hello')
+      t.notOk(instance.local)
     })
 
     next()
   })
 
   fastify.ready(() => {
-    t.notOk(fastify.test)
+    t.notOk(fastify.global)
   })
 
   fastify.listen(0, err => {

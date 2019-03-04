@@ -299,6 +299,7 @@ function build (options) {
       }
     }
 
+    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
     req.hostname = hostname
     req.ip = ip
     req.ips = ips

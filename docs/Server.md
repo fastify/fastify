@@ -348,6 +348,17 @@ fastify.listen(3000, '127.0.0.1', 511, (err, address) => {
 })
 ```
 
+Specifying options is also supported:
+
+```js
+fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
+```
+
 If no callback is provided a Promise is returned:
 
 ```js
@@ -363,6 +374,17 @@ Specifying an address without a callback is also supported:
 
 ```js
 fastify.listen(3000, '127.0.0.1')
+  .then((address) => console.log(`server listening on ${address}`))
+  .catch(err => {
+    console.log('Error starting server:', err)
+    process.exit(1)
+  })
+```
+
+Specifying options without a callback is also supported:
+
+```js
+fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 })
   .then((address) => console.log(`server listening on ${address}`))
   .catch(err => {
     console.log('Error starting server:', err)

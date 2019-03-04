@@ -294,7 +294,7 @@ function build (options) {
     if (trustProxy) {
       ip = proxyAddr(req, proxyFn)
       ips = proxyAddr.all(req, proxyFn)
-      if (ip !== undefined) {
+      if (ip !== undefined && req.headers['x-forwarded-host']) {
         hostname = req.headers['x-forwarded-host']
       }
     }

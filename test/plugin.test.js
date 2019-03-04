@@ -63,7 +63,7 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
 })
 
 test('fastify.register with fastify-plugin should provide access to external fastify instance if opts argument is a function', t => {
-  t.plan(16)
+  t.plan(20)
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
@@ -88,7 +88,20 @@ test('fastify.register with fastify-plugin should provide access to external fas
 
     instance.register((i, o, n) => n(), p => t.notOk(p.test_2))
 
+    instance.register((i, o, n) => {
+      t.ok(i.test_2)
+      n()
+    }, p => p.decorate('test_2', () => {}))
+
+    instance.register((i, o, n) => n(), p => t.notOk(p.test_2))
+
+    instance.register(fp((i, o, n) => {
+      t.ok(i.test_2)
+      n()
+    }), p => p.decorate('test_2', () => {}))
+
     t.notOk(instance.test)
+    t.notOk(instance.test_2)
 
     // the decoration is added at the end
     instance.after(() => {

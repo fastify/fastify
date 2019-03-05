@@ -49,7 +49,15 @@ test('listen accepts options and a callback', t => {
   t.plan(1)
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
-  fastify.listen({ port: 0, host: 'localhost' }, (err) => {
+  fastify.listen({
+    port: 0,
+    host: 'localhost',
+    backlog: 511,
+    exclusive: false,
+    readableAll: false,
+    writableAll: false,
+    ipv6Only: false
+  }, (err) => {
     t.error(err)
   })
 })

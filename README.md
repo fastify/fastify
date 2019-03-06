@@ -120,19 +120,19 @@ Code for Fastify's **v1.x** is in [Branch 1.x](https://github.com/fastify/fastif
 
 ### Benchmarks
 
-__Machine:__ MacBook Pro (Late 2016 | 2,7 GHz Intel Core i7 | 16 GB 2133 MHz LPDDR3)
+__Machine:__ EX41S-SSD, Intel Core i7, 4Ghz, 64GB RAM, 4C/8T, SSD.
 
-__Method:__: `autocannon -c 100 -d 5 -p 10 localhost:3000` * 2, taking the second average
+__Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the second average
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| hapi               | 17.8.1                     | &#10003;     | 26,497        |
-| Express            | 4.16.4                     | &#10003;     | 26,481        |
-| Restify            | 7.2.3                      | &#10003;     | 22,968        |
-| Koa                | 2.6.2                      | &#10007;     | 35,796        |
-| **Fastify**        | **1.13.1**                 | **&#10003;** | **45,846**    |
+| hapi               | 18.1.0                     | &#10003;     | 29,998        |
+| Express            | 4.16.4                     | &#10003;     | 38,510        |
+| Restify            | 8.0.0                      | &#10003;     | 39,331        |
+| Koa                | 2.7.0                      | &#10007;     | 50,933        |
+| **Fastify**        | **2.0.0**                  | **&#10003;** | **76,835**    |
 | -                  |                            |              |               |
-| `http.Server`      | 10.13.0	                  | &#10007;     | 43,542\*      |
+| `http.Server`      | 10.15.2	                  | &#10007;     | 71,768        |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework
@@ -192,6 +192,7 @@ Team members are listed in alphabetical order.
 * [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
 * [__Cemre Mengu__](https://github.com/cemremengu), <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Evan Shortiss__](https://github.com/evanshortiss), <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
+* [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 * [__Nathan Woltman__](https://github.com/nwoltman), <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 

@@ -18,25 +18,58 @@ const sgetForwardedRequest = (app, forHeader, path) => {
 
 const testRequestValues = (t, req, options) => {
   if (options.ip) {
-    t.ok(req.raw.ip, 'ip is defined')
-    t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
+    if (options.addPropertiesToNodeReq) {
+      t.ok(req.raw.ip, 'ip is defined')
+      t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
+    }
     t.ok(req.ip, 'ip is defined')
     t.equal(req.ip, options.ip, 'gets ip from x-forwarder-for')
   }
   if (options.hostname) {
-    t.ok(req.raw.hostname, 'hostname is defined')
-    t.equal(req.raw.hostname, options.hostname, 'gets hostname from x-forwarded-host')
+    if (options.addPropertiesToNodeReq) {
+      t.ok(req.raw.hostname, 'hostname is defined')
+      t.equal(req.raw.hostname, options.hostname, 'gets hostname from x-forwarded-host')
+    }
     t.ok(req.hostname, 'hostname is defined')
     t.equal(req.hostname, options.hostname, 'gets hostname from x-forwarded-host')
   }
   if (options.ips) {
-    t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
+    if (options.addPropertiesToNodeReq) {
+      t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
+    }
     t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarder-for')
   }
 }
 
-test('trust proxy', (t) => {
+test('trust proxy, add properties to node req', (t) => {
   t.plan(15)
+  const addPropertiesToNodeReq = true
+  const app = fastify({
+    trustProxy: true,
+    addPropertiesToNodeReq
+  })
+  app.get('/trustproxy', function (req, reply) {
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', addPropertiesToNodeReq })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+
+  app.get('/trustproxychain', function (req, reply) {
+    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'], addPropertiesToNodeReq })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+
+  t.tearDown(app.close.bind(app))
+
+  app.listen(0, (err) => {
+    app.server.unref()
+    t.error(err)
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain')
+  })
+})
+
+test('trust proxy, not add properties to node req', (t) => {
+  t.plan(8)
   const app = fastify({
     trustProxy: true
   })
@@ -61,7 +94,7 @@ test('trust proxy', (t) => {
 })
 
 test('trust proxy chain', (t) => {
-  t.plan(5)
+  t.plan(3)
   const app = fastify({
     trustProxy: ['127.0.0.1', '192.168.1.1']
   })
@@ -81,7 +114,7 @@ test('trust proxy chain', (t) => {
 })
 
 test('trust proxy function', (t) => {
-  t.plan(5)
+  t.plan(3)
   const app = fastify({
     trustProxy: (address) => address === '127.0.0.1'
   })
@@ -100,7 +133,7 @@ test('trust proxy function', (t) => {
 })
 
 test('trust proxy number', (t) => {
-  t.plan(7)
+  t.plan(4)
   const app = fastify({
     trustProxy: 1
   })
@@ -119,7 +152,7 @@ test('trust proxy number', (t) => {
 })
 
 test('trust proxy IP addresses', (t) => {
-  t.plan(7)
+  t.plan(4)
   const app = fastify({
     trustProxy: '127.0.0.1, 2.2.2.2'
   })

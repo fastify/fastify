@@ -15,9 +15,7 @@ test('handlers receive correct `this` context', (t) => {
   plugin[Symbol.for('skip-override')] = true
 
   const instance = fastify()
-  instance.register(plugin, (err) => {
-    if (err) t.threw(err)
-  })
+  instance.register(plugin)
 
   instance.get('/', function (req, reply) {
     t.ok(this.foo)

@@ -262,6 +262,26 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="factory-modify-core-objects"></a>
+### `modifyCoreObjects`
+
+By enabling the `modifyCoreObjects` option, Fastify will set `ip`, `ips`, and `hostname` to Node's request object. And set `log` to Node's request and response objects for logging. The consequence of enabling this option is these properties will be available in the `raw` object of Fastify's Request. For example, `ip`, `ips`, and `hostname` values can be accessed from raw `request`.
+
+```js
+const fastify = Fastify({ modifyCoreObjects: true })
+
+fastify.get('/', (request, reply) => {
+  console.log(request.raw.ip)
+  console.log(request.raw.ips)
+  console.log(request.raw.hostname)
+})
+```
+
++ Default: `false`
++ `true/false`: add properties `ip`, `ips`, `hostname`, and `log` to Node's request object and only `log` to Node's response object  (`true`) or leave Node's request and response objects alone (`false`).
+
+
+
 ## Instance
 
 ### Server Methods

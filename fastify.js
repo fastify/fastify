@@ -61,6 +61,9 @@ function build (options) {
     throw new TypeError('Options must be an object')
   }
 
+  const trustProxy = options.trustProxy
+  const modifyCoreObjects = options.modifyCoreObjects === true
+
   var log
   var hasLogger = true
   if (isValidLogger(options.logger)) {
@@ -108,7 +111,6 @@ function build (options) {
   const setupResponseListeners = Reply.setupResponseListeners
 
   // logger utils
-  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const proxyFn = getTrustProxyFn()
 
   const avvio = Avvio(fastify, {
@@ -249,36 +251,23 @@ function build (options) {
   return fastify
 
   function getTrustProxyFn () {
-    const tp = options.trustProxy
-    if (typeof tp === 'function') {
-      return tp
+    if (typeof trustProxy === 'function') {
+      return trustProxy
     }
-    if (tp === true) {
+    if (trustProxy === true) {
       // Support plain true/false
       return function () { return true }
     }
-    if (typeof tp === 'number') {
+    if (typeof trustProxy === 'number') {
       // Support trusting hop count
-      return function (a, i) { return i < tp }
+      return function (a, i) { return i < trustProxy }
     }
-    if (typeof tp === 'string') {
+    if (typeof trustProxy === 'string') {
       // Support comma-separated tps
-      const vals = tp.split(',').map(it => it.trim())
+      const vals = trustProxy.split(',').map(it => it.trim())
       return proxyAddr.compile(vals)
     }
-    return proxyAddr.compile(tp || [])
-  }
-
-  function _handleTrustProxy (req) {
-    req.ip = proxyAddr(req, proxyFn)
-    req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip !== undefined) {
-      req.hostname = req.headers['x-forwarded-host']
-    }
-  }
-
-  function _ipAsRemoteAddress (req) {
-    req.ip = req.connection.remoteAddress
+    return proxyAddr.compile(trustProxy || [])
   }
 
   function routeHandler (req, res, params, context) {
@@ -300,17 +289,38 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    handleTrustProxy(req)
-    req.hostname = req.hostname || req.headers['host']
-    req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
+
+    var hostname = req.headers['host']
+    var ip = req.connection.remoteAddress
+    var ips
+
+    if (trustProxy) {
+      ip = proxyAddr(req, proxyFn)
+      ips = proxyAddr.all(req, proxyFn)
+      if (ip !== undefined && req.headers['x-forwarded-host']) {
+        hostname = req.headers['x-forwarded-host']
+      }
+    }
+
+    var logger = log.child({ reqId: req.id, level: context.logLevel })
+
+    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
+    if (modifyCoreObjects) {
+      req.hostname = hostname
+      req.ip = ip
+      req.ips = ips
+
+      req.log = res.log = logger
+    }
+
     req.originalUrl = req.url
 
-    req.log.info({ req }, 'incoming request')
+    logger.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, req.log)
-    var reply = new context.Reply(res, context, request, res.log)
+    var request = new context.Request(params, req, query, req.headers, logger, ip, ips, hostname)
+    var reply = new context.Reply(res, context, request, logger)
 
     if (hasLogger === true || context.onResponse !== null) {
       setupResponseListeners(reply)
@@ -726,9 +736,9 @@ function build (options) {
   function defaultErrorHandler (error, request, reply) {
     var res = reply.res
     if (res.statusCode >= 500) {
-      res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
+      reply.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
     } else if (res.statusCode >= 400) {
-      res.log.info({ res: res, err: error }, error && error.message)
+      reply.log.info({ res: res, err: error }, error && error.message)
     }
     reply.send(error)
   }
@@ -874,13 +884,18 @@ function build (options) {
     // here, let's print out as much info as
     // we can
     req.id = genReqId(req)
-    req.log = res.log = log.child({ reqId: req.id })
+
+    var logger = log.child({ reqId: req.id })
+    if (modifyCoreObjects) {
+      req.log = res.log = logger
+    }
+
     req.originalUrl = req.url
 
-    req.log.info({ req }, 'incoming request')
+    logger.info({ req }, 'incoming request')
 
-    var request = new Request(null, req, null, req.headers, req.log)
-    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
+    var request = new Request(null, req, null, req.headers, logger)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, logger)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     request.log.warn(fourOhFour.prettyPrint())

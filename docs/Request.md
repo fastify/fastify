@@ -10,6 +10,9 @@ Request is a core Fastify object containing the following fields:
 - `raw` - the incoming HTTP request from Node core *(you can use the alias `req`)*
 - `id` - the request id
 - `log` - the logger instance of the incoming request
+- `ip` - the ip of the incoming request
+- `ips` - the ips from x-forwarder-for of the incoming request
+- `hostname` - the hostname of the incoming request
 
 ```js
 fastify.post('/:params', options, function (request, reply) {
@@ -19,6 +22,9 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.headers)
   console.log(request.raw)
   console.log(request.id)
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.hostname)
   request.log.info('some info')
 })
 ```

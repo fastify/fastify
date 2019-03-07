@@ -615,7 +615,7 @@ test('Should set the log level for the customized 500 handler', t => {
     })
 
     instance.setErrorHandler(function (e, request, reply) {
-      reply.res.log.fatal('Hello')
+      reply.log.fatal('Hello')
       reply.code(500).send()
     })
     next()

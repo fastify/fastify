@@ -62,7 +62,7 @@ function build (options) {
   }
 
   const trustProxy = options.trustProxy
-  const optAddToNodeReq = options.addPropertiesToNodeReq === true
+  const modifyCoreObjects = options.modifyCoreObjects === true
 
   var log
   var hasLogger = true
@@ -305,7 +305,7 @@ function build (options) {
     var logger = log.child({ reqId: req.id, level: context.logLevel })
 
     // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
-    if (optAddToNodeReq) {
+    if (modifyCoreObjects) {
       req.hostname = hostname
       req.ip = ip
       req.ips = ips
@@ -886,7 +886,7 @@ function build (options) {
     req.id = genReqId(req)
 
     var logger = log.child({ reqId: req.id })
-    if (optAddToNodeReq) {
+    if (modifyCoreObjects) {
       req.log = res.log = logger
     }
 

@@ -18,7 +18,7 @@ const sgetForwardedRequest = (app, forHeader, path) => {
 
 const testRequestValues = (t, req, options) => {
   if (options.ip) {
-    if (options.addPropertiesToNodeReq) {
+    if (options.modifyCoreObjects) {
       t.ok(req.raw.ip, 'ip is defined')
       t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
     }
@@ -26,7 +26,7 @@ const testRequestValues = (t, req, options) => {
     t.equal(req.ip, options.ip, 'gets ip from x-forwarder-for')
   }
   if (options.hostname) {
-    if (options.addPropertiesToNodeReq) {
+    if (options.modifyCoreObjects) {
       t.ok(req.raw.hostname, 'hostname is defined')
       t.equal(req.raw.hostname, options.hostname, 'gets hostname from x-forwarded-host')
     }
@@ -34,7 +34,7 @@ const testRequestValues = (t, req, options) => {
     t.equal(req.hostname, options.hostname, 'gets hostname from x-forwarded-host')
   }
   if (options.ips) {
-    if (options.addPropertiesToNodeReq) {
+    if (options.modifyCoreObjects) {
       t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
     }
     t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarder-for')
@@ -43,18 +43,18 @@ const testRequestValues = (t, req, options) => {
 
 test('trust proxy, add properties to node req', (t) => {
   t.plan(15)
-  const addPropertiesToNodeReq = true
+  const modifyCoreObjects = true
   const app = fastify({
     trustProxy: true,
-    addPropertiesToNodeReq
+    modifyCoreObjects
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', addPropertiesToNodeReq })
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', modifyCoreObjects })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'], addPropertiesToNodeReq })
+    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'], modifyCoreObjects })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 

@@ -192,7 +192,8 @@ declare namespace fastify {
         empty() : void
       },
       deriveVersion<Context>(req: Object, ctx?: Context) : String,
-    }
+    },
+    modifyCoreObjects: boolean
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

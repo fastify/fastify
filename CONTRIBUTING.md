@@ -29,6 +29,18 @@ Declaring formal releases remains the prerogative of the project maintainers.
 
 This is an experiment and feedback is welcome! This document may also be subject to pull-requests or changes by contributors where you believe you have something valuable to add or change.
 
+## Onboarding Collaborators
+
+> This section pertains to Fastify collaborators
+
+Welcome to the team! We are happy to have you. Before you start, please complete the following tasks:
+1. Set up 2 factor authentication for GitHub and NPM
+  - [GitHub 2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
+  - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
+2. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the collaborators in the [README.md](./README.md) and [package.json](./package.json) files. The collaborator lists are sorted alphabetically; make sure to add your name in the proper order.
+3. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
+4. The person that does the onboarding must add you to the  [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
+
 -----------------------------------------
 
 <a id="developers-certificate-of-origin"></a>

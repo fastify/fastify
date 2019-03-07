@@ -44,6 +44,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 #### [Community](#community)
 
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
+- [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds 405 HTTP status to your routes
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-apollo`](https://github.com/coopnd/fastify-apollo) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for development servers which require babel transformations of JavaScript sources.
@@ -67,6 +68,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect HTTP requests to HTTPS, both using the same port number, or different response on HTTP and HTTPS.
+- [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify InfluxDB plugin connecting to an InfluxDB instance via the Influx default package.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT authentication for fastify-based web apps.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify plugin for support KnexJS Query Builder.

@@ -205,12 +205,13 @@ const fastify = Fastify({ trustProxy: true })
 
 For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
 
-You may also access `ip` and `hostname` values from raw `request`.
+You may access the `ip`, `ips`, and `hostname` values on the [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
-  console.log(request.raw.ip)
-  console.log(request.raw.hostname)
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.hostname)
 })
 ```
 
@@ -265,22 +266,35 @@ const fastify = require('fastify')({
 <a name="factory-modify-core-objects"></a>
 ### `modifyCoreObjects`
 
-By enabling the `modifyCoreObjects` option, Fastify will set `ip`, `ips`, and `hostname` to Node's request object. And set `log` to Node's request and response objects for logging. The consequence of enabling this option is these properties will be available in the `raw` object of Fastify's Request. For example, `ip`, `ips`, and `hostname` values can be accessed from raw `request`.
++ Default: `true`
+
+By default, Fastify will add the `ip`, `ips`, `hostname`, and `log` [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) properties to Node's raw request object and the `log` property to Node's raw response object. Set to `false` to prevent these properties from being added to the Node core objects.
 
 ```js
-const fastify = Fastify({ modifyCoreObjects: true })
+const fastify = Fastify({ modifyCoreObjects: true }) // the default
 
 fastify.get('/', (request, reply) => {
   console.log(request.raw.ip)
   console.log(request.raw.ips)
   console.log(request.raw.hostname)
+  request.raw.log('Hello')
+  reply.res.log('World')
 })
 ```
 
-+ Default: `false`
-+ `true/false`: add properties `ip`, `ips`, `hostname`, and `log` to Node's request object and only `log` to Node's response object  (`true`) or leave Node's request and response objects alone (`false`).
+**Note that these properties are deprecated and will be removed in the next major version of Fastify along with this option.** It is recommended to use the same properties on Fastify's [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead.
 
+```js
+const fastify = Fastify({ modifyCoreObjects: false }) 
 
+fastify.get('/', (request, reply) => {
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.hostname)
+  request.log('Hello')
+  reply.log('World')
+})
+```
 
 ## Instance
 

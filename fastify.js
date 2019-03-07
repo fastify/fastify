@@ -62,7 +62,7 @@ function build (options) {
   }
 
   const trustProxy = options.trustProxy
-  const modifyCoreObjects = options.modifyCoreObjects === true
+  const modifyCoreObjects = options.modifyCoreObjects !== false
 
   var log
   var hasLogger = true

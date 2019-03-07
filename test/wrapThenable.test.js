@@ -17,7 +17,7 @@ test('should reject immediately when reply[kReplySentOverwritten] is true', t =>
   t.plan(1)
   const reply = { res: {} }
   reply[kReplySentOverwritten] = true
-  reply.res.log = {
+  reply.log = {
     error: ({ err }) => {
       t.strictEqual(err.message, 'Reply sent already')
     }

@@ -262,13 +262,13 @@ const fastify = require('fastify')({
 })
 ```
 
-<a name="factory-add-properties-to-node-req"></a>
-### `addPropertiesToNodeReq`
+<a name="factory-modify-core-objects"></a>
+### `modifyCoreObjects`
 
-By enabling the `addPropertiesToNodeReq` option, Fastify will set `ip`, `ips`, and `hostname` to Node's request object. And set `log` to Node's request and response objects for logging. The consequence of enabling this option is these properties will be available in the `raw` object of Fastify's Request. For example, `ip`, `ips`, and `hostname` values can be accessed from raw `request`.
+By enabling the `modifyCoreObjects` option, Fastify will set `ip`, `ips`, and `hostname` to Node's request object. And set `log` to Node's request and response objects for logging. The consequence of enabling this option is these properties will be available in the `raw` object of Fastify's Request. For example, `ip`, `ips`, and `hostname` values can be accessed from raw `request`.
 
 ```js
-const fastify = Fastify({ addPropertiesToNodeReq: true })
+const fastify = Fastify({ modifyCoreObjects: true })
 
 fastify.get('/', (request, reply) => {
   console.log(request.raw.ip)

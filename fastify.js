@@ -62,6 +62,7 @@ function build (options) {
   }
 
   const trustProxy = options.trustProxy
+  const optAddToNodeReq = options.addPropertiesToNodeReq === true
 
   var log
   var hasLogger = true
@@ -299,20 +300,25 @@ function build (options) {
       }
     }
 
-    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
-    req.hostname = hostname
-    req.ip = ip
-    req.ips = ips
+    var logger = log.child({ reqId: req.id, level: context.logLevel })
 
-    req.log = res.log = log.child({ reqId: req.id, level: context.logLevel })
+    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
+    if (optAddToNodeReq) {
+      req.hostname = hostname
+      req.ip = ip
+      req.ips = ips
+
+      req.log = res.log = logger
+    }
+
     req.originalUrl = req.url
 
-    req.log.info({ req }, 'incoming request')
+    logger.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, req.log, ip, ips, hostname)
-    var reply = new context.Reply(res, context, request, res.log)
+    var request = new context.Request(params, req, query, req.headers, logger, ip, ips, hostname)
+    var reply = new context.Reply(res, context, request, logger)
 
     if (hasLogger === true || context.onResponse !== null) {
       setupResponseListeners(reply)
@@ -723,9 +729,9 @@ function build (options) {
   function defaultErrorHandler (error, request, reply) {
     var res = reply.res
     if (res.statusCode >= 500) {
-      res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
+      reply.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
     } else if (res.statusCode >= 400) {
-      res.log.info({ res: res, err: error }, error && error.message)
+      reply.log.info({ res: res, err: error }, error && error.message)
     }
     reply.send(error)
   }
@@ -871,13 +877,18 @@ function build (options) {
     // here, let's print out as much info as
     // we can
     req.id = genReqId(req)
-    req.log = res.log = log.child({ reqId: req.id })
+
+    var logger = log.child({ reqId: req.id })
+    if (optAddToNodeReq) {
+      req.log = res.log = logger
+    }
+
     req.originalUrl = req.url
 
-    req.log.info({ req }, 'incoming request')
+    logger.info({ req }, 'incoming request')
 
-    var request = new Request(null, req, null, req.headers, req.log)
-    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
+    var request = new Request(null, req, null, req.headers, logger)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, logger)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     request.log.warn(fourOhFour.prettyPrint())

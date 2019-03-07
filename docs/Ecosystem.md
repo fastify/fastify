@@ -79,6 +79,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
 - [`fastify-metrics`](https://gitlab.com/m03geek/fastify-metrics) Plugin for exporting [Prometheus](https://prometheus.io) metrics.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
+- [`fastify-multer`](https://github.com/fox1t/multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.

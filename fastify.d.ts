@@ -246,7 +246,7 @@ declare namespace fastify {
     bodyLimit?: number
     logLevel?: string
     config?: any
-    prefixRootOnly?: boolean
+    prefixTrailingSlash?: boolean;
   }
 
   /**

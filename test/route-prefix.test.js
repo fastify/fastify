@@ -423,7 +423,7 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
   })
 })
 
-test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: false', t => {
+test('matches both /prefix and /prefix/ with a / route with prefixTrailingSlash: undefined - ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -454,7 +454,7 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: fa
   })
 })
 
-test('matches only /prefix  with a / route - prefixRootOnly: true, ignoreTrailingSlash: false', t => {
+test('matches only /prefix  with a / route - prefixTrailingSlash: false, ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -464,7 +464,7 @@ test('matches only /prefix  with a / route - prefixRootOnly: true, ignoreTrailin
     fastify.route({
       method: 'GET',
       url: '/',
-      prefixRootOnly: true,
+      prefixTrailingSlash: false,
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -484,6 +484,42 @@ test('matches only /prefix  with a / route - prefixRootOnly: true, ignoreTrailin
   fastify.inject({
     method: 'GET',
     url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(JSON.parse(res.payload).statusCode, 404)
+  })
+})
+
+test('matches only /prefix/  with a / route - prefixTrailingSlash: true, ignoreTrailingSlash: false', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreTrailingSlash: false
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: true,
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix'
   }, (err, res) => {
     t.error(err)
     t.equal(JSON.parse(res.payload).statusCode, 404)

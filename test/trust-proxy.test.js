@@ -20,10 +20,10 @@ const testRequestValues = (t, req, options) => {
   if (options.ip) {
     if (options.modifyCoreObjects) {
       t.ok(req.raw.ip, 'ip is defined')
-      t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarder-for')
+      t.equal(req.raw.ip, options.ip, 'gets ip from x-forwarded-for')
     }
     t.ok(req.ip, 'ip is defined')
-    t.equal(req.ip, options.ip, 'gets ip from x-forwarder-for')
+    t.equal(req.ip, options.ip, 'gets ip from x-forwarded-for')
   }
   if (options.hostname) {
     if (options.modifyCoreObjects) {
@@ -35,9 +35,9 @@ const testRequestValues = (t, req, options) => {
   }
   if (options.ips) {
     if (options.modifyCoreObjects) {
-      t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarder-for')
+      t.deepEqual(req.raw.ips, options.ips, 'gets ips from x-forwarded-for')
     }
-    t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarder-for')
+    t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarded-for')
   }
 }
 

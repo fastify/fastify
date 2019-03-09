@@ -14,9 +14,20 @@ test('Fastify.initialConfig is an object', t => {
   t.type(Fastify().initialConfig, 'object')
 })
 
-test('without options passed to Fastify initialConfig is an empty object', t => {
+test('without options passed to Fastify, initialConfig should exposes default values', t => {
   t.plan(1)
-  t.deepEquals(Fastify().initialConfig, {})
+
+  const fastifyDefaultOptions = {
+    bodyLimit: 1024 * 1024,
+    caseSensitive: true,
+    ignoreTrailingSlash: false,
+    maxParamLength: 100,
+    onProtoPoisoning: 'error',
+    pluginTimeout: 10000,
+    requestIdHeader: 'request-id'
+  }
+
+  t.deepEquals(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
 test('Fastify.initialConfig should expose all options', t => {
@@ -207,7 +218,15 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     fastify = Fastify(originalOptions)
 
     t.type(fastify, 'object')
-    t.deepEqual(fastify.initialConfig, { ignoreTrailingSlash: true })
+    t.deepEqual(fastify.initialConfig, {
+      bodyLimit: 1024 * 1024,
+      caseSensitive: true,
+      ignoreTrailingSlash: true,
+      maxParamLength: 100,
+      onProtoPoisoning: 'error',
+      pluginTimeout: 10000,
+      requestIdHeader: 'request-id'
+    })
   } catch (error) {
     t.fail()
   }

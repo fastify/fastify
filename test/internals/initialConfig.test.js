@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const http = require('http')
 const pino = require('pino')
+const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 
 test('Fastify.initialConfig is an object', t => {
@@ -183,4 +184,28 @@ test('Original options must not be altered (test deep cloning)', t => {
   // originalOptions must not have been altered
   t.deepEqual(originalOptions.https.key, originalOptionsClone.https.key)
   t.deepEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
+})
+
+test('Should not have issues when passing stream options to Pino.js', t => {
+  t.plan(3)
+
+  const stream = split(JSON.parse)
+
+  const originalOptions = {
+    ignoreTrailingSlash: true,
+    logger: {
+      level: 'trace',
+      stream
+    }
+  }
+
+  try {
+    const fastify = Fastify(originalOptions)
+
+    t.type(fastify, 'object')
+    t.deepEqual(fastify.initialConfig, { ignoreTrailingSlash: true })
+    t.pass()
+  } catch (error) {
+    t.fail()
+  }
 })

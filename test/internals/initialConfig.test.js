@@ -187,7 +187,7 @@ test('Original options must not be altered (test deep cloning)', t => {
 })
 
 test('Should not have issues when passing stream options to Pino.js', t => {
-  t.plan(3)
+  t.plan(15)
 
   const stream = split(JSON.parse)
 
@@ -199,13 +199,47 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     }
   }
 
+  let fastify
+
   try {
-    const fastify = Fastify(originalOptions)
+    fastify = Fastify(originalOptions)
 
     t.type(fastify, 'object')
     t.deepEqual(fastify.initialConfig, { ignoreTrailingSlash: true })
-    t.pass()
   } catch (error) {
     t.fail()
   }
+
+  fastify.get('/', function (req, reply) {
+    t.ok(req.log)
+    reply.send({ hello: 'world' })
+  })
+
+  stream.once('data', listenAtLogLine => {
+    t.ok(listenAtLogLine, 'listen at log message is ok')
+
+    stream.once('data', line => {
+      const id = line.reqId
+      t.ok(line.reqId, 'reqId is defined')
+      t.ok(line.req, 'req is defined')
+      t.equal(line.msg, 'incoming request', 'message is set')
+      t.equal(line.req.method, 'GET', 'method is get')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, id)
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'request completed', 'message is set')
+        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        t.ok(line.responseTime, 'responseTime is defined')
+      })
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    http.get('http://localhost:' + fastify.server.address().port)
+  })
 })

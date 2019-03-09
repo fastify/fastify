@@ -130,7 +130,7 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
 })
 
 test('Return an error if options do not match the validation schema', t => {
-  t.plan(7)
+  t.plan(6)
 
   try {
     Fastify({ ignoreTrailingSlash: 'string instead of boolean' })
@@ -141,7 +141,6 @@ test('Return an error if options do not match the validation schema', t => {
     t.equal(error.name, 'FastifyError [FST_ERR_INIT_OPTS_INVALID]')
     t.equal(error.message, `FST_ERR_INIT_OPTS_INVALID: Invalid initialization options: 'should be boolean'`)
     t.equal(error.code, 'FST_ERR_INIT_OPTS_INVALID')
-    t.equal(error.statusCode, 500)
     t.ok(error.stack)
     t.pass()
   }

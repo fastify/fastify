@@ -14,7 +14,7 @@ test('Fastify.initialConfig is an object', t => {
   t.type(Fastify().initialConfig, 'object')
 })
 
-test('without options passed to Fastify, initialConfig should exposes default values', t => {
+test('without options passed to Fastify, initialConfig should expose default values', t => {
   t.plan(1)
 
   const fastifyDefaultOptions = {

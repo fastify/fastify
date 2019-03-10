@@ -71,7 +71,7 @@ const fastify = require('fastify')({
   }
 })
 ```
-For example, the response payload can be logged using the approach below
+For example, the response payload and headers could be logged using the approach below (even if it is *not* recommended*):
 
 ```js
 const fastify = require('fastify')({
@@ -90,12 +90,16 @@ const fastify = require('fastify')({
           url: req.url,
           path: req.path,
           parameters: req.parameters,
+          // Including the body and headers in the log could be in violation 
+          // of privacy laws, e.g. GDPR. You should use the "redact" option to
+          // remove sensitive fields. It could also leak authentication data in
+          // the logs.
           body: req.body,
-          headers: req.headers,
+          headers: req.headers
         };
-      },
-    },
-  },
+      }
+    }
+  }
 });
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
@@ -71,6 +71,10 @@
       "email": "evanshortiss@gmail.com"
     },
     {
+      "name": "Manuel Spigolon",
+      "email": "behemoth89@gmail.com"
+    },
+    {
       "name": "James Sumners",
       "url": "https://james.sumners.info"
     }
@@ -97,6 +101,7 @@
     "eslint-import-resolver-node": "^0.3.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.5.0",
+    "fluent-schema": "^0.6.1",
     "form-data": "^2.3.3",
     "frameguard": "^3.0.0",
     "h2url": "^0.1.2",
@@ -127,7 +132,7 @@
   "dependencies": {
     "abstract-logging": "^1.0.0",
     "ajv": "^6.9.2",
-    "avvio": "^6.1.0",
+    "avvio": "^6.1.1",
     "bourne": "^1.1.2",
     "fast-json-stringify": "^1.11.2",
     "find-my-way": "^2.0.0",

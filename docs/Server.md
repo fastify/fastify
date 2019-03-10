@@ -10,7 +10,7 @@ customize the resulting instance. This document describes the properties
 available in that options object.
 
 <a name="factory-http2"></a>
-### `http2` (Status: experimental)
+### `http2`
 
 If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html) module is used for binding the socket.
 
@@ -131,7 +131,7 @@ const serverFactory = (handler, opts) => {
   return server
 }
 
-const fastify = Fastify({ serverFactory })
+const fastify = Fastify({ serverFactory, modifyCoreObjects: false })
 
 fastify.get('/', (req, reply) => {
   reply.send({ hello: 'world' })
@@ -140,7 +140,8 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.
+Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
+*Note that we have also added `modifyCoreObjects: false` because in some serverless environments such as Google Cloud Functions, some Node.js core properties are not writable.*
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
@@ -205,12 +206,13 @@ const fastify = Fastify({ trustProxy: true })
 
 For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
 
-You may also access `ip` and `hostname` values from raw `request`.
+You may access the `ip`, `ips`, and `hostname` values on the [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
-  console.log(request.raw.ip)
-  console.log(request.raw.hostname)
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.hostname)
 })
 ```
 
@@ -259,6 +261,41 @@ const versioning = {
 
 const fastify = require('fastify')({
   versioning
+})
+```
+
+<a name="factory-modify-core-objects"></a>
+### `modifyCoreObjects`
+
++ Default: `true`
+
+By default, Fastify will add the `ip`, `ips`, `hostname`, and `log` [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) properties to Node's raw request object and the `log` property to Node's raw response object. Set to `false` to prevent these properties from being added to the Node core objects.
+
+```js
+const fastify = Fastify({ modifyCoreObjects: true }) // the default
+
+fastify.get('/', (request, reply) => {
+  console.log(request.raw.ip)
+  console.log(request.raw.ips)
+  console.log(request.raw.hostname)
+  request.raw.log('Hello')
+  reply.res.log('World')
+})
+```
+
+Disable this option could help in serverless environments such as Google Cloud Functions, where `ip` and `ips` are not writable properties.
+
+**Note that these properties are deprecated and will be removed in the next major version of Fastify along with this option.** It is recommended to use the same properties on Fastify's [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead.
+
+```js
+const fastify = Fastify({ modifyCoreObjects: false })
+
+fastify.get('/', (request, reply) => {
+  console.log(request.ip)
+  console.log(request.ips)
+  console.log(request.hostname)
+  request.log('Hello')
+  reply.log('World')
 })
 ```
 

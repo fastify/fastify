@@ -63,10 +63,11 @@ function build (options) {
     options.genReqId = options.logger.genReqId
   }
 
+  const trustProxy = options.trustProxy
+  const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || 'request-id'
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
-  const handleTrustProxy = options.trustProxy ? _handleTrustProxy : _ipAsRemoteAddress
   const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // Instance Fastify components
@@ -82,6 +83,7 @@ function build (options) {
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
 
+  // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)
   const [server, listen] = createServer(options, httpHandler)
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
@@ -154,7 +156,7 @@ function build (options) {
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
-    // Fastify architecture methods
+    // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
     ready: null,
@@ -194,7 +196,7 @@ function build (options) {
     }
   })
 
-  // Install and configurte Avvio
+  // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register
   // - after
@@ -249,17 +251,36 @@ function build (options) {
     }
 
     req.id = genReqId(req)
-    handleTrustProxy(req)
-    req.hostname = req.hostname || req.headers['host']
-    req.log = res.log = logger.child({ reqId: req.id, level: context.logLevel })
     req.originalUrl = req.url
+    var hostname = req.headers['host']
+    var ip = req.connection.remoteAddress
+    var ips
 
-    req.log.info({ req }, 'incoming request')
+    if (trustProxy) {
+      ip = proxyAddr(req, proxyFn)
+      ips = proxyAddr.all(req, proxyFn)
+      if (ip !== undefined && req.headers['x-forwarded-host']) {
+        hostname = req.headers['x-forwarded-host']
+      }
+    }
+
+    var childLogger = logger.child({ reqId: req.id, level: context.logLevel })
+
+    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
+    if (modifyCoreObjects) {
+      req.hostname = hostname
+      req.ip = ip
+      req.ips = ips
+
+      req.log = res.log = childLogger
+    }
+
+    childLogger.info({ req }, 'incoming request')
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, req.log)
-    var reply = new context.Reply(res, context, request, res.log)
+    var request = new context.Request(params, req, query, req.headers, childLogger, ip, ips, hostname)
+    var reply = new context.Reply(res, context, request, childLogger)
 
     if (hasLogger === true || context.onResponse !== null) {
       setupResponseListeners(reply)
@@ -309,18 +330,6 @@ function build (options) {
     } else {
       handleRequest(null, reply.request, reply)
     }
-  }
-
-  function _handleTrustProxy (req) {
-    req.ip = proxyAddr(req, proxyFn)
-    req.ips = proxyAddr.all(req, proxyFn)
-    if (req.ip !== undefined) {
-      req.hostname = req.headers['x-forwarded-host']
-    }
-  }
-
-  function _ipAsRemoteAddress (req) {
-    req.ip = req.connection.remoteAddress
   }
 
   function throwIfAlreadyStarted (msg) {
@@ -548,6 +557,7 @@ function build (options) {
     }
   }
 
+  // wrapper tha we expose to the user for middlewares handling
   function use (url, fn) {
     throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
     if (typeof url === 'string') {
@@ -565,6 +575,7 @@ function build (options) {
     }
   }
 
+  // wrapper that we expose to the user for hooks handling
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
@@ -588,6 +599,7 @@ function build (options) {
     }
   }
 
+  // wrapper that we expose to the user for schemas handling
   function addSchema (schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
     this[kSchemas].add(schema)
@@ -624,13 +636,16 @@ function build (options) {
     // here, let's print out as much info as
     // we can
     req.id = genReqId(req)
-    req.log = res.log = logger.child({ reqId: req.id })
     req.originalUrl = req.url
+    var childLogger = logger.child({ reqId: req.id })
+    if (modifyCoreObjects) {
+      req.log = res.log = childLogger
+    }
 
-    req.log.info({ req }, 'incoming request')
+    childLogger.info({ req }, 'incoming request')
 
-    var request = new Request(null, req, null, req.headers, req.log)
-    var reply = new Reply(res, { onSend: [], onError: [] }, request, res.log)
+    var request = new Request(null, req, null, req.headers, childLogger)
+    var reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
     request.log.warn(fourOhFour.prettyPrint())
@@ -736,6 +751,7 @@ function build (options) {
     fourOhFour.all(prefix || '/', routeHandler, context)
   }
 
+  // wrapper that we expose to the user for schemas compiler handling
   function setSchemaCompiler (schemaCompiler) {
     throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
 
@@ -743,6 +759,7 @@ function build (options) {
     return this
   }
 
+  // wrapper that we expose to the user for configure the custom error handler
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
@@ -798,7 +815,7 @@ function validateBodyLimitOption (bodyLimit) {
   }
 }
 
-// Function that runs the magic.
+// Function that runs the encapsulation magic.
 // Everything that need to be encapsulated must be handled in this function.
 function override (old, fn, opts) {
   const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)

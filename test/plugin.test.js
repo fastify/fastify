@@ -62,6 +62,85 @@ test('fastify.register with fastify-plugin should not incapsulate his code', t =
   })
 })
 
+test('fastify.register with fastify-plugin should provide access to external fastify instance if opts argument is a function', t => {
+  t.plan(22)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.register(fp((i, o, n) => {
+      i.decorate('global', () => {})
+      t.ok(i.global)
+      n()
+    }))
+
+    instance.register((i, o, n) => n(), p => {
+      t.notOk(p === instance || p === fastify)
+      t.ok(instance.isPrototypeOf(p))
+      t.ok(fastify.isPrototypeOf(p))
+      t.ok(p.global)
+    })
+
+    instance.register((i, o, n) => {
+      i.decorate('local', () => {})
+      n()
+    })
+
+    instance.register((i, o, n) => n(), p => t.notOk(p.local))
+
+    instance.register((i, o, n) => {
+      t.ok(i.local)
+      n()
+    }, p => p.decorate('local', () => {}))
+
+    instance.register((i, o, n) => n(), p => t.notOk(p.local))
+
+    instance.register(fp((i, o, n) => {
+      t.ok(i.global_2)
+      n()
+    }), p => p.decorate('global_2', () => 'hello'))
+
+    instance.register((i, o, n) => {
+      i.decorate('global_2', () => 'world')
+      n()
+    }, p => p.get('/', (req, reply) => {
+      t.ok(p.global_2)
+      reply.send({ hello: p.global_2() })
+    }))
+
+    t.notOk(instance.global)
+    t.notOk(instance.global_2)
+    t.notOk(instance.local)
+
+    // the decoration is added at the end
+    instance.after(() => {
+      t.ok(instance.global)
+      t.strictEqual(instance.global_2(), 'hello')
+      t.notOk(instance.local)
+    })
+
+    next()
+  })
+
+  fastify.ready(() => {
+    t.notOk(fastify.global)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
 test('fastify.register with fastify-plugin registers root level plugins', t => {
   t.plan(15)
   const fastify = Fastify()

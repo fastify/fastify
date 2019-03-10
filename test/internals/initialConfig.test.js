@@ -8,6 +8,7 @@ const http = require('http')
 const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
+const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -263,4 +264,35 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
     http.get('http://localhost:' + fastify.server.address().port)
   })
+})
+
+test('deepFreezeObject() should not throw on TypedArray', t => {
+  t.plan(5)
+
+  const object = {
+    buffer: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+    dataView: new DataView(new ArrayBuffer(16)),
+    float: 1.1,
+    integer: 1,
+    object: {
+      nested: { string: 'string' }
+    },
+    stream: split(JSON.parse),
+    string: 'string'
+  }
+
+  try {
+    const frozenObject = deepFreezeObject(object)
+
+    // Buffers should not be frozen, as they are Uint8Array inherited instances
+    t.strictEqual(Object.isFrozen(frozenObject.buffer), false)
+
+    t.strictEqual(Object.isFrozen(frozenObject), true)
+    t.strictEqual(Object.isFrozen(frozenObject.object), true)
+    t.strictEqual(Object.isFrozen(frozenObject.object.nested), true)
+
+    t.pass()
+  } catch (error) {
+    t.fail()
+  }
 })

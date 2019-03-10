@@ -45,6 +45,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const loggerUtils = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
+const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
 
@@ -247,6 +248,9 @@ function build (options) {
   fastify.setNotFoundHandler() // Set the default 404 handler
 
   fastify.setErrorHandler = setErrorHandler
+
+  // Set fastify initial configuration options read-only object
+  fastify.initialConfig = getSecuredInitialConfig(options)
 
   return fastify
 

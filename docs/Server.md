@@ -566,3 +566,80 @@ fastify.ready(() => {
   //   └── hello/world (GET)
 })
 ```
+
+<a name="initial-config"></a>
+#### initialConfig
+
+`fastify.initialConfig`: Exposes a frozen read-only object registering the initial
+options passed down by the user to the fastify instance.
+
+Currently the properties that can be exposed are:
+- bodyLimit
+- caseSensitive
+- http2
+- https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if explicitly passed)
+- ignoreTrailingSlash
+- maxParamLength
+- onProtoPoisoning
+- pluginTimeout
+- requestIdHeader
+
+```js
+const { readFileSync } = require('fs')
+const Fastify = require('fastify')
+
+const fastify = Fastify({
+  https: {
+    allowHTTP1: true,
+    key: readFileSync('./fastify.key'),
+    cert: readFileSync('./fastify.cert')
+  },
+  logger: { level: 'trace'},
+  ignoreTrailingSlash: true,
+  maxParamLength: 200,
+  caseSensitive: true,
+  trustProxy: '127.0.0.1,192.168.1.1/24',
+})
+
+console.log(fastify.initialConfig)
+/*
+will log :
+{
+  caseSensitive: true,
+  https: { allowHTTP1: true },
+  ignoreTrailingSlash: true,
+  maxParamLength: 200
+}
+*/
+
+fastify.register(async (instance, opts) => {
+  instance.get('/', async (request, reply) => {
+    return instance.initialConfig
+    /*
+    will return :
+    {
+      caseSensitive: true,
+      https: { allowHTTP1: true },
+      ignoreTrailingSlash: true,
+      maxParamLength: 200
+    }
+    */
+  })
+
+  instance.get('/error', async (request, reply) => {
+    // will throw an error because initialConfig is read-only
+    // and can not be modified
+    instance.initialConfig.https.allowHTTP1 = false
+
+    return instance.initialConfig
+  })
+})
+
+// Start listening.
+fastify.listen(3000, (err) => {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
+```

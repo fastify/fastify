@@ -18,6 +18,7 @@ and properties:
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
 - `.res` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
+- `.log` - the logger instance of the incoming request
 
 ```js
 fastify.get('/', options, function (request, reply) {

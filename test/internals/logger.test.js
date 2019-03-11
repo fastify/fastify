@@ -3,8 +3,6 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const split = require('split2')
-const proxyquire = require('proxyquire')
 const loggerUtils = require('../../lib/logger')
 
 test('time resolution', t => {
@@ -71,39 +69,6 @@ test('The logger should reuse request id header for req.id', t => {
       fastify.close()
       t.end()
     })
-  })
-})
-
-test('The logger should add a timestamp if logging to stdout', t => {
-  t.plan(5)
-
-  const stream = split(JSON.parse)
-  const stub = Object.create(loggerUtils)
-  stub.createLogger = function (opts) {
-    return loggerUtils.createLogger(opts, stream)
-  }
-
-  const Fastify = proxyquire('../..', {
-    './lib/logger': stub
-  })
-  const fastify = Fastify({ logger: true })
-
-  stream.once('data', (line) => {
-    t.equal(line.msg, 'incoming request')
-    stream.once('data', (line) => {
-      t.equal(line.msg, 'Not Found')
-      stream.once('data', (line) => {
-        t.equal(line.msg, 'request completed')
-        t.ok(line.responseTime, 'responseTime exists')
-      })
-    })
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, function (err, res) {
-    t.error(err)
   })
 })
 

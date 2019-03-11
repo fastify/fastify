@@ -268,6 +268,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 
 - `'onClose'`
 - `'onRoute'`
+- `'onEncapsulation''`
 
 <a name="on-close"></a>
 **'onClose'**<br>
@@ -293,6 +294,32 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
+<a name="on-encapsulation"></a>
+**'onEncapsulation'**<br>
+Triggered when Fastify runs its internal logic that enables the encapsulation.<br/>
+This hook can be useful if you are developing a plugin that needs to use the encapsulation functionality of Fastify.
+```js
+fastify.decorate('data', [])
+
+fastify.register(async (instance, opts) => {
+  instance.data.push('hello')
+  console.log(instance.data) // ['hello']
+
+  instance.register(async (instance, opts) => {
+    instance.data.push('world')
+    console.log(instance.data) // ['hello', 'world']
+  })
+})
+
+fastify.register(async (instance, opts) => {
+  console.log(instance.data) // []
+})
+
+fastify.addHook('onEncapsulation', (instance) => {
+  instance.data = instance.data.slice()
+})
+```
+
 <a name="scope"></a>
 ### Scope
 Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.

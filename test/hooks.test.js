@@ -2561,6 +2561,80 @@ test('preSerialization hooks should support encapsulation', t => {
   })
 })
 
+test('onEncapsulation hook should be called / 1', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    next()
+  })
+
+  fastify.addHook('onEncapsulation', instance => {
+    // duck typing for the win!
+    t.ok(instance.addHook)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onEncapsulation hook should be called / 2', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.register((instance, opts, next) => {
+      next()
+    })
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    next()
+  })
+
+  fastify.addHook('onEncapsulation', instance => {
+    // duck typing for the win!
+    t.ok(instance.addHook)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onEncapsulation hook should be called / 3', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.decorate('data', [])
+
+  fastify.register((instance, opts, next) => {
+    instance.data.push(1)
+    instance.register((instance, opts, next) => {
+      instance.data.push(2)
+      t.deepEqual(instance.data, [1, 2])
+      next()
+    })
+    t.deepEqual(instance.data, [1])
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    t.deepEqual(instance.data, [])
+    next()
+  })
+
+  fastify.addHook('onEncapsulation', instance => {
+    instance.data = instance.data.slice()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

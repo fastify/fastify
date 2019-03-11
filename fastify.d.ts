@@ -246,7 +246,7 @@ declare namespace fastify {
     bodyLimit?: number
     logLevel?: string
     config?: any
-    prefixTrailingSlash?: boolean
+    prefixTrailingSlash?: 'slash' | 'no-slash' | 'both'
   }
 
   /**

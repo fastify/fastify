@@ -423,15 +423,20 @@ test('matches both /prefix and /prefix/ with a / route - ignoreTrailingSlash: tr
   })
 })
 
-test('matches both /prefix and /prefix/ with a / route with prefixTrailingSlash: undefined - ignoreTrailingSlash: false', t => {
+test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "both", ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
   })
 
   fastify.register(function (fastify, opts, next) {
-    fastify.get('/', (req, reply) => {
-      reply.send({ hello: 'world' })
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
     })
 
     next()
@@ -454,7 +459,7 @@ test('matches both /prefix and /prefix/ with a / route with prefixTrailingSlash:
   })
 })
 
-test('matches only /prefix  with a / route - prefixTrailingSlash: false, ignoreTrailingSlash: false', t => {
+test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -464,7 +469,7 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: false, ignoreT
     fastify.route({
       method: 'GET',
       url: '/',
-      prefixTrailingSlash: false,
+      prefixTrailingSlash: 'no-slash',
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }
@@ -490,7 +495,7 @@ test('matches only /prefix  with a / route - prefixTrailingSlash: false, ignoreT
   })
 })
 
-test('matches only /prefix/  with a / route - prefixTrailingSlash: true, ignoreTrailingSlash: false', t => {
+test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: false
@@ -500,7 +505,7 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: true, ignoreT
     fastify.route({
       method: 'GET',
       url: '/',
-      prefixTrailingSlash: true,
+      prefixTrailingSlash: 'slash',
       handler: (req, reply) => {
         reply.send({ hello: 'world' })
       }

@@ -594,13 +594,17 @@ function build (options) {
     _fastify.after(function (notHandledErr, done) {
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
-        if (opts.prefixTrailingSlash === undefined) {
-          afterRouteAdded('', notHandledErr, done)
-          afterRouteAdded(path, notHandledErr, done)
-        } else if (!opts.prefixTrailingSlash) {
-          afterRouteAdded('', notHandledErr, done)
-        } else {
-          afterRouteAdded(path, notHandledErr, done)
+        switch (opts.prefixTrailingSlash) {
+          case 'slash':
+            afterRouteAdded(path, notHandledErr, done)
+            break
+          case 'no-slash':
+            afterRouteAdded('', notHandledErr, done)
+            break
+          case 'both':
+          default:
+            afterRouteAdded('', notHandledErr, done)
+            afterRouteAdded(path, notHandledErr, done)
         }
       } else if (path[0] === '/' && prefix.endsWith('/')) {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'

@@ -40,6 +40,25 @@ fastify.register(require('fastify-foo'), {
 })
 ```
 
+The `options` parameter can also be a `Function` which will be evaluated at the time the plugin is registered while giving access to the fastify instance via the first positional argument:
+
+```js
+const fp = require('fastify-plugin')
+
+fastify.register(fp((fastify, opts, next) => {
+  fastify.decorate('foo_bar', { hello: 'world' })
+
+  next()
+}))
+
+// The opts argument of fastify-foo will be { hello: 'world' }
+fastify.register(require('fastify-foo'), parent => parent.foo_bar)
+```
+
+The fastify instance passed on to the function is the latest state of the **external fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin f.e. utilizing an existing database connection to wrap around it.
+
+Keep in mind that the fastify instance passed on to the function is the same as the one that will be passed in to the plugin, a copy of the external fastify instance rather than a reference. Any usage of the instance will behave the same as it would if called within the plugin's function i.e. if `decorate` is called, the decorated variables will be available within the plugin's function unless it was wrapped with [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
+
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option
 If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](https://github.com/fastify/fastify/blob/master/docs/Routes.md#route-prefixing).<br>

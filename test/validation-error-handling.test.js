@@ -1,6 +1,7 @@
 'use strict'
 
 const t = require('tap')
+const Joi = require('joi')
 const Fastify = require('..')
 const test = t.test
 
@@ -250,5 +251,92 @@ test('should handle response validation error with promises', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+  })
+})
+
+test('should return a defined output message parsing AJV errors', t => {
+  t.plan(2)
+
+  const body = {
+    type: 'object',
+    required: ['name', 'work'],
+    properties: {
+      name: { type: 'string' },
+      work: { type: 'string' }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.post('/', { schema: { body } }, function (req, reply) {
+    t.fail()
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: { },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"body should have required property 'name', body should have required property 'work'"}`)
+  })
+})
+
+test('should return a defined output message parsing JOI errors', t => {
+  t.plan(2)
+
+  const body = Joi.object().keys({
+    name: Joi.string().required(),
+    work: Joi.string().required()
+  }).required()
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: { body },
+    schemaCompiler: schema => data => Joi.validate(data, schema)
+  },
+  function (req, reply) {
+    t.fail()
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {},
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"child \\"name\\" fails because [\\"name\\" is required]"}`)
+  })
+})
+
+test('should return a defined output message parsing JOI error details', t => {
+  t.plan(2)
+
+  const body = Joi.object().keys({
+    name: Joi.string().required(),
+    work: Joi.string().required()
+  }).required()
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: { body },
+    schemaCompiler: schema => data => {
+      const validation = Joi.validate(data, schema)
+      return { error: validation.error.details }
+    }
+  },
+  function (req, reply) {
+    t.fail()
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {},
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}`)
   })
 })

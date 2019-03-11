@@ -32,7 +32,10 @@ They need to be in
 * `logLevel`: set log level for this route. See below.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/versioned-routes/docs/Routes.md#version).
-* `prefixRootOnly`: when using a `/` url with a prefix, setting this option to true will register only `/prefix` without trailing slash. (Defaults to `false`)
+* `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
+  * `both` (default): Will register both `/prefix` and `/prefix/`.
+  * `slash`: Will register only `/prefix/`.
+  * `no-slash`: Will register only `/prefix`.
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 
@@ -241,7 +244,7 @@ adding a `/` route will only match `/something/`. If we consider a
 prefix `/something`, adding a `/` route will match both `/something` 
 and `/something/`.
 
-Passing `prefixRootOnly: true` to the route options will match only `/something`.
+See the `prefixTrailingSlash` route option above to change this behaviour.
 
 <a name="custom-log-level"></a>
 ### Custom Log Level

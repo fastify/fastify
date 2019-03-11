@@ -271,6 +271,28 @@ module.exports = fp(dbPlugin)
 ```
 You can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
 
+As we mentioned earlier, Fastify starts loading its plugins __after__ `.listen()`, `.inject()` or `.ready()` are called and as such, __after__ they have been declared. This means that, even though the plugin may inject variables to the external fastify instance via [`decorate`](https://github.com/fastify/fastify/blob/master/docs/Decorators.md), the decorated variables will not be accessible before calling `.listen()`, `.inject()` or `.ready()`.
+
+In case you rely on a variable injected by a preceding plugin and want to pass that in the `options` argument of `register`, you can do so by using a function instead of an object:
+```js
+const fastify = require('fastify')()
+const fp = require('fastify-plugin')
+const dbClient = require('db-client')
+
+function dbPlugin (fastify, opts, next) {
+  dbClient.connect(opts.url, (err, conn) => {
+    fastify.decorate('db', conn)
+    next()
+  })
+}
+
+fastify.register(fp(dbPlugin), { url: 'https://example.com' })
+fastify.register(require('your-plugin'), parent => {
+  return { connection: parent.db, otherOption: 'foo-bar' }
+})
+```
+In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
+
 <a name="handle-errors"></a>
 ## Handle errors
 It can happen that one of your plugins could fail during the startup. Maybe you expect it and you have a custom logic that will be triggered in that case. How can you do this?

@@ -72,7 +72,7 @@ function build (options) {
   const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
 
   // Instance Fastify components
-  const [logger, hasLogger] = createLogger(options)
+  const { logger, hasLogger } = createLogger(options)
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -86,7 +86,7 @@ function build (options) {
 
   // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)
-  const [server, listen] = createServer(options, httpHandler)
+  const { server, listen } = createServer(options, httpHandler)
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
     server.on('clientError', handleClientError)
   }

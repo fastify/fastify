@@ -120,7 +120,7 @@ function build (options) {
     [kFourOhFourContext]: null,
     [kGlobalHooks]: {
       onRoute: [],
-      onEncapsulation: []
+      onPlugin: []
     },
     [pluginUtils.registeredPlugins]: [],
     // routes shorthand methods
@@ -593,9 +593,9 @@ function build (options) {
     } else if (name === 'onRoute') {
       this[kHooks].validate(name, fn)
       this[kGlobalHooks].onRoute.push(fn)
-    } else if (name === 'onEncapsulation') {
+    } else if (name === 'onPlugin') {
       this[kHooks].validate(name, fn)
-      this[kGlobalHooks].onEncapsulation.push(fn)
+      this[kGlobalHooks].onPlugin.push(fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)
@@ -853,7 +853,7 @@ function override (old, fn, opts) {
     instance[kFourOhFourLevelInstance] = instance
   }
 
-  for (const hook of instance[kGlobalHooks].onEncapsulation) hook.call(this, instance)
+  for (const hook of instance[kGlobalHooks].onPlugin) hook.call(this, instance)
 
   return instance
 }

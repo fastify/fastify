@@ -2561,7 +2561,7 @@ test('preSerialization hooks should support encapsulation', t => {
   })
 })
 
-test('onEncapsulation hook should be called / 1', t => {
+test('onPlugin hook should be called / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -2569,7 +2569,7 @@ test('onEncapsulation hook should be called / 1', t => {
     next()
   })
 
-  fastify.addHook('onEncapsulation', instance => {
+  fastify.addHook('onPlugin', instance => {
     // duck typing for the win!
     t.ok(instance.addHook)
   })
@@ -2579,7 +2579,7 @@ test('onEncapsulation hook should be called / 1', t => {
   })
 })
 
-test('onEncapsulation hook should be called / 2', t => {
+test('onPlugin hook should be called / 2', t => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -2594,7 +2594,7 @@ test('onEncapsulation hook should be called / 2', t => {
     next()
   })
 
-  fastify.addHook('onEncapsulation', instance => {
+  fastify.addHook('onPlugin', instance => {
     // duck typing for the win!
     t.ok(instance.addHook)
   })
@@ -2604,7 +2604,7 @@ test('onEncapsulation hook should be called / 2', t => {
   })
 })
 
-test('onEncapsulation hook should be called / 3', t => {
+test('onPlugin hook should be called / 3', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -2626,7 +2626,7 @@ test('onEncapsulation hook should be called / 3', t => {
     next()
   })
 
-  fastify.addHook('onEncapsulation', instance => {
+  fastify.addHook('onPlugin', instance => {
     instance.data = instance.data.slice()
   })
 

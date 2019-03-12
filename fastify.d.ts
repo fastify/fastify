@@ -129,6 +129,7 @@ declare namespace fastify {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     logger?: pino.LoggerOptions | boolean,
+    pluginTimeout?: number,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,

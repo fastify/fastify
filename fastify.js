@@ -44,6 +44,12 @@ const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 
 const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
+const DEFAULT_ENABLE_CASE_SENSITIVE = true
+const DEFAULT_IGNORE_TRAILING_SLASH = false
+const DEFAULT_MAX_PARAM_LENGTH = 100
+const DEFAULT_ON_PROTO_POISONING = 'error'
+const DEFAULT_PLUGIN_TIMEOUT = 10000 // 10 seconds
+const DEFAULT_REQUEST_ID_HEADER = 'request-id'
 
 function build (options) {
   // Options validations
@@ -66,7 +72,7 @@ function build (options) {
 
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
-  const requestIdHeader = options.requestIdHeader || 'request-id'
+  const requestIdHeader = options.requestIdHeader || DEFAULT_REQUEST_ID_HEADER
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
   const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
@@ -76,8 +82,8 @@ function build (options) {
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
-    ignoreTrailingSlash: options.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength,
+    ignoreTrailingSlash: options.ignoreTrailingSlash || DEFAULT_IGNORE_TRAILING_SLASH,
+    maxParamLength: options.maxParamLength || DEFAULT_MAX_PARAM_LENGTH,
     caseSensitive: options.caseSensitive,
     versioning: options.versioning
   })
@@ -111,7 +117,7 @@ function build (options) {
     [kLogLevel]: '',
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, options.onProtoPoisoning),
+    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || DEFAULT_ON_PROTO_POISONING)),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
@@ -206,7 +212,7 @@ function build (options) {
   // - close
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || 10000,
+    timeout: Number(options.pluginTimeout) || DEFAULT_PLUGIN_TIMEOUT,
     expose: { use: 'register' }
   })
   // Override to allow the plugin incapsulation
@@ -230,8 +236,18 @@ function build (options) {
   fastify.setNotFoundHandler()
   fastify[kFourOhFourLevelInstance] = fastify
 
+  const defaultInitOptions = {
+    bodyLimit: DEFAULT_BODY_LIMIT,
+    caseSensitive: DEFAULT_ENABLE_CASE_SENSITIVE,
+    ignoreTrailingSlash: DEFAULT_IGNORE_TRAILING_SLASH,
+    maxParamLength: DEFAULT_MAX_PARAM_LENGTH,
+    onProtoPoisoning: DEFAULT_ON_PROTO_POISONING,
+    pluginTimeout: DEFAULT_PLUGIN_TIMEOUT,
+    requestIdHeader: DEFAULT_REQUEST_ID_HEADER
+  }
+
   // Set fastify initial configuration options read-only object
-  fastify.initialConfig = getSecuredInitialConfig(options)
+  fastify.initialConfig = getSecuredInitialConfig(options, defaultInitOptions)
 
   return fastify
 

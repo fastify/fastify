@@ -154,6 +154,7 @@ function build (options) {
     addSchema: addSchema,
     getSchemas: schemas.getSchemas.bind(schemas),
     setSchemaCompiler: setSchemaCompiler,
+    getSchemaCompiler: getSchemaCompiler,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -761,6 +762,10 @@ function build (options) {
 
     this._schemaCompiler = schemaCompiler
     return this
+  }
+
+  function getSchemaCompiler () {
+    return this._schemaCompiler
   }
 
   // wrapper that we expose to the user for configure the custom error handler

@@ -23,3 +23,15 @@ t.test('cannot set schemaCompiler after binding', t => {
     }
   })
 })
+
+t.test('get schemaCompiler after set schemaCompiler', t => {
+  t.plan(2)
+  const mySchemaCompiler = () => { }
+
+  const fastify = Fastify()
+  fastify.setSchemaCompiler(mySchemaCompiler)
+  const sc = fastify.getSchemaCompiler()
+
+  t.ok(Object.is(mySchemaCompiler, sc))
+  fastify.ready(t.error)
+})

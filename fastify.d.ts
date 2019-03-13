@@ -628,6 +628,11 @@ declare namespace fastify {
     setSchemaCompiler(schemaCompiler: SchemaCompiler): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Get the schema compiler
+     */
+    getSchemaCompiler(): SchemaCompiler
+
+    /**
      * Create a shared schema
      */
     addSchema(schema: object): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

@@ -7,6 +7,8 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
+import * as pino from 'pino'
+import * as Logger from './types/logger'
 
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
@@ -27,7 +29,8 @@ declare namespace fastify {
 
   type DefaultQuery = { [k: string]: any }
   type DefaultParams = { [k: string]: any }
-  type DefaultHeaders = { [k: string]: any }
+  // type DefaultHeaders = { [k: string]: any }
+  type DefaultHeaders = http.IncomingHttpHeaders | http.OutgoingHttpHeaders
   type DefaultBody = any
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
@@ -181,7 +184,7 @@ declare namespace fastify {
     bodyLimit?: number,
     pluginTimeout?: number,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-    logger?: any,
+    logger?: boolean | pino.LoggerOptions | FastifyLoggerOptions,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
     querystringParser?: (str: string) => { [key: string]: string | string[] },

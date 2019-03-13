@@ -606,7 +606,7 @@ declare namespace fastify {
      * This hook can be useful if you are developing a plugin that needs to use the encapsulation functionality of Fastify.
      * The interface is synchronous, and, as such, the listeners do not get passed a callback.
      */
-    addHook(name: 'onPlugin', hook: (instance: FastifyInstance) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    addHook(name: 'onRegister', hook: (instance: FastifyInstance) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Useful for testing http requests without running a sever

@@ -268,7 +268,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 
 - `'onClose'`
 - `'onRoute'`
-- `'onPlugin''`
+- `'onRegister''`
 
 <a name="on-close"></a>
 **'onClose'**<br>
@@ -294,8 +294,8 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
-<a name="on-encapsulation"></a>
-**'onPlugin'**<br>
+<a name="on-register"></a>
+**'onRegister'**<br>
 Triggered when a new plugin function is registered, and a new encapsulation context is created.<br/>
 This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
 ```js
@@ -315,7 +315,7 @@ fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
 })
 
-fastify.addHook('onPlugin', (instance) => {
+fastify.addHook('onRegister', (instance) => {
   instance.data = instance.data.slice()
 })
 ```

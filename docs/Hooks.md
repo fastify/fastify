@@ -296,8 +296,9 @@ fastify.addHook('onRoute', (routeOptions) => {
 ```
 <a name="on-register"></a>
 **'onRegister'**<br>
-Triggered when a new plugin function is registered, and a new encapsulation context is created.<br/>
-This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
+Triggered when a new plugin function is registered, and a new encapsulation context is created, he hook will be executed **before** the plugin code.<br/>
+This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
+**Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
 
@@ -316,6 +317,10 @@ fastify.register(async (instance, opts) => {
 })
 
 fastify.addHook('onRegister', (instance) => {
+  // create a new array from the old one
+  // but without keeping the reference
+  // allowing the user to have encapsulated
+  // instances of the `data` property
   instance.data = instance.data.slice()
 })
 ```

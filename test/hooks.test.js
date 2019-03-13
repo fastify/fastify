@@ -2635,6 +2635,27 @@ test('onRegister hook should be called / 3', t => {
   })
 })
 
+test('onRegister hook should be called / 4', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+  plugin[Symbol.for('skip-override')] = true
+
+  fastify.register(plugin)
+
+  fastify.addHook('onRegister', instance => {
+    // duck typing for the win!
+    t.ok(instance.addHook)
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

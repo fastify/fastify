@@ -102,6 +102,16 @@ function build (options) {
   const schemas = new Schemas()
   const onRouteHooks = []
 
+  const defaultInitOptions = {
+    bodyLimit: DEFAULT_BODY_LIMIT,
+    caseSensitive: DEFAULT_ENABLE_CASE_SENSITIVE,
+    ignoreTrailingSlash: DEFAULT_IGNORE_TRAILING_SLASH,
+    maxParamLength: DEFAULT_MAX_PARAM_LENGTH,
+    onProtoPoisoning: DEFAULT_ON_PROTO_POISONING,
+    pluginTimeout: DEFAULT_PLUGIN_TIMEOUT,
+    requestIdHeader: DEFAULT_REQUEST_ID_HEADER
+  }
+
   // Public API
   const fastify = {
     // Fastify internals
@@ -187,7 +197,9 @@ function build (options) {
     printRoutes: router.prettyPrint.bind(router),
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
-    setErrorHandler: setErrorHandler
+    setErrorHandler: setErrorHandler,
+    // Set fastify initial configuration options read-only object
+    initialConfig: getSecuredInitialConfig(options, defaultInitOptions)
   }
 
   Object.defineProperty(fastify, 'prefix', {
@@ -235,19 +247,6 @@ function build (options) {
   // Set the default 404 handler
   fastify.setNotFoundHandler()
   fastify[kFourOhFourLevelInstance] = fastify
-
-  const defaultInitOptions = {
-    bodyLimit: DEFAULT_BODY_LIMIT,
-    caseSensitive: DEFAULT_ENABLE_CASE_SENSITIVE,
-    ignoreTrailingSlash: DEFAULT_IGNORE_TRAILING_SLASH,
-    maxParamLength: DEFAULT_MAX_PARAM_LENGTH,
-    onProtoPoisoning: DEFAULT_ON_PROTO_POISONING,
-    pluginTimeout: DEFAULT_PLUGIN_TIMEOUT,
-    requestIdHeader: DEFAULT_REQUEST_ID_HEADER
-  }
-
-  // Set fastify initial configuration options read-only object
-  fastify.initialConfig = getSecuredInitialConfig(options, defaultInitOptions)
 
   return fastify
 

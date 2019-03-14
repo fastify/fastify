@@ -3,7 +3,8 @@
 const t = require('tap')
 const test = t.test
 const proxyquire = require('proxyquire')
-const Fastify = proxyquire('../..', { http2: null })
+const server = proxyquire('../../lib/server', { http2: null })
+const Fastify = proxyquire('../..', { './lib/server.js': server })
 
 test('should throw when http2 module cannot be found', t => {
   t.plan(1)

@@ -31,7 +31,7 @@ They need to be in
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `config`: object used to store custom configuration.
-* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/versioned-routes/docs/Routes.md#version).
+* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version).
 
   `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
 

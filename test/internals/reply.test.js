@@ -401,7 +401,7 @@ test('stream using reply.res.writeHead should return customize headers', t => {
   var buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
-    reply.res.log.warn = function mockWarn (message) {
+    reply.log.warn = function mockWarn (message) {
       t.equal(message, 'response will send, but you shouldn\'t use res.writeHead in stream mode')
     }
     reply.res.writeHead(200, {

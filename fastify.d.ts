@@ -146,6 +146,7 @@ declare namespace fastify {
     id: any
 
     ip: string
+    ips: string[]
     hostname: string
 
     raw: HttpRequest
@@ -178,6 +179,7 @@ declare namespace fastify {
   interface ServerOptions {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
+    pluginTimeout?: number,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
@@ -191,7 +193,8 @@ declare namespace fastify {
         empty() : void
       },
       deriveVersion<Context>(req: Object, ctx?: Context) : String,
-    }
+    },
+    modifyCoreObjects?: boolean
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

@@ -43,8 +43,7 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-
-const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
+const { defaultInitOptions } = getSecuredInitialConfig
 
 function build (options) {
   // Options validations
@@ -67,18 +66,18 @@ function build (options) {
 
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
-  const requestIdHeader = options.requestIdHeader || 'request-id'
+  const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
-  const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
+  const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
-    ignoreTrailingSlash: options.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength,
+    ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
+    maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
     caseSensitive: options.caseSensitive,
     versioning: options.versioning
   })
@@ -111,7 +110,7 @@ function build (options) {
     [kLogLevel]: '',
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, options.onProtoPoisoning),
+    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
@@ -185,7 +184,9 @@ function build (options) {
     printRoutes: router.prettyPrint.bind(router),
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
-    setErrorHandler: setErrorHandler
+    setErrorHandler: setErrorHandler,
+    // Set fastify initial configuration options read-only object
+    initialConfig: getSecuredInitialConfig(options)
   }
 
   Object.defineProperty(fastify, 'prefix', {
@@ -210,7 +211,7 @@ function build (options) {
   // - close
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || 10000,
+    timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
     expose: { use: 'register' }
   })
   // Override to allow the plugin incapsulation
@@ -233,9 +234,6 @@ function build (options) {
   // Set the default 404 handler
   fastify.setNotFoundHandler()
   fastify[kFourOhFourLevelInstance] = fastify
-
-  // Set fastify initial configuration options read-only object
-  fastify.initialConfig = getSecuredInitialConfig(options)
 
   return fastify
 

@@ -603,6 +603,13 @@ declare namespace fastify {
     addHook(name: 'onRoute', hook: (opts: RouteOptions<HttpServer, HttpRequest, HttpResponse> & { path: string, prefix: string }) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
+     * Adds a hook that is triggered when Fastify a new plugin is being registered.
+     * This hook can be useful if you are developing a plugin that needs to use the encapsulation functionality of Fastify.
+     * The interface is synchronous, and, as such, the listeners do not get passed a callback.
+     */
+    addHook(name: 'onRegister', hook: (instance: FastifyInstance) => void): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
      * Useful for testing http requests without running a sever
      */
     inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void

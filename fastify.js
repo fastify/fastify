@@ -23,7 +23,8 @@ const {
   kFourOhFourLevelInstance,
   kFourOhFourContext,
   kState,
-  kOptions
+  kOptions,
+  kGlobalHooks
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -94,7 +95,6 @@ function build (options) {
   const setupResponseListeners = Reply.setupResponseListeners
   const proxyFn = getTrustProxyFn(options)
   const schemas = new Schemas()
-  const onRouteHooks = []
 
   // Public API
   const fastify = {
@@ -118,6 +118,10 @@ function build (options) {
     [kCanSetNotFoundHandler]: true,
     [kFourOhFourLevelInstance]: null,
     [kFourOhFourContext]: null,
+    [kGlobalHooks]: {
+      onRoute: [],
+      onRegister: []
+    },
     [pluginUtils.registeredPlugins]: [],
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
@@ -419,7 +423,7 @@ function build (options) {
       }
 
       // run 'onRoute' hooks
-      for (const hook of onRouteHooks) hook.call(this, opts)
+      for (const hook of this[kGlobalHooks].onRoute) hook.call(this, opts)
 
       const config = opts.config || {}
       config.url = url
@@ -588,7 +592,10 @@ function build (options) {
       this.onClose(fn)
     } else if (name === 'onRoute') {
       this[kHooks].validate(name, fn)
-      onRouteHooks.push(fn)
+      this[kGlobalHooks].onRoute.push(fn)
+    } else if (name === 'onRegister') {
+      this[kHooks].validate(name, fn)
+      this[kGlobalHooks].onRegister.push(fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)
@@ -845,6 +852,8 @@ function override (old, fn, opts) {
     instance[kCanSetNotFoundHandler] = true
     instance[kFourOhFourLevelInstance] = instance
   }
+
+  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)
 
   return instance
 }

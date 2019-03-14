@@ -42,14 +42,7 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-
-const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
-const DEFAULT_ENABLE_CASE_SENSITIVE = true
-const DEFAULT_IGNORE_TRAILING_SLASH = false
-const DEFAULT_MAX_PARAM_LENGTH = 100
-const DEFAULT_ON_PROTO_POISONING = 'error'
-const DEFAULT_PLUGIN_TIMEOUT = 10000 // 10 seconds
-const DEFAULT_REQUEST_ID_HEADER = 'request-id'
+const { defaultInitOptions } = getSecuredInitialConfig
 
 function build (options) {
   // Options validations
@@ -72,18 +65,18 @@ function build (options) {
 
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
-  const requestIdHeader = options.requestIdHeader || DEFAULT_REQUEST_ID_HEADER
+  const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
-  const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
+  const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
-    ignoreTrailingSlash: options.ignoreTrailingSlash || DEFAULT_IGNORE_TRAILING_SLASH,
-    maxParamLength: options.maxParamLength || DEFAULT_MAX_PARAM_LENGTH,
+    ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
+    maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
     caseSensitive: options.caseSensitive,
     versioning: options.versioning
   })
@@ -102,16 +95,6 @@ function build (options) {
   const schemas = new Schemas()
   const onRouteHooks = []
 
-  const defaultInitOptions = {
-    bodyLimit: DEFAULT_BODY_LIMIT,
-    caseSensitive: DEFAULT_ENABLE_CASE_SENSITIVE,
-    ignoreTrailingSlash: DEFAULT_IGNORE_TRAILING_SLASH,
-    maxParamLength: DEFAULT_MAX_PARAM_LENGTH,
-    onProtoPoisoning: DEFAULT_ON_PROTO_POISONING,
-    pluginTimeout: DEFAULT_PLUGIN_TIMEOUT,
-    requestIdHeader: DEFAULT_REQUEST_ID_HEADER
-  }
-
   // Public API
   const fastify = {
     // Fastify internals
@@ -127,7 +110,7 @@ function build (options) {
     [kLogLevel]: '',
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || DEFAULT_ON_PROTO_POISONING)),
+    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
@@ -199,7 +182,7 @@ function build (options) {
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
     // Set fastify initial configuration options read-only object
-    initialConfig: getSecuredInitialConfig(options, defaultInitOptions)
+    initialConfig: getSecuredInitialConfig(options)
   }
 
   Object.defineProperty(fastify, 'prefix', {
@@ -224,7 +207,7 @@ function build (options) {
   // - close
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || DEFAULT_PLUGIN_TIMEOUT,
+    timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
     expose: { use: 'register' }
   })
   // Override to allow the plugin incapsulation

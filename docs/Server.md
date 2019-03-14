@@ -385,7 +385,7 @@ fastify.listen(3000, '127.0.0.1', 511, (err, address) => {
 })
 ```
 
-Specifying options is also supported:
+Specifying options is also supported, the object is same as [options](https://nodejs.org/api/net.html#net_server_listen_options_callback) in the Node.js server listen:
 
 ```js
 fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {

@@ -313,6 +313,23 @@ declare namespace fastify {
   }
 
   /**
+   * Server listen options
+   */
+  interface ListenOptions {
+    port?: number;
+    host?: string;
+    backlog?: number;
+    path?: string;
+    exclusive?: boolean;
+    readableAll?: boolean;
+    writableAll?: boolean;
+    /**
+     * @default false
+     */
+    ipv6Only?: boolean;
+  }
+
+  /**
    * Represents the fastify instance created by the factory function the module exports.
    */
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
@@ -471,9 +488,11 @@ declare namespace fastify {
     listen(port: number, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
+    listen(options: ListenOptions, callback: (err: Error, address: string) => void): void
     listen(sockFile: string, callback: (err: Error, address: string) => void): void
     listen(port: number, address?: string, backlog?: number): Promise<string>
     listen(sockFile: string): Promise<string>
+    listen(options: ListenOptions): Promise<string>
 
     /**
      * Registers a listener function that is invoked when all the plugins have

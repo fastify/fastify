@@ -4,14 +4,18 @@ import * as https from 'https'
 
 declare function fastify<
   RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server,
-  RawRequest = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest,
-  RawReply = RawServer extends http.Server | https.Server ? http.OutgoingMessage : http2.Http2ServerResponse,
+  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest,
+  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse,
 >(opts?: fastify.ServerOptions<RawServer, RawRequest, RawReply>): fastify.FastifyInstance<RawServer, RawRequest, RawReply>;
 
 declare namespace fastify {
-  interface FastifyInstance<RawServer, RawRequest, RawReply> {
+  interface FastifyInstance<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server,
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest,
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse,
+  > {
     server: RawServer
-    after(error): FastifyInstance<RawServer, RawRequest, RawReply>
+    after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>
 
     listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, callback: (err: Error, address: string) => void): void    
@@ -29,7 +33,7 @@ declare namespace fastify {
    * FastifyRequest is an instance of the standard http or http2 request objects.
    * It defaults to http.IncomingMessage, and it also extends the relative request object.
    */
-  type FastifyRequest<RawRequest> = RawRequest & {
+  type FastifyRequest<RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage> = RawRequest & {
     body: any, // what to do with Body
     id: any, // declare this
     log: FastifyLogger,
@@ -38,7 +42,7 @@ declare namespace fastify {
     raw: RawRequest,
   }
 
-  type FastifyReply<RawReply> = RawReply & {
+  type FastifyReply<RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse> = RawReply & {
     callNotFound(): void
     code(statusCode: number): FastifyReply<RawReply>
     hasHeader(key: string): boolean
@@ -58,7 +62,11 @@ declare namespace fastify {
     sent: boolean
   }
 
-  type ServerOptions<RawServer, RawRequest, RawReply> = {
+  type ServerOptions<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server,
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends (http.Server | https.Server) ? http.IncomingMessage : http2.Http2ServerRequest,
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends (http.Server | https.Server) ? http.ServerResponse : http2.Http2ServerResponse,
+  > = {
     http2?: RawServer extends http2.Http2Server ? true : false,
     https?: RawServer extends https.Server 
       ? https.ServerOptions

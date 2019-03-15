@@ -318,6 +318,7 @@ declare namespace fastify {
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     server: HttpServer
     log: Logger
+    schemaCompiler: SchemaCompiler
 
     /**
      * Adds a route to the server
@@ -626,11 +627,6 @@ declare namespace fastify {
      * Set the schema compiler for all routes.
      */
     setSchemaCompiler(schemaCompiler: SchemaCompiler): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
-
-    /**
-     * Get the schema compiler
-     */
-    getSchemaCompiler(): SchemaCompiler
 
     /**
      * Create a shared schema

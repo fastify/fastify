@@ -154,7 +154,6 @@ function build (options) {
     addSchema: addSchema,
     getSchemas: schemas.getSchemas.bind(schemas),
     setSchemaCompiler: setSchemaCompiler,
-    getSchemaCompiler: getSchemaCompiler,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -184,6 +183,15 @@ function build (options) {
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler
   }
+
+  Object.defineProperty(fastify, 'schemaCompiler', {
+    get: function () {
+      return this._schemaCompiler
+    },
+    set: function (schemaCompiler) {
+      this.setSchemaCompiler(schemaCompiler)
+    }
+  })
 
   Object.defineProperty(fastify, 'prefix', {
     get: function () {
@@ -762,10 +770,6 @@ function build (options) {
 
     this._schemaCompiler = schemaCompiler
     return this
-  }
-
-  function getSchemaCompiler () {
-    return this._schemaCompiler
   }
 
   // wrapper that we expose to the user for configure the custom error handler

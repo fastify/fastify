@@ -68,3 +68,6 @@ package-lock.json
 # generated code
 examples/typescript-server.js
 test/types/index.js
+
+# test tap report
+out.tap

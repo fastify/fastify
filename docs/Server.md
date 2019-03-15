@@ -385,6 +385,17 @@ fastify.listen(3000, '127.0.0.1', 511, (err, address) => {
 })
 ```
 
+Specifying options is also supported, the object is same as [options](https://nodejs.org/api/net.html#net_server_listen_options_callback) in the Node.js server listen:
+
+```js
+fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+})
+```
+
 If no callback is provided a Promise is returned:
 
 ```js
@@ -407,6 +418,17 @@ fastify.listen(3000, '127.0.0.1')
   })
 ```
 
+Specifying options without a callback is also supported:
+
+```js
+fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 })
+  .then((address) => console.log(`server listening on ${address}`))
+  .catch(err => {
+    console.log('Error starting server:', err)
+    process.exit(1)
+  })
+```
+
 When deploying to a Docker, and potentially other, containers, it is advisable to listen on `0.0.0.0` because they do not default to exposing mapped ports to `localhost`:
 
 ```js
@@ -419,6 +441,19 @@ fastify.listen(3000, '0.0.0.0', (err, address) => {
 ```
 
 If the `port` is omitted (or is set to zero), a random available port is automatically chosen (later available via `fastify.server.address().port`).
+
+The default options of listen are:
+
+```js
+fastify.listen({
+  port: 0,
+  host: 'localhost',
+  exclusive: false,
+  readableAll: false,
+  writableAll: false,
+  ipv6Only: false
+}, (err) => {})
+```
 
 <a name="route"></a>
 #### route

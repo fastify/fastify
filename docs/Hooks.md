@@ -268,6 +268,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 
 - `'onClose'`
 - `'onRoute'`
+- `'onRegister''`
 
 <a name="on-close"></a>
 **'onClose'**<br>
@@ -293,6 +294,37 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
+<a name="on-register"></a>
+**'onRegister'**<br>
+Triggered when a new plugin function is registered, and a new encapsulation context is created, the hook will be executed **before** the plugin code.<br/>
+This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
+**Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
+```js
+fastify.decorate('data', [])
+
+fastify.register(async (instance, opts) => {
+  instance.data.push('hello')
+  console.log(instance.data) // ['hello']
+
+  instance.register(async (instance, opts) => {
+    instance.data.push('world')
+    console.log(instance.data) // ['hello', 'world']
+  })
+})
+
+fastify.register(async (instance, opts) => {
+  console.log(instance.data) // []
+})
+
+fastify.addHook('onRegister', (instance) => {
+  // create a new array from the old one
+  // but without keeping the reference
+  // allowing the user to have encapsulated
+  // instances of the `data` property
+  instance.data = instance.data.slice()
+})
+```
+
 <a name="scope"></a>
 ### Scope
 Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.

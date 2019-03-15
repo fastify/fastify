@@ -24,7 +24,8 @@ const {
   kFourOhFourLevelInstance,
   kFourOhFourContext,
   kState,
-  kOptions
+  kOptions,
+  kGlobalHooks
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -43,8 +44,7 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
-
-const DEFAULT_BODY_LIMIT = 1024 * 1024 // 1 MiB
+const { defaultInitOptions } = getSecuredInitialConfig
 
 function build (options) {
   // Options validations
@@ -67,18 +67,18 @@ function build (options) {
 
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
-  const requestIdHeader = options.requestIdHeader || 'request-id'
+  const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
-  const bodyLimit = options.bodyLimit || DEFAULT_BODY_LIMIT
+  const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
-    ignoreTrailingSlash: options.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength,
+    ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
+    maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
     caseSensitive: options.caseSensitive,
     versioning: options.versioning
   })
@@ -95,7 +95,6 @@ function build (options) {
   const setupResponseListeners = Reply.setupResponseListeners
   const proxyFn = getTrustProxyFn(options)
   const schemas = new Schemas()
-  const onRouteHooks = []
 
   // Public API
   const fastify = {
@@ -113,13 +112,17 @@ function build (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kSchemaCompiler]: null,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, options.onProtoPoisoning),
+    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
     [kCanSetNotFoundHandler]: true,
     [kFourOhFourLevelInstance]: null,
     [kFourOhFourContext]: null,
+    [kGlobalHooks]: {
+      onRoute: [],
+      onRegister: []
+    },
     [pluginUtils.registeredPlugins]: [],
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
@@ -183,7 +186,9 @@ function build (options) {
     printRoutes: router.prettyPrint.bind(router),
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
-    setErrorHandler: setErrorHandler
+    setErrorHandler: setErrorHandler,
+    // Set fastify initial configuration options read-only object
+    initialConfig: getSecuredInitialConfig(options)
   }
 
   Object.defineProperty(fastify, 'schemaCompiler', {
@@ -217,7 +222,7 @@ function build (options) {
   // - close
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || 10000,
+    timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
     expose: { use: 'register' }
   })
   // Override to allow the plugin incapsulation
@@ -240,9 +245,6 @@ function build (options) {
   // Set the default 404 handler
   fastify.setNotFoundHandler()
   fastify[kFourOhFourLevelInstance] = fastify
-
-  // Set fastify initial configuration options read-only object
-  fastify.initialConfig = getSecuredInitialConfig(options)
 
   return fastify
 
@@ -430,7 +432,7 @@ function build (options) {
       }
 
       // run 'onRoute' hooks
-      for (const hook of onRouteHooks) hook.call(this, opts)
+      for (const hook of this[kGlobalHooks].onRoute) hook.call(this, opts)
 
       const config = opts.config || {}
       config.url = url
@@ -599,7 +601,10 @@ function build (options) {
       this.onClose(fn)
     } else if (name === 'onRoute') {
       this[kHooks].validate(name, fn)
-      onRouteHooks.push(fn)
+      this[kGlobalHooks].onRoute.push(fn)
+    } else if (name === 'onRegister') {
+      this[kHooks].validate(name, fn)
+      this[kGlobalHooks].onRegister.push(fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)
@@ -856,6 +861,8 @@ function override (old, fn, opts) {
     instance[kCanSetNotFoundHandler] = true
     instance[kFourOhFourLevelInstance] = instance
   }
+
+  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)
 
   return instance
 }

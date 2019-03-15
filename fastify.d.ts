@@ -3,61 +3,42 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 /**
- * Fastify factor function for the standard fastify http(s) server instance.
+ * Fastify factor function for the standard fastify http, https, or http2 server instance.
  *
- * This is the default function declaration.
+ * The default function utilizes http
  *
- * @param opts Fastify http server options
+ * @param opts Fastify server options
  */
 declare function fastify<
-  RawServer extends http.Server | https.Server = http.Server,
-  RawRequest extends http.IncomingMessage = http.IncomingMessage,
-  RawReply extends http.ServerResponse = http.ServerResponse
->(opts?: fastify.ServerOptions<RawServer>): fastify.FastifyHttpInstance<RawServer, RawRequest, RawReply>;
+  RawServer extends http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer = http.Server
+>(opts?: fastify.ServerOptions<RawServer>): fastify.FastifyInstance<RawServer>;
 
-/**
- * Fastify factory function for the experimental fastify http2 server instance.
- *
- * To use this you must at least specify the http2 server generic.
- *
- * @param opts Fastify http2 server options
- */
-declare function fastify<
-  RawServer extends http2.Http2Server | http2.Http2SecureServer = http2.Http2Server,
-  RawRequest extends http2.Http2ServerRequest = http2.Http2ServerRequest,
-  RawReply extends http2.Http2ServerResponse = http2.Http2ServerResponse
->(opts?: fastify.ServerOptions<RawServer>): fastify.FastifyHttp2Instance<RawServer, RawRequest, RawReply>;
-
-// This declaration is not exported so the user must utilize the type safe FastifyHttpInstance or FastifyHttp2Instance
-interface FastifyInstance<RawServer, RawRequest, RawReply> {
-  server: RawServer
-  after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>
-
-  listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
-  listen(port: number, address: string, callback: (err: Error, address: string) => void): void    
-  listen(port: number, callback: (err: Error, address: string) => void): void
-  listen(port: number, address?: string, backlog?: number): Promise<string>
-
-  ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>
-  ready(readyListener: (err: Error) => void): void
-
-  route(): void
-
-}
 declare namespace fastify {
 
-  interface FastifyHttpInstance<
-    RawServer extends http.Server | https.Server = http.Server,
-    RawRequest extends http.IncomingMessage = http.IncomingMessage,
-    RawReply extends http.ServerResponse = http.ServerResponse
-  > extends FastifyInstance<RawServer, RawRequest, RawReply> {}
-
-  interface FastifyHttp2Instance<
-    RawServer extends http2.Http2Server | http2.Http2SecureServer = http2.Http2Server,
-    RawRequest extends http2.Http2ServerRequest = http2.Http2ServerRequest,
-    RawReply extends http2.Http2ServerResponse = http2.Http2ServerResponse
-  > extends FastifyInstance<RawServer, RawRequest, RawReply> {}
-
+  /**
+   * FastifyInstance interface for the standard fastify instance object returned by the fastify factory function.
+   * 
+   * The default interface instance implements an http server. It is recommended you only define the RawServer generic and let TypeScript determine the generic value of RawRequest and RawReply.
+   */
+  interface FastifyInstance<
+    RawServer extends http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > {
+    server: RawServer
+    after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>
+  
+    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
+    listen(port: number, address: string, callback: (err: Error, address: string) => void): void    
+    listen(port: number, callback: (err: Error, address: string) => void): void
+    listen(port: number, address?: string, backlog?: number): Promise<string>
+  
+    ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>
+    ready(readyListener: (err: Error) => void): void
+  
+    route(): void
+  
+  }
   /**
    * FastifyRequest is an instance of the standard http or http2 request objects.
    * It defaults to http.IncomingMessage, and it also extends the relative request object.

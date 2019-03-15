@@ -15,6 +15,7 @@ const {
   kLogLevel,
   kHooks,
   kSchemas,
+  kSchemaCompiler,
   kContentTypeParser,
   kReply,
   kRequest,
@@ -111,6 +112,7 @@ function build (options) {
     [kLogLevel]: '',
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
+    [kSchemaCompiler]: null,
     [kContentTypeParser]: new ContentTypeParser(bodyLimit, options.onProtoPoisoning),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
@@ -186,7 +188,7 @@ function build (options) {
 
   Object.defineProperty(fastify, 'schemaCompiler', {
     get: function () {
-      return this._schemaCompiler
+      return this[kSchemaCompiler]
     },
     set: function (schemaCompiler) {
       this.setSchemaCompiler(schemaCompiler)
@@ -447,12 +449,12 @@ function build (options) {
       )
 
       try {
-        if (opts.schemaCompiler == null && this._schemaCompiler == null) {
+        if (opts.schemaCompiler == null && this[kSchemaCompiler] == null) {
           const externalSchemas = this[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
           this.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
         }
 
-        buildSchema(context, opts.schemaCompiler || this._schemaCompiler, this[kSchemas])
+        buildSchema(context, opts.schemaCompiler || this[kSchemaCompiler], this[kSchemas])
       } catch (error) {
         done(error)
         return
@@ -768,7 +770,7 @@ function build (options) {
   function setSchemaCompiler (schemaCompiler) {
     throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
 
-    this._schemaCompiler = schemaCompiler
+    this[kSchemaCompiler] = schemaCompiler
     return this
   }
 

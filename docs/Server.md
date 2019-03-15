@@ -491,6 +491,10 @@ To learn more, see [shared schema example](https://github.com/fastify/fastify/bl
 #### setSchemaCompiler
 Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
 
+<a name="schema-compiler"></a>
+#### schemaCompiler
+Get the schema compiler for all routes if one has been settled.
+
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 

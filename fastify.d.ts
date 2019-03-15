@@ -107,6 +107,7 @@ declare namespace fastify {
   Headers = DefaultHeaders,
   Body = DefaultBody
   > = (
+    this: FastifyInstance<http.Server, HttpRequest, HttpResponse>,
     request: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
     reply: FastifyReply<HttpResponse>,
   ) => void | Promise<any>

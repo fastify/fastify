@@ -395,14 +395,24 @@ function build (options) {
     this.after((notHandledErr, done) => {
       var path = opts.url || opts.path
       if (path === '/' && prefix.length > 0) {
-        // Ensure that '/prefix' + '/' gets registered as '/prefix'
-        afterRouteAdded.call(this, '', notHandledErr, done)
+        switch (opts.prefixTrailingSlash) {
+          case 'slash':
+            afterRouteAdded.call(this, path, notHandledErr, done)
+            break
+          case 'no-slash':
+            afterRouteAdded.call(this, '', notHandledErr, done)
+            break
+          case 'both':
+          default:
+            afterRouteAdded.call(this, '', notHandledErr, done)
+            afterRouteAdded.call(this, path, notHandledErr, done)
+        }
       } else if (path[0] === '/' && prefix.endsWith('/')) {
         // Ensure that '/prefix/' + '/route' gets registered as '/prefix/route'
-        path = path.slice(1)
+        afterRouteAdded.call(this, path.slice(1), notHandledErr, done)
+      } else {
+        afterRouteAdded.call(this, path, notHandledErr, done)
       }
-
-      afterRouteAdded.call(this, path, notHandledErr, done)
     })
 
     // chainable api

@@ -528,7 +528,8 @@ Set the schema compiler for all routes [here](https://github.com/fastify/fastify
 
 <a name="schema-compiler"></a>
 #### schemaCompiler
-Get the schema compiler for all routes if one has been settled.
+This property can be used to set the schema compiler, it is a shortcut for the `setSchemaCompiler` method,
+and get the schema compiler back for all routes.
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler

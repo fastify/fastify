@@ -20,6 +20,7 @@ const {
   kRequest,
   kMiddlewares,
   kCanSetNotFoundHandler,
+  kFourOhFour,
   kFourOhFourLevelInstance,
   kFourOhFourContext,
   kState,
@@ -42,6 +43,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
+const fourOhFourManager = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -82,7 +84,7 @@ function build (options) {
     versioning: options.versioning
   })
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = FindMyWay({ defaultRoute: fourOhFourFallBack })
+  const fourOhFour = fourOhFourManager(fourOhFourFallBack)
 
   // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)
@@ -115,6 +117,7 @@ function build (options) {
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
     [kCanSetNotFoundHandler]: true,
+    [kFourOhFour]: fourOhFour,
     [kFourOhFourLevelInstance]: null,
     [kFourOhFourContext]: null,
     [kGlobalHooks]: {
@@ -642,11 +645,7 @@ function build (options) {
     if (req.headers['accept-version'] !== undefined) {
       req.headers['accept-version'] = undefined
     }
-    fourOhFour.lookup(req, res)
-  }
-
-  function basic404 (req, reply) {
-    reply.code(404).send(new Error('Not Found'))
+    fourOhFour.router.lookup(req, res)
   }
 
   function fourOhFourFallBack (req, res) {
@@ -667,59 +666,14 @@ function build (options) {
     var reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
 
     request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
-    request.log.warn(fourOhFour.prettyPrint())
+    request.log.warn(fourOhFour.router.prettyPrint())
     reply.code(404).send(new Error('Not Found'))
   }
 
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    const _fastify = this
-    const prefix = this[kRoutePrefix] || '/'
-
-    if (this[kCanSetNotFoundHandler] === false) {
-      throw new Error(`Not found handler already set for Fastify instance with prefix: '${prefix}'`)
-    }
-
-    if (typeof opts === 'object') {
-      if (opts.preHandler == null && opts.beforeHandler != null) {
-        beforeHandlerWarning()
-        opts.preHandler = opts.beforeHandler
-      }
-      if (opts.preHandler) {
-        if (Array.isArray(opts.preHandler)) {
-          opts.preHandler = opts.preHandler.map(hook => hook.bind(_fastify))
-        } else {
-          opts.preHandler = opts.preHandler.bind(_fastify)
-        }
-      }
-
-      if (opts.preValidation) {
-        if (Array.isArray(opts.preValidation)) {
-          opts.preValidation = opts.preValidation.map(hook => hook.bind(_fastify))
-        } else {
-          opts.preValidation = opts.preValidation.bind(_fastify)
-        }
-      }
-    }
-
-    if (typeof opts === 'function') {
-      handler = opts
-      opts = undefined
-    }
-    opts = opts || {}
-
-    if (handler) {
-      this[kFourOhFourLevelInstance][kCanSetNotFoundHandler] = false
-      handler = handler.bind(this)
-    } else {
-      handler = basic404
-    }
-
-    this.after((notHandledErr, done) => {
-      _setNotFoundHandler.call(this, prefix, opts, handler)
-      done(notHandledErr)
-    })
+    this[kFourOhFour].setNotFoundHandler.call(this, opts, handler, _setNotFoundHandler)
   }
 
   function _setNotFoundHandler (prefix, opts, handler) {
@@ -766,8 +720,8 @@ function build (options) {
 
     this[kFourOhFourLevelInstance][kFourOhFourContext] = context
 
-    fourOhFour.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
-    fourOhFour.all(prefix || '/', routeHandler, context)
+    this[kFourOhFour].router.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
+    this[kFourOhFour].router.all(prefix || '/', routeHandler, context)
   }
 
   // wrapper that we expose to the user for schemas compiler handling

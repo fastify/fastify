@@ -185,8 +185,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
-        headers: { 'Content-Length': '0' },
-        timeout: 500
+        headers: { 'Content-Length': '0' }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -209,8 +208,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: 'http://localhost:' + fastify.server.address().port + '/missing',
-        body: 'hello world',
-        timeout: 500
+        body: 'hello world'
+
       }, (err, response, body) => {
         t.error(err)
         if (upMethod === 'OPTIONS') {
@@ -230,8 +229,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           body: 'hello world',
           headers: {
             'Content-Type': 'text/xml'
-          },
-          timeout: 500
+          }
         }, (err, response, body) => {
           t.error(err)
           t.strictEqual(response.statusCode, 415)
@@ -248,8 +246,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         body: 'hello world',
         headers: {
           'Content-Type': 'application/json'
-        },
-        timeout: 500
+        }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 400)
@@ -261,8 +258,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         headers: {
           'Content-Type': 'application/json',
           'Content-Length': '0'
-        },
-        timeout: 500
+        }
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 400)
@@ -297,8 +293,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           method: upMethod,
           url: 'http://localhost:' + fastify.server.address().port,
           headers: { 'Content-Type': 'application/json' },
-          body: largeStream,
-          timeout: 500
+          body: largeStream
         }, (err, response, body) => {
           t.error(err)
           t.strictEqual(response.statusCode, 413)

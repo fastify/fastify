@@ -31,6 +31,7 @@ const {
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
+const Context = require('./lib/context')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const buildSchema = require('./lib/validation').build
 const handleRequest = require('./lib/handleRequest')
@@ -535,28 +536,6 @@ function build (options) {
     }
   }
 
-  // Objects that holds the context of every request
-  // Every route holds an instance of this object.
-  function Context (schema, handler, Reply, Request, contentTypeParser, config, errorHandler, bodyLimit, logLevel, attachValidation) {
-    this.schema = schema
-    this.handler = handler
-    this.Reply = Reply
-    this.Request = Request
-    this.contentTypeParser = contentTypeParser
-    this.onRequest = null
-    this.onSend = null
-    this.onError = null
-    this.preHandler = null
-    this.onResponse = null
-    this.config = config
-    this.errorHandler = errorHandler || defaultErrorHandler
-    this._middie = null
-    this._parserOptions = { limit: bodyLimit || null }
-    this.logLevel = logLevel
-    this[kFourOhFourContext] = null
-    this.attachValidation = attachValidation
-  }
-
   // HTTP injection handling
   // If the server is not ready yet, this
   // utility will automatically force it.
@@ -673,55 +652,7 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    this[kFourOhFour].setNotFoundHandler.call(this, opts, handler, _setNotFoundHandler)
-  }
-
-  function _setNotFoundHandler (prefix, opts, handler) {
-    const context = new Context(
-      opts.schema,
-      handler,
-      this[kReply],
-      this[kRequest],
-      this[kContentTypeParser],
-      opts.config || {},
-      this._errorHandler,
-      this[kBodyLimit],
-      this[kLogLevel]
-    )
-
-    avvio.once('preReady', () => {
-      const context = this[kFourOhFourContext]
-
-      const onRequest = this[kHooks].onRequest
-      const preParsing = this[kHooks].preParsing.concat(opts.preParsing || [])
-      const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
-      const preSerialization = this[kHooks].preSerialization.concat(opts.preSerialization || [])
-      const preHandler = this[kHooks].preHandler.concat(opts.beforeHandler || opts.preHandler || [])
-      const onSend = this[kHooks].onSend
-      const onError = this[kHooks].onError
-      const onResponse = this[kHooks].onResponse
-
-      context.onRequest = onRequest.length ? onRequest : null
-      context.preParsing = preParsing.length ? preParsing : null
-      context.preValidation = preValidation.length ? preValidation : null
-      context.preSerialization = preSerialization.length ? preSerialization : null
-      context.preHandler = preHandler.length ? preHandler : null
-      context.onSend = onSend.length ? onSend : null
-      context.onError = onError.length ? onError : null
-      context.onResponse = onResponse.length ? onResponse : null
-
-      context._middie = buildMiddie(this[kMiddlewares])
-    })
-
-    if (this[kFourOhFourContext] !== null && prefix === '/') {
-      Object.assign(this[kFourOhFourContext], context) // Replace the default 404 handler
-      return
-    }
-
-    this[kFourOhFourLevelInstance][kFourOhFourContext] = context
-
-    this[kFourOhFour].router.all(prefix + (prefix.endsWith('/') ? '*' : '/*'), routeHandler, context)
-    this[kFourOhFour].router.all(prefix || '/', routeHandler, context)
+    this[kFourOhFour].setNotFoundHandler.call(this, opts, handler, avvio, routeHandler, buildMiddie)
   }
 
   // wrapper that we expose to the user for schemas compiler handling
@@ -836,16 +767,6 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
   }
 
   return instancePrefix + pluginPrefix
-}
-
-function defaultErrorHandler (error, request, reply) {
-  var res = reply.res
-  if (res.statusCode >= 500) {
-    res.log.error({ req: reply.request.raw, res: res, err: error }, error && error.message)
-  } else if (res.statusCode >= 400) {
-    res.log.info({ res: res, err: error }, error && error.message)
-  }
-  reply.send(error)
 }
 
 module.exports = build

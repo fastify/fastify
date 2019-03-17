@@ -85,7 +85,7 @@ function build (options) {
     versioning: options.versioning
   })
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = fourOhFourManager(fourOhFourFallBack)
+  const fourOhFour = fourOhFourManager(logger, modifyCoreObjects, genReqId)
 
   // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)
@@ -625,28 +625,6 @@ function build (options) {
       req.headers['accept-version'] = undefined
     }
     fourOhFour.router.lookup(req, res)
-  }
-
-  function fourOhFourFallBack (req, res) {
-    // if this happen, we have a very bad bug
-    // we might want to do some hard debugging
-    // here, let's print out as much info as
-    // we can
-    req.id = genReqId(req)
-    req.originalUrl = req.url
-    var childLogger = logger.child({ reqId: req.id })
-    if (modifyCoreObjects) {
-      req.log = res.log = childLogger
-    }
-
-    childLogger.info({ req }, 'incoming request')
-
-    var request = new Request(null, req, null, req.headers, childLogger)
-    var reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
-
-    request.log.warn('the default handler for 404 did not catch this, this is likely a fastify bug, please report it')
-    request.log.warn(fourOhFour.router.prettyPrint())
-    reply.code(404).send(new Error('Not Found'))
   }
 
   function setNotFoundHandler (opts, handler) {

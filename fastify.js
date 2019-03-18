@@ -21,7 +21,6 @@ const {
   kMiddlewares,
   kCanSetNotFoundHandler,
   kFourOhFour,
-  kFourOhFourLevelInstance,
   kFourOhFourContext,
   kState,
   kOptions,
@@ -119,7 +118,6 @@ function build (options) {
     [kMiddlewares]: [],
     [kCanSetNotFoundHandler]: true,
     [kFourOhFour]: fourOhFour,
-    [kFourOhFourLevelInstance]: null,
     [kFourOhFourContext]: null,
     [kGlobalHooks]: {
       onRoute: [],
@@ -237,7 +235,7 @@ function build (options) {
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
-  fastify[kFourOhFourLevelInstance] = fastify
+  fastify[kFourOhFour].updateInstance.call(fastify, fastify)
 
   return fastify
 
@@ -719,7 +717,7 @@ function override (old, fn, opts) {
 
   if (opts.prefix) {
     instance[kCanSetNotFoundHandler] = true
-    instance[kFourOhFourLevelInstance] = instance
+    instance[kFourOhFour].updateInstance.call(instance, instance)
   }
 
   for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)

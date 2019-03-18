@@ -527,9 +527,7 @@ function build (options) {
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        const _404Context = Object.assign({}, this[kFourOhFourContext])
-        _404Context.onSend = context.onSend
-        context[kFourOhFourContext] = _404Context
+        this[kFourOhFour].setContext.call(this, context)
       })
 
       done(notHandledErr)

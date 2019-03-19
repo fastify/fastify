@@ -21,24 +21,110 @@ declare namespace fastify {
    * The default interface instance implements an http server. It is recommended you only define the RawServer generic and let TypeScript determine the generic value of RawRequest and RawReply.
    */
   interface FastifyInstance<
-    RawServer extends http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer = http.Server, 
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
     RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
     RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
   > {
-    server: RawServer
-    after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>
+    server: RawServer,
+    after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>,
   
-    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
-    listen(port: number, address: string, callback: (err: Error, address: string) => void): void    
-    listen(port: number, callback: (err: Error, address: string) => void): void
-    listen(port: number, address?: string, backlog?: number): Promise<string>
+    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void,
+    listen(port: number, address: string, callback: (err: Error, address: string) => void): void,
+    listen(port: number, callback: (err: Error, address: string) => void): void,
+    listen(port: number, address?: string, backlog?: number): Promise<string>,
   
-    ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>
-    ready(readyListener: (err: Error) => void): void
-  
-    route(): void
-  
+    ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>,
+    ready(readyListener: (err: Error) => void): void,
+
+    route(opts?: RouteOptions<RawServer, RawRequest, RawReply>): FastifyInstance<RawServer, RawRequest, RawReply>,
+
+    // Would love to implement something like the following:
+    // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+
+    get: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    head: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    post: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    put: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    delete: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    options: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    patch: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
+    all: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
   }
+
+  type RouteShorthandMethod<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = (path: string, handler: RouteHandlerMethod) => FastifyInstance<RawServer, RawRequest, RawReply>
+  
+  type RouteShorthandMethodWithOptions<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = (path: string, opts: RouteShorthandOptions<RawServer, RawRequest, RawReply>, handler: RouteHandlerMethod) => FastifyInstance<RawServer, RawRequest, RawReply>
+
+  type RouteMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
+
+  type RouteOptions<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = RouteShorthandOptions<RawServer, RawRequest, RawReply> & {
+    method: RouteMethods | RouteMethods[],
+    url: string,
+    handler: RouteHandlerMethod,
+  }
+
+  type RouteShorthandOptions<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = {
+    schema?: FastifySchema,
+    attachValidation?: boolean,
+    preValidation?: FastifyMiddleware<RawServer, RawRequest, RawReply> | FastifyMiddleware<RawServer, RawRequest, RawReply>[],
+    preHandler?: FastifyMiddleware<RawServer, RawRequest, RawReply> | FastifyMiddleware<RawServer, RawRequest, RawReply>[],
+    preSerialization?: FastifyMiddlewareWithPayload | FastifyMiddlewareWithPayload[],
+    schemaCompiler?: FastifySchemaCompiler,
+    bodyLimit?: number,
+    logLevel?: string, // restrict to FastifyLogger levels
+    config?: any, // some object
+    version?: string
+  }
+
+  type RouteHandlerMethod<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
+    request: FastifyRequest<RawRequest>,
+    reply: FastifyReply<RawReply>
+  ) => void | Promise<any>
+
+  type FastifyMiddleware<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
+    req: FastifyRequest<RawRequest>,
+    reply: FastifyReply<RawReply>,
+    done: (err?: Error) => void,
+  ) => void
+
+  type FastifyMiddlewareWithPayload<
+    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
+    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
+    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  > = (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
+    req: FastifyRequest<RawRequest>,
+    reply: FastifyReply<RawReply>,
+    payload: any,
+    done: (err?: Error, value?: any) => void,
+  ) => void
+
   /**
    * FastifyRequest is an instance of the standard http or http2 request objects.
    * It defaults to http.IncomingMessage, and it also extends the relative request object.
@@ -107,11 +193,20 @@ declare namespace fastify {
 
   interface FastifyLogger {
 
-  }
+  } // todo
 
   interface FastifyContext {
 
-  }
+  } // todo
+
+  interface FastifySchema {
+    body: any,
+    querystring: any,
+    params: any,
+    response: any
+  } // todo
+
+  type FastifySchemaCompiler = (schema: FastifySchema) => void // todo
 }
 
 export = fastify

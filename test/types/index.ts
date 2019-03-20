@@ -366,6 +366,19 @@ server.get<Query, Params, Headers, Body>('/', ({ query, params, headers, body },
   reply.send({ hello: 'world' })
 })
 
+// `this` points to FastifyInstance
+server
+  .get('/', function (req, res) {
+    this.log.debug('`this` is not `any`')
+  })
+  .route({
+    url: '/',
+    method: 'GET',
+    handler: function (req, res) {
+      this.log.debug('`this` is not `any`')
+    }
+  })
+
 // Default values are exported for each
 server.get<fastify.DefaultQuery, Params>('/', ({ params }, reply) => {
   const foo: string = params.foo

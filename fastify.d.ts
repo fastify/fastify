@@ -337,6 +337,7 @@ declare namespace fastify {
   interface FastifyInstance<HttpServer = http.Server, HttpRequest = http.IncomingMessage, HttpResponse = http.ServerResponse> {
     server: HttpServer
     log: Logger
+    schemaCompiler: SchemaCompiler
 
     /**
      * Adds a route to the server

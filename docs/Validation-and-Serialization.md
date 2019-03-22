@@ -248,6 +248,10 @@ const ajv = new Ajv({
 fastify.setSchemaCompiler(function (schema) {
   return ajv.compile(schema)
 })
+
+// -------
+// Alternatively, you can set the schema compiler using the setter property:
+fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 ```
 
 But maybe you want to change the validation library. Perhaps you like `Joi`. In this case, you can use it to validate the url parameters, body, and query string!

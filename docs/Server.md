@@ -269,7 +269,7 @@ const fastify = require('fastify')({
 
 + Default: `true`
 
-By default, Fastify will add the `ip`, `ips`, `hostname`, and `log` [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) properties to Node's raw request object and the `log` property to Node's raw response object. Set to `false` to prevent these properties from being added to the Node core objects.
+By default, Fastify will add the `ip`, `ips`, `hostname`, and `log` properties to Node's raw request object (see [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md)) and the `log` property to Node's raw response object. Set to `false` to prevent these properties from being added to the Node core objects.
 
 ```js
 const fastify = Fastify({ modifyCoreObjects: true }) // the default

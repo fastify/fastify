@@ -74,6 +74,12 @@ function build (options) {
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
+
+  // Update the options with the fixed values
+  options.logger = logger
+  options.modifyCoreObjects = modifyCoreObjects
+  options.genReqId = genReqId
+
   // Default router
   const router = FindMyWay({
     defaultRoute: defaultRoute,
@@ -83,7 +89,7 @@ function build (options) {
     versioning: options.versioning
   })
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = build404({ logger, modifyCoreObjects, genReqId })
+  const fourOhFour = build404(options)
 
   // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)

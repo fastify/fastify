@@ -232,7 +232,7 @@ function build (options) {
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
-  fastify[kFourOhFour].updateInstance(fastify)
+  fastify[kFourOhFour].arrange404(fastify)
 
   return fastify
 
@@ -707,7 +707,7 @@ function override (old, fn, opts) {
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
   if (opts.prefix) {
-    instance[kFourOhFour].updateInstance(instance)
+    instance[kFourOhFour].arrange404(instance)
   }
 
   for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)

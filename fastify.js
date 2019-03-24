@@ -19,9 +19,7 @@ const {
   kReply,
   kRequest,
   kMiddlewares,
-  kCanSetNotFoundHandler,
   kFourOhFour,
-  kFourOhFourContext,
   kState,
   kOptions,
   kGlobalHooks
@@ -43,7 +41,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
-const fourOhFourManager = require('./lib/fourOhFour')
+const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -84,7 +82,7 @@ function build (options) {
     versioning: options.versioning
   })
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = fourOhFourManager(logger, modifyCoreObjects, genReqId)
+  const fourOhFour = build404({ logger, modifyCoreObjects, genReqId })
 
   // HTTP server and its handler
   const httpHandler = router.lookup.bind(router)
@@ -116,9 +114,7 @@ function build (options) {
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
-    [kCanSetNotFoundHandler]: true,
     [kFourOhFour]: fourOhFour,
-    [kFourOhFourContext]: null,
     [kGlobalHooks]: {
       onRoute: [],
       onRegister: []
@@ -235,7 +231,7 @@ function build (options) {
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
-  fastify[kFourOhFour].updateInstance.call(fastify, fastify)
+  fastify[kFourOhFour].updateInstance(fastify)
 
   return fastify
 
@@ -716,8 +712,7 @@ function override (old, fn, opts) {
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
 
   if (opts.prefix) {
-    instance[kCanSetNotFoundHandler] = true
-    instance[kFourOhFour].updateInstance.call(instance, instance)
+    instance[kFourOhFour].updateInstance(instance)
   }
 
   for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)

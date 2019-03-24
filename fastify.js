@@ -42,6 +42,7 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const build404 = require('./lib/fourOhFour')
+const { beforeHandlerWarning } = require('./lib/warnings')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -652,12 +653,6 @@ function build (options) {
     }
 
     return middie
-  }
-
-  function beforeHandlerWarning () {
-    if (beforeHandlerWarning.called) return
-    beforeHandlerWarning.called = true
-    process.emitWarning('The route option `beforeHandler` has been deprecated, use `preHandler` instead')
   }
 }
 

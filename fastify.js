@@ -238,7 +238,7 @@ function build (options) {
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
-  fastify[kFourOhFour].arrange404(fastify)
+  fourOhFour.arrange404(fastify)
 
   return fastify
 
@@ -528,7 +528,7 @@ function build (options) {
 
         // Must store the 404 Context in 'preReady' because it is only guaranteed to
         // be available after all of the plugins and routes have been loaded.
-        this[kFourOhFour].setContext.call(this, context)
+        fourOhFour.setContext(this, context)
       })
 
       done(notHandledErr)
@@ -629,7 +629,7 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    this[kFourOhFour].setNotFoundHandler.call(this, opts, handler, avvio, routeHandler, buildMiddie)
+    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, routeHandler, buildMiddie)
   }
 
   // wrapper that we expose to the user for schemas compiler handling

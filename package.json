@@ -116,7 +116,7 @@
     "pre-commit": "^1.2.2",
     "proxyquire": "^2.1.0",
     "pump": "^3.0.0",
-    "semver": "^5.6.0",
+    "semver": "^6.0.0",
     "send": "^0.16.2",
     "serve-static": "^1.13.2",
     "simple-get": "^3.0.3",

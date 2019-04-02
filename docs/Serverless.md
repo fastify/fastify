@@ -1,14 +1,14 @@
 <h1 align="center">Serverless</h1>
 
-Run serverless applications and REST APIs using your existing fastify application.
+Run serverless applications and REST APIs using your existing Fastify application.
 
 
 ## AWS Lambda
 
-On top of AWS Lambda and Amazon API Gateway. The sample provided allows you to easily build serverless web applications/services and RESTful APIs using fastify.
+The sample provided allows you to easily build serverless web applications/services and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 
 
-Having a normal fastify application like this:
+Having a normal Fastify application like this:
 
 ```js
 const fastify = require('fastify');
@@ -21,12 +21,6 @@ app.listen(3000, () => console.log('server listening on 3000'));
 ```
 
 *Note: This is just one possible way.*
-
-You can simply wrap your initialization code by offering to inject an optional [serverFactory](https://www.fastify.io/docs/latest/Server/#serverfactory).
-
-When executed in your lambda function we don't need to listen to a specific port, so we just export the wrapper function `init` in this case. The [`lambda.js`](https://www.fastify.io/docs/latest/Server/#lambda.js) file will use this export.
-
-When you execute your fastify application like always, i.e. `node app.js` *(the detection for this could be `require.main === module`)*, you can normally listen to your port, so you can still run your fastify function locally.
 
 ### app.js
 
@@ -51,9 +45,11 @@ if (require.main !== module) {
 }
 ```
 
-We define a custom `serverFactory` function, in which we create a new server with the help of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
-Then we call the exported `init` with the `serverFactory` function.
-Finally inside the lambda `handler` function we wait for the fastify app to be `ready` and do proxying the incoming event (API Gateway request) to the `proxy` function of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
+You can simply wrap your initialization code by offering to inject an optional [serverFactory](https://www.fastify.io/docs/latest/Server/#serverfactory).
+
+When executed in your lambda function we don't need to listen to a specific port, so we just export the wrapper function `init` in this case. The [`lambda.js`](https://www.fastify.io/docs/latest/Server/#lambda.js) file will use this export.
+
+When you execute your Fastify application like always, i.e. `node app.js` *(the detection for this could be `require.main === module`)*, you can normally listen to your port, so you can still run your Fastify function locally.
 
 ### lambda.js
 
@@ -76,6 +72,11 @@ exports.handler = (event, context, callback) => {
   });
 };
 ```
+
+We define a custom `serverFactory` function, in which we create a new server with the help of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
+Then we call the exported `init` with the `serverFactory` function.
+Finally inside the lambda `handler` function we wait for the Fastify app to be `ready` and do proxying the incoming event (API Gateway request) to the `proxy` function of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
+
 
 ### Example
 

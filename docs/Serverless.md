@@ -1,12 +1,11 @@
 <h1 align="center">Serverless</h1>
 
-> Fastify is not designed to run on the AWS Lambda platform. The Fastify framework is designed to make implementing a traditional HTTP/S server easy. The AWS Lambda platform services requests in a completely different manner than a traditional HTTP/S server and is therefore at odds with Fastify's whole design. Regardless, it is possible to use Fastify in this environment if you so choose. This document describes how to do it. However, remember that this is an unsupported usage of Fastify and you are on your own in terms of support.
-
-
 Run serverless applications and REST APIs using your existing Fastify application.
 
+> Fastify is not designed to run on the AWS Lambda platform.</br>The Fastify framework is designed to make implementing a traditional HTTP/S server easy.</br>The AWS Lambda platform services requests in a completely different manner than</br>a traditional HTTP/S server and is therefore at odds with Fastify's whole design.</br>Regardless, it is possible to use Fastify in this environment if you so choose.</br>This document describes how to do it. However, remember that</br>this is an unsupported usage of Fastify and you are on your own in terms of support.
 
-## AWS Lambda
+
+## Serverless environments"
 
 The sample provided allows you to easily build serverless web applications/services and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 
@@ -76,7 +75,8 @@ exports.handler = (event, context, callback) => {
 };
 ```
 
-We define a custom `serverFactory` function, in which we create a new server with the help of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
+
+We define a custom `serverFactory` function, in which we create a new server with the help of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express) (make sure you install the dependency `npm i --save aws-serverless-express`).
 Then we call the exported `init` with the `serverFactory` function.
 Finally inside the lambda `handler` function we wait for the Fastify app to be `ready` and do proxying the incoming event (API Gateway request) to the `proxy` function of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
 

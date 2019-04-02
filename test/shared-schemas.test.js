@@ -665,11 +665,11 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
 })
 
 // https://github.com/fastify/fastify/issues/1043
-test('The schema resolver should clean the $id key before passing it to the compiler', t => {
-  t.plan(1)
+test('The schema resolver should clean the $id key before passing it to the compiler without modify it', t => {
+  t.plan(3)
   const fastify = Fastify()
 
-  fastify.addSchema({
+  const first = {
     $id: 'first',
     type: 'object',
     properties: {
@@ -677,7 +677,9 @@ test('The schema resolver should clean the $id key before passing it to the comp
         type: 'number'
       }
     }
-  })
+  }
+
+  fastify.addSchema(first)
 
   fastify.addSchema({
     $id: 'second',
@@ -725,7 +727,11 @@ test('The schema resolver should clean the $id key before passing it to the comp
     }
   })
 
-  fastify.ready(t.error)
+  t.ok(first.$id)
+  fastify.ready(err => {
+    t.error(err)
+    t.ok(first.$id)
+  })
 })
 
 test('Get schema anyway should not add `properties` if allOf is present', t => {

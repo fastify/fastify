@@ -162,6 +162,7 @@ matters to you.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/HTTP2.md"><code><b>HTTP2</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/LTS.md"><code><b>Long Term Support</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Serverless.md"><code><b>Serverless</b></code></a>
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
 

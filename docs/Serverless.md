@@ -2,7 +2,13 @@
 
 Run serverless applications and REST APIs using your existing Fastify application.
 
-> Fastify is not designed to run on the AWS Lambda platform.</br>The Fastify framework is designed to make implementing a traditional HTTP/S server easy.</br>The AWS Lambda platform services requests in a completely different manner than</br>a traditional HTTP/S server and is therefore at odds with Fastify's whole design.</br>Regardless, it is possible to use Fastify in this environment if you so choose.</br>This document describes how to do it. However, remember that</br>this is an unsupported usage of Fastify and you are on your own in terms of support.
+> Fastify is not designed to run on the AWS Lambda platform.
+The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
+The AWS Lambda platform services requests in a completely different manner than
+a traditional HTTP/S server and is therefore at odds with Fastify's whole design.
+Regardless, it is possible to use Fastify in this environment if you so choose.
+This document describes how to do it. However, remember that
+this is an unsupported usage of Fastify and you are on your own in terms of support.
 
 
 ## Serverless environments

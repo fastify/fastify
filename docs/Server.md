@@ -179,9 +179,11 @@ Especially in distributed systems, you may want to override the default id gener
 ```js
 let i = 0
 const fastify = require('fastify')({
-  genReqId: function (req) { return i++ }
+  genReqId: function (req) { return req.headers['request-id'] || i++ }
 })
 ```
+
+**Note: genReqId will be called even when the 'request-id' header is supplied. It is possible to default to that value if provided before generating a new value, as per the example above.**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`

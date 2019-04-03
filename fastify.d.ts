@@ -9,14 +9,28 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 declare function fastify<
-  HttpServer extends (http.Server | http2.Http2Server) = http.Server,
-  HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage,
-  HttpResponse extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse
->(opts?: fastify.ServerOptions): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
-declare function fastify(opts?: fastify.ServerOptionsAsHttp): fastify.FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>;
-declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp): fastify.FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>;
-declare function fastify(opts?: fastify.ServerOptionsAsHttp2): fastify.FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>;
-declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>;
+  HttpServer extends http.Server = http.Server,
+  HttpRequest extends http.IncomingMessage = http.IncomingMessage,
+  HttpResponse extends http.ServerResponse = http.ServerResponse
+>(opts?: fastify.ServerOptionsAsHttp<HttpServer, HttpRequest, HttpResponse>): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
+
+declare function fastify<
+  HttpServer extends https.Server = https.Server,
+  HttpRequest extends http.IncomingMessage = http.IncomingMessage,
+  HttpResponse extends http.ServerResponse = http.ServerResponse,
+>(opts?: fastify.ServerOptionsAsSecureHttp<HttpServer, HttpRequest, HttpResponse>): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
+
+declare function fastify<
+  HttpServer extends http2.Http2Server = http2.Http2Server,
+  HttpRequest extends http2.Http2ServerRequest = http2.Http2ServerRequest,
+  HttpResponse extends http2.Http2ServerResponse = http2.Http2ServerResponse
+>(opts?: fastify.ServerOptionsAsHttp2<HttpServer, HttpRequest, HttpResponse>): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
+
+declare function fastify<
+  HttpServer extends http2.Http2SecureServer = http2.Http2SecureServer,
+  HttpRequest extends http2.Http2ServerRequest = http2.Http2ServerRequest,
+  HttpResponse extends http2.Http2ServerResponse = http2.Http2ServerResponse,
+>(opts?: fastify.ServerOptionsAsSecureHttp2<HttpServer, HttpRequest, HttpResponse>): fastify.FastifyInstance<HttpServer, HttpRequest, HttpResponse>;
 
 // eslint-disable-next-line no-redeclare
 declare namespace fastify {
@@ -50,7 +64,7 @@ declare namespace fastify {
     /**
      * Validation errors
      */
-    validation?: Array<ValidationResult>;
+    validation?: ValidationResult[];
   }
 
   interface Logger {
@@ -177,37 +191,45 @@ declare namespace fastify {
     context: FastifyContext
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
-  interface ServerOptions {
+
+  interface ServerOptions<HttpServer, HttpRequest, HttpResponse> {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     pluginTimeout?: number,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
-    trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
+    trustProxy?: string | number | boolean | string[] | TrustProxyFunction,
     maxParamLength?: number,
     querystringParser?: (str: string) => { [key: string]: string | string[] },
     versioning? : {
       storage() : {
-        get(version: String) : Function | null,
-        set(version: String, store: Function) : void,
-        del(version: String) : void,
+        get(version: string) : Function | null,
+        set(version: string, store: Function) : void,
+        del(version: string) : void,
         empty() : void
       },
       deriveVersion<Context>(req: Object, ctx?: Context) : String,
     },
-    modifyCoreObjects?: boolean
+    modifyCoreObjects?: boolean,
+    requestIdHeader?: string,
+    genReqId?: (req: HttpRequest) => string,
+    serverFactory?: (handler: (req: HttpRequest, resp: HttpResponse) => void, opts: any) => HttpServer,
   }
-  interface ServerOptionsAsSecure extends ServerOptions {
-    https: http2.SecureServerOptions
-  }
-  interface ServerOptionsAsHttp extends ServerOptions {
+
+  interface ServerOptionsAsHttp<HttpServer, HttpRequest, HttpResponse> extends ServerOptions<HttpServer, HttpRequest, HttpResponse> {
     http2?: false
   }
-  interface ServerOptionsAsSecureHttp extends ServerOptionsAsHttp, ServerOptionsAsSecure {}
-  interface ServerOptionsAsHttp2 extends ServerOptions {
-    http2: true
+  interface ServerOptionsAsSecureHttp<HttpServer, HttpRequest, HttpResponse> extends ServerOptions<HttpServer, HttpRequest, HttpResponse> {
+    https: https.ServerOptions,
   }
-  interface ServerOptionsAsSecureHttp2 extends ServerOptionsAsHttp2, ServerOptionsAsSecure {}
+
+  interface ServerOptionsAsHttp2<HttpServer, HttpRequest, HttpResponse> extends ServerOptions<HttpServer, HttpRequest, HttpResponse> {
+    http2: true,
+  }
+  interface ServerOptionsAsSecureHttp2<HttpServer, HttpRequest, HttpResponse> extends ServerOptions<HttpServer, HttpRequest, HttpResponse> {
+    http2: true
+    https: http2.SecureServerOptions,
+  }
 
   // TODO - define/import JSONSchema types
   type JSONSchema = Object

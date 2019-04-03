@@ -4,6 +4,7 @@
 
 import * as fastify from '../../fastify'
 import * as http from 'http'
+import * as https from 'https'
 import * as http2 from 'http2'
 import { readFileSync } from 'fs'
 
@@ -56,13 +57,60 @@ const cors = require('cors')
 
   logAllServer.addHook('preSerialization', async (req, reply, payload, next) => payload)
 
-  // other simple options
+  // other options
   const otherServer = fastify({
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
     maxParamLength: 200,
     querystringParser: (str: string) => ({ str: str, strArray: [str] }),
-    modifyCoreObjects: true
+    modifyCoreObjects: true,
+    pluginTimeout: 1000,
+    onProtoPoisoning: 'error',
+    requestIdHeader: 'x-unique-id'
+  })
+
+  const HTTPServerFactory = (handler: (req: http.IncomingMessage, res: http.ServerResponse) => void, opts: any): http.Server => {
+    return http.createServer((req, res) => {
+      handler(req, res)
+    })
+  }
+  const advancedHTTPServer = fastify({
+    genReqId: (req: http.IncomingMessage) => '1',
+    serverFactory: HTTPServerFactory
+  })
+
+  const HTTPSecureServerFactory = (handler: (req: http.IncomingMessage, res: http.ServerResponse) => void, opts: any): https.Server => {
+    return https.createServer((req, res) => {
+      handler(req, res)
+    })
+  }
+  const advancedHTTPSecureServer = fastify({
+    https: {},
+    genReqId: (req: http.IncomingMessage) => '1',
+    serverFactory: HTTPSecureServerFactory
+  })
+
+  const HTTP2ServerFactory = (handler: (req: http2.Http2ServerRequest, res: http2.Http2ServerResponse) => void, opts: any): http2.Http2Server => {
+    return http2.createServer((req, res) => {
+      handler(req, res)
+    })
+  }
+  const advancedHTTP2Server = fastify({
+    http2: true,
+    genReqId: (req: http2.Http2ServerRequest) => '1',
+    serverFactory: HTTP2ServerFactory
+  })
+
+  const HTTP2SecureServerFactory = (handler: (req: http2.Http2ServerRequest, res: http2.Http2ServerResponse) => void, opts: any): http2.Http2SecureServer => {
+    return http2.createSecureServer((req, res) => {
+      handler(req, res)
+    })
+  }
+  const advancedHTTP2HTTPSServer = fastify({
+    http2: true,
+    https: {},
+    genReqId: (req: http2.Http2ServerRequest) => '1',
+    serverFactory: HTTP2SecureServerFactory
   })
 
   // custom types
@@ -78,7 +126,9 @@ const cors = require('cors')
     getDeviceType: () => string;
   }
 
-  const customHttp2Server: fastify.FastifyInstance<http2.Http2Server, CustomHttp2IncomingMessage, http2.Http2ServerResponse> = fastify()
+  const customHttp2Server: fastify.FastifyInstance<http2.Http2Server, CustomHttp2IncomingMessage, http2.Http2ServerResponse> = fastify({
+    http2: true
+  })
   customHttp2Server.use((req, res, next) => {
     console.log('can access props from CustomIncomingMessage', req.getDeviceType())
   })
@@ -188,7 +238,7 @@ const schema: fastify.RouteSchema = {
   }
 }
 
-const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema,
   preValidation: [
     (request, reply, next) => {

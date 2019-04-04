@@ -300,16 +300,7 @@ declare namespace fastify {
    * Fake http inject response
    */
   interface HTTPInjectResponse {
-    raw: {
-      req: NodeJS.ReadableStream,
-      res: http.ServerResponse
-    },
-    headers: object,
-    statusCode: number,
-    statusMessage: string,
-    payload: string,
-    rawPayload: Buffer,
-    trailers: object
+    
   }
 
   /**

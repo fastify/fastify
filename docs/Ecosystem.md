@@ -75,6 +75,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT authentication for fastify-based web apps.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify plugin for support KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock) Fastify Mock KnexJS for testing support.
+- [`fastify-kubernetes`](https://github.com/greguz/fastify-kubernetes) Fastify Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser) Fastify plugin to parse request language.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from a directory and inject the fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).

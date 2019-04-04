@@ -14,6 +14,8 @@ import {
 import { FastifySchema } from './types/schema'
 import { HTTPMethods } from './types/utils'
 import { FastifyLogger } from './types/logger'
+import { InjectOptions, InjectPayload } from 'light-my-request'
+
 /**
  * Fastify factor function for the standard fastify http, https, or http2 server instance.
  *
@@ -56,8 +58,8 @@ declare namespace fastify {
     hasRequestDecorator(decorator: string): boolean
     hasReplyDecorator(decorator: string): boolean
 
-    inject(opts: FastifyInjectOptions | string, cb: (err: Error, response: FastifyInjectResponse) => void): void
-    inject(opts: FastifyInjectOptions | string): Promise<FastifyInjectResponse>
+    inject(opts: InjectOptions | string, cb: (err: Error, response: InjectPayload) => void): void
+    inject(opts: InjectOptions | string): Promise<InjectPayload>
 
     listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
     listen(port: number, address: string, callback: (err: Error, address: string) => void): void
@@ -84,36 +86,6 @@ declare namespace fastify {
     options: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
     patch: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
     all: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-  }
-
-  type FastifyInjectResponse = {
-    raw: {
-      req: NodeJS.ReadableStream,
-      res: http.ServerResponse
-    },
-    headers: object,
-    statusCode: number,
-    statusMessage: string,
-    payload: string,
-    rawPayload: Buffer,
-    trailers: object
-  }
-
-  type FastifyInjectOptions = {
-    url: string,
-    method?: HTTPMethods,
-    authority?: string,
-    headers?: any,
-    query?: any,
-    remoteAddress?: string,
-    payload?: string | object | Buffer | NodeJS.ReadableStream
-    simulate?: {
-      end?: boolean,
-      split?: boolean,
-      error?: boolean,
-      close?: boolean
-    },
-    validate?: boolean
   }
 
   type ServerOptions<

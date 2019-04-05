@@ -12,7 +12,7 @@ export interface FastifyLoggerOptions<
   RawReply extends RawReplyBase = RawReplyDefault
 > {
   serializers?: {
-    req: (req: HttpRequest) => {
+    req: (req: RawRequest) => {
       method: string,
       url: string,
       version: string,
@@ -26,7 +26,7 @@ export interface FastifyLoggerOptions<
       stack: string;
       [key: string]: any;
     },
-    res: (res: HttpResponse) => {
+    res: (res: RawReply) => {
       statusCode: string | number
     }
   };

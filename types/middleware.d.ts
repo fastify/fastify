@@ -5,11 +5,12 @@ import * as https from 'https'
 import { FastifyInstance } from '../fastify'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
+import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 
 export type FastifyMiddleware<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   req: FastifyRequest<RawRequest>,
@@ -18,9 +19,9 @@ export type FastifyMiddleware<
 ) => void
 
 export type FastifyMiddlewareWithPayload<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   req: FastifyRequest<RawRequest>,

@@ -3,8 +3,9 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { FastifyContext } from '../fastify'
+import { RawReplyBase, RawReplyDefault } from './utils';
 
-export type FastifyReply<RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = http.ServerResponse> = RawReply & {
+export type FastifyReply<RawReply extends RawReplyBase = RawReplyDefault> = RawReply & {
   callNotFound(): void
   code(statusCode: number): FastifyReply<RawReply>
   hasHeader(key: string): boolean

@@ -12,7 +12,15 @@ import {
   RouteShorthandOptions
 } from './types/route'
 import { FastifySchema } from './types/schema'
-import { HTTPMethods } from './types/utils'
+import {
+  HTTPMethods,
+  RawServerBase,
+  RawRequestBase,
+  RawReplyBase,
+  RawServerDefault,
+  RawRequestDefault,
+  RawReplyDefault 
+} from './types/utils'
 import { FastifyLogger } from './types/logger'
 import { InjectOptions, InjectPayload } from 'light-my-request'
 
@@ -24,7 +32,7 @@ import { InjectOptions, InjectPayload } from 'light-my-request'
  * @param opts Fastify server options
  */
 declare function fastify<
-  RawServer extends http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer = http.Server
+  RawServer extends RawServerBase = RawServerDefault
 >(opts?: fastify.ServerOptions<RawServer>): fastify.FastifyInstance<RawServer>;
 
 declare namespace fastify {
@@ -34,9 +42,9 @@ declare namespace fastify {
    * The default interface instance implements an http server. It is recommended you only define the RawServer generic and let TypeScript determine the generic value of RawRequest and RawReply.
    */
   interface FastifyInstance<
-    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-    RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-    RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+    RawServer extends RawServerBase = RawServerDefault, 
+    RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+    RawReply extends RawReplyBase = RawReplyDefault<RawServer>
   > {
     server: RawServer
     prefix: string
@@ -89,7 +97,7 @@ declare namespace fastify {
   }
 
   type ServerOptions<
-    RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server,
+    RawServer extends RawServerBase = RawServerDefault,
   > = {
     http2?: RawServer extends http2.Http2Server ? true : false,
     https?: RawServer extends https.Server 
@@ -105,7 +113,7 @@ declare namespace fastify {
     serverFactory?: any, // inquire with team / code base for more details
     caseSensitive?: boolean,
     requestIdHeader?: string,
-    genReqId?: (req: FastifyRequest<RawServer extends (http.Server | https.Server) ? http.IncomingMessage : http2.Http2ServerRequest>) => string,
+    genReqId?: (req: FastifyRequest<RawRequestDefault<RawServer>>) => string,
     trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
     querystringParser?: (str: string) => { [key: string]: string | string[] },
     versioning?: {

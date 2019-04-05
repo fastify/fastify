@@ -7,24 +7,24 @@ import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { HTTPMethods } from './utils'
+import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 
 export type RouteShorthandMethod<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = (path: string, handler: RouteHandlerMethod) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 export type RouteShorthandMethodWithOptions<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = (path: string, opts: RouteShorthandOptions<RawServer, RawRequest, RawReply>, handler: RouteHandlerMethod) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 export type RouteOptions<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = RouteShorthandOptions<RawServer, RawRequest, RawReply> & {
   method: HTTPMethods | HTTPMethods[],
   url: string,
@@ -32,9 +32,9 @@ export type RouteOptions<
 }
 
 export type RouteShorthandOptions<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = {
   schema?: FastifySchema,
   attachValidation?: boolean,
@@ -49,9 +49,9 @@ export type RouteShorthandOptions<
 }
 
 export type RouteHandlerMethod<
-  RawServer extends (http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer) = http.Server, 
-  RawRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest, 
-  RawReply extends (http.ServerResponse | http2.Http2ServerResponse) = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault, 
+  RawReply extends RawReplyBase = RawReplyDefault
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   request: FastifyRequest<RawRequest>,

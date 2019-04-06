@@ -74,24 +74,20 @@ fastify.listen(3000, err => {
   })
 
   test('get /service/sub-service also raise 429 after 5 request under 1 minutes as /service as rate limit set', t => {
-    t.plan(3)
-    for (let i = 1; i < 4; i++) {
-      sget({
-        method: 'GET',
-        url: 'http://localhost:3000/service/sub-service',
-        body: {},
-        json: true
-      },
-      (err, response, body) => {
-        if (err) throw err
-        if (i < 4) {
-          t.strictEqual(response.statusCode, 200)
-        } else {
-          t.strictEqual(response.statusCode, 429)
-          t.end()
-        }
-      })
-    }
+    t.plan(1)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:3000/service/sub-service',
+      body: {},
+      json: true
+    },
+    (err, response, body) => {
+      if (err) throw err
+
+      t.strictEqual(response.statusCode, 429)
+      t.end()
+    })
   })
 
   test('get /account/sub-category-1 raise 429 after 5 request under 1 minutes', t => {
@@ -137,8 +133,8 @@ fastify.listen(3000, err => {
   })
 
   test('get /home should not raise 429 as no rate limit rule', t => {
-    t.plan(50)
-    for (let i = 1; i <= 50; i++) {
+    t.plan(49)
+    for (let i = 1; i < 50; i++) {
       sget({
         method: 'GET',
         url: 'http://localhost:3000/home',
@@ -147,7 +143,7 @@ fastify.listen(3000, err => {
       },
       (err, response, body) => {
         if (err) throw err
-        if (i === 50) {
+        if (i === 49) {
           t.strictEqual(response.statusCode, 200)
           t.end()
           process.exit(0)

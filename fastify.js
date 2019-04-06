@@ -12,7 +12,7 @@ const onRateLimit = require('./lib/rateLimit')
 const {
   kChildren,
   kBodyLimit,
-  kRateLimitConnector,
+  kRateLimit,
   kRoutePrefix,
   kLogLevel,
   kHooks,
@@ -74,7 +74,7 @@ function build (options) {
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
-  const rateLimitConnector = options.rateLimitConnector || false
+  const rateLimit = options.rateLimit || false
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -117,7 +117,7 @@ function build (options) {
     [kOptions]: options,
     [kChildren]: [],
     [kBodyLimit]: bodyLimit,
-    [kRateLimitConnector]: rateLimitConnector,
+    [kRateLimit]: rateLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kHooks]: new Hooks(),
@@ -198,7 +198,9 @@ function build (options) {
     setErrorHandler: setErrorHandler,
     // Set fastify initial configuration options read-only object
     initialConfig: getSecuredInitialConfig(options),
-    rateLimitConnector: false,
+    rateLimit: {
+      connector: false
+    },
     rateLimitMaxLocalCache: 5000
   }
 
@@ -452,16 +454,17 @@ function build (options) {
         opts.attachValidation = false
       }
 
+      if (typeof opts.rateLimit === 'object') {
+        opts.rateLimit.redis = this[kRateLimit]
+        opts.rateLimit.path = url
+        this.use(url, onRateLimit(opts.rateLimit))
+      }
+
       // run 'onRoute' hooks
       for (const hook of this[kGlobalHooks].onRoute) hook.call(this, opts)
 
       const config = opts.config || {}
       config.url = url
-
-      if (typeof opts.rateLimit === 'object') {
-        opts.rateLimit.redis = this[kRateLimitConnector]
-        this.use(url, onRateLimit(opts.rateLimit))
-      }
 
       const context = new Context(
         opts.schema,

@@ -137,6 +137,7 @@
     "fast-json-stringify": "^1.11.2",
     "find-my-way": "^2.0.0",
     "flatstr": "^1.0.9",
+    "hyperid": "^2.0.2",
     "light-my-request": "^3.2.0",
     "middie": "^4.0.1",
     "pino": "^5.11.1",

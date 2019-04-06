@@ -48,12 +48,12 @@ const fastify = require('fastify')({
 
 // registers both "/foo" and "/foo/"
 fastify.get('/foo/', function (req, reply) {
-  res.send('foo')
+  reply.send('foo')
 })
 
 // registers both "/bar" and "/bar/"
 fastify.get('/bar', function (req, reply) {
-  res.send('bar')
+  reply.send('bar')
 })
 ```
 

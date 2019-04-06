@@ -76,7 +76,6 @@ function build (options) {
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const rateLimitConnector = options.rateLimitConnector || false
 
-
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
 
@@ -118,7 +117,7 @@ function build (options) {
     [kOptions]: options,
     [kChildren]: [],
     [kBodyLimit]: bodyLimit,
-    [kRateLimitConnector] : rateLimitConnector,
+    [kRateLimitConnector]: rateLimitConnector,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
     [kHooks]: new Hooks(),

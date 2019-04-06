@@ -29,17 +29,29 @@ Declaring formal releases remains the prerogative of the project maintainers.
 
 This is an experiment and feedback is welcome! This document may also be subject to pull-requests or changes by contributors where you believe you have something valuable to add or change.
 
-## Onboarding Collaborators
+# Fastify Organization Structure
 
-> This section pertains to Fastify collaborators
+We have many collaborators, and every kind of contribution is welcome! Our organization is structured as follows:
+
+|  Team | Competence  |  Repository |
+|---|---|---|
+| `@fastify/core`   |  Fastify Core development  |  `fastify`, `fast-json-stringify`, `light-my-request`, `fastify-plugin`, `middie` |
+| `@fastify/plugins`   |  Build, maintain and release Fastify plugins  |  All plugins repositories |
+| `@fastify/benchmarks`   |  Build and maintain our benchmarks suite  |  `benchmarks` |
+| `@fastify/docs-chinese`   |  Translate the Fastify documentation in Chinese  |  `docs-chinese` |
+
+Every memeber of the org is also part of `@fastify/fastify`.
+
+### Onboarding Collaborators
 
 Welcome to the team! We are happy to have you. Before you start, please complete the following tasks:
 1. Set up 2 factor authentication for GitHub and NPM
   - [GitHub 2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
   - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
-2. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the collaborators in the [README.md](./README.md) and [package.json](./package.json) files. The collaborator lists are sorted alphabetically; make sure to add your name in the proper order.
-3. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
-4. The person that does the onboarding must add you to the  [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
+2. Choose which team to join *(more than one is ok!)* based on how you want to help.
+3. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the team you have choosen in the [README.md](./README.md) and [package.json](./package.json) *(if you are part of the core team)* files. The members lists are sorted alphabetically; make sure to add your name in the proper order.
+4. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
+5. The person that does the onboarding must add you to the  [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
 
 -----------------------------------------
 

@@ -84,7 +84,7 @@ Possible values are `'error'`, `'remove'` and `'ignore'`.
 + Default: `'error'`
 
 <a name="factory-rate-limit-connector"></a>
-### `rateLimitConnector`
+### `rateLimit`
 
 Defines the Redis connection instance to be use to store the rate limit statistics. 
 By default value `'false'` means that it will use the cache LRU (using [tiny-lru](https://www.npmjs.com/package/tiny-lru))

@@ -1,6 +1,29 @@
 <h1 align="center">Fastify</h1>
 
 ## Reply
+- [Reply](#reply)
+  - [Introduction](#introduction)
+  - [.code(statusCode)](#codestatuscode)
+  - [.header(key, value)](#headerkey-value)
+  - [.getHeader(key)](#getheaderkey)
+  - [.removeHeader(key)](#removeheaderkey)
+  - [.hasHeader(key)](#hasheaderkey)
+  - [.redirect(dest)](#redirectdest)
+  - [.callNotFound()](#callnotfound)
+  - [.type(contentType)](#typecontenttype)
+  - [.serializer(func)](#serializerfunc)
+  - [.sent](#sent)
+  - [.send(data)](#senddata)
+    - [Objects](#objects)
+    - [Strings](#strings)
+    - [Streams](#streams)
+    - [Buffers](#buffers)
+    - [Errors](#errors)
+    - [Type of the final payload](#type-of-the-final-payload)
+    - [Async-Await and Promises](#async-await-and-promises)
+  
+<a name="introduction"></a>
+### Introduction
 The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions
 and properties:
@@ -9,6 +32,7 @@ and properties:
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.header(name, value)` - Sets a response header.
 - `.getHeader(name)` - Retrieve value of already set header.
+- `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
@@ -60,7 +84,7 @@ reply.getHeader('x-foo') // 'foo'
 <a name="getHeader"></a>
 ### .removeHeader(key)
 
-Removed the value of a previously set header.
+Remove the value of a previously set header.
 ```js
 reply.header('x-foo', 'foo')
 reply.removeHeader('x-foo')

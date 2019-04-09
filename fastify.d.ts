@@ -5,11 +5,8 @@ import * as https from 'https'
 import { FastifyRequest } from './types/request'
 import { FastifyReply } from './types/reply'
 import {
-  RouteHandlerMethod,
   RouteOptions,
-  RouteShorthandMethod,
-  RouteShorthandMethodWithOptions,
-  RouteShorthandOptions
+  RouteShorthandIntersection
 } from './types/route'
 import { FastifySchema } from './types/schema'
 import {
@@ -19,7 +16,7 @@ import {
   RawReplyBase,
   RawServerDefault,
   RawRequestDefault,
-  RawReplyDefault 
+  RawReplyDefault
 } from './types/utils'
 import { FastifyLogger } from './types/logger'
 import { InjectOptions, InjectPayload } from 'light-my-request'
@@ -86,14 +83,14 @@ declare namespace fastify {
     // Would love to implement something like the following:
     // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
 
-    get: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    head: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    post: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    put: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    delete: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    options: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    patch: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
-    all: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>
+    get: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    head: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    post: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    put: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    delete: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    options: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    patch: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+    all: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
   }
 
   type ServerOptions<

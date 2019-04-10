@@ -70,7 +70,7 @@ function build (options) {
   const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
-  const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+  const genReqId = reqIdGenFactory(requestIdHeader, options.genReqId)
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
   // Instance Fastify components

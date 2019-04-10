@@ -164,6 +164,10 @@ Please note this setting this option to `false` goes against
 ### `requestIdHeader`
 
 The header name used to know the request id. See [the request id](https://github.com/fastify/fastify/blob/master/docs/Logging.md#logging-request-id) section.
+When this option is specified along with [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Logging.md#factory-gen-request-id)
+it will take precedence over the `genReqId` function when the header is present.
+Otherwise, if the header is missing on the incoming request, the `genReqId`
+function will be used.
 
 + Default: `'request-id'`
 

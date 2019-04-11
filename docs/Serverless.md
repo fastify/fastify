@@ -85,3 +85,9 @@ and proxy all the incoming events (API Gateway requests) to the `proxy` function
 ### Example
 
 An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
+
+
+### Considerations
+
+- API Gateway doesn't support streams yet, so you're not able to handle streams like here: https://www.fastify.io/docs/latest/Reply/#streams
+- API Gateway has a timeout of 29 seconds, so it's important provide reply during this time.

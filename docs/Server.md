@@ -167,6 +167,13 @@ The header name used to know the request id. See [the request id](https://github
 
 + Default: `'request-id'`
 
+<a name="factory-request-id-log-label"></a>
+### `requestIdLogLabel`
+
+Defines the label used for the request identifier when logging the request.
+
++ Default: `'reqId'`
+
 <a name="factory-gen-request-id"></a>
 ### `genReqId`
 
@@ -183,7 +190,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will be called even when the 'request-id' header is supplied. It is possible to default to that value if provided before generating a new value, as per the example above.**
+**Note: genReqId will _not_ be called if the 'request-id' header is available.**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`

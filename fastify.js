@@ -70,7 +70,8 @@ function build (options) {
   const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
-  const genReqId = options.genReqId || reqIdGenFactory(requestIdHeader)
+  const genReqId = options.genReqId || reqIdGenFactory()
+  const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
 
   // Instance Fastify components
@@ -272,7 +273,7 @@ function build (options) {
       return
     }
 
-    req.id = genReqId(req)
+    req.id = req.headers[requestIdHeader] || genReqId(req)
     req.originalUrl = req.url
     var hostname = req.headers['host']
     var ip = req.connection.remoteAddress
@@ -286,7 +287,7 @@ function build (options) {
       }
     }
 
-    var childLogger = logger.child({ reqId: req.id, level: context.logLevel })
+    var childLogger = logger.child({ [requestIdLogLabel]: req.id, level: context.logLevel })
 
     // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
     if (modifyCoreObjects) {

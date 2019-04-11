@@ -90,4 +90,4 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 ### Considerations
 
 - API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams). 
-- API Gateway has a timeout of 29 seconds, so it's important provide reply during this time.
+- API Gateway has a timeout of 29 seconds, so it's important to provide a reply during this time.

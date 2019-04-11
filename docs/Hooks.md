@@ -268,7 +268,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 
 - `'onClose'`
 - `'onRoute'`
-- `'onRegister''`
+- `'onRegister'`
 
 <a name="on-close"></a>
 **'onClose'**<br>

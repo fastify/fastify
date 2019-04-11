@@ -164,10 +164,6 @@ Please note this setting this option to `false` goes against
 ### `requestIdHeader`
 
 The header name used to know the request id. See [the request id](https://github.com/fastify/fastify/blob/master/docs/Logging.md#logging-request-id) section.
-When this option is specified along with [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Logging.md#factory-gen-request-id)
-it will take precedence over the `genReqId` function when the header is present.
-Otherwise, if the header is missing on the incoming request, the `genReqId`
-function will be used.
 
 + Default: `'request-id'`
 
@@ -194,7 +190,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will be called even when the 'request-id' header is supplied. It is possible to default to that value if provided before generating a new value, as per the example above.**
+**Note: genReqId will _not_ be called if the 'request-id' header is available.**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`

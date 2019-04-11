@@ -171,6 +171,13 @@ function will be used.
 
 + Default: `'request-id'`
 
+<a name="factory-request-id-log-label"></a>
+### `requestIdLogLabel`
+
+Defines the label used for the request identifier when logging the request.
+
++ Default: `'reqId'`
+
 <a name="factory-gen-request-id"></a>
 ### `genReqId`
 

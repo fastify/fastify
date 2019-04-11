@@ -25,7 +25,8 @@ test('without options passed to Fastify, initialConfig should expose default val
     maxParamLength: 100,
     onProtoPoisoning: 'error',
     pluginTimeout: 10000,
-    requestIdHeader: 'request-id'
+    requestIdHeader: 'request-id',
+    requestIdLogLabel: 'reqId'
   }
 
   t.deepEquals(Fastify().initialConfig, fastifyDefaultOptions)
@@ -226,7 +227,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       maxParamLength: 100,
       onProtoPoisoning: 'error',
       pluginTimeout: 10000,
-      requestIdHeader: 'request-id'
+      requestIdHeader: 'request-id',
+      requestIdLogLabel: 'reqId'
     })
   } catch (error) {
     t.fail()

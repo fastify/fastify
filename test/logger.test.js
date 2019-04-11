@@ -373,6 +373,49 @@ test('The request id header key can be customized along with a custom id generat
   })
 })
 
+test('The request id log label can be changed', t => {
+  t.plan(6)
+  const REQUEST_ID = '42'
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: { stream: stream, level: 'info' },
+    requestIdHeader: 'my-custom-request-id',
+    requestIdLogLabel: 'traceId'
+  })
+  t.tearDown(() => fastify.close())
+
+  fastify.get('/one', (req, reply) => {
+    t.equal(req.id, REQUEST_ID)
+    req.log.info('some log message')
+    reply.send({ id: req.id })
+  })
+
+  const matches = [
+    { traceId: REQUEST_ID, msg: /incoming request/ },
+    { traceId: REQUEST_ID, msg: /some log message/ },
+    { traceId: REQUEST_ID, msg: /request completed/ }
+  ]
+
+  let i = 0
+  stream.on('data', line => {
+    t.match(line, matches[i])
+    i += 1
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/one',
+    headers: {
+      'my-custom-request-id': REQUEST_ID
+    }
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, REQUEST_ID)
+  })
+})
+
 test('The logger should accept custom serializer', t => {
   t.plan(9)
 

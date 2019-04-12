@@ -32,9 +32,9 @@ import { FastifyInstance } from './types/instance'
  */
 export default function fastify<
   RawServer extends RawServerBase = RawServerDefault
->(opts?: ServerOptions<RawServer>): FastifyInstance<RawServer>;
+>(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer>; // For `import fastify from 'fastify'`
 
-export type ServerOptions<
+export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
 > = {
   http2?: RawServer extends http2.Http2Server ? true : false,
@@ -74,3 +74,4 @@ interface FastifyContext {
 /* Export all additional types*/
 export { FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
+export { fastify } // For `import { fastify } from 'fastify'`

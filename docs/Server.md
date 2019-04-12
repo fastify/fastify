@@ -116,6 +116,27 @@ are not present on the object, they will be added accordingly:
         ```
       Any user supplied serializer will override the default serializer of the
       corresponding property.
++ `loggerInstance`: a custom logger instance. The logger must conform to the Pino 
+interface by having the following methods: `info`, `error`, `debug`, `fatal`, `warn`, `trace`, `child`. For example:
+  ```js
+  const pino = require('pino')();
+  
+  const customLogger = {
+    info: function (o, ...n) {},
+    warn: function (o, ...n) {},
+    error: function (o, ...n) {},
+    fatal: function (o, ...n) {},
+    trace: function (o, ...n) {},
+    debug: function (o, ...n) {},
+    child: function() {
+      const child = Object.create(this);
+      child.pino = pino.child(...arguments);
+      return child;
+    },
+  };
+  
+  const fastify = require('fastify')({logger: customLogger});
+  ```
 
 <a name="custom-http-server"></a>
 ### `serverFactory`

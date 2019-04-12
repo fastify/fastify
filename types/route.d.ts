@@ -2,7 +2,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
-import { FastifyInstance } from '../fastify'
+import { FastifyInstance } from './instance'
 import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'

@@ -1,7 +1,7 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import { FastifyInstance } from '../fastify';
+import { FastifyInstance } from './instance';
 
 export type HTTPMethods = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
 

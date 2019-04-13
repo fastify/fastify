@@ -339,11 +339,24 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="route-hooks"></a>
 ## Route level hooks
-You can declare one or more custom `preValidation` and `preHandler` hook(s) that will be unique for the route.
-If you do so, those hooks always be executed as last hook in their category.<br/>
-This can be useful if you need to run the authentication, and the `preValidation` hooks is exactly what you need for doing that.
+You can declare one or more custom `onRequest`, `preParsing`, `preValidation`, `preHandler` and `preSerialization` hook(s) that will be unique for the route.
+If you do so, those hooks always be executed as last hook in their category. <br/>
+This can be useful if you need to run the authentication, and the `preParsing` or `preValidation` hooks are exactly what you need for doing that.
+Multiple route-level hooks can also be specified as an array.
+
 Let's make an example:
+
 ```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  // your code
+  done()
+})
+
+fastify.addHook('preParsing', (request, reply, done) => {
+  // your code
+  done()
+})
+
 fastify.addHook('preValidation', (request, reply, done) => {
   // your code
   done()
@@ -354,10 +367,23 @@ fastify.addHook('preHandler', (request, reply, done) => {
   done()
 })
 
+fastify.addHook('preSerialization', (request, reply, done) => {
+  // your code
+  done()
+})
+
 fastify.route({
   method: 'GET',
   url: '/',
   schema: { ... },
+  onRequest: function (request, reply, done) {
+    // this hook will always be executed after the shared `onRequest` hooks
+    done()
+  },
+  preParsing: function (request, reply, done) {
+    // this hook will always be executed after the shared `preParsing` hooks
+    done()
+  },
   preValidation: function (request, reply, done) {
     // this hook will always be executed after the shared `preValidation` hooks
     done()
@@ -366,9 +392,20 @@ fastify.route({
     // this hook will always be executed after the shared `preHandler` hooks
     done()
   },
+  // // Example with an array. All hooks support this syntax.
+  //
+  // preHandler: [function (request, reply, done) {
+  //   // this hook will always be executed after the shared `preHandler` hooks
+  //   done()
+  // }],
+  preSerialization: (request, reply, payload, next) => {
+    // manipulate the payload
+    next(null, payload)
+  },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
 })
 ```
+
 **Note**: both options also accept an array of functions.

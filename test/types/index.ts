@@ -216,8 +216,20 @@ server
     handler: (req, reply) => {
       reply.send({ hello: 'route' })
     },
+    onRequest: (req, reply, done) => {
+      req.log.info(`onRequest for "${req.req.url}" ${req.id}`)
+      done()
+    },
+    preParsing: (req, reply, done) => {
+      req.log.info(`preParsing for "${req.req.url}" ${req.id}`)
+      done()
+    },
     preValidation: (req, reply, done) => {
-      req.log.info(`pre validation for "${req.req.url}" ${req.id}`)
+      req.log.info(`preValidation for "${req.req.url}" ${req.id}`)
+      done()
+    },
+    preSerialization: (req, reply, done) => {
+      req.log.info(`preSerialization for "${req.req.url}" ${req.id}`)
       done()
     },
     preHandler: (req, reply, done) => {

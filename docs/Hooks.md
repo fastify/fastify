@@ -365,6 +365,11 @@ fastify.addHook('preHandler', (request, reply, done) => {
   done()
 })
 
+fastify.addHook('preSerialization', (request, reply, done) => {
+  // your code
+  done()
+})
+
 fastify.route({
   method: 'GET',
   url: '/',
@@ -385,9 +390,14 @@ fastify.route({
     // this hook will always be executed after the shared `preHandler` hooks
     done()
   },
+  preSerialization: (request, reply, payload, next) => {
+    // manipulate the payload
+    next(null, payload)
+  },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
 })
 ```
+
 **Note**: both options also accept an array of functions.

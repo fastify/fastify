@@ -339,7 +339,7 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="route-hooks"></a>
 ## Route level hooks
-You can declare one or more custom `onRequest`, `preParsing`,  `preValidation` and `preHandler` hook(s) that will be unique for the route.
+You can declare one or more custom `onRequest`, `preParsing`, `preValidation`, `preHandler` and `preSerialization` hook(s) that will be unique for the route.
 If you do so, those hooks always be executed as last hook in their category.<br/>
 This can be useful if you need to run the authentication, and the `preValidation` hooks is exactly what you need for doing that.
 Let's make an example:

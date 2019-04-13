@@ -339,11 +339,22 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="route-hooks"></a>
 ## Route level hooks
-You can declare one or more custom `preValidation` and `preHandler` hook(s) that will be unique for the route.
+You can declare one or more custom `onRequest`, `preParsing`,  `preValidation` and `preHandler` hook(s) that will be unique for the route.
 If you do so, those hooks always be executed as last hook in their category.<br/>
 This can be useful if you need to run the authentication, and the `preValidation` hooks is exactly what you need for doing that.
 Let's make an example:
+
 ```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  // your code
+  done()
+})
+
+fastify.addHook('preParsing', (request, reply, done) => {
+  // your code
+  done()
+})
+
 fastify.addHook('preValidation', (request, reply, done) => {
   // your code
   done()
@@ -358,6 +369,14 @@ fastify.route({
   method: 'GET',
   url: '/',
   schema: { ... },
+  onRequest: function (request, reply, done) {
+    // this hook will always be executed after the shared `onRequest` hooks
+    done()
+  },
+  preParsing: function (request, reply, done) {
+    // this hook will always be executed after the shared `preParsing` hooks
+    done()
+  },
   preValidation: function (request, reply, done) {
     // this hook will always be executed after the shared `preValidation` hooks
     done()

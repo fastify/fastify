@@ -478,32 +478,20 @@ function build (options) {
         return
       }
 
-      if (opts.preParsing) {
-        if (Array.isArray(opts.preParsing)) {
-          opts.preParsing = opts.preParsing.map(hook => hook.bind(this))
-        } else {
-          opts.preParsing = opts.preParsing.bind(this)
-        }
-      }
-
-      if (opts.preValidation) {
-        if (Array.isArray(opts.preValidation)) {
-          opts.preValidation = opts.preValidation.map(hook => hook.bind(this))
-        } else {
-          opts.preValidation = opts.preValidation.bind(this)
-        }
-      }
-
       if (opts.preHandler == null && opts.beforeHandler != null) {
         beforeHandlerWarning()
         opts.preHandler = opts.beforeHandler
       }
 
-      if (opts.preHandler) {
-        if (Array.isArray(opts.preHandler)) {
-          opts.preHandler = opts.preHandler.map(hook => hook.bind(this))
-        } else {
-          opts.preHandler = opts.preHandler.bind(this)
+      const hooks = ['preParsing', 'preValidation', 'onRequest', 'preHandler', 'preSerialization']
+
+      for (let hook of hooks) {
+        if (opts[hook]) {
+          if (Array.isArray(opts[hook])) {
+            opts[hook] = opts[hook].map(fn => fn.bind(this))
+          } else {
+            opts[hook] = opts[hook].bind(this)
+          }
         }
       }
 
@@ -518,23 +506,18 @@ function build (options) {
       // the route registration. To be sure to load also that hooks/middlewares,
       // we must listen for the avvio's preReady event, and update the context object accordingly.
       avvio.once('preReady', () => {
-        const onRequest = this[kHooks].onRequest
         const onResponse = this[kHooks].onResponse
         const onSend = this[kHooks].onSend
         const onError = this[kHooks].onError
-        const preParsing = this[kHooks].preParsing.concat(opts.preParsing || [])
-        const preValidation = this[kHooks].preValidation.concat(opts.preValidation || [])
-        const preSerialization = this[kHooks].preSerialization.concat(opts.preSerialization || [])
-        const preHandler = this[kHooks].preHandler.concat(opts.preHandler || [])
 
-        context.onRequest = onRequest.length ? onRequest : null
-        context.preParsing = preParsing.length ? preParsing : null
-        context.preValidation = preValidation.length ? preValidation : null
-        context.preSerialization = preSerialization.length ? preSerialization : null
-        context.preHandler = preHandler.length ? preHandler : null
         context.onSend = onSend.length ? onSend : null
         context.onError = onError.length ? onError : null
         context.onResponse = onResponse.length ? onResponse : null
+
+        for (let hook of hooks) {
+          const toSet = this[kHooks][hook].concat(opts[hook] || [])
+          context[hook] = toSet.length ? toSet : null
+        }
 
         context._middie = buildMiddie(this[kMiddlewares])
 

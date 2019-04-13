@@ -132,12 +132,12 @@ test('within an instance', t => {
     reply.redirect(301, '/')
   })
 
-  fastify.get('/redirect-code-before-call', function (req, reply) {
+  fastify.get('/redirect-code-before-call-default-overwrite', function (req, reply) {
     reply.code(307).redirect('/')
   })
 
   fastify.get('/redirect-code-before-call-overwrite', function (req, reply) {
-    reply.code(307).redirect(302, '/')
+    reply.code(307).redirect(301, '/')
   })
 
   fastify.get('/custom-serializer', function (req, reply) {
@@ -265,11 +265,13 @@ test('within an instance', t => {
       })
     })
 
+    // redirect-code-before-call-default-overwrite
+
     test('redirect to `/` - 6', t => {
       t.plan(4)
       sget({
         method: 'GET',
-        url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call'
+        url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-default-overwrite'
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
@@ -279,6 +281,14 @@ test('within an instance', t => {
     })
 
     test('redirect to `/` - 7', t => {
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-default-overwrite', function (response) {
+        t.strictEqual(response.statusCode, 302)
+      })
+    })
+
+    test('redirect to `/` - 8', t => {
       t.plan(4)
       sget({
         method: 'GET',
@@ -291,19 +301,11 @@ test('within an instance', t => {
       })
     })
 
-    test('redirect to `/` - 8', t => {
-      t.plan(1)
-
-      http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
-        t.strictEqual(response.statusCode, 307)
-      })
-    })
-
     test('redirect to `/` - 9', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
-        t.strictEqual(response.statusCode, 302)
+        t.strictEqual(response.statusCode, 301)
       })
     })
 

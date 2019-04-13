@@ -97,7 +97,7 @@ Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
 ### .redirect(dest)
-Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
+Redirects a request to the specified url, the status code is optional, default to `302`.
 ```js
 reply.redirect('/home')
 ```

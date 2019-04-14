@@ -5,8 +5,8 @@ import { FastifyInstance } from './instance';
 
 export type FastifyRegister<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = <Options>(plugin: FastifyPlugin<Options, RawServer>, opts?: RegisterOptions & Options) => void;
 
 export type RegisterOptions = {

@@ -2,11 +2,11 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
+import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandIntersection } from './route'
 import { FastifySchema } from './schema'
 import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
 import { FastifyLogger } from './logger'
-import { InjectOptions, InjectPayload } from 'light-my-request'
 import { FastifyRegister } from './register';
 
 export interface FastifyInstance<

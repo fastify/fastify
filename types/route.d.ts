@@ -11,26 +11,26 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawReques
 
 export type RouteShorthandMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (path: string, handler: RouteHandlerMethod<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 export type RouteShorthandMethodWithOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (path: string, opts: RouteShorthandOptions<RawServer, RawRequest, RawReply>, handler: RouteHandlerMethod<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 export type RouteShorthandMethodWithoutHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (path: string, opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 export type RouteOptions<
   RawServer extends RawServerBase = RawServerDefault, 
-  RawRequest extends RawRequestBase = RawRequestDefault, 
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = RouteShorthandOptions<RawServer, RawRequest, RawReply> & {
   method: HTTPMethods | HTTPMethods[],
   url: string,
@@ -39,8 +39,8 @@ export type RouteOptions<
 
 export type RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault, 
-  RawRequest extends RawRequestBase = RawRequestDefault, 
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = {
   schema?: FastifySchema,
   attachValidation?: boolean,
@@ -56,24 +56,24 @@ export type RouteShorthandOptions<
 
 export type RouteShorthandOptionsWithHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = RouteShorthandOptions<RawServer, RawRequest, RawReply> & {
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply>
 }
 
 export type RouteHandlerMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
-  request: FastifyRequest<RawRequest>,
-  reply: FastifyReply<RawReply>
+  request: FastifyRequest<RawServer, RawRequest>,
+  reply: FastifyReply<RawServer, RawReply>
 ) => void | Promise<any>
 
 export type RouteShorthandIntersection<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithoutHandler<RawServer, RawRequest, RawReply>

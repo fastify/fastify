@@ -1,12 +1,12 @@
-import { FastifyInstance } from '../fastify'
+import { FastifyInstance } from './instance'
 import { FastifyError } from './error'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 
 type FastifyPlugin<
   Options extends { [key: string]: any },
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (
   instance: FastifyInstance<RawServer, RawRequest, RawReply>,
   opts: Options,

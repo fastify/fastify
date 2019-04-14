@@ -2,14 +2,15 @@ import * as http from 'http'
 import * as net from 'net'
 
 import { FastifyError } from './error'
-import { RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
+import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
 
 type WriteFn = (msg: string, ...args: any[]) => void
 type WriteFnWithObj = (obj: {}, msg?: string, ...args: any[]) => void
 
 export interface FastifyLoggerOptions<
-  RawRequest extends RawRequestBase = RawRequestDefault,
-  RawReply extends RawReplyBase = RawReplyDefault
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > {
   serializers?: {
     req: (req: RawRequest) => {
@@ -56,5 +57,11 @@ namespace fastify {
 */
 type PinoObject = object
 
-export type FastifyLoggerFunction = (opts: FastifyLoggerOptions) => void
+export type FastifyLoggerFunction = <
+  RawServer extends RawServerBase = RawServerDefault, 
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+>(opts: FastifyLoggerOptions<RawServer, RawRequest, RawReply>) => void
+
+// Check this type FastifyLoggerFunction may not be correct
 export type FastifyLogger = boolean | FastifyLoggerFunction | PinoObject

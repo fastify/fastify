@@ -3,24 +3,8 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { FastifyRequest } from './types/request'
-import { FastifyReply } from './types/reply'
-import {
-  RouteOptions,
-  RouteShorthandIntersection
-} from './types/route'
-import { FastifySchema } from './types/schema'
-import {
-  HTTPMethods,
-  RawServerBase,
-  RawRequestBase,
-  RawReplyBase,
-  RawServerDefault,
-  RawRequestDefault,
-  RawReplyDefault
-} from './types/utils'
+import { RawServerBase, RawServerDefault, RawRequestDefault } from './types/utils'
 import { FastifyLogger } from './types/logger'
-import { InjectOptions, InjectPayload } from 'light-my-request'
-import { FastifyRegister } from './types/register';
 import { FastifyInstance } from './types/instance'
 
 /**
@@ -67,11 +51,8 @@ export type FastifyServerOptions<
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
-interface FastifyContext {
-
-} // todo
-
 /* Export all additional types*/
 export { FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
-export { fastify } // For `import { fastify } from 'fastify'`
+export { FastifyLogger, FastifyLoggerFunction, FastifyLoggerOptions } from './types/logger'
+export { fastify }

@@ -48,7 +48,7 @@ const { beforeHandlerWarning } = require('./lib/warnings')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
-function build (options) {
+function fastify (options) {
   // Options validations
   options = options || {}
 
@@ -764,4 +764,6 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
   return instancePrefix + pluginPrefix
 }
 
-module.exports = build
+fastify.fastify = fastify
+fastify.default = fastify
+module.exports = fastify

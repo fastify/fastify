@@ -3,7 +3,7 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { InjectOptions, InjectPayload } from 'light-my-request'
-import { RouteOptions, RouteShorthandIntersection } from './route'
+import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
 import { FastifyLogger } from './logger'
@@ -58,14 +58,14 @@ export interface FastifyInstance<
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
 
-  get: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  head: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  post: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  put: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  delete: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  options: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  patch: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
-  all: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+  get: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  head: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  post: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  put: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  options: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply>
+  all: RouteShorthandMethod<RawServer, RawRequest, RawReply>
 
   addHook: onCloseHook<RawServer, RawRequest, RawReply> |
            onRouteHook<RawServer, RawRequest, RawReply> |

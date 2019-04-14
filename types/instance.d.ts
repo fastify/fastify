@@ -8,6 +8,8 @@ import { FastifySchema } from './schema'
 import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
 import { FastifyLogger } from './logger'
 import { FastifyRegister } from './register';
+import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks';
+
 
 export interface FastifyInstance<
   RawServer extends RawServerBase = RawServerDefault, 
@@ -61,4 +63,14 @@ export interface FastifyInstance<
   options: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
   patch: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
   all: RouteShorthandIntersection<RawServer, RawRequest, RawReply>
+
+  addHook: onCloseHook<RawServer, RawRequest, RawReply> |
+           onRouteHook<RawServer, RawRequest, RawReply> |
+           onRequestHook<RawServer, RawRequest, RawReply> |
+           onSendHook<RawServer, RawRequest, RawReply> |
+           onErrorHook<RawServer, RawRequest, RawReply> |
+           preHandlerHook<RawServer, RawRequest, RawReply> |
+           preParsingHook<RawServer, RawRequest, RawReply> |
+           preSerializationHook<RawServer, RawRequest, RawReply> |
+           preValidationHook<RawServer, RawRequest, RawReply>
 }

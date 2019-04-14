@@ -5,11 +5,11 @@ import { FastifyError } from './error'
 import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
 
 type WriteFn = (msg: string, ...args: any[]) => void
-type WriteFnWithObj = (obj: {}, msg?: string, ...args: any[]) => void
+type WriteFnWithObj = (obj: { [key: string]: any }, msg?: string, ...args: any[]) => void
 
 export interface FastifyLoggerOptions<
-  RawServer extends RawServerBase = RawServerDefault, 
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > {
   serializers?: {

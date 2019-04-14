@@ -35,7 +35,7 @@ export type FastifyServerOptions<
   serverFactory?: any, // inquire with team / code base for more details
   caseSensitive?: boolean,
   requestIdHeader?: string,
-  genReqId?: (req: FastifyRequest<RawRequestDefault<RawServer>>) => string,
+  genReqId?: (req: FastifyRequest<RawServer, RawRequestDefault<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: string | string[] },
   versioning?: {

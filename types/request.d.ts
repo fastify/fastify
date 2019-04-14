@@ -12,7 +12,7 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault } fr
 export type FastifyRequest<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
-  > = RawRequest & {
+> = RawRequest & {
   body: any, // what to do with Body
   id: any, // declare this
   log: FastifyLogger,

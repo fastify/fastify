@@ -4,16 +4,20 @@ import * as https from 'https'
 
 import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandIntersection } from './route'
-import { FastifySchema } from './schema'
+import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
 import { FastifyLogger } from './logger'
-import { FastifyRegister } from './register';
-import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks';
+import { FastifyRegister } from './register'
+import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks'
+import { FastifyRequest } from './request'
+import { FastifyReply } from './reply'
+import { FastifyError } from './error'
+import { addContentTypeParser, hasContentTypeParser } from './content-type-parser';
 
 
 export interface FastifyInstance<
-  RawServer extends RawServerBase = RawServerDefault, 
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > {
   server: RawServer
@@ -50,7 +54,7 @@ export interface FastifyInstance<
   register: FastifyRegister<RawServer, RawRequest, RawReply>
   use: FastifyRegister<RawServer, RawRequest, RawReply>
 
-  route(opts?: RouteOptions<RawServer, RawRequest, RawReply>): FastifyInstance<RawServer, RawRequest, RawReply>
+  route(opts: RouteOptions<RawServer, RawRequest, RawReply>): FastifyInstance<RawServer, RawRequest, RawReply>
 
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
@@ -73,4 +77,34 @@ export interface FastifyInstance<
            preParsingHook<RawServer, RawRequest, RawReply> |
            preSerializationHook<RawServer, RawRequest, RawReply> |
            preValidationHook<RawServer, RawRequest, RawReply>
+  
+  /**
+   * Set the 404 handler
+   */
+  setNotFoundHandler(
+    handler: (request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawReply>) => void
+  ): void
+
+  /**
+   * Set a function that will be called whenever an error happens
+   */
+  setErrorHandler(
+    handler: (error: FastifyError, request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawReply>) => void
+  ): void
+
+  /**
+   * Set the schema compiler for all routes.
+   */
+  setSchemaCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply>
+
+  /**
+   * Add a content type parser
+   */
+  addContentTypeParser: addContentTypeParser<RawServer, RawRequest>
+  hasContentTypeParser: hasContentTypeParser
+
+  /**
+   * Prints the representation of the internal radix tree used by the router
+   */
+  printRoutes(): string
 }

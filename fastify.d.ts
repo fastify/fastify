@@ -52,7 +52,18 @@ export type FastifyServerOptions<
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
 /* Export all additional types*/
+export { FastifyRequest } from './types/request'
+export { FastifyReply } from './types/reply'
 export { FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLogger, FastifyLoggerFunction, FastifyLoggerOptions } from './types/logger'
+export { FastifyMiddleware, FastifyMiddlewareWithPayload } from './types/middleware'
+export { FastifyContext } from './types/context'
+export { RouteHandlerMethod, RouteOptions, RouteShorthandIntersection, RouteShorthandMethod, RouteShorthandMethodWithOptions, RouteShorthandMethodWithoutHandler, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
+export { FastifyRegister, RegisterOptions } from './types/register'
+export { FastifyBodyParser, FastifyContentTypeParser, addContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
+export { FastifyError, ValidationResult } from './types/error'
+export { FastifySchema, FastifySchemaCompiler } from './types/schema'
+export { HTTPMethods, RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'
+export { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './types/hooks'
 export { fastify }

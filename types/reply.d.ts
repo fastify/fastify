@@ -3,6 +3,7 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault } from './utils';
+import { FastifyContext } from './context'
 
 export type FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
@@ -26,5 +27,3 @@ export type FastifyReply<
   res: RawReply,
   sent: boolean
 }
-
-interface FastifyContext {}

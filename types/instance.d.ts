@@ -14,7 +14,6 @@ import { FastifyReply } from './reply'
 import { FastifyError } from './error'
 import { addContentTypeParser, hasContentTypeParser } from './content-type-parser';
 
-
 export interface FastifyInstance<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,

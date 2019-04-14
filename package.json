@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
-  "typings": "fastify.d.ts",
+  "types": "fastify.d.ts",
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",
@@ -127,6 +127,7 @@
     "tap": "^12.5.2",
     "tap-mocha-reporter": "^3.0.7",
     "then-sleep": "^1.0.1",
+    "tsd": "^0.7.2",
     "typescript": "^3.5.1",
     "x-xss-protection": "^1.1.0"
   },
@@ -156,7 +157,11 @@
   },
   "standard": {
     "ignore": [
-      "lib/configValidator.js"
+      "lib/configValidator.js",
+      "fastify.d.ts"
     ]
+  },
+  "tsd": {
+    "directory": "test/types"
   }
 }

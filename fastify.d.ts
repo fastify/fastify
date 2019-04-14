@@ -51,7 +51,7 @@ export type FastifyServerOptions<
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
-/* Export all additional types*/
+/* Export all additional types */
 export { FastifyRequest } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPlugin } from './types/plugin'

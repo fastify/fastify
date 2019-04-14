@@ -3,11 +3,13 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawReques
 import { FastifyPlugin } from './plugin';
 import { FastifyInstance } from './instance';
 
-export type FastifyRegister<
+export interface FastifyRegister<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = <Options>(plugin: FastifyPlugin<Options, RawServer>, opts?: RegisterOptions & Options) => void;
+> {
+  <Options = { [key: string]: any }>(plugin: FastifyPlugin<Options, RawServer>, opts?: RegisterOptions & Options): void;
+}
 
 export type RegisterOptions = {
   prefix?: string,

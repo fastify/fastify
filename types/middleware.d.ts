@@ -5,27 +5,32 @@ import * as https from 'https'
 import { FastifyInstance } from './instance'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
-import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
+import { FastifyError } from './error'
+import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 
-export type FastifyMiddleware<
+export interface FastifyMiddleware<
   RawServer extends RawServerBase = RawServerDefault, 
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
-  req: FastifyRequest<RawServer, RawRequest>,
-  reply: FastifyReply<RawServer, RawReply>,
-  done: (err?: Error) => void,
-) => void
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
+    req: FastifyRequest<RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawReply>,
+    done: (err?: FastifyError) => void
+  ): void
+}
 
-export type FastifyMiddlewareWithPayload<
+export interface FastifyMiddlewareWithPayload<
   RawServer extends RawServerBase = RawServerDefault, 
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
-  req: FastifyRequest<RawServer, RawRequest>,
-  reply: FastifyReply<RawServer, RawReply>,
-  payload: any,
-  done: (err?: Error, value?: any) => void,
-) => void
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
+    req: FastifyRequest<RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawReply>,
+    payload: any,
+    done: (err?: FastifyError, value?: any) => void
+  ): void
+}

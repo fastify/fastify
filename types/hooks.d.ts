@@ -1,4 +1,4 @@
-import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
+import { FastifyMiddleware } from './middleware'
 import { FastifyInstance } from './instance'
 import { RouteOptions } from './route'
 import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
@@ -50,7 +50,7 @@ export type preSerializationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply>
+> = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
  * Hook that is fired before a request is processed, but after the "preValidation" hook

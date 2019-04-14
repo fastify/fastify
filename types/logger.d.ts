@@ -57,11 +57,13 @@ namespace fastify {
 */
 type PinoObject = object
 
-export type FastifyLoggerFunction = <
+export interface FastifyLoggerFunction<
   RawServer extends RawServerBase = RawServerDefault, 
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
->(opts: FastifyLoggerOptions<RawServer, RawRequest, RawReply>) => void
+> {
+  (opts: FastifyLoggerOptions<RawServer, RawRequest, RawReply>): void
+}
 
 // Check this type FastifyLoggerFunction may not be correct
 export type FastifyLogger = boolean | FastifyLoggerFunction | PinoObject

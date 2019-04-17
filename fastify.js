@@ -5,7 +5,7 @@ const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 const Middie = require('middie')
-const lightMyRequest = require('light-my-request')
+let lightMyRequest
 const proxyAddr = require('proxy-addr')
 
 const {
@@ -466,16 +466,21 @@ function build (options) {
         opts.attachValidation
       )
 
-      try {
-        if (opts.schemaCompiler == null && this[kSchemaCompiler] == null) {
-          const externalSchemas = this[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
-          this.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
-        }
+      // TODO this needs to be refactored so that buildSchemaCompiler is
+      // not called for every single route. Creating a new one for every route
+      // is going to be very expensive.
+      if (opts.schema) {
+        try {
+          if (opts.schemaCompiler == null && this[kSchemaCompiler] == null) {
+            const externalSchemas = this[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
+            this.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
+          }
 
-        buildSchema(context, opts.schemaCompiler || this[kSchemaCompiler], this[kSchemas])
-      } catch (error) {
-        done(error)
-        return
+          buildSchema(context, opts.schemaCompiler || this[kSchemaCompiler], this[kSchemas])
+        } catch (error) {
+          done(error)
+          return
+        }
       }
 
       if (opts.preHandler == null && opts.beforeHandler != null) {
@@ -534,6 +539,12 @@ function build (options) {
   // If the server is not ready yet, this
   // utility will automatically force it.
   function inject (opts, cb) {
+    // lightMyRequest is dynamically laoded as it seems very expensive
+    // because of Ajv
+    if (lightMyRequest === undefined) {
+      lightMyRequest = require('light-my-request')
+    }
+
     if (fastify[kState].started) {
       return lightMyRequest(httpHandler, opts, cb)
     }

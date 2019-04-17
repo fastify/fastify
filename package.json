@@ -92,6 +92,7 @@
     "@typescript-eslint/eslint-plugin": "^1.4.2",
     "@typescript-eslint/parser": "^1.4.2",
     "JSONStream": "^1.3.5",
+    "ajv-pack": "^0.3.1",
     "autocannon": "^3.2.0",
     "branch-comparer": "^0.4.0",
     "concurrently": "^4.1.0",
@@ -134,7 +135,7 @@
     "ajv": "^6.9.2",
     "avvio": "^6.1.1",
     "bourne": "^1.1.2",
-    "fast-json-stringify": "^1.11.2",
+    "fast-json-stringify": "^1.15.0",
     "find-my-way": "^2.0.0",
     "flatstr": "^1.0.9",
     "light-my-request": "^3.2.0",
@@ -151,6 +152,11 @@
       "joi",
       "@types/node",
       "tap-mocha-reporter"
+    ]
+  },
+  "standard": {
+    "ignore": [
+      "lib/configValidator.js"
     ]
   }
 }

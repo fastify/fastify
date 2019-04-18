@@ -3,6 +3,13 @@
 ## Validation and Serialization
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
+> ## ⚠  Security Notice
+> As both validation and serialization features dynamically evaluate
+> code with `new Function()`, it is not safe to use them with
+> user-provided data. See [Ajv](http://npm.im/ajv) and
+> [fast-json-stringify](http://npm.im/fast-json-stringify) for more
+> details.
+
 <a name="validation"></a>
 ### Validation
 The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator. Validating the input is very easy: just add the fields that you need inside the route schema, and you are done! The supported validations are:

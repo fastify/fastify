@@ -33,7 +33,7 @@ This is an experiment and feedback is welcome! This document may also be subject
 
 We have many collaborators, and every kind of contribution is welcome! Our organization is structured as follows:
 
-|  Team | Competence  |  Repository |
+|  Team | Responsibility  |  Repository |
 |---|---|---|
 | `@fastify/core`   |  Fastify Core development  |  `fastify`, `fast-json-stringify`, `light-my-request`, `fastify-plugin`, `middie` |
 | `@fastify/plugins`   |  Build, maintain and release Fastify plugins  |  All plugins repositories |

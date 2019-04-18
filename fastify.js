@@ -252,6 +252,9 @@ function build (options) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
+  const schemaCache = new Map()
+  schemaCache.put = schemaCache.set
+
   return fastify
 
   // HTTP request entry point, the routing has already been executed
@@ -473,7 +476,7 @@ function build (options) {
         try {
           if (opts.schemaCompiler == null && this[kSchemaCompiler] == null) {
             const externalSchemas = this[kSchemas].getJsonSchemas({ onlyAbsoluteUri: true })
-            this.setSchemaCompiler(buildSchemaCompiler(externalSchemas))
+            this.setSchemaCompiler(buildSchemaCompiler(externalSchemas, schemaCache))
           }
 
           buildSchema(context, opts.schemaCompiler || this[kSchemaCompiler], this[kSchemas])

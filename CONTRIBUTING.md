@@ -14,8 +14,9 @@ There are a few basic ground-rules for contributors:
 1. Internal pull-requests to solicit feedback are *encouraged* for any other non-trivial contribution but left to the discretion of the contributor.
 1. Contributors should attempt to adhere to the prevailing code-style.
 1. At least two contributors, or one core member, must approve pull-requests prior to merging.
-1. All integrated CI services must be green, unless an agreement has been reached in the conversation about the exception, before a pull-request can be merged.
-1. Breaking changes or significant new features must be merged by a core member. Small pull-requests, e.g. documentation typo corrections, may be merged by any member with commit access.
+1. All integrated CI services must be green before a pull-request can be merged.
+1. SemVer-major changes in this repository must be merged by a lead maintainer.
+1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead mainatiners team.
 
 ### Fastify v1.x
 
@@ -23,7 +24,7 @@ Code for Fastify's **v1.x** is in [branch 1.x](https://github.com/fastify/fastif
 
 ## Releases
 
-Declaring formal releases remains the prerogative of the project maintainers.
+Declaring formal releases remains the prerogative of the lead maintainers. Do not bump version numbers in pull requests.
 
 ## Changes to this arrangement
 
@@ -35,6 +36,7 @@ We have many collaborators, and every kind of contribution is welcome! Our organ
 
 |  Team | Responsibility  |  Repository |
 |---|---|---|
+| `@fastify/leads | Fastify Lead Maintainers | GitHub organization owners |
 | `@fastify/core`   |  Fastify Core development  |  `fastify`, `fast-json-stringify`, `light-my-request`, `fastify-plugin`, `middie` |
 | `@fastify/plugins`   |  Build, maintain and release Fastify plugins  |  All plugins repositories |
 | `@fastify/benchmarks`   |  Build and maintain our benchmarks suite  |  `benchmarks` |

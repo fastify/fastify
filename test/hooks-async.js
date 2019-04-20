@@ -438,7 +438,7 @@ function asyncHookTest (t) {
         fastify.addHook('onRequest', async (req, reply, next) => {})
         t.fail('Should throw')
       } catch (err) {
-        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
       }
       t.end()
     })
@@ -448,14 +448,14 @@ function asyncHookTest (t) {
         fastify.addHook('onSend', async (req, reply, payload, next) => {})
         t.fail('Should throw')
       } catch (err) {
-        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
       }
 
       try {
         fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
         t.fail('Should throw')
       } catch (err) {
-        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
       }
 
       t.end()

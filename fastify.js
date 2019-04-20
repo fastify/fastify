@@ -25,6 +25,11 @@ const {
   kOptions,
   kGlobalHooks
 } = require('./lib/symbols.js')
+const {
+  codes: {
+    FST_ERR_HOOK_INVALID_FUNCTION
+  }
+} = require('./lib/errors')
 
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
@@ -584,6 +589,16 @@ function build (options) {
   // wrapper that we expose to the user for hooks handling
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
+
+    if (name === 'onSend' || name === 'preSerialization') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
+        throw new FST_ERR_HOOK_INVALID_FUNCTION()
+      }
+    } else {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
+        throw new FST_ERR_HOOK_INVALID_FUNCTION()
+      }
+    }
 
     if (name === 'onClose') {
       this[kHooks].validate(name, fn)

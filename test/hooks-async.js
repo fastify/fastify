@@ -429,6 +429,40 @@ function asyncHookTest (t) {
       t.is(res.statusCode, 200)
     })
   })
+
+  test('Should throw if is an async function with `next`', t => {
+    const fastify = Fastify()
+
+    t.test('3 arguments', t => {
+      try {
+        fastify.addHook('onRequest', async (req, reply, next) => {})
+        t.fail('Should throw')
+      } catch (err) {
+        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+      }
+      t.end()
+    })
+
+    t.test('4 arguments', t => {
+      try {
+        fastify.addHook('onSend', async (req, reply, payload, next) => {})
+        t.fail('Should throw')
+      } catch (err) {
+        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+      }
+
+      try {
+        fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
+        t.fail('Should throw')
+      } catch (err) {
+        t.ok(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
+      }
+
+      t.end()
+    })
+
+    t.end()
+  })
 }
 
 module.exports = asyncHookTest

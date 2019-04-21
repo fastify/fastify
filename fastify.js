@@ -25,11 +25,6 @@ const {
   kOptions,
   kGlobalHooks
 } = require('./lib/symbols.js')
-const {
-  codes: {
-    FST_ERR_HOOK_INVALID_FUNCTION
-  }
-} = require('./lib/errors')
 
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
@@ -590,13 +585,14 @@ function build (options) {
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
+    // TODO: v3 instead of log a warning, throw an error
     if (name === 'onSend' || name === 'preSerialization') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        throw new FST_ERR_HOOK_INVALID_FUNCTION()
+        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`)
       }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        throw new FST_ERR_HOOK_INVALID_FUNCTION()
+        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`)
       }
     }
 

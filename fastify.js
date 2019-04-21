@@ -588,11 +588,11 @@ function build (options) {
     // TODO: v3 instead of log a warning, throw an error
     if (name === 'onSend' || name === 'preSerialization') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`, new Error().stack)
       }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+        fastify.log.warn(`Async function has too many arguments. Async hooks should not use the 'next' argument.`, new Error().stack)
       }
     }
 

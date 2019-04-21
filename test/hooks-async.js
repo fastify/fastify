@@ -433,7 +433,7 @@ function asyncHookTest (t) {
 
   test('Should throw if is an async function with `next`', t => {
     t.test('3 arguments', t => {
-      t.plan(2)
+      t.plan(3)
       const stream = split(JSON.parse)
       const fastify = Fastify({
         logger: { stream }
@@ -441,14 +441,15 @@ function asyncHookTest (t) {
 
       stream.on('data', line => {
         t.strictEqual(line.level, 40)
-        t.strictEqual(line.msg, `Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+        t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
+        t.true(/test\/hooks-async\.js/.test(line.msg))
       })
 
       fastify.addHook('onRequest', async (req, reply, next) => {})
     })
 
     t.test('4 arguments', t => {
-      t.plan(4)
+      t.plan(6)
       const stream = split(JSON.parse)
       const fastify = Fastify({
         logger: { stream }
@@ -456,7 +457,8 @@ function asyncHookTest (t) {
 
       stream.on('data', line => {
         t.strictEqual(line.level, 40)
-        t.strictEqual(line.msg, `Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+        t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
+        t.true(/test\/hooks-async\.js/.test(line.msg))
       })
 
       fastify.addHook('onSend', async (req, reply, payload, next) => {})

@@ -1,5 +1,6 @@
 'use strict'
 
+const split = require('split2')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const fs = require('fs')
@@ -431,34 +432,35 @@ function asyncHookTest (t) {
   })
 
   test('Should throw if is an async function with `next`', t => {
-    const fastify = Fastify()
-
     t.test('3 arguments', t => {
-      try {
-        fastify.addHook('onRequest', async (req, reply, next) => {})
-        t.fail('Should throw')
-      } catch (err) {
-        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
-      }
-      t.end()
+      t.plan(2)
+      const stream = split(JSON.parse)
+      const fastify = Fastify({
+        logger: { stream }
+      })
+
+      stream.on('data', line => {
+        t.strictEqual(line.level, 40)
+        t.strictEqual(line.msg, `Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+      })
+
+      fastify.addHook('onRequest', async (req, reply, next) => {})
     })
 
     t.test('4 arguments', t => {
-      try {
-        fastify.addHook('onSend', async (req, reply, payload, next) => {})
-        t.fail('Should throw')
-      } catch (err) {
-        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
-      }
+      t.plan(4)
+      const stream = split(JSON.parse)
+      const fastify = Fastify({
+        logger: { stream }
+      })
 
-      try {
-        fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
-        t.fail('Should throw')
-      } catch (err) {
-        t.is(err.code, 'FST_ERR_HOOK_INVALID_FUNCTION')
-      }
+      stream.on('data', line => {
+        t.strictEqual(line.level, 40)
+        t.strictEqual(line.msg, `Async function has too many arguments. Async hooks should not use the 'next' argument.`)
+      })
 
-      t.end()
+      fastify.addHook('onSend', async (req, reply, payload, next) => {})
+      fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
     })
 
     t.end()

@@ -4,6 +4,8 @@ jobs:
     vmImage: ${{ parameters.vmImage }}
   strategy:
     matrix:
+      node_12_x:
+        node_version: 12.x
       node_11_x:
         node_version: 11.x
       node_10_x:

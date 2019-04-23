@@ -431,7 +431,7 @@ function asyncHookTest (t) {
     })
   })
 
-  test('Should throw if is an async function with `next`', t => {
+  test('Should log a warning if is an async function with `next`', t => {
     t.test('3 arguments', t => {
       t.plan(3)
       const stream = split(JSON.parse)

@@ -1,10 +1,10 @@
 language: node_js
 
 node_js:
+  - "12"
   - "11"
   - "10"
   - "8"
-  - "6"
 
 script:
   - npm run lint && npm run coveralls -- -c && npm run typescript

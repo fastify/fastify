@@ -91,6 +91,25 @@ Thanks to the `addSchema` API, you can add multiple schemas to the Fastify insta
 There are two ways to reuse your shared schemas:
 + **`$ref-way`**: as described in the [standard](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8),
 you can refer to an external schema. To use it you have to `addSchema` with a valid `$id` absolute URI.
++ **`replace-way`**: this is a Fastify utility that lets you to substitute some fields with a shared schema.
+To use it you have to `addSchema` with an `$id` having a relative URI fragment which is a simple string that
+applies only to alphanumeric chars `[A-Za-z0-9]`.
+
+Here an overview on _how_ to set an `$id` and _how_ references to it:
+
++ `replace-way`
+  + `myField: 'foobar#'` will search for a shared schema added with `$id: 'foobar'`
++ `$ref-way`
+  + `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the current schema
+  + `myField: { $ref: '#/definitions/foo'}` will search for field `definitions.foo` inside the current schema
+  + `myField: { $ref: 'http://url.com/sh.json#'}` will search for a shared schema added with `$id: 'http://url.com/sh.json'`
+  + `myField: { $ref: 'http://url.com/sh.json#/definitions/foo'}` will search for a shared schema added with `$id: 'http://url.com/sh.json'` and will use the field `definitions.foo`
+  + `myField: { $ref: 'http://url.com/sh.json#foo'}` will search for a shared schema added with `$id: 'http://url.com/sh.json'` and it will look inside of it for object with `$id: '#foo'`
+
+
+More examples:
+
+**`$ref-way`** usage examples:
 
 ```js
 fastify.addSchema({
@@ -114,9 +133,7 @@ fastify.route({
 })
 ```
 
-+ **`replace-way`**: this is a Fastify utility that lets you to substitute some fields with a shared schema.
-To use it you have to `addSchema` with an `$id` having a relative URI fragment which is a simple string that
-applies only to alphanumeric chars `[A-Za-z0-9]`.
+**`replace-way`** usage examples:
 
 ```js
 const fastify = require('fastify')()

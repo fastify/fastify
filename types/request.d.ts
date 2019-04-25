@@ -2,7 +2,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
-import { FastifyLogger } from './logger'
+import { FastifyLoggerOptions } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault } from './utils';
 
 /**
@@ -15,7 +15,7 @@ export type FastifyRequest<
 > = RawRequest & {
   body: any, // what to do with Body
   id: any, // declare this
-  log: FastifyLogger,
+  log: FastifyLoggerOptions<RawServer>,
   params: any, // declare this
   query: string,
   raw: RawRequest,

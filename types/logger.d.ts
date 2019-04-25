@@ -4,8 +4,15 @@ import * as net from 'net'
 import { FastifyError } from './error'
 import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
 
-type WriteFn = (msg: string, ...args: any[]) => void
-type WriteFnWithObj = (obj: { [key: string]: any }, msg?: string, ...args: any[]) => void
+export interface FastifyLoggerWriteFn {
+  (msg: string, ...args: any[]): void
+}
+
+export interface FastifyLoggerWriteFn {
+  (obj: { [key: string]: any }, msg?: string, ...args: any[]): void
+}
+
+type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
@@ -31,13 +38,13 @@ export interface FastifyLoggerOptions<
       statusCode: string | number
     }
   };
-  info: WriteFn | WriteFnWithObj;
-  error: WriteFn | WriteFnWithObj;
-  debug: WriteFn | WriteFnWithObj;
-  fatal: WriteFn | WriteFnWithObj;
-  warn: WriteFn | WriteFnWithObj;
-  trace: WriteFn | WriteFnWithObj;
-  child: WriteFn | WriteFnWithObj | FastifyLogger;
+  info: FastifyLoggerWriteFn;
+  error: FastifyLoggerWriteFn;
+  debug: FastifyLoggerWriteFn;
+  fatal: FastifyLoggerWriteFn;
+  warn: FastifyLoggerWriteFn;
+  trace: FastifyLoggerWriteFn;
+  child: FastifyLoggerWriteFn | FastifyLoggerOptions<RawServer>;
   genReqId?: string;
 }
 
@@ -55,15 +62,4 @@ namespace fastify {
 ```
 3. You now have access to the pino logger typings
 */
-type PinoObject = object
-
-export interface FastifyLoggerFunction<
-  RawServer extends RawServerBase = RawServerDefault, 
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> {
-  (opts: FastifyLoggerOptions<RawServer, RawRequest, RawReply>): void
-}
-
-// Check this type FastifyLoggerFunction may not be correct
-export type FastifyLogger = boolean | FastifyLoggerFunction | PinoObject
+export type PinoObject = object

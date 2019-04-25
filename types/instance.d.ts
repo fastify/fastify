@@ -6,7 +6,7 @@ import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
-import { FastifyLogger } from './logger'
+import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks'
 import { FastifyRequest } from './request'
@@ -21,7 +21,7 @@ export interface FastifyInstance<
 > {
   server: RawServer
   prefix: string
-  log: FastifyLogger
+  log: FastifyLoggerOptions
 
   addSchema(schema: FastifySchema): FastifyInstance<RawServer, RawRequest, RawReply>
 

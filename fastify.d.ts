@@ -3,8 +3,8 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { FastifyRequest } from './types/request'
-import { RawServerBase, RawServerDefault, RawRequestDefault } from './types/utils'
-import { FastifyLogger } from './types/logger'
+import { RawServerBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'
+import { FastifyLoggerOptions, PinoObject } from './types/logger'
 import { FastifyInstance } from './types/instance'
 
 /**
@@ -16,8 +16,11 @@ import { FastifyInstance } from './types/instance'
  */
 export default function fastify<
   RawServer extends RawServerBase = RawServerDefault
->(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer>; // For `import fastify from 'fastify'`
+>(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer>;
 
+/**
+ * Options for a fastify server instance
+ */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
 > = {
@@ -31,7 +34,7 @@ export type FastifyServerOptions<
   bodyLimit?: number,
   pluginTimeout?: number,
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',
-  logger?: FastifyLogger,
+  logger?: boolean | FastifyLoggerOptions<RawServer> | PinoObject,
   serverFactory?: any, // inquire with team / code base for more details
   caseSensitive?: boolean,
   requestIdHeader?: string,
@@ -56,11 +59,11 @@ export { FastifyRequest } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
-export { FastifyLogger, FastifyLoggerFunction, FastifyLoggerOptions } from './types/logger'
+export { FastifyLoggerOptions, FastifyLoggerWriteFn } from './types/logger'
 export { FastifyMiddleware, FastifyMiddlewareWithPayload } from './types/middleware'
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
-export { FastifyRegister, RegisterOptions } from './types/register'
+export { RegisterOptions } from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, addContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
 export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'

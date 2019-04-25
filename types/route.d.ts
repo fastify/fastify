@@ -83,7 +83,6 @@ export type RouteHandlerMethod<
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
   request: FastifyRequest<RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawReply>
 ) => void | Promise<any>

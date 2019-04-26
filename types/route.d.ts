@@ -16,10 +16,10 @@ export interface RouteShorthandMethod<
 > {
   (
     path: string,
+    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply>,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply>
   ): FastifyInstance<RawServer, RawRequest, RawReply>
 }
-
 export interface RouteShorthandMethod<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
@@ -27,7 +27,6 @@ export interface RouteShorthandMethod<
 > {
   (
     path: string,
-    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply>,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply>
   ): FastifyInstance<RawServer, RawRequest, RawReply>
 }

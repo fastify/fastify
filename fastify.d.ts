@@ -3,9 +3,10 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { FastifyRequest } from './types/request'
-import { RawServerBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'
+import { RawServerBase, RawServerDefault, RawRequestDefault, RawReplyDefault, RawRequestBase, RawReplyBase } from './types/utils'
 import { FastifyLoggerOptions, PinoObject } from './types/logger'
 import { FastifyInstance } from './types/instance'
+import { FastifyServerFactory } from './types/serverFactory'
 
 /**
  * Fastify factor function for the standard fastify http, https, or http2 server instance.
@@ -15,8 +16,10 @@ import { FastifyInstance } from './types/instance'
  * @param opts Fastify server options
  */
 export default function fastify<
-  RawServer extends RawServerBase = RawServerDefault
->(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer>;
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+>(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer, RawRequest, RawReply>;
 
 /**
  * Options for a fastify server instance
@@ -35,7 +38,7 @@ export type FastifyServerOptions<
   pluginTimeout?: number,
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',
   logger?: boolean | FastifyLoggerOptions<RawServer> | PinoObject,
-  serverFactory?: any, // inquire with team / code base for more details
+  serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
   genReqId?: (req: FastifyRequest<RawServer, RawRequestDefault<RawServer>>) => string,
@@ -69,4 +72,5 @@ export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'
 export { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './types/hooks'
+export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { fastify }

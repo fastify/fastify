@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "lib": [ "es2015" ],
     "module": "commonjs",
     "noEmit": true,
-    "strict": true,
+    "strict": true
   },
-  "files": [
-    "./index.ts"
+  "includes": [
+    "./*.test-d.ts"
   ]
 }

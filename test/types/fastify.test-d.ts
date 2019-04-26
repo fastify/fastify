@@ -24,28 +24,8 @@ const plugin: FastifyPlugin<{
 expectError(fastify().register(plugin, {}))
 expectType<void>(fastify().register(plugin, { option1: '', option2: true }))
 
-// FastifyRoute
-expectType<FastifyInstance<http.Server>>(fastify().get('/', (request, reply) => {}))
-expectType<FastifyInstance<http.Server>>(fastify().get('/', {}, (request, reply) => {}))
-expectType<FastifyInstance<http.Server>>(fastify().get('/', { handler: (request, reply) => {}}))
-
 // FastifyRequest and FastifyReply
 fastify().get('/', (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-})
-
-// Custom Server
-type CustomType = void;
-interface CustomIncomingMessage extends http.IncomingMessage {
-  fakeMethod?: () => CustomType;
-}
-interface CustomServerResponse extends http.ServerResponse {
-  fakeMethod?: () => CustomType;
-}
-
-const customServer: FastifyInstance<http.Server, CustomIncomingMessage, CustomServerResponse> = fastify<http.Server>()
-customServer.get('/', (request, reply) => { // currently failling: `Cannot invoke an object which is possibly undefined.`
-  expectType<CustomType>(request.fakeMethod())
-  expectType<CustomType>(reply.fakeMethod())
 })

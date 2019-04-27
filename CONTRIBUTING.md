@@ -36,7 +36,7 @@ We have many collaborators, and every kind of contribution is welcome! Our organ
 
 |  Team | Responsibility  |  Repository |
 |---|---|---|
-| `@fastify/leads | Fastify Lead Maintainers | GitHub organization owners |
+| `@fastify/leads` | Fastify Lead Maintainers | GitHub organization owners |
 | `@fastify/core`   |  Fastify Core development  |  `fastify`, `fast-json-stringify`, `light-my-request`, `fastify-plugin`, `middie` |
 | `@fastify/plugins`   |  Build, maintain and release Fastify plugins  |  All plugins repositories |
 | `@fastify/benchmarks`   |  Build and maintain our benchmarks suite  |  `benchmarks` |

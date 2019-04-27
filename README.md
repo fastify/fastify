@@ -200,6 +200,7 @@ Team members are listed in alphabetical order.
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 
 ### Collaborators
+Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.
 
 * [__Trivikram Kamat__](https://github.com/trivikr), <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
 * [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>

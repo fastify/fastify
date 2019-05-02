@@ -1,6 +1,5 @@
 'use strict'
 
-const FindMyWay = require('find-my-way')
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
@@ -42,6 +41,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
+const buildRouter = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const { beforeHandlerWarning } = require('./lib/warnings')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
@@ -83,12 +83,14 @@ function build (options) {
   options.genReqId = genReqId
 
   // Default router
-  const router = FindMyWay({
-    defaultRoute: defaultRoute,
-    ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
-    maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-    caseSensitive: options.caseSensitive,
-    versioning: options.versioning
+  const router = buildRouter({
+    config: {
+      defaultRoute: defaultRoute,
+      ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
+      maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
+      caseSensitive: options.caseSensitive,
+      versioning: options.versioning
+    }
   })
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)

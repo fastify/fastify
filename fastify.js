@@ -96,7 +96,7 @@ function build (options) {
   const fourOhFour = build404(options)
 
   // HTTP server and its handler
-  const httpHandler = router.lookup.bind(router)
+  const httpHandler = router.routing
   const { server, listen } = createServer(options, httpHandler)
   if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
     server.on('clientError', handleClientError)
@@ -191,7 +191,7 @@ function build (options) {
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
-    printRoutes: router.prettyPrint.bind(router),
+    printRoutes: router.printRoutes,
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
@@ -506,7 +506,7 @@ function build (options) {
       }
 
       try {
-        router.on(opts.method, url, { version: opts.version }, routeHandler, context)
+        router.router.on(opts.method, url, { version: opts.version }, routeHandler, context)
       } catch (err) {
         done(err)
         return

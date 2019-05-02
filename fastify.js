@@ -129,28 +129,28 @@ function build (options) {
     [pluginUtils.registeredPlugins]: [],
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
-      return prepareRoute.call(this, 'DELETE', url, opts, handler)
+      return router.prepareRoute.call(this, 'DELETE', url, opts, handler)
     },
     get: function _get (url, opts, handler) {
-      return prepareRoute.call(this, 'GET', url, opts, handler)
+      return router.prepareRoute.call(this, 'GET', url, opts, handler)
     },
     head: function _head (url, opts, handler) {
-      return prepareRoute.call(this, 'HEAD', url, opts, handler)
+      return router.prepareRoute.call(this, 'HEAD', url, opts, handler)
     },
     patch: function _patch (url, opts, handler) {
-      return prepareRoute.call(this, 'PATCH', url, opts, handler)
+      return router.prepareRoute.call(this, 'PATCH', url, opts, handler)
     },
     post: function _post (url, opts, handler) {
-      return prepareRoute.call(this, 'POST', url, opts, handler)
+      return router.prepareRoute.call(this, 'POST', url, opts, handler)
     },
     put: function _put (url, opts, handler) {
-      return prepareRoute.call(this, 'PUT', url, opts, handler)
+      return router.prepareRoute.call(this, 'PUT', url, opts, handler)
     },
     options: function _options (url, opts, handler) {
-      return prepareRoute.call(this, 'OPTIONS', url, opts, handler)
+      return router.prepareRoute.call(this, 'OPTIONS', url, opts, handler)
     },
     all: function _all (url, opts, handler) {
-      return prepareRoute.call(this, supportedMethods, url, opts, handler)
+      return router.prepareRoute.call(this, supportedMethods, url, opts, handler)
     },
     // extended route
     route: function _route (opts) {
@@ -363,32 +363,6 @@ function build (options) {
 
   function throwIfAlreadyStarted (msg) {
     if (fastify[kState].started) throw new Error(msg)
-  }
-
-  // Convert shorthand to extended route declaration
-  function prepareRoute (method, url, options, handler) {
-    if (!handler && typeof options === 'function') {
-      handler = options
-      options = {}
-    } else if (handler && typeof handler === 'function') {
-      if (Object.prototype.toString.call(options) !== '[object Object]') {
-        throw new Error(`Options for ${method}:${url} route must be an object`)
-      } else if (options.handler) {
-        if (typeof options.handler === 'function') {
-          throw new Error(`Duplicate handler for ${method}:${url} route is not allowed!`)
-        } else {
-          throw new Error(`Handler for ${method}:${url} route must be a function`)
-        }
-      }
-    }
-
-    options = Object.assign({}, options, {
-      method,
-      url,
-      handler: handler || (options && options.handler)
-    })
-
-    return router.route.call(this, options)
   }
 
   // HTTP injection handling

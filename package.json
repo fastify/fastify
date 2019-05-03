@@ -118,7 +118,7 @@
     "proxyquire": "^2.1.0",
     "pump": "^3.0.0",
     "semver": "^6.0.0",
-    "send": "^0.16.2",
+    "send": "^0.17.0",
     "serve-static": "^1.13.2",
     "simple-get": "^3.0.3",
     "snazzy": "^8.0.0",

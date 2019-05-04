@@ -1120,3 +1120,28 @@ test('should redact the authorization header if so specified', t => {
     })
   })
 })
+
+test('should not log incoming request and outgoing response when disabled', t => {
+  t.plan(3)
+  const lines = []
+  const dest = new stream.Writable({
+    write: function (chunk, enc, cb) {
+      lines.push(JSON.parse(chunk))
+      cb()
+    }
+  })
+  const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream: dest } })
+
+  fastify.get('/500', (req, reply) => {
+    reply.code(500).send(Error('500 error'))
+  })
+
+  fastify.inject({
+    url: '/500',
+    method: 'GET'
+  }, (e, res) => {
+    t.is(lines.length, 1)
+    t.ok(lines[0].msg)
+    t.is(lines[0].msg, '500 error')
+  })
+})

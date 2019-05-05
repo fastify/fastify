@@ -148,6 +148,19 @@ custom `onRequest` and `onResponse` hooks.
 
 + Default: `false`
 
+```js
+// Examples of hooks to replicate the disabled functionality.
+fastify.addHook('onRequest', (req, reply, next) => {
+  req.log.info({ url: req.req.url, id: req.id }, 'received request')
+  next()
+})
+
+fastify.addHook('onResponse', (req, reply, next) => {
+  req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
+  next()
+})
+```
+
 <a name="custom-http-server"></a>
 ### `serverFactory`
 You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>

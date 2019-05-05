@@ -351,3 +351,19 @@ test('listen logs the port as info', t => {
       t.ok(/http:\/\//.test(msgs[0]))
     })
 })
+
+test('listen should not log address when disabled', t => {
+  t.plan(1)
+  const fastify = Fastify({ disableStartupLogging: true })
+  t.tearDown(fastify.close.bind(fastify))
+
+  const msgs = []
+  fastify.log.info = function (msg) {
+    msgs.push(msg)
+  }
+
+  fastify.listen(0)
+    .then(() => {
+      t.equals(msgs.length, 0)
+    })
+})

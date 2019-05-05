@@ -161,6 +161,21 @@ fastify.addHook('onResponse', (req, reply, next) => {
 })
 ```
 
+<a name="factory-disable-startup-logging"></a>
+### `disableStartupLogging`
+By default, when logging is enabled, Fastify will issue an `info` level log
+message when the server starts to listen on a port. By setting this option 
+to `true`, this log message will be disabled.
+This allows to log a custom message.
+
++ Default: `false`
+
+```js
+// Example to replicate the disabled functionality.
+const address = await fastify.listen(0)
+fastify.log.info('Server listening at ' + address)
+```
+
 <a name="custom-http-server"></a>
 ### `serverFactory`
 You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>

@@ -181,6 +181,8 @@ declare namespace fastify {
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     pluginTimeout?: number,
+    disableRequestLogging?: boolean,
+    disableStartupLogging?: boolean,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,

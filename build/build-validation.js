@@ -15,6 +15,8 @@ const ajv = new Ajv({
 const defaultInitOptions = {
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
+  disableRequestLogging: false,
+  disableStartupLogging: false,
   ignoreTrailingSlash: false,
   maxParamLength: 100,
   onProtoPoisoning: 'error',
@@ -61,6 +63,8 @@ const schema = {
       },
       then: { setDefaultValue: true }
     },
+    disableRequestLogging: { type: 'boolean', default: defaultInitOptions.disableRequestLogging },
+    disableStartupLogging: { type: 'boolean', default: defaultInitOptions.disableStartupLogging },
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
@@ -81,7 +85,7 @@ ${pack(ajv, validate)}
 
 ${customRule0.toString()}
 
-module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
+module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions, null, 2)}
 `
 
 fs.writeFileSync(path.join(__dirname, '..', 'lib', 'configValidator.js'), moduleCode)

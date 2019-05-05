@@ -24,7 +24,8 @@ const {
   kState,
   kOptions,
   kGlobalHooks,
-  kDisableRequestLogging
+  kDisableRequestLogging,
+  kDisableStartupLogging
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -75,6 +76,7 @@ function build (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const disableStartupLogging = options.disableStartupLogging || false
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -131,6 +133,7 @@ function build (options) {
       onRoute: [],
       onRegister: []
     },
+    [kDisableStartupLogging]: disableStartupLogging,
     [pluginUtils.registeredPlugins]: [],
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {

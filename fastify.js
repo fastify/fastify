@@ -23,7 +23,8 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kGlobalHooks
+  kGlobalHooks,
+  kDisableRequestLogging
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -73,6 +74,7 @@ function build (options) {
   const genReqId = options.genReqId || reqIdGenFactory()
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
+  const disableRequestLogging = options.disableRequestLogging || false
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -291,6 +293,7 @@ function build (options) {
     }
 
     var childLogger = logger.child({ [requestIdLogLabel]: req.id, level: context.logLevel })
+    childLogger[kDisableRequestLogging] = disableRequestLogging
 
     // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
     if (modifyCoreObjects) {
@@ -301,7 +304,9 @@ function build (options) {
       req.log = res.log = childLogger
     }
 
-    childLogger.info({ req }, 'incoming request')
+    if (disableRequestLogging === false) {
+      childLogger.info({ req }, 'incoming request')
+    }
 
     var queryPrefix = req.url.indexOf('?')
     var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')

@@ -21,6 +21,7 @@ test('without options passed to Fastify, initialConfig should expose default val
   const fastifyDefaultOptions = {
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
+    disableRequestLogging: false,
     ignoreTrailingSlash: false,
     maxParamLength: 100,
     onProtoPoisoning: 'error',
@@ -223,6 +224,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     t.deepEqual(fastify.initialConfig, {
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
+      disableRequestLogging: false,
       ignoreTrailingSlash: true,
       maxParamLength: 100,
       onProtoPoisoning: 'error',

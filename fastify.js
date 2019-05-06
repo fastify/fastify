@@ -29,15 +29,15 @@ const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
-const handleRequest = require('./lib/handleRequest')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
-const { Hooks, hookRunner, hookIterator, buildHooks } = require('./lib/hooks')
+const { Hooks, buildHooks } = require('./lib/hooks')
 const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const buildRouter = require('./lib/route')
+const { onRunMiddlewares } = buildRouter
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
@@ -234,11 +234,10 @@ function build (options) {
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
   // cache the closing value, since we are checking it in an hot path
-  var closing = false
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
-      closing = true
+      router.closeRoutes()
       if (fastify[kState].listening) {
         instance.server.close(done)
       } else {
@@ -252,114 +251,22 @@ function build (options) {
   fourOhFour.arrange404(fastify)
 
   router.fill({
-    routeHandler,
     avvio,
     buildMiddie,
-    fourOhFour
+    fourOhFour,
+    trustProxy,
+    requestIdHeader,
+    querystringParser,
+    requestIdLogLabel,
+    logger,
+    hasLogger,
+    setupResponseListeners,
+    proxyFn,
+    modifyCoreObjects,
+    genReqId
   })
 
   return fastify
-
-  // HTTP request entry point, the routing has already been executed
-  function routeHandler (req, res, params, context) {
-    if (closing === true) {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Content-Length': '80'
-      }
-      if (req.httpVersionMajor !== 2) {
-        headers.Connection = 'close'
-      }
-      res.writeHead(503, headers)
-      res.end('{"error":"Service Unavailable","message":"Service Unavailable","statusCode":503}')
-      if (req.httpVersionMajor !== 2) {
-        // This is not needed in HTTP/2
-        setImmediate(() => req.destroy())
-      }
-      return
-    }
-
-    req.id = req.headers[requestIdHeader] || genReqId(req)
-    req.originalUrl = req.url
-    var hostname = req.headers['host']
-    var ip = req.connection.remoteAddress
-    var ips
-
-    if (trustProxy) {
-      ip = proxyAddr(req, proxyFn)
-      ips = proxyAddr.all(req, proxyFn)
-      if (ip !== undefined && req.headers['x-forwarded-host']) {
-        hostname = req.headers['x-forwarded-host']
-      }
-    }
-
-    var childLogger = logger.child({ [requestIdLogLabel]: req.id, level: context.logLevel })
-
-    // added hostname, ip, and ips back to the Node req object to maintain backward compatibility
-    if (modifyCoreObjects) {
-      req.hostname = hostname
-      req.ip = ip
-      req.ips = ips
-
-      req.log = res.log = childLogger
-    }
-
-    childLogger.info({ req }, 'incoming request')
-
-    var queryPrefix = req.url.indexOf('?')
-    var query = querystringParser(queryPrefix > -1 ? req.url.slice(queryPrefix + 1) : '')
-    var request = new context.Request(params, req, query, req.headers, childLogger, ip, ips, hostname)
-    var reply = new context.Reply(res, context, request, childLogger)
-
-    if (hasLogger === true || context.onResponse !== null) {
-      setupResponseListeners(reply)
-    }
-
-    if (context.onRequest !== null) {
-      hookRunner(
-        context.onRequest,
-        hookIterator,
-        request,
-        reply,
-        middlewareCallback
-      )
-    } else {
-      middlewareCallback(null, request, reply)
-    }
-  }
-
-  function middlewareCallback (err, request, reply) {
-    if (reply.sent === true) return
-    if (err != null) {
-      reply.send(err)
-      return
-    }
-
-    if (reply.context._middie !== null) {
-      reply.context._middie.run(request.raw, reply.res, reply)
-    } else {
-      onRunMiddlewares(null, null, null, reply)
-    }
-  }
-
-  function onRunMiddlewares (err, req, res, reply) {
-    if (err != null) {
-      reply.send(err)
-      return
-    }
-
-    if (reply.context.preParsing !== null) {
-      hookRunner(
-        reply.context.preParsing,
-        hookIterator,
-        reply.request,
-        reply,
-        handleRequest
-      )
-    } else {
-      handleRequest(null, reply.request, reply)
-    }
-  }
 
   function throwIfAlreadyStarted (msg) {
     if (fastify[kState].started) throw new Error(msg)
@@ -476,7 +383,7 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, routeHandler, buildMiddie)
+    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler, buildMiddie)
   }
 
   // wrapper that we expose to the user for schemas compiler handling

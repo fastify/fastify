@@ -517,6 +517,16 @@ Method to add routes to the server, it also has shorthand functions, check [here
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
 
+If it is called without any arguments, it will return a Promise:
+
+```js
+fastify.close().then(() => {
+  console.log('successfully closed!')
+}, (err) => {
+  console.log('an error happened', err)
+})
+```
+
 <a name="decorate"></a>
 #### decorate*
 Function useful if you need to decorate the fastify instance, Reply or Request, check [here](https://github.com/fastify/fastify/blob/master/docs/Decorators.md).

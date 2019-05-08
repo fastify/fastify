@@ -3,7 +3,6 @@
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
-const Middie = require('middie')
 let lightMyRequest
 const proxyAddr = require('proxy-addr')
 
@@ -37,7 +36,6 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const buildRouter = require('./lib/route')
-const { onRunMiddlewares } = require('./lib/middleware')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
@@ -252,7 +250,6 @@ function build (options) {
 
   router.fill({
     avvio,
-    buildMiddie,
     fourOhFour,
     trustProxy,
     requestIdHeader,
@@ -383,7 +380,7 @@ function build (options) {
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
-    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler, buildMiddie)
+    fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
   }
 
   // wrapper that we expose to the user for schemas compiler handling
@@ -400,19 +397,6 @@ function build (options) {
 
     this._errorHandler = func
     return this
-  }
-
-  function buildMiddie (middlewares) {
-    if (!middlewares.length) {
-      return null
-    }
-
-    const middie = Middie(onRunMiddlewares)
-    for (var i = 0; i < middlewares.length; i++) {
-      middie.use.apply(middie, middlewares[i])
-    }
-
-    return middie
   }
 }
 

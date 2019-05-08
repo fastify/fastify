@@ -4,7 +4,6 @@ const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
-const proxyAddr = require('proxy-addr')
 
 const {
   kChildren,
@@ -35,7 +34,7 @@ const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
-const buildRouter = require('./lib/route')
+const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
@@ -59,7 +58,6 @@ function build (options) {
     options.genReqId = options.logger.genReqId
   }
 
-  const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
@@ -74,9 +72,13 @@ function build (options) {
   options.logger = logger
   options.modifyCoreObjects = modifyCoreObjects
   options.genReqId = genReqId
+  options.requestIdHeader = requestIdHeader
+  options.querystringParser = querystringParser
+  options.requestIdLogLabel = requestIdLogLabel
+  options.modifyCoreObjects = modifyCoreObjects
 
   // Default router
-  const router = buildRouter({
+  const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
@@ -96,7 +98,6 @@ function build (options) {
   }
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const proxyFn = getTrustProxyFn(options)
   const schemas = new Schemas()
 
   // Public API
@@ -248,19 +249,12 @@ function build (options) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
-  router.fill({
+  router.fill(options, {
     avvio,
     fourOhFour,
-    trustProxy,
-    requestIdHeader,
-    querystringParser,
-    requestIdLogLabel,
     logger,
     hasLogger,
-    setupResponseListeners,
-    proxyFn,
-    modifyCoreObjects,
-    genReqId
+    setupResponseListeners
   })
 
   return fastify
@@ -397,34 +391,6 @@ function build (options) {
 
     this._errorHandler = func
     return this
-  }
-}
-
-function getTrustProxyFn (options) {
-  const tp = options.trustProxy
-  if (typeof tp === 'function') {
-    return tp
-  }
-  if (tp === true) {
-    // Support plain true/false
-    return function () { return true }
-  }
-  if (typeof tp === 'number') {
-    // Support trusting hop count
-    return function (a, i) { return i < tp }
-  }
-  if (typeof tp === 'string') {
-    // Support comma-separated tps
-    const vals = tp.split(',').map(it => it.trim())
-    return proxyAddr.compile(vals)
-  }
-  return proxyAddr.compile(tp || [])
-}
-
-function validateBodyLimitOption (bodyLimit) {
-  if (bodyLimit === undefined) return
-  if (!Number.isInteger(bodyLimit) || bodyLimit <= 0) {
-    throw new TypeError(`'bodyLimit' option must be an integer > 0. Got '${bodyLimit}'`)
   }
 }
 

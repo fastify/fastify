@@ -116,11 +116,11 @@ are not present on the object, they will be added accordingly:
         ```
       Any user supplied serializer will override the default serializer of the
       corresponding property.
-+ `loggerInstance`: a custom logger instance. The logger must conform to the Pino 
++ `loggerInstance`: a custom logger instance. The logger must conform to the Pino
 interface by having the following methods: `info`, `error`, `debug`, `fatal`, `warn`, `trace`, `child`. For example:
   ```js
   const pino = require('pino')();
-  
+
   const customLogger = {
     info: function (o, ...n) {},
     warn: function (o, ...n) {},
@@ -134,9 +134,32 @@ interface by having the following methods: `info`, `error`, `debug`, `fatal`, `w
       return child;
     },
   };
-  
+
   const fastify = require('fastify')({logger: customLogger});
   ```
+
+<a name="factory-disable-request-logging"></a>
+### `disableRequestLogging`
+By default, when logging is enabled, Fastify will issue an `info` level log
+message when a request is received and when the response for that request has
+been sent. By setting this option to `true`, these log messages will be disabled.
+This allows for more flexible request start and end logging by attaching
+custom `onRequest` and `onResponse` hooks.
+
++ Default: `false`
+
+```js
+// Examples of hooks to replicate the disabled functionality.
+fastify.addHook('onRequest', (req, reply, next) => {
+  req.log.info({ url: req.req.url, id: req.id }, 'received request')
+  next()
+})
+
+fastify.addHook('onResponse', (req, reply, next) => {
+  req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
+  next()
+})
+```
 
 <a name="custom-http-server"></a>
 ### `serverFactory`
@@ -493,6 +516,16 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
+
+If it is called without any arguments, it will return a Promise:
+
+```js
+fastify.close().then(() => {
+  console.log('successfully closed!')
+}, (err) => {
+  console.log('an error happened', err)
+})
+```
 
 <a name="decorate"></a>
 #### decorate*

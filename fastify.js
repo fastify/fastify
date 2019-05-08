@@ -20,7 +20,8 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kGlobalHooks
+  kGlobalHooks,
+  kDisableRequestLogging
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -64,6 +65,7 @@ function build (options) {
   const genReqId = options.genReqId || reqIdGenFactory()
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
+  const disableRequestLogging = options.disableRequestLogging || false
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -76,6 +78,7 @@ function build (options) {
   options.querystringParser = querystringParser
   options.requestIdLogLabel = requestIdLogLabel
   options.modifyCoreObjects = modifyCoreObjects
+  options.disableRequestLogging = disableRequestLogging
 
   // Default router
   const router = buildRouting({

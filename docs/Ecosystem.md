@@ -28,6 +28,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify MongoDB connection plugin, with which you can share the same MongoDB connection pool across every part of your server.
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart support for Fastify.
 - [`fastify-oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
+- [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
 - [`fastify-postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server.
 - [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
 - [`fastify-nextjs`](https://github.com/fastify/fastify-nextjs) React server side rendering support for Fastify with [Next](https://github.com/zeit/next.js/).
@@ -114,4 +115,3 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
-- [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.

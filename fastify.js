@@ -20,8 +20,7 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kGlobalHooks,
-  kDisableRequestLogging
+  kGlobalHooks
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')

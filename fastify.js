@@ -254,7 +254,8 @@ function build (options) {
     fourOhFour,
     logger,
     hasLogger,
-    setupResponseListeners
+    setupResponseListeners,
+    throwIfAlreadyStarted
   })
 
   return fastify

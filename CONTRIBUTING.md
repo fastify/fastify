@@ -16,7 +16,7 @@ There are a few basic ground-rules for contributors:
 1. At least two contributors, or one core member, must approve pull-requests prior to merging.
 1. All integrated CI services must be green before a pull-request can be merged.
 1. SemVer-major changes in this repository must be merged by a lead maintainer.
-1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead mainatiners team.
+1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead maintainers team.
 
 ### Fastify v1.x
 

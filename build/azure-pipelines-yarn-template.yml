@@ -2,6 +2,7 @@ jobs:
 - job: ${{ parameters.name }}
   pool:
     vmImage: ${{ parameters.vmImage }}
+
   strategy:
     matrix:
       node_12_x:
@@ -12,26 +13,30 @@ jobs:
         node_version: 10.x
       node_8_x:
         node_version: 8.x
-      node_6_x:
-        node_version: 6.x
     maxParallel: 5
+
   steps:
   - task: NodeTool@0
     inputs:
       versionSpec: $(node_version)
     displayName: Install Node.js
-  - bash: npm i
+
+  - bash: yarn install
     displayName: Install dependencies
-  - bash: npm run test:report
+
+  - bash: yarn test:report
     displayName: Run tests
-  - bash: npm run unit:junit
+
+  - bash: yarn unit:junit
     condition: succeededOrFailed()
+
   - task: PublishTestResults@2
     displayName: "Publish Test Results"
     condition: succeededOrFailed()
     inputs:
       testResultsFiles: "**test/junit-testresults.xml"
       testRunTitle: TestRun ${{ parameters.name }} $(node_version)
+
   - task: PublishCodeCoverageResults@1
     displayName: "Publish code coverage results"
     condition: succeededOrFailed()

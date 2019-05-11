@@ -1,10 +1,34 @@
 jobs:
-- template: azure-pipelines-yarn-template.yml
+
+# npm jobs
+- template: build/azure-pipelines-npm-template.yml
   parameters:
-    name: Linux_Yarn
+    name: Linux_npm
     vmImage: ubuntu-16.04
 
-- template: azure-pipelines-npm-template.yml
+- template: build/azure-pipelines-npm-template.yml
   parameters:
-    name: Windows_NPM
+    name: Windows_npm
     vmImage: vs2017-win2016
+
+- template: build/azure-pipelines-npm-template.yml
+  parameters:
+    name:  macOs_npm
+    vmImage: macOS-10.14
+
+# yarn jobs
+- template: build/azure-pipelines-yarn-template.yml
+  parameters:
+    name: Linux_yarn
+    vmImage: ubuntu-16.04
+
+- template: build/azure-pipelines-yarn-template.yml
+  parameters:
+    name: Windows_yarm
+    vmImage: vs2017-win2016
+
+- template: build/azure-pipelines-yarn-template.yml
+  parameters:
+    name: macOS_yarn
+    vmImage: macOS-10.14
+

@@ -98,7 +98,7 @@
     "concurrently": "^4.1.0",
     "cors": "^2.8.5",
     "coveralls": "^3.0.3",
-    "dns-prefetch-control": "^0.1.0",
+    "dns-prefetch-control": "^0.2.0",
     "eslint-import-resolver-node": "^0.3.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.5.0",

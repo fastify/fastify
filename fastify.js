@@ -251,7 +251,7 @@ function build (options) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
-  router.fill(options, {
+  router.setup(options, {
     avvio,
     fourOhFour,
     logger,

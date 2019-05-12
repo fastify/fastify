@@ -502,4 +502,4 @@ const refToSharedSchemaDefinitions = {
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
 - [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
 - [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
-- Custom error handling with core methods with error file dumping [example](https://gist.github.com/dalisoft/a6a088860e724996d0baecae59ace329)
+- Custom error handling with core methods with error file dumping [example](https://github.com/fastify/example/tree/master/validation-messages)

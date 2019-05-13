@@ -151,7 +151,6 @@
       "boom",
       "joi",
       "@types/node",
-      "tap",
       "tap-mocha-reporter"
     ]
   },

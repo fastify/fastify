@@ -59,10 +59,10 @@ Welcome to the team! We are happy to have you. Before you start, please complete
 
 We are thankful to you and we are really glad to have worked with you.
 We'll be really happy to see you here again if you want to come back, but for now the person that did the onboarding must:
-1. Ask the collaborator if he/she want to stay or not.
-1. If the collaborator can't work with us anymore, he/she should:
-  1. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) and move himself/herseff in the *Past Collaborators* section.
-  2. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) and move himself/herseff in the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file.
+1. Ask the collaborator if they want to stay or not.
+1. If the collaborator can't work with us anymore, they should:
+  1. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) and move themselves in the *Past Collaborators* section.
+  2. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) and move themselves in the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file.
 
 The person that did the onboarding must:
 1. If the collaborator doesn't reply to the ping in reasonable time, open the pull requests described above.

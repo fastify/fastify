@@ -58,6 +58,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
 - [`fastify-csrf`](https://github.com/Tarang11/fastify-csrf) A csrf plugin for Fastify.
 - [`fastify-datastore`](https://github.com/now-ims/now-fastify-datastore) Fastify plugin for [Google Cloud Datastore](https://cloud.google.com/nodejs/docs/reference/datastore/1.4.x/).
+- [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-error-page`](https://github.com/hemerajs/fastify-error-page) Fastify plugin to print errors in structured HTML to the browser.
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon) Fastify plugin to serve default favicon.

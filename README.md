@@ -169,6 +169,7 @@ matters to you.
 ## Ecosystem
 - [Core](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
 - [Community](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md#community) - Community supported plugins.
+- [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
 
 ## Support
 - [Fastify help](https://github.com/fastify/help)

@@ -564,7 +564,7 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
-test('onRoute hook that throws sholud be catched ', t => {
+test('onRoute hook that throws should be caught ', t => {
   t.plan(2)
   const fastify = Fastify()
 

@@ -564,6 +564,26 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
+test('onRoute hook that throws sholud be catched ', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {
+      t.pass()
+      throw new Error('snap')
+    })
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
+  })
+})
+
 test('onResponse hook should log request error', t => {
   t.plan(4)
 

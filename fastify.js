@@ -456,7 +456,14 @@ function build (options) {
       }
 
       // run 'onRoute' hooks
-      for (const hook of this[kGlobalHooks].onRoute) hook.call(this, opts)
+      for (const hook of this[kGlobalHooks].onRoute) {
+        try {
+          hook.call(this, opts)
+        } catch (error) {
+          done(error)
+          return
+        }
+      }
 
       const config = opts.config || {}
       config.url = url

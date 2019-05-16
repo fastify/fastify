@@ -136,7 +136,7 @@
     "avvio": "^6.1.1",
     "fast-json-stringify": "^1.15.0",
     "find-my-way": "^2.0.0",
-    "flatstr": "^1.0.9",
+    "flatstr": "^1.0.12",
     "light-my-request": "^3.2.0",
     "middie": "^4.0.1",
     "pino": "^5.11.1",

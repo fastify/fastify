@@ -601,8 +601,13 @@ function build (options) {
       }
 
       // run 'onRoute' hooks
-      for (var h of onRouteHooks) {
-        h.call(_fastify, opts)
+      for (const hook of onRouteHooks) {
+        try {
+          hook.call(_fastify, opts)
+        } catch (error) {
+          done(error)
+          return
+        }
       }
 
       const config = opts.config || {}

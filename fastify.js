@@ -155,6 +155,8 @@ function build (options) {
     },
     // extended route
     route: function _route (opts) {
+      // we need the fastify object that we are producing so we apply a lazy loading of the function,
+      // otherwise we should bind it after the declaration
       return router.route.call(this, opts)
     },
     // expose logger instance

@@ -288,7 +288,7 @@ testHook('preValidation')
 testHook('preParsing')
 
 test('preHandler backwards compatibility with beforeHandler option (should emit a warning)', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
 
   process.on('warning', warn => {
@@ -296,6 +296,7 @@ test('preHandler backwards compatibility with beforeHandler option (should emit 
       warn.message,
       'The route option `beforeHandler` has been deprecated, use `preHandler` instead'
     )
+    t.ok(warn.stack.indexOf(__filename) >= 0)
   })
 
   fastify.post('/', {

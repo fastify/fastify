@@ -391,6 +391,8 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
+If you want custom error response in schema without headaches and quickly, you can take a look at [here](https://github.com/epoberezkin/ajv-errors)
+
 ### JSON Schema and Shared Schema support
 
 JSON Schema has some type of utilities in order to optimize your schemas that,
@@ -522,3 +524,6 @@ const refToSharedSchemaDefinitions = {
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
+- [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
+- [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
+- Custom error handling with core methods with error file dumping [example](https://github.com/fastify/example/tree/master/validation-messages)

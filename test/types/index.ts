@@ -308,7 +308,7 @@ server
       reply.send({ hello: 'world' })
     })
     done()
-  }, { prefix: 'v1', hello: 'world' })
+  }, { prefix: 'v1', hello: 'world', schema: 'any string' })
   .all('/all/no-opts', function (req, reply) {
     reply.send(req.headers)
   })

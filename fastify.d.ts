@@ -280,7 +280,7 @@ declare namespace fastify {
   /**
    * Register options
    */
-  interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> extends RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse> {
+  interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> {
     [key: string]: any,
     prefix?: string,
   }

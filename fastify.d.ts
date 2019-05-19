@@ -14,6 +14,7 @@ import { FastifyServerFactory } from './types/serverFactory'
  * The default function utilizes http
  *
  * @param opts Fastify server options
+ * @returns Fastify server instance
  */
 export default function fastify<
   RawServer extends RawServerBase = RawServerDefault,
@@ -22,7 +23,7 @@ export default function fastify<
 >(opts?: FastifyServerOptions<RawServer>): FastifyInstance<RawServer, RawRequest, RawReply>;
 
 /**
- * Options for a fastify server instance
+ * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,

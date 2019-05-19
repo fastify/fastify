@@ -7,31 +7,37 @@ expectType<FastifyLoggerWriteFn>(fastify().log.info)
 expectType<void>(fastify().log.info(''))
 expectType<void>(fastify().log.info({}))
 expectError(fastify().log.info(0))
+expectError(fastify().log.info())
 
 expectType<FastifyLoggerWriteFn>(fastify().log.error)
 expectType<void>(fastify().log.error(''))
 expectType<void>(fastify().log.error({}))
 expectError(fastify().log.error(0))
+expectError(fastify().log.error())
 
 expectType<FastifyLoggerWriteFn>(fastify().log.debug)
 expectType<void>(fastify().log.debug(''))
 expectType<void>(fastify().log.debug({}))
 expectError(fastify().log.debug(0))
+expectError(fastify().log.debug())
 
 expectType<FastifyLoggerWriteFn>(fastify().log.fatal)
 expectType<void>(fastify().log.fatal(''))
 expectType<void>(fastify().log.fatal({}))
 expectError(fastify().log.fatal(0))
+expectError(fastify().log.fatal())
 
 expectType<FastifyLoggerWriteFn>(fastify().log.warn)
 expectType<void>(fastify().log.warn(''))
 expectType<void>(fastify().log.warn({}))
 expectError(fastify().log.warn(0))
+expectError(fastify().log.warn())
 
 expectType<FastifyLoggerWriteFn>(fastify().log.trace)
 expectType<void>(fastify().log.trace(''))
 expectType<void>(fastify().log.trace({}))
 expectError(fastify().log.trace(0))
+expectError(fastify().log.trace())
 
 function logFn(msg: string) {
   expectType<string>(msg)

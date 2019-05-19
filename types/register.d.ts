@@ -1,4 +1,3 @@
-import { RouteShorthandOptions } from './route'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 import { FastifyPlugin } from './plugin';
 import { FastifyInstance } from './instance';

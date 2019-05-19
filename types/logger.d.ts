@@ -4,16 +4,25 @@ import * as net from 'net'
 import { FastifyError } from './error'
 import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
 
+/**
+ * Standard Fastify logging function
+ */
 export interface FastifyLoggerWriteFn {
   (msg: string, ...args: any[]): void
 }
 
+/**
+ * Fastify logging function with an object as the first argument
+ */
 export interface FastifyLoggerWriteFn {
   (obj: { [key: string]: any }, msg?: string, ...args: any[]): void
 }
 
-type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
+export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
+/**
+ * Fastify Custom Logger options.
+ */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,

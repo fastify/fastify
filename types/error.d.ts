@@ -1,3 +1,6 @@
+/**
+ * The route validation internally relies upon Ajv, which is a high-performance JSON schema validator.
+ */
 export interface ValidationResult {
   keyword: string;
   dataPath: string;
@@ -9,7 +12,7 @@ export interface ValidationResult {
 }
 
 /**
- * Fastify custom error
+ * FastifyError is a custom error object that includes status code and validation results.
  */
 export interface FastifyError extends Error {
   statusCode?: number;

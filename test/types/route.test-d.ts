@@ -2,7 +2,8 @@ import fastify, {FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMeth
 import {expectType} from 'tsd'
 
 /*
- * Testing Fastify HTTP Routes and Route Shorthands
+ * Testing Fastify HTTP Routes and Route Shorthands.
+ * Verifies Request and Reply types as well.
  * For the route shorthand tests the argument orders are:
  * - `(path, handler)`
  * - `(path, options, handler)`
@@ -14,7 +15,7 @@ const routeHandler: RouteHandlerMethod = (request, reply) => {
   expectType<FastifyReply>(reply)
 }
 
-// route
+// route method
 expectType<FastifyInstance>(fastify().route({
   method: 'GET',
   url: '/',

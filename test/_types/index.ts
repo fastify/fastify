@@ -2,7 +2,7 @@
 /* eslint no-undef: 0 */
 // This file will be passed to the TypeScript CLI to verify our typings compile
 
-import * as fastify from '../../_fastify'
+import * as fastify from '../../fastify'
 import * as http from 'http'
 import * as http2 from 'http2'
 import { readFileSync } from 'fs'

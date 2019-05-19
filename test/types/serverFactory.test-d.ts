@@ -1,6 +1,6 @@
-/**
- * There is some conflict with the Custom things. If the fakeMethod is optional then the http.createServer works and the the request handler fails. If it is non-optional then the http.createServer fails and the request handlers works-ish.
- */
+// /**
+//  * There is some conflict with the Custom things. If the fakeMethod is optional then the http.createServer works and the the request handler fails. If it is non-optional then the http.createServer fails and the request handlers works-ish.
+//  */
 // import fastify, {FastifyServerFactory} from '../../fastify'
 // import * as http from 'http'
 // import {expectType, } from 'tsd'

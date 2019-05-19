@@ -15,17 +15,3 @@ expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Ht
 expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify<http2.Http2SecureServer>())
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
-
-// FastifyPlugin & FastifyRegister
-const plugin: FastifyPlugin<{
-  option1: string,
-  option2: boolean
-}> = function(instance, opts, next) { }
-expectError(fastify().register(plugin, {}))
-expectType<void>(fastify().register(plugin, { option1: '', option2: true }))
-
-// FastifyRequest and FastifyReply
-fastify().get('/', (request, reply) => {
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
-})

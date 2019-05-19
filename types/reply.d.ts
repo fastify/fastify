@@ -5,6 +5,10 @@ import * as https from 'https'
 import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault } from './utils';
 import { FastifyContext } from './context'
 
+/**
+ * FastifyReply is an instance of the standard http or http2 reply types.
+ * It defaults to http.ServerResponse, and it also extends the relative reply object.
+ */
 export type FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>

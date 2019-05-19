@@ -415,6 +415,11 @@ function build (options) {
 
     validateBodyLimitOption(opts.bodyLimit)
 
+    if (opts.preHandler == null && opts.beforeHandler != null) {
+      beforeHandlerWarning()
+      opts.preHandler = opts.beforeHandler
+    }
+
     const prefix = this[kRoutePrefix]
 
     this.after((notHandledErr, done) => {
@@ -496,11 +501,6 @@ function build (options) {
           done(error)
           return
         }
-      }
-
-      if (opts.preHandler == null && opts.beforeHandler != null) {
-        beforeHandlerWarning()
-        opts.preHandler = opts.beforeHandler
       }
 
       const hooks = ['preParsing', 'preValidation', 'onRequest', 'preHandler', 'preSerialization']

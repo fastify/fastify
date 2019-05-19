@@ -11,7 +11,7 @@
     "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "test:typescript": "tsd",
-    "test:report": "npm run lint && npm run unit:report && npm run typescript",
+    "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "coveralls": "npm run unit -- --cov",

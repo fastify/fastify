@@ -77,7 +77,7 @@ For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/d
 ### .getHeader(key)
 Retrieves the value of a previously set header.
 ```js
-reply.header('x-foo', 'foo')
+reply.header('x-foo', 'foo') // setHeader: key, value
 reply.getHeader('x-foo') // 'foo'
 ```
 

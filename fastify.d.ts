@@ -8,6 +8,9 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
+import * as pino from 'pino'
+import { Stream } from 'stream'
+
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
   HttpRequest extends (http.IncomingMessage | http2.Http2ServerRequest) = http.IncomingMessage,
@@ -66,6 +69,7 @@ declare namespace fastify {
     debug(obj: {}, msg?: string, ...args: any[]): void;
     trace(msg: string, ...args: any[]): void;
     trace(obj: {}, msg?: string, ...args: any[]): void;
+    child(...args: Parameters<pino.BaseLogger['child']>): Logger
   }
 
   type FastifyMiddleware<
@@ -183,7 +187,10 @@ declare namespace fastify {
     pluginTimeout?: number,
     disableRequestLogging?: boolean,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-    logger?: any,
+    logger?: boolean
+      | ({ level: keyof Logger, serializers?: typeof pino.stdSerializers }
+          & ({ file: string } | { stream: Stream }))
+      | Logger,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
     querystringParser?: (str: string) => { [key: string]: string | string[] },

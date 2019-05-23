@@ -24,8 +24,20 @@ const {
   kState,
   kOptions,
   kGlobalHooks,
-  kDisableRequestLogging
+  kDisableRequestLogging,
+  kRegister
 } = require('./lib/symbols.js')
+const {
+  Get,
+  Post,
+  Delete,
+  Head,
+  Put,
+  Options,
+  Patch,
+  All,
+  Hook
+} = require('./lib/pluginDecorators')
 
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
@@ -44,6 +56,8 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const build404 = require('./lib/fourOhFour')
+const { beforeHandlerWarning } = require('./lib/warnings')
+const { register } = require('./lib/register')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -164,8 +178,8 @@ function fastify (options) {
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
+    register,
     // Fastify architecture methods (initialized by Avvio)
-    register: null,
     after: null,
     ready: null,
     onClose: null,
@@ -218,7 +232,7 @@ function fastify (options) {
   const avvio = Avvio(fastify, {
     autostart: false,
     timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
-    expose: { use: 'register' }
+    expose: { use: kRegister }
   })
   // Override to allow the plugin incapsulation
   avvio.override = override
@@ -759,3 +773,12 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
 fastify.fastify = fastify
 fastify.default = fastify
 module.exports = fastify
+module.exports.Get = Get
+module.exports.Post = Post
+module.exports.Delete = Delete
+module.exports.Head = Head
+module.exports.Put = Put
+module.exports.Options = Options
+module.exports.Patch = Patch
+module.exports.All = All
+module.exports.Hook = Hook

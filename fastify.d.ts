@@ -69,9 +69,9 @@ declare namespace fastify {
   }
 
   type FastifyMiddleware<
-  HttpServer,
-  HttpRequest,
-  HttpResponse,
+  HttpServer = http.Server,
+  HttpRequest = http.IncomingMessage,
+  HttpResponse = http.ServerResponse,
   Query = DefaultQuery,
   Params = DefaultParams,
   Headers = DefaultHeaders,
@@ -84,9 +84,9 @@ declare namespace fastify {
   ) => void
 
   type FastifyMiddlewareWithPayload<
-  HttpServer,
-  HttpRequest,
-  HttpResponse,
+  HttpServer = http.Server,
+  HttpRequest = http.IncomingMessage,
+  HttpResponse = http.ServerResponse,
   Query = DefaultQuery,
   Params = DefaultParams,
   Headers = DefaultHeaders,
@@ -100,8 +100,8 @@ declare namespace fastify {
   ) => void
 
   type RequestHandler<
-  HttpRequest,
-  HttpResponse,
+  HttpRequest = http.IncomingMessage,
+  HttpResponse = http.ServerResponse,
   Query = DefaultQuery,
   Params = DefaultParams,
   Headers = DefaultHeaders,
@@ -130,7 +130,7 @@ declare namespace fastify {
    * fastify's wrapped version of node.js IncomingMessage
    */
   interface FastifyRequest<
-    HttpRequest,
+    HttpRequest = http.IncomingMessage,
     Query = DefaultQuery,
     Params = DefaultParams,
     Headers = DefaultHeaders,
@@ -264,9 +264,9 @@ declare namespace fastify {
    * Route configuration options such as "url" and "method"
    */
   interface RouteOptions<
-    HttpServer,
-    HttpRequest,
-    HttpResponse,
+    HttpServer = http.Server,
+    HttpRequest = http.IncomingMessage,
+    HttpResponse = http.ServerResponse,
     Query = DefaultQuery,
     Params = DefaultParams,
     Headers = DefaultHeaders,

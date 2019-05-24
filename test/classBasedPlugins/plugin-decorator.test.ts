@@ -1,7 +1,18 @@
 const test = require('tap').test
 const fastify = require('../../')
 const {
-  Get, Post, Head, Put, Delete, Options, Patch, All, Hook
+  Get,
+  Post,
+  Head,
+  Put,
+  Delete,
+  Options,
+  Patch,
+  All,
+  Hook,
+  DecorateRequest,
+  DecorateReply,
+  DecorateInstance
 } = fastify;
 import 'reflect-metadata'
 const { kPluginMetadata } = require('../../lib/symbols')
@@ -206,4 +217,118 @@ test('should be able to use multiple decorators', (t) => {
   t.ok(typeof metadata[1].options.handler === 'function')
   t.ok(metadata[1].options.handler.name.startsWith('bound'))
   t.equals(metadata[1].options.url, '/')
+})
+
+test('should add metadata for @DecorateRequest', (t) => {
+  t.plan(14)
+  class TestPlugin {
+    @DecorateRequest()
+    test0 = 42
+
+    @DecorateRequest('test1')
+    aName () {
+      return 'test'
+    }
+
+    @DecorateRequest()
+    test2 () {
+      return 'test'
+    }
+  }
+
+  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+
+  t.ok(Array.isArray(metadata))
+  t.equals(metadata.length, 3)
+
+  t.equals(metadata[0].type, 'decorateRequest')
+  t.equals(metadata[0].value, 'test0')
+  t.equals(metadata[0].name, 'test0')
+  t.equals(metadata[0].isFunction, false)
+  
+  t.equals(metadata[1].type, 'decorateRequest')
+  t.equals(metadata[1].value, 'aName')
+  t.equals(metadata[1].name, 'test1')
+  t.equals(metadata[1].isFunction, true)
+
+  t.equals(metadata[2].type, 'decorateRequest')
+  t.equals(metadata[2].value, 'test2')
+  t.equals(metadata[2].name, 'test2')
+  t.equals(metadata[2].isFunction, true)
+})
+
+test('should add metadata for @DecorateReply', (t) => {
+  t.plan(14)
+  class TestPlugin {
+    @DecorateReply()
+    test0 = 42
+
+    @DecorateReply('test1')
+    aName () {
+      return 'test'
+    }
+
+    @DecorateReply()
+    test2 () {
+      return 'test'
+    }
+  }
+
+  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+
+  t.ok(Array.isArray(metadata))
+  t.equals(metadata.length, 3)
+
+  t.equals(metadata[0].type, 'decorateReply')
+  t.equals(metadata[0].value, 'test0')
+  t.equals(metadata[0].name, 'test0')
+  t.equals(metadata[0].isFunction, false)
+  
+  t.equals(metadata[1].type, 'decorateReply')
+  t.equals(metadata[1].value, 'aName')
+  t.equals(metadata[1].name, 'test1')
+  t.equals(metadata[1].isFunction, true)
+
+  t.equals(metadata[2].type, 'decorateReply')
+  t.equals(metadata[2].value, 'test2')
+  t.equals(metadata[2].name, 'test2')
+  t.equals(metadata[2].isFunction, true)
+})
+
+test('should add metadata for @DecorateInstance', (t) => {
+  t.plan(14)
+  class TestPlugin {
+    @DecorateInstance()
+    test0 = 42
+
+    @DecorateInstance('test1')
+    aName () {
+      return 'test'
+    }
+
+    @DecorateInstance()
+    test2 () {
+      return 'test'
+    }
+  }
+
+  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+
+  t.ok(Array.isArray(metadata))
+  t.equals(metadata.length, 3)
+
+  t.equals(metadata[0].type, 'decorateInstance')
+  t.equals(metadata[0].value, 'test0')
+  t.equals(metadata[0].name, 'test0')
+  t.equals(metadata[0].isFunction, false)
+  
+  t.equals(metadata[1].type, 'decorateInstance')
+  t.equals(metadata[1].value, 'aName')
+  t.equals(metadata[1].name, 'test1')
+  t.equals(metadata[1].isFunction, true)
+
+  t.equals(metadata[2].type, 'decorateInstance')
+  t.equals(metadata[2].value, 'test2')
+  t.equals(metadata[2].name, 'test2')
+  t.equals(metadata[2].isFunction, true)
 })

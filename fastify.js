@@ -36,7 +36,10 @@ const {
   Options,
   Patch,
   All,
-  Hook
+  Hook,
+  DecorateRequest,
+  DecorateReply,
+  DecorateInstance
 } = require('./lib/pluginDecorators')
 
 const { createServer } = require('./lib/server')
@@ -782,3 +785,6 @@ module.exports.Options = Options
 module.exports.Patch = Patch
 module.exports.All = All
 module.exports.Hook = Hook
+module.exports.DecorateRequest = DecorateRequest
+module.exports.DecorateReply = DecorateReply
+module.exports.DecorateInstance = DecorateInstance

@@ -604,3 +604,21 @@ const server2 = fastify()
 server2.close().then(() => {})
 const server3 = fastify()
 server3.close(() => {})
+
+{
+  // tests generics default values
+  const routeOptions: fastify.RouteOptions = {
+    method: 'GET',
+    url: '/',
+    handler: function (req, reply) { reply.send({}) }
+  }
+
+  const genericHandler: fastify.RequestHandler = (req, reply) => { reply.send(reply) }
+
+  const middleware: fastify.FastifyMiddleware = function middleware (req, reply, done) {
+    this.addHook('onClose', function (instance, done) {
+      done()
+    })
+    done()
+  }
+}

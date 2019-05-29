@@ -1,8 +1,3 @@
-pr:
-- master
-- next
-- 1.x
-
 jobs:
 
 # npm jobs

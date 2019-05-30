@@ -164,7 +164,7 @@ const schema: fastify.RouteSchema = {
   }
 }
 
-const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema,
   beforeHandler: [
     (request, reply, next) => {
@@ -361,7 +361,7 @@ server.listen(3000, err => {
   if (err) throw err
   const address = server.server.address()
   if (typeof address === 'object') {
-    server.log.info(`server listening on ${address.port}`)
+    server.log.info(`server listening on ${address && address.port}`)
   } else {
     server.log.info(`server listening on ${address}`)
   }

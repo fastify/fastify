@@ -188,7 +188,7 @@ const schema: fastify.RouteSchema = {
   }
 }
 
-const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema,
   preValidation: [
     (request, reply, next) => {
@@ -604,3 +604,21 @@ const server2 = fastify()
 server2.close().then(() => {})
 const server3 = fastify()
 server3.close(() => {})
+
+{
+  // tests generics default values
+  const routeOptions: fastify.RouteOptions = {
+    method: 'GET',
+    url: '/',
+    handler: function (req, reply) { reply.send({}) }
+  }
+
+  const genericHandler: fastify.RequestHandler = (req, reply) => { reply.send(reply) }
+
+  const middleware: fastify.FastifyMiddleware = function middleware (req, reply, done) {
+    this.addHook('onClose', function (instance, done) {
+      done()
+    })
+    done()
+  }
+}

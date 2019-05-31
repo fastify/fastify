@@ -23,9 +23,9 @@ A "month" is to be a period of 30 consecutive days.
 
 ### Schedule
 
-| Version | Release Date | End Of LTS Date |
-| :------ | :----------- | :-------------- |
-| 1.0.0   | 2018-03-06   | TBD             |
+| Version | Release Date | End Of LTS Date | Node.js         |
+| :------ | :----------- | :-------------- | :-------------- |
+| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11 |
 
 <a name="supported-os"></a>
 
@@ -33,7 +33,6 @@ A "month" is to be a period of 30 consecutive days.
 
 | CI             | OS      | Version        | Package Manager | Node.js        |
 | :------------- | :------ | :------------- | :-------------- | :------------- |
-| Travis         | Linux   | Ubuntu 14.04   | npm             | 6,8,9,10       |
 | Azure pipeline | Linux   | Ubuntu 16.04   | yarn            | ~~6¹~~,8,10,11 |
 | Azure pipeline | Windows | vs2017-win2016 | npm             | 6,8,10,11      |
 

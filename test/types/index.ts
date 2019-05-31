@@ -188,7 +188,7 @@ const schema: fastify.RouteSchema = {
   }
 }
 
-const opts: fastify.RouteShorthandOptions<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
   schema,
   preValidation: [
     (request, reply, next) => {

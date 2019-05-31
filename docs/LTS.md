@@ -34,7 +34,7 @@ A "month" is to be a period of 30 consecutive days.
 | CI              | OS      | Version        | Package Manager | Node.js               |
 | :-------------- | :------ | :------------- | :-------------- | :-------------------- |
 | Azure pipelines | Linux   | Ubuntu 16.04   | npm, yarn       | ~~6¹~~, 8, 10, 11, 12 |
-| Azure pipelines | Windows | vs2017-win2016 | npm, yarn       | 6, 8, 10, 11, 12      |
-| Azure pipelines | Mac     | macOS 10.14    | npm, yarn       | 6, 8, 10, 11, 12      |
+| Azure pipelines | Windows | vs2017-win2016 | npm, yarn       | ~~6¹~~, 8, 10, 11, 12      |
+| Azure pipelines | Mac     | macOS 10.14    | npm, yarn       | ~~6¹~~, 8, 10, 11, 12      |
 
 _¹ yarn supports only node >= 8_

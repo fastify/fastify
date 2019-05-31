@@ -1,14 +1,12 @@
-const test = require('tap').test
+import { test } from 'tap'
 const fastify = require('../../')
 const {
   Get,
   Hook,
   DecorateInstance,
   DecorateRequest,
-  DecorateReply,
-  Plugin
-} = fastify;
-import 'reflect-metadata'
+  DecorateReply
+} = fastify
 const sget = require('simple-get').concat
 
 test('Should register route', (t) => {

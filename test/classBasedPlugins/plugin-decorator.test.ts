@@ -1,4 +1,4 @@
-const test = require('tap').test
+import { test } from 'tap'
 const fastify = require('../../')
 const {
   Get,
@@ -14,7 +14,6 @@ const {
   DecorateReply,
   DecorateInstance
 } = fastify;
-import 'reflect-metadata'
 const { kPluginMetadata } = require('../../lib/symbols')
 
 test('Should add metadata to decorated class', (t: any) => {
@@ -26,7 +25,8 @@ test('Should add metadata to decorated class', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin();
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 1)
@@ -45,7 +45,8 @@ test('Should add method metadata for @Get', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'GET')
 })
@@ -59,7 +60,8 @@ test('Should add metadata for @Post', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'POST')
 })
@@ -73,7 +75,8 @@ test('Should add method metadata for @Head', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'HEAD')
 })
@@ -87,7 +90,8 @@ test('Should add method metadata for @Delete', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'DELETE')
 })
@@ -101,7 +105,8 @@ test('Should add method metadata for @Patch', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'PATCH')
 })
@@ -115,7 +120,8 @@ test('Should add method metadata for @Put', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'PUT')
 })
@@ -129,7 +135,8 @@ test('Should add method metadata for @Options', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.equals(metadata[0].options.method, 'OPTIONS')
 })
@@ -143,7 +150,8 @@ test('Should add method metadata for @All', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.deepEquals(
     metadata[0].options.method,
@@ -166,7 +174,8 @@ test('should be able to pass options', (t: any) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.deepEquals(metadata[0].options.schema, schema)
 })
@@ -180,7 +189,8 @@ test('should add metadata for @Hook decorator', (t) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 1)
@@ -204,7 +214,8 @@ test('should be able to use multiple decorators', (t) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 2)
@@ -236,7 +247,8 @@ test('should add metadata for @DecorateRequest', (t) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 3)
@@ -274,7 +286,8 @@ test('should add metadata for @DecorateReply', (t) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 3)
@@ -312,7 +325,8 @@ test('should add metadata for @DecorateInstance', (t) => {
     }
   }
 
-  const metadata = Reflect.getMetadata(kPluginMetadata, new TestPlugin())
+  const plugin = new TestPlugin()
+  const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
   t.equals(metadata.length, 3)

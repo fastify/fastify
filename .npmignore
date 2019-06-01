@@ -3,7 +3,6 @@
 .gitignore
 .github
 .nyc_output
-.travis.yml
 coverage/
 tools/
 azure-pipelines-npm-template.yml

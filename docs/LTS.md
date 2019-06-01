@@ -31,10 +31,10 @@ A "month" is to be a period of 30 consecutive days.
 
 ### Schedule
 
-| Version | Release Date | End Of LTS Date | Node.js         |
-| :------ | :----------- | :-------------- | :-------------- |
-| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11 |
-| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 11    |
+| Version | Release Date | End Of LTS Date | Node.js             |
+| :------ | :----------- | :-------------- | :------------------ |
+| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11, 12 |
+| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 11, 12    |
 
 <a name="supported-os"></a>
 

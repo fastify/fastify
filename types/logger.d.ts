@@ -7,15 +7,9 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, Raw
 /**
  * Standard Fastify logging function
  */
-export interface FastifyLoggerWriteFn {
-  (msg: string, ...args: any[]): void
-}
-
-/**
- * Fastify logging function with an object as the first argument
- */
-export interface FastifyLoggerWriteFn {
-  (obj: { [key: string]: any }, msg?: string, ...args: any[]): void
+export interface FastifyLogFn {
+  (msg: string, ...args: any[]): void;
+  (obj: object, msg?: string, ...args: any[]): void;
 }
 
 export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
@@ -47,13 +41,13 @@ export interface FastifyLoggerOptions<
       statusCode: string | number
     }
   };
-  info: FastifyLoggerWriteFn;
-  error: FastifyLoggerWriteFn;
-  debug: FastifyLoggerWriteFn;
-  fatal: FastifyLoggerWriteFn;
-  warn: FastifyLoggerWriteFn;
-  trace: FastifyLoggerWriteFn;
-  child: FastifyLoggerWriteFn | FastifyLoggerOptions<RawServer>;
+  info: FastifyLogFn;
+  error: FastifyLogFn;
+  debug: FastifyLogFn;
+  fatal: FastifyLogFn;
+  warn: FastifyLogFn;
+  trace: FastifyLogFn;
+  child: FastifyLogFn | FastifyLoggerOptions<RawServer>;
   genReqId?: string;
 }
 

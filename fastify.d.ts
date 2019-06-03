@@ -178,6 +178,7 @@ declare namespace fastify {
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
   interface ServerOptions {
+    caseSensitive?: boolean,
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     pluginTimeout?: number,

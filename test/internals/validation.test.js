@@ -74,6 +74,37 @@ test('build schema - payload schema', t => {
   t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
+test('build schema - query schema', t => {
+  t.plan(2)
+  const opts = {
+    schema: {
+      query: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  }
+  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  t.type(opts[symbols.querystringSchema].schema.type, 'string')
+  t.is(typeof opts[symbols.querystringSchema], 'function')
+})
+
+test('build schema - query schema abbreviated', t => {
+  t.plan(2)
+  const opts = {
+    schema: {
+      query: {
+        hello: { type: 'string' }
+      }
+    }
+  }
+  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  t.type(opts[symbols.querystringSchema].schema.type, 'string')
+  t.is(typeof opts[symbols.querystringSchema], 'function')
+})
+
 test('build schema - querystring schema', t => {
   t.plan(2)
   const opts = {

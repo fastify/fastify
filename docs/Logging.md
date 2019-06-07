@@ -101,7 +101,7 @@ const fastify = require('fastify')({
   }
 });
 ```
-**Note**: The body not can serialize inside `req` method, because when the request is serialized when we create the child logger. At that time, the body is not parsed yet.
+**Note**: The body not can serialize inside `req` method, because the request is serialized when we create the child logger. At that time, the body is not parsed yet.
 
 See a approach to log `req.body`
 

@@ -58,6 +58,7 @@ const cors = require('cors')
 
   // other simple options
   const otherServer = fastify({
+    caseSensitive: false,
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
     maxParamLength: 200,

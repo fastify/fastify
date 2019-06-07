@@ -148,6 +148,7 @@
   },
   "greenkeeper": {
     "ignore": [
+      "autocannon",
       "boom",
       "joi",
       "@types/node",

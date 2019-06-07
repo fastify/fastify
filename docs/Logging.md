@@ -90,11 +90,10 @@ const fastify = require('fastify')({
           url: req.url,
           path: req.path,
           parameters: req.parameters,
-          // Including the body and headers in the log could be in violation 
+          // Including the headers in the log could be in violation 
           // of privacy laws, e.g. GDPR. You should use the "redact" option to
           // remove sensitive fields. It could also leak authentication data in
           // the logs.
-          body: req.body,
           headers: req.headers
         };
       }
@@ -102,6 +101,19 @@ const fastify = require('fastify')({
   }
 });
 ```
+**Note**: The body not can serialize inside `req` method, because the request is serialized when we create the child logger. At that time, the body is not parsed yet.
+
+See a approach to log `req.body`
+
+```js
+app.addHook('preHandler', function (req, reply, next) {
+  if (req.body) {
+    req.log.info({ body: req.body }, 'parsed body')
+  }
+  next()
+})
+```
+
 
 *This option will be ignored by any logger other than Pino.*
 

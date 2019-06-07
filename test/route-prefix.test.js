@@ -459,6 +459,37 @@ test('matches both /prefix and /prefix/  with a / route - prefixTrailingSlash: "
   })
 })
 
+test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "both" (default), ignoreTrailingSlash: true', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    ignoreTrailingSlash: true
+  })
+
+  fastify.register(function (fastify, opts, next) {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix/' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix//'
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), {
+      'error': 'Not Found',
+      'message': 'Not Found',
+      'statusCode': 404
+    })
+  })
+})
+
 test('matches only /prefix  with a / route - prefixTrailingSlash: "no-slash", ignoreTrailingSlash: false', t => {
   t.plan(4)
   const fastify = Fastify({

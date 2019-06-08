@@ -112,7 +112,7 @@ reply.callNotFound()
 
 <a name="getResponseTime"></a>
 ### .getResponseTime()
-Invokes the custom response time getter to calculate the amount of time passed since a reply has been sent.
+Invokes the custom response time getter to calculate the amount of time passed since the request was started.
 
 ```js
 reply.getResponseTime()

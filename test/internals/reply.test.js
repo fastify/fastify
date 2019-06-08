@@ -979,7 +979,7 @@ test('should throw error when attempting to set reply.sent more than once', t =>
   })
 })
 
-test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by sending a response', t => {
+test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const context = {}

@@ -136,6 +136,32 @@ test('build schema - querystring schema abbreviated', t => {
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
 
+test('build schema - must throw if querystring and query schema exist', t => {
+  t.plan(2)
+  try {
+    const opts = {
+      schema: {
+        query: {
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        },
+        querystring: {
+          type: 'object',
+          properties: {
+            hello: { type: 'string' }
+          }
+        }
+      }
+    }
+    validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  } catch (err) {
+    t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
+    t.is(err.message, 'FST_ERR_SCH_DUPLICATE: Schema with \'querystring\' already present!')
+  }
+})
+
 test('build schema - params schema', t => {
   t.plan(1)
   const opts = {

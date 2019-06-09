@@ -7,12 +7,13 @@ const {
   DecorateRequest,
   DecorateReply
 } = fastify
+import { AbstractPlugin } from '../..'
 const sget = require('simple-get').concat
 
 test('Should register route', (t) => {
   t.plan(5)
   
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @Get('/')
     async handler (request, response) {
       t.pass('route called')
@@ -41,7 +42,7 @@ test('Should register route', (t) => {
 test('Should register hook', (t) => {
   t.plan(6)
   
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @Hook('onSend')
     hook (request, reply, payload, next) {
       t.pass('onSend hook executed')
@@ -76,7 +77,7 @@ test('Should register hook', (t) => {
 test('Should register async hook', (t) => {
   t.plan(6)
   
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @Hook('onSend')
     async hook (request, reply, payload) {
       t.pass('onSend hook executed')
@@ -110,7 +111,7 @@ test('Should register async hook', (t) => {
 test('Should decorate request', (t) => {
   t.plan(6)
   
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @DecorateRequest()
     test = 42
 
@@ -150,7 +151,7 @@ test('Should decorate request', (t) => {
 test('should decorate instance', (t) => {
   t.plan(2)
 
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @DecorateInstance()
     conf = {
       db: 'some.db',
@@ -174,7 +175,7 @@ test('should decorate instance', (t) => {
 test('Should decorate reply', (t) => {
   t.plan(7)
   
-  class TestPlugin {
+  class TestPlugin extends AbstractPlugin {
     @DecorateReply()
     headerDefaultValue = '42'
 
@@ -210,6 +211,35 @@ test('Should decorate reply', (t) => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['x-test'], '42')
       t.deepEqual(body.toString(), 'hello world')
+    })
+  })
+})
+
+test('Should expose fastify instance to plugin', (t) => {
+  t.plan(5)
+  
+  class TestPlugin extends AbstractPlugin {
+    @Get('/')
+    async handler (request, response) {
+      t.ok(this.instance)
+      return 'hello world!'
+    }
+  }
+
+  const app = fastify()
+  app.register(new TestPlugin())
+  app.listen(0, err => {
+    t.error(err)
+    app.server.unref()
+    const port = app.server.address().port
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'hello world!')
     })
   })
 })

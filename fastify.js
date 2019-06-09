@@ -63,6 +63,7 @@ const { beforeHandlerWarning } = require('./lib/warnings')
 const { register } = require('./lib/register')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const AbstractPlugin = require('./lib/abstractPlugin')
 
 function fastify (options) {
   // Options validations
@@ -788,3 +789,4 @@ module.exports.Hook = Hook
 module.exports.DecorateRequest = DecorateRequest
 module.exports.DecorateReply = DecorateReply
 module.exports.DecorateInstance = DecorateInstance
+module.exports.AbstractPlugin = AbstractPlugin

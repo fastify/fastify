@@ -17,7 +17,7 @@ const {
 const { kPluginMetadata } = require('../../lib/symbols')
 
 test('Should add metadata to decorated class', (t: any) => {
-  t.plan(6)
+  t.plan(5)
   class TestPlugin {
     @Get('/')
     async handler (request: any, response: any) {
@@ -32,7 +32,6 @@ test('Should add metadata to decorated class', (t: any) => {
   t.equals(metadata.length, 1)
   t.equals(metadata[0].type, 'route')
   t.ok(typeof metadata[0].options.handler === 'function')
-  t.ok(metadata[0].options.handler.name.startsWith('bound'))
   t.equals(metadata[0].options.url, '/')
 })
 
@@ -181,7 +180,7 @@ test('should be able to pass options', (t: any) => {
 })
 
 test('should add metadata for @Hook decorator', (t) => {
-  t.plan(6)
+  t.plan(5)
   class TestPlugin {
     @Hook('onSend')
     handler (request, reply, payload, next) {
@@ -197,11 +196,10 @@ test('should add metadata for @Hook decorator', (t) => {
   t.equals(metadata[0].type, 'hook')
   t.equals(metadata[0].name, 'onSend')
   t.ok(typeof metadata[0].handler === 'function')
-  t.ok(metadata[0].handler.name.startsWith('bound'))
 })
 
 test('should be able to use multiple decorators', (t) => {
-  t.plan(9)
+  t.plan(7)
   class TestPlugin {
     @Hook('onSend')
     hook (request, reply, payload, next) {
@@ -222,11 +220,9 @@ test('should be able to use multiple decorators', (t) => {
 
   t.equals(metadata[0].type, 'hook')
   t.ok(typeof metadata[0].handler === 'function')
-  t.ok(metadata[0].handler.name.startsWith('bound'))
 
   t.equals(metadata[1].type, 'route')
   t.ok(typeof metadata[1].options.handler === 'function')
-  t.ok(metadata[1].options.handler.name.startsWith('bound'))
   t.equals(metadata[1].options.url, '/')
 })
 

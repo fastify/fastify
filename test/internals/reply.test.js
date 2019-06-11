@@ -14,7 +14,7 @@ const {
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(12)
+  t.plan(13)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -27,6 +27,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.status, 'function')
   t.is(typeof reply.header, 'function')
   t.is(typeof reply.serialize, 'function')
+  t.is(typeof reply.getResponseTime, 'function')
   t.is(typeof reply[kReplyHeaders], 'object')
   t.strictEqual(reply.res, response)
   t.strictEqual(reply.context, context)
@@ -976,4 +977,31 @@ test('should throw error when attempting to set reply.sent more than once', t =>
     t.error(err)
     t.pass()
   })
+})
+
+test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
+  t.plan(1)
+  const response = { statusCode: 200 }
+  const context = {}
+  const reply = new Reply(response, context, null)
+  t.equal(reply.getResponseTime(), 0)
+})
+
+test('reply.getResponseTime() should return a number greater than 0 after the timer is initialised on the reply by setting up response listeners', t => {
+  t.plan(1)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send('hello world')
+    }
+  })
+
+  fastify.addHook('onResponse', (req, reply) => {
+    t.true(reply.getResponseTime() > 0)
+    t.end()
+  })
+
+  fastify.inject({ method: 'GET', url: '/' })
 })

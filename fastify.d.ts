@@ -166,6 +166,7 @@ declare namespace fastify {
     getHeader(name: string): string | undefined
     hasHeader(name: string): boolean
     callNotFound(): void
+    getResponseTime(): number
     type(contentType: string): FastifyReply<HttpResponse>
     redirect(url: string): FastifyReply<HttpResponse>
     redirect(statusCode: number, url: string): FastifyReply<HttpResponse>

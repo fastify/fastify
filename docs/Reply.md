@@ -115,7 +115,7 @@ reply.callNotFound()
 Invokes the custom response time getter to calculate the amount of time passed since the request was started.
 
 ```js
-reply.getResponseTime()
+const milliseconds = reply.getResponseTime()
 ```
 
 <a name="type"></a>

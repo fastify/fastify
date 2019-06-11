@@ -345,6 +345,10 @@ server
   .get('/deprecatedpath/*', (req, reply) => {
     reply.callNotFound()
   })
+  .get('/getResponseTime', function (req, reply) {
+    const milliseconds : number = reply.getResponseTime()
+    reply.send({ milliseconds })
+  })
 
 // Generics example
 interface Query {

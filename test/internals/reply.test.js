@@ -1005,3 +1005,29 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
 
   fastify.inject({ method: 'GET', url: '/' })
 })
+
+test('reply should use the custom serializer', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+  fastify.setReplySerializer((payload) => {
+    t.deepEqual(payload, { foo: 'bar' })
+    payload.foo = 'bar bar'
+    return JSON.stringify(payload)
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar bar"}')
+  })
+})

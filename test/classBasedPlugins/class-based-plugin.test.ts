@@ -7,13 +7,12 @@ const {
   DecorateRequest,
   DecorateReply
 } = fastify
-import { AbstractPlugin } from '../..'
 const sget = require('simple-get').concat
 
 test('Should register route', (t) => {
   t.plan(5)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @Get('/')
     async handler (request, response) {
       t.pass('route called')
@@ -42,7 +41,7 @@ test('Should register route', (t) => {
 test('Should register hook', (t) => {
   t.plan(6)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @Hook('onSend')
     hook (request, reply, payload, next) {
       t.pass('onSend hook executed')
@@ -77,7 +76,7 @@ test('Should register hook', (t) => {
 test('Should register async hook', (t) => {
   t.plan(6)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @Hook('onSend')
     async hook (request, reply, payload) {
       t.pass('onSend hook executed')
@@ -111,7 +110,7 @@ test('Should register async hook', (t) => {
 test('Should decorate request', (t) => {
   t.plan(6)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @DecorateRequest()
     test = 42
 
@@ -151,7 +150,7 @@ test('Should decorate request', (t) => {
 test('should decorate instance', (t) => {
   t.plan(2)
 
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @DecorateInstance()
     conf = {
       db: 'some.db',
@@ -175,7 +174,7 @@ test('should decorate instance', (t) => {
 test('Should decorate reply', (t) => {
   t.plan(7)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @DecorateReply()
     headerDefaultValue = '42'
 
@@ -218,10 +217,10 @@ test('Should decorate reply', (t) => {
 test('Should expose fastify instance to plugin', (t) => {
   t.plan(5)
   
-  class TestPlugin extends AbstractPlugin {
+  class TestPlugin {
     @Get('/')
     async handler (request, response) {
-      t.ok(this.instance)
+      t.ok(this['instance'])
       return 'hello world!'
     }
   }

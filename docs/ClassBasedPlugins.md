@@ -6,7 +6,7 @@
 **Note**: It is required to enable the `experimentalDecorators` compiler option to be able to use the typescript decorators.
 
 ```ts
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   constructor (options) {
     // ...
   }
@@ -33,7 +33,7 @@ The first argument of the method decorators is the url.
 ```ts
 import { Get, Post } from 'fastify'
 
-class UserController extends AbstractPlugin {
+class UserController {
   @Get('/user/:id')
   async getUser (request, reply) {
     // ...
@@ -66,7 +66,7 @@ const schema = {
   }
 }
 
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   @Get('/', { schema })
   async route (request, reply) {
     return { hello: 'world' }
@@ -79,7 +79,7 @@ class MyPlugin extends AbstractPlugin {
 ```ts
 import { Hook } from 'fastify'
 
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   @Hook('onRequest')
   hook (request, reply, next) {
     // ...
@@ -98,7 +98,7 @@ class MyPlugin extends AbstractPlugin {
 ```ts
 import { DecorateInstance } from 'fastify'
 
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   @DecorateInstance()
   conf = { db: 'some.db', port: 3000 }
 }
@@ -107,7 +107,7 @@ class MyPlugin extends AbstractPlugin {
 ```ts
 import { DecorateReply } from 'fastify'
 
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   @DecorateReply('utility')
   addUtility () {
     return function () {
@@ -120,7 +120,7 @@ class MyPlugin extends AbstractPlugin {
 ```ts
 import { DecorateRequest } from 'fastify'
 
-class MyPlugin extends AbstractPlugin {
+class MyPlugin {
   @DecorateRequest('utility')
   addUtility () {
     return function () {

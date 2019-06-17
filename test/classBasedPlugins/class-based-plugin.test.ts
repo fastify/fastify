@@ -8,6 +8,7 @@ const {
   DecorateReply
 } = fastify
 const sget = require('simple-get').concat
+import { FastifyInstance } from '../..'
 
 test('Should register route', (t) => {
   t.plan(5)
@@ -218,9 +219,11 @@ test('Should expose fastify instance to plugin', (t) => {
   t.plan(5)
   
   class TestPlugin {
+    private instance: FastifyInstance
+
     @Get('/')
     async handler (request, response) {
-      t.ok(this['instance'])
+      t.ok(this.instance)
       return 'hello world!'
     }
   }

@@ -585,6 +585,18 @@ Fake http injection (for testing purposes) [here](https://github.com/fastify/fas
 `fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.<br/>
 To learn more, see [shared schema example](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#shared-schema) in the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
 
+<a name="set-reply-serializer"></a>
+#### setReplySerializer
+Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](https://github.com/fastify/fastify/blob/master/docs/Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
+Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) for errors.
+
+```js
+fastify.setReplySerializer(function (payload, statusCode){
+  // serialize the payload with a sync function
+  return `my serialized ${statusCode} content: ${payload}`
+})
+```
+
 <a name="set-schema-compiler"></a>
 #### setSchemaCompiler
 Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).

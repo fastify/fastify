@@ -1007,10 +1007,11 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
 })
 
 test('reply should use the custom serializer', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = require('../..')()
-  fastify.setReplySerializer((payload) => {
+  fastify.setReplySerializer((payload, statusCode) => {
     t.deepEqual(payload, { foo: 'bar' })
+    t.equal(statusCode, 200)
     payload.foo = 'bar bar'
     return JSON.stringify(payload)
   })
@@ -1210,5 +1211,43 @@ test('cannot set the replySerializer when the server is running', t => {
     } catch (e) {
       t.is(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
     }
+  })
+})
+
+test('reply should not call the custom serializer for errors and not found', t => {
+  t.plan(15)
+  const fastify = require('../..')()
+  fastify.setReplySerializer((payload, statusCode) => {
+    t.deepEqual(payload, { foo: 'bar' })
+    t.equal(statusCode, 200)
+    return JSON.stringify(payload)
+  })
+
+  fastify.get('/', (req, reply) => { reply.send({ foo: 'bar' }) })
+  fastify.get('/err', (req, reply) => { reply.send(new Error('an error')) })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/err'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-existing'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
   })
 })

@@ -1215,7 +1215,8 @@ test('cannot set the replySerializer when the server is running', t => {
 })
 
 test('reply should not call the custom serializer for errors and not found', t => {
-  t.plan(15)
+  t.plan(9)
+
   const fastify = require('../..')()
   fastify.setReplySerializer((payload, statusCode) => {
     t.deepEqual(payload, { foo: 'bar' })

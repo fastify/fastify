@@ -445,6 +445,13 @@ server.setErrorHandler((err, request, reply) => {
   }
 })
 
+server.setReplySerializer((payload, statusCode) => {
+  if (statusCode === 201) {
+    return `Created ${payload}`
+  }
+  return JSON.stringify(payload)
+})
+
 server.listen(3000, err => {
   if (err) throw err
   const address = server.server.address()

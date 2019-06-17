@@ -661,6 +661,11 @@ declare namespace fastify {
     setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
+     * Set a function that will be called whenever an error happens
+     */
+    setReplySerializer(handler: (payload: string | object | Buffer | NodeJS.ReadableStream, statusCode: number) => string): void
+
+    /**
      * Set the schema compiler for all routes.
      */
     setSchemaCompiler(schemaCompiler: SchemaCompiler): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

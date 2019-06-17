@@ -8,6 +8,7 @@ const {
   DecorateReply
 } = fastify
 const sget = require('simple-get').concat
+const { pluginDecoratorsWarning } = require('../../lib/warnings')
 import { FastifyInstance } from '../..'
 
 test('Should register route', (t) => {
@@ -244,4 +245,18 @@ test('Should expose fastify instance to plugin', (t) => {
       t.deepEqual(body.toString(), 'hello world!')
     })
   })
+})
+
+test('should emit warning if plugin decorators are used', (t) => {
+  t.plan(1)
+  pluginDecoratorsWarning.called = false
+
+  process.on('warning', warning => {
+    t.strictEqual(warning.message, `The plugin decorators are experimental`)
+  })
+
+  class TestPlugin {
+    @Get('/')
+    async test (request, reply) {}
+  }
 })

@@ -71,7 +71,7 @@ const fastify = require('fastify')({
   }
 })
 ```
-For example, the response payload and headers could be logged using the approach below (even if it is *not* recommended*):
+For example, the response payload and headers could be logged using the approach below (even if it is *not recommended*):
 
 ```js
 const fastify = require('fastify')({

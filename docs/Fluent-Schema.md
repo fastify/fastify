@@ -43,7 +43,7 @@ const headersJsonSchema = S.object()
 
 const schema = {
   body: bodyJsonSchema.valueOf(),
-  querystring: queryStringJsonSchema.valueOf(),
+  querystring: queryStringJsonSchema.valueOf(), // (or) query: queryStringJsonSchema.valueOf()
   params: paramsJsonSchema.valueOf(),
   headers: headersJsonSchema.valueOf()
 }

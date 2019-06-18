@@ -10,6 +10,7 @@
   - [.hasHeader(key)](#hasheaderkey)
   - [.redirect(dest)](#redirectdest)
   - [.callNotFound()](#callnotfound)
+  - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
@@ -107,6 +108,14 @@ reply.redirect('/home')
 Invokes the custom not found handler.
 ```js
 reply.callNotFound()
+```
+
+<a name="getResponseTime"></a>
+### .getResponseTime()
+Invokes the custom response time getter to calculate the amount of time passed since the request was started.
+
+```js
+const milliseconds = reply.getResponseTime()
 ```
 
 <a name="type"></a>

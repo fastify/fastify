@@ -58,6 +58,7 @@ const cors = require('cors')
 
   // other simple options
   const otherServer = fastify({
+    caseSensitive: false,
     ignoreTrailingSlash: true,
     bodyLimit: 1000,
     maxParamLength: 200,
@@ -344,6 +345,10 @@ server
   })
   .get('/deprecatedpath/*', (req, reply) => {
     reply.callNotFound()
+  })
+  .get('/getResponseTime', function (req, reply) {
+    const milliseconds : number = reply.getResponseTime()
+    reply.send({ milliseconds })
   })
 
 // Generics example

@@ -1072,6 +1072,38 @@ test('should not log the error if error handler is defined', t => {
   })
 })
 
+test('should not rely on raw request to log errors', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    modifyCoreObjects: false,
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.status(415).send(new Error('something happened'))
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 30, 'level is correct')
+          t.equal(line.msg, 'something happened', 'message is set')
+          t.deepEqual(line.res, { statusCode: 415 }, 'status code is set')
+        })
+      })
+    })
+  })
+})
+
 test('should redact the authorization header if so specified', t => {
   t.plan(7)
   const stream = split(JSON.parse)

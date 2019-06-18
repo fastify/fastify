@@ -166,6 +166,7 @@ declare namespace fastify {
     getHeader(name: string): string | undefined
     hasHeader(name: string): boolean
     callNotFound(): void
+    getResponseTime(): number
     type(contentType: string): FastifyReply<HttpResponse>
     redirect(url: string): FastifyReply<HttpResponse>
     redirect(statusCode: number, url: string): FastifyReply<HttpResponse>
@@ -178,6 +179,7 @@ declare namespace fastify {
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
   interface ServerOptions {
+    caseSensitive?: boolean,
     ignoreTrailingSlash?: boolean,
     bodyLimit?: number,
     pluginTimeout?: number,

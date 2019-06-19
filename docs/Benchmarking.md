@@ -18,7 +18,7 @@ npm run benchmark
 
 ### Run the test against different Node.js versions ✨
 ```sh
-npx -p node@6 -- npm run benchmark
+npx -p node@10 -- npm run benchmark
 ```
 
 ## Advanced

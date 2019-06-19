@@ -85,7 +85,7 @@
   },
   "homepage": "https://www.fastify.io/",
   "engines": {
-    "node": ">=6"
+    "node": ">=8.16.0"
   },
   "devDependencies": {
     "@types/node": "^11.13.12",

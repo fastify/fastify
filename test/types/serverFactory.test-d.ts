@@ -1,34 +1,38 @@
-// /**
-//  * There is some conflict with the Custom things. If the fakeMethod is optional then the http.createServer works and the the request handler fails. If it is non-optional then the http.createServer fails and the request handlers works-ish.
-//  */
-// import fastify, {FastifyServerFactory} from '../../fastify'
-// import * as http from 'http'
-// import {expectType, } from 'tsd'
+import fastify, {FastifyServerFactory} from '../../fastify'
+import * as http from 'http'
+import {expectType, } from 'tsd'
 
-// // Custom Server
-// type CustomType = void;
-// interface CustomIncomingMessage extends http.IncomingMessage {
-//   fakeMethod: () => CustomType;
-// }
-// interface CustomServerResponse extends http.ServerResponse {
-//   fakeMethod: () => CustomType;
-// }
+// Custom Server
+type CustomType = void;
+interface CustomIncomingMessage extends http.IncomingMessage {
+  fakeMethod?: () => CustomType
+}
 
-// const serverFactory: FastifyServerFactory<http.Server> = (handler, opts) => {
-//   const server = http.createServer((req: CustomIncomingMessage, res: CustomServerResponse) => {
-//     req.fakeMethod = () => {}
-//     res.fakeMethod = () => {}
+interface CustomServerResponse extends http.ServerResponse {
+  fakeMethod?: () => CustomType
 
-//     handler(req, res)
-//   })
+}
 
-//   return server
-// }
+const serverFactory: FastifyServerFactory<http.Server> = (handler, opts) => {
+  const server = http.createServer((req: CustomIncomingMessage, res: CustomServerResponse) => {
+    req.fakeMethod = () => {}
+    res.fakeMethod = () => {}
 
-// const customServer = fastify<http.Server, CustomIncomingMessage, CustomServerResponse>({ serverFactory })
-// customServer.get('/', function (request, reply) {
-//   console.log(request.raw)
-//   request.fakeMethod()
-//   expectType<CustomType>(request.fakeMethod()) // currently failling: `Cannot invoke an object which is possibly undefined.`
-//   expectType<CustomType>(reply.fakeMethod()) // currently failling: `Cannot invoke an object which is possibly undefined.`
-// })
+    handler(req, res)
+  })
+
+  return server
+}
+
+// The request and reply objects should have the fakeMethods available (even though they may be undefined)
+const customServer = fastify<http.Server, CustomIncomingMessage, CustomServerResponse>({ serverFactory })
+
+customServer.get('/', function (request, reply) {
+  if (request.fakeMethod) {
+    expectType<CustomType>(request.fakeMethod())
+  }
+
+  if (reply.fakeMethod) {
+    expectType<CustomType>(reply.fakeMethod())
+  }
+})

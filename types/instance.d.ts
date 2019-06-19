@@ -56,7 +56,7 @@ export interface FastifyInstance<
   register: FastifyRegister<RawServer, RawRequest, RawReply>
   use: FastifyRegister<RawServer, RawRequest, RawReply>
 
-  route(opts: RouteOptions<RawServer, RawRequest, RawReply>): FastifyInstance<RawServer, RawRequest, RawReply>
+  route<RequestBody, RequestQuerystring, RequestParams, RequestHeaders>(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>): FastifyInstance<RawServer, RawRequest, RawReply>
 
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,

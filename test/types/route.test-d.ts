@@ -91,3 +91,43 @@ expectType<FastifyInstance>(fastify().options('/', { handler: routeHandler }))
 expectType<FastifyInstance>(fastify().all('/', routeHandler))
 expectType<FastifyInstance>(fastify().all('/', {}, routeHandler))
 expectType<FastifyInstance>(fastify().all('/', { handler: routeHandler }))
+
+type BodyType = void
+type QuerystringType = void
+type ParamsType = void
+type HeadersType = void
+fastify().get<BodyType, QuerystringType, ParamsType, HeadersType>('/', (req, res) => {
+  expectType<BodyType>(req.body)
+  expectType<QuerystringType>(req.query)
+  expectType<ParamsType>(req.params)
+  // expectType<HeadersType>(req.headers)
+})
+
+fastify().route<BodyType, QuerystringType, ParamsType, HeadersType>({
+  url: '/',
+  method: 'GET',
+  preHandler: (req, res) => {
+    expectType<BodyType>(req.body)
+    expectType<QuerystringType>(req.query)
+    expectType<ParamsType>(req.params)
+    // expectType<HeadersType>(req.headers)
+  },
+  preValidation: (req, res) => {
+    expectType<BodyType>(req.body)
+    expectType<QuerystringType>(req.query)
+    expectType<ParamsType>(req.params)
+    // expectType<HeadersType>(req.headers)
+  },
+  preSerialization: (req, res) => {
+    expectType<BodyType>(req.body)
+    expectType<QuerystringType>(req.query)
+    expectType<ParamsType>(req.params)
+    // expectType<HeadersType>(req.headers)
+  },
+  handler: (req, res) => {
+    expectType<BodyType>(req.body)
+    expectType<QuerystringType>(req.query)
+    expectType<ParamsType>(req.params)
+    // expectType<HeadersType>(req.headers)
+  }
+})

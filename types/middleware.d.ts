@@ -6,7 +6,7 @@ import { FastifyInstance } from './instance'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
 /**
  * Fastify Middleware 
@@ -16,10 +16,14 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, Raw
 export interface FastifyMiddleware<
   RawServer extends RawServerBase = RawServerDefault, 
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RequestBody = RequestBodyDefault,
+  RequestQuerystring = RequestQuerystringDefault,
+  RequestParams = RequestParamsDefault,
+  RequestHeaders = RequestHeadersDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest>,
+    request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
     reply: FastifyReply<RawServer, RawReply>,
     done: (err?: FastifyError) => void
   ): void
@@ -33,10 +37,14 @@ export interface FastifyMiddleware<
 export interface FastifyMiddlewareWithPayload<
   RawServer extends RawServerBase = RawServerDefault, 
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RequestBody = RequestBodyDefault,
+  RequestQuerystring = RequestQuerystringDefault,
+  RequestParams = RequestParamsDefault,
+  RequestHeaders = RequestHeadersDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest>,
+    request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
     reply: FastifyReply<RawServer, RawReply>,
     payload: any,
     done: (err?: FastifyError, value?: any) => void

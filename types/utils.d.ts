@@ -37,3 +37,8 @@ export type RawRequestDefault<RawServer = RawServerDefault> = RawServer extends 
  * The default reply type based on the server type. Utilizes generic constraining.
  */
 export type RawReplyDefault<RawServer = RawServerDefault> = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+
+export type RequestBodyDefault = unknown
+export type RequestQuerystringDefault = unknown
+export type RequestParamsDefault = unknown
+export type RequestHeadersDefault = unknown

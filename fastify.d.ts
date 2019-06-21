@@ -66,6 +66,7 @@ declare namespace fastify {
     debug(obj: {}, msg?: string, ...args: any[]): void;
     trace(msg: string, ...args: any[]): void;
     trace(obj: {}, msg?: string, ...args: any[]): void;
+    child(obj: {}): Logger;
   }
 
   type FastifyMiddleware<

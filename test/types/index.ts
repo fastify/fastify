@@ -604,6 +604,7 @@ server.log.trace('Should log trace message', [])
 server.log.trace({ log: 'object' }, 'Should log trace message', [])
 server.log.warn('Should log warn message', [])
 server.log.warn({ log: 'object' }, 'Should log warn message', [])
+server.log.child({ some: 'prop' })
 
 const server2 = fastify()
 server2.close().then(() => {})

@@ -1005,3 +1005,250 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
 
   fastify.inject({ method: 'GET', url: '/' })
 })
+
+test('reply should use the custom serializer', t => {
+  t.plan(4)
+  const fastify = require('../..')()
+  fastify.setReplySerializer((payload, statusCode) => {
+    t.deepEqual(payload, { foo: 'bar' })
+    t.equal(statusCode, 200)
+    payload.foo = 'bar bar'
+    return JSON.stringify(payload)
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar bar"}')
+  })
+})
+
+test('reply should use the right serializer in encapsulated context', t => {
+  t.plan(9)
+
+  const fastify = require('../..')()
+  fastify.setReplySerializer((payload) => {
+    t.deepEqual(payload, { foo: 'bar' })
+    payload.foo = 'bar bar'
+    return JSON.stringify(payload)
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => { reply.send({ foo: 'bar' }) }
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.route({
+      method: 'GET',
+      url: '/sub',
+      handler: (req, reply) => { reply.send({ john: 'doo' }) }
+    })
+    instance.setReplySerializer((payload) => {
+      t.deepEqual(payload, { john: 'doo' })
+      payload.john = 'too too'
+      return JSON.stringify(payload)
+    })
+    next()
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.route({
+      method: 'GET',
+      url: '/sub',
+      handler: (req, reply) => { reply.send({ sweet: 'potato' }) }
+    })
+    instance.setReplySerializer((payload) => {
+      t.deepEqual(payload, { sweet: 'potato' })
+      payload.sweet = 'potato potato'
+      return JSON.stringify(payload)
+    })
+    next()
+  }, { prefix: 'sub' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar bar"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/sub'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"john":"too too"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/sub/sub'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"sweet":"potato potato"}')
+  })
+})
+
+test('reply should use the right serializer in deep encapsulated context', t => {
+  t.plan(8)
+
+  const fastify = require('../..')()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => { reply.send({ foo: 'bar' }) }
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.route({
+      method: 'GET',
+      url: '/sub',
+      handler: (req, reply) => { reply.send({ john: 'doo' }) }
+    })
+    instance.setReplySerializer((payload) => {
+      t.deepEqual(payload, { john: 'doo' })
+      payload.john = 'too too'
+      return JSON.stringify(payload)
+    })
+
+    instance.register(function (subInstance, opts, next) {
+      subInstance.route({
+        method: 'GET',
+        url: '/deep',
+        handler: (req, reply) => { reply.send({ john: 'deep' }) }
+      })
+      subInstance.setReplySerializer((payload) => {
+        t.deepEqual(payload, { john: 'deep' })
+        payload.john = 'deep deep'
+        return JSON.stringify(payload)
+      })
+      next()
+    })
+    next()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/sub'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"john":"too too"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/deep'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"john":"deep deep"}')
+  })
+})
+
+test('reply should use the route serializer', t => {
+  t.plan(3)
+
+  const fastify = require('../..')()
+  fastify.setReplySerializer(() => {
+    t.fail('this serializer should not be executed')
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply
+        .serializer((payload) => {
+          t.deepEqual(payload, { john: 'doo' })
+          payload.john = 'too too'
+          return JSON.stringify(payload)
+        })
+        .send({ john: 'doo' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"john":"too too"}')
+  })
+})
+
+test('cannot set the replySerializer when the server is running', t => {
+  t.plan(2)
+
+  const fastify = require('../..')()
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(err => {
+    t.error(err)
+    try {
+      fastify.setReplySerializer(() => {})
+      t.fail('this serializer should not be setup')
+    } catch (e) {
+      t.is(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
+    }
+  })
+})
+
+test('reply should not call the custom serializer for errors and not found', t => {
+  t.plan(9)
+
+  const fastify = require('../..')()
+  fastify.setReplySerializer((payload, statusCode) => {
+    t.deepEqual(payload, { foo: 'bar' })
+    t.equal(statusCode, 200)
+    return JSON.stringify(payload)
+  })
+
+  fastify.get('/', (req, reply) => { reply.send({ foo: 'bar' }) })
+  fastify.get('/err', (req, reply) => { reply.send(new Error('an error')) })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/err'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/not-existing'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+  })
+})

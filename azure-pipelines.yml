@@ -4,7 +4,7 @@ jobs:
 - template: build/azure-pipelines-npm-template.yml
   parameters:
     name: Linux_npm
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
 
 - template: build/azure-pipelines-npm-template.yml
   parameters:
@@ -20,7 +20,7 @@ jobs:
 - template: build/azure-pipelines-yarn-template.yml
   parameters:
     name: Linux_yarn
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
 
 - template: build/azure-pipelines-yarn-template.yml
   parameters:

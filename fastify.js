@@ -13,6 +13,7 @@ const {
   kHooks,
   kSchemas,
   kSchemaCompiler,
+  kReplySerializerDefault,
   kContentTypeParser,
   kReply,
   kRequest,
@@ -118,6 +119,7 @@ function build (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kSchemaCompiler]: null,
+    [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
@@ -167,6 +169,7 @@ function build (options) {
     addSchema: addSchema,
     getSchemas: schemas.getSchemas.bind(schemas),
     setSchemaCompiler: setSchemaCompiler,
+    setReplySerializer: setReplySerializer,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -387,6 +390,13 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
 
     this[kSchemaCompiler] = schemaCompiler
+    return this
+  }
+
+  function setReplySerializer (replySerializer) {
+    throwIfAlreadyStarted('Cannot call "setReplySerializer" when fastify instance is already started!')
+
+    this[kReplySerializerDefault] = replySerializer
     return this
   }
 

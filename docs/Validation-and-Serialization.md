@@ -31,7 +31,7 @@ const bodyJsonSchema = {
       maxItems: 3,
       items: { type: 'integer' }
     },
-    nullableKey: { type: ['number', 'null'] },
+    nullableKey: { type: ['number', 'null'] }, // or { type: 'number', nullable: true }
     multipleTypesKey: { type: ['boolean', 'number'] },
     multipleRestrictedTypesKey: {
       oneOf: [
@@ -251,7 +251,8 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
   removeAdditional: true, // remove additional properties
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   coerceTypes: true, // change data type of data to match type keyword
-  allErrors: true    // check for all errors
+  allErrors: true,   // check for all errors
+  nullable: true     // support keyword "nullable" from Open API 3 specification.
 }
 ```
 
@@ -265,7 +266,8 @@ const ajv = new Ajv({
   removeAdditional: true,
   useDefaults: true,
   coerceTypes: true,
-  allErrors: true
+  allErrors: true,
+  nullable: true,
   // any other options
   // ...
 })

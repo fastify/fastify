@@ -4,9 +4,10 @@
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 > ## ⚠  Security Notice
+> Treat the schema definition as application code.
 > As both validation and serialization features dynamically evaluate
-> code with `new Function()`, it is not safe to use them with
-> user-provided data. See [Ajv](http://npm.im/ajv) and
+> code with `new Function()`, it is not safe to use
+> user-provided schemas. See [Ajv](http://npm.im/ajv) and
 > [fast-json-stringify](http://npm.im/fast-json-stringify) for more
 > details.
 

@@ -16,6 +16,8 @@ try {
   t.fail('http2 loading failed', e)
 }
 
+fastify.get('/', () => Promise.resolve({}))
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -28,7 +30,7 @@ fastify.listen(0, err => {
         ':method': 'GET',
         ':path': '/'
       }).on('response', headers => {
-        t.strictEqual(headers[':status'], 503)
+        t.strictEqual(headers[':status'], 200)
         t.end()
         this.destroy()
       }).on('error', () => {

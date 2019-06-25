@@ -23,13 +23,18 @@ test('Should return 503 while closing - pipelining', t => {
       amount: 10
     })
 
-    const codes = [200, 503]
+    const codes = [200, 200]
     instance.on('response', (client, statusCode) => {
       t.strictEqual(statusCode, codes.shift())
     })
 
-    instance.on('done', () => t.end('Done'))
-    instance.on('reqError', () => t.deepEqual(codes.shift(), null))
+    instance.on('done', () => {
+      t.strictEqual(codes.length, 0)
+      t.end('Done')
+    })
+    instance.on('reqError', () => {
+      t.strictEqual(codes.shift(), undefined)
+    })
     instance.on('error', err => t.fail(err))
   })
 })

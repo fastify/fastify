@@ -199,7 +199,7 @@ t.test('Current opened connection should not accept new incoming connections', t
       const newConnection = net.createConnection({ port: port })
       newConnection.on('error', err => {
         t.ok(err)
-        t.equal(err.code, 'ECONNREFUSED')
+        t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
 
         client.end()
         t.end()

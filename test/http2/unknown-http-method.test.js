@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const Fastify = require('../../fastify')
+const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const Fastify = require('../../fastify')
+const Fastify = require('../..')
 const http2 = require('http2')
 const semver = require('semver')
 

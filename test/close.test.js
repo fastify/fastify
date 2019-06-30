@@ -172,9 +172,10 @@ t.test('Current opened connection should continue to work after closing and retu
           t.match(data.toString(), /Connection:\s*close/i)
           t.match(data.toString(), /200 OK/i)
 
-          client.end()
-
-          t.end()
+          // Test that fastify closes the TCP connection
+          client.once('close', () => {
+            t.end()
+          })
         })
       })
     })

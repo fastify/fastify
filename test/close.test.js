@@ -147,8 +147,10 @@ test('Should return error while closing - injection', t => {
   })
 })
 
-t.test('Current opened connection should continue to work after closing and return "connection: close" header', t => {
-  const fastify = Fastify()
+t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false', t => {
+  const fastify = Fastify({
+    return503OnClosing: false
+  })
 
   fastify.get('/', (req, reply) => {
     fastify.close()

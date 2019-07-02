@@ -1,5 +1,6 @@
 import fastify, {FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import {expectType} from 'tsd'
+import {expectType, expectError} from 'tsd'
+import { HTTPMethods } from '../../types/utils';
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -15,119 +16,78 @@ const routeHandler: RouteHandlerMethod = (request, reply) => {
   expectType<FastifyReply>(reply)
 }
 
-// route method
-expectType<FastifyInstance>(fastify().route({
-  method: 'GET',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'POST',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'PUT',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'PATCH',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'HEAD',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'DELETE',
-  url: '/',
-  handler: routeHandler
-}))
-expectType<FastifyInstance>(fastify().route({
-  method: 'OPTIONS',
-  url: '/',
-  handler: routeHandler
-}))
+type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options'
 
-// get
-expectType<FastifyInstance>(fastify().get('/', routeHandler))
-expectType<FastifyInstance>(fastify().get('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().get('/', { handler: routeHandler }))
+;['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
+  // route method
+  expectType<FastifyInstance>(fastify().route({
+    method: method as HTTPMethods,
+    url: '/',
+    handler: routeHandler
+  }))
 
-// post
-expectType<FastifyInstance>(fastify().post('/', routeHandler))
-expectType<FastifyInstance>(fastify().post('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().post('/', { handler: routeHandler }))
+  const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
 
-// put
-expectType<FastifyInstance>(fastify().put('/', routeHandler))
-expectType<FastifyInstance>(fastify().put('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().put('/', { handler: routeHandler }))
+  // method as method
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
 
-// patch
-expectType<FastifyInstance>(fastify().patch('/', routeHandler))
-expectType<FastifyInstance>(fastify().patch('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().patch('/', { handler: routeHandler }))
+  type BodyType = void
+  type QuerystringType = void
+  type ParamsType = void
+  type HeadersType = void
+  fastify()[lowerCaseMethod]<BodyType, QuerystringType, ParamsType, HeadersType>('/', (req, res) => {
+    expectType<BodyType>(req.body)
+    expectType<QuerystringType>(req.query)
+    expectType<ParamsType>(req.params)
+    // expectType<HeadersType>(req.headers)
+  })
 
-// head
-expectType<FastifyInstance>(fastify().head('/', routeHandler))
-expectType<FastifyInstance>(fastify().head('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().head('/', { handler: routeHandler }))
-
-// delete
-expectType<FastifyInstance>(fastify().delete('/', routeHandler))
-expectType<FastifyInstance>(fastify().delete('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().delete('/', { handler: routeHandler }))
-
-// options
-expectType<FastifyInstance>(fastify().options('/', routeHandler))
-expectType<FastifyInstance>(fastify().options('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().options('/', { handler: routeHandler }))
-
-// all
-expectType<FastifyInstance>(fastify().all('/', routeHandler))
-expectType<FastifyInstance>(fastify().all('/', {}, routeHandler))
-expectType<FastifyInstance>(fastify().all('/', { handler: routeHandler }))
-
-type BodyType = void
-type QuerystringType = void
-type ParamsType = void
-type HeadersType = void
-fastify().get<BodyType, QuerystringType, ParamsType, HeadersType>('/', (req, res) => {
-  expectType<BodyType>(req.body)
-  expectType<QuerystringType>(req.query)
-  expectType<ParamsType>(req.params)
-  // expectType<HeadersType>(req.headers)
+  fastify().route<BodyType, QuerystringType, ParamsType, HeadersType>({
+    url: '/',
+    method: method as HTTPMethods,
+    preHandler: (req, res) => {
+      expectType<BodyType>(req.body)
+      expectType<QuerystringType>(req.query)
+      expectType<ParamsType>(req.params)
+      // expectType<HeadersType>(req.headers)
+    },
+    preValidation: (req, res) => {
+      expectType<BodyType>(req.body)
+      expectType<QuerystringType>(req.query)
+      expectType<ParamsType>(req.params)
+      // expectType<HeadersType>(req.headers)
+    },
+    preSerialization: (req, res) => {
+      expectType<BodyType>(req.body)
+      expectType<QuerystringType>(req.query)
+      expectType<ParamsType>(req.params)
+      // expectType<HeadersType>(req.headers)
+    },
+    handler: (req, res) => {
+      expectType<BodyType>(req.body)
+      expectType<QuerystringType>(req.query)
+      expectType<ParamsType>(req.params)
+      // expectType<HeadersType>(req.headers)
+    }
+  })
 })
 
-fastify().route<BodyType, QuerystringType, ParamsType, HeadersType>({
+expectError(fastify().route({
   url: '/',
-  method: 'GET',
-  preHandler: (req, res) => {
-    expectType<BodyType>(req.body)
-    expectType<QuerystringType>(req.query)
-    expectType<ParamsType>(req.params)
-    // expectType<HeadersType>(req.headers)
-  },
-  preValidation: (req, res) => {
-    expectType<BodyType>(req.body)
-    expectType<QuerystringType>(req.query)
-    expectType<ParamsType>(req.params)
-    // expectType<HeadersType>(req.headers)
-  },
-  preSerialization: (req, res) => {
-    expectType<BodyType>(req.body)
-    expectType<QuerystringType>(req.query)
-    expectType<ParamsType>(req.params)
-    // expectType<HeadersType>(req.headers)
-  },
-  handler: (req, res) => {
-    expectType<BodyType>(req.body)
-    expectType<QuerystringType>(req.query)
-    expectType<ParamsType>(req.params)
-    // expectType<HeadersType>(req.headers)
-  }
-})
+  method: 'CONNECT',
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: ['GET', 'POST'],
+  handler: routeHandler
+}))
+
+expectError(fastify().route({
+  url: '/',
+  method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
+  handler: routeHandler
+}))

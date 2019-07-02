@@ -30,7 +30,7 @@ export interface addContentTypeParser<
   (
     contentType: string | string[],
     opts: {
-      bodyLimi?: number
+      bodyLimit?: number
     },
     parser: FastifyContentTypeParser<RawServer, RawRequest>
   ): void

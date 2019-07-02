@@ -74,7 +74,8 @@ export interface RouteShorthandOptions<
   bodyLimit?: number,
   logLevel?: LogLevels,
   config?: any, // TODO: this shouldn't be any
-  version?: string
+  version?: string,
+  prefixTrailingSlash?: boolean
 }
 
 /**

@@ -31,7 +31,7 @@ export type preValidationHook<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (name: 'preParsin', hook: preValidationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
+> = (name: 'preValidation', hook: preValidationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
  * Handler function for the preValidation hook
@@ -49,7 +49,7 @@ export type preSerializationHook<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (name: 'preParsin', hook: preSerializationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
+> = (name: 'preParsing', hook: preSerializationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
  * Handler function for the preSerialization hook
@@ -67,7 +67,7 @@ export type preHandlerHook<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (name: 'preParsin', hook: preHandlerHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
+> = (name: 'preHandler', hook: preHandlerHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
  * Handler function for preHandler hook
@@ -155,7 +155,7 @@ export type onSendHookHandler<
 > = (
   req: FastifyRequest<RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawReply>,
-  payload: any,
+  payload: unknown,
   done: (err?: Error, value?: any) => void
 ) => void
 

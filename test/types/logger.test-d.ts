@@ -1,42 +1,25 @@
 import {expectType, expectError} from 'tsd'
-import fastify, { FastifyLoggerOptions, FastifyLogFn } from '../../fastify'
+import fastify, { FastifyLoggerOptions, FastifyLogFn, LogLevels } from '../../fastify'
 
 expectType<FastifyLoggerOptions>(fastify().log)
 
-expectType<FastifyLogFn>(fastify().log.info)
-expectType<void>(fastify().log.info(''))
-expectType<void>(fastify().log.info({}))
-expectError(fastify().log.info(0))
+;['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
+  expectType<FastifyLogFn>(fastify().log[logLevel as LogLevels])
+  expectType<void>(fastify().log[logLevel as LogLevels](''))
+  expectType<void>(fastify().log[logLevel as LogLevels]({}))
+  expectError(fastify().log[logLevel as LogLevels](0))
+})
+
 // expectError(fastify().log.info())
 
-expectType<FastifyLogFn>(fastify().log.error)
-expectType<void>(fastify().log.error(''))
-expectType<void>(fastify().log.error({}))
-expectError(fastify().log.error(0))
 // expectError(fastify().log.error())
 
-expectType<FastifyLogFn>(fastify().log.debug)
-expectType<void>(fastify().log.debug(''))
-expectType<void>(fastify().log.debug({}))
-expectError(fastify().log.debug(0))
 // expectError(fastify().log.debug())
 
-expectType<FastifyLogFn>(fastify().log.fatal)
-expectType<void>(fastify().log.fatal(''))
-expectType<void>(fastify().log.fatal({}))
-expectError(fastify().log.fatal(0))
 // expectError(fastify().log.fatal())
 
-expectType<FastifyLogFn>(fastify().log.warn)
-expectType<void>(fastify().log.warn(''))
-expectType<void>(fastify().log.warn({}))
-expectError(fastify().log.warn(0))
 // expectError(fastify().log.warn())
 
-expectType<FastifyLogFn>(fastify().log.trace)
-expectType<void>(fastify().log.trace(''))
-expectType<void>(fastify().log.trace({}))
-expectError(fastify().log.trace(0))
 // expectError(fastify().log.trace())
 
 

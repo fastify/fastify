@@ -1,7 +1,7 @@
 'use strict'
 
 const t = require('tap')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 require('./helper').payloadMethod('post', t)
 require('./input-validation').payloadMethod('post', t)
 

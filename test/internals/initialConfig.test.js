@@ -185,8 +185,8 @@ test('Original options must not be altered (test deep cloning)', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key'), 'utf8').toString('base64'),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'), 'utf8').toString('base64')
     }
   }
 

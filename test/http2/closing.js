@@ -24,7 +24,7 @@ t.test('http/2 request while fastify closing', t => {
     fastify.server.unref()
 
     // Skipped because there is likely a bug on Node 8.
-    test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
+    t.test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
       const url = `http://127.0.0.1:${fastify.server.address().port}`
       const session = http2.connect(url, function () {
         this.request({

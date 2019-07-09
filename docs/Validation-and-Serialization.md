@@ -281,7 +281,7 @@ fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 But maybe you want to change the validation library. Perhaps you like `Joi`. In this case, you can use it to validate the url parameters, body, and query string!
 
 ```js
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 fastify.post('/the/url', {
   schema: {

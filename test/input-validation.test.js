@@ -27,7 +27,7 @@ test('case insensitive header validation', t => {
     method: 'GET',
     url: '/',
     headers: {
-      'FooBar': 'Baz'
+      FooBar: 'Baz'
     }
   }, (err, res) => {
     t.error(err)

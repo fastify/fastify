@@ -565,7 +565,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },
@@ -624,7 +624,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },
@@ -1089,7 +1089,7 @@ test('Use shared schema and $ref to /definitions', t => {
         $id: '#otherId',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },

@@ -483,9 +483,9 @@ test('returns 404 status code with /prefix/ and / route - prefixTrailingSlash: "
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), {
-      'error': 'Not Found',
-      'message': 'Not Found',
-      'statusCode': 404
+      error: 'Not Found',
+      message: 'Not Found',
+      statusCode: 404
     })
   })
 })

@@ -1935,7 +1935,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1949,7 +1949,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1963,7 +1963,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1977,7 +1977,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })

@@ -1143,7 +1143,7 @@ test('should redact the authorization header if so specified', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'authorization': 'Bearer abcde'
+        authorization: 'Bearer abcde'
       }
     }, (err, response, body) => {
       t.error(err)

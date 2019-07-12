@@ -188,10 +188,11 @@ if (os.platform() !== 'win32') {
   test('listen on socket', t => {
     t.plan(4)
     const fastify = Fastify()
-    t.tearDown(fastify.close.bind(fastify))
-
     const socketFileName = Date.now().toString().concat('.sock')
     const sockFile = path.join(os.tmpdir(), socketFileName)
+
+    t.tearDown(fastify.close.bind(t.equal(fs.existsSync(sockFile), false)))
+
     try {
       fs.unlinkSync(sockFile)
     } catch (e) { }
@@ -200,10 +201,6 @@ if (os.platform() !== 'win32') {
       t.error(err)
       t.equal(sockFile, fastify.server.address())
       t.equal(address, sockFile)
-
-      fastify.close(() => {
-        t.equal(fs.existsSync(sockFile), false)
-      })
     })
   })
 }

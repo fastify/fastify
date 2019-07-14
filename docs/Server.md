@@ -352,6 +352,14 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
+<a name="factory-return-503-on-closing"></a>
+### `return503OnClosing`
+
+Returns 503 after calling `close` server method.
+If `false`, the server routes the incoming request as usual.
+
++ Default: `true`
+
 ## Instance
 
 ### Server Methods
@@ -516,6 +524,7 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
+See [`return503OnClosing` flags](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-return-503-on-closing) for changing this behaviour.
 
 If it is called without any arguments, it will return a Promise:
 

@@ -245,6 +245,7 @@ function build (options) {
       fastify[kState].closing = true
       router.closeRoutes()
       if (fastify[kState].listening) {
+        // No new TCP connections are accepted
         instance.server.close(done)
       } else {
         done(null)
@@ -282,6 +283,16 @@ function build (options) {
     }
 
     if (fastify[kState].started) {
+      if (fastify[kState].closing) {
+        // Force to return an error
+        const error = new Error('Server is closed')
+        if (cb) {
+          cb(error)
+          return
+        } else {
+          return Promise.reject(error)
+        }
+      }
       return lightMyRequest(httpHandler, opts, cb)
     }
 

@@ -63,7 +63,8 @@ const cors = require('cors')
     bodyLimit: 1000,
     maxParamLength: 200,
     querystringParser: (str: string) => ({ str: str, strArray: [str] }),
-    modifyCoreObjects: true
+    modifyCoreObjects: true,
+    return503OnClosing: true
   })
 
   // custom types

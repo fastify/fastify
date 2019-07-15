@@ -17,8 +17,8 @@ export type FastifyBodyParser<
 export type FastifyContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
-> = ((req: RawRequest, done: (err: Error | null, body?: any) => void) => void)
-  | ((req: RawRequest) => Promise<any>)
+> = ((req: RawRequest) => Promise<any>)
+  | ((req: RawRequest, done: (err: Error | null, body?: any) => void) => void)
 
 /**
  * Natively, Fastify only supports 'application/json' and 'text/plain' content types. The default charset is utf-8. If you need to support different content types, you can use the addContentTypeParser API. The default JSON and/or plain text parser can be changed.

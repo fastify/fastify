@@ -20,7 +20,7 @@ fastify.addContentTypeParser(['text/xml', 'application/xml'], function (req, don
     done(err, body)
   })
 })
-// async also supported in Node versions >= 8.0.0
+// async supported in Node versions >= 8.x
 fastify.addContentTypeParser('application/jsoff', async function (req) {
   var res = await new Promise((resolve, reject) => resolve(req))
   return res
@@ -32,7 +32,7 @@ You can also use the `hasContentTypeParser` API to find if a specific content ty
 ```js
 if (!fastify.hasContentTypeParser('application/jsoff')){
   fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    //code to parse request body /payload for given content type
+    // code to parse request body / payload for given content type
   })
 }
 ```

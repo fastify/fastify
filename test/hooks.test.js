@@ -2,7 +2,6 @@
 
 const t = require('tap')
 const test = t.test
-const semver = require('semver')
 const sget = require('simple-get').concat
 const stream = require('stream')
 const Fastify = require('..')
@@ -2655,10 +2654,3 @@ test('onRegister hook should be called / 4', t => {
     t.error(err)
   })
 })
-
-if (semver.gt(process.versions.node, '8.0.0')) {
-  require('./hooks-async')(t)
-} else {
-  t.pass('Skip because Node version < 8')
-  t.end()
-}

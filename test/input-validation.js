@@ -2,7 +2,7 @@
 
 const sget = require('simple-get').concat
 const Ajv = require('ajv')
-const Joi = require('joi')
+const Joi = require('@hapi/joi')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test

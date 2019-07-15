@@ -25,23 +25,26 @@ and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 ```js
 const fastify = require('fastify');
 
-const app = fastify();
-app.get('/', (request, reply) => reply.send({ hello: 'world' }));
+function init() {
+  const app = fastify();
+  app.get('/', (request, reply) => reply.send({ hello: 'world' }));
+  return app;
+}
 
 if (require.main !== module) {
   // called directly i.e. "node app"
-  app.listen(3000, (err) => {
+  init().listen(3000, (err) => {
     if (err) console.error(err);
     console.log('server listening on 3000');
   });
 } else {
   // required as a module => executed on aws lambda
-  module.exports = app;
+  module.exports = init;
 }
 ```
 
 When executed in your lambda function we don't need to listen to a specific port,
-so we just export the `app` in this case.
+so we just export the wrapper function `init` in this case.
 The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
 
 When you execute your Fastify application like always,
@@ -52,11 +55,11 @@ you can normally listen to your port, so you can still run your Fastify function
 
 ```js
 const awsLambdaFastify = require('aws-lambda-fastify')
-const app = require('./app');
+const init = require('./app');
 
-const proxy = awsLambdaFastify(app)
+const proxy = awsLambdaFastify(init())
 // or
-// const proxy = awsLambdaFastify(app, { binaryMimeTypes: ['application/octet-stream'] })
+// const proxy = awsLambdaFastify(init(), { binaryMimeTypes: ['application/octet-stream'] })
 
 exports.handler = proxy;
 // or

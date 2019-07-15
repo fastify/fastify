@@ -23,17 +23,3 @@ test('should emit warning if basePath prop is used', t => {
   const fastify = Fastify({ basePath: '/test' })
   return fastify.basePath
 })
-
-test('should emit warning if preHandler is used', t => {
-  t.plan(1)
-
-  process.once('warning', warning => {
-    t.strictEqual(warning.message, `The route option \`beforeHandler\` has been deprecated, use \`preHandler\` instead`)
-  })
-
-  const fastify = Fastify()
-
-  fastify.setNotFoundHandler({
-    beforeHandler: (req, reply, done) => done()
-  }, () => {})
-})

@@ -12,14 +12,3 @@ test('should emit warning using genReqId prop in logger options', t => {
 
   Fastify({ logger: { genReqId: 'test' } })
 })
-
-test('should emit warning if basePath prop is used', t => {
-  t.plan(1)
-
-  process.once('warning', warning => {
-    t.strictEqual(warning.message, `basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix`)
-  })
-
-  const fastify = Fastify({ basePath: '/test' })
-  return fastify.basePath
-})

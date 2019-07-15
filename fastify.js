@@ -213,13 +213,6 @@ function build (options) {
     }
   })
 
-  Object.defineProperty(fastify, 'basePath', {
-    get: function () {
-      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
-      return this[kRoutePrefix]
-    }
-  })
-
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register

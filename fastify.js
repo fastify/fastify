@@ -61,11 +61,6 @@ function build (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  if (options.logger && options.logger.genReqId) {
-    process.emitWarning(`Using 'genReqId' in logger options is deprecated. Use fastify options instead. See: https://www.fastify.io/docs/latest/Server/#gen-request-id`)
-    options.genReqId = options.logger.genReqId
-  }
-
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader

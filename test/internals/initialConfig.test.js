@@ -59,6 +59,7 @@ test('Fastify.initialConfig should expose all options', t => {
     }
   }
 
+  let reqId = 0
   let options = {
     http2: true,
     https: {
@@ -75,8 +76,7 @@ test('Fastify.initialConfig should expose all options', t => {
     pluginTimeout: 20000,
     querystringParser: str => str,
     genReqId: function (req) {
-      let i = 0
-      return i++
+      return reqId++
     },
     logger: pino({ level: 'info' }),
     versioning,

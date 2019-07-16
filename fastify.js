@@ -229,13 +229,6 @@ function build (options) {
     }
   })
 
-  Object.defineProperty(fastify, 'basePath', {
-    get: function () {
-      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
-      return this[kRoutePrefix]
-    }
-  })
-
   Object.defineProperty(fastify, 'pluginName', {
     get: function () {
       if (this[kPluginNameChain].length > 1) {

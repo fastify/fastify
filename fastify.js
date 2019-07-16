@@ -44,7 +44,6 @@ const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const build404 = require('./lib/fourOhFour')
-const { beforeHandlerWarning } = require('./lib/warnings')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
@@ -61,11 +60,6 @@ function build (options) {
   }
 
   validateBodyLimitOption(options.bodyLimit)
-
-  if (options.logger && options.logger.genReqId) {
-    process.emitWarning(`Using 'genReqId' in logger options is deprecated. Use fastify options instead. See: https://www.fastify.io/docs/latest/Server/#gen-request-id`)
-    options.genReqId = options.logger.genReqId
-  }
 
   const trustProxy = options.trustProxy
   const modifyCoreObjects = options.modifyCoreObjects !== false
@@ -210,13 +204,6 @@ function build (options) {
 
   Object.defineProperty(fastify, 'prefix', {
     get: function () {
-      return this[kRoutePrefix]
-    }
-  })
-
-  Object.defineProperty(fastify, 'basePath', {
-    get: function () {
-      process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
       return this[kRoutePrefix]
     }
   })
@@ -489,11 +476,6 @@ function build (options) {
           done(error)
           return
         }
-      }
-
-      if (opts.preHandler == null && opts.beforeHandler != null) {
-        beforeHandlerWarning()
-        opts.preHandler = opts.beforeHandler
       }
 
       const hooks = ['preParsing', 'preValidation', 'onRequest', 'preHandler', 'preSerialization']

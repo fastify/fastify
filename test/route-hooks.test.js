@@ -287,37 +287,6 @@ testHook('onRequest')
 testHook('preValidation')
 testHook('preParsing')
 
-test('preHandler backwards compatibility with beforeHandler option (should emit a warning)', t => {
-  t.plan(3)
-  const fastify = Fastify()
-
-  process.on('warning', warn => {
-    t.strictEqual(
-      warn.message,
-      'The route option `beforeHandler` has been deprecated, use `preHandler` instead'
-    )
-  })
-
-  fastify.post('/', {
-    beforeHandler: (req, reply, done) => {
-      req.body.preHandler = true
-      done()
-    }
-  }, (req, reply) => {
-    reply.send(req.body)
-  })
-
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    var payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { preHandler: true, hello: 'world' })
-  })
-})
-
 test('preValidation option should be called before preHandler hook', t => {
   t.plan(3)
   const fastify = Fastify()

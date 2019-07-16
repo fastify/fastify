@@ -283,17 +283,15 @@ The type of the sent payload (after serialization and going through any [`onSend
 Fastify natively handles promises and supports async-await.<br>
 *Note that in the following examples we are not using reply.send.*
 ```js
+const delay = promisify(setTimeout)
+
 fastify.get('/promises', options, function (request, reply) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
+ return delay(200).then(() => { return { hello: 'world' }})
 })
 
 fastify.get('/async-await', options, async function (request, reply) {
-  var res = await new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
-  return res
+  await delay(200)
+  return { hello: 'world' }
 })
 ```
 

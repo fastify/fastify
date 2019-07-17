@@ -24,7 +24,7 @@ When a potential vulnerability is reported and confirmed the Fastify Core Team w
 
 ## The Fastify Core team
 
-The core team is responsible for the management of this process.
+The core team is responsible for the management of [this](https://github.com/nodejs/security-wg/blob/master/processes/third_party_vuln_process.md#handling-vulnerability-reports) process.
 
 Members of this team are expected to keep all information that they have privileged access to by being
 on the team completely private to the team. This includes agreeing to not notify anyone outside the

@@ -156,7 +156,7 @@ fastify.route({
   handler: () => {}
 })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
 
   /**
    * In children's scope can use schemas defined in upper scope like 'greetings'.
@@ -180,7 +180,7 @@ fastify.register((instance, opts, next) => {
     handler: () => {}
   })
 
-  next()
+  done()
 })
 ```
 
@@ -220,16 +220,16 @@ The function `getSchemas` returns the shared schemas available in the selected s
 fastify.addSchema({ $id: 'one', my: 'hello' })
 fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   instance.addSchema({ $id: 'two', my: 'ciao' })
   instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
 
-  instance.register((subinstance, opts, next) => {
+  instance.register((subinstance, opts, done) => {
     subinstance.addSchema({ $id: 'three', my: 'hola' })
     subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
-    next()
+    done()
   })
-  next()
+  done()
 })
 ```
 This example will returns:

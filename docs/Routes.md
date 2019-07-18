@@ -216,16 +216,16 @@ fastify.listen(3000)
 ```
 ```js
 // routes/v1/users.js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v1)
-  next()
+  done()
 }
 ```
 ```js
 // routes/v2/users.js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v2)
-  next()
+  done()
 }
 ```
 Fastify will not complain because you are using the same name for two different routes, because at compilation time it will handle the prefix automatically *(this also means that the performance will not be affected at all!)*.

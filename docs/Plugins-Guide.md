@@ -35,20 +35,20 @@ Fastify helps you a lot in this direction, because thanks to the encapsulation m
 *Let's return to how to correctly use `register`.*<br>
 As you probably know, the required plugins must expose a single function with the following signature
 ```js
-module.exports = function (fastify, options, next) {}
+module.exports = function (fastify, options, done) {}
 ```
-Where `fastify` is (pretty obvious) the encapsulated Fastify instance, `options` is the options object and `next` is the function you **must** call when your plugin is ready.
+Where `fastify` is (pretty obvious) the encapsulated Fastify instance, `options` is the options object and `done` is the function you **must** call when your plugin is ready.
 
 Fastify's plugin model is fully reentrant and graph-based, it handles without any kind of problem asynchronous code and it guarantees the load order of the plugins, even the close order! *How?* Glad you asked, checkout [`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin __after__ `.listen()`, `.inject()` or `.ready()` are called.
 
-Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `next` when everything is set up!
+Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `done` when everything is set up!
 ```js
-module.exports = function (fastify, options, next) {
+module.exports = function (fastify, options, done) {
   fastify.get('/plugin', (request, reply) => {
     reply.send({ hello: 'world' })
   })
 
-  next()
+  done()
 }
 ```
 
@@ -77,38 +77,38 @@ fastify.decorate('util', (a, b) => a + b)
 Now you can access your utility just by doing `fastify.util` whenever you need it, even inside your test.<br>
 And here's starts the magic; do you remember that few lines above we talked about encapsulation? Well, using `register` and `decorate` in conjunction enable exactly that, let me show you an example to clarify this:
 ```js
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
   console.log(instance.util('that is ', ' awesome'))
 
-  next()
+  done()
 })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   console.log(instance.util('that is ', ' awesome')) // this will throw an error
 
-  next()
+  done()
 })
 ```
 Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
 Let's step back for a moment and get deeper on this: when using the `register` api you will create a new context every time and this avoids situations like the one mentioned few line above. But pay attention, the encapsulation works only for the ancestors and the brothers, but not for the sons.
 ```js
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
   console.log(instance.util('that is ', ' awesome'))
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     console.log(instance.util('that is ', ' awesome')) // this will not throw an error
-    next()
+    done()
   })
 
-  next()
+  done()
 })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   console.log(instance.util('that is ', ' awesome')) // this will throw an error
 
-  next()
+  done()
 })
 ```
 *Take home message: if you need that an utility is available in every part of your application, pay attention that is declared at the root scope of your application. Otherwise you can use `fastify-plugin` utility as described [here](#distribution).*
@@ -214,7 +214,7 @@ Now for every request you will run your utility, it is obvious that you can regi
 It can happen that you want a hook that must be executed just for a subset of routes, how can you do that?  Yep, encapsulation!
 
 ```js
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   instance.decorate('util', (request, key, value) => { request[key] = value })
 
   instance.addHook('preHandler', (request, reply, done) => {
@@ -226,7 +226,7 @@ fastify.register((instance, opts, next) => {
     reply.send(request)
   })
 
-  next()
+  done()
 })
 
 fastify.get('/plugin2', (request, reply) => {
@@ -260,10 +260,10 @@ Yes, I said that. But what I didn't tell you, is that you can tell to Fastify to
 const fp = require('fastify-plugin')
 const dbClient = require('db-client')
 
-function dbPlugin (fastify, opts, next) {
+function dbPlugin (fastify, opts, done) {
   dbClient.connect(opts.url, (err, conn) => {
     fastify.decorate('db', conn)
-    next()
+    done()
   })
 }
 
@@ -279,10 +279,10 @@ const fastify = require('fastify')()
 const fp = require('fastify-plugin')
 const dbClient = require('db-client')
 
-function dbPlugin (fastify, opts, next) {
+function dbPlugin (fastify, opts, done) {
   dbClient.connect(opts.url, (err, conn) => {
     fastify.decorate('db', conn)
-    next()
+    done()
   })
 }
 

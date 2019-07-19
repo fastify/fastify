@@ -400,7 +400,7 @@ fastify.route({
   // }],
   preSerialization: (request, reply, payload, done) => {
     // manipulate the payload
-    next(null, payload)
+    done(null, payload)
   },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })

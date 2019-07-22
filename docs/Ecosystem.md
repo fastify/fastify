@@ -90,6 +90,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose) Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin with support for Models.
 - [`fastify-multer`](https://github.com/fox1t/multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
+- [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties) Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.
 - [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply) Plugin to normalize the request and reply to the Express version 4.x request and response, which allows use of middleware, like swagger-stats, that was originally written for Express.

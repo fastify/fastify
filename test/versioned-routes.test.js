@@ -445,7 +445,7 @@ test('Should register a versioned route with custome versioning strategy', t => 
     method: 'GET',
     url: '/',
     headers: {
-      'Accept': 'application/vnd.example.api+json;version=2'
+      Accept: 'application/vnd.example.api+json;version=2'
     }
   }, (err, res) => {
     t.error(err)
@@ -457,7 +457,7 @@ test('Should register a versioned route with custome versioning strategy', t => 
     method: 'GET',
     url: '/',
     headers: {
-      'Accept': 'application/vnd.example.api+json;version=3'
+      Accept: 'application/vnd.example.api+json;version=3'
     }
   }, (err, res) => {
     t.error(err)
@@ -469,7 +469,7 @@ test('Should register a versioned route with custome versioning strategy', t => 
     method: 'GET',
     url: '/',
     headers: {
-      'Accept': 'application/vnd.example.api+json;version=4'
+      Accept: 'application/vnd.example.api+json;version=4'
     }
   }, (err, res) => {
     t.error(err)

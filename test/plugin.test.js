@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint no-prototype-builtins: 0 */
+
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')

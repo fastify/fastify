@@ -59,7 +59,7 @@ test('Fastify.initialConfig should expose all options', t => {
     }
   }
 
-  let options = {
+  const options = {
     http2: true,
     https: {
       key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),

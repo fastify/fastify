@@ -106,11 +106,11 @@ const fastify = require('fastify')({
 See a approach to log `req.body`
 
 ```js
-app.addHook('preHandler', function (req, reply, next) {
+app.addHook('preHandler', function (req, reply, done) {
   if (req.body) {
     req.log.info({ body: req.body }, 'parsed body')
   }
-  next()
+  done()
 })
 ```
 

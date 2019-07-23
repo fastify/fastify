@@ -137,9 +137,9 @@ As an example let's add a user property to the `Request` object:
 fastify.decorateRequest('user', '')
 
 // Update our property
-fastify.addHook('preHandler', (req, reply, next) => {
+fastify.addHook('preHandler', (req, reply, done) => {
   req.user = 'Bob Dylan'
-  next()
+  done()
 })
 // And finally access it
 fastify.get('/', (req, reply) => {

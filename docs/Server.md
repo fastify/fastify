@@ -150,14 +150,14 @@ custom `onRequest` and `onResponse` hooks.
 
 ```js
 // Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, next) => {
+fastify.addHook('onRequest', (req, reply, done) => {
   req.log.info({ url: req.req.url, id: req.id }, 'received request')
-  next()
+  done()
 })
 
-fastify.addHook('onResponse', (req, reply, next) => {
+fastify.addHook('onResponse', (req, reply, done) => {
   req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
-  next()
+  done()
 })
 ```
 
@@ -376,16 +376,16 @@ It is always executed before the method `fastify.ready`.
 
 ```js
 fastify
-  .register((instance, opts, next) => {
+  .register((instance, opts, done) => {
     console.log('Current plugin')
-    next()
+    done()
   })
   .after(err => {
     console.log('After current plugin')
   })
-  .register((instance, opts, next) => {
+  .register((instance, opts, done) => {
     console.log('Next plugin')
-    next()
+    done()
   })
   .ready(err => {
     console.log('Everything has been loaded')
@@ -560,24 +560,24 @@ The full path that will be prefixed to a route.
 Example:
 
 ```js
-fastify.register(function (instance, opts, next) {
+fastify.register(function (instance, opts, done) {
   instance.get('/foo', function (request, reply) {
     // Will log "prefix: /v1"
     request.log.info('prefix: %s', instance.prefix)
     reply.send({ prefix: instance.prefix })
   })
 
-  instance.register(function (instance, opts, next) {
+  instance.register(function (instance, opts, done) {
     instance.get('/bar', function (request, reply) {
       // Will log "prefix: /v1/v2"
       request.log.info('prefix: %s', instance.prefix)
       reply.send({ prefix: instance.prefix })
     })
 
-    next()
+    done()
   }, { prefix: '/v2' })
 
-  next()
+  done()
 }, { prefix: '/v1' })
 ```
 
@@ -623,24 +623,24 @@ You can also register a [`preValidation`](https://www.fastify.io/docs/latest/Hoo
 
 ```js
 fastify.setNotFoundHandler({
-  preValidation: (req, reply, next) => {
+  preValidation: (req, reply, done) => {
     // your code
-    next()
+    done()
   },
-  preHandler: (req, reply, next) => {
+  preHandler: (req, reply, done) => {
     // your code
-    next()
+    done()
   }
 }, function (request, reply) {
     // Default not found handler with preValidation and preHandler hooks
 })
 
-fastify.register(function (instance, options, next) {
+fastify.register(function (instance, options, done) {
   instance.setNotFoundHandler(function (request, reply) {
     // Handle not found request without preValidation and preHandler hooks
     // to URLs that begin with '/v1'
   })
-  next()
+  done()
 }, { prefix: '/v1' })
 ```
 

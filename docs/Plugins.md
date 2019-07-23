@@ -45,10 +45,10 @@ The `options` parameter can also be a `Function` which will be evaluated at the 
 ```js
 const fp = require('fastify-plugin')
 
-fastify.register(fp((fastify, opts, next) => {
+fastify.register(fp((fastify, opts, done) => {
   fastify.decorate('foo_bar', { hello: 'world' })
 
-  next()
+  done()
 }))
 
 // The opts argument of fastify-foo will be { hello: 'world' }
@@ -100,24 +100,24 @@ await fastify.listen(3000)
 Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.<br>
 Example:
 ```js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.decorate('utility', () => {})
 
   fastify.get('/', handler)
 
-  next()
+  done()
 }
 ```
 You can also use `register` inside another `register`:
 ```js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.decorate('utility', () => {})
 
   fastify.get('/', handler)
 
   fastify.register(require('./other-plugin'))
 
-  next()
+  done()
 }
 ```
 Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is going to happen, you can use the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.
@@ -136,18 +136,18 @@ We recommend to using the `fastify-plugin` module, because it solves this proble
 ```js
 const fp = require('fastify-plugin')
 
-module.exports = fp(function (fastify, opts, next) {
+module.exports = fp(function (fastify, opts, done) {
   fastify.decorate('utility', () => {})
-  next()
+  done()
 }, '0.x')
 ```
 Check the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) documentation to know more about how use this module.
 
 If you don't use the `fastify-plugin` module, you can use the `'skip-override'` hidden property, but we do not recommend it. If in the future the Fastify API changes it will be a your responsibility update the module, while if you use `fastify-plugin`, you can be sure about backwards compatibility.
 ```js
-function yourPlugin (fastify, opts, next) {
+function yourPlugin (fastify, opts, done) {
   fastify.decorate('utility', () => {})
-  next()
+  done()
 }
 yourPlugin[Symbol.for('skip-override')] = true
 module.exports = yourPlugin

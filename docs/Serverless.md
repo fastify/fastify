@@ -18,7 +18,7 @@ we do not test for such integration scenarios.
 The sample provided allows you to easily build serverless web applications/services
 and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 
-*Note: Using [aws-lambda-fastify](https://github.com/adrai/aws-lambda-fastify) is just one possible way.*
+*Note: Using [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) is just one possible way.*
 
 ### app.js
 
@@ -70,12 +70,12 @@ exports.handler = proxy;
 // exports.handler = async (event, context) => proxy(event, context);
 ```
 
-We just require [aws-lambda-fastify](https://github.com/adrai/aws-lambda-fastify)
+We just require [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify)
 (make sure you install the dependency `npm i --save aws-lambda-fastify`) and our
 [`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call the
 exported `awsLambdaFastify` function with the `app` as the only parameter.
 The resulting `proxy` function has the correct signature to be used as lambda `handler` function. 
-This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/adrai/aws-lambda-fastify).
+This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
 

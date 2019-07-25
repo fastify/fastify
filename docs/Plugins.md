@@ -97,7 +97,7 @@ await fastify.listen(3000)
 ```
 <a name="create-plugin"></a>
 ### Create a plugin
-Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.<br>
+Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an `options` object and the `done` callback.<br>
 Example:
 ```js
 module.exports = function (fastify, opts, done) {

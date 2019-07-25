@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
+const joi = require('joi')
 const Fastify = require('..')
 
 test('route', t => {
@@ -253,5 +254,39 @@ test('handler function in options of shorthand route should works correctly', t 
     t.error(err)
     t.strictEqual(res.statusCode, 200)
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('does not mutate joi schemas', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  function schemaCompiler (schema) {
+    return function (data, opts) {
+      return joi.validate(data, schema)
+    }
+  }
+
+  fastify.setSchemaCompiler(schemaCompiler)
+
+  fastify.route({
+    path: '/foo/:an_id',
+    method: 'GET',
+    schema: {
+      params: { an_id: joi.number() }
+    },
+    handler (req, res) {
+      t.deepEqual(req.params, { an_id: 42 })
+      res.send({ hello: 'world' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/foo/42'
+  }, (err, result) => {
+    t.error(err)
+    t.strictEqual(result.statusCode, 200)
+    t.deepEqual(JSON.parse(result.payload), { hello: 'world' })
   })
 })

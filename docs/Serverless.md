@@ -122,7 +122,7 @@ const address = IS_GOOGLE_CLOUD_RUN ? "0.0.0.0" : undefined
 const fastify = Fastify({ trustProxy: true })
 
 async function start() {
-  const address = await server.listen(port, address)
+  const address = await fastify.listen(port, address)
 
   console.log(`Listening on ${address}`)
 }

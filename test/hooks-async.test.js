@@ -2,7 +2,6 @@
 
 const t = require('tap')
 const test = t.test
-const split = require('split2')
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('fs')
@@ -431,38 +430,32 @@ test('preHandler respond with a stream', t => {
   })
 })
 
-test('Should log a warning if is an async function with `next`', t => {
+test('Should log a warning if is an async function with `done`', t => {
   t.test('3 arguments', t => {
-    t.plan(3)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({
-      logger: { stream }
-    })
+    t.plan(1)
+    const fastify = Fastify()
 
-    stream.on('data', line => {
-      t.strictEqual(line.level, 40)
-      t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
-      t.true(/test(\\|\/)hooks-async\.test\.js/.test(line.msg))
-    })
-
-    fastify.addHook('onRequest', async (req, reply, next) => {})
+    try {
+      fastify.addHook('onRequest', async (req, reply, done) => {})
+    } catch (e) {
+      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+    }
   })
 
   t.test('4 arguments', t => {
-    t.plan(6)
-    const stream = split(JSON.parse)
-    const fastify = Fastify({
-      logger: { stream }
-    })
+    t.plan(2)
+    const fastify = Fastify()
 
-    stream.on('data', line => {
-      t.strictEqual(line.level, 40)
-      t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
-      t.true(/test(\\|\/)hooks-async\.test\.js/.test(line.msg))
-    })
-
-    fastify.addHook('onSend', async (req, reply, payload, next) => {})
-    fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
+    try {
+      fastify.addHook('onSend', async (req, reply, payload, done) => {})
+    } catch (e) {
+      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+    }
+    try {
+      fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
+    } catch (e) {
+      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+    }
   })
 
   t.end()

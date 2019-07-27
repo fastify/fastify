@@ -18,15 +18,15 @@ we do not test for such integration scenarios.
 The sample provided allows you to easily build serverless web applications/services
 and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 
-*Note: This is just one possible way.*
+*Note: Using [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) is just one possible way.*
 
 ### app.js
 
 ```js
 const fastify = require('fastify');
 
-function init(serverFactory) {
-  const app = fastify({ serverFactory });
+function init() {
+  const app = fastify();
   app.get('/', (request, reply) => reply.send({ hello: 'world' }));
   return app;
 }
@@ -43,11 +43,9 @@ if (require.main !== module) {
 }
 ```
 
-You can simply wrap your initialization code by offering to inject an optional [serverFactory](https://www.fastify.io/docs/latest/Server/#serverfactory).
-
 When executed in your lambda function we don't need to listen to a specific port,
 so we just export the wrapper function `init` in this case.
-The [`lambda.js`](https://www.fastify.io/docs/latest/Server/#lambda.js) file will use this export.
+The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
 
 When you execute your Fastify application like always,
 i.e. `node app.js` *(the detection for this could be `require.main === module`)*,
@@ -56,31 +54,28 @@ you can normally listen to your port, so you can still run your Fastify function
 ### lambda.js
 
 ```js
-const awsServerlessExpress = require('aws-serverless-express');
+const awsLambdaFastify = require('aws-lambda-fastify')
 const init = require('./app');
 
-let server;
-const serverFactory = (handler) => {
-  server = awsServerlessExpress.createServer(handler);
-  return server;
-}
-const app = init(serverFactory);
+const proxy = awsLambdaFastify(init())
+// or
+// const proxy = awsLambdaFastify(init(), { binaryMimeTypes: ['application/octet-stream'] })
 
-exports.handler = (event, context, callback) => {
-  context.callbackWaitsForEmptyEventLoop = false;
-  app.ready((e) => {
-    if (e) return console.error(e.stack || e);
-    awsServerlessExpress.proxy(server, event, context, 'CALLBACK', callback);
-  });
-};
+exports.handler = proxy;
+// or
+// exports.handler = (event, context, callback) => proxy(event, context, callback);
+// or
+// exports.handler = (event, context) => proxy(event, context);
+// or
+// exports.handler = async (event, context) => proxy(event, context);
 ```
 
-We define a custom `serverFactory` function, in which we create a new server with the help of [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express)
-(make sure you install the dependency `npm i --save aws-serverless-express`).
-Then we call the `init` function (imported from [`app.js`](https://www.fastify.io/docs/latest/Server/#app.js)) with the `serverFactory` function as the only parameter.
-Finally inside the lambda `handler` function we wait for the Fastify app to be `ready`
-and proxy all the incoming events (API Gateway requests) to the `proxy` function from [`aws-serverless-express`](https://github.com/awslabs/aws-serverless-express).
-
+We just require [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify)
+(make sure you install the dependency `npm i --save aws-lambda-fastify`) and our
+[`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call the
+exported `awsLambdaFastify` function with the `app` as the only parameter.
+The resulting `proxy` function has the correct signature to be used as lambda `handler` function. 
+This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
 

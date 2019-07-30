@@ -316,7 +316,7 @@ declare namespace fastify {
       req: NodeJS.ReadableStream,
       res: http.ServerResponse
     },
-    headers: object,
+    headers: Record<string, string>,
     statusCode: number,
     statusMessage: string,
     payload: string,

@@ -135,7 +135,7 @@ start().catch(err => {
 
 ### Add a Dockerfile
 
-You can add any valid `Dockerfile` that packages and runs a Node app. A basic `Dockerfile`, taken from [here](https://cloud.google.com/run/docs/quickstarts/build-and-deploy) would like the following (assuming you have defined `start` as a script in your `package.json`):
+You can add any valid `Dockerfile` that packages and runs a Node app. A basic `Dockerfile` can be found in the official [gcloud docs](https://github.com/knative/docs/blob/2d654d1fd6311750cc57187a86253c52f273d924/docs/serving/samples/hello-world/helloworld-nodejs/Dockerfile).
 
 ```Dockerfile
 # Use the official Node.js 10 image.

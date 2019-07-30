@@ -107,30 +107,37 @@ Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **
 In order for Fastify to properly listen for requests within the container, be sure to set the correct port and address:
 
 ```js
-const Fastify = require("fastify")
-
-// Google Cloud Run will set this environment variable for you, so
-// you can also use it to detect if you are running in Cloud Run
-const IS_GOOGLE_CLOUD_RUN = process.env.K_SERVICE !== undefined
-
-// You must listen on the port Cloud Run provides
-const port = process.env.PORT || 3000
-
-// You must listen on all IPV4 addresses in Cloud Run
-const address = IS_GOOGLE_CLOUD_RUN ? "0.0.0.0" : undefined
-
-const fastify = Fastify({ trustProxy: true })
-
-async function start() {
-  const address = await fastify.listen(port, address)
-
-  console.log(`Listening on ${address}`)
+function build() {
+  const fastify = Fastify({ trustProxy: true })
+  return fastify
 }
 
-start().catch(err => {
-  console.error(err)
-  process.exit(1)
-})
+async function start() {
+  // Google Cloud Run will set this environment variable for you, so
+  // you can also use it to detect if you are running in Cloud Run
+  const IS_GOOGLE_CLOUD_RUN = process.env.K_SERVICE !== undefined
+
+  // You must listen on the port Cloud Run provides
+  const port = process.env.PORT || 3000
+
+  // You must listen on all IPV4 addresses in Cloud Run
+  const address = IS_GOOGLE_CLOUD_RUN ? "0.0.0.0" : undefined
+
+  try {
+    const server = build()
+    const address = await server.listen(port, address)
+    console.log(`Listening on ${address}`)
+  } catch (err) {
+    console.error(err)
+    process.exit(1)
+  }
+}
+
+module.exports = build
+
+if (require.main === module) {
+  start()
+}
 ```
 
 ### Add a Dockerfile

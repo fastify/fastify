@@ -4,7 +4,8 @@ const split = require('split2')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const fs = require('fs')
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const { promisify } = require('util')
+const sleep = promisify(setTimeout)
 
 function asyncHookTest (t) {
   const test = t.test
@@ -231,6 +232,53 @@ function asyncHookTest (t) {
     })
   })
 
+  test('preValidation hooks should be able to block a request with async onSend', t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.addHook('preValidation', async (req, reply) => {
+      reply.send('hello')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      await sleep(10)
+      t.equal(payload, 'hello')
+    })
+
+    fastify.addHook('preHandler', async (request, reply) => {
+      t.fail('we should not be here')
+    })
+
+    fastify.addHook('onResponse', async (request, reply) => {
+      t.ok('called')
+    })
+
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            hello: {
+              type: 'string'
+            }
+          },
+          required: ['hello']
+        }
+      }
+    }, function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'POST'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
+
   test('preSerialization hooks should be able to modify the payload', t => {
     t.plan(3)
     const fastify = Fastify()
@@ -318,6 +366,37 @@ function asyncHookTest (t) {
     })
 
     fastify.addHook('onSend', async (req, reply, payload) => {
+      t.equal(payload, 'hello')
+    })
+
+    fastify.addHook('onResponse', async (request, reply) => {
+      t.ok('called')
+    })
+
+    fastify.get('/', function (request, reply) {
+      t.fail('we should not be here')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 200)
+      t.is(res.payload, 'hello')
+    })
+  })
+
+  test('preHandler hooks should be able to block a request (last hook) with a delay in onSend', t => {
+    t.plan(5)
+    const fastify = Fastify()
+
+    fastify.addHook('preHandler', async (req, reply) => {
+      reply.send('hello')
+    })
+
+    fastify.addHook('onSend', async (req, reply, payload) => {
+      await sleep(10)
       t.equal(payload, 'hello')
     })
 

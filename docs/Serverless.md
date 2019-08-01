@@ -81,9 +81,10 @@ exported `awsLambdaFastify` function with the `app` as the only parameter.
 The resulting `proxy` function has the correct signature to be used as lambda `handler` function. 
 This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
-### Example
+### Examples
 
-An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
+-  An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
+-  An example of a [NestJS](https://nestjs.com/) API using Fastify, with AWS CI/CD driven deployments can be found [here](https://github.com/rynop/abp-sam-nestjs)
 
 
 ### Considerations

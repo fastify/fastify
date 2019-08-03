@@ -95,7 +95,7 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **container** environment. It's primary purpose is to provide an infrastucture-abstracted environment to run arbitrary containers. As a result, Fastify can be deployed to Google Cloud Run with little-to-no code changes from the way you would write your Fastify app normally.
 
-*Follow the steps below to deploy to Google Cloud Run if you are already familiar with gcloud or just follow their [quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*
+*Follow the steps below to deploy to Google Cloud Run if you are already familiar with gcloud or just follow their [quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
 
 ### Adjust Fastfiy server
 
@@ -175,7 +175,7 @@ npm-debug.log
 
 ### Submit build
 
-Next, submit your app to be built into a Docker image by running the following command (replacing `PROJECT-ID` and `APP-NAME` with your GCP project id and an app name:
+Next, submit your app to be built into a Docker image by running the following command (replacing `PROJECT-ID` and `APP-NAME` with your GCP project id and an app name):
 
 ```bash
 gcloud builds submit --tag gcr.io/PROJECT-ID/APP-NAME

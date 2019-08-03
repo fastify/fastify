@@ -94,3 +94,11 @@ test('Create error with different base', t => {
   t.equal(err.statusCode, 500)
   t.ok(err.stack)
 })
+
+test('Error has appropriate string tag', t => {
+  t.plan(1)
+  const NewError = createError('CODE', 'foo')
+  const err = new NewError()
+  const str = Object.prototype.toString.call(err)
+  t.equal(str, '[object Error]')
+})

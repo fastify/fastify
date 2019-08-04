@@ -158,7 +158,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
     validation.build(opts, schema => ajv.compile(schema), new Schemas())
   } catch (err) {
     t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
-    t.is(err.message, 'FST_ERR_SCH_DUPLICATE: Schema with \'querystring\' already present!')
+    t.is(err.message, 'Schema with \'querystring\' already present!')
   }
 })
 

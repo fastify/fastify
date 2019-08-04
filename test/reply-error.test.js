@@ -360,7 +360,7 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
     } catch (err) {
       t.type(err, TypeError)
       t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
-      t.is(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.is(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -385,7 +385,7 @@ test('should throw an error if the custom serializer does not serialize the payl
     } catch (err) {
       t.type(err, TypeError)
       t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
-      t.is(err.message, "FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.is(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 

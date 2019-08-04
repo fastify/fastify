@@ -131,7 +131,7 @@ test('Should throw on duplicate request decorator', t => {
     t.fail()
   } catch (e) {
     t.is(e.code, 'FST_ERR_DEC_ALREADY_PRESENT')
-    t.is(e.message, `FST_ERR_DEC_ALREADY_PRESENT: The decorator 'foo' has already been added!`)
+    t.is(e.message, `The decorator 'foo' has already been added!`)
   }
 })
 
@@ -146,7 +146,7 @@ test('Should throw if request decorator dependencies are not met', t => {
     t.fail()
   } catch (e) {
     t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.is(e.message, `FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency 'world'.`)
+    t.is(e.message, `The decorator is missing dependency 'world'.`)
   }
 })
 

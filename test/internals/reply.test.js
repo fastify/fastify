@@ -940,14 +940,15 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
 })
 
 test('should throw error when passing falsy value to reply.sent', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
     try {
       reply.sent = false
     } catch (err) {
-      t.strictEqual(err.message, 'FST_ERR_REP_SENT_VALUE: The only possible value for reply.sent is true.')
+      t.is(err.code, 'FST_ERR_REP_SENT_VALUE')
+      t.strictEqual(err.message, 'The only possible value for reply.sent is true.')
       reply.send()
     }
   })
@@ -959,7 +960,7 @@ test('should throw error when passing falsy value to reply.sent', t => {
 })
 
 test('should throw error when attempting to set reply.sent more than once', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
@@ -967,7 +968,8 @@ test('should throw error when attempting to set reply.sent more than once', t =>
     try {
       reply.sent = true
     } catch (err) {
-      t.strictEqual(err.message, 'FST_ERR_REP_ALREADY_SENT: Reply was already sent.')
+      t.is(err.code, 'FST_ERR_REP_ALREADY_SENT')
+      t.strictEqual(err.message, 'Reply was already sent.')
     }
     reply.res.end()
   })

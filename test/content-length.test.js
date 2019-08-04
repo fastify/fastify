@@ -28,7 +28,7 @@ test('default 413 with bodyLimit option', t => {
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-      message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large',
+      message: 'Request body is too large',
       statusCode: 413
     })
   })
@@ -59,7 +59,7 @@ test('default 413 with wrong content-length', t => {
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-      message: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH: Request body size did not match Content-Length',
+      message: 'Request body size did not match Content-Length',
       statusCode: 400
     })
   })
@@ -96,7 +96,7 @@ test('custom 413 with bodyLimit option', t => {
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
-      message: 'FST_ERR_CTP_BODY_TOO_LARGE: Request body is too large',
+      message: 'Request body is too large',
       statusCode: 413
     })
   })
@@ -134,7 +134,7 @@ test('custom 413 with wrong content-length', t => {
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
-      message: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH: Request body size did not match Content-Length',
+      message: 'Request body size did not match Content-Length',
       statusCode: 400
     })
   })

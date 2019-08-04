@@ -109,6 +109,6 @@ test('The logger should error if both stream and file destination are given', t 
     })
   } catch (err) {
     t.is(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
-    t.is(err.message, 'FST_ERR_LOG_INVALID_DESTINATION: Cannot specify both logger.stream and logger.file options')
+    t.is(err.message, 'Cannot specify both logger.stream and logger.file options')
   }
 })

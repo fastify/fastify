@@ -152,8 +152,8 @@ test('Return an error if options do not match the validation schema', t => {
     t.fail()
   } catch (error) {
     t.type(error, Error)
-    t.equal(error.name, 'FastifyError [FST_ERR_INIT_OPTS_INVALID]')
-    t.equal(error.message, `FST_ERR_INIT_OPTS_INVALID: Invalid initialization options: '["should be boolean"]'`)
+    t.equal(error.name, 'FastifyError')
+    t.equal(error.message, `Invalid initialization options: '["should be boolean"]'`)
     t.equal(error.code, 'FST_ERR_INIT_OPTS_INVALID')
     t.ok(error.stack)
     t.pass()

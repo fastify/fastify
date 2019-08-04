@@ -70,7 +70,7 @@ test('should throw on wrong parameters', t => {
     t.fail()
   } catch (e) {
     t.is(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
-    t.is(e.message, 'FST_ERR_HOOK_INVALID_TYPE: The hook name must be a string')
+    t.is(e.message, 'The hook name must be a string')
   }
 
   try {
@@ -78,6 +78,6 @@ test('should throw on wrong parameters', t => {
     t.fail()
   } catch (e) {
     t.is(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
-    t.is(e.message, 'FST_ERR_HOOK_INVALID_HANDLER: The hook callback must be a function')
+    t.is(e.message, 'The hook callback must be a function')
   }
 })

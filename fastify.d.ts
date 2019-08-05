@@ -256,6 +256,7 @@ declare namespace fastify {
     preSerialization?:
       FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
+    handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number
     logLevel?: string
@@ -362,7 +363,7 @@ declare namespace fastify {
     get<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -379,7 +380,7 @@ declare namespace fastify {
     put<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -396,7 +397,7 @@ declare namespace fastify {
     patch<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -413,7 +414,7 @@ declare namespace fastify {
     post<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -430,7 +431,7 @@ declare namespace fastify {
     head<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -447,7 +448,7 @@ declare namespace fastify {
     delete<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -464,7 +465,7 @@ declare namespace fastify {
     options<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
@@ -481,7 +482,7 @@ declare namespace fastify {
     all<Query = DefaultQuery, Params = DefaultParams, Headers = DefaultHeaders, Body = DefaultBody>(
       url: string,
       opts: RouteShorthandOptions<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>,
-      handler: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
+      handler?: RequestHandler<HttpRequest, HttpResponse, Query, Params, Headers, Body>,
     ): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**

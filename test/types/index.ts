@@ -209,6 +209,10 @@ const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2Se
   logLevel: 'trace',
   config: { }
 }
+const optsWithHandler: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {
+  ...opts,
+  handler (req, reply) { reply.send({ hello: 'route' }) }
+}
 
 // Chaining and route definitions
 server
@@ -250,6 +254,7 @@ server
     reply.header('Content-Type', 'application/json').code(200)
     reply.send({ hello: 'world' })
   })
+  .get('/optsWithHandler', optsWithHandler)
   .get('/status', function (req, reply) {
     reply.status(204).send()
   })
@@ -279,17 +284,21 @@ server
       .headers({ 'Content-Type': 'application/json' })
       .send({ hello: 'world' })
   })
+  .post('/optsWithHandler', optsWithHandler)
   .head('/', {}, function (req, reply) {
     reply.send()
   })
+  .head('/optsWithHandler', optsWithHandler)
   .delete('/', opts, function (req, reply) {
     reply.send({ hello: 'world' })
   })
+  .delete('/optsWithHandler', optsWithHandler)
   .patch('/:id', opts, function (req, reply) {
     req.log.info(`incoming id is ${req.params.id}`)
 
     reply.send({ hello: 'world' })
   })
+  .patch('/optsWithHandler', optsWithHandler)
   .route({
     method: ['GET', 'POST', 'PUT'],
     url: '/multi-route',
@@ -317,6 +326,7 @@ server
   .all('/all/with-opts', opts, function (req, reply) {
     reply.send(req.headers)
   })
+  .all('/optsWithHandler', optsWithHandler)
   .route({
     method: 'GET',
     url: '/headers',

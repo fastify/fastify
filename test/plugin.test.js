@@ -269,7 +269,7 @@ test('check dependencies - should throw', t => {
         t.fail()
       } catch (e) {
         t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-        t.is(e.message, 'FST_ERR_DEC_MISSING_DEPENDENCY: The decorator is missing dependency \'test\'.')
+        t.is(e.message, 'The decorator is missing dependency \'test\'.')
       }
       n()
     }))

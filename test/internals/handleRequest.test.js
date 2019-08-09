@@ -250,7 +250,7 @@ test('request should respond with an error if an unserialized payload is sent in
     t.strictDeepEqual(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
-      message: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE: Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
       statusCode: 500
     })
   })

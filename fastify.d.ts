@@ -176,6 +176,7 @@ declare namespace fastify {
     sent: boolean
     res: HttpResponse
     context: FastifyContext
+    request: FastifyRequest
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
   interface ServerOptions {

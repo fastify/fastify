@@ -645,3 +645,11 @@ server3.close(() => {})
     done()
   }
 }
+
+type TestReplyDecoration = (this: fastify.FastifyReply<http.ServerResponse>) => void
+
+const server4 = fastify()
+const testReplyDecoration: TestReplyDecoration = function () {
+  console.log('can access request from reply decorator', this.request.id)
+}
+server4.decorateReply('test-request-accessible-from-reply', testReplyDecoration)

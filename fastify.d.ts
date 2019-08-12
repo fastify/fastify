@@ -63,7 +63,7 @@ type TrustProxyFunction = (address: string, hop: number) => boolean
 /* Export all additional types */
 export { FastifyRequest } from './types/request'
 export { FastifyReply } from './types/reply'
-export { FastifyPlugin } from './types/plugin'
+export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLogFn, LogLevels } from './types/logger'
 export { FastifyMiddleware, FastifyMiddlewareWithPayload } from './types/middleware'

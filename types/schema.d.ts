@@ -14,4 +14,4 @@ export type FastifySchema = {
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler = (schema: FastifySchema) => void // todo
+export type FastifySchemaCompiler = (schema: FastifySchema) => unknown

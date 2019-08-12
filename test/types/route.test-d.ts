@@ -37,16 +37,23 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   type QuerystringType = void
   type ParamsType = void
   type HeadersType = void
-  fastify()[lowerCaseMethod]<BodyType, QuerystringType, ParamsType, HeadersType>('/', (req, res) => {
+  type ContextConfigType = {
+    foo: string,
+    bar: number
+  }
+  fastify()[lowerCaseMethod]<BodyType, QuerystringType, ParamsType, HeadersType, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
     expectType<BodyType>(req.body)
     expectType<QuerystringType>(req.query)
     expectType<ParamsType>(req.params)
     // expectType<HeadersType>(req.headers)
+    expectType<string>(res.context.config.foo)
+    expectType<number>(res.context.config.bar)
   })
 
-  fastify().route<BodyType, QuerystringType, ParamsType, HeadersType>({
+  fastify().route<BodyType, QuerystringType, ParamsType, HeadersType, ContextConfigType>({
     url: '/',
     method: method as HTTPMethods,
+    config: { foo: 'bar', bar: 100 },
     preHandler: (req, res) => {
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
@@ -70,13 +77,15 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
       // expectType<HeadersType>(req.headers)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
     }
   })
 })
 
 expectError(fastify().route({
   url: '/',
-  method: 'CONNECT',
+  method: 'CONNECT', // not a valid method
   handler: routeHandler
 }))
 

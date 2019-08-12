@@ -5,7 +5,7 @@ import * as https from 'https'
 import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './utils'
+import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks'
@@ -57,7 +57,13 @@ export interface FastifyInstance<
   register: FastifyRegister<RawServer, RawRequest, RawReply>
   use: FastifyRegister<RawServer, RawRequest, RawReply>
 
-  route<RequestBody, RequestQuerystring, RequestParams, RequestHeaders>(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>): FastifyInstance<RawServer, RawRequest, RawReply>
+  route<
+    RequestBody = RequestBodyDefault,
+    RequestQuerystring = RequestQuerystringDefault,
+    RequestParams = RequestParamsDefault,
+    RequestHeaders = RequestHeadersDefault,
+    ContextConfig = ContextConfigDefault
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>
 
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,

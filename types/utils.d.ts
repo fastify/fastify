@@ -42,3 +42,5 @@ export type RequestBodyDefault = unknown
 export type RequestQuerystringDefault = unknown
 export type RequestParamsDefault = unknown
 export type RequestHeadersDefault = unknown
+
+export type ContextConfigDefault = unknown

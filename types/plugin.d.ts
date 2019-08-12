@@ -8,7 +8,7 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawReques
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
 export interface FastifyPlugin<
-  Options extends { [key: string]: any },
+  Options extends FastifyPluginOptions,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>, 
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
@@ -18,4 +18,8 @@ export interface FastifyPlugin<
     opts: Options,
     next: (err?: FastifyError) => void
   ): void
+}
+
+export type FastifyPluginOptions = {
+  [key: string]: any
 }

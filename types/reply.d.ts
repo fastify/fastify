@@ -2,7 +2,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 
-import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault } from './utils';
+import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault, ContextConfigDefault } from './utils';
 import { FastifyContext } from './context'
 
 /**
@@ -11,7 +11,8 @@ import { FastifyContext } from './context'
  */
 export type FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  ContextConfig = ContextConfigDefault
 > = RawReply & {
   callNotFound(): void
   code(statusCode: number): FastifyReply<RawServer, RawReply>
@@ -27,7 +28,7 @@ export type FastifyReply<
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawReply>
   status(statusCode: number): FastifyReply<RawServer, RawReply>
   type(contentType: string): FastifyReply<RawServer, RawReply>
-  context: FastifyContext
+  context: FastifyContext<ContextConfig>
   res: RawReply,
   sent: boolean
 }

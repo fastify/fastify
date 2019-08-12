@@ -50,19 +50,3 @@ export interface FastifyLoggerOptions<
   child: FastifyLogFn | FastifyLoggerOptions<RawServer>;
   genReqId?: string;
 }
-
-/**
-Planning on using Pino as your logger?
-1. Download and install pino types `npm i -s @types/pino
-2. Add the following code block to a type declaration file
-```typescript
-import * as pino from 'pino' 
-namespace fastify {
-  interface FastifyInterface {
-    logger: FastifyLogger | pino
-  }
-}
-```
-3. You now have access to the pino logger typings
-*/
-export type PinoObject = object

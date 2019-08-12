@@ -20,11 +20,12 @@ import { addContentTypeParser, hasContentTypeParser } from './content-type-parse
 export interface FastifyInstance<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  Logger = FastifyLoggerOptions<RawServer>
 > {
   server: RawServer
   prefix: string
-  log: FastifyLoggerOptions
+  log: Logger
 
   addSchema(schema: FastifySchema): FastifyInstance<RawServer, RawRequest, RawReply>
 

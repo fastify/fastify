@@ -6,7 +6,7 @@ import { FastifyInstance } from './instance'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
 
 /**
  * Fastify Middleware 
@@ -20,11 +20,12 @@ export interface FastifyMiddleware<
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault
+  RequestHeaders = RequestHeadersDefault,
+  ContextConfig = ContextConfigDefault
 > {
   (
     request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
-    reply: FastifyReply<RawServer, RawReply>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: (err?: FastifyError) => void
   ): void
 }
@@ -41,11 +42,12 @@ export interface FastifyMiddlewareWithPayload<
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault
+  RequestHeaders = RequestHeadersDefault,
+  ContextConfig = ContextConfigDefault
 > {
   (
     request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
-    reply: FastifyReply<RawServer, RawReply>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: any,
     done: (err?: FastifyError, value?: any) => void
   ): void

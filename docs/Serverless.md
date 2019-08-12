@@ -35,7 +35,7 @@ function init() {
   return app;
 }
 
-if (require.main !== module) {
+if (require.main === module) {
   // called directly i.e. "node app"
   init().listen(3000, (err) => {
     if (err) console.error(err);

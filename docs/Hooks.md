@@ -4,61 +4,26 @@
 
 Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
 
-## Request/Response Hooks
-
 By using the hooks you can interact directly inside the lifecycle of Fastify. There are seven different Hooks that you can use *(in order of execution)*:
-- `'onRequest'`
-- `'preParsing'`
-- `'preValidation'`
-- `'preHandler'`
-- `'preSerialization'`
-- `'onError'`
-- `'onSend'`
-- `'onResponse'`
+- [onRequest](#onRequest)
+- [preParsing](#preParsing)
+- [preValidation](#preValidation)
+- [preHandler](#preHandler)
+- [preSerialization](#preSerialization)
+- [onError](#onError)
+- [onSend](#onSend)
+- [onResponse](#onResponse)
 
-Example:
+**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+
+### onRequest
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
   // some code
   done()
 })
-
-fastify.addHook('preParsing', (request, reply, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('preValidation', (request, reply, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('preHandler', (request, reply, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('onError', (request, reply, error, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('onSend', (request, reply, payload, done) => {
-  // some code
-  done()
-})
-
-fastify.addHook('onResponse', (request, reply, done) => {
-  // some code
-  done()
-})
 ```
-Or `async/await`
+Or `async/await`:
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
   // some code
@@ -69,7 +34,19 @@ fastify.addHook('onRequest', async (request, reply) => {
   }
   return
 })
+```
 
+**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
+
+### preParsing
+```js
+fastify.addHook('preParsing', (request, reply, done) => {
+  // some code
+  done()
+})
+```
+Or `async/await`:
+```js
 fastify.addHook('preParsing', async (request, reply) => {
   // some code
   await asyncMethod()
@@ -79,7 +56,16 @@ fastify.addHook('preParsing', async (request, reply) => {
   }
   return
 })
-
+```
+### preValidation
+```js
+fastify.addHook('preValidation', (request, reply, done) => {
+  // some code
+  done()
+})
+```
+Or `async/await`:
+```js
 fastify.addHook('preValidation', async (request, reply) => {
   // some code
   await asyncMethod()
@@ -89,7 +75,18 @@ fastify.addHook('preValidation', async (request, reply) => {
   }
   return
 })
+```
+**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
 
+### preHandler
+```js
+fastify.addHook('preHandler', (request, reply, done) => {
+  // some code
+  done()
+})
+```
+Or `async/await`:
+```js
 fastify.addHook('preHandler', async (request, reply) => {
   // some code
   await asyncMethod()
@@ -99,32 +96,89 @@ fastify.addHook('preHandler', async (request, reply) => {
   }
   return
 })
+```
+### preSerialization
 
-fastify.addHook('preSerialization', async (request, reply, payload) => {
-  // some code
-  await asyncMethod()
-  // error occurred
-  if (err) {
-    throw new Error('some errors occurred.')
-  }
-  return payload
+If you are using the `preSerialization` hook, you can change (or replace) the payload before it is serialized. For example:
+
+```js
+fastify.addHook('preSerialization', (request, reply, payload, done) => {
+  var err = null;
+  var newPayload = {wrapped: payload }
+  done(err, newPayload)
 })
+```
+Or `async/await`
+```js
+fastify.addHook('preSerialization', async (request, reply, payload) => {
+  return {wrapped: payload }
+})
+```
 
+Note: the hook is NOT called if the payload is  a `string`, a `Buffer`, a `stream`, or `null`.
+
+### onError
+```js
+fastify.addHook('onError', (request, reply, error, done) => {
+  // some code
+  done()
+})
+```
+Or `async/await`:
+```js
 fastify.addHook('onError', async (request, reply, error) => {
   // useful for custom error logging
   // you should not use this hook to update the error
 })
+```
+This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
+It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back an error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
+**Notice:** unlike the other hooks, pass an error to the `done` function is not supported.
 
-fastify.addHook('onSend', async (request, reply, payload) => {
-  // some code
-  await asyncMethod()
-  // error occurred
-  if (err) {
-    throw new Error('some errors occurred.')
-  }
-  return
+### onSend
+If you are using the `onSend` hook, you can change the payload. For example:
+
+```js
+fastify.addHook('onSend', (request, reply, payload, done) => {
+  var err = null;
+  var newPayload = payload.replace('some-text', 'some-new-text')
+  done(err, newPayload)
 })
+```
+Or `async/await`:
+```js
+fastify.addHook('onSend', async (request, reply, payload) => {
+  var newPayload = payload.replace('some-text', 'some-new-text')
+  return newPayload
+})
+```
 
+You can also clear the payload to send a response with an empty body by replacing the payload with `null`:
+
+```js
+fastify.addHook('onSend', (request, reply, payload, done) => {
+  reply.code(304)
+  const newPayload = null
+  done(null, newPayload)
+})
+```
+
+> You can also send an empty body by replacing the payload with the empty string `''`, but be aware that this will cause the `Content-Length` header to be set to `0`, whereas the `Content-Length` header will not be set if the payload is `null`.
+
+Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
+
+
+### onResponse
+```js
+
+fastify.addHook('onResponse', (request, reply, done) => {
+  // some code
+  done()
+})
+```
+Or `async/await`:
+```js
 fastify.addHook('onResponse', async (request, reply) => {
   // some code
   await asyncMethod()
@@ -136,9 +190,9 @@ fastify.addHook('onResponse', async (request, reply) => {
 })
 ```
 
-**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
 
-**Notice:** in the `onRequest` and `preValidation` hooks, `request.body` will always be `null`, because the body parsing happens before the `preHandler` hook.
+## Request/Reply Hooks
 
 [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
 `done` is the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
@@ -164,80 +218,6 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
-#### The `onError` Hook
-
-This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
-It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
-This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back an error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
-**Notice:** unlike the other hooks, pass an error to the `done` function is not supported.
-
-```js
-fastify.addHook('onError', (request, reply, error, done) => {
-  // apm stands for Application Performance Monitoring
-  apm.sendError(error)
-  done()
-})
-
-// Or async
-fastify.addHook('onError', async (request, reply, error) => {
-  // apm stands for Application Performance Monitoring
-  apm.sendError(error)
-})
-```
-
-#### The `preSerialization` Hook
-
-If you are using the `preSerialization` hook, you can change (or replace) the payload before it is serialized. For example:
-
-```js
-fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  var err = null;
-  var newPayload = {wrapped: payload }
-  done(err, newPayload)
-})
-
-// Or async
-fastify.addHook('preSerialization', async (request, reply, payload) => {
-  return {wrapped: payload }
-})
-```
-
-Note: the hook is NOT called if the payload is  a `string`, a `Buffer`, a `stream`, or `null`.
-
-#### The `onSend` Hook
-
-If you are using the `onSend` hook, you can change the payload. For example:
-
-```js
-fastify.addHook('onSend', (request, reply, payload, done) => {
-  var err = null;
-  var newPayload = payload.replace('some-text', 'some-new-text')
-  done(err, newPayload)
-})
-
-// Or async
-fastify.addHook('onSend', async (request, reply, payload) => {
-  var newPayload = payload.replace('some-text', 'some-new-text')
-  return newPayload
-})
-```
-
-You can also clear the payload to send a response with an empty body by replacing the payload with `null`:
-
-```js
-fastify.addHook('onSend', (request, reply, payload, done) => {
-  reply.code(304)
-  const newPayload = null
-  done(null, newPayload)
-})
-```
-
-> You can also send an empty body by replacing the payload with the empty string `''`, but be aware that this will cause the `Content-Length` header to be set to `0`, whereas the `Content-Length` header will not be set if the payload is `null`.
-
-Note: If you change the payload, you may only change it to a `string`, a `Buffer`, a `stream`, or `null`.
-
-#### The `onResponse` Hook
-The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
 
 ### Respond to a request from a hook
 If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
@@ -339,9 +319,9 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="route-hooks"></a>
 ## Route level hooks
-You can declare one or more custom `onRequest`, `preParsing`, `preValidation`, `preHandler` and `preSerialization` hook(s) that will be **unique** for the route.
+You can declare one or more custom [onRequest](#onRequest), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
 If you do so, those hooks always be executed as last hook in their category. <br/>
-This can be useful if you need to run the authentication, and the `preParsing` or `preValidation` hooks are exactly what you need for doing that.
+This can be useful if you need to run the authentication, and the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need for doing that.
 Multiple route-level hooks can also be specified as an array.
 
 Let's make an example:

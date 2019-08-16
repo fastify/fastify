@@ -30,49 +30,6 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
-### Manage Errors from a hook
-If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  done(new Error('some error'))
-})
-```
-
-If you want to pass a custom error code to the user, just use `reply.code()`:
-```js
-fastify.addHook('preHandler', (request, reply, done) => {
-  reply.code(400)
-  done(new Error('some error'))
-})
-```
-
-*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
-
-
-### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  reply.send('early response')
-})
-
-// Works with async functions too
-fastify.addHook('preHandler', async (request, reply) => {
-  reply.send({ hello: 'world' })
-})
-```
-
-If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.send(stream)
-})
-```
-
 ### onRequest
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
@@ -248,6 +205,49 @@ fastify.addHook('onResponse', async (request, reply) => {
 ```
 
 The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
+
+### Manage Errors from a hook
+If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  done(new Error('some error'))
+})
+```
+
+If you want to pass a custom error code to the user, just use `reply.code()`:
+```js
+fastify.addHook('preHandler', (request, reply, done) => {
+  reply.code(400)
+  done(new Error('some error'))
+})
+```
+
+*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+
+
+### Respond to a request from a hook
+If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  reply.send('early response')
+})
+
+// Works with async functions too
+fastify.addHook('preHandler', async (request, reply) => {
+  reply.send({ hello: 'world' })
+})
+```
+
+If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.send(stream)
+})
+```
 
 ## Application Hooks
 

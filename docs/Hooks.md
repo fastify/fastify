@@ -104,7 +104,7 @@ If you are using the `preSerialization` hook, you can change (or replace) the pa
 ```js
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
   var err = null;
-  var newPayload = {wrapped: payload }
+  var newPayload = { wrapped: payload }
   done(err, newPayload)
 })
 ```

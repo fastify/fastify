@@ -5,16 +5,73 @@
 Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
 
 By using the hooks you can interact directly inside the lifecycle of Fastify. There are seven different Hooks that you can use *(in order of execution)*:
-- [onRequest](#onRequest)
-- [preParsing](#preParsing)
-- [preValidation](#preValidation)
-- [preHandler](#preHandler)
-- [preSerialization](#preSerialization)
-- [onError](#onError)
-- [onSend](#onSend)
-- [onResponse](#onResponse)
+
+- [Request/Reply Hooks](#request/reply-hooks)
+  - [onRequest](#onRequest)
+  - [preParsing](#preParsing)
+  - [preValidation](#preValidation)
+  - [preHandler](#preHandler)
+  - [preSerialization](#preSerialization)
+  - [onError](#onError)
+  - [onSend](#onSend)
+  - [onResponse](#onResponse)
+- [Application Hooks](#application-hooks)
+  - [onClose](#onclose)
+  - [onRoute](#onroute)
+  - [onRegister](#onregister)
 
 **Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+
+## Request/Reply Hooks
+
+[Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
+`done` is the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
+
+It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
+Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
+
+### Manage Errors from a hook
+If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  done(new Error('some error'))
+})
+```
+
+If you want to pass a custom error code to the user, just use `reply.code()`:
+```js
+fastify.addHook('preHandler', (request, reply, done) => {
+  reply.code(400)
+  done(new Error('some error'))
+})
+```
+
+*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+
+
+### Respond to a request from a hook
+If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  reply.send('early response')
+})
+
+// Works with async functions too
+fastify.addHook('preHandler', async (request, reply) => {
+  reply.send({ hello: 'world' })
+})
+```
+
+If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
+
+```js
+fastify.addHook('onRequest', (request, reply, done) => {
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.send(stream)
+})
+```
 
 ### onRequest
 ```js
@@ -192,67 +249,17 @@ fastify.addHook('onResponse', async (request, reply) => {
 
 The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
 
-## Request/Reply Hooks
-
-[Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
-`done` is the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
-
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
-Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
-
-### Manage Errors from a hook
-If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  done(new Error('some error'))
-})
-```
-
-If you want to pass a custom error code to the user, just use `reply.code()`:
-```js
-fastify.addHook('preHandler', (request, reply, done) => {
-  reply.code(400)
-  done(new Error('some error'))
-})
-```
-
-*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
-
-
-### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  reply.send('early response')
-})
-
-// Works with async functions too
-fastify.addHook('preHandler', async (request, reply) => {
-  reply.send({ hello: 'world' })
-})
-```
-
-If you want to respond with a stream, you should avoid using an `async` function for the hook. If you must use an `async` function, your code will need to follow the pattern in [test/hooks-async.js](https://github.com/fastify/fastify/blob/94ea67ef2d8dce8a955d510cd9081aabd036fa85/test/hooks-async.js#L269-L275).
-
-```js
-fastify.addHook('onRequest', (request, reply, done) => {
-  const stream = fs.createReadStream('some-file', 'utf8')
-  reply.send(stream)
-})
-```
-
 ## Application Hooks
 
 You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.
 
-- `'onClose'`
-- `'onRoute'`
-- `'onRegister'`
+- [onClose](#onclose)
+- [onRoute](#onroute)
+- [onRegister](#onregister)
 
 <a name="on-close"></a>
-**'onClose'**<br>
+
+### onClose
 Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, such as a connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
@@ -262,7 +269,7 @@ fastify.addHook('onClose', (instance, done) => {
 })
 ```
 <a name="on-route"></a>
-**'onRoute'**<br>
+### onRoute
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
@@ -276,7 +283,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 })
 ```
 <a name="on-register"></a>
-**'onRegister'**<br>
+### onRegister
 Triggered when a new plugin function is registered, and a new encapsulation context is created, the hook will be executed **before** the plugin code.<br/>
 This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).

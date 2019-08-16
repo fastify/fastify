@@ -7,7 +7,7 @@ const http = require('http')
 const sget = require('simple-get').concat
 
 test('Should support a custom http server', t => {
-  t.plan(6)
+  t.plan(7)
 
   const serverFactory = (handler, opts) => {
     t.ok(opts.serverFactory)
@@ -26,6 +26,7 @@ test('Should support a custom http server', t => {
 
   fastify.get('/', (req, reply) => {
     t.ok(req.raw.custom)
+    t.equal(req.protocol, 'http:', 'protocol is http')
     reply.send({ hello: 'world' })
   })
 

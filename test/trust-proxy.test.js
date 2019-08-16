@@ -10,7 +10,8 @@ const sgetForwardedRequest = (app, forHeader, path) => {
     method: 'GET',
     headers: {
       'X-Forwarded-For': forHeader,
-      'X-Forwarded-Host': 'example.com'
+      'X-Forwarded-Host': 'example.com',
+      'X-Forwarded-Proto': 'https'
     },
     url: 'http://localhost:' + app.server.address().port + path
   }, () => {})
@@ -39,18 +40,26 @@ const testRequestValues = (t, req, options) => {
     }
     t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarded-for')
   }
+  if (options.protocol) {
+    if (options.modifyCoreObjects) {
+      t.ok(req.raw.protocol, 'protocol is defined')
+      t.equal(req.raw.protocol, options.protocol, 'gets protocol from x-forwarded-proto')
+    }
+    t.ok(req.protocol, 'protocol is defined')
+    t.equal(req.protocol, options.protocol, 'gets protocol from x-forwarded-proto')
+  }
 }
 
 test('trust proxy, add properties to node req', (t) => {
-  t.plan(15)
+  t.plan(19)
   const modifyCoreObjects = true
   const app = fastify({
     trustProxy: true,
     modifyCoreObjects
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', modifyCoreObjects })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', protocol: 'https:', modifyCoreObjects })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname, protocol: req.protocol })
   })
 
   app.get('/trustproxychain', function (req, reply) {
@@ -69,13 +78,13 @@ test('trust proxy, add properties to node req', (t) => {
 })
 
 test('trust proxy, not add properties to node req', (t) => {
-  t.plan(8)
+  t.plan(10)
   const app = fastify({
     trustProxy: true
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com' })
-    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', protocol: 'https:' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname, protocol: req.protocol })
   })
 
   app.get('/trustproxychain', function (req, reply) {

@@ -9,7 +9,7 @@ const path = require('path')
 const sget = require('simple-get').concat
 
 test('Should support a custom https server', t => {
-  t.plan(6)
+  t.plan(7)
 
   const serverFactory = (handler, opts) => {
     t.ok(opts.serverFactory)
@@ -33,6 +33,7 @@ test('Should support a custom https server', t => {
 
   fastify.get('/', (req, reply) => {
     t.ok(req.raw.custom)
+    t.equal(req.protocol, 'https:', 'protocol is https:')
     reply.send({ hello: 'world' })
   })
 

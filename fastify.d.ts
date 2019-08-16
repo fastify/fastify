@@ -149,6 +149,7 @@ declare namespace fastify {
     ip: string
     ips: string[]
     hostname: string
+    protocol: string
 
     raw: HttpRequest
     req: HttpRequest

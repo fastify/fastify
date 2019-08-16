@@ -226,3 +226,21 @@ test('build schema - headers are not lowercased in case of custom object', t => 
     return () => {}
   }, new Schemas())
 })
+
+test('build schema - uppercased headers are not included', t => {
+  t.plan(1)
+  const opts = {
+    schema: {
+      headers: {
+        type: 'object',
+        properties: {
+          'Content-Type': { type: 'string' }
+        }
+      }
+    }
+  }
+  validation.build(opts, schema => {
+    t.notOk('Content-Type' in schema.properties, 'uppercase does not exist')
+    return () => {}
+  }, new Schemas())
+})

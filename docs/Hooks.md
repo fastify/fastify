@@ -4,7 +4,7 @@
 
 Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
 
-By using the hooks you can interact directly inside the lifecycle of Fastify. There are seven different Hooks that you can use *(in order of execution)*:
+By using the hooks you can interact directly inside the lifecycle of Fastify. There are Request/Reply hooks and application hooks:
 
 - [Request/Reply Hooks](#requestreply-hooks)
   - [onRequest](#onRequest)
@@ -29,6 +29,8 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
 
 It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
+
+There are eight different hooks that you can use in Request/Reply *(in order of execution)*:
 
 ### onRequest
 ```js

@@ -106,7 +106,7 @@ const opts: fastify.RouteShorthandOptions = {
   }
 }
 
-server.get<Query, Params, Body, Headers>('/ping/:bar', opts, (request, reply) => {
+server.get<Query, Params, Headers, Body>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type Query!
   console.log(request.params) // this is of type Params!
   console.log(request.body) // this is of type Body!

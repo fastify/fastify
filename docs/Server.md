@@ -104,7 +104,7 @@ are not present on the object, they will be added accordingly:
     for incoming requests. The default function generates sequential identifiers.
     * `level`: the minimum logging level. If not set, it will be set to `'info'`.
     * `serializers`: a hash of serialization functions. By default, serializers
-      are added for `req` (incoming request objects), `res` (outgoing repsonse
+      are added for `req` (incoming request objects), `res` (outgoing response
       objets), and `err` (standard `Error` objects). When a log method receives
       an object with any of these properties then the respective serializer will
       be used for that property. For example:

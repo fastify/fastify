@@ -79,7 +79,7 @@ The hook callback must be a function.
 <a name="FST_ERR_LOG_INVALID_DESTINATION"></a>
 #### FST_ERR_LOG_INVALID_DESTINATION
 
-Logger acceptes either a `'stream'` or a `'file'` as the destination.
+Logger accepts either a `'stream'` or a `'file'` as the destination.
 
 <a id="FST_ERR_REP_ALREADY_SENT"></a>
 ### FST_ERR_REP_ALREADY_SENT

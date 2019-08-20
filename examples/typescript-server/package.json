@@ -1,0 +1,24 @@
+{
+  "name": "typescript-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/node": "^12.7.2",
+    "cors": "^2.8.5",
+    "fastify": "^2.7.1"
+  }
+}

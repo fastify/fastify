@@ -11,12 +11,13 @@
  * node examples/typescript-server.js
  */
 
-import * as fastify from '../fastify'
-import * as cors from 'cors'
+import fastify from 'fastify'
 import { createReadStream } from 'fs'
-import * as http from 'http'
+import path from 'path';
+import { ServerResponse, IncomingMessage, Server} from 'http'
+import { AddressInfo } from 'net';
 
-const server = fastify()
+const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify()
 
 const opts = {
   schema: {
@@ -33,22 +34,16 @@ const opts = {
   }
 }
 
-function getHelloHandler (req: fastify.FastifyRequest<http.IncomingMessage>,
-    reply: fastify.FastifyReply<http.ServerResponse>) {
+server.get('/', opts, (req, reply) => {
+  const stream = createReadStream(path.join(__dirname,'../../plugin.js'), 'utf8')
+  reply.code(200).send(stream)
+})
+server.get('/stream', (req, reply) => {
   reply.header('Content-Type', 'application/json').code(200)
   reply.send({ hello: 'world' })
-}
-
-function getStreamHandler (req, reply) {
-  const stream = createReadStream(process.cwd() + '/examples/plugin.js', 'utf8')
-  reply.code(200).send(stream)
-}
-
-server.use(cors())
-server.get('/', opts, getHelloHandler)
-server.get('/stream', getStreamHandler)
+})
 
 server.listen(3000, err => {
   if (err) throw err
-  console.log(`server listening on ${server.server.address().port}`)
+  console.log(`server listening on ${(server.server.address()as AddressInfo).port}`)
 })

@@ -701,7 +701,7 @@ test('The schema resolver should clean the $id key before passing it to the comp
     url: '/',
     method: 'GET',
     schema: {
-      description: `get`,
+      description: 'get',
       body: 'second#',
       response: {
         200: 'second#'
@@ -716,7 +716,7 @@ test('The schema resolver should clean the $id key before passing it to the comp
     url: '/',
     method: 'PATCH',
     schema: {
-      description: `patch`,
+      description: 'patch',
       body: 'first#',
       response: {
         200: 'first#'

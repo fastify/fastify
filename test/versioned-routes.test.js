@@ -417,7 +417,7 @@ test('Should register a versioned route with custome versioning strategy', t => 
       }
     },
     deriveVersion: (req, ctx) => {
-      return req.headers['accept']
+      return req.headers.accept
     }
   }
 

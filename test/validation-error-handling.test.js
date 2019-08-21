@@ -278,7 +278,7 @@ test('should return a defined output message parsing AJV errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"body should have required property 'name', body should have required property 'work'"}`)
+    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\', body should have required property \'work\'"}')
   })
 })
 
@@ -306,7 +306,7 @@ test('should return a defined output message parsing JOI errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"child \\"name\\" fails because [\\"name\\" is required]"}`)
+    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"child \\"name\\" fails because [\\"name\\" is required]"}')
   })
 })
 
@@ -337,6 +337,6 @@ test('should return a defined output message parsing JOI error details', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, `{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}`)
+    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
   })
 })

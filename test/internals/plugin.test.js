@@ -7,7 +7,7 @@ const pluginUtilsPublic = require('../../lib/pluginUtils.js')
 const pluginUtils = require('../../lib/pluginUtils')[Symbol.for('internals')]
 const symbols = require('../../lib/symbols.js')
 
-test(`shouldSkipOverride should check the 'skip-override' symbol`, t => {
+test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   t.plan(2)
 
   yes[Symbol.for('skip-override')] = true
@@ -19,7 +19,7 @@ test(`shouldSkipOverride should check the 'skip-override' symbol`, t => {
   function no () {}
 })
 
-test(`getMeta should return the object stored with the 'plugin-meta' symbol`, t => {
+test("getMeta should return the object stored with the 'plugin-meta' symbol", t => {
   t.plan(1)
 
   const meta = { hello: 'world' }
@@ -76,7 +76,7 @@ test('checkDecorators should check if the given decorator is present in the inst
     pluginUtils.checkDecorators.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `The decorator 'plugin' is not present in Request`)
+    t.is(err.message, "The decorator 'plugin' is not present in Request")
   }
 
   function fn () {}
@@ -117,7 +117,7 @@ test('checkDependencies should check if the given dependency is present in the i
     pluginUtils.checkDependencies.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, `The dependency 'plugin' of plugin 'test-plugin' is not registered`)
+    t.is(err.message, "The dependency 'plugin' of plugin 'test-plugin' is not registered")
   }
 
   function fn () {}

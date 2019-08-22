@@ -111,6 +111,11 @@ A schema with the same `$id` already exists.
 
 No schema with the provided `$id` exists.
 
+<a name="FST_ERR_SCH_BUILD"></a>
+#### FST_ERR_SCH_BUILD
+
+The JSON schema provided to one route is not valid.
+
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 

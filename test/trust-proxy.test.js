@@ -169,3 +169,22 @@ test('trust proxy IP addresses', (t) => {
     sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs')
   })
 })
+
+test('validation trust proxy chain', (t) => {
+  t.plan(5)
+  const app = fastify({
+    trustProxy: ['2.2.2.2', '1.1.1.1']
+  })
+  app.get('/trustproxyipvalidation', function (req, reply) {
+    testRequestValues(t, req, { ip: '127.0.0.1', hostname: req.headers.host })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+
+  t.tearDown(app.close.bind(app))
+
+  app.listen(0, (err) => {
+    app.server.unref()
+    t.error(err)
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxyipvalidation')
+  })
+})

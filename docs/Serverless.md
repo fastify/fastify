@@ -200,6 +200,7 @@ configuring your `now.json` file like the following:
 
 ```json
 {
+  "version": 2,
   "builds": [
     {
       "src": "serverless.js",

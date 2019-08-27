@@ -764,6 +764,17 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
   return instancePrefix + pluginPrefix
 }
 
+/**
+ * These export configurations enable JS and TS developers
+ * to consumer fastify in whatever way best suits their needs.
+ * Some examples of supported import syntax includes:
+ * - `const fastify = require('fastify')`
+ * - `const { fastify } = require('fastify')`
+ * - `import * as Fastify from 'fastify'`
+ * - `import { fastify, TSC_definition } from 'fastify'`
+ * - `import fastify from 'fastify'`
+ * - `import fastify, { TSC_definition } from 'fastify'`
+ */
 fastify.fastify = fastify
 fastify.default = fastify
 module.exports = fastify

@@ -5,8 +5,9 @@
   "main": "fastify.js",
   "types": "fastify.d.ts",
   "scripts": {
-    "lint": "npm run lint:standard",
+    "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",
+    "lint:typescript": "eslint -c types/.eslintrc.json 'types/**/*.d.ts' 'test/types/**/*.test-d.ts'",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
     "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
@@ -87,9 +88,10 @@
     "node": ">=8.16.0"
   },
   "devDependencies": {
+    "@hapi/joi": "^15.1.0",
     "@types/node": "^12.0.10",
-    "@typescript-eslint/eslint-plugin": "^1.11.0",
-    "@typescript-eslint/parser": "^1.11.0",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "@typescript-eslint/parser": "^1.13.0",
     "JSONStream": "^1.3.5",
     "ajv-pack": "^0.3.1",
     "autocannon": "^4.0.0",
@@ -98,7 +100,13 @@
     "cors": "^2.8.5",
     "coveralls": "^3.0.4",
     "dns-prefetch-control": "^0.2.0",
+    "eslint": "^6.2.2",
+    "eslint-config-standard": "^14.0.1",
     "eslint-import-resolver-node": "^0.3.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.6.0",
     "fluent-schema": "^0.7.3",
@@ -110,7 +118,6 @@
     "hsts": "^2.2.0",
     "http-errors": "^1.7.3",
     "ienoopen": "^1.1.0",
-    "@hapi/joi": "^15.1.0",
     "license-checker": "^25.0.1",
     "lolex": "^4.1.0",
     "pre-commit": "^1.2.2",
@@ -155,7 +162,7 @@
     "ignore": [
       "lib/configValidator.js",
       "fastify.d.ts",
-      "types/*.d.ts",
+      "types/*",
       "test/types/*"
     ]
   },

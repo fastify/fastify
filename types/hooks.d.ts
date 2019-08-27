@@ -115,7 +115,7 @@ export type onRouteHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>
-> = (opts: RouteOptions<RawServer, RawRequest, RawReply> & { path: string, prefix: string }) => void
+> = (opts: RouteOptions<RawServer, RawRequest, RawReply> & { path: string; prefix: string }) => void
 
 /**
  * Add a hook that is triggered when a request is initially received

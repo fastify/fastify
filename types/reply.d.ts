@@ -1,8 +1,4 @@
-import * as http from 'http'
-import * as http2 from 'http2'
-import * as https from 'https'
-
-import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault, ContextConfigDefault } from './utils';
+import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault, ContextConfigDefault } from './utils'
 import { FastifyContext } from './context'
 
 /**
@@ -14,21 +10,21 @@ export type FastifyReply<
   RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
   ContextConfig = ContextConfigDefault
 > = RawReply & {
-  callNotFound(): void
-  code(statusCode: number): FastifyReply<RawServer, RawReply>
-  hasHeader(key: string): boolean
-  header(key: string, value: any): FastifyReply<RawServer, RawReply>
-  getHeader(key: string): string | undefined
+  callNotFound(): void;
+  code(statusCode: number): FastifyReply<RawServer, RawReply>;
+  hasHeader(key: string): boolean;
+  header(key: string, value: any): FastifyReply<RawServer, RawReply>;
+  getHeader(key: string): string | undefined;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
-  redirect(statusCode: number, url: string): FastifyReply<RawServer, RawReply>
-  redirect(url: string): FastifyReply<RawServer, RawReply>
-  removeHeader(key: string): void
-  send(payload?: any): FastifyReply<RawServer, RawReply>
-  serialize(payload: any): string
-  serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawReply>
-  status(statusCode: number): FastifyReply<RawServer, RawReply>
-  type(contentType: string): FastifyReply<RawServer, RawReply>
-  context: FastifyContext<ContextConfig>
-  res: RawReply,
-  sent: boolean
+  redirect(statusCode: number, url: string): FastifyReply<RawServer, RawReply>;
+  redirect(url: string): FastifyReply<RawServer, RawReply>;
+  removeHeader(key: string): void;
+  send(payload?: any): FastifyReply<RawServer, RawReply>;
+  serialize(payload: any): string;
+  serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawReply>;
+  status(statusCode: number): FastifyReply<RawServer, RawReply>;
+  type(contentType: string): FastifyReply<RawServer, RawReply>;
+  context: FastifyContext<ContextConfig>;
+  res: RawReply;
+  sent: boolean;
 }

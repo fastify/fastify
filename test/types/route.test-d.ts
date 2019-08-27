@@ -1,6 +1,6 @@
-import fastify, {FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import {expectType, expectError} from 'tsd'
-import { HTTPMethods } from '../../types/utils';
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
+import { expectType, expectError } from 'tsd'
+import { HTTPMethods } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -37,9 +37,9 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   type QuerystringType = void
   type ParamsType = void
   type HeadersType = void
-  type ContextConfigType = {
-    foo: string,
-    bar: number
+  interface ContextConfigType {
+    foo: string;
+    bar: number;
   }
   fastify()[lowerCaseMethod]<BodyType, QuerystringType, ParamsType, HeadersType, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
     expectType<BodyType>(req.body)

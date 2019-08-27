@@ -1,8 +1,8 @@
-import fastify, {FastifyInstance, FastifyPlugin, FastifyRequest, FastifyReply } from '../../fastify'
+import fastify, { FastifyInstance } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import {expectType, expectError} from 'tsd'
+import { expectType, expectError } from 'tsd'
 
 // FastifyInstance
 // http server

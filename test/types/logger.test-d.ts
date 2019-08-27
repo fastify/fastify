@@ -1,4 +1,4 @@
-import {expectType, expectError} from 'tsd'
+import { expectType, expectError } from 'tsd'
 import fastify, { FastifyLoggerOptions, FastifyLogFn, LogLevels } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 
@@ -11,23 +11,23 @@ expectType<FastifyLoggerOptions>(fastify().log)
   expectError(fastify().log[logLevel as LogLevels](0))
 })
 
-interface ICustomLogger {
+interface CustomLogger {
   log: {
-    specialFunc: (...args: any[]) => void
-  }
+    specialFunc: (...args: any[]) => void;
+  };
 }
 
-const customLogger: ICustomLogger = {
+const customLogger: CustomLogger = {
   log: {
     specialFunc: (...args) => console.log(...args)
   }
 }
 
 const serverWithCustomLogger = fastify<
-  Server,
-  IncomingMessage,
-  ServerResponse,
-  ICustomLogger
+Server,
+IncomingMessage,
+ServerResponse,
+CustomLogger
 >({ logger: customLogger })
 
-expectType<ICustomLogger>(serverWithCustomLogger.log)
+expectType<CustomLogger>(serverWithCustomLogger.log)

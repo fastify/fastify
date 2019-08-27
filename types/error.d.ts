@@ -7,7 +7,7 @@ export interface ValidationResult {
   schemaPath: string;
   params: {
     [type: string]: string;
-  },
+  };
   message: string;
 }
 
@@ -19,5 +19,5 @@ export interface FastifyError extends Error {
   /**
    * Validation errors
    */
-  validation?: Array<ValidationResult>;
+  validation?: ValidationResult[];
 }

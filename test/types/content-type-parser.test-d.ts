@@ -1,6 +1,6 @@
 import fastify from '../../fastify'
-import { expectType } from 'tsd';
-import { IncomingMessage } from 'http';
+import { expectType } from 'tsd'
+import { IncomingMessage } from 'http'
 
 expectType<void>(fastify().addContentTypeParser('contentType', function (req, done) {
   expectType<IncomingMessage>(req)
@@ -55,4 +55,3 @@ expectType<void>(fastify().addContentTypeParser<Buffer>('bodyContentType', { par
   expectType<Buffer>(body)
   return null
 }))
-

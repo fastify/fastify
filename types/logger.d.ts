@@ -1,8 +1,5 @@
-import * as http from 'http'
-import * as net from 'net'
-
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils';
+import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
 
 /**
  * Standard Fastify logging function
@@ -24,22 +21,22 @@ export interface FastifyLoggerOptions<
 > {
   serializers?: {
     req: (req: RawRequest) => {
-      method: string,
-      url: string,
-      version: string,
-      hostname: string,
-      remoteAddress: string,
-      remotePort: number
-    },
+      method: string;
+      url: string;
+      version: string;
+      hostname: string;
+      remoteAddress: string;
+      remotePort: number;
+    };
     err: (err: FastifyError) => {
       type: string;
       message: string;
       stack: string;
       [key: string]: any;
-    },
+    };
     res: (res: RawReply) => {
-      statusCode: string | number
-    }
+      statusCode: string | number;
+    };
   };
   info: FastifyLogFn;
   error: FastifyLogFn;

@@ -1,7 +1,6 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import { FastifyInstance } from './instance';
 
 /**
  * Standard HTTP method strings

@@ -1,15 +1,15 @@
-import fastify, {FastifyServerFactory} from '../../fastify'
+import fastify, { FastifyServerFactory } from '../../fastify'
 import * as http from 'http'
-import {expectType, } from 'tsd'
+import { expectType } from 'tsd'
 
 // Custom Server
 type CustomType = void;
 interface CustomIncomingMessage extends http.IncomingMessage {
-  fakeMethod?: () => CustomType
+  fakeMethod?: () => CustomType;
 }
 
 interface CustomServerResponse extends http.ServerResponse {
-  fakeMethod?: () => CustomType
+  fakeMethod?: () => CustomType;
 
 }
 

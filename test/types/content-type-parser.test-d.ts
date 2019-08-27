@@ -35,10 +35,6 @@ expectType<void>(fastify().addContentTypeParser<Buffer>('bodyContentType', { par
   done(null)
 }))
 
-// Async tests - TS cannot infer the function properly even though it should be as simple as a basic function overload
-// Here is a reference StackOverflow question: https://stackoverflow.com/questions/56861255/overloaded-typescript-function-parameter-does-not-work-with-async-keyword
-// This may be an issue with the Type Definition, but I'm (Ethan) not sure.
-
 expectType<void>(fastify().addContentTypeParser('contentType', async function (req: IncomingMessage) {
   expectType<IncomingMessage>(req)
   return null

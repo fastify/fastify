@@ -11,7 +11,7 @@ export type FastifyRequest<
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault // currently unused; how do we extend header list?
+  RequestHeaders = RequestHeadersDefault
 > = RawRequest & {
   body: RequestBody;
   id: any;
@@ -19,4 +19,5 @@ export type FastifyRequest<
   params: RequestParams;
   query: RequestQuerystring;
   raw: RawRequest;
+  headers: RawRequest['headers'] & RequestHeaders; // this enables the developer to extend the existing http(s|2) headers list
 }

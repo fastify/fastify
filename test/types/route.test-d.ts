@@ -45,7 +45,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     expectType<BodyType>(req.body)
     expectType<QuerystringType>(req.query)
     expectType<ParamsType>(req.params)
-    // expectType<HeadersType>(req.headers)
+    expectType<HeadersType>(req.headers)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
   })
@@ -58,7 +58,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      // expectType<HeadersType>(req.headers)
+      expectType<HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -66,7 +66,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      // expectType<HeadersType>(req.headers)
+      expectType<HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -74,7 +74,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      // expectType<HeadersType>(req.headers)
+      expectType<HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -82,7 +82,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      // expectType<HeadersType>(req.headers)
+      expectType<HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     }

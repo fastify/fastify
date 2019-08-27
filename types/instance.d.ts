@@ -4,7 +4,7 @@ import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
-import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks'
+import { AddHook } from './hooks'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
@@ -73,15 +73,7 @@ export interface FastifyInstance<
   patch: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
 
-  addHook: onCloseHook<RawServer, RawRequest, RawReply> |
-  onRouteHook<RawServer, RawRequest, RawReply> |
-  onRequestHook<RawServer, RawRequest, RawReply> |
-  onSendHook<RawServer, RawRequest, RawReply> |
-  onErrorHook<RawServer, RawRequest, RawReply> |
-  preHandlerHook<RawServer, RawRequest, RawReply> |
-  preParsingHook<RawServer, RawRequest, RawReply> |
-  preSerializationHook<RawServer, RawRequest, RawReply> |
-  preValidationHook<RawServer, RawRequest, RawReply>;
+  addHook: AddHook<RawServer, RawRequest, RawReply>;
 
   /**
    * Set the 404 handler

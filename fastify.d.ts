@@ -70,7 +70,7 @@ export { FastifyMiddleware, FastifyMiddlewareWithPayload } from './types/middlew
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export { RegisterOptions } from './types/register'
-export { FastifyBodyParser, FastifyContentTypeParser, addContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
+export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
 export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'

@@ -3,7 +3,7 @@ import * as http2 from 'http2'
 import * as https from 'https'
 
 import { FastifyRequest } from './types/request'
-import { RawServerBase, RawServerDefault, RawRequestDefault, RawReplyDefault, RawRequestBase, RawReplyBase } from './types/utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
 import { FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
@@ -18,8 +18,8 @@ import { FastifyServerFactory } from './types/serverFactory'
  */
 export default function fastify<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
 >(opts?: FastifyServerOptions<RawServer, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
@@ -44,7 +44,7 @@ export type FastifyServerOptions<
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
-  genReqId?: (req: FastifyRequest<RawServer, RawRequestDefault<RawServer>>) => string,
+  genReqId?: (req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: string | string[] },
   versioning?: {
@@ -73,7 +73,7 @@ export { RegisterOptions } from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
 export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
-export { HTTPMethods, RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault } from './types/utils'
+export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './types/utils'
 export { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { fastify }

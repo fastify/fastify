@@ -1,6 +1,6 @@
 import { FastifyInstance } from './instance'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 
 /**
  * FastifyPlugin
@@ -10,8 +10,8 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, Raw
 export interface FastifyPlugin<
   Options extends FastifyPluginOptions,
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply>,

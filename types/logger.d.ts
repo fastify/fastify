@@ -1,5 +1,5 @@
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 
 /**
  * Standard Fastify logging function
@@ -16,8 +16,8 @@ export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
   serializers?: {
     req: (req: RawRequest) => {

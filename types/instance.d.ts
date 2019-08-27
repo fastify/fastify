@@ -1,7 +1,7 @@
 import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { RawServerBase, RawRequestBase, RawReplyBase, RawServerDefault, RawRequestDefault, RawReplyDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { onCloseHook, onRouteHook, onRequestHook, onSendHook, onErrorHook, preHandlerHook, preParsingHook, preSerializationHook, preValidationHook } from './hooks'
@@ -15,8 +15,8 @@ import { AddContentTypeParser, hasContentTypeParser } from './content-type-parse
  */
 export interface FastifyInstance<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
 > {
   server: RawServer;

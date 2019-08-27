@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression } from './utils'
 
 /**
  * Body parser method that operatoes on request body
@@ -7,7 +7,7 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault } fr
 export type FastifyBodyParser<
   RawBody extends string | Buffer,
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
 > = ((req: RawRequest, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
 | ((req: RawRequest, rawBody: RawBody) => Promise<any>)
 
@@ -16,7 +16,7 @@ export type FastifyBodyParser<
  */
 export type FastifyContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > = ((req: RawRequest) => Promise<any>)
 | ((req: RawRequest, done: (err: Error | null, body?: any) => void) => void)
 
@@ -25,7 +25,7 @@ export type FastifyContentTypeParser<
  */
 export interface AddContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > {
   (
     contentType: string | string[],
@@ -38,14 +38,14 @@ export interface AddContentTypeParser<
 
 export interface AddContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > {
   (contentType: string | string[], parser: FastifyContentTypeParser<RawServer, RawRequest>): void;
 }
 
 export interface AddContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 >{
   <parseAs extends string | Buffer>(
     contentType: string | string[],

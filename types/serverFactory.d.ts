@@ -1,4 +1,4 @@
-import { RawServerBase, RawServerDefault, RawReplyBase, RawReplyDefault, RawRequestBase, RawRequestDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawReplyDefaultExpression, RawRequestDefaultExpression } from './utils'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
@@ -11,8 +11,8 @@ export interface FastifyServerFactory<
 
 export type FastifyServerFactoryHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > =
   RawServer extends http.Server | https.Server ?
     (request: http.IncomingMessage & RawRequest, response: http.ServerResponse & RawReply) => void :

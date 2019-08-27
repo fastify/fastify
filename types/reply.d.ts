@@ -1,4 +1,4 @@
-import { RawReplyBase, RawReplyDefault, RawServerBase, RawServerDefault, ContextConfigDefault } from './utils'
+import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault } from './utils'
 import { FastifyContext } from './context'
 
 /**
@@ -7,7 +7,7 @@ import { FastifyContext } from './context'
  */
 export type FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   ContextConfig = ContextConfigDefault
 > = RawReply & {
   callNotFound(): void;

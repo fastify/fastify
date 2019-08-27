@@ -1,5 +1,5 @@
 import { FastifyLoggerOptions } from './logger'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
 /**
  * FastifyRequest is an instance of the standard http or http2 request objects.
@@ -7,7 +7,7 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, Req
  */
 export type FastifyRequest<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,

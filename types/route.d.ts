@@ -3,7 +3,7 @@ import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
+import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
 import { LogLevels } from './logger'
 
 /**
@@ -11,8 +11,8 @@ import { LogLevels } from './logger'
  */
 export interface RouteShorthandMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
   <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
     path: string,
@@ -26,8 +26,8 @@ export interface RouteShorthandMethod<
  */
 export interface RouteShorthandMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
   <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
     path: string,
@@ -40,8 +40,8 @@ export interface RouteShorthandMethod<
  */
 export interface RouteShorthandMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
   <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
     path: string,
@@ -54,8 +54,8 @@ export interface RouteShorthandMethod<
  */
 export interface RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
@@ -80,8 +80,8 @@ export interface RouteShorthandOptions<
  */
 export interface RouteOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
@@ -98,8 +98,8 @@ export interface RouteOptions<
  */
 export interface RouteShorthandOptionsWithHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
@@ -114,8 +114,8 @@ export interface RouteShorthandOptionsWithHandler<
  */
 export type RouteHandlerMethod<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,

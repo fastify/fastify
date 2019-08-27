@@ -1,7 +1,7 @@
 import { FastifyMiddleware } from './middleware'
 import { FastifyInstance } from './instance'
 import { RouteOptions } from './route'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
@@ -11,8 +11,8 @@ import { FastifyError } from './error'
  */
 export type preParsingHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'preParsing', hook: preParsingHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -20,8 +20,8 @@ export type preParsingHook<
  */
 export type preParsingHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
@@ -29,8 +29,8 @@ export type preParsingHookHandler<
  */
 export type preValidationHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'preValidation', hook: preValidationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -38,8 +38,8 @@ export type preValidationHook<
  */
 export type preValidationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
@@ -47,8 +47,8 @@ export type preValidationHookHandler<
  */
 export type preSerializationHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'preParsing', hook: preSerializationHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -56,8 +56,8 @@ export type preSerializationHook<
  */
 export type preSerializationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
@@ -65,8 +65,8 @@ export type preSerializationHookHandler<
  */
 export type preHandlerHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'preHandler', hook: preHandlerHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -74,8 +74,8 @@ export type preHandlerHook<
  */
 export type preHandlerHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
@@ -84,8 +84,8 @@ export type preHandlerHookHandler<
  */
 export type onCloseHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'onClose', hook: onCloseHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -93,8 +93,8 @@ export type onCloseHook<
  */
 export type onCloseHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (instance: FastifyInstance<RawServer, RawRequest, RawReply>, done: () => void) => void
 
 /**
@@ -104,8 +104,8 @@ export type onCloseHookHandler<
  */
 export type onRouteHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'onRoute', hook: onRouteHookHandler) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -113,8 +113,8 @@ export type onRouteHook<
  */
 export type onRouteHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (opts: RouteOptions<RawServer, RawRequest, RawReply> & { path: string; prefix: string }) => void
 
 /**
@@ -122,8 +122,8 @@ export type onRouteHookHandler<
  */
 export type onRequestHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'onRequest', hook: onRequestHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -131,8 +131,8 @@ export type onRequestHook<
  */
 export type onRequestHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = FastifyMiddleware<RawServer, RawRequest, RawReply>
 
 /**
@@ -141,8 +141,8 @@ export type onRequestHookHandler<
  */
 export type onSendHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'onSend', hook: onSendHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -150,8 +150,8 @@ export type onSendHook<
  */
 export type onSendHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (
   req: FastifyRequest<RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawReply>,
@@ -164,8 +164,8 @@ export type onSendHookHandler<
  */
 export type onErrorHook<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (name: 'onError', hook: onErrorHookHandler<RawServer, RawRequest, RawReply>) => FastifyInstance<RawServer, RawRequest, RawReply>
 
 /**
@@ -173,8 +173,8 @@ export type onErrorHook<
  */
 export type onErrorHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > = (
   req: FastifyRequest<RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawReply>,

@@ -1,7 +1,7 @@
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, RawReplyBase, RawReplyDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
 
 /**
  * Fastify Middleware
@@ -10,8 +10,8 @@ import { RawServerBase, RawServerDefault, RawRequestBase, RawRequestDefault, Raw
  */
 export interface FastifyMiddleware<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,
@@ -32,8 +32,8 @@ export interface FastifyMiddleware<
  */
 export interface FastifyMiddlewareWithPayload<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestBase = RawRequestDefault<RawServer>,
-  RawReply extends RawReplyBase = RawReplyDefault<RawServer>,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestBody = RequestBodyDefault,
   RequestQuerystring = RequestQuerystringDefault,
   RequestParams = RequestParamsDefault,

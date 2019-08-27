@@ -31,13 +31,13 @@ export interface FastifyInstance<
   close<T>(): Promise<T>; // what is this use case? Not documented on Server#close
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
-  decorate(property: string, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
-  decorateRequest(property: string, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
-  decorateReply(property: string, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
+  decorate(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
+  decorateRequest(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
+  decorateReply(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-  hasDecorator(decorator: string): boolean;
-  hasRequestDecorator(decorator: string): boolean;
-  hasReplyDecorator(decorator: string): boolean;
+  hasDecorator(decorator: string | symbol): boolean;
+  hasRequestDecorator(decorator: string | symbol): boolean;
+  hasReplyDecorator(decorator: string | symbol): boolean;
 
   inject(opts: InjectOptions | string, cb: (err: Error, response: InjectPayload) => void): void;
   inject(opts: InjectOptions | string): Promise<InjectPayload>;

@@ -43,7 +43,7 @@ const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
 
-function build (options) {
+function fastify (options) {
   // Options validations
   options = options || {}
 
@@ -506,4 +506,17 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
   return instancePrefix + pluginPrefix
 }
 
-module.exports = build
+/**
+ * These export configurations enable JS and TS developers
+ * to consumer fastify in whatever way best suits their needs.
+ * Some examples of supported import syntax includes:
+ * - `const fastify = require('fastify')`
+ * - `const { fastify } = require('fastify')`
+ * - `import * as Fastify from 'fastify'`
+ * - `import { fastify, TSC_definition } from 'fastify'`
+ * - `import fastify from 'fastify'`
+ * - `import fastify, { TSC_definition } from 'fastify'`
+ */
+fastify.fastify = fastify
+fastify.default = fastify
+module.exports = fastify

@@ -3,17 +3,17 @@
   "version": "2.10.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
-  "typings": "fastify.d.ts",
+  "types": "fastify.d.ts",
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",
-    "lint:typescript": "standard --parser @typescript-eslint/parser --plugin @typescript-eslint/eslint-plugin test/types/*.ts fastify.d.ts",
-    "unit": "tap --no-esm -J test/*.test.js test/*/*.test.js",
-    "unit:report": "tap --no-esm -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
+    "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
+    "unit": "tap -J test/*.test.js test/*/*.test.js",
+    "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
-    "typescript": "tsc --project ./test/types/tsconfig.json",
-    "test:report": "npm run lint && npm run unit:report && npm run typescript",
-    "test": "npm run lint && npm run unit && npm run typescript",
+    "test:typescript": "tsd",
+    "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
+    "test": "npm run lint && npm run unit && npm run test:typescript",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "test:ci": "npm run lint && npm run unit -- --cov --coverage-report=lcovonly && npm run typescript",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
@@ -92,6 +92,7 @@
     "node": ">=8.16.0"
   },
   "devDependencies": {
+    "@hapi/joi": "^15.1.0",
     "@types/node": "^12.0.10",
     "@typescript-eslint/eslint-plugin": "^2.3.0",
     "@typescript-eslint/parser": "^2.3.0",
@@ -104,7 +105,12 @@
     "coveralls": "^3.0.6",
     "dns-prefetch-control": "^0.2.0",
     "eslint": "^6.4.0",
+    "eslint-config-standard": "^14.0.1",
     "eslint-import-resolver-node": "^0.3.2",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.6.0",
     "fluent-schema": "^0.8.0",
@@ -116,7 +122,6 @@
     "hsts": "^2.2.0",
     "http-errors": "^1.7.1",
     "ienoopen": "^1.1.0",
-    "@hapi/joi": "^15.1.0",
     "license-checker": "^25.0.1",
     "lolex": "^4.2.0",
     "pre-commit": "^1.2.2",
@@ -132,6 +137,7 @@
     "tap": "^14.4.1",
     "tap-mocha-reporter": "^4.0.1",
     "then-sleep": "^1.0.1",
+    "tsd": "^0.7.3",
     "typescript": "^3.6.3",
     "x-xss-protection": "^1.2.0"
   },
@@ -158,7 +164,13 @@
   },
   "standard": {
     "ignore": [
-      "lib/configValidator.js"
+      "lib/configValidator.js",
+      "fastify.d.ts",
+      "types/*",
+      "test/types/*"
     ]
+  },
+  "tsd": {
+    "directory": "test/types"
   }
 }

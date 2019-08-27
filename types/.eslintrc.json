@@ -1,0 +1,30 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "standard"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "env": { "node": true },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "project": "./types/tsconfig.json"
+  },
+  "rules": {
+    "no-console": "off",
+    "@typescript-eslint/indent": ["error", 2],
+    "semi": ["error", "never"],
+    "import/export": "off" // this errors on multiple exports (overload interfaces)
+  },
+  "overrides": [
+    {
+      "files": ["*.test-d.ts"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
+    }
+  ]
+}

@@ -77,3 +77,4 @@ export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaul
 export { onCloseHookHandler, onRouteHookHandler, onRequestHookHandler, onSendHookHandler, onErrorHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler, AddHook, addHookHandler } from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { fastify }
+export { Get, Post, Put, Delete, Head, Options, Patch, All, Hook, DecorateInstance, DecorateRequest, DecorateReply } from './types/decorators'

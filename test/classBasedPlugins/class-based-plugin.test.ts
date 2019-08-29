@@ -1,22 +1,39 @@
 import { test } from 'tap'
-const fastify = require('../../')
-const {
+import fastify, {
   Get,
   Hook,
   DecorateInstance,
   DecorateRequest,
-  DecorateReply
-} = fastify
-const sget = require('simple-get').concat
-const { pluginDecoratorsWarning } = require('../../lib/warnings')
-import { FastifyInstance } from '../..'
+  DecorateReply,
+  FastifyInstance,
+  RawServerBase,
+  RawRequestDefaultExpression,
+  RawServerDefault,
+  RawReplyDefaultExpression,
+  FastifyLoggerOptions
+} from '../../'
+import { concat } from 'simple-get'
+import { AddressInfo } from 'net'
+import { pluginDecoratorsWarning } from '../../lib/warnings'
 
-test('Should register route', (t) => {
+interface InstanceWithConf<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger = FastifyLoggerOptions<RawServer>
+> extends FastifyInstance<RawServer, RawRequest, RawReply, Logger> {
+  conf: {
+    db: string;
+    port: number;
+  };
+}
+
+test('Should register route', (t): void => {
   t.plan(5)
-  
+
   class TestPlugin {
     @Get('/')
-    async handler (request, response) {
+    public async handler (): Promise<string> {
       t.pass('route called')
       return 'hello world!'
     }
@@ -24,15 +41,15 @@ test('Should register route', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body.toString(), 'hello world!')
@@ -40,18 +57,18 @@ test('Should register route', (t) => {
   })
 })
 
-test('Should register hook', (t) => {
+test('Should register hook', (t): void => {
   t.plan(6)
-  
+
   class TestPlugin {
     @Hook('onSend')
-    hook (request, reply, payload, next) {
+    public hook (request, reply, payload, next): void {
       t.pass('onSend hook executed')
       next()
     }
 
     @Get('/')
-    async handler (request, response) {
+    public async handler (): Promise<string> {
       t.pass('route called')
       return 'hello world!'
     }
@@ -59,15 +76,15 @@ test('Should register hook', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body.toString(), 'hello world!')
@@ -75,17 +92,17 @@ test('Should register hook', (t) => {
   })
 })
 
-test('Should register async hook', (t) => {
+test('Should register async hook', (t): void => {
   t.plan(6)
-  
+
   class TestPlugin {
     @Hook('onSend')
-    async hook (request, reply, payload) {
+    public async hook (): Promise<void> {
       t.pass('onSend hook executed')
     }
 
     @Get('/')
-    async handler (request, response) {
+    public async handler (): Promise<string> {
       t.pass('route called')
       return 'hello world!'
     }
@@ -93,15 +110,15 @@ test('Should register async hook', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body.toString(), 'hello world!')
@@ -109,22 +126,22 @@ test('Should register async hook', (t) => {
   })
 })
 
-test('Should decorate request', (t) => {
+test('Should decorate request', (t): void => {
   t.plan(6)
-  
+
   class TestPlugin {
     @DecorateRequest()
-    test = 42
+    public test: number = 42
 
     @DecorateRequest('utility')
-    addUtilityFunction () {
-      return function utility (template, args) {
+    public addUtilityFunction (): (template, args) => string {
+      return function utility (template, args): string {
         return 'hello world'
       }
     }
 
     @Get('/')
-    async handler (request, reply) {
+    public async handler (request, reply): Promise<void> {
       t.ok(typeof request.utility === 'function')
       t.equals(request.test, 42)
       reply.send(request.utility())
@@ -133,15 +150,15 @@ test('Should decorate request', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body.toString(), 'hello world')
@@ -149,12 +166,12 @@ test('Should decorate request', (t) => {
   })
 })
 
-test('should decorate instance', (t) => {
+test('should decorate instance', (t): void => {
   t.plan(2)
 
   class TestPlugin {
     @DecorateInstance()
-    conf = {
+    public conf = {
       db: 'some.db',
       port: 3000
     }
@@ -163,33 +180,33 @@ test('should decorate instance', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    t.deepEqual(app.conf, {
+    t.deepEqual((app as InstanceWithConf).conf, {
       db: 'some.db',
       port: 3000
     })
   })
 })
 
-test('Should decorate reply', (t) => {
+test('Should decorate reply', (t): void => {
   t.plan(7)
-  
+
   class TestPlugin {
     @DecorateReply()
-    headerDefaultValue = '42'
+    public headerDefaultValue = '42'
 
     @DecorateReply('testHeader')
-    addViewFunction () {
+    public addViewFunction (): (value?: string) => void {
       const headerDefaultValue = this.headerDefaultValue
-      return function testHeader (value) {
+      return function testHeader (value): void {
         this.header('x-test', value || headerDefaultValue)
       }
     }
 
     @Get('/')
-    async handler (request, reply) {
+    public async handler (request, reply): Promise<void> {
       t.ok(typeof reply.testHeader === 'function')
       t.equals(reply.headerDefaultValue, '42')
       reply.testHeader()
@@ -199,15 +216,15 @@ test('Should decorate reply', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['x-test'], '42')
@@ -216,14 +233,14 @@ test('Should decorate reply', (t) => {
   })
 })
 
-test('Should expose fastify instance to plugin', (t) => {
+test('Should expose fastify instance to plugin', (t): void => {
   t.plan(5)
-  
+
   class TestPlugin {
     private instance: FastifyInstance
 
     @Get('/')
-    async handler (request, response) {
+    public async handler (): Promise<string> {
       t.ok(this.instance)
       return 'hello world!'
     }
@@ -231,15 +248,15 @@ test('Should expose fastify instance to plugin', (t) => {
 
   const app = fastify()
   app.register(new TestPlugin())
-  app.listen(0, err => {
+  app.listen(0, (err): void => {
     t.error(err)
     app.server.unref()
-    const port = app.server.address().port
+    const port = (app.server.address() as AddressInfo).port
 
-    sget({
+    concat({
       method: 'GET',
       url: 'http://localhost:' + port
-    }, (err, response, body) => {
+    }, (err, response, body): void => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(body.toString(), 'hello world!')
@@ -247,16 +264,17 @@ test('Should expose fastify instance to plugin', (t) => {
   })
 })
 
-test('should emit warning if plugin decorators are used', (t) => {
+test('should emit warning if plugin decorators are used', (t): void => {
   t.plan(1)
   pluginDecoratorsWarning.called = false
 
-  process.on('warning', warning => {
-    t.strictEqual(warning.message, `The plugin decorators are experimental`)
+  process.on('warning', (warning): void => {
+    t.strictEqual(warning.message, 'The plugin decorators are experimental')
   })
 
+  // eslint-disable-next-line no-unused-vars
   class TestPlugin {
     @Get('/')
-    async test (request, reply) {}
+    public async test (): Promise<void> {}
   }
 })

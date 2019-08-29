@@ -1,6 +1,5 @@
 import { test } from 'tap'
-const fastify = require('../../')
-const {
+import {
   Get,
   Post,
   Head,
@@ -13,19 +12,19 @@ const {
   DecorateRequest,
   DecorateReply,
   DecorateInstance
-} = fastify;
-const { kPluginMetadata } = require('../../lib/symbols')
+} from '../../'
+import { kPluginMetadata } from '../../lib/symbols'
 
-test('Should add metadata to decorated class', (t: any) => {
+test('Should add metadata to decorated class', (t): void => {
   t.plan(5)
   class TestPlugin {
     @Get('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
 
-  const plugin = new TestPlugin();
+  const plugin = new TestPlugin()
   const metadata = plugin[kPluginMetadata]
 
   t.ok(Array.isArray(metadata))
@@ -35,11 +34,11 @@ test('Should add metadata to decorated class', (t: any) => {
   t.equals(metadata[0].options.url, '/')
 })
 
-test('Should add method metadata for @Get', (t: any) => {
+test('Should add method metadata for @Get', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Get('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -50,11 +49,11 @@ test('Should add method metadata for @Get', (t: any) => {
   t.equals(metadata[0].options.method, 'GET')
 })
 
-test('Should add metadata for @Post', (t: any) => {
+test('Should add metadata for @Post', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Post('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -65,11 +64,11 @@ test('Should add metadata for @Post', (t: any) => {
   t.equals(metadata[0].options.method, 'POST')
 })
 
-test('Should add method metadata for @Head', (t: any) => {
+test('Should add method metadata for @Head', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Head('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -80,11 +79,11 @@ test('Should add method metadata for @Head', (t: any) => {
   t.equals(metadata[0].options.method, 'HEAD')
 })
 
-test('Should add method metadata for @Delete', (t: any) => {
+test('Should add method metadata for @Delete', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Delete('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -95,11 +94,11 @@ test('Should add method metadata for @Delete', (t: any) => {
   t.equals(metadata[0].options.method, 'DELETE')
 })
 
-test('Should add method metadata for @Patch', (t: any) => {
+test('Should add method metadata for @Patch', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Patch('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -110,11 +109,11 @@ test('Should add method metadata for @Patch', (t: any) => {
   t.equals(metadata[0].options.method, 'PATCH')
 })
 
-test('Should add method metadata for @Put', (t: any) => {
+test('Should add method metadata for @Put', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Put('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -125,11 +124,11 @@ test('Should add method metadata for @Put', (t: any) => {
   t.equals(metadata[0].options.method, 'PUT')
 })
 
-test('Should add method metadata for @Options', (t: any) => {
+test('Should add method metadata for @Options', (t): void => {
   t.plan(1)
   class TestPlugin {
     @Options('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -140,11 +139,11 @@ test('Should add method metadata for @Options', (t: any) => {
   t.equals(metadata[0].options.method, 'OPTIONS')
 })
 
-test('Should add method metadata for @All', (t: any) => {
+test('Should add method metadata for @All', (t): void => {
   t.plan(1)
   class TestPlugin {
     @All('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -158,7 +157,7 @@ test('Should add method metadata for @All', (t: any) => {
   )
 })
 
-test('should be able to pass options', (t: any) => {
+test('should be able to pass options', (t): void => {
   t.plan(1)
   const schema = {
     querystring: {
@@ -168,7 +167,7 @@ test('should be able to pass options', (t: any) => {
   }
   class TestPlugin {
     @All('/', { schema })
-    async handler (request, response) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -179,11 +178,11 @@ test('should be able to pass options', (t: any) => {
   t.deepEquals(metadata[0].options.schema, schema)
 })
 
-test('should add metadata for @Hook decorator', (t) => {
+test('should add metadata for @Hook decorator', (t): void => {
   t.plan(5)
   class TestPlugin {
     @Hook('onSend')
-    handler (request, reply, payload, next) {
+    public handler (request, reply, payload, next): void {
       next()
     }
   }
@@ -198,16 +197,16 @@ test('should add metadata for @Hook decorator', (t) => {
   t.ok(typeof metadata[0].handler === 'function')
 })
 
-test('should be able to use multiple decorators', (t) => {
+test('should be able to use multiple decorators', (t): void => {
   t.plan(7)
   class TestPlugin {
     @Hook('onSend')
-    hook (request, reply, payload, next) {
+    public hook (request, reply, payload, next): void {
       next()
     }
 
     @Get('/')
-    async handler (request: any, response: any) {
+    public async handler (): Promise<string> {
       return 'hello world!'
     }
   }
@@ -226,19 +225,19 @@ test('should be able to use multiple decorators', (t) => {
   t.equals(metadata[1].options.url, '/')
 })
 
-test('should add metadata for @DecorateRequest', (t) => {
+test('should add metadata for @DecorateRequest', (t): void => {
   t.plan(14)
   class TestPlugin {
     @DecorateRequest()
-    test0 = 42
+    public test0 = 42
 
     @DecorateRequest('test1')
-    aName () {
+    public aName (): string {
       return 'test'
     }
 
     @DecorateRequest()
-    test2 () {
+    public test2 (): string {
       return 'test'
     }
   }
@@ -253,7 +252,7 @@ test('should add metadata for @DecorateRequest', (t) => {
   t.equals(metadata[0].value, 'test0')
   t.equals(metadata[0].name, 'test0')
   t.equals(metadata[0].isFunction, false)
-  
+
   t.equals(metadata[1].type, 'decorateRequest')
   t.equals(metadata[1].value, 'aName')
   t.equals(metadata[1].name, 'test1')
@@ -265,19 +264,19 @@ test('should add metadata for @DecorateRequest', (t) => {
   t.equals(metadata[2].isFunction, true)
 })
 
-test('should add metadata for @DecorateReply', (t) => {
+test('should add metadata for @DecorateReply', (t): void => {
   t.plan(14)
   class TestPlugin {
     @DecorateReply()
-    test0 = 42
+    public test0 = 42
 
     @DecorateReply('test1')
-    aName () {
+    public aName (): string {
       return 'test'
     }
 
     @DecorateReply()
-    test2 () {
+    public test2 (): string {
       return 'test'
     }
   }
@@ -292,7 +291,7 @@ test('should add metadata for @DecorateReply', (t) => {
   t.equals(metadata[0].value, 'test0')
   t.equals(metadata[0].name, 'test0')
   t.equals(metadata[0].isFunction, false)
-  
+
   t.equals(metadata[1].type, 'decorateReply')
   t.equals(metadata[1].value, 'aName')
   t.equals(metadata[1].name, 'test1')
@@ -304,19 +303,19 @@ test('should add metadata for @DecorateReply', (t) => {
   t.equals(metadata[2].isFunction, true)
 })
 
-test('should add metadata for @DecorateInstance', (t) => {
+test('should add metadata for @DecorateInstance', (t): void => {
   t.plan(14)
   class TestPlugin {
     @DecorateInstance()
-    test0 = 42
+    public test0 = 42
 
     @DecorateInstance('test1')
-    aName () {
+    public aName (): string {
       return 'test'
     }
 
     @DecorateInstance()
-    test2 () {
+    public test2 (): string {
       return 'test'
     }
   }
@@ -331,7 +330,7 @@ test('should add metadata for @DecorateInstance', (t) => {
   t.equals(metadata[0].value, 'test0')
   t.equals(metadata[0].name, 'test0')
   t.equals(metadata[0].isFunction, false)
-  
+
   t.equals(metadata[1].type, 'decorateInstance')
   t.equals(metadata[1].value, 'aName')
   t.equals(metadata[1].name, 'test1')

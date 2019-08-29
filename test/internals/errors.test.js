@@ -78,7 +78,7 @@ test('Should throw when error code has no message', t => {
   try {
     createError('code')
   } catch (err) {
-    t.equal(err.message, `Fastify error message must not be empty`)
+    t.equal(err.message, 'Fastify error message must not be empty')
   }
 })
 

@@ -7,7 +7,7 @@ Fastify is shipped with a typings file, but you may need to install `@types/node
 ## Types support
 We do care about the TypeScript community, and one of our core team members is currently reworking all types.
 We do our best to have the typings updated with the latest version of the API, but *it can happen* that the typings are not in sync.<br/>
-Luckly this is Open Source and you can contribute to fix them, we will be very happy to accept the fix and release it as soon as possible as a patch release. Checkout the [contributing](#contributing) rules!
+Luckily this is Open Source and you can contribute to fix them, we will be very happy to accept the fix and release it as soon as possible as a patch release. Checkout the [contributing](#contributing) rules!
 
 Plugins may or may not include typings. See [Plugin Types](#plugin-types) for more information.
 
@@ -106,7 +106,7 @@ const opts: fastify.RouteShorthandOptions = {
   }
 }
 
-server.get<Query, Params, Body, Headers>('/ping/:bar', opts, (request, reply) => {
+server.get<Query, Params, Headers, Body>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type Query!
   console.log(request.params) // this is of type Params!
   console.log(request.body) // this is of type Body!
@@ -204,7 +204,7 @@ When updating core types you should make a PR to this repository. Ensure you:
 <a id="plugin-types"></a>
 ### Plugin Types
 
-Plugins maintained by and orginized under the fastify organization on GitHub should ship with typings just like fastify itself does.
+Plugins maintained by and organized under the fastify organization on GitHub should ship with typings just like fastify itself does.
 Some plugins already include typings but many do not. We are happy to accept contributions to those plugins without any typings, see [fastify-cors](https://github.com/fastify/fastify-cors) for an example of a plugin that comes with it's own typings.
 
 Typings for third-party-plugins may either be included with the plugin or hosted on DefinitelyTyped. Remember, if you author a plugin to either include typings or publish them on DefinitelyTyped! Information  of how to install typings from DefinitelyTyped can be found [here](https://github.com/DefinitelyTyped/DefinitelyTyped#npm).

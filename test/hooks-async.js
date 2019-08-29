@@ -520,7 +520,7 @@ function asyncHookTest (t) {
 
       stream.on('data', line => {
         t.strictEqual(line.level, 40)
-        t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
+        t.true(line.msg.startsWith("Async function has too many arguments. Async hooks should not use the 'next' argument."))
         t.true(/test(\\|\/)hooks-async\.js/.test(line.msg))
       })
 
@@ -536,7 +536,7 @@ function asyncHookTest (t) {
 
       stream.on('data', line => {
         t.strictEqual(line.level, 40)
-        t.true(line.msg.startsWith(`Async function has too many arguments. Async hooks should not use the 'next' argument.`))
+        t.true(line.msg.startsWith("Async function has too many arguments. Async hooks should not use the 'next' argument."))
         t.true(/test(\\|\/)hooks-async\.js/.test(line.msg))
       })
 

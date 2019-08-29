@@ -262,7 +262,7 @@ test('within an instance', t => {
       http.get(url, (response) => {
         t.strictEqual(response.headers['x-onsend'], 'yes')
         t.strictEqual(response.headers['content-length'], '0')
-        t.strictEqual(response.headers['location'], '/')
+        t.strictEqual(response.headers.location, '/')
       })
     })
 
@@ -419,7 +419,7 @@ test('stream using reply.res.writeHead should return customize headers', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['location'], '/')
+      t.strictEqual(response.headers.location, '/')
       t.strictEqual(response.headers['Content-Type'], undefined)
       t.deepEqual(body, buf)
     })

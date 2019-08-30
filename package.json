@@ -153,7 +153,8 @@
       "joi",
       "@types/node",
       "tap",
-      "tap-mocha-reporter"
+      "tap-mocha-reporter",
+      "@typescript-eslint/eslint-plugin"
     ]
   },
   "standard": {

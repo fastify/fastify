@@ -203,7 +203,7 @@ configuring your `now.json` file like the following:
   "version": 2,
   "builds": [
     {
-      "src": "serverless.js",
+      "src": "api/serverless.js",
       "use": "@now/node",
       "config": {
         "helpers": false
@@ -211,12 +211,12 @@ configuring your `now.json` file like the following:
     }
   ],
   "routes": [
-    { "src": "/.*", "dest": "/serverless.js"}
+    { "src": "/.*", "dest": "/api/serverless.js"}
   ]
 }
 ```
 
-Then, write a `serverless.js` like so:
+Then, write a `api/serverless.js` like so:
 
 ```js
 'use strict'
@@ -231,7 +231,7 @@ module.exports = async function (req, res) {
 }
 ```
 
-And a `index.js` file:
+And a `api/index.js` file:
 
 ```js
 'use strict'

@@ -6,6 +6,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 
 - [AWS Lambda](#aws-lambda)
 - [Google Cloud Run](#google-cloud-run)
+- [Zeit Now](#zeit-now)
 
 ### Attention Readers:
 > Fastify is not designed to run on serverless environments.
@@ -190,3 +191,74 @@ gcloud beta run deploy --image gcr.io/PROJECT-ID/APP-NAME --platform managed
 ```
 
 Your app will be accessible from the URL GCP provides.
+
+## Zeit Now
+
+[now](https://zeit.co/home) provides zero configuration deployment for
+Node.js applications. In order to use now, it is as simple as
+configuring your `now.json` file like the following:
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/serverless.js",
+      "use": "@now/node",
+      "config": {
+        "helpers": false
+      }
+    }
+  ],
+  "routes": [
+    { "src": "/.*", "dest": "/api/serverless.js"}
+  ]
+}
+```
+
+Then, write a `api/serverless.js` like so:
+
+```js
+'use strict'
+
+const build = require('./index')
+
+const app = build()
+
+module.exports = async function (req, res) {
+  await app.ready()
+  app.server.emit('request', req, res)
+}
+```
+
+And a `api/index.js` file:
+
+```js
+'use strict'
+
+const fastify = require('fastify')
+
+function build () {
+  const app = fastify({
+    logger: true
+  })
+
+  app.get('/', async (req, res) => {
+    const { name = 'World' } = req.query
+    req.log.info({ name }, 'hello world!')
+    return `Hello ${name}!`
+  })
+
+  return app
+}
+
+module.exports = build
+```
+
+Note that you'll need to use Node 10 by setting it in `package.json`:
+
+```js
+  "engines": {
+    "node": "10.x"
+  },
+```

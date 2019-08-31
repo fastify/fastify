@@ -424,11 +424,16 @@ function build (options) {
 // Everything that need to be encapsulated must be handled in this function.
 function override (old, fn, opts) {
   const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+
   if (shouldSkipOverride) {
+    // after every plugin registration we will overwrite the name
+    // that's why "current" has the correct meaning
+    old.currentPluginName = pluginUtils.getDisplayName(fn)
     return old
   }
 
   const instance = Object.create(old)
+
   old[kChildren].push(instance)
   instance[kChildren] = []
   instance[kReply] = Reply.buildReply(instance[kReply])
@@ -441,6 +446,7 @@ function override (old, fn, opts) {
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
+  instance.currentPluginName = pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)
 
   if (opts.prefix) {
     instance[kFourOhFour].arrange404(instance)

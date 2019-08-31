@@ -312,7 +312,7 @@ test('check dependencies - should throw', t => {
   })
 })
 
-test('set the plugin name based on the plugin displayName', t => {
+test('set the plugin name based on the plugin displayName symbol', t => {
   t.plan(5)
   const fastify = Fastify()
 

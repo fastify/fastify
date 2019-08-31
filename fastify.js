@@ -433,7 +433,6 @@ function override (old, fn, opts) {
   }
 
   const instance = Object.create(old)
-
   old[kChildren].push(instance)
   instance[kChildren] = []
   instance[kReply] = Reply.buildReply(instance[kReply])

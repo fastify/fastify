@@ -14,7 +14,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 
 test('hooks', t => {
-  t.plan(37)
+  t.plan(38)
   const fastify = Fastify()
 
   try {
@@ -98,6 +98,9 @@ test('hooks', t => {
       t.is(req.test, 'the request is coming')
       t.is(reply.test, 'the reply has come')
       reply.code(200).send(payload)
+    },
+    onResponse: function (req, reply, done) {
+      t.ok('onResponse inside hook')
     },
     response: {
       200: {

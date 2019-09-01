@@ -245,6 +245,9 @@ declare namespace fastify {
     onRequest?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
+    onResponse?:
+      | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
+      | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse>>
     preParsing?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>

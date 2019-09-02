@@ -587,10 +587,11 @@ Name of the current plugin. There are three ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the metadata `name` is used.
 2. If you you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
-3. If you export a plugin in a separate file the filename is used.
-4. The first two lines of your plugin will represent the plugin name. This will help to indentify the root cause when you deal with many plugins.
+3. If you `module.exports` a plugin in a separate file the filename is used.
 
-The name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attache contextual data. In that case the plugin name will represent a unique path in the format of `plugin-A -> plugin-B`.
+*Fallback*: The first two lines of your plugin will represent the plugin name. This will help to indentify the root cause when you deal with many plugins.
+
+Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent a unique path of all involved plugins in the format of `plugin-A -> plugin-B`.
 
 <a name="log"></a>
 #### log

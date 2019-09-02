@@ -586,8 +586,8 @@ fastify.register(function (instance, opts, done) {
 Name of the current plugin. There are three ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the metadata `name` is used.
-2. If you you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
-3. If you `module.exports` a plugin in a separate file the filename is used.
+2. If you `module.exports` a plugin the filename is used.
+3. If you you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
 
 *Fallback*: The first two lines of your plugin will represent the plugin name. This will help to indentify the root cause when you deal with many plugins.
 

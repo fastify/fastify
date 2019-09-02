@@ -370,6 +370,18 @@ test('plugin name will change when using no encapsulation', t => {
   })
 })
 
+test('plugin name is undefined when accessing in no plugin context', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  t.strictEqual(fastify.pluginName, undefined)
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
 test('set the plugin name based on the plugin function name', t => {
   t.plan(5)
   const fastify = Fastify()

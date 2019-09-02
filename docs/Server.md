@@ -591,7 +591,7 @@ Name of the current plugin. There are three ways to define a name (in order).
 
 *Fallback*: The first two lines of your plugin will represent the plugin name. This will help to indentify the root cause when you deal with many plugins.
 
-Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent a unique path of all involved plugins in the format of `plugin-A -> plugin-B`.
+Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
 
 <a name="log"></a>
 #### log

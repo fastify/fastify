@@ -21,7 +21,8 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kGlobalHooks
+  kGlobalHooks,
+  kPluginNameChain
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -130,6 +131,7 @@ function build (options) {
       onRegister: []
     },
     [pluginUtils.registeredPlugins]: [],
+    [kPluginNameChain]: [],
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)
@@ -221,6 +223,15 @@ function build (options) {
     get: function () {
       process.emitWarning('basePath is deprecated. Use prefix instead. See: https://www.fastify.io/docs/latest/Server/#prefix')
       return this[kRoutePrefix]
+    }
+  })
+
+  Object.defineProperty(fastify, 'pluginName', {
+    get: function () {
+      if (this[kPluginNameChain].length > 1) {
+        return this[kPluginNameChain].join(' -> ')
+      }
+      return this[kPluginNameChain][0]
     }
   })
 
@@ -426,9 +437,8 @@ function override (old, fn, opts) {
   const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
 
   if (shouldSkipOverride) {
-    // after every plugin registration we will overwrite the name
-    // that's why "current" has the correct meaning
-    old.currentPluginName = pluginUtils.getDisplayName(fn)
+    // after every plugin registration we will enter a new name
+    old[kPluginNameChain].push(pluginUtils.getDisplayName(fn))
     return old
   }
 
@@ -445,7 +455,7 @@ function override (old, fn, opts) {
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
-  instance.currentPluginName = pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)
+  instance[kPluginNameChain] = [pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)]
 
   if (opts.prefix) {
     instance[kFourOhFour].arrange404(instance)

@@ -317,20 +317,20 @@ test('set the plugin name based on the plugin displayName symbol', t => {
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, next) => {
-    t.strictEqual(fastify.currentPluginName, 'plugin-A')
+    t.strictEqual(fastify.pluginName, 'plugin-A')
     fastify.register(fp((fastify, opts, next) => {
-      t.strictEqual(fastify.currentPluginName, 'plugin-AB')
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
       next()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, next) => {
-      t.strictEqual(fastify.currentPluginName, 'plugin-AC')
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       next()
     }, { name: 'plugin-AC' }))
     next()
   }, { name: 'plugin-A' }))
 
   fastify.register(fp((fastify, opts, next) => {
-    t.strictEqual(fastify.currentPluginName, 'plugin-B')
+    t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
     next()
   }, { name: 'plugin-B' }))
 
@@ -346,19 +346,19 @@ test('plugin name will change when using no encapsulation', t => {
 
   fastify.register(fp((fastify, opts, next) => {
     // store it in a different variable will hold the correct name
-    const pluginName = fastify.currentPluginName
+    const pluginName = fastify.pluginName
     fastify.register(fp((fastify, opts, next) => {
-      t.strictEqual(fastify.currentPluginName, 'plugin-AB')
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
       next()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, next) => {
-      t.strictEqual(fastify.currentPluginName, 'plugin-AC')
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       next()
     }, { name: 'plugin-AC' }))
     setTimeout(() => {
       // normally we would expect the name plugin-A
       // but we operate on the same instance in each plugin
-      t.strictEqual(fastify.currentPluginName, 'plugin-AC')
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       t.strictEqual(pluginName, 'plugin-A')
     }, 20)
     next()
@@ -375,20 +375,20 @@ test('set the plugin name based on the plugin function name', t => {
   const fastify = Fastify()
 
   fastify.register(function myPluginA (fastify, opts, next) {
-    t.strictEqual(fastify.currentPluginName, 'myPluginA')
+    t.strictEqual(fastify.pluginName, 'myPluginA')
     fastify.register(function myPluginAB (fastify, opts, next) {
-      t.strictEqual(fastify.currentPluginName, 'myPluginAB')
+      t.strictEqual(fastify.pluginName, 'myPluginAB')
       next()
     })
     setTimeout(() => {
       // exact name due to encapsulation
-      t.strictEqual(fastify.currentPluginName, 'myPluginA')
+      t.strictEqual(fastify.pluginName, 'myPluginA')
     }, 20)
     next()
   })
 
   fastify.register(function myPluginB (fastify, opts, next) {
-    t.strictEqual(fastify.currentPluginName, 'myPluginB')
+    t.strictEqual(fastify.pluginName, 'myPluginB')
     next()
   })
 
@@ -403,9 +403,9 @@ test('approximate a plugin name when no meta data is available', t => {
   const fastify = Fastify()
 
   fastify.register((fastify, opts, next) => {
-    t.is(fastify.currentPluginName.startsWith('(fastify, opts, next)'), true)
+    t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
     fastify.register((fastify, opts, next) => {
-      t.is(fastify.currentPluginName.startsWith('(fastify, opts, next)'), true)
+      t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
       next()
     })
     next()

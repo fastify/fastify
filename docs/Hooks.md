@@ -375,7 +375,7 @@ fastify.route({
     // this hook will always be executed after the shared `onRequest` hooks
     done()
   },
-  onRequest: function (request, reply, done) {
+  onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
     done()
   },

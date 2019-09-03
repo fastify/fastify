@@ -355,12 +355,12 @@ test('plugin name will change when using no encapsulation', t => {
       t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       next()
     }, { name: 'plugin-AC' }))
-    setTimeout(() => {
+    setImmediate(() => {
       // normally we would expect the name plugin-A
       // but we operate on the same instance in each plugin
       t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       t.strictEqual(pluginName, 'plugin-A')
-    }, 20)
+    })
     next()
   }, { name: 'plugin-A' }))
 
@@ -392,10 +392,10 @@ test('set the plugin name based on the plugin function name', t => {
       t.strictEqual(fastify.pluginName, 'myPluginAB')
       next()
     })
-    setTimeout(() => {
+    setImmediate(() => {
       // exact name due to encapsulation
       t.strictEqual(fastify.pluginName, 'myPluginA')
-    }, 20)
+    })
     next()
   })
 
@@ -411,17 +411,48 @@ test('set the plugin name based on the plugin function name', t => {
 })
 
 test('approximate a plugin name when no meta data is available', t => {
-  t.plan(3)
+  t.plan(7)
   const fastify = Fastify()
 
   fastify.register((fastify, opts, next) => {
+    // A
     t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+    t.is(fastify.pluginName.includes('// A'), true)
     fastify.register((fastify, opts, next) => {
+      // B
       t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+      t.is(fastify.pluginName.includes('// B'), true)
       next()
+    })
+    setImmediate(() => {
+      t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+      t.is(fastify.pluginName.includes('// A'), true)
     })
     next()
   })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('approximate a plugin name also when fastify-plugin has no meta data', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(fp((fastify, opts, next) => {
+    t.is(fastify.pluginName, 'plugin.test')
+    fastify.register(fp(function B (fastify, opts, next) {
+      // function has name
+      t.is(fastify.pluginName, 'plugin.test -> B')
+      next()
+    }))
+    setImmediate(() => {
+      t.is(fastify.pluginName, 'plugin.test -> B')
+    })
+    next()
+  }))
 
   fastify.listen(0, err => {
     t.error(err)

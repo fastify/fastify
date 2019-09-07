@@ -26,6 +26,16 @@ Code for Fastify's **v1.x** is in [branch 1.x](https://github.com/fastify/fastif
 
 Declaring formal releases remains the prerogative of the lead maintainers. Do not bump version numbers in pull requests.
 
+## Plugins
+
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustement:
+
+1. A release can be published by any member:
+  1. The SemVer version must be agreed with a lead maintainer if there is doubt.
+  1. The new release must have the changelog information stored in the GitHub release.
+     For this scope we suggest to adopt a tool like [`releasify`](https://github.com/fastify/releasify) to archive this.
+1. Only chore PR can be merged with only one contributor's approval
+
 ## Changes to this arrangement
 
 This is an experiment and feedback is welcome! This document may also be subject to pull-requests or changes by contributors where you believe you have something valuable to add or change.

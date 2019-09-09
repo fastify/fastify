@@ -329,7 +329,7 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 
 <a name="route-hooks"></a>
 ## Route level hooks
-You can declare one or more custom [onRequest](#onRequest), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
+You can declare one or more custom [onRequest](#onRequest), [onReponse](#onResponse), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
 If you do so, those hooks always be executed as last hook in their category. <br/>
 This can be useful if you need to run the authentication, and the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need for doing that.
 Multiple route-level hooks can also be specified as an array.
@@ -338,6 +338,11 @@ Let's make an example:
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
+  // your code
+  done()
+})
+
+fastify.addHook('onResponse', (request, reply, done) => {
   // your code
   done()
 })
@@ -368,6 +373,10 @@ fastify.route({
   schema: { ... },
   onRequest: function (request, reply, done) {
     // this hook will always be executed after the shared `onRequest` hooks
+    done()
+  },
+  onResponse: function (request, reply, done) {
+    // this hook will always be executed after the shared `onResponse` hooks
     done()
   },
   preParsing: function (request, reply, done) {

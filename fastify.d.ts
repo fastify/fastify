@@ -81,7 +81,7 @@ declare namespace fastify {
     req: FastifyRequest<HttpRequest, Query, Params, Headers, Body>,
     reply: FastifyReply<HttpResponse>,
     done: (err?: Error) => void,
-  ) => void
+  ) => void | Promise<any>
 
   type FastifyMiddlewareWithPayload<
   HttpServer = http.Server,
@@ -97,7 +97,7 @@ declare namespace fastify {
     reply: FastifyReply<HttpResponse>,
     payload: any,
     done: (err?: Error, value?: any) => void,
-  ) => void
+  ) => void | Promise<any>
 
   type RequestHandler<
   HttpRequest = http.IncomingMessage,

@@ -28,13 +28,14 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustement:
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustements:
 
-1. A release can be published by any member:
-  1. The SemVer version must be agreed with a lead maintainer if there is doubt.
-  1. The new release must have the changelog information stored in the GitHub release.
+1. A release can be published by any member
+1. The plugin version must follow the SemVer specification
+1. The plugin must support the same Node.js versions of the master branch in the Fastify's repository
+1. The new release must have the changelog information stored in the GitHub release.
      For this scope we suggest to adopt a tool like [`releasify`](https://github.com/fastify/releasify) to archive this.
-1. Only chore PR can be merged with only one contributor's approval
+1. PR opened by bots (like Greenkeeper) can be merged if the CI is green and the Node.js versions supported are the same of the plugin
 
 ## Changes to this arrangement
 

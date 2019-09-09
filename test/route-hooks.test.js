@@ -89,8 +89,8 @@ function testExecutionHook (hook) {
     })
   })
 
-  test(`${hook} option does not interfere with ${hook} hook`, async t => {
-    t.plan(4)
+  test(`${hook} option does not interfere with ${hook} hook`, t => {
+    t.plan(7)
     const fastify = Fastify()
     const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
       get: function () { return ++this.calledTimes }
@@ -114,17 +114,23 @@ function testExecutionHook (hook) {
       reply.send({})
     }
 
-    await fastify.inject({
+    fastify.inject({
       method: 'post',
       url: '/'
-    })
-    checker.calledTimes = 0
+    }, (err, res) => {
+      t.error(err)
+      t.equal(checker.calledTimes, 2)
 
-    await fastify.inject({
-      method: 'post',
-      url: '/no'
+      checker.calledTimes = 0
+
+      fastify.inject({
+        method: 'post',
+        url: '/no'
+      }, (err, res) => {
+        t.error(err)
+        t.equal(checker.calledTimes, 1)
+      })
     })
-    t.equal(checker.calledTimes, 1)
   })
 }
 

@@ -117,6 +117,18 @@ server.addHook('preHandler', function (req, reply, next) {
   }
 })
 
+server.addHook('preHandler', async function (req, reply) {
+  this.log.debug('`this` is not `any`')
+  if (req.body.error) {
+    throw new Error('testing if middleware errors can be passed')
+  } else {
+    // `stream` can be accessed correctly because `server` is an http2 server.
+    console.log('req stream', req.req.stream)
+    console.log('res stream', reply.res.stream)
+    reply.code(200).send('ok')
+  }
+})
+
 server.addHook('onRequest', function (req, reply, next) {
   this.log.debug('`this` is not `any`')
   console.log(`${req.raw.method} ${req.raw.url}`)

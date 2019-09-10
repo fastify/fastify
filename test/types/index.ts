@@ -102,6 +102,20 @@ server.use('/', (req, res, next) => {
   console.log(`${req.method} ${req.url}`)
 })
 
+// Third party plugin
+// Also check if async functions are allowed to be passed to .register()
+// https://github.com/fastify/fastify/pull/1841
+// All function parameters should be inferrable and should not produce 'any'
+const thirdPartyPlugin: fastify.Plugin<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse, {}> = (instance, options, callback) => {}
+const thirdPartyPluginAsync: fastify.Plugin<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse, {}> = async (instance, options) => {}
+
+server.register(thirdPartyPlugin)
+server.register(thirdPartyPluginAsync)
+
+// Custom plugin
+server.register((instance, options, callback) => {})
+server.register(async (instance, options) => {})
+
 /**
  * Test various hooks and different signatures
  */

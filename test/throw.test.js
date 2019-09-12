@@ -25,6 +25,52 @@ test('Fastify should throw on multiple assignment to the same route', t => {
   })
 })
 
+test('Fastify should throw for an invalid schema, printing the error route - headers', t => {
+  t.plan(2)
+
+  const badSchema = {
+    type: 'object',
+    properties: {
+      bad: {
+        type: 'bad-type'
+      }
+    }
+  }
+
+  const fastify = Fastify()
+  fastify.get('/', { schema: { headers: badSchema } }, () => {})
+  fastify.get('/not-loaded', { schema: { headers: badSchema } }, () => {})
+
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_BUILD')
+    t.isLike(err.message, /Failed building the schema for GET: \//)
+  })
+})
+
+test('Fastify should throw for an invalid schema, printing the error route - body', t => {
+  t.plan(2)
+
+  const badSchema = {
+    type: 'object',
+    properties: {
+      bad: {
+        type: 'bad-type'
+      }
+    }
+  }
+
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.post('/form', { schema: { body: badSchema } }, () => {})
+    next()
+  }, { prefix: 'hello' })
+
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_BUILD')
+    t.isLike(err.message, /Failed building the schema for POST: \/hello\/form/)
+  })
+})
+
 test('Should throw on unsupported method', t => {
   t.plan(1)
   const fastify = Fastify()

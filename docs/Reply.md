@@ -225,11 +225,12 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 ```js
 {
   error: String        // the http error message
+  code: String         // the Fastify error code
   message: String      // the user error message
   statusCode: Number   // the http status code
 }
 ```
-You can add some custom property to the Error object, such as `statusCode` and `headers`, that will be used to enhance the http response.<br>
+You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:

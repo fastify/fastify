@@ -41,7 +41,7 @@ fastify.listen(3000, function (err, address) {
 ```
 
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br>
-*(we also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks)*
+*(We also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks.)*
 ```js
 const fastify = require('fastify')()
 
@@ -122,6 +122,12 @@ Fastify handles this internally, with minimum effort!
 
 Let's rewrite the above example with a database connection.<br>
 *(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md))*
+
+First, install `fastify-plugin`:
+
+```
+npm install --save fastify-plugin
+```
 
 **server.js**
 ```js
@@ -289,8 +295,7 @@ Read the [testing](https://github.com/fastify/fastify/blob/master/docs/Testing.m
 
 <a name="cli"></a>
 ### Run your server from CLI
-Fastify also has CLI integration thanks to
-[fastify-cli](https://github.com/fastify/fastify-cli).
+Fastify also has CLI integration thanks to [fastify-cli](https://github.com/fastify/fastify-cli).
 
 First, install `fastify-cli`:
 

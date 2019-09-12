@@ -280,6 +280,7 @@ fastify.setSchemaCompiler(function (schema) {
 // Alternatively, you can set the schema compiler using the setter property:
 fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 ```
+_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of fastify, since fastify's default validator is no longer used, and fastify's `addSchema` method has no idea what validator you are using._
 
 But maybe you want to change the validation library. Perhaps you like `Joi`. In this case, you can use it to validate the url parameters, body, and query string!
 

@@ -667,5 +667,5 @@ const testReplyDecoration: TestReplyDecoration = function () {
 server4.decorateReply('test-request-accessible-from-reply', testReplyDecoration)
 
 server4.get('/', (req, reply) => {
-  reply.removeHeader('x-foo').removeHeader('x-bar')
+  reply.removeHeader('x-foo').removeHeader('x-bar').send({})
 })

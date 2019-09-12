@@ -2,9 +2,9 @@
 
 ## Hooks
 
-Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
+Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered, otherwise the event is lost.
 
-By using the hooks you can interact directly inside the lifecycle of Fastify. There are Request/Reply hooks and application hooks:
+By using hooks you can interact directly with the lifecycle of Fastify. There are Request/Reply hooks and application hooks:
 
 - [Request/Reply Hooks](#requestreply-hooks)
   - [onRequest](#onRequest)
@@ -20,7 +20,7 @@ By using the hooks you can interact directly inside the lifecycle of Fastify. Th
   - [onRoute](#onroute)
   - [onRegister](#onregister)
 
-**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
+**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behaviour may occur, e.g. duplicate invocation of handlers.
 
 ## Request/Reply Hooks
 
@@ -35,18 +35,18 @@ There are eight different hooks that you can use in Request/Reply *(in order of 
 ### onRequest
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
-  // some code
+  // Some code
   await asyncMethod()
-  // error occurred
+  // Error occurred
   if (err) {
-    throw new Error('some errors occurred.')
+    throw new Error('Some errors occurred.')
   }
   return
 })
@@ -57,18 +57,18 @@ fastify.addHook('onRequest', async (request, reply) => {
 ### preParsing
 ```js
 fastify.addHook('preParsing', (request, reply, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('preParsing', async (request, reply) => {
-  // some code
+  // Some code
   await asyncMethod()
-  // error occurred
+  // Error occurred
   if (err) {
-    throw new Error('some errors occurred.')
+    throw new Error('Some errors occurred.')
   }
   return
 })
@@ -76,18 +76,18 @@ fastify.addHook('preParsing', async (request, reply) => {
 ### preValidation
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
-  // some code
+  // Some code
   await asyncMethod()
-  // error occurred
+  // Error occurred
   if (err) {
-    throw new Error('some errors occurred.')
+    throw new Error('Some errors occurred.')
   }
   return
 })
@@ -104,11 +104,11 @@ fastify.addHook('preHandler', (request, reply, done) => {
 Or `async/await`:
 ```js
 fastify.addHook('preHandler', async (request, reply) => {
-  // some code
+  // Some code
   await asyncMethod()
-  // error occurred
+  // Error occurred
   if (err) {
-    throw new Error('some errors occurred.')
+    throw new Error('Some errors occurred.')
   }
   return
 })
@@ -119,37 +119,37 @@ If you are using the `preSerialization` hook, you can change (or replace) the pa
 
 ```js
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  var err = null;
-  var newPayload = { wrapped: payload }
+  const err = null;
+  const newPayload = { wrapped: payload }
   done(err, newPayload)
 })
 ```
 Or `async/await`
 ```js
 fastify.addHook('preSerialization', async (request, reply, payload) => {
-  return {wrapped: payload }
+  return { wrapped: payload }
 })
 ```
 
-Note: the hook is NOT called if the payload is  a `string`, a `Buffer`, a `stream`, or `null`.
+Note: the hook is NOT called if the payload is a `string`, a `Buffer`, a `stream` or `null`.
 
 ### onError
 ```js
 fastify.addHook('onError', (request, reply, error, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('onError', async (request, reply, error) => {
-  // useful for custom error logging
-  // you should not use this hook to update the error
+  // Useful for custom error logging
+  // You should not use this hook to update the error
 })
 ```
 This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
 It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
-This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends back an error to the user *(Note that the default `customErrorHandler` always send back the error to the user)*.<br/>
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends an error back to the user *(Note that the default `customErrorHandler` always sends the error back to the user)*.<br/>
 **Notice:** unlike the other hooks, pass an error to the `done` function is not supported.
 
 ### onSend
@@ -157,15 +157,15 @@ If you are using the `onSend` hook, you can change the payload. For example:
 
 ```js
 fastify.addHook('onSend', (request, reply, payload, done) => {
-  var err = null;
-  var newPayload = payload.replace('some-text', 'some-new-text')
+  const err = null;
+  const newPayload = payload.replace('some-text', 'some-new-text')
   done(err, newPayload)
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('onSend', async (request, reply, payload) => {
-  var newPayload = payload.replace('some-text', 'some-new-text')
+  const newPayload = payload.replace('some-text', 'some-new-text')
   return newPayload
 })
 ```
@@ -189,31 +189,31 @@ Note: If you change the payload, you may only change it to a `string`, a `Buffer
 ```js
 
 fastify.addHook('onResponse', (request, reply, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('onResponse', async (request, reply) => {
-  // some code
+  // Some code
   await asyncMethod()
-  // error occurred
+  // Error occurred
   if (err) {
-    throw new Error('some errors occurred.')
+    throw new Error('Some errors occurred.')
   }
   return
 })
 ```
 
-The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client, however you can use this hook to send some data to an external service or elaborate some statistics.
+The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
 
 ### Manage Errors from a hook
 If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
-  done(new Error('some error'))
+  done(new Error('Some error'))
 })
 ```
 
@@ -221,19 +221,18 @@ If you want to pass a custom error code to the user, just use `reply.code()`:
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {
   reply.code(400)
-  done(new Error('some error'))
+  done(new Error('Some error'))
 })
 ```
 
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
-
 ### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler. An example could be an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, `res.end`.
+If needed, you can respond to a request before you reach the route handler, for example when implementing an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, use `res.end`.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
-  reply.send('early response')
+  reply.send('Early response')
 })
 
 // Works with async functions too
@@ -253,7 +252,7 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 ## Application Hooks
 
-You are able to hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.
+You can hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.
 
 - [onClose](#onclose)
 - [onRoute](#onroute)
@@ -262,11 +261,11 @@ You are able to hook into the application-lifecycle as well. It's important to n
 <a name="on-close"></a>
 
 ### onClose
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, such as a connection to a database.<br>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
-  // some code
+  // Some code
   done()
 })
 ```
@@ -275,7 +274,7 @@ fastify.addHook('onClose', (instance, done) => {
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
-  // some code
+  //Some code
   routeOptions.method
   routeOptions.schema
   routeOptions.url
@@ -286,7 +285,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 ```
 <a name="on-register"></a>
 ### onRegister
-Triggered when a new plugin function is registered, and a new encapsulation context is created, the hook will be executed **before** the plugin code.<br/>
+Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
 This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
@@ -307,7 +306,7 @@ fastify.register(async (instance, opts) => {
 })
 
 fastify.addHook('onRegister', (instance) => {
-  // create a new array from the old one
+  // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated
   // instances of the `data` property
@@ -328,17 +327,16 @@ fastify.addHook('onRequest', function (request, reply, done) {
 Note: using an arrow function will break the binding of this to the Fastify instance.
 
 <a name="route-hooks"></a>
+
 ## Route level hooks
 You can declare one or more custom [onRequest](#onRequest), [onReponse](#onResponse), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
-If you do so, those hooks always be executed as last hook in their category. <br/>
-This can be useful if you need to run the authentication, and the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need for doing that.
+If you do so, those hooks are always executed as the last hook in their category. <br/>
+This can be useful if you need to implement authentication, where the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
-
-Let's make an example:
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
-  // your code
+  // Your code
   done()
 })
 
@@ -348,22 +346,22 @@ fastify.addHook('onResponse', (request, reply, done) => {
 })
 
 fastify.addHook('preParsing', (request, reply, done) => {
-  // your code
+  // Your code
   done()
 })
 
 fastify.addHook('preValidation', (request, reply, done) => {
-  // your code
+  // Your code
   done()
 })
 
 fastify.addHook('preHandler', (request, reply, done) => {
-  // your code
+  // Your code
   done()
 })
 
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  // your code
+  // Your code
   done()
 })
 
@@ -372,7 +370,7 @@ fastify.route({
   url: '/',
   schema: { ... },
   onRequest: function (request, reply, done) {
-    // this hook will always be executed after the shared `onRequest` hooks
+    // This hook will always be executed after the shared `onRequest` hooks
     done()
   },
   onResponse: function (request, reply, done) {
@@ -380,25 +378,25 @@ fastify.route({
     done()
   },
   preParsing: function (request, reply, done) {
-    // this hook will always be executed after the shared `preParsing` hooks
+    // This hook will always be executed after the shared `preParsing` hooks
     done()
   },
   preValidation: function (request, reply, done) {
-    // this hook will always be executed after the shared `preValidation` hooks
+    // This hook will always be executed after the shared `preValidation` hooks
     done()
   },
   preHandler: function (request, reply, done) {
-    // this hook will always be executed after the shared `preHandler` hooks
+    // This hook will always be executed after the shared `preHandler` hooks
     done()
   },
   // // Example with an array. All hooks support this syntax.
   //
   // preHandler: [function (request, reply, done) {
-  //   // this hook will always be executed after the shared `preHandler` hooks
+  //   // This hook will always be executed after the shared `preHandler` hooks
   //   done()
   // }],
   preSerialization: (request, reply, payload, done) => {
-    // manipulate the payload
+    // Manipulate the payload
     done(null, payload)
   },
   handler: function (request, reply) {

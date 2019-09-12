@@ -2,19 +2,16 @@
 
 ## Fluent Schema
 
-The [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md)
-has explained all the parameter accepted by Fastify to set a JSON Schema Validation, to validates
-the input, and a JSON Schema Serialization to optimize the output.
+The [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation outlines all parameters accepted by Fastify to set up JSON Schema Validation in order to validate the input, and JSON Schema Serialization in order to optimize the output.
 
-To set up the JSON schemas of our Fastify application, we can use [`fluent-schema`][fluent-schema-repo]
-to simplify this task and reuse constants values.
+[`fluent-schema`](fluent-schema-repo) can be used to simplify this task while allowing the reuse of constants.
 
 ### Basic settings
 
 ```js
 const S = require('fluent-schema')
 
-// You can have an object like this, or query a db to get the values
+// You can have an object like this, or query a DB to get the values
 const MY_KEY = {
   KEY1: 'ONE',
   KEY2: 'TWO'
@@ -41,7 +38,7 @@ const paramsJsonSchema = S.object()
 const headersJsonSchema = S.object()
   .prop('x-foo', S.string().required())
 
-// note that there is no need to call `.valueOf()`!
+// Note that there is no need to call `.valueOf()`!
 const schema = {
   body: bodyJsonSchema,
   querystring: queryStringJsonSchema, // (or) query: queryStringJsonSchema
@@ -56,11 +53,11 @@ fastify.post('/the/url', { schema }, handler)
 
 With `fluent-schema` you can manipulate your schemas in an easier and programmatic way and then reuse them
 thanks to the `addSchema()` method. You can refer to the schema in two different manners that are detailed
-in [Validation-and-Serialization.md](./Validation-and-Serialization.md#adding-a-shared-schema) document.
+in the [Validation-and-Serialization.md](./Validation-and-Serialization.md#adding-a-shared-schema) documentation.
 
-Here some example usage:
+Here are some usage examples:
 
-**`$ref-way`**: refer to external schema.
+**`$ref-way`**: refer to an external schema.
 
 ```js
 const addressSchema = S.object()
@@ -74,7 +71,7 @@ const addressSchema = S.object()
 const commonSchemas = S.object()
   .id('https://fastify/demo')
   .definition('addressSchema', addressSchema)
-  .definition('otherSchema', otherSchema) // you can add any schemas you need
+  .definition('otherSchema', otherSchema) // You can add any schemas you need
 
 fastify.addSchema(commonSchemas)
 
@@ -117,6 +114,6 @@ const schema = { body: bodyJsonSchema }
 fastify.post('/the/url', { schema }, handler)
 ```
 
-NB: you can mix up the usage `$ref-way` and the `replace-way` with `fastify.addSchema`.
+NB: you can mix up the `$ref-way` and the `replace-way` when using `fastify.addSchema`.
 
 [fluent-schema-repo]: https://github.com/fastify/fluent-schema

@@ -24,7 +24,7 @@ The parser for this content type was already registered.
 <a name="FST_ERR_CTP_INVALID_TYPE"></a>
 #### FST_ERR_CTP_INVALID_TYPE
 
-The content-type should be a string.
+The `Content-Type` should be a string.
 
 <a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE
@@ -49,7 +49,7 @@ The request body is larger than the provided limit.
 <a name="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 #### FST_ERR_CTP_INVALID_MEDIA_TYPE
 
-The received media type is not supported (i.e. there is no suitable content-type parser for it).
+The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it).
 
 <a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
 #### FST_ERR_CTP_INVALID_CONTENT_LENGTH

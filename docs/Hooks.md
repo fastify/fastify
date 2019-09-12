@@ -144,7 +144,7 @@ Or `async/await`:
 ```js
 fastify.addHook('onError', async (request, reply, error) => {
   // Useful for custom error logging
-  // >ou should not use this hook to update the error
+  // You should not use this hook to update the error
 })
 ```
 This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>

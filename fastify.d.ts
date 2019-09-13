@@ -165,6 +165,7 @@ declare namespace fastify {
     headers(headers: { [key: string]: any }): FastifyReply<HttpResponse>
     getHeader(name: string): string | undefined
     hasHeader(name: string): boolean
+    removeHeader(name: string): FastifyReply<HttpResponse>
     callNotFound(): void
     getResponseTime(): number
     type(contentType: string): FastifyReply<HttpResponse>

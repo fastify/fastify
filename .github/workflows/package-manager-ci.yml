@@ -31,7 +31,7 @@ jobs:
           npm run test
 
   yarn:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:

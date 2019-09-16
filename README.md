@@ -5,6 +5,7 @@
 <div align="center">
 
 ![](https://github.com/fastify/fastify/workflows/ci/badge.svg)
+![](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)
 ![](https://github.com/fastify/fastify/workflows/website/badge.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)

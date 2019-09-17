@@ -28,13 +28,15 @@ test('plugin metadata - ignore prefix', t => {
   fastify.inject({
     method: 'GET',
     url: '/'
-  }, (err, res) => {
+  }, function (err, res) {
     t.error(err)
     t.equals(res.payload, 'hello')
   })
 
   function plugin (instance, opts, next) {
-    instance.get('/', async () => 'hello')
+    instance.get('/', function (request, reply) {
+      reply.send('hello')
+    })
     next()
   }
 })

@@ -190,7 +190,7 @@ if (os.platform() !== 'win32') {
     const fastify = Fastify()
     t.tearDown(fastify.close.bind(fastify))
 
-    const sockFile = path.join(os.tmpdir(), 'server.sock')
+    const sockFile = path.join(os.tmpdir(), `${(Math.random().toString(16) + '0000000').substr(2, 8)}-server.sock`)
     try {
       fs.unlinkSync(sockFile)
     } catch (e) { }

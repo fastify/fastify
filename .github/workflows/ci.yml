@@ -29,11 +29,7 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run test:report
-
-      - name: Generate coverage
-        run: |
-          npm run coveralls -- -c
+          npm run test:ci
 
       - name: Coveralls Parallel
         uses: coverallsapp/github-action@master

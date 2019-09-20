@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run test
+          pnpm run test
 
   yarn:
     runs-on: ${{ matrix.os }}
@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x 10.x]
+        node-version: [8.x, 10.x]
         os: [ubuntu-16.04]
 
     steps:
@@ -54,4 +54,4 @@ jobs:
 
       - name: Run tests
         run: |
-          npm run test
+          yarn run test

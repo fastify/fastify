@@ -1,0 +1,55 @@
+name: package-manager-ci
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  pnpm:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Maintenance and active LTS
+        node-version: [8.x, 10.x]
+        os: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }} in ${{ matrix.os }}
+
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install with pnpm
+        uses: znck/pnpm@v0.1.0-alpha.1
+
+      - name: Run tests
+        run: |
+          npm run test
+
+  yarn:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Maintenance and active LTS
+        node-version: [8.x 10.x]
+        os: [ubuntu-16.04]
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }} in ${{ matrix.os }}
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install with yarn
+        uses: Borales/actions-yarn@1.1.0
+
+      - name: Run tests
+        run: |
+          npm run test

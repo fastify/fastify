@@ -24,9 +24,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install with pnpm
-        uses: znck/pnpm@v0.1.0-alpha.1
-        with:
-          args: install
+        run: |
+          curl -L https://unpkg.com/@pnpm/self-installer | node
+          pnpm install
 
       - name: Run tests
         run: |
@@ -50,7 +50,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install with yarn
-        uses: Borales/actions-yarn@1.1.0
+        run: |
+          curl -o- -L https://yarnpkg.com/install.sh | bash
+          yarn install
 
       - name: Run tests
         run: |

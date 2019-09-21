@@ -24,13 +24,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install with pnpm
-        uses: znck/pnpm@v0.1.0-alpha.1
-        with:
-          args: install
+        run: |
+          curl -L https://unpkg.com/@pnpm/self-installer | node
+          pnpm install
 
       - name: Run tests
         run: |
-          pnpm run test
+          npm run test
 
   yarn:
     runs-on: ${{ matrix.os }}
@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x, 10.x]
+        node-version: [8.x 10.x]
         os: [ubuntu-16.04]
 
     steps:
@@ -50,7 +50,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install with yarn
-        uses: Borales/actions-yarn@1.1.0
+        run: |
+          curl -o- -L https://yarnpkg.com/install.sh | bash
+          yarn install
 
       - name: Run tests
         run: |

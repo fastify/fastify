@@ -211,11 +211,9 @@ If your handler is an `async` function or returns a promise, you should be aware
 1. If you want to use `async/await` **Don't** use `reply.send` and just return the value so that the `route` handler function is resolved with the value you want to respond.
 2. If you want to use `reply.send` **Don't** use `async/await` and **Don't** return a promise otherwise the control-flow will get lost and the `route` handler function is resolved before you can call `reply.send`.
 
-You can also combine different styles like `callback-style` and `async-await` but they will quickly hard to manage only do it if you know exactly what to do. Because of that and to practice error-handling in a consistent way we recommend to go with only one style within your application.
+You can also combine different styles like `callback-style` and `async-await` but it will quickly hard to manage only do it if you know exactly what to do. Because of that and to practice error-handling in a consistent way we recommend to go with only one style within your application.
 
-**Notice**: Every async function returns a promise by itself.
-
-**Notice**: There is no difference between an async function and a function which returns a promise.
+**Notice**: Every async function returns a promise by itself. This means there is no difference between an async function and a function which returns a promise.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

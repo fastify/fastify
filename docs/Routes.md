@@ -173,7 +173,7 @@ fastify.get('/', options, async function (request, reply) {
 <a name="callback"></a>
 ### Callback
 
-As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
+As you see [above](/#async-await) we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
 If you need it you can also send back the data to the user with `reply.send`.
 ```js
@@ -190,7 +190,7 @@ fastify.get('/', options, function (request, reply) {
 <a name="promises"></a>
 ### Promises
 
-As you see above the code is very verbose because we combine different control-flow styles (`callback-style` and `async-await`) and error-handling is explicit. We can fix it very easily:
+As you see [above](/#callback) the code is very verbose because we combine different control-flow styles (`callback-style` and `async-await`) and error-handling is explicit. We can fix it very easily:
 
 If you **return** the promise the value is returned to the user and error-handling is handled by the framework.
 ```js

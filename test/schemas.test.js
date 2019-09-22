@@ -33,6 +33,7 @@ test('Should use the ref resolver - response', t => {
   ajv.addSchema(fastClone(schemaParent))
   ajv.addSchema(fastClone(schemaUsed))
 
+  fastify.setSchemaCompiler(schema => ajv.compile(schema))
   fastify.setSchemaResolver((ref) => {
     t.equals(ref, 'urn:schema:foo')
     return ajv.getSchema(ref).schema
@@ -62,7 +63,6 @@ test('Should use the ref resolver - body', t => {
   ajv.addSchema(fastClone(schemaUsed))
 
   fastify.setSchemaCompiler(schema => ajv.compile(schema))
-
   fastify.setSchemaResolver((ref) => {
     t.equals(ref, 'urn:schema:foo')
     return ajv.getSchema(ref).schema
@@ -189,5 +189,25 @@ test('Encapsulation', t => {
       t.equals(res.statusCode, 200)
       t.deepEquals(JSON.parse(res.payload), { foo: 'bar' })
     })
+  })
+})
+
+test('Schema resolver without schema compiler', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.setSchemaResolver(() => { t.fail('the schema resolver will never be called') })
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {},
+    handler (req, reply) {
+      reply.send({ foo: 'bar' })
+    }
+  })
+
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_MISSING_COMPILER')
+    t.isLike(err.message, /You must provide a schemaCompiler to route POST \/ to use the schemaResolver/)
   })
 })

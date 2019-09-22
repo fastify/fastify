@@ -170,14 +170,33 @@ fastify.get('/', options, async function (request, reply) {
 ```
 **Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
+<a name="callback"></a>
+### Callback
+
 As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
 If you need it you can also send back the data to the user with `reply.send`.
 ```js
-fastify.get('/', options, async function (request, reply) {
-  var data = await getData()
-  var processed = await processData(data)
-  reply.send(processed)
+fastify.get('/', options, function (request, reply) {
+  getData()
+  .then((data) => processData(data))
+  .then((processed) => reply.send(processed))
+  .catch((err) => {
+    reply.code(500).send(err)
+  })
+})
+```
+
+<a name="promises"></a>
+### Promises
+
+As you see above the code is very verbose because we combine different control-flow styles (`callback-style` and `async-await`) and error-handling is explicit. We can fix it very easily:
+
+If you **return** the promise the value is returned to the user and error-handling is handled by the framework.
+```js
+fastify.get('/', options, function (request, reply) {
+  return getData()
+  .then((data) => processData(data))
 })
 ```
 **Warning:**
@@ -187,18 +206,16 @@ fastify.get('/', options, async function (request, reply) {
 <a name="promise-resolution"></a>
 ### Promise resolution
 
-If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
+If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted. Follow these rules and you are safe.
 
-1. If you want to use `async/await` or promises but respond a value with `reply.send`:
-    - **Don't** `return` any value.
-    - **Don't** forget to call `reply.send`.
-2. If you want to use `async/await` or promises:
-    - **Don't** use `reply.send`.
-    - **Don't** return `undefined`.
+1. If you want to use `async/await` **Don't** use `reply.send` and just return the value so that the `route` handler function is resolved with the value you want to respond.
+2. If you want to use `reply.send` **Don't** use `async/await` and **Don't** return a promise otherwise the control-flow will get lost and the `route` handler function is resolved before you can call `reply.send`.
 
-In this way, we can support both `callback-style` and `async-await`, with the minimum trade-off. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
+You can also combine different styles like `callback-style` and `async-await` but they will quickly hard to manage only do it if you know exactly what to do. Because of that and to practice error-handling in a consistent way we recommend to go with only one style within your application.
 
 **Notice**: Every async function returns a promise by itself.
+
+**Notice**: There is no difference between an async function and a function which returns a promise.
 
 <a name="route-prefixing"></a>
 ### Route Prefixing

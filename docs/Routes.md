@@ -182,7 +182,7 @@ fastify.get('/', options, function (request, reply) {
   .then((data) => processData(data))
   .then((processed) => reply.send(processed))
   .catch((err) => {
-    reply.code(500).send(err)
+    reply.send(err)
   })
 })
 ```
@@ -206,7 +206,7 @@ fastify.get('/', options, function (request, reply) {
 <a name="promise-resolution"></a>
 ### Promise resolution
 
-If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted. Follow these rules and you are safe.
+If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted. Follow these rules and you are safe:
 
 1. If you want to use `async/await` **Don't** use `reply.send` and just return the value so that the `route` handler function is resolved with the value you want to respond.
 2. If you want to use `reply.send` **Don't** use `async/await` and **Don't** return a promise otherwise the control-flow will get lost and the `route` handler function is resolved before you can call `reply.send`.

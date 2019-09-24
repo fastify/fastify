@@ -22,7 +22,8 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  
+  - [.then](#then)
+
 <a name="introduction"></a>
 ### Introduction
 The second parameter of the handler function is `Reply`.
@@ -309,3 +310,11 @@ fastify.get('/teapot', async function (request, reply) => {
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).
+
+<a name="then"></a>
+### .then(fullfilled, rejected)
+
+As the name suggests, `reply.then()` makes `Reply` awaitable.
+`fullfilled` will be called when a response has been fully sent,
+`rejected` will be called if the underlining stream had an error, e.g.
+the socket has been destroyed.

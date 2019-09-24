@@ -314,17 +314,17 @@ If you want to know more please review [Routes#async-await](https://github.com/f
 <a name="then"></a>
 ### .then(fullfilled, rejected)
 
-As the name suggests, a `Reply` object can be awaited up, i.e. `await reply` will wait until the reply is sent.
+As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
 The `await` syntax calls the `reply.then()`.
 
 `reply.then(fullfilled, rejected)` accepts two parameters:
 
 - `fullfilled` will be called when a response has been fully sent,
-- `rejected` will be called if the underlining stream had an error, e.g.
+- `rejected` will be called if the underlying stream had an error, e.g.
 the socket has been destroyed.
 
 For more details, see:
 
-- https://github.com/fastify/fastify/issues/1864 for the discussions
-- https://promisesaplus.com/ for the definition of thenable
+- https://github.com/fastify/fastify/issues/1864 for the discussion about this feature
+- https://promisesaplus.com/ for the definition of thenables
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then for the signature

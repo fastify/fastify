@@ -204,7 +204,7 @@ fastify.get('/', options, async function (request, reply) {
 ```
 
 **Warning:**
-* If both `return value` and `reply.send(value)` at the same time, the first one that happens takes precedence, the second value will be discarded, and a *warn* log will also be emitted because you tried to send a response twice.
+* When using both `return value` and `reply.send(value)` at the same time, the first one that happens takes precedence, the second value will be discarded, and a *warn* log will also be emitted because you tried to send a response twice.
 * You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 <a name="promise-resolution"></a>

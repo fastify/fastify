@@ -37,14 +37,30 @@ test('Once called, Reply should return an object with methods', t => {
 
 test('reply.send throw with circular JSON', t => {
   t.plan(1)
-  const request = {}
-  const response = { setHeader: () => {} }
-  const reply = new Reply(request, response, null)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { onSend: [] }, null)
   t.throws(() => {
     var obj = {}
     obj.obj = obj
     reply.send(JSON.stringify(obj))
-  })
+  }, 'Converting circular structure to JSON')
+})
+
+test('reply.send returns itself', t => {
+  t.plan(1)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { onSend: [] }, null)
+  t.equal(reply.send('hello'), reply)
 })
 
 test('reply.serializer should set a custom serializer', t => {

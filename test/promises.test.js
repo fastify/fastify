@@ -56,6 +56,10 @@ fastify.get('/thenable-error', opts, function (req, reply) {
   return reply
 })
 
+fastify.get('/return-reply', opts, function (req, reply) {
+  return reply.send({ hello: 'world' })
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -118,6 +122,19 @@ fastify.listen(0, err => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 500)
+    })
+  })
+
+  test('return-reply', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
 })

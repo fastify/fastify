@@ -6,12 +6,12 @@
 <a name="error-handling"></a>
 ### Error Handling
 
-Uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try fixing this issue, but they did not. Given the fact that it is not possible to process all uncaught errors in a sensible way, the best way to deal with them at the moment is to [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly). In case of promises, make sure to [handle](https://nodejs.org/dist/latest-v8.x/docs/api/deprecations.html#deprecations_dep0018_unhandled_promise_rejections) errors [correctly](https://github.com/mcollina/make-promises-safe).
+Uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try fixing this issue, but they did not. Given the fact that it is not possible to process all uncaught errors sensibly, the best way to deal with them at the moment is to [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly). In case of promises, make sure to [handle](https://nodejs.org/dist/latest-v8.x/docs/api/deprecations.html#deprecations_dep0018_unhandled_promise_rejections) errors [correctly](https://github.com/mcollina/make-promises-safe).
 
 Fastify follows an all-or-nothing approach and aims to be lean and optimal as much as possible. Thus, the developer is responsible for making sure that the errors are handled properly. Most of the errors are usually a result of unexpected input data, so we recommend specifying a [JSON.schema validation](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) for your input data.
 
-Note that Fastify doesn't catch uncaught errors within callback based routes for you, so any uncaught errors will result in a crash.
-If routes are declared as `async` though - the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behavior, you should use [setErrorHandler](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
+Note that Fastify doesn't catch uncaught errors within callback-based routes for you, so any uncaught errors will result in a crash.
+If routes are declared as `async` though - the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [setErrorHandler](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
 
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes
@@ -24,7 +24,7 @@ The parser for this content type was already registered.
 <a name="FST_ERR_CTP_INVALID_TYPE"></a>
 #### FST_ERR_CTP_INVALID_TYPE
 
-The content type should be a string.
+The `Content-Type` should be a string.
 
 <a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE
@@ -44,12 +44,12 @@ The provided parse type is not supported. Accepted values are `string` or `buffe
 <a name="FST_ERR_CTP_BODY_TOO_LARGE"></a>
 #### FST_ERR_CTP_BODY_TOO_LARGE
 
-Request body is larger than the provided limit.
+The request body is larger than the provided limit.
 
 <a name="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 #### FST_ERR_CTP_INVALID_MEDIA_TYPE
 
-Received media type is not supported (i.e. there is no suitable content-type parser for it).
+The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it).
 
 <a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
 #### FST_ERR_CTP_INVALID_CONTENT_LENGTH
@@ -79,7 +79,7 @@ The hook callback must be a function.
 <a name="FST_ERR_LOG_INVALID_DESTINATION"></a>
 #### FST_ERR_LOG_INVALID_DESTINATION
 
-Logger accepts either a `'stream'` or a `'file'` as the destination.
+The logger accepts either a `'stream'` or a `'file'` as the destination.
 
 <a id="FST_ERR_REP_ALREADY_SENT"></a>
 ### FST_ERR_REP_ALREADY_SENT
@@ -119,4 +119,4 @@ The JSON schema provided to one route is not valid.
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 
-Promise may not be fulfilled with 'undefined' when statusCode is not 204.
+A promise may not be fulfilled with 'undefined' when statusCode is not 204.

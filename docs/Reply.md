@@ -22,7 +22,8 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  
+  - [.then](#then)
+
 <a name="introduction"></a>
 ### Introduction
 The second parameter of the handler function is `Reply`.
@@ -225,11 +226,12 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 ```js
 {
   error: String        // the http error message
+  code: String         // the Fastify error code
   message: String      // the user error message
   statusCode: Number   // the http status code
 }
 ```
-You can add some custom property to the Error object, such as `statusCode` and `headers`, that will be used to enhance the http response.<br>
+You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -308,3 +310,21 @@ fastify.get('/teapot', async function (request, reply) => {
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).
+
+<a name="then"></a>
+### .then(fullfilled, rejected)
+
+As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
+The `await` syntax calls the `reply.then()`.
+
+`reply.then(fullfilled, rejected)` accepts two parameters:
+
+- `fullfilled` will be called when a response has been fully sent,
+- `rejected` will be called if the underlying stream had an error, e.g.
+the socket has been destroyed.
+
+For more details, see:
+
+- https://github.com/fastify/fastify/issues/1864 for the discussion about this feature
+- https://promisesaplus.com/ for the definition of thenables
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then for the signature

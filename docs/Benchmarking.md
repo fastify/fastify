@@ -1,13 +1,13 @@
 <h1 align="center">Fastify</h1>
 
 ## Benchmarking
-Benchmarking is important if you want to measure how a change can impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches on different Node.js versions.
+Benchmarking is important if you want to measure how a change can impact the performance of your application. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches and on different Node.js versions.
 
 The modules we'll use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.
 - [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout multiple git branches, execute scripts and log the results.
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands concurrently.
-- [Npx](https://github.com/zkat/npx) NPM package runner - We using it to run scripts against different Node.js Versions and execute local binaries. Shipped with npm@5.2.0.
+- [Npx](https://github.com/zkat/npx) NPM package runner - We are using it to run scripts against different Node.js Versions and to execute local binaries. Shipped with npm@5.2.0.
 
 ## Simple
 

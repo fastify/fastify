@@ -4,12 +4,12 @@
 
 Logging is disabled by default, and you can enable it by passing
 `{ logger: true }` or `{ logger: { level: 'info' } }` when you create
-the fastify instance. Note that if the logger is disabled, it is impossible to
+a fastify instance. Note that if the logger is disabled, it is impossible to
 enable it at runtime. We use
 [abstract-logging](https://www.npmjs.com/package/abstract-logging) for
 this purpose.
 
-Since Fastify is really focused on performances, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
+Since Fastify is focused on performance, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
 
 Enabling the logger is extremely easy:
 
@@ -24,14 +24,14 @@ fastify.get('/', options, function (request, reply) {
 })
 ```
 
-If you want to pass some options to the logger, just pass the logger option to Fastify.
-You can find all the options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
+If you want to pass some options to the logger, just pass them to Fastify.
+You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
 
 ```js
 const fastify = require('fastify')({
   logger: {
     level: 'info',
-    file: '/path/to/file' // will use pino.destination()
+    file: '/path/to/file' // Will use pino.destination()
   }
 })
 
@@ -41,7 +41,7 @@ fastify.get('/', options, function (request, reply) {
 })
 ```
 
-If you want to pass a custom stream to the Pino instance, just add the stream field to the logger object.
+If you want to pass a custom stream to the Pino instance, just add a stream field to the logger object.
 
 ```js
 const split = require('split2')
@@ -57,9 +57,9 @@ const fastify = require('fastify')({
 
 <a name="logging-request-id"></a>
 
-By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Server.md#gen-request-id) for customization options.
+By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Server.md#gen-request-id) for customization options.
 
-The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. This behavior can be customized by specifying custom serializers.
+The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. This behaviour can be customized by specifying custom serializers.
 ```js
 const fastify = require('fastify')({
   logger: {
@@ -79,7 +79,7 @@ const fastify = require('fastify')({
     prettyPrint: true,
     serializers: {
       res(res) {
-        // the default
+        // The default
         return {
           statusCode: res.statusCode
         }
@@ -103,7 +103,7 @@ const fastify = require('fastify')({
 ```
 **Note**: The body not can serialize inside `req` method, because the request is serialized when we create the child logger. At that time, the body is not parsed yet.
 
-See a approach to log `req.body`
+See an approach to log `req.body`
 
 ```js
 app.addHook('preHandler', function (req, reply, done) {

@@ -18,6 +18,8 @@ The optional `options` parameter for `fastify.register` supports a predefined se
 + [`logLevel`](https://github.com/fastify/fastify/blob/master/docs/Routes.md#custom-log-level)
 + [`prefix`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-options)
 
+**Note: Those options will be ignored when used with fastify-plugin**
+
 It is possible that Fastify will directly support other options in the future. Thus, to avoid collisions, a plugin should consider namespacing its options. For example, a plugin `foo` might be registered like so:
 
 ```js

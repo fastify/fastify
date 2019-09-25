@@ -622,6 +622,11 @@ fastify.setReplySerializer(function (payload, statusCode){
 #### setSchemaCompiler
 Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
 
+<a name="set-schema-resolver"></a>
+#### setSchemaResolver
+Set the schema `$ref` resolver for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-resolver).
+
+
 <a name="schema-compiler"></a>
 #### schemaCompiler
 This property can be used to set the schema compiler, it is a shortcut for the `setSchemaCompiler` method, and get the schema compiler back for all routes.

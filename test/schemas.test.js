@@ -26,6 +26,15 @@ const schemaParent = {
   }
 }
 
+const schemaRequest = {
+  $id: 'urn:schema:request',
+  type: 'object',
+  required: ['foo'],
+  properties: {
+    foo: { $ref: 'urn:schema:response#/properties/foo' }
+  }
+}
+
 test('Should use the ref resolver - response', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -209,5 +218,54 @@ test('Schema resolver without schema compiler', t => {
   fastify.ready(err => {
     t.is(err.code, 'FST_ERR_SCH_MISSING_COMPILER')
     t.isLike(err.message, /You must provide a schemaCompiler to route POST \/ to use the schemaResolver/)
+  })
+})
+
+test('Triple $ref deep', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  const ajv = new AJV()
+  ajv.addSchema(fastClone(schemaParent))
+  ajv.addSchema(fastClone(schemaUsed))
+  ajv.addSchema(fastClone(schemaRequest))
+
+  fastify.setSchemaCompiler(schema => ajv.compile(schema))
+  fastify.setSchemaResolver((ref) => {
+    return ajv.getSchema(ref).schema
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body: ajv.getSchema('urn:schema:request').schema,
+      response: {
+        '2xx': ajv.getSchema('urn:schema:response').schema
+      }
+    },
+    handler (req, reply) {
+      reply.send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 'bar' }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(JSON.parse(res.payload), { foo: 'bar' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { fool: 'bar' }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 400)
+    t.deepEquals(JSON.parse(res.payload).message, "body should have required property 'foo'")
   })
 })

@@ -186,7 +186,7 @@ If the route is wrapping a callback-based API that will call
 ```js
 fastify.get('/', options, async function (request, reply) {
   setImmediate(() => {
-    reply.send(processed)
+    reply.send({ hello: 'world' })
   })
   await reply
 })
@@ -197,7 +197,7 @@ Returning reply also works:
 ```js
 fastify.get('/', options, async function (request, reply) {
   setImmediate(() => {
-    reply.send(processed)
+    reply.send({ hello: 'world' })
   })
   return reply
 })

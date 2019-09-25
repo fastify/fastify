@@ -40,6 +40,7 @@ test('reply.send throw with circular JSON', t => {
   const response = {
     setHeader: () => {},
     hasHeader: () => false,
+    getHeader: () => undefined,
     writeHead: () => {},
     end: () => {}
   }
@@ -56,6 +57,7 @@ test('reply.send returns itself', t => {
   const response = {
     setHeader: () => {},
     hasHeader: () => false,
+    getHeader: () => undefined,
     writeHead: () => {},
     end: () => {}
   }

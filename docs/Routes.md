@@ -159,7 +159,7 @@ Having a route with multiple parameters may affect negatively the performance, s
 If you are interested in how we handle the routing, checkout [find-my-way](https://github.com/delvedor/find-my-way).
 
 <a name="async-await"></a>
-### Async Await
+### Pure Async Await
 Are you an `async/await` user? We have you covered!
 ```js
 fastify.get('/', options, async function (request, reply) {
@@ -170,7 +170,7 @@ fastify.get('/', options, async function (request, reply) {
 ```
 
 <a name="callback"></a>
-### Callback
+### From callback to promises
 
 As you see [above](/#async-await) we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
@@ -187,7 +187,7 @@ fastify.get('/', options, function (request, reply) {
 ```
 
 <a name="promises"></a>
-### Promises
+### Pure Promises
 
 As you see [above](/#callback) the code is very verbose because we combine different control-flow styles (`callback-style` and `async-await`) and error-handling is explicit. We can fix it very easily:
 
@@ -198,6 +198,9 @@ fastify.get('/', options, function (request, reply) {
   .then((data) => processData(data))
 })
 ```
+
+<a name="reply-as-promise"></a>
+### Using reply interface as promise:
 
 If the route is wrapping a callback-based API that will call
 `reply.send()` outside of the promise chain, it is possible to `await reply`:

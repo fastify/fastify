@@ -301,6 +301,68 @@ In that case the function returned by `schemaCompiler` returns an object like:
 * `error`: filled with an instance of `Error` or a string that describes the validation error
 * `value`: the coerced value that passed the validation
 
+<a name="schema-resolver"></a>
+#### Schema Resolver
+
+The `schemaResolver` is a function that works together with the `schemaCompiler`: you can't use it
+with the default schema compiler. This feature is useful when you use complex schemas with `$ref` keyword
+in your routes and a custom validator.
+
+This is needed because all the schemas you add to your custom compiler are unknown to Fastify but it
+need to resolve the `$ref` paths.
+
+```js
+const fastify = require('fastify')()
+const Ajv = require('ajv')
+const ajv = new Ajv()
+
+ajv.addSchema({
+  $id: 'urn:schema:foo',
+  definitions: {
+    foo: { type: 'string' }
+  },
+  type: 'object',
+  properties: {
+    foo: { $ref: '#/definitions/foo' }
+  }
+})
+ajv.addSchema({
+  $id: 'urn:schema:response',
+  type: 'object',
+  required: ['foo'],
+  properties: {
+    foo: { $ref: 'urn:schema:foo#/definitions/foo' }
+  }
+})
+ajv.addSchema({
+  $id: 'urn:schema:request',
+  type: 'object',
+  required: ['foo'],
+  properties: {
+    foo: { $ref: 'urn:schema:foo#/definitions/foo' }
+  }
+})
+
+fastify.setSchemaCompiler(schema => ajv.compile(schema))
+fastify.setSchemaResolver((ref) => {
+  return ajv.getSchema(ref).schema
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: ajv.getSchema('urn:schema:request').schema,
+    response: {
+      '2xx': ajv.getSchema('urn:schema:response').schema
+    }
+  },
+  handler (req, reply) {
+    reply.send({ foo: 'bar' })
+  }
+})
+```
+
 <a name="serialization"></a>
 ### Serialization
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.

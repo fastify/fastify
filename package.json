@@ -77,6 +77,10 @@
     {
       "name": "James Sumners",
       "url": "https://james.sumners.info"
+    },
+    {
+      "name": "Denis Fäcke",
+      "url": "https://github.com/SerayaEryn"
     }
   ],
   "license": "MIT",
@@ -145,7 +149,7 @@
     "readable-stream": "^3.1.1",
     "rfdc": "^1.1.2",
     "secure-json-parse": "^1.0.0",
-    "tiny-lru": "^6.0.1"
+    "tiny-lru": "^7.0.0"
   },
   "greenkeeper": {
     "ignore": [

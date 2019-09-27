@@ -18,6 +18,29 @@ test('require a plugin', t => {
   })
 })
 
+test('plugin metadata - ignore prefix', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  fastify.register(plugin, { prefix: 'foo' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, function (err, res) {
+    t.error(err)
+    t.equals(res.payload, 'hello')
+  })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', function (request, reply) {
+      reply.send('hello')
+    })
+    next()
+  }
+})
+
 test('fastify.register with fastify-plugin should not incapsulate his code', t => {
   t.plan(10)
   const fastify = Fastify()

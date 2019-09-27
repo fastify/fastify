@@ -21,7 +21,10 @@ declare function fastify(opts?: fastify.ServerOptionsAsSecureHttp2): fastify.Fas
 // eslint-disable-next-line no-redeclare
 declare namespace fastify {
 
-  type Plugin < HttpServer, HttpRequest, HttpResponse, T > = (instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, opts: T, callback: (err?: FastifyError) => void) => void
+  type Plugin<HttpServer, HttpRequest, HttpResponse, Options, PluginInstance extends Function = Function> =
+    PluginInstance extends () => Promise<void> ?
+      ((instance: FastifyInstance< HttpServer, HttpRequest, HttpResponse >, options: Options) => Promise<void>) :
+      (instance: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, options: Options, callback: (err?: FastifyError) => void) => void;
 
   type Middleware < HttpServer, HttpRequest, HttpResponse > = (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, req: HttpRequest, res: HttpResponse, callback: (err?: FastifyError) => void) => void
 
@@ -541,7 +544,7 @@ declare namespace fastify {
     /**
      * Registers a plugin
      */
-    register<T extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, T>, opts?: T): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+    register<Options extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>, PluginInstance extends Function>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, Options, PluginInstance>, options?: Options): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * `Register a callback that will be executed just after a register.

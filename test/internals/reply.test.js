@@ -6,6 +6,7 @@ const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
 const Reply = require('../../lib/reply')
+const { Writable } = require('readable-stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,
@@ -36,14 +37,32 @@ test('Once called, Reply should return an object with methods', t => {
 
 test('reply.send throw with circular JSON', t => {
   t.plan(1)
-  const request = {}
-  const response = { setHeader: () => {} }
-  const reply = new Reply(request, response, null)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    getHeader: () => undefined,
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { onSend: [] }, null)
   t.throws(() => {
     var obj = {}
     obj.obj = obj
     reply.send(JSON.stringify(obj))
-  })
+  }, 'Converting circular structure to JSON')
+})
+
+test('reply.send returns itself', t => {
+  t.plan(1)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    getHeader: () => undefined,
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { onSend: [] }, null)
+  t.equal(reply.send('hello'), reply)
 })
 
 test('reply.serializer should set a custom serializer', t => {
@@ -1250,5 +1269,41 @@ test('reply should not call the custom serializer for errors and not found', t =
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('reply.then', t => {
+  t.plan(2)
+
+  function context () {}
+  function request () {}
+
+  t.test('without an error', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, context, request)
+
+    reply.then(function () {
+      t.pass('fullfilled called')
+    })
+
+    response.destroy()
+  })
+
+  t.test('with an error', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, context, request)
+    const _err = new Error('kaboom')
+
+    reply.then(function () {
+      t.fail('fullfilled called')
+    }, function (err) {
+      t.equal(err, _err)
+    })
+
+    response.destroy(_err)
   })
 })

@@ -304,7 +304,7 @@ In that case the function returned by `schemaCompiler` returns an object like:
 <a name="schema-resolver"></a>
 #### Schema Resolver
 
-The `schemaResolver` is a function that works togheter with the `schemaCompiler`: you can't use it
+The `schemaResolver` is a function that works together with the `schemaCompiler`: you can't use it
 with the default schema compiler. This feature is useful when you use complex schemas with `$ref` keyword
 in your routes and a custom validator.
 

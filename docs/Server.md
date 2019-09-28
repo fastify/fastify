@@ -547,7 +547,7 @@ A plugin can be a set of routes, a server decorator or whatever, check [here](ht
 
 <a name="use"></a>
 #### use
-Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md).
+Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middleware.md).
 
 <a name="addHook"></a>
 #### addHook

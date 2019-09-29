@@ -76,6 +76,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect HTTP requests to HTTPS, both using the same port number, or different response on HTTP and HTTPS.
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
+- [`fastify-ibm-cos`](https://github.com/alex-ppg/fastify-ibm-cos) Fastify IBM COS plugin connecting to an IBM COS instance via the IBM COS SDK.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify InfluxDB plugin connecting to an InfluxDB instance via the Influx default package.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT authentication for fastify-based web apps.

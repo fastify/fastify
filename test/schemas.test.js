@@ -269,3 +269,45 @@ test('Triple $ref deep', t => {
     t.deepEquals(JSON.parse(res.payload).message, "body should have required property 'foo'")
   })
 })
+
+test('$ref with a simple $id', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const ajv = new AJV()
+  ajv.addSchema(fastClone(schemaUsed))
+  ajv.addSchema({
+    $id: 'urn:schema:response',
+    type: 'object',
+    required: ['foo'],
+    properties: {
+      foo: { $ref: 'urn:schema:foo' }
+    }
+  })
+
+  fastify.setSchemaCompiler(schema => ajv.compile(schema))
+  fastify.setSchemaResolver((ref) => {
+    t.equals(ref, 'urn:schema:foo')
+    return ajv.getSchema(ref).schema
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body: ajv.getSchema('urn:schema:response').schema
+    },
+    handler (req, reply) {
+      reply.send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: { foo: 'bar' } }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(JSON.parse(res.payload), { foo: 'bar' })
+  })
+})

@@ -294,10 +294,13 @@ test('$ref with a simple $id', t => {
     method: 'POST',
     url: '/',
     schema: {
-      body: ajv.getSchema('urn:schema:response').schema
+      body: ajv.getSchema('urn:schema:response').schema,
+      response: {
+        '2xx': ajv.getSchema('urn:schema:response').schema
+      }
     },
     handler (req, reply) {
-      reply.send({ foo: 'bar' })
+      reply.send({ foo: { foo: 'bar', bar: 'foo' } })
     }
   })
 
@@ -308,6 +311,6 @@ test('$ref with a simple $id', t => {
   }, (err, res) => {
     t.error(err)
     t.equals(res.statusCode, 200)
-    t.deepEquals(JSON.parse(res.payload), { foo: 'bar' })
+    t.deepEquals(JSON.parse(res.payload), { foo: { foo: 'bar' } })
   })
 })

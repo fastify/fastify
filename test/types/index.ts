@@ -558,6 +558,13 @@ server.setSchemaCompiler(function (schema: object) {
   return () => true
 })
 
+server.setSchemaResolver(function (ref: string) {
+  return {
+    $id: ref,
+    type: 'string'
+  }
+})
+
 server.addSchema({})
 
 server.addContentTypeParser('*', (req, done) => {

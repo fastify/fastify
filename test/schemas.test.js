@@ -283,6 +283,14 @@ test('$ref with a simple $id', t => {
       foo: { $ref: 'urn:schema:foo' }
     }
   })
+  ajv.addSchema({
+    $id: 'urn:schema:request',
+    type: 'object',
+    required: ['foo'],
+    properties: {
+      foo: { $ref: 'urn:schema:foo' }
+    }
+  })
 
   fastify.setSchemaCompiler(schema => ajv.compile(schema))
   fastify.setSchemaResolver((ref) => {
@@ -294,7 +302,7 @@ test('$ref with a simple $id', t => {
     method: 'POST',
     url: '/',
     schema: {
-      body: ajv.getSchema('urn:schema:response').schema,
+      body: ajv.getSchema('urn:schema:request').schema,
       response: {
         '2xx': ajv.getSchema('urn:schema:response').schema
       }

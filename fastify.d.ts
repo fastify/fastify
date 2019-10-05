@@ -116,6 +116,7 @@ declare namespace fastify {
   ) => void | Promise<any>
 
   type SchemaCompiler = (schema: Object) => Function
+  type SchemaResolver = (ref: string) => Object
 
   type BodyParser<HttpRequest, RawBody extends string | Buffer> =
     | ((req: HttpRequest, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
@@ -679,6 +680,11 @@ declare namespace fastify {
      * Set the schema compiler for all routes.
      */
     setSchemaCompiler(schemaCompiler: SchemaCompiler): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+
+    /**
+     * Set the schema resolver to find the `$ref` schema object
+     */
+    setSchemaResolver(schemaResolver: SchemaResolver): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * Create a shared schema

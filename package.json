@@ -159,7 +159,8 @@
       "@types/node",
       "tap",
       "tap-mocha-reporter",
-      "@typescript-eslint/eslint-plugin"
+      "@typescript-eslint/eslint-plugin",
+      "lolex"
     ]
   },
   "standard": {

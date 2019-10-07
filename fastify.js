@@ -86,6 +86,7 @@ function build (options) {
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
+      onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
@@ -402,6 +403,15 @@ function build (options) {
       req.headers['accept-version'] = undefined
     }
     fourOhFour.router.lookup(req, res)
+  }
+
+  function onBadUrl (path, req, res) {
+    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Content-Length': body.length
+    })
+    res.end(body)
   }
 
   function setNotFoundHandler (opts, handler) {

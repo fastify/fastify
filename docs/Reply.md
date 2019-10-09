@@ -75,7 +75,7 @@ If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 <a name="statusCode"></a>
 ### .statusCode
-This property read and set the HTTP status code. It is an alias for `reply.code()` when used as a set.
+This property reads and sets the HTTP status code. It is an alias for `reply.code()` when used as a setter.
 ```js
 if (reply.statusCode >= 299) {
   reply.statusCode = 500

@@ -924,6 +924,23 @@ test('.status() is an alias for .code()', t => {
   })
 })
 
+test('.statusCode is getter and setter', t => {
+  t.plan(4)
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    t.ok(reply.statusCode, 200, 'default status value')
+    reply.statusCode = 418
+    t.ok(reply.statusCode, 418)
+    reply.send()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 418)
+  })
+})
+
 test('reply.header setting multiple cookies as multiple Set-Cookie headers', t => {
   t.plan(7)
 

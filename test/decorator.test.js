@@ -673,14 +673,13 @@ test('after can access to a decorated instance and previous plugin decoration', 
     instance.decorate('test', TEST_VALUE)
 
     next()
-  }))
-    .after(function (err, instance, done) {
-      t.error(err)
-      t.equal(instance.test, TEST_VALUE)
+  })).after(function (err, instance, done) {
+    t.error(err)
+    t.equal(instance.test, TEST_VALUE)
 
-      instance.decorate('test2', OTHER_TEST_VALUE)
-      done()
-    })
+    instance.decorate('test2', OTHER_TEST_VALUE)
+    done()
+  })
 
   fastify.register(fp(function (instance, options, next) {
     t.equal(instance.test, TEST_VALUE)

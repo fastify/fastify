@@ -48,7 +48,7 @@ const serveStatic = require('serve-static')
 fastify.use('/css', serveStatic(path.join(__dirname, '/assets')))
 
 // Wildcard path
-fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
+fastify.use('/css/(.*)', serveStatic(path.join(__dirname, '/assets')))
 
 // Multiple paths
 fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))

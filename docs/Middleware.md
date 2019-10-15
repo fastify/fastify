@@ -40,6 +40,8 @@ If you need to run a middleware only under certain path(s), just pass the path a
 
 *Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcards are not supported in multiple paths.*
 
+*Also note that wildcard path syntax is different from the fastify routes. (eg: `/css/(.*)` instead of `/css/*`)*
+
 ```js
 const path = require('path')
 const serveStatic = require('serve-static')

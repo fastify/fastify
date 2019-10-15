@@ -38,9 +38,9 @@ Fastify middleware also do not expose the `send` method or other methods specifi
 #### Restrict middleware execution to a certain path(s)
 If you need to run a middleware only under certain path(s), just pass the path as first parameter to `use` and you are done!
 
-*Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcards are not supported in multiple paths.*
+The middleware syntax is different from the fastify route syntax. We use [middie](https://github.com/fastify/middie) to support express.js.
 
-**Note**: Wildcard path syntax is different from the fastify routes. (eg: `/css/(.*)` instead of `/css/*`)
+*Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcards are not supported in multiple paths.*
 
 ```js
 const path = require('path')

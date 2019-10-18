@@ -298,19 +298,19 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 <a name="custom-log-serializer"></a>
 ### Custom Log Serializer
 
-Some description HERE
+In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
 ```js
 const fastify = require('fastify')({ logger: true })
 
 fastify.register(require('./routes/user'), { 
   logSerializer: {
-    user: (value) => `My serializer one - ${value}`
+    user: (value) => `My serializer one - ${value.name}`
   } 
 })
 fastify.register(require('./routes/events'), {
   logSerializer: {
-    user: (value) => `My serializer two - ${value}`
+    user: (value) => `My serializer two - ${value.name} ${value.surname}`
   }
 })
 
@@ -346,7 +346,7 @@ fastify.register(context1, {
 
 async function context1 (fastify, opts) {
   fastify.get('/', (req, reply) => {
-    req.log.info({ user: 'call father serializer', key: 'another key' })
+    req.log.info({ user: 'call father serializer', key: 'another key' }) // shows: { user: 'My serializer father - call father  serializer', key: 'another key' }
     reply.send({})
   })
 }

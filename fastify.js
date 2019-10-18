@@ -10,6 +10,7 @@ const {
   kBodyLimit,
   kRoutePrefix,
   kLogLevel,
+  kLogSerializer,
   kHooks,
   kSchemas,
   kSchemaCompiler,
@@ -118,6 +119,7 @@ function build (options) {
     [kBodyLimit]: bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
+    [kLogSerializer]: {},
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kSchemaCompiler]: null,
@@ -461,6 +463,7 @@ function override (old, fn, opts) {
   instance[kHooks] = buildHooks(instance[kHooks])
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
+  instance[kLogSerializer] = opts.logSerializer || instance[kLogSerializer]
   instance[kMiddlewares] = old[kMiddlewares].slice()
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])

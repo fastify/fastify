@@ -786,10 +786,10 @@ test('Should override serializers from plugin', t => {
   })
 
   fastify.register(function (instance, opts, next) {
-    instance.register(context1, { 
-      logSerializer: { 
+    instance.register(context1, {
+      logSerializer: {
         test: value => 'Z' + value // should override
-      } 
+      }
     })
     next()
   }, { logSerializer: { test: value => 'X' + value } })

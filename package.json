@@ -110,7 +110,7 @@
     "fluent-schema": "^0.7.4",
     "form-data": "^2.5.0",
     "frameguard": "^3.0.0",
-    "h2url": "^0.1.2",
+    "h2url": "^0.2.0",
     "helmet": "^3.20.0",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.1.0",

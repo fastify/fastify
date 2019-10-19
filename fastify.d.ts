@@ -205,7 +205,8 @@ declare namespace fastify {
       deriveVersion<Context>(req: Object, ctx?: Context) : String,
     },
     modifyCoreObjects?: boolean,
-    return503OnClosing?: boolean
+    return503OnClosing?: boolean,
+    genReqId?: () => number | string
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

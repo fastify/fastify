@@ -120,6 +120,43 @@ test('Querystring without value', t => {
   })
 })
 
+test('Querystring after few question marks', t => {
+  t.plan(9)
+
+  const fastify = Fastify({
+    querystringParser: function (str) {
+      t.strictEqual(str, 'foo=bar')
+      return querystring.parse(str)
+    }
+  })
+
+  fastify.get('/', (req, reply) => {
+    t.deepEqual(req.query, { foo: 'bar' })
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.tearDown(() => fastify.close())
+
+    sget({
+      method: 'GET',
+      url: `${address}??foo=bar`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: `${address}??foo=bar`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+    })
+  })
+})
+
 test('Custom querystring parser should be a function', t => {
   t.plan(1)
 

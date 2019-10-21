@@ -812,6 +812,93 @@ test('Should override serializers from plugin', t => {
   })
 })
 
+test('Should use serializers from plugin and route', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'XHello')
+    }
+    if (line.test2) {
+      t.is(line.test2, 'ZHello')
+    }
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(context1, {
+    logSerializers: { test: value => 'X' + value }
+  })
+
+  function context1 (instance, opts, next) {
+    instance.get('/', {
+      logSerializers: {
+        test2: value => 'Z' + value
+      }
+    }, (req, reply) => {
+      req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should use serializers from instance fastify and route', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'XHello')
+    }
+    if (line.test2) {
+      t.is(line.test2, 'ZHello')
+    }
+  })
+
+  const logger = pino({
+    level: 'info',
+    serializers: {
+      test: value => 'X' + value,
+      test2: value => 'This should be override - ' + value
+    }
+  }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', {
+    logSerializers: {
+      test2: value => 'Z' + value
+    }
+  }, (req, reply) => {
+    req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
 test('Should increase the log level for a specific plugin', t => {
   t.plan(4)
 

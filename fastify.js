@@ -463,7 +463,7 @@ function override (old, fn, opts) {
   instance[kHooks] = buildHooks(instance[kHooks])
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
-  instance[kLogSerializers] = opts.logSerializers || instance[kLogSerializers]
+  instance[kLogSerializers] = Object.assign(Object.create(instance[kLogSerializers]), opts.logSerializers)
   instance[kMiddlewares] = old[kMiddlewares].slice()
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])

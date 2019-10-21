@@ -899,6 +899,50 @@ test('Should use serializers from instance fastify and route', t => {
   })
 })
 
+test('Should use serializers inherit from contexts', t => {
+  t.plan(5)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test && line.test2 && line.test3) {
+      t.is(line.test, 'XHello')
+      t.is(line.test2, 'YHello')
+      t.is(line.test3, 'ZHello')
+    }
+  })
+
+  const logger = pino({
+    level: 'info',
+    serializers: {
+      test: value => 'X' + value
+    }
+  }, splitStream)
+
+  const fastify = Fastify({ logger })
+  fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })
+
+  function context1 (instance, opts, next) {
+    instance.get('/', {
+      logSerializers: {
+        test3: value => 'Z' + value
+      }
+    }, (req, reply) => {
+      req.log.info({ test: 'Hello', test2: 'Hello', test3: 'Hello' }) // { test: 'XHello', test2: 'YHello', test3: 'ZHello' }
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
 test('Should increase the log level for a specific plugin', t => {
   t.plan(4)
 

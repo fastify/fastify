@@ -567,7 +567,7 @@ test('Should set a custom logLevel for a plugin', t => {
   })
 })
 
-test('Should set a custom logSerializer for a plugin', t => {
+test('Should set a custom logSerializers for a plugin', t => {
   t.plan(3)
 
   const splitStream = split(JSON.parse)
@@ -589,7 +589,7 @@ test('Should set a custom logSerializer for a plugin', t => {
       reply.send({ hello: 'world' })
     })
     next()
-  }, { logLevel: 'info', logSerializer: { test: value => 'X' + value } })
+  }, { logLevel: 'info', logSerializers: { test: value => 'X' + value } })
 
   fastify.inject({
     method: 'GET',
@@ -668,7 +668,7 @@ test('Should set a custom logLevel for every plugin', t => {
   })
 })
 
-test('Should set a custom logSerializer for every plugin', t => {
+test('Should set a custom logSerializers for every plugin', t => {
   const lines = ['Hello', 'XHello', 'ZHello']
   t.plan(9)
 
@@ -695,7 +695,7 @@ test('Should set a custom logSerializer for every plugin', t => {
       reply.send({ hello: 'world' })
     })
     next()
-  }, { logSerializer: { test: value => 'X' + value } })
+  }, { logSerializers: { test: value => 'X' + value } })
 
   fastify.register(function (instance, opts, next) {
     instance.get('/test2', (req, reply) => {
@@ -703,7 +703,7 @@ test('Should set a custom logSerializer for every plugin', t => {
       reply.send({ hello: 'world' })
     })
     next()
-  }, { logSerializer: { test: value => 'Z' + value } })
+  }, { logSerializers: { test: value => 'Z' + value } })
 
   fastify.inject({
     method: 'GET',
@@ -750,7 +750,7 @@ test('Should override serializers from route', t => {
 
   fastify.register(function (instance, opts, next) {
     instance.get('/', {
-      logSerializer: {
+      logSerializers: {
         test: value => 'Z' + value // should override
       }
     }, (req, reply) => {
@@ -758,7 +758,7 @@ test('Should override serializers from route', t => {
       reply.send({ hello: 'world' })
     })
     next()
-  }, { logSerializer: { test: value => 'X' + value } })
+  }, { logSerializers: { test: value => 'X' + value } })
 
   fastify.inject({
     method: 'GET',
@@ -787,12 +787,12 @@ test('Should override serializers from plugin', t => {
 
   fastify.register(function (instance, opts, next) {
     instance.register(context1, {
-      logSerializer: {
+      logSerializers: {
         test: value => 'Z' + value // should override
       }
     })
     next()
-  }, { logSerializer: { test: value => 'X' + value } })
+  }, { logSerializers: { test: value => 'X' + value } })
 
   function context1 (instance, opts, next) {
     instance.get('/', (req, reply) => {

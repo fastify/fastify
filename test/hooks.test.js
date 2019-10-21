@@ -496,12 +496,12 @@ test('onRoute hook should pass correct route with custom options', t => {
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.logLevel, 'info')
       t.strictEqual(route.bodyLimit, 100)
-      t.type(route.logSerializer.test, 'function')
+      t.type(route.logSerializers.test, 'function')
     })
     instance.get('/foo', {
       logLevel: 'info',
       bodyLimit: 100,
-      logSerializer: {
+      logSerializers: {
         test: value => value
       }
     }, function (req, reply) {

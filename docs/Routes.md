@@ -31,7 +31,7 @@ They need to be in
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
-* `logSerializer`: set serializers to log for this route.
+* `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
@@ -304,12 +304,12 @@ In some context, you may need to log a large object but it could be a waste of r
 const fastify = require('fastify')({ logger: true })
 
 fastify.register(require('./routes/user'), { 
-  logSerializer: {
+  logSerializers: {
     user: (value) => `My serializer one - ${value.name}`
   } 
 })
 fastify.register(require('./routes/events'), {
-  logSerializer: {
+  logSerializers: {
     user: (value) => `My serializer two - ${value.name} ${value.surname}`
   }
 })
@@ -339,7 +339,7 @@ const fastify = Fastify({
 })
 
 fastify.register(context1, { 
-  logSerializer: {
+  logSerializers: {
     user: value => `My serializer father - ${value}`
   } 
 })

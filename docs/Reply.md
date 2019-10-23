@@ -4,7 +4,9 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.statusCode](#statusCode)
   - [.header(key, value)](#headerkey-value)
+  - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
@@ -32,7 +34,9 @@ and properties:
 
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
+- `.statusCode` - Read and set the HTTP status code.
 - `.header(name, value)` - Sets a response header.
+- `.headers(object)` - Sets all the keys of the object as a response headers.
 - `.getHeader(name)` - Retrieve value of already set header.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
@@ -69,12 +73,31 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ### .code(statusCode)
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
+<a name="statusCode"></a>
+### .statusCode
+This property reads and sets the HTTP status code. It is an alias for `reply.code()` when used as a setter.
+```js
+if (reply.statusCode >= 299) {
+  reply.statusCode = 500
+}
+```
+
 <a name="header"></a>
 ### .header(key, value)
 Sets a response header. If the value is omitted or undefined it is coerced
 to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
+
+<a name="headers"></a>
+### .headers(object)
+Sets all the keys of the object as response headers. [`.header`](#headerkey-value) will be called under the hood.
+```js
+reply.headers({
+  'x-foo': 'foo',
+  'x-bar': 'bar'
+})
+```
 
 <a name="getHeader"></a>
 ### .getHeader(key)

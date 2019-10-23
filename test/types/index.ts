@@ -64,7 +64,13 @@ const cors = require('cors')
     maxParamLength: 200,
     querystringParser: (str: string) => ({ str: str, strArray: [str] }),
     modifyCoreObjects: true,
-    return503OnClosing: true
+    return503OnClosing: true,
+    genReqId: () => {
+      if (Math.random() > 0.5) {
+        return Math.random().toString()
+      }
+      return Math.random()
+    }
   })
 
   // custom types
@@ -556,6 +562,13 @@ server.inject({ url: '/testAgain' })
 
 server.setSchemaCompiler(function (schema: object) {
   return () => true
+})
+
+server.setSchemaResolver(function (ref: string) {
+  return {
+    $id: ref,
+    type: 'string'
+  }
 })
 
 server.addSchema({})

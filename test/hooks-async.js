@@ -528,7 +528,7 @@ function asyncHookTest (t) {
     })
 
     t.test('4 arguments', t => {
-      t.plan(6)
+      t.plan(9)
       const stream = split(JSON.parse)
       const fastify = Fastify({
         logger: { stream }
@@ -542,6 +542,7 @@ function asyncHookTest (t) {
 
       fastify.addHook('onSend', async (req, reply, payload, next) => {})
       fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
+      fastify.addHook('onError', async (req, reply, error, next) => {})
     })
 
     t.end()

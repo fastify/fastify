@@ -90,7 +90,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api) Fastify plugin to create REST API methods based on Mongoose MongoDB models.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose) Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin with support for Models.
-- [`fastify-multer`](https://github.com/fox1t/multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
+- [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
 - [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties) Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.

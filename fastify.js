@@ -344,7 +344,7 @@ function build (options) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
     // TODO: v3 instead of log a warning, throw an error
-    if (name === 'onSend' || name === 'preSerialization') {
+    if (name === 'onSend' || name === 'preSerialization' || name === 'onError') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         fastify.log.warn("Async function has too many arguments. Async hooks should not use the 'next' argument.", new Error().stack)
       }

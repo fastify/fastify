@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "2.8.0",
+  "version": "2.10.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "typings": "fastify.d.ts",
@@ -99,7 +99,7 @@
     "ajv-pack": "^0.3.1",
     "autocannon": "^3.2.0",
     "branch-comparer": "^0.4.0",
-    "concurrently": "^4.1.2",
+    "concurrently": "^5.0.0",
     "cors": "^2.8.5",
     "coveralls": "^3.0.6",
     "dns-prefetch-control": "^0.2.0",
@@ -110,7 +110,7 @@
     "fluent-schema": "^0.7.4",
     "form-data": "^2.5.0",
     "frameguard": "^3.0.0",
-    "h2url": "^0.1.2",
+    "h2url": "^0.2.0",
     "helmet": "^3.20.0",
     "hide-powered-by": "^1.0.0",
     "hsts": "^2.1.0",
@@ -139,7 +139,7 @@
     "abstract-logging": "^1.0.0",
     "ajv": "^6.10.2",
     "avvio": "^6.2.2",
-    "fast-json-stringify": "^1.15.4",
+    "fast-json-stringify": "^1.15.5",
     "find-my-way": "^2.0.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^3.4.1",
@@ -159,7 +159,8 @@
       "@types/node",
       "tap",
       "tap-mocha-reporter",
-      "@typescript-eslint/eslint-plugin"
+      "@typescript-eslint/eslint-plugin",
+      "lolex"
     ]
   },
   "standard": {

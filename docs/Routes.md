@@ -182,7 +182,7 @@ If you are interested in how we handle the routing, checkout [find-my-way](https
 Are you an `async/await` user? We have you covered!
 
 ```js
-fastify.get('/', options, async function(request, reply) {
+fastify.get('/', options, async function (request, reply) {
   var data = await getData()
   var processed = await processData(data)
   return processed
@@ -198,7 +198,7 @@ As you see we are not calling `reply.send` to send back the data to the user. Yo
 If you need it you can also send back the data to the user with `reply.send`.
 
 ```js
-fastify.get('/', options, function(request, reply) {
+fastify.get('/', options, function (request, reply) {
   getData()
     .then(data => processData(data))
     .then(processed => reply.send(processed))
@@ -217,7 +217,7 @@ As you see [above](/#callback) the code is very verbose because we combine diffe
 If you **return** the promise the value is returned to the user and error-handling is handled by the framework.
 
 ```js
-fastify.get('/', options, function(request, reply) {
+fastify.get('/', options, function (request, reply) {
   return getData().then(data => processData(data))
 })
 ```
@@ -230,7 +230,7 @@ If the route is wrapping a callback-based API that will call
 `reply.send()` outside of the promise chain, it is possible to `await reply`:
 
 ```js
-fastify.get('/', options, async function(request, reply) {
+fastify.get('/', options, async function (request, reply) {
   setImmediate(() => {
     reply.send({ hello: 'world' })
   })
@@ -241,7 +241,7 @@ fastify.get('/', options, async function(request, reply) {
 Returning reply also works:
 
 ```js
-fastify.get('/', options, async function(request, reply) {
+fastify.get('/', options, async function (request, reply) {
   setImmediate(() => {
     reply.send({ hello: 'world' })
   })
@@ -287,7 +287,7 @@ fastify.listen(3000)
 
 ```js
 // routes/v1/users.js
-module.exports = function(fastify, opts, done) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v1)
   done()
 }
@@ -295,7 +295,7 @@ module.exports = function(fastify, opts, done) {
 
 ```js
 // routes/v2/users.js
-module.exports = function(fastify, opts, done) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v2)
   done()
 }
@@ -360,7 +360,7 @@ Registering a new handler, you can pass a configuration object to it and retriev
 // server.js
 const fastify = require('fastify')()
 
-function handler(req, reply) {
+function handler (req, reply) {
   reply.send(reply.context.config.output)
 }
 
@@ -385,7 +385,7 @@ fastify.route({
   method: 'GET',
   url: '/',
   version: '1.2.0',
-  handler: function(request, reply) {
+  handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
 })

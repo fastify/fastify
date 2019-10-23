@@ -119,7 +119,7 @@ function build (options) {
     [kBodyLimit]: bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
-    [kLogSerializers]: {},
+    [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kSchemaCompiler]: null,
@@ -463,12 +463,15 @@ function override (old, fn, opts) {
   instance[kHooks] = buildHooks(instance[kHooks])
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
-  instance[kLogSerializers] = Object.assign(Object.create(instance[kLogSerializers]), opts.logSerializers)
   instance[kMiddlewares] = old[kMiddlewares].slice()
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
   instance[kPluginNameChain] = [pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)]
+
+  if (instance[kLogSerializers] || opts.logSerializers) {
+    instance[kLogSerializers] = Object.assign(Object.create(instance[kLogSerializers]), opts.logSerializers)
+  }
 
   if (opts.prefix) {
     instance[kFourOhFour].arrange404(instance)

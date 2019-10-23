@@ -8,7 +8,7 @@ You have two ways to declare a route with Fastify, the shorthand method and the 
 ### Full declaration
 
 ```js
-fastify.route(options);
+fastify.route(options)
 ```
 
 - `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
@@ -69,9 +69,9 @@ fastify.route({
     }
   },
   handler: function(request, reply) {
-    reply.send({ hello: 'world' });
+    reply.send({ hello: 'world' })
   }
-});
+})
 ```
 
 <a name="shorthand-declaration"></a>
@@ -101,10 +101,10 @@ const opts = {
       }
     }
   }
-};
+}
 fastify.get('/', opts, (request, reply) => {
-  reply.send({ hello: 'world' });
-});
+  reply.send({ hello: 'world' })
+})
 ```
 
 `fastify.all(path, [options], handler)` will add the same handler to all the supported methods.
@@ -124,10 +124,10 @@ const opts = {
     }
   },
   handler(request, reply) {
-    reply.send({ hello: 'world' });
+    reply.send({ hello: 'world' })
   }
-};
-fastify.get('/', opts);
+}
+fastify.get('/', opts)
 ```
 
 > Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then throws duplicate `handler` error.
@@ -183,10 +183,10 @@ Are you an `async/await` user? We have you covered!
 
 ```js
 fastify.get('/', options, async function(request, reply) {
-  var data = await getData();
-  var processed = await processData(data);
-  return processed;
-});
+  var data = await getData()
+  var processed = await processData(data)
+  return processed
+})
 ```
 
 As you see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
@@ -203,9 +203,9 @@ fastify.get('/', options, function(request, reply) {
     .then(data => processData(data))
     .then(processed => reply.send(processed))
     .catch(err => {
-      reply.send(err);
-    });
-});
+      reply.send(err)
+    })
+})
 ```
 
 <a name="promises"></a>
@@ -218,8 +218,8 @@ If you **return** the promise the value is returned to the user and error-handli
 
 ```js
 fastify.get('/', options, function(request, reply) {
-  return getData().then(data => processData(data));
-});
+  return getData().then(data => processData(data))
+})
 ```
 
 <a name="reply-as-promise"></a>
@@ -232,10 +232,10 @@ If the route is wrapping a callback-based API that will call
 ```js
 fastify.get('/', options, async function(request, reply) {
   setImmediate(() => {
-    reply.send({ hello: 'world' });
-  });
-  await reply;
-});
+    reply.send({ hello: 'world' })
+  })
+  await reply
+})
 ```
 
 Returning reply also works:
@@ -243,10 +243,10 @@ Returning reply also works:
 ```js
 fastify.get('/', options, async function(request, reply) {
   setImmediate(() => {
-    reply.send({ hello: 'world' });
-  });
-  return reply;
-});
+    reply.send({ hello: 'world' })
+  })
+  return reply
+})
 ```
 
 **Warning:**
@@ -277,28 +277,28 @@ Fastify offers you a fast and smart way to create different version of the same 
 
 ```js
 // server.js
-const fastify = require('fastify')();
+const fastify = require('fastify')()
 
-fastify.register(require('./routes/v1/users'), { prefix: '/v1' });
-fastify.register(require('./routes/v2/users'), { prefix: '/v2' });
+fastify.register(require('./routes/v1/users'), { prefix: '/v1' })
+fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
 
-fastify.listen(3000);
+fastify.listen(3000)
 ```
 
 ```js
 // routes/v1/users.js
 module.exports = function(fastify, opts, done) {
-  fastify.get('/user', handler_v1);
-  done();
-};
+  fastify.get('/user', handler_v1)
+  done()
+}
 ```
 
 ```js
 // routes/v2/users.js
 module.exports = function(fastify, opts, done) {
-  fastify.get('/user', handler_v2);
-  done();
-};
+  fastify.get('/user', handler_v2)
+  done()
+}
 ```
 
 Fastify will not complain because you are using the same name for two different routes, because at compilation time it will handle the prefix automatically _(this also means that the performance will not be affected at all!)_.
@@ -332,20 +332,20 @@ Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundH
 
 ```js
 // server.js
-const fastify = require('fastify')({ logger: true });
+const fastify = require('fastify')({ logger: true })
 
-fastify.register(require('./routes/user'), { logLevel: 'warn' });
-fastify.register(require('./routes/events'), { logLevel: 'debug' });
+fastify.register(require('./routes/user'), { logLevel: 'warn' })
+fastify.register(require('./routes/events'), { logLevel: 'debug' })
 
-fastify.listen(3000);
+fastify.listen(3000)
 ```
 
 Or you can directly pass it to a route:
 
 ```js
 fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
-  reply.send({ hello: 'world' });
-});
+  reply.send({ hello: 'world' })
+})
 ```
 
 _Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`_
@@ -358,16 +358,16 @@ Registering a new handler, you can pass a configuration object to it and retriev
 
 ```js
 // server.js
-const fastify = require('fastify')();
+const fastify = require('fastify')()
 
 function handler(req, reply) {
-  reply.send(reply.context.config.output);
+  reply.send(reply.context.config.output)
 }
 
-fastify.get('/en', { config: { output: 'hello world!' } }, handler);
-fastify.get('/it', { config: { output: 'ciao mondo!' } }, handler);
+fastify.get('/en', { config: { output: 'hello world!' } }, handler)
+fastify.get('/it', { config: { output: 'ciao mondo!' } }, handler)
 
-fastify.listen(3000);
+fastify.listen(3000)
 ```
 
 <a name="version"></a>
@@ -386,9 +386,9 @@ fastify.route({
   url: '/',
   version: '1.2.0',
   handler: function(request, reply) {
-    reply.send({ hello: 'world' });
+    reply.send({ hello: 'world' })
   }
-});
+})
 
 fastify.inject(
   {
@@ -401,7 +401,7 @@ fastify.inject(
   (err, res) => {
     // { hello: 'world' }
   }
-);
+)
 ```
 
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>

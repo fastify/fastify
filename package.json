@@ -148,7 +148,7 @@
     "proxy-addr": "^2.0.4",
     "readable-stream": "^3.1.1",
     "rfdc": "^1.1.2",
-    "secure-json-parse": "^1.0.0",
+    "secure-json-parse": "^2.0.0",
     "tiny-lru": "^7.0.0"
   },
   "greenkeeper": {

@@ -123,7 +123,11 @@ function build (options) {
     [kSchemaCompiler]: null,
     [kSchemaResolver]: null,
     [kReplySerializerDefault]: null,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
+    [kContentTypeParser]: new ContentTypeParser(
+      bodyLimit,
+      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+    ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],

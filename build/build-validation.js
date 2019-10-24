@@ -15,9 +15,12 @@ const ajv = new Ajv({
 const defaultInitOptions = {
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
+  disableRequestLogging: false,
   ignoreTrailingSlash: false,
   maxParamLength: 100,
   onProtoPoisoning: 'error',
+  // TODO v3: default should be 'error'
+  onConstructorPoisoning: 'ignore',
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
   requestIdLogLabel: 'reqId'
@@ -62,8 +65,13 @@ const schema = {
       then: { setDefaultValue: true }
     },
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
+    disableRequestLogging: {
+      type: 'boolean',
+      default: false
+    },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
+    onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { type: 'string', default: defaultInitOptions.requestIdHeader },
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel }

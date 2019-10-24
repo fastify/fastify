@@ -191,6 +191,7 @@ declare namespace fastify {
     pluginTimeout?: number,
     disableRequestLogging?: boolean,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+    onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,

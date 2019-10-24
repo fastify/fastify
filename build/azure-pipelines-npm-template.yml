@@ -5,6 +5,8 @@ jobs:
 
   strategy:
     matrix:
+      node_13_x:
+        node_version: 13.x
       node_12_x:
         node_version: 12.x
       node_11_x:

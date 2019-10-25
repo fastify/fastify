@@ -31,6 +31,7 @@ They need to be in
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
+* `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
@@ -294,6 +295,64 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 ```
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
 
+<a name="custom-log-serializer"></a>
+### Custom Log Serializer
+
+In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
+
+```js
+const fastify = require('fastify')({ logger: true })
+
+fastify.register(require('./routes/user'), { 
+  logSerializers: {
+    user: (value) => `My serializer one - ${value.name}`
+  } 
+})
+fastify.register(require('./routes/events'), {
+  logSerializers: {
+    user: (value) => `My serializer two - ${value.name} ${value.surname}`
+  }
+})
+
+fastify.listen(3000)
+```
+
+You can inherit serializers by context:
+
+```js
+const fastify = Fastify({ 
+  logger: {
+    level: 'info',
+    serializers: {
+      user (req) {
+        return {
+          method: req.method,
+          url: req.url,
+          headers: req.headers,
+          hostname: req.hostname,
+          remoteAddress: req.ip,
+          remotePort: req.connection.remotePort
+        }
+      }
+    }
+  } 
+})
+
+fastify.register(context1, { 
+  logSerializers: {
+    user: value => `My serializer father - ${value}`
+  } 
+})
+
+async function context1 (fastify, opts) {
+  fastify.get('/', (req, reply) => {
+    req.log.info({ user: 'call father serializer', key: 'another key' }) // shows: { user: 'My serializer father - call father  serializer', key: 'another key' }
+    reply.send({})
+  })
+}
+
+fastify.listen(3000)
+```
 
 <a name="routes-config"></a>
 ### Config

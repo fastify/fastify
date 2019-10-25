@@ -271,6 +271,7 @@ declare namespace fastify {
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number
     logLevel?: string
+    logSerializers?: Object
     config?: any
     prefixTrailingSlash?: 'slash' | 'no-slash' | 'both'
   }
@@ -298,6 +299,7 @@ declare namespace fastify {
   interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> {
     [key: string]: any,
     prefix?: string,
+    logSerializers?: Object
   }
 
   /**

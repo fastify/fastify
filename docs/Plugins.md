@@ -16,6 +16,7 @@ fastify.register(plugin, [options])
 The optional `options` parameter for `fastify.register` supports a predefined set of options that Fastify itself will use, except when the plugin has been wrapped with [fastify-plugin](https://github.com/fastify/fastify-plugin). This options object will also be passed to the plugin upon invocation, regardless of whether or not the plugin has been wrapped. The currently supported list of Fastify specific options is:
 
 + [`logLevel`](https://github.com/fastify/fastify/blob/master/docs/Routes.md#custom-log-level)
++ [`logSerializers`](https://github.com/fastify/fastify/blob/master/docs/Routes.md#custom-log-serializer)
 + [`prefix`](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-options)
 
 **Note: Those options will be ignored when used with fastify-plugin**

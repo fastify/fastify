@@ -101,6 +101,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
+- [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.

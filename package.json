@@ -140,7 +140,7 @@
     "ajv": "^6.10.2",
     "avvio": "^6.2.2",
     "fast-json-stringify": "^1.15.5",
-    "find-my-way": "^2.0.0",
+    "find-my-way": "^2.2.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^3.4.1",
     "middie": "^4.0.1",

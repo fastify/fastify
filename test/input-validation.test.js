@@ -69,10 +69,13 @@ test('not evaluate json-schema $schema keyword', t => {
 })
 
 test('validation context in validation result', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
-  // return validation context, so we can test it in response
-  fastify.setErrorHandler((err, request, reply) => reply.send(err.validationContext))
+  // custom error handler to expose validation context in response, so we can test it later
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equal(err instanceof Error, true)
+    reply.send(err.validationContext)
+  })
   fastify.route({
     method: 'GET',
     url: '/',
@@ -96,7 +99,6 @@ test('validation context in validation result', t => {
     body: {}
   }, (err, res) => {
     t.error(err)
-    // validationContext returned by custom error handler
     t.equal(res.payload, 'body')
   })
 })

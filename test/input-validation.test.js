@@ -74,7 +74,8 @@ test('validation context in validation result', t => {
   // custom error handler to expose validation context in response, so we can test it later
   fastify.setErrorHandler((err, request, reply) => {
     t.equal(err instanceof Error, true)
-    reply.send(err.validationContext)
+    t.equal(err.validationContext, 'body')
+    reply.send()
   })
   fastify.route({
     method: 'GET',
@@ -99,6 +100,5 @@ test('validation context in validation result', t => {
     body: {}
   }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, 'body')
   })
 })

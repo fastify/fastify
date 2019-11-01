@@ -280,6 +280,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.url
   routeOptions.bodyLimit
   routeOptions.logLevel
+  routeOptions.logSerializers
   routeOptions.prefix
 })
 ```

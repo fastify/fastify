@@ -10,6 +10,7 @@ const {
   kBodyLimit,
   kRoutePrefix,
   kLogLevel,
+  kLogSerializers,
   kHooks,
   kSchemas,
   kSchemaCompiler,
@@ -86,6 +87,7 @@ function build (options) {
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
+      onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
@@ -118,12 +120,17 @@ function build (options) {
     [kBodyLimit]: bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
+    [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kSchemaCompiler]: null,
     [kSchemaResolver]: null,
     [kReplySerializerDefault]: null,
-    [kContentTypeParser]: new ContentTypeParser(bodyLimit, (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning)),
+    [kContentTypeParser]: new ContentTypeParser(
+      bodyLimit,
+      (options.onProtoPoisoning || defaultInitOptions.onProtoPoisoning),
+      (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
+    ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
@@ -404,6 +411,15 @@ function build (options) {
     fourOhFour.router.lookup(req, res)
   }
 
+  function onBadUrl (path, req, res) {
+    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Content-Length': body.length
+    })
+    res.end(body)
+  }
+
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
@@ -466,6 +482,10 @@ function override (old, fn, opts) {
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
   instance[kPluginNameChain] = [pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)]
+
+  if (instance[kLogSerializers] || opts.logSerializers) {
+    instance[kLogSerializers] = Object.assign(Object.create(instance[kLogSerializers]), opts.logSerializers)
+  }
 
   if (opts.prefix) {
     instance[kFourOhFour].arrange404(instance)

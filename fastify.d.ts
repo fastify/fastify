@@ -191,6 +191,7 @@ declare namespace fastify {
     pluginTimeout?: number,
     disableRequestLogging?: boolean,
     onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+    onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
     logger?: any,
     trustProxy?: string | number | boolean | Array<string> | TrustProxyFunction,
     maxParamLength?: number,
@@ -270,6 +271,7 @@ declare namespace fastify {
     schemaCompiler?: SchemaCompiler
     bodyLimit?: number
     logLevel?: string
+    logSerializers?: Object
     config?: any
     prefixTrailingSlash?: 'slash' | 'no-slash' | 'both'
   }
@@ -297,6 +299,7 @@ declare namespace fastify {
   interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> {
     [key: string]: any,
     prefix?: string,
+    logSerializers?: Object
   }
 
   /**

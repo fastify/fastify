@@ -3,7 +3,7 @@ name: ci
 on: [push, pull_request]
 
 jobs:
-  build:
+  test:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -37,8 +37,12 @@ jobs:
           github-token: ${{ secrets.github_token }}
           parallel: true
 
+  coverage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.github_token }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true

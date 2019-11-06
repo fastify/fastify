@@ -70,6 +70,14 @@ const cors = require('cors')
         return Math.random().toString()
       }
       return Math.random()
+    },
+    requestIdHeader: 'request-id',
+    requestIdLogLabel: 'reqId',
+    serverFactory: (handler, options) => {
+      const server = http.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
     }
   })
 

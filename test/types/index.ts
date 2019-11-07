@@ -81,6 +81,16 @@ const cors = require('cors')
     }
   })
 
+  // http2 server factory option
+  const otherHttp2Server = fastify({
+    serverFactory: (handler, options) => {
+      const server = http2.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
+    }
+  })
+
   // custom types
   interface CustomIncomingMessage extends http.IncomingMessage {
     getDeviceType: () => string;

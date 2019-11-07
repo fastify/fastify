@@ -184,7 +184,7 @@ declare namespace fastify {
     request: FastifyRequest
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
-  type ServerFactoryHandlerFunction = (request: http.IncomingMessage, response: http.ServerResponse) => void
+  type ServerFactoryHandlerFunction = (request: http.IncomingMessage | http2.Http2ServerRequest, response: http.ServerResponse | http2.Http2ServerResponse) => void
   type ServerFactoryFunction = (handler: ServerFactoryHandlerFunction, options: ServerOptions) => http.Server | http2.Http2Server
   interface ServerOptions {
     caseSensitive?: boolean,

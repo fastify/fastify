@@ -70,6 +70,24 @@ const cors = require('cors')
         return Math.random().toString()
       }
       return Math.random()
+    },
+    requestIdHeader: 'request-id',
+    requestIdLogLabel: 'reqId',
+    serverFactory: (handler, options) => {
+      const server = http.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
+    }
+  })
+
+  // http2 server factory option
+  const otherHttp2Server = fastify({
+    serverFactory: (handler, options) => {
+      const server = http2.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
     }
   })
 

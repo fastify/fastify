@@ -278,6 +278,7 @@ declare namespace fastify {
     logLevel?: string
     logSerializers?: Object
     config?: any
+    version?: string
     prefixTrailingSlash?: 'slash' | 'no-slash' | 'both'
   }
 

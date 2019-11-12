@@ -257,6 +257,7 @@ const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2Se
   schemaCompiler: (schema: Object) => () => {},
   bodyLimit: 5000,
   logLevel: 'trace',
+  version: '1.0.0',
   config: { }
 }
 const optsWithHandler: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {

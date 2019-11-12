@@ -544,6 +544,30 @@ test('plain string with content type application/json should be serialized as js
   })
 })
 
+test('json string with content type application/json should NOT be serialized as json', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('application/json').send('{"key": "hello world!"}')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.deepEqual(body.toString(), '{"key": "hello world!"}')
+    })
+  })
+})
+
 test('error object with a content type that is not application/json should work', t => {
   t.plan(6)
 

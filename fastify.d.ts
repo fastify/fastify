@@ -301,8 +301,8 @@ declare namespace fastify {
   /**
    * Register options
    */
-  interface RegisterOptions<HttpServer, HttpRequest, HttpResponse> {
-    [key: string]: any,
+   type RegisterOptions<HttpServer, HttpRequest, HttpResponse, T extends {}> = {
+   [ k in keyof T ]: T[k] } & {
     prefix?: string,
     logSerializers?: Object
   }
@@ -554,7 +554,7 @@ declare namespace fastify {
     /**
      * Registers a plugin
      */
-    register<Options extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>, PluginInstance extends Function>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, Options, PluginInstance>, options?: Options): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
+     register<Options extends RegisterOptions<HttpServer, HttpRequest, HttpResponse, any >, PluginInstance extends Function>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, Options, PluginInstance>, options?: Options): FastifyInstance<HttpServer, HttpRequest, HttpResponse>
 
     /**
      * `Register a callback that will be executed just after a register.

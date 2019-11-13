@@ -544,13 +544,13 @@ test('plain string with content type application/json should be serialized as js
   })
 })
 
-test('json string with content type application/json should NOT be serialized as json', t => {
+test('string with content type application/json and disableStringify(true) should NOT be serialized as json', t => {
   t.plan(4)
 
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
-    reply.type('application/json').send('{"key": "hello world!"}')
+    reply.disableStringify(true).type('application/json').send('{"key": "hello world!"}')
   })
 
   fastify.listen(0, err => {

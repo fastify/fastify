@@ -24,6 +24,7 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
+  - [.skipSerialization()](#skipserialization)
   - [.then](#then)
 
 <a name="introduction"></a>
@@ -333,6 +334,19 @@ fastify.get('/teapot', async function (request, reply) => {
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).
+
+<a name="skipserialization"></a>
+### .skipSerialization()
+
+Disable calling stringify method for already serialized payload.
+You should use it when your payload already serialized to string and conforms to yours selected Content-Type header value 
+
+```js
+fastify.get('/json-string', function (request, reply) {
+  const jsonString = '{"key": "hello world!"}'
+  reply.skipSerialization().header('Content-Type', 'application/json').send(jsonString)
+})
+```
 
 <a name="then"></a>
 ### .then(fullfilled, rejected)

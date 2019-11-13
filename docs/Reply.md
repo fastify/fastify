@@ -339,7 +339,7 @@ If you want to know more please review [Routes#async-await](https://github.com/f
 ### .skipSerialization()
 
 Disable automatic serialization for the current reply.
-You should use it when your payload already serialized to string and conforms to yours selected Content-Type header value 
+This is useful when the response payload is already serialized according to the response `Content-Type` header. 
 
 ```js
 fastify.get('/json-string', function (request, reply) {

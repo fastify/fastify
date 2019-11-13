@@ -338,7 +338,7 @@ If you want to know more please review [Routes#async-await](https://github.com/f
 <a name="skipserialization"></a>
 ### .skipSerialization()
 
-Disable calling stringify method for already serialized payload.
+Disable automatic serialization for the current reply.
 You should use it when your payload already serialized to string and conforms to yours selected Content-Type header value 
 
 ```js

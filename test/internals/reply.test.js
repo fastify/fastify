@@ -568,6 +568,31 @@ test('string with content type application/json and skipSerialization() called s
   })
 })
 
+test('object serialized via JSON.stringify with content type application/json and skipSerialization() called should NOT be serialized twice', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    const payload = JSON.stringify({ test: true })
+    reply.skipSerialization().type('application/json').send(payload)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.deepEqual(body.toString(), JSON.stringify({ test: true }))
+    })
+  })
+})
+
 test('error object with a content type that is not application/json should work', t => {
   t.plan(6)
 

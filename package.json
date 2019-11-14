@@ -136,7 +136,7 @@
     "x-xss-protection": "^1.1.0"
   },
   "dependencies": {
-    "abstract-logging": "^1.0.0",
+    "abstract-logging": "^2.0.0",
     "ajv": "^6.10.2",
     "avvio": "^6.2.2",
     "fast-json-stringify": "^1.15.5",

@@ -1,14 +1,34 @@
 <h1 align="center">Fastify</h1>
 
 ## Routes
-You have two ways to declare a route with Fastify, the shorthand method and the full declaration. Let's start with the second one:
+
+The routes methods will configure the endpoints of your application. 
+You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
+
+- [Full Declaration](#full-declaration)
+- [Route Options](#options)
+- [Shorthand Declaration](#shorthand-declaration)
+- [URL Parameters](#url-building)
+- [Use `async`/`await`](#async-await)
+- [Promise resolution](#promise-resolution)
+- [Route Prefixing](#route-prefixing)
+- Logs
+  - [Custom Log Level](#custom-log-level)
+  - [Custom Log Serializer](#custom-log-serializer)
+- [Route handler configuration](#routes-config)
+- [Route's Versioning](#version)
+
 <a name="full-declaration"></a>
 ### Full declaration
+
 ```js
 fastify.route(options)
 ```
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 
+<a name="options"></a>
+### Routes option
+
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
@@ -23,10 +43,12 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) as soon that a request is received, it could also be an array of functions.
-* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
-* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the request handler, it could also be an array of functions.
-* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the serialization, it could also be an array of functions.
+* `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
+* `preParsing(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
+* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
+* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
+* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
+* `onResponse(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
@@ -238,6 +260,7 @@ fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
 
 fastify.listen(3000)
 ```
+
 ```js
 // routes/v1/users.js
 module.exports = function (fastify, opts, done) {
@@ -245,6 +268,7 @@ module.exports = function (fastify, opts, done) {
   done()
 }
 ```
+
 ```js
 // routes/v2/users.js
 module.exports = function (fastify, opts, done) {
@@ -287,6 +311,7 @@ fastify.register(require('./routes/events'), { logLevel: 'debug' })
 
 fastify.listen(3000)
 ```
+
 Or you can directly pass it to a route:
 ```js
 fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
@@ -374,10 +399,12 @@ fastify.listen(3000)
 
 <a name="version"></a>
 ### Version
+
 #### Default
 If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
 Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
+
 ```js
 fastify.route({
   method: 'GET',
@@ -398,7 +425,9 @@ fastify.inject({
   // { hello: 'world' }
 })
 ```
+
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
+
 #### Custom
 It's possible to define a custom versioning logic. This can be done through the [`versioning`](https://github.com/fastify/fastify/blob/master/docs/Server.md#versioning) configuration, when creating a fastify server instance.

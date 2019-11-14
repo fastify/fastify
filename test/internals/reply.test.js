@@ -14,8 +14,6 @@ const {
   kReplyIsError
 } = require('../../lib/symbols')
 
-t.setTimeout(0)
-
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
   const response = { res: 'res' }

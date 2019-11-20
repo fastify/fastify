@@ -216,6 +216,12 @@ Great contributors on a specific area in the Fastify ecosystem will be invited t
 * [__Trivikram Kamat__](https://github.com/trivikr), <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
 * [__Nathan Woltman__](https://github.com/nwoltman), <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
 
+## Hosted by
+
+[<img src="https://github.com/openjs-foundation/cross-project-council/blob/master/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#incubating)
+
+We are currently an [incubated project](https://openjsf.org/blog/2019/11/20/web-framework-fastify-joins-openjs-foundation-as-an-incubating-project/) at the OpenJS Foundation.
+
 ## Acknowledgements
 
 This project is kindly sponsored by:

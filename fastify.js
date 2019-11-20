@@ -69,6 +69,8 @@ function build (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const ajvOptions = options.ajvOptions || {}
+  const ajvUseMergeAndPatch = options.ajvUseMergeAndPatch || false
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -82,6 +84,8 @@ function build (options) {
   options.requestIdLogLabel = requestIdLogLabel
   options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
+  options.ajvOptions = ajvOptions
+  options.ajvUseMergeAndPatch = ajvUseMergeAndPatch
 
   // Default router
   const router = buildRouting({

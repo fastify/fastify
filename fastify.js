@@ -71,12 +71,19 @@ function build (options) {
   const disableRequestLogging = options.disableRequestLogging || false
   const ajvOptions = Object.assign({
     customOptions: {},
-    useMergeAndPatch: false
+    plugins: []
   }, options.ajv)
 
-  if (ajvOptions && typeof ajvOptions.customOptions !== 'object') {
+  // Ajv options
+  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
     throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
   }
+  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
+    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.customOptions}'`)
+  }
+  ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
+    return Array.isArray(plugin) ? plugin : [plugin]
+  })
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)

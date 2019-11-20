@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const ajvMergePatch = require('ajv-merge-patch')
 
 test('case insensitive header validation', t => {
   t.plan(2)
@@ -72,7 +73,9 @@ test('Should handle $merge keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      useMergeAndPatch: true
+      plugins: [
+        ajvMergePatch
+      ]
     }
   })
 
@@ -129,7 +132,9 @@ test('Should handle $patch keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      useMergeAndPatch: true
+      plugins: [
+        ajvMergePatch
+      ]
     }
   })
 

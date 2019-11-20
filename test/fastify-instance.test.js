@@ -18,15 +18,14 @@ test('fastify instance should contains ajv options', t => {
     ajv: {
       customOptions: {
         nullable: false
-      },
-      useMergeAndPatch: true
+      }
     }
   })
   t.same(fastify[kOptions].ajv, {
     customOptions: {
       nullable: false
     },
-    useMergeAndPatch: true
+    plugins: []
   })
 })
 

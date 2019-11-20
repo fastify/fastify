@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 
+const ajvMergePatch = require('ajv-merge-patch')
 const AJV = require('ajv')
 const fastClone = require('rfdc')({ circles: false, proto: true })
 
@@ -327,7 +328,9 @@ test('Should handle root $merge keywords in header', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      useMergeAndPatch: true
+      plugins: [
+        ajvMergePatch
+      ]
     }
   })
 
@@ -384,7 +387,9 @@ test('Should handle root $patch keywords in header', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      useMergeAndPatch: true
+      plugins: [
+        ajvMergePatch
+      ]
     }
   })
 

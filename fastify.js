@@ -69,8 +69,14 @@ function build (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const ajvOptions = options.ajvOptions || {}
-  const ajvUseMergeAndPatch = options.ajvUseMergeAndPatch || false
+  const ajvOptions = Object.assign({
+    customOptions: {},
+    useMergeAndPatch: false
+  }, options.ajv)
+
+  if (ajvOptions && typeof ajvOptions.customOptions !== 'object') {
+    throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
+  }
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -84,8 +90,7 @@ function build (options) {
   options.requestIdLogLabel = requestIdLogLabel
   options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
-  options.ajvOptions = ajvOptions
-  options.ajvUseMergeAndPatch = ajvUseMergeAndPatch
+  options.ajv = ajvOptions
 
   // Default router
   const router = buildRouting({

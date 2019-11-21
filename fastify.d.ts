@@ -217,7 +217,7 @@ declare namespace fastify {
     serverFactory?: ServerFactoryFunction,
     ajv?: {
       customOptions?: ajv.Options,
-      plugins?: Array<Array<String>|String>
+      plugins?: Array<Array<any>|String>
     }
   }
   interface ServerOptionsAsSecure extends ServerOptions {

@@ -378,7 +378,20 @@ If `false`, the server routes the incoming request as usual.
 
 Configure the ajv instance used by Fastify without providing a custom one.
 
-+ Default: `{ }`
++ Default:
+
+```js
+{
+  customOptions: {
+    removeAdditional: true,
+    useDefaults: true,
+    coerceTypes: true,
+    allErrors: true,
+    nullable: true
+  },
+  plugins: []
+}
+```
 
 ```js
 const fastify = require('fastify')({

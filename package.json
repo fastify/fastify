@@ -107,7 +107,7 @@
     "eslint-import-resolver-node": "^0.3.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.5.0",
-    "fluent-schema": "^0.7.4",
+    "fluent-schema": "^0.8.0",
     "form-data": "^3.0.0",
     "frameguard": "^3.0.0",
     "h2url": "^0.2.0",

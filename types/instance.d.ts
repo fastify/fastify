@@ -5,7 +5,7 @@ import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyD
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { AddHook } from './hooks'
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
 import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
@@ -54,12 +54,9 @@ export interface FastifyInstance<
   use: FastifyRegister<RawServer, RawRequest, RawReply>;
 
   route<
-    RequestBody = RequestBodyDefault,
-    RequestQuerystring = RequestQuerystringDefault,
-    RequestParams = RequestParamsDefault,
-    RequestHeaders = RequestHeadersDefault,
+    RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
     ContextConfig = ContextConfigDefault
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>;
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,

@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod, RequestGenericInterface } from '../../fastify'
 import { expectType, expectError } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 
@@ -33,15 +33,24 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
 
-  type BodyType = void
-  type QuerystringType = void
-  type ParamsType = void
-  type HeadersType = void
+  type BodyType = { prop: string }
+  type QuerystringType = { prop: number }
+  type ParamsType = { prop: boolean }
+  type HeadersType = { prop: string }
+
   interface ContextConfigType {
     foo: string;
     bar: number;
   }
-  fastify()[lowerCaseMethod]<BodyType, QuerystringType, ParamsType, HeadersType, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
+
+  type RouteGeneric = {
+    Body: BodyType, 
+    Querystring: QuerystringType, 
+    Params: ParamsType,
+    Headers: HeadersType
+  }
+
+  fastify()[lowerCaseMethod]<RouteGeneric, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
     expectType<BodyType>(req.body)
     expectType<QuerystringType>(req.query)
     expectType<ParamsType>(req.params)
@@ -50,7 +59,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     expectType<number>(res.context.config.bar)
   })
 
-  fastify().route<BodyType, QuerystringType, ParamsType, HeadersType, ContextConfigType>({
+  fastify().route<RouteGeneric, ContextConfigType>({
     url: '/',
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },

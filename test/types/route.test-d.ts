@@ -1,6 +1,7 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod, RequestGenericInterface } from '../../fastify'
 import { expectType, expectError } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
+import * as http from 'http'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -54,7 +55,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     expectType<BodyType>(req.body)
     expectType<QuerystringType>(req.query)
     expectType<ParamsType>(req.params)
-    expectType<HeadersType>(req.headers)
+    expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
   })
@@ -67,7 +68,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      expectType<HeadersType>(req.headers)
+      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -75,7 +76,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      expectType<HeadersType>(req.headers)
+      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -83,7 +84,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      expectType<HeadersType>(req.headers)
+      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
@@ -91,7 +92,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<BodyType>(req.body)
       expectType<QuerystringType>(req.query)
       expectType<ParamsType>(req.params)
-      expectType<HeadersType>(req.headers)
+      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     }

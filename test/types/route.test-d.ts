@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod, RequestGenericInterface } from '../../fastify'
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
 import { expectType, expectError } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
@@ -34,28 +34,28 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
 
-  type BodyType = { prop: string }
-  type QuerystringType = { prop: number }
-  type ParamsType = { prop: boolean }
-  type HeadersType = { prop: string }
+  interface BodyInterface { prop: string }
+  interface QuerystringInterface { prop: number }
+  interface ParamsInterface { prop: boolean }
+  interface HeadersInterface { prop: string }
 
   interface ContextConfigType {
     foo: string;
     bar: number;
   }
 
-  type RouteGeneric = {
-    Body: BodyType, 
-    Querystring: QuerystringType, 
-    Params: ParamsType,
-    Headers: HeadersType
+  interface RouteGeneric {
+    Body: BodyInterface;
+    Querystring: QuerystringInterface;
+    Params: ParamsInterface;
+    Headers: HeadersInterface;
   }
 
   fastify()[lowerCaseMethod]<RouteGeneric, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
-    expectType<BodyType>(req.body)
-    expectType<QuerystringType>(req.query)
-    expectType<ParamsType>(req.params)
-    expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
+    expectType<BodyInterface>(req.body)
+    expectType<QuerystringInterface>(req.query)
+    expectType<ParamsInterface>(req.params)
+    expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
   })
@@ -65,34 +65,34 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },
     preHandler: (req, res) => {
-      expectType<BodyType>(req.body)
-      expectType<QuerystringType>(req.query)
-      expectType<ParamsType>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
     preValidation: (req, res) => {
-      expectType<BodyType>(req.body)
-      expectType<QuerystringType>(req.query)
-      expectType<ParamsType>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
     preSerialization: (req, res) => {
-      expectType<BodyType>(req.body)
-      expectType<QuerystringType>(req.query)
-      expectType<ParamsType>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },
     handler: (req, res) => {
-      expectType<BodyType>(req.body)
-      expectType<QuerystringType>(req.query)
-      expectType<ParamsType>(req.params)
-      expectType<http.IncomingHttpHeaders & HeadersType>(req.headers)
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     }

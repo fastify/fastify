@@ -2,10 +2,10 @@ import { FastifyLoggerOptions } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
 export interface RequestGenericInterface {
-  Body?: RequestBodyDefault,
-  Querystring?: RequestQuerystringDefault,
-  Params?: RequestParamsDefault,
-  Headers?: RequestHeadersDefault
+  Body?: RequestBodyDefault;
+  Querystring?: RequestQuerystringDefault;
+  Params?: RequestParamsDefault;
+  Headers?: RequestHeadersDefault;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { AddHook } from './hooks'

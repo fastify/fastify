@@ -3,7 +3,7 @@ import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
+import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevels } from './logger'
 
 /**

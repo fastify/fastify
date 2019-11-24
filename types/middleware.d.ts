@@ -1,8 +1,8 @@
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
-import { RequestGenericInterface } from './request'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
+
 /**
  * Fastify Middleware
  *

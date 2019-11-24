@@ -25,6 +25,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     ignoreTrailingSlash: false,
     maxParamLength: 100,
     onProtoPoisoning: 'error',
+    onConstructorPoisoning: 'ignore',
     pluginTimeout: 10000,
     requestIdHeader: 'request-id',
     requestIdLogLabel: 'reqId'
@@ -55,12 +56,12 @@ test('Fastify.initialConfig should expose all options', t => {
       }
     },
     deriveVersion: (req, ctx) => {
-      return req.headers['accept']
+      return req.headers.accept
     }
   }
 
   let reqId = 0
-  let options = {
+  const options = {
     http2: true,
     https: {
       key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
@@ -153,7 +154,7 @@ test('Return an error if options do not match the validation schema', t => {
   } catch (error) {
     t.type(error, Error)
     t.equal(error.name, 'FastifyError')
-    t.equal(error.message, `Invalid initialization options: '["should be boolean"]'`)
+    t.equal(error.message, 'Invalid initialization options: \'["should be boolean"]\'')
     t.equal(error.code, 'FST_ERR_INIT_OPTS_INVALID')
     t.ok(error.stack)
     t.pass()
@@ -228,6 +229,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       ignoreTrailingSlash: true,
       maxParamLength: 100,
       onProtoPoisoning: 'error',
+      onConstructorPoisoning: 'ignore',
       pluginTimeout: 10000,
       requestIdHeader: 'request-id',
       requestIdLogLabel: 'reqId'

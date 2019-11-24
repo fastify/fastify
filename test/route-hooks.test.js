@@ -3,7 +3,7 @@
 const test = require('tap').test
 const Fastify = require('../')
 
-function testHook (hook) {
+function testExecutionHook (hook) {
   test(`${hook}`, t => {
     t.plan(3)
     const fastify = Fastify()
@@ -29,22 +29,24 @@ function testHook (hook) {
   })
 
   test(`${hook} option should be called after ${hook} hook`, t => {
-    t.plan(2)
+    t.plan(3)
     const fastify = Fastify()
-    let check = ''
+    const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
+      get: function () { return ++this.calledTimes }
+    })
 
     fastify.addHook(hook, (req, reply, next) => {
-      check = 'a'
+      t.equal(checker.check, 1)
       next()
     })
 
     fastify.post('/', {
       [hook]: (req, reply, done) => {
-        check += 'b'
+        t.equal(checker.check, 2)
         done()
       }
     }, (req, reply) => {
-      reply.send({ check })
+      reply.send({})
     })
 
     fastify.inject({
@@ -53,11 +55,86 @@ function testHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { check: 'ab' })
     })
   })
 
+  test(`${hook} option could accept an array of functions`, t => {
+    t.plan(3)
+    const fastify = Fastify()
+    const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
+      get: function () { return ++this.calledTimes }
+    })
+
+    fastify.post('/', {
+      [hook]: [
+        (req, reply, done) => {
+          t.equal(checker.check, 1)
+          done()
+        },
+        (req, reply, done) => {
+          t.equal(checker.check, 2)
+          done()
+        }
+      ]
+    }, (req, reply) => {
+      reply.send({})
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.error(err)
+    })
+  })
+
+  test(`${hook} option does not interfere with ${hook} hook`, t => {
+    t.plan(7)
+    const fastify = Fastify()
+    const checker = Object.defineProperty({ calledTimes: 0 }, 'check', {
+      get: function () { return ++this.calledTimes }
+    })
+
+    fastify.addHook(hook, (req, reply, next) => {
+      t.equal(checker.check, 1)
+      next()
+    })
+
+    fastify.post('/', {
+      [hook]: (req, reply, done) => {
+        t.equal(checker.check, 2)
+        done()
+      }
+    }, handler)
+
+    fastify.post('/no', handler)
+
+    function handler (req, reply) {
+      reply.send({})
+    }
+
+    fastify.inject({
+      method: 'post',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.equal(checker.calledTimes, 2)
+
+      checker.calledTimes = 0
+
+      fastify.inject({
+        method: 'post',
+        url: '/no'
+      }, (err, res) => {
+        t.error(err)
+        t.equal(checker.calledTimes, 1)
+      })
+    })
+  })
+}
+
+function testBeforeHandlerHook (hook) {
   test(`${hook} option should be unique per route`, t => {
     t.plan(4)
     const fastify = Fastify()
@@ -153,79 +230,6 @@ function testHook (hook) {
     })
   })
 
-  test(`${hook} option could accept an array of functions`, t => {
-    t.plan(2)
-    const fastify = Fastify()
-
-    fastify.post('/', {
-      [hook]: [
-        (req, reply, done) => {
-          req.aa = 'a'
-          done()
-        },
-        (req, reply, done) => {
-          req.aa += 'b'
-          done()
-        }
-      ]
-    }, (req, reply) => {
-      reply.send({ aa: req.aa })
-    })
-
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { aa: 'ab' })
-    })
-  })
-
-  test(`${hook} option does not interfere with ${hook} hook`, t => {
-    t.plan(4)
-    const fastify = Fastify()
-
-    fastify.addHook(hook, (req, reply, next) => {
-      req.check = 'a'
-      next()
-    })
-
-    fastify.post('/', {
-      [hook]: (req, reply, done) => {
-        req.check += 'b'
-        done()
-      }
-    }, handler)
-
-    fastify.post('/no', handler)
-
-    function handler (req, reply) {
-      reply.send({ check: req.check })
-    }
-
-    fastify.inject({
-      method: 'post',
-      url: '/',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { check: 'ab' })
-    })
-
-    fastify.inject({
-      method: 'post',
-      url: '/no',
-      payload: { hello: 'world' }
-    }, (err, res) => {
-      t.error(err)
-      var payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { check: 'a' })
-    })
-  })
-
   test(`${hook} option should keep the context`, t => {
     t.plan(3)
     const fastify = Fastify()
@@ -281,11 +285,16 @@ function testHook (hook) {
   })
 }
 
+testExecutionHook('preHandler')
+testExecutionHook('onRequest')
+testExecutionHook('onResponse')
+testExecutionHook('preValidation')
+testExecutionHook('preParsing')
 // hooks that comes before the handler
-testHook('preHandler')
-testHook('onRequest')
-testHook('preValidation')
-testHook('preParsing')
+testBeforeHandlerHook('preHandler')
+testBeforeHandlerHook('onRequest')
+testBeforeHandlerHook('preValidation')
+testBeforeHandlerHook('preParsing')
 
 test('preValidation option should be called before preHandler hook', t => {
   t.plan(3)

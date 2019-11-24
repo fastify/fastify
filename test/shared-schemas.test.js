@@ -565,7 +565,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },
@@ -624,7 +624,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
         $id: '#address',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },
@@ -701,7 +701,7 @@ test('The schema resolver should clean the $id key before passing it to the comp
     url: '/',
     method: 'GET',
     schema: {
-      description: `get`,
+      description: 'get',
       body: 'second#',
       response: {
         200: 'second#'
@@ -716,7 +716,7 @@ test('The schema resolver should clean the $id key before passing it to the comp
     url: '/',
     method: 'PATCH',
     schema: {
-      description: `patch`,
+      description: 'patch',
       body: 'first#',
       response: {
         200: 'first#'
@@ -1089,7 +1089,7 @@ test('Use shared schema and $ref to /definitions', t => {
         $id: '#otherId',
         type: 'object',
         properties: {
-          city: { 'type': 'string' }
+          city: { type: 'string' }
         }
       }
     },

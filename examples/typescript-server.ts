@@ -3,7 +3,7 @@
  * Most type annotations in this file are not strictly necessary but are
  * included for this example.
  *
- * To run this example exectute the following commands to install typescript,
+ * To run this example execute the following commands to install typescript,
  * transpile the code, and start the server:
  *
  * npm i -g typescript

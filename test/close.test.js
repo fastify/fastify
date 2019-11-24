@@ -1,5 +1,6 @@
 'use strict'
 
+const net = require('net')
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -114,8 +115,8 @@ test('onClose should keep the context', t => {
   })
 })
 
-test('Should return 503 while closing - injection', t => {
-  t.plan(8)
+test('Should return error while closing - injection', t => {
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.addHook('onClose', (instance, done) => {
@@ -139,17 +140,73 @@ test('Should return 503 while closing - injection', t => {
         method: 'GET',
         url: '/'
       }, (err, res) => {
-        t.error(err)
-        t.strictEqual(res.statusCode, 503)
-        t.strictEqual(res.headers['content-type'], 'application/json')
-        t.strictEqual(res.headers['content-length'], '80')
-        t.strictEqual(res.headers['connection'], 'close')
-        t.deepEqual(JSON.parse(res.payload), {
-          error: 'Service Unavailable',
-          message: 'Service Unavailable',
-          statusCode: 503
-        })
+        t.ok(err)
+        t.equal(err.message, 'Server is closed')
       })
     }, 100)
+  })
+})
+
+t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false', t => {
+  const fastify = Fastify({
+    return503OnClosing: false
+  })
+
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const client = net.createConnection({ port: port }, () => {
+      client.write('GET / HTTP/1.1\r\n\r\n')
+
+      client.once('data', data => {
+        t.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.match(data.toString(), /200 OK/i)
+
+        client.write('GET / HTTP/1.1\r\n\r\n')
+
+        client.once('data', data => {
+          t.match(data.toString(), /Connection:\s*close/i)
+          t.match(data.toString(), /200 OK/i)
+
+          // Test that fastify closes the TCP connection
+          client.once('close', () => {
+            t.end()
+          })
+        })
+      })
+    })
+  })
+})
+
+t.test('Current opened connection should not accept new incoming connections', t => {
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const client = net.createConnection({ port: port }, () => {
+      client.write('GET / HTTP/1.1\r\n\r\n')
+
+      const newConnection = net.createConnection({ port: port })
+      newConnection.on('error', err => {
+        t.ok(err)
+        t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
+
+        client.end()
+        t.end()
+      })
+    })
   })
 })

@@ -13,7 +13,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 
 test('hooks', t => {
-  t.plan(37)
+  t.plan(38)
   const fastify = Fastify()
 
   try {
@@ -97,6 +97,9 @@ test('hooks', t => {
       t.is(req.test, 'the request is coming')
       t.is(reply.test, 'the reply has come')
       reply.code(200).send(payload)
+    },
+    onResponse: function (req, reply, done) {
+      t.ok('onResponse inside hook')
     },
     response: {
       200: {
@@ -484,7 +487,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
 })
 
 test('onRoute hook should pass correct route with custom options', t => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
@@ -492,8 +495,15 @@ test('onRoute hook should pass correct route with custom options', t => {
       t.strictEqual(route.url, '/foo')
       t.strictEqual(route.logLevel, 'info')
       t.strictEqual(route.bodyLimit, 100)
+      t.type(route.logSerializers.test, 'function')
     })
-    instance.get('/foo', { logLevel: 'info', bodyLimit: 100 }, function (req, reply) {
+    instance.get('/foo', {
+      logLevel: 'info',
+      bodyLimit: 100,
+      logSerializers: {
+        test: value => value
+      }
+    }, function (req, reply) {
       reply.send()
     })
     done()
@@ -560,6 +570,25 @@ test('onRoute hook should preserve handler function in options of shorthand rout
 
   fastify.ready(err => {
     t.error(err)
+  })
+})
+
+test('onRoute hook that throws should be caught ', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {
+      throw new Error('snap')
+    })
+    instance.get('/', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.ready(err => {
+    t.ok(err)
   })
 })
 
@@ -1915,7 +1944,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1929,7 +1958,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1943,7 +1972,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })
@@ -1957,7 +1986,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     t.deepEqual(request.headers, {
       'content-length': '17',
       'content-type': 'application/json',
-      'host': 'localhost:80',
+      host: 'localhost:80',
       'user-agent': 'lightMyRequest',
       'x-custom': 'hello'
     })

@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint no-prototype-builtins: 0 */
+
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -658,4 +660,52 @@ test('a decorator should addSchema to all the encapsulated tree', t => {
   })
 
   fastify.ready(t.error)
+})
+
+test('after can access to a decorated instance and previous plugin decoration', t => {
+  t.plan(11)
+  const TEST_VALUE = {}
+  const OTHER_TEST_VALUE = {}
+  const NEW_TEST_VALUE = {}
+
+  const fastify = Fastify()
+
+  fastify.register(fp(function (instance, options, next) {
+    instance.decorate('test', TEST_VALUE)
+
+    next()
+  })).after(function (err, instance, done) {
+    t.error(err)
+    t.equal(instance.test, TEST_VALUE)
+
+    instance.decorate('test2', OTHER_TEST_VALUE)
+    done()
+  })
+
+  fastify.register(fp(function (instance, options, next) {
+    t.equal(instance.test, TEST_VALUE)
+    t.equal(instance.test2, OTHER_TEST_VALUE)
+
+    instance.decorate('test3', NEW_TEST_VALUE)
+
+    next()
+  })).after(function (err, instance, done) {
+    t.error(err)
+    t.equal(instance.test, TEST_VALUE)
+    t.equal(instance.test2, OTHER_TEST_VALUE)
+    t.equal(instance.test3, NEW_TEST_VALUE)
+
+    done()
+  })
+
+  fastify.get('/', function (req, res) {
+    t.equal(this.test, TEST_VALUE)
+    t.equal(this.test2, OTHER_TEST_VALUE)
+    res.send({})
+  })
+
+  fastify.inject('/')
+    .then(response => {
+      t.equal(response.statusCode, 200)
+    })
 })

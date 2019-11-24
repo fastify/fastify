@@ -24,7 +24,7 @@ jobs:
 
 - template: build/azure-pipelines-yarn-template.yml
   parameters:
-    name: Windows_yarm
+    name: Windows_yarn
     vmImage: vs2017-win2016
 
 - template: build/azure-pipelines-yarn-template.yml

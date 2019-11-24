@@ -1,14 +1,34 @@
 <h1 align="center">Fastify</h1>
 
 ## Routes
-You have two ways to declare a route with Fastify, the shorthand method and the full declaration. Let's start with the second one:
+
+The routes methods will configure the endpoints of your application. 
+You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
+
+- [Full Declaration](#full-declaration)
+- [Route Options](#options)
+- [Shorthand Declaration](#shorthand-declaration)
+- [URL Parameters](#url-building)
+- [Use `async`/`await`](#async-await)
+- [Promise resolution](#promise-resolution)
+- [Route Prefixing](#route-prefixing)
+- Logs
+  - [Custom Log Level](#custom-log-level)
+  - [Custom Log Serializer](#custom-log-serializer)
+- [Route handler configuration](#routes-config)
+- [Route's Versioning](#version)
+
 <a name="full-declaration"></a>
 ### Full declaration
+
 ```js
 fastify.route(options)
 ```
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 
+<a name="options"></a>
+### Routes option
+
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
@@ -16,21 +36,24 @@ They need to be in
 
   * `body`: validates the body of the request if it is a POST or a
     PUT.
-  * `querystring`: validates the querystring. This can be a complete JSON
+  * `querystring` or `query`: validates the querystring. This can be a complete JSON
   Schema object, with the property `type` of `object` and `properties` object of parameters, or
   simply the values of what would be contained in the `properties` object as shown below.
   * `params`: validates the params.
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) as soon that a request is received, it could also be an array of functions.
-* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
-* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the request handler, it could also be an array of functions.
-* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called just before the serialization, it could also be an array of functions.
+* `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
+* `preParsing(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
+* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
+* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
+* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
+* `onResponse(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
+* `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
@@ -168,7 +191,6 @@ fastify.get('/', options, async function (request, reply) {
   return processed
 })
 ```
-**Warning:** You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 As you can see we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
@@ -180,8 +202,32 @@ fastify.get('/', options, async function (request, reply) {
   reply.send(processed)
 })
 ```
+
+If the route is wrapping a callback-based API that will call
+`reply.send()` outside of the promise chain, it is possible to `await reply`:
+
+```js
+fastify.get('/', options, async function (request, reply) {
+  setImmediate(() => {
+    reply.send({ hello: 'world' })
+  })
+  await reply
+})
+```
+
+Returning reply also works:
+
+```js
+fastify.get('/', options, async function (request, reply) {
+  setImmediate(() => {
+    reply.send({ hello: 'world' })
+  })
+  return reply
+})
+```
+
 **Warning:**
-* If you use `return` and `reply.send` at the same time, the first one that happens takes precedence, the second value will be discarded, a *warn* log will also be emitted because you tried to send a response twice.
+* When using both `return value` and `reply.send(value)` at the same time, the first one that happens takes precedence, the second value will be discarded, and a *warn* log will also be emitted because you tried to send a response twice.
 * You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 <a name="promise-resolution"></a>
@@ -214,18 +260,20 @@ fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
 
 fastify.listen(3000)
 ```
+
 ```js
 // routes/v1/users.js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v1)
-  next()
+  done()
 }
 ```
+
 ```js
 // routes/v2/users.js
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify.get('/user', handler_v2)
-  next()
+  done()
 }
 ```
 Fastify will not complain because you are using the same name for two different routes, because at compilation time it will handle the prefix automatically *(this also means that the performance will not be affected at all!)*.
@@ -249,7 +297,7 @@ See the `prefixTrailingSlash` route option above to change this behaviour.
 
 <a name="custom-log-level"></a>
 ### Custom Log Level
-It could happen that you need different log levels in your routes, with Fastify achieve this is very straightforward.<br/>
+It could happen that you need different log levels in your routes, Fastify achieves this in a very straightforward way.<br/>
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/API.md#discussion-3) that you need.
 
 Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#setnotfoundhandler) and [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) will be affected.
@@ -263,6 +311,7 @@ fastify.register(require('./routes/events'), { logLevel: 'debug' })
 
 fastify.listen(3000)
 ```
+
 Or you can directly pass it to a route:
 ```js
 fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
@@ -271,6 +320,64 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 ```
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
 
+<a name="custom-log-serializer"></a>
+### Custom Log Serializer
+
+In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
+
+```js
+const fastify = require('fastify')({ logger: true })
+
+fastify.register(require('./routes/user'), { 
+  logSerializers: {
+    user: (value) => `My serializer one - ${value.name}`
+  } 
+})
+fastify.register(require('./routes/events'), {
+  logSerializers: {
+    user: (value) => `My serializer two - ${value.name} ${value.surname}`
+  }
+})
+
+fastify.listen(3000)
+```
+
+You can inherit serializers by context:
+
+```js
+const fastify = Fastify({ 
+  logger: {
+    level: 'info',
+    serializers: {
+      user (req) {
+        return {
+          method: req.method,
+          url: req.url,
+          headers: req.headers,
+          hostname: req.hostname,
+          remoteAddress: req.ip,
+          remotePort: req.connection.remotePort
+        }
+      }
+    }
+  } 
+})
+
+fastify.register(context1, { 
+  logSerializers: {
+    user: value => `My serializer father - ${value}`
+  } 
+})
+
+async function context1 (fastify, opts) {
+  fastify.get('/', (req, reply) => {
+    req.log.info({ user: 'call father serializer', key: 'another key' }) // shows: { user: 'My serializer father - call father  serializer', key: 'another key' }
+    reply.send({})
+  })
+}
+
+fastify.listen(3000)
+```
 
 <a name="routes-config"></a>
 ### Config
@@ -292,10 +399,12 @@ fastify.listen(3000)
 
 <a name="version"></a>
 ### Version
+
 #### Default
 If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
 Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
+
 ```js
 fastify.route({
   method: 'GET',
@@ -316,7 +425,9 @@ fastify.inject({
   // { hello: 'world' }
 })
 ```
+
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
+
 #### Custom
 It's possible to define a custom versioning logic. This can be done through the [`versioning`](https://github.com/fastify/fastify/blob/master/docs/Server.md#versioning) configuration, when creating a fastify server instance.

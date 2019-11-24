@@ -41,8 +41,9 @@ A "month" is to be a period of 30 consecutive days.
 
 ### CI tested operating systems
 
-| CI              | OS      | Version        | Package Manager | Node.js       |
-| :-------------- | :------ | :------------- | :-------------- | :------------ |
-| Azure pipelines | Linux   | Ubuntu 16.04   | npm, yarn       | 8, 10, 12     |
-| Azure pipelines | Windows | vs2017-win2016 | npm, yarn       | 8, 10, 12     |
-| Azure pipelines | Mac     | macOS 10.14    | npm, yarn       | 8, 10, 12     |
+| CI             | OS      | Version                | Package Manager           | Node.js   |
+|----------------|---------|------------------------|---------------------------|-----------|
+| Github Actions | Linux   | Ubuntu 16.04           | npm                       | 8,10,12 |
+| Github Actions | Linux   | Ubuntu 16.04           | yarn,pnpm                 | 8,10      |
+| Github Actions | Windows | Windows Server 2016 R2 | npm                       | 8,10,12 |
+| Github Actions | MacOS   | macOS X Mojave 10.14   | npm                       | 8,10,12 |

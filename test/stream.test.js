@@ -140,7 +140,7 @@ test('onSend hook stream', t => {
 })
 
 test('Destroying streams prematurely', t => {
-  t.plan(5)
+  t.plan(6)
 
   let fastify = null
   const logStream = split(JSON.parse)
@@ -190,7 +190,9 @@ test('Destroying streams prematurely', t => {
       response.on('readable', function () {
         response.destroy()
       })
-      response.on('close', function () {
+
+      // Node bug? Node never emits 'close' here.
+      response.on('aborted', function () {
         t.pass('Response closed')
       })
     })
@@ -198,7 +200,7 @@ test('Destroying streams prematurely', t => {
 })
 
 test('Destroying streams prematurely should call close method', t => {
-  t.plan(6)
+  t.plan(7)
 
   let fastify = null
   const logStream = split(JSON.parse)
@@ -249,7 +251,8 @@ test('Destroying streams prematurely should call close method', t => {
       response.on('readable', function () {
         response.destroy()
       })
-      response.on('close', function () {
+      // Node bug? Node never emits 'close' here.
+      response.on('aborted', function () {
         t.pass('Response closed')
       })
     })
@@ -257,7 +260,7 @@ test('Destroying streams prematurely should call close method', t => {
 })
 
 test('Destroying streams prematurely should call abort method', t => {
-  t.plan(6)
+  t.plan(7)
 
   let fastify = null
   const logStream = split(JSON.parse)
@@ -309,7 +312,8 @@ test('Destroying streams prematurely should call abort method', t => {
       response.on('readable', function () {
         response.destroy()
       })
-      response.on('close', function () {
+      // Node bug? Node never emits 'close' here.
+      response.on('aborted', function () {
         t.pass('Response closed')
       })
     })

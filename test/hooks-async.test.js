@@ -438,7 +438,7 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
-      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -449,12 +449,12 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.true(e.message === `Async function has too many arguments. Async hooks should not use the 'done' argument.`)
+      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 

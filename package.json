@@ -13,7 +13,7 @@
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",
     "test:typescript": "tsd",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
-    "test": "npm run lint && npm run unit && npm run test:typescript",
+    "test": "npm run lint && npm run unit",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "test:ci": "npm run lint && npm run unit -- --cov --coverage-report=lcovonly && npm run typescript",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",

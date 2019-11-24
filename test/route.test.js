@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const joi = require('joi')
+const joi = require('@hapi/joi')
 const Fastify = require('..')
 
 test('route', t => {

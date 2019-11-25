@@ -77,13 +77,13 @@ The best way to learn the Fastify type system is by example! The following four 
 
 This example will get you up and running with Fastify and TypeScript. It results in a blank http Fastify server. 
 
-- Create a new npm project, install Fastify, and install typescript & node.js types as peer dependencies:
+1. Create a new npm project, install Fastify, and install typescript & node.js types as peer dependencies:
   ```bash
   npm init -y
   npm i fastify
   npm i -D typescript @types/node
   ```
-- Add the following lines to the `"scripts"` section of the `package.json`:
+2. Add the following lines to the `"scripts"` section of the `package.json`:
   ```json
   {
     "scripts": {
@@ -92,12 +92,12 @@ This example will get you up and running with Fastify and TypeScript. It results
     }
   }
   ```
-- Initialize a TypeScript configuration file:
+3. Initialize a TypeScript configuration file:
   ```bash
   ./node_modules/typescript/bin/tsc --init
   ```
-- Create an `index.ts` file - this will contain the server code
-- Add the following code block to your file:
+4. Create an `index.ts` file - this will contain the server code
+5. Add the following code block to your file:
   ```typescript
   import fastify from 'fastify'
 
@@ -115,16 +115,52 @@ This example will get you up and running with Fastify and TypeScript. It results
     console.log(`Server listening at ${address}`)
   })
   ```
-- Run `npm run build` - this will compile `index.ts` into `index.js` which can be executed using Node.js. If you run into any errors please open an issue in [fastify/help](https://github.com/fastify/help/)
-- Run `npm run start` to run the Fastify server
-- You should see `Server listening at http://127.0.0.1:8080` in your console
-- Try out your server using `curl localhost:8080/ping`, it should return `pong` 🏓
+6. Run `npm run build` - this will compile `index.ts` into `index.js` which can be executed using Node.js. If you run into any errors please open an issue in [fastify/help](https://github.com/fastify/help/)
+7. Run `npm run start` to run the Fastify server
+8. You should see `Server listening at http://127.0.0.1:8080` in your console
+9. Try out your server using `curl localhost:8080/ping`, it should return `pong` 🏓
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates the simplicity of the version 3.x type system. By default, the type system assumes you are using an `http` server. The later examples will demonstrate how to create more complex servers such as `https` and `http2`, how to specify route schemas, and more!
 
+> For more examples on initializing Fastify with TypeScript (such as enabling HTTP2) check out the detailed API section [here]((#fastifyopts-fastifyoptions-fastifyinstance))
+
 ### Using Generics
 
-The type system heavily relies on generic properties to provide the most accurate development experience. While some may find the overhead a bit cumbersome, the tradeoff is worth it! This example will dive into implementing generic types for route schemas. 
+The type system heavily relies on generic properties to provide the most accurate development experience. While some may find the overhead a bit cumbersome, the tradeoff is worth it! This example will dive into implementing generic types for route schemas and the dynamic properties located on the route-level `request` object.
+
+1. If you did not complete the previous example, follow steps 1-4 to get set up.
+2. Inside `index.ts`, define two interfaces `IQuerystring` and `IHeaders`:
+    ```typescript
+    interface IQuerystring {
+      username: string;
+      password: string;
+    }
+
+    interface IHeaders {
+      'H-Custom': string;
+    }
+    ```
+3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance. 
+    ```typescript
+    server.get<{ 
+      Querystring: IQuerystring,
+      Headers: IHeaders
+    }>('/auth', async (request, reply) => {
+      const { username, password } = request.query
+      const customerHeader = request.headers['H-Custom']
+      // do something with request data
+
+      return `logged in!`
+    }) 
+    ```
+4. Build and run the server code with `npm run build` and `npm run start`
+5. Query the api
+    ```bash
+    curl localhost:8080/auth?username=admin&password=Password123!
+    ```
+    And it should return back `logged in!`
+
+🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the system rely on similar generic properties. The next example will demonstrate how to define hooks and middleware with TypeScript. 
 
 ### Hooks & Middleware
 

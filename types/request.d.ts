@@ -1,6 +1,13 @@
 import { FastifyLoggerOptions } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
+export interface RequestGenericInterface {
+  Body?: RequestBodyDefault;
+  Querystring?: RequestQuerystringDefault;
+  Params?: RequestParamsDefault;
+  Headers?: RequestHeadersDefault;
+}
+
 /**
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
@@ -8,16 +15,13 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBo
 export type FastifyRequest<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface
 > = RawRequest & {
-  body: RequestBody;
+  body: RequestGeneric['Body'];
   id: any;
   log: FastifyLoggerOptions<RawServer>;
-  params: RequestParams;
-  query: RequestQuerystring;
+  params: RequestGeneric['Params'];
+  query: RequestGeneric['Querystring'];
   raw: RawRequest;
-  headers: RawRequest['headers'] & RequestHeaders; // this enables the developer to extend the existing http(s|2) headers list
+  headers: RawRequest['headers'] & RequestGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
 }

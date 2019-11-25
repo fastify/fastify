@@ -1,9 +1,9 @@
 import { FastifyInstance } from './instance'
 import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
+import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevels } from './logger'
 
 /**
@@ -14,10 +14,10 @@ export interface RouteShorthandMethod<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
-  <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
+  <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
-    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>
+    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 }
 
@@ -29,9 +29,9 @@ export interface RouteShorthandMethod<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
-  <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
+  <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 }
 
@@ -43,9 +43,9 @@ export interface RouteShorthandMethod<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
-  <RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>(
+  <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
-    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>
+    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 }
 
@@ -56,17 +56,14 @@ export interface RouteShorthandOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   schema?: FastifySchema;
   attachValidation?: boolean;
-  preValidation?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>[];
-  preHandler?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>[];
-  preSerialization?: FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig> | FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>[];
+  preValidation?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preHandler?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preSerialization?: FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   schemaCompiler?: FastifySchemaCompiler;
   bodyLimit?: number;
   logLevel?: LogLevels;
@@ -82,15 +79,12 @@ export interface RouteOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
-> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig> {
+> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> {
   method: HTTPMethods | HTTPMethods[];
   url: string;
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>;
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>;
 }
 
 /**
@@ -100,13 +94,10 @@ export interface RouteShorthandOptionsWithHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
-> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig> {
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>;
+> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> {
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>;
 }
 
 /**
@@ -116,12 +107,9 @@ export type RouteHandlerMethod<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
 > = (
-  request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
+  request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
   reply: FastifyReply<RawServer, RawReply, ContextConfig>
 ) => void | Promise<any>

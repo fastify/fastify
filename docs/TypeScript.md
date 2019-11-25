@@ -99,7 +99,7 @@ In its current state, the type systems between Fastify v2.x and future v3.x cont
   const server = fastify()
 
   server.get('/ping', async (request, reply) => {
-    await reply.send('pong\n')
+    return 'pong\n'
   })
 
   server.listen(8080, (err, address) => {

@@ -284,6 +284,9 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
+
+If you are authoring a plugin and you need to customize application routes, like modifying the options or adding new route hooks, this is the right place.
+
 <a name="on-register"></a>
 ### onRegister
 Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>

@@ -1,7 +1,7 @@
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, ContextConfigDefault } from './utils'
+import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 
 /**
  * Fastify Middleware
@@ -12,14 +12,11 @@ export interface FastifyMiddleware<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: (err?: FastifyError) => void
   ): void;
@@ -34,14 +31,11 @@ export interface FastifyMiddlewareWithPayload<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestBody = RequestBodyDefault,
-  RequestQuerystring = RequestQuerystringDefault,
-  RequestParams = RequestParamsDefault,
-  RequestHeaders = RequestHeadersDefault,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestBody, RequestQuerystring, RequestParams, RequestHeaders>,
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: any,
     done: (err?: FastifyError, value?: any) => void

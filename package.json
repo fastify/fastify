@@ -137,7 +137,7 @@
     "tap": "^14.4.1",
     "tap-mocha-reporter": "^4.0.1",
     "then-sleep": "^1.0.1",
-    "tsd": "^0.7.3",
+    "tsd": "^0.11.0",
     "typescript": "^3.6.3",
     "x-xss-protection": "^1.2.0"
   },

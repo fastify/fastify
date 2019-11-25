@@ -1,11 +1,11 @@
 import { InjectOptions, InjectPayload } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
-import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
 import { AddHook } from './hooks'
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
 import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
@@ -54,12 +54,9 @@ export interface FastifyInstance<
   use: FastifyRegister<RawServer, RawRequest, RawReply>;
 
   route<
-    RequestBody = RequestBodyDefault,
-    RequestQuerystring = RequestQuerystringDefault,
-    RequestParams = RequestParamsDefault,
-    RequestHeaders = RequestHeadersDefault,
+    RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
     ContextConfig = ContextConfigDefault
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestBody, RequestQuerystring, RequestParams, RequestHeaders, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>;
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   // Would love to implement something like the following:
   // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,

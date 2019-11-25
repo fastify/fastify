@@ -291,7 +291,7 @@ If you are authoring a plugin and you need to customize application routes, like
 fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.preSerialization = function (request, reply, payload, done) {
     // Your code
-    done()
+    done(null, payload)
   })
 })
 ```
@@ -375,7 +375,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
   // Your code
-  done()
+  done(null, payload)
 })
 
 fastify.route({

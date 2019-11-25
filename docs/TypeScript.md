@@ -71,7 +71,12 @@ In its current state, the type systems between Fastify v2.x and future v3.x cont
 
 ## Learn By Example
 
+The best way to learn the Fastify type system is by example! The following four examples should cover the most common Fastify development cases. After the examples there is further, more detailed documentation for the type system. 
+
 ### Getting Started
+
+This example will get you up and running with Fastify and TypeScript. It results in a blank http Fastify server. 
+
 - Create a new npm project, install Fastify, and install typescript & node.js types as peer dependencies:
   ```bash
   npm init -y
@@ -89,7 +94,7 @@ In its current state, the type systems between Fastify v2.x and future v3.x cont
   ```
 - Initialize a TypeScript configuration file:
   ```bash
-  tsc --init
+  ./node_modules/typescript/bin/tsc --init
   ```
 - Create an `index.ts` file - this will contain the server code
 - Add the following code block to your file:
@@ -118,6 +123,8 @@ In its current state, the type systems between Fastify v2.x and future v3.x cont
 🎉 You now have a working Typescript Fastify server! This example demonstrates the simplicity of the version 3.x type system. By default, the type system assumes you are using an `http` server. The later examples will demonstrate how to create more complex servers such as `https` and `http2`, how to specify route schemas, and more!
 
 ### Using Generics
+
+The type system heavily relies on generic properties to provide the most accurate development experience. While some may find the overhead a bit cumbersome, the tradeoff is worth it! This example will dive into implementing generic types for route schemas. 
 
 ### Hooks & Middleware
 

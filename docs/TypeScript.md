@@ -14,7 +14,6 @@ In its current state, the type systems between Fastify v2.x and future v3.x cont
 - [Learn By Example](#learn-by-example)
   * [Getting Started](#getting-started)
   * [Using Generics](#using-generics)
-  * [Hooks & Middleware](#hooks--middleware)
   * [Plugins](#plugins)
 - [API Type Documentation](#api-type-documentation)
   * [How to import](#how-to-import)
@@ -159,10 +158,25 @@ The type system heavily relies on generic properties to provide the most accurat
     curl localhost:8080/auth?username=admin&password=Password123!
     ```
     And it should return back `logged in!`
+6. But wait theres more! The generic interfaces are also available inside route level hook methods. Modify the previous route by adding a `preValidation` hook:
+    ```typescript
+    server.get<{ 
+      Querystring: IQuerystring,
+      Headers: IHeaders
+    }>('/auth', {
+      preValidation: (request, reply) => {
+        const { username, password } = request.query
+        done(username !== 'admin' ? new Error('Must be admin') : undefined) // only validate `admin` account
+      }
+    }, async (request, reply) => {
+      const customerHeader = request.headers['H-Custom']
+      // do something with request data
+      return `logged in!`
+    }) 
+    ```
+7. Build and run and query with the `username` query string option set to anything other than `admin`. The API should now return a HTTP 500 error `{"statusCode":500,"error":"Internal Server Error","message":"Must be admin"}`
 
-🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the system rely on similar generic properties. The next example will demonstrate how to define hooks and middleware with TypeScript. 
-
-### Hooks & Middleware
+🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the Fastify type system rely on generic properties. Make sure to reference the detailed type system documentation below to learn more about what is available.
 
 ### Plugins
 

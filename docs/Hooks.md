@@ -289,15 +289,12 @@ If you are authoring a plugin and you need to customize application routes, like
 
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
-  // Can be undefined or an array of functions.
-  if(!routeOptions.preSerialization) {
-    routeOptions.preSerialization = []
-  }
-  
-  routeOptions.preSerialization.push(function (request, reply, payload, done) {
+  function onPreSerialization(request, reply, payload, done) {
     // Your code
     done(null, payload)
-  }))
+  }
+  
+  routeOptions.preSerialization = [...routeOptions.preSerialization, onPreSerialization]
 })
 ```
 

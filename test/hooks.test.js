@@ -2599,10 +2599,16 @@ test('onRegister hook should be called / 1', t => {
     next()
   }, pluginOpts)
 
+  let first = true
   fastify.addHook('onRegister', (instance, opts) => {
     // duck typing for the win!
     t.ok(instance.addHook)
-    t.deepEquals(opts, pluginOpts)
+    if (first) {
+      // the first call of the onRegister is the main fastify instance, not the registered ones
+      first = false
+    } else {
+      t.deepEquals(opts, pluginOpts)
+    }
   })
 
   fastify.ready(err => {

@@ -2680,7 +2680,7 @@ test('onRegister hook should be called / 4', t => {
   fastify.addHook('onRegister', (instance, opts) => {
     // duck typing for the win!
     t.ok(instance.addHook)
-    t.notOk(opts)
+    t.deepEquals(opts, {})
   })
 
   fastify.ready(err => {

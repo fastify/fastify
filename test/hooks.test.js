@@ -2673,7 +2673,7 @@ test('onRegister hook should be called / 3', t => {
 })
 
 test('onRegister hook should be called / 4', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   function plugin (instance, opts, next) {

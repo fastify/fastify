@@ -284,6 +284,20 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
+
+If you are authoring a plugin and you need to customize application routes, like modifying the options or adding new route hooks, this is the right place.
+
+```js
+fastify.addHook('onRoute', (routeOptions) => {
+  function onPreSerialization(request, reply, payload, done) {
+    // Your code
+    done(null, payload)
+  }
+  
+  routeOptions.preSerialization = [...routeOptions.preSerialization, onPreSerialization]
+})
+```
+
 <a name="on-register"></a>
 ### onRegister
 Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
@@ -363,7 +377,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
   // Your code
-  done()
+  done(null, payload)
 })
 
 fastify.route({
@@ -397,7 +411,7 @@ fastify.route({
   //   done()
   // }],
   preSerialization: (request, reply, payload, done) => {
-    // Manipulate the payload
+    // This hook will always be executed after the shared `preSerialization` hooks
     done(null, payload)
   },
   handler: function (request, reply) {

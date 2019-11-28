@@ -293,8 +293,8 @@ fastify.addHook('onRoute', (routeOptions) => {
     // Your code
     done(null, payload)
   }
-  
-  routeOptions.preSerialization = [...routeOptions.preSerialization, onPreSerialization]
+  // preSerialization can be an array or undefined
+  routeOptions.preSerialization = [...(routeOptions.preSerialization || []), onPreSerialization]
 })
 ```
 

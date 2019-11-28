@@ -4,6 +4,7 @@
 
 /// <reference types="node" />
 
+import * as ajv from 'ajv'
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
@@ -186,6 +187,7 @@ declare namespace fastify {
   type TrustProxyFunction = (addr: string, index: number) => boolean
   type ServerFactoryHandlerFunction = (request: http.IncomingMessage | http2.Http2ServerRequest, response: http.ServerResponse | http2.Http2ServerResponse) => void
   type ServerFactoryFunction = (handler: ServerFactoryHandlerFunction, options: ServerOptions) => http.Server | http2.Http2Server
+
   interface ServerOptions {
     caseSensitive?: boolean,
     ignoreTrailingSlash?: boolean,
@@ -212,7 +214,11 @@ declare namespace fastify {
     genReqId?: () => number | string,
     requestIdHeader?: string,
     requestIdLogLabel?: string,
-    serverFactory?: ServerFactoryFunction
+    serverFactory?: ServerFactoryFunction,
+    ajv?: {
+      customOptions?: ajv.Options,
+      plugins?: Array<Array<any>|String>
+    }
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions

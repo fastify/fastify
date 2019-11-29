@@ -559,6 +559,11 @@ declare namespace fastify {
     use(path: string, middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
 
     /**
+     * Apply the given middleware to routes matching the given multiple path
+     */
+    use(path: string[], middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
+
+    /**
      * Registers a plugin
      */
     register<Options extends RegisterOptions<HttpServer, HttpRequest, HttpResponse>, PluginInstance extends Function>(plugin: Plugin<HttpServer, HttpRequest, HttpResponse, Options, PluginInstance>, options?: Options): FastifyInstance<HttpServer, HttpRequest, HttpResponse>

@@ -219,9 +219,9 @@ This code shows the typings for the `fastify-static` plugin.
 
 ```ts
 /// <reference types="node" />
+
 // require fastify typings
 import * as fastify from 'fastify';
-import { Plugin } from "fastify";
 
 // require necessary http, http2, https typings
 import { Server, IncomingMessage, ServerResponse } from "http";

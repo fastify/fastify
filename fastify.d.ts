@@ -260,6 +260,9 @@ declare namespace fastify {
   > {
     schema?: RouteSchema
     attachValidation?: boolean
+    onSend?:
+      | FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
+      | Array<FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
     onRequest?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>

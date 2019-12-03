@@ -9,9 +9,13 @@ function testExecutionHook (hook) {
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
+      [hook]: (req, reply, doneOrPayload, next) => {
         t.pass('hook called')
-        done()
+        if (typeof doneOrPayload === 'function') {
+          doneOrPayload()
+        } else {
+          next()
+        }
       }
     }, (req, reply) => {
       reply.send(req.body)
@@ -35,15 +39,23 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, next) => {
+    fastify.addHook(hook, (req, reply, doneOrPayload, next) => {
       t.equal(checker.check, 1)
-      next()
+      if (typeof doneOrPayload === 'function') {
+        doneOrPayload()
+      } else {
+        next()
+      }
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
+      [hook]: (req, reply, doneOrPayload, next) => {
         t.equal(checker.check, 2)
-        done()
+        if (typeof doneOrPayload === 'function') {
+          doneOrPayload()
+        } else {
+          next()
+        }
       }
     }, (req, reply) => {
       reply.send({})
@@ -67,13 +79,21 @@ function testExecutionHook (hook) {
 
     fastify.post('/', {
       [hook]: [
-        (req, reply, done) => {
+        (req, reply, doneOrPayload, next) => {
           t.equal(checker.check, 1)
-          done()
+          if (typeof doneOrPayload === 'function') {
+            doneOrPayload()
+          } else {
+            next()
+          }
         },
-        (req, reply, done) => {
+        (req, reply, doneOrPayload, next) => {
           t.equal(checker.check, 2)
-          done()
+          if (typeof doneOrPayload === 'function') {
+            doneOrPayload()
+          } else {
+            next()
+          }
         }
       ]
     }, (req, reply) => {
@@ -96,15 +116,23 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, next) => {
+    fastify.addHook(hook, (req, reply, doneOrPayload, next) => {
       t.equal(checker.check, 1)
-      next()
+      if (typeof doneOrPayload === 'function') {
+        doneOrPayload()
+      } else {
+        next()
+      }
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
+      [hook]: (req, reply, doneOrPayload, next) => {
         t.equal(checker.check, 2)
-        done()
+        if (typeof doneOrPayload === 'function') {
+          doneOrPayload()
+        } else {
+          next()
+        }
       }
     }, handler)
 
@@ -286,6 +314,7 @@ function testBeforeHandlerHook (hook) {
 }
 
 testExecutionHook('preHandler')
+testExecutionHook('onSend')
 testExecutionHook('onRequest')
 testExecutionHook('onResponse')
 testExecutionHook('preValidation')

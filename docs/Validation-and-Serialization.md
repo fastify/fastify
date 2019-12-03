@@ -240,6 +240,77 @@ This example will returns:
 | /sub  | one, two        |
 | /deep | one, two, three |
 
+<a name="ajv-plugins"></a>
+#### Ajv Plugins
+
+You can provide a list of plugins you want to use with Ajv:
+
+> Refer to [`ajv options`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to check plugins format
+
+```js
+const fastify = require('fastify')({
+  ajv: {
+    plugins: [
+      require('ajv-merge-patch')
+    ]
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      $patch: {
+        source: {
+          type: 'object',
+          properties: {
+            q: {
+              type: 'string'
+            }
+          }
+        },
+        with: [
+          {
+            op: 'add',
+            path: '/properties/q',
+            value: { type: 'number' }
+          }
+        ]
+      }
+    }
+  },
+  handler (req, reply) {
+    reply.send({ ok: 1 })
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      $merge: {
+        source: {
+          type: 'object',
+          properties: {
+            q: {
+              type: 'string'
+            }
+          }
+        },
+        with: {
+          required: ['q']
+        }
+      }
+    }
+  },
+  handler (req, reply) {
+    reply.send({ ok: 1 })
+  }
+})
+```
+
 <a name="schema-compiler"></a>
 #### Schema Compiler
 
@@ -257,7 +328,9 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
 }
 ```
 
-This baseline configuration cannot be modified. If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
+This baseline configuration can be modified by providing [`ajv.customOptions`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to your Fastify factory.
+
+If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 
 ```js
 const fastify = require('fastify')()

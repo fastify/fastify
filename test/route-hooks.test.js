@@ -3,19 +3,23 @@
 const test = require('tap').test
 const Fastify = require('../')
 
+function endMiddleware (nextOrPayload, next) {
+  if (typeof nextOrPayload === 'function') {
+    nextOrPayload()
+  } else {
+    next()
+  }
+}
+
 function testExecutionHook (hook) {
   test(`${hook}`, t => {
     t.plan(3)
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, doneOrPayload, next) => {
+      [hook]: (req, reply, nextOrPayload, next) => {
         t.pass('hook called')
-        if (typeof doneOrPayload === 'function') {
-          doneOrPayload()
-        } else {
-          next()
-        }
+        endMiddleware(nextOrPayload, next)
       }
     }, (req, reply) => {
       reply.send(req.body)
@@ -39,23 +43,15 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, doneOrPayload, next) => {
+    fastify.addHook(hook, (req, reply, nextOrPayload, next) => {
       t.equal(checker.check, 1)
-      if (typeof doneOrPayload === 'function') {
-        doneOrPayload()
-      } else {
-        next()
-      }
+      endMiddleware(nextOrPayload, next)
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, doneOrPayload, next) => {
+      [hook]: (req, reply, nextOrPayload, next) => {
         t.equal(checker.check, 2)
-        if (typeof doneOrPayload === 'function') {
-          doneOrPayload()
-        } else {
-          next()
-        }
+        endMiddleware(nextOrPayload, next)
       }
     }, (req, reply) => {
       reply.send({})
@@ -79,21 +75,13 @@ function testExecutionHook (hook) {
 
     fastify.post('/', {
       [hook]: [
-        (req, reply, doneOrPayload, next) => {
+        (req, reply, nextOrPayload, next) => {
           t.equal(checker.check, 1)
-          if (typeof doneOrPayload === 'function') {
-            doneOrPayload()
-          } else {
-            next()
-          }
+          endMiddleware(nextOrPayload, next)
         },
-        (req, reply, doneOrPayload, next) => {
+        (req, reply, nextOrPayload, next) => {
           t.equal(checker.check, 2)
-          if (typeof doneOrPayload === 'function') {
-            doneOrPayload()
-          } else {
-            next()
-          }
+          endMiddleware(nextOrPayload, next)
         }
       ]
     }, (req, reply) => {
@@ -116,23 +104,15 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, doneOrPayload, next) => {
+    fastify.addHook(hook, (req, reply, nextOrPayload, next) => {
       t.equal(checker.check, 1)
-      if (typeof doneOrPayload === 'function') {
-        doneOrPayload()
-      } else {
-        next()
-      }
+      endMiddleware(nextOrPayload, next)
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, doneOrPayload, next) => {
+      [hook]: (req, reply, nextOrPayload, next) => {
         t.equal(checker.check, 2)
-        if (typeof doneOrPayload === 'function') {
-          doneOrPayload()
-        } else {
-          next()
-        }
+        endMiddleware(nextOrPayload, next)
       }
     }, handler)
 

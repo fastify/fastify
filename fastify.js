@@ -507,7 +507,7 @@ function override (old, fn, opts) {
     instance[kFourOhFour].arrange404(instance)
   }
 
-  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)
+  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance, opts)
 
   return instance
 }

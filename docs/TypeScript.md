@@ -218,26 +218,43 @@ Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `Fa
 This code shows the typings for the `fastify-static` plugin.
 
 ```ts
+/// <reference types="node" />
+
 // require fastify typings
-import fastify = require("fastify");
-// require necessary http typings
+import * as fastify from 'fastify';
+
+// require necessary http, http2, https typings
 import { Server, IncomingMessage, ServerResponse } from "http";
+import { Http2SecureServer, Http2Server, Http2ServerRequest, Http2ServerResponse } from "http2";
+import * as https from "https";
+
+type HttpServer = Server | Http2Server | Http2SecureServer | https.Server;
+type HttpRequest = IncomingMessage | Http2ServerRequest;
+type HttpResponse = ServerResponse | Http2ServerResponse;
 
 // extend fastify typings
 declare module "fastify" {
-    interface FastifyReply<HttpResponse> {
-        sendFile(filename: string): FastifyReply<HttpResponse>;
-    }
+  interface FastifyReply<HttpResponse> {
+    sendFile(filename: string): FastifyReply<HttpResponse>;
+  }
 }
 
 // declare plugin type using fastify.Plugin
-declare const fastifyStatic: fastify.Plugin<Server, IncomingMessage, ServerResponse, {
+declare function fastifyStatic(): fastify.Plugin<
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  {
     root: string;
     prefix?: string;
     serve?: boolean;
     decorateReply?: boolean;
     schemaHide?: boolean;
     setHeaders?: (...args: any[]) => void;
+    redirect?: boolean;
+    wildcard?: boolean | string;
+
+    // Passed on to `send`
     acceptRanges?: boolean;
     cacheControl?: boolean;
     dotfiles?: boolean;
@@ -247,7 +264,12 @@ declare const fastifyStatic: fastify.Plugin<Server, IncomingMessage, ServerRespo
     index?: string[];
     lastModified?: boolean;
     maxAge?: string | number;
-}>;
+  }
+>;
+
+declare namespace fastifyStatic {
+  interface FastifyStaticOptions {}
+}
 
 // export plugin type
 export = fastifyStatic;

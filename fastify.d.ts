@@ -178,7 +178,6 @@ declare namespace fastify {
     serialize(payload: any): string
     serializer(fn: Function): FastifyReply<HttpResponse>
     send(payload?: any): FastifyReply<HttpResponse>
-    skipSerialization(): FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
     context: FastifyContext

@@ -24,7 +24,6 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  - [.skipSerialization()](#skipserialization)
   - [.then](#then)
 
 <a name="introduction"></a>
@@ -334,20 +333,6 @@ fastify.get('/teapot', async function (request, reply) => {
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).
-
-<a name="skipserialization"></a>
-### .skipSerialization()
-
-Disable automatic serialization for the current reply.
-This is useful when the response payload is already serialized according to the response `Content-Type` header.
-If your payload is not a string this call will be ignored 
-
-```js
-fastify.get('/json-string', function (request, reply) {
-  const jsonString = '{"key": "hello world!"}'
-  reply.skipSerialization().header('Content-Type', 'application/json').send(jsonString)
-})
-```
 
 <a name="then"></a>
 ### .then(fullfilled, rejected)

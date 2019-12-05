@@ -520,37 +520,13 @@ test('plain string with content type and custom serializer should be serialized'
   })
 })
 
-test('plain string with content type application/json should be serialized as json', t => {
+test('plain string with content type application/json should NOT be serialized as json', t => {
   t.plan(4)
 
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
-    reply.type('application/json').send('hello world!')
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), '"hello world!"')
-    })
-  })
-})
-
-test('string with content type application/json and skipSerialization() called should NOT be serialized as json', t => {
-  t.plan(4)
-
-  const fastify = require('../..')()
-
-  fastify.get('/', function (req, reply) {
-    reply.skipSerialization().type('application/json').send('{"key": "hello world!"}')
+    reply.type('application/json').send('{"key": "hello world!"}')
   })
 
   fastify.listen(0, err => {
@@ -568,13 +544,13 @@ test('string with content type application/json and skipSerialization() called s
   })
 })
 
-test('non-string with content type application/json and skipSerialization() called SHOULD be serialized as json', t => {
+test('non-string with content type application/json SHOULD be serialized as json', t => {
   t.plan(4)
 
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
-    reply.skipSerialization().type('application/json').send({ key: 'hello world!' })
+    reply.type('application/json').send({ key: 'hello world!' })
   })
 
   fastify.listen(0, err => {
@@ -588,48 +564,6 @@ test('non-string with content type application/json and skipSerialization() call
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
-    })
-  })
-})
-
-test('object serialized via JSON.stringify with content type application/json and skipSerialization() called should NOT be serialized twice' +
-  'and shouldn\'t disable stringify for another reply at same route', t => {
-  t.plan(7)
-
-  const fastify = require('../..')()
-  let count = 0
-
-  fastify.get('/', function (req, reply) {
-    if (count === 0) {
-      const payload = JSON.stringify({ test: true })
-      reply.skipSerialization().type('application/json').send(payload)
-      count++
-    } else {
-      const payload = { test: true }
-      reply.type('application/json').send(payload)
-    }
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), JSON.stringify({ test: true }))
-    })
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), JSON.stringify({ test: true }))
     })
   })
 })

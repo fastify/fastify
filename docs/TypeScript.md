@@ -178,6 +178,117 @@ The type system heavily relies on generic properties to provide the most accurat
 
 🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the Fastify type system rely on generic properties. Make sure to reference the detailed type system documentation below to learn more about what is available.
 
+### JSON Schema
+
+In the last example we used interfaces to define the types for the request querystring and headers. Many users will already be using JSON Schemas to define these properties, and luckily there is a way to transform existing JSON Schemas into TypeScript interfaces!
+
+1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
+2. Install the `json-schema-to-typescript` module:
+    ```
+    npm i -D json-schema-to-typescript
+    ```
+3. Create a new folder called `schemas` and add two files `params.json` and `querystring.json`. Copy and paste the following schema definitions into the respective files:
+    ```json
+    {
+      "title": "Params Schema",
+      "type": "object",
+      "properties": {
+        "fuzz": { "type": "string" },
+        "buzz": { "type": "integer" }
+      },
+      "additionalProperties": false,
+      "required": ["buzz"]
+    }
+    ```
+    ```json
+    {
+      "title": "Querystring Schema",
+      "type": "object",
+      "properties": {
+        "foo": { "type": "string" },
+        "bar": { "type": "integer" }
+      },
+      "additionalProperties": false,
+      "required": ["foo"]
+    }
+    ```
+4. Create a new folder `types`, leave it empty. Create a new file in the root of your project called `compileSchemaTypes.ts` and copy/paste the following code:
+    ```typescript
+    import path from 'path'
+    import _fs from 'fs'
+    const fs = _fs.promises
+    import { compileFromFile } from 'json-schema-to-typescript'
+
+    const fileOutputPath = (file: string) => {
+      return path.join(__dirname, '/types', `${path.basename(file, '.json')}.d.ts`)
+    }
+
+    const compileSchemas = async () => {
+      try {
+        const files = await fs.readdir(path.join(__dirname, '/schemas'))
+        for (var file of files) {
+          if (path.extname(file) === '.json') {
+            const ts = await compileFromFile(path.join(__dirname, '/schemas', file))
+            await fs.writeFile(fileOutputPath(file), ts)
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    compileSchemas()
+    ```
+    This function loops over the JSON Schemas and uses the `json-schema-to-typescript` library to compile them into type definition files.
+5. Run `npm run build` then `node compileSchemaTypes.js`. Two new files should have been created in the `types` directory.
+6. Update `index.ts` to have the following code:
+    ```typescript
+    import fastify from 'fastify'
+
+    // import json schemas as normal
+    import querystringSchema from './schemas/querystring.json'
+    import paramsSchema from './schemas/params.json'
+
+    // import the generated interfaces
+    import { QuerystringSchema } from './types/querystring'
+    import { ParamsSchema } from './types/params'
+
+    const server = fastify()
+
+    server.get<{
+      Querystring: QuerystringSchema,
+      Params: ParamsSchema
+    }>(
+      '/',
+      {
+        schema: {
+          querystring: querystringSchema,
+          params: paramsSchema
+        }
+      },
+      async (req, res) => {
+        const { foo } = req.query
+        const { buzz } = req.params
+        return `${foo}: ${buzz}`
+      }
+    )
+
+    server.listen(8080, (err, address) => {
+      if(err) {
+        console.error(err)
+        process.exit(0)
+      }
+      console.log(`Server listening at ${address}`)
+    })
+    ```
+    Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
+
+Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](./Validation-and-Serialization.md) documenation for more info.
+
+Some additional notes:
+  - There is an open [pull request](https://github.com/bcherny/json-schema-to-typescript/pull/238) on `json-schema-to-typescript` to add the directory support we implemented in step 4. When it is merged, updates will be made to this documentation.
+  - Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!
+
 ### Plugins
 
 ## API Type System Documentation

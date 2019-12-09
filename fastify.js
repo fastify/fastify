@@ -23,7 +23,6 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kGlobalHooks,
   kPluginNameChain
 } = require('./lib/symbols.js')
 
@@ -151,10 +150,6 @@ function build (options) {
     [kRequest]: Request.buildRequest(Request),
     [kMiddlewares]: [],
     [kFourOhFour]: fourOhFour,
-    [kGlobalHooks]: {
-      onRoute: [],
-      onRegister: []
-    },
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
     // routes shorthand methods
@@ -380,12 +375,6 @@ function build (options) {
     if (name === 'onClose') {
       this[kHooks].validate(name, fn)
       this.onClose(fn)
-    } else if (name === 'onRoute') {
-      this[kHooks].validate(name, fn)
-      this[kGlobalHooks].onRoute.push(fn)
-    } else if (name === 'onRegister') {
-      this[kHooks].validate(name, fn)
-      this[kGlobalHooks].onRegister.push(fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)
@@ -507,7 +496,7 @@ function override (old, fn, opts) {
     instance[kFourOhFour].arrange404(instance)
   }
 
-  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance, opts)
+  for (const hook of instance[kHooks].onRegister) hook.call(this, instance, opts)
 
   return instance
 }

@@ -70,6 +70,24 @@ const cors = require('cors')
         return Math.random().toString()
       }
       return Math.random()
+    },
+    requestIdHeader: 'request-id',
+    requestIdLogLabel: 'reqId',
+    serverFactory: (handler, options) => {
+      const server = http.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
+    }
+  })
+
+  // http2 server factory option
+  const otherHttp2Server = fastify({
+    serverFactory: (handler, options) => {
+      const server = http2.createServer((req, res) => {
+        handler(req, res)
+      })
+      return server
     }
   })
 
@@ -105,6 +123,11 @@ server.use(cors())
 
 // Custom middleware
 server.use('/', (req, res, next) => {
+  console.log(`${req.method} ${req.url}`)
+})
+
+// Custom middleware with multiple paths
+server.use(['/foo', '/bar'], (req, res, next) => {
   console.log(`${req.method} ${req.url}`)
 })
 
@@ -239,6 +262,7 @@ const opts: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2Se
   schemaCompiler: (schema: Object) => () => {},
   bodyLimit: 5000,
   logLevel: 'trace',
+  version: '1.0.0',
   config: { }
 }
 const optsWithHandler: fastify.RouteShorthandOptions<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> = {

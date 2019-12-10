@@ -1733,3 +1733,43 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
     t.is(res.payload, '404 Not Found')
   })
 })
+
+test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
+  t.test('Dyamic route', t => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.get('/hello/:id', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/hello/%world',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: "'%world' is not a valid url component",
+        statusCode: 400
+      })
+    })
+  })
+
+  t.test('Wildcard', t => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.get('*', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/hello/%world',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 400)
+      t.deepEqual(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: "'/hello/%world' is not a valid url component",
+        statusCode: 400
+      })
+    })
+  })
+
+  t.end()
+})

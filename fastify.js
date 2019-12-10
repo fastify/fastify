@@ -69,6 +69,21 @@ function build (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const ajvOptions = Object.assign({
+    customOptions: {},
+    plugins: []
+  }, options.ajv)
+
+  // Ajv options
+  if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
+    throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
+  }
+  if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
+    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.customOptions}'`)
+  }
+  ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
+    return Array.isArray(plugin) ? plugin : [plugin]
+  })
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -82,11 +97,13 @@ function build (options) {
   options.requestIdLogLabel = requestIdLogLabel
   options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
+  options.ajv = ajvOptions
 
   // Default router
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
+      onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
@@ -410,6 +427,15 @@ function build (options) {
     fourOhFour.router.lookup(req, res)
   }
 
+  function onBadUrl (path, req, res) {
+    const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
+    res.writeHead(400, {
+      'Content-Type': 'application/json',
+      'Content-Length': body.length
+    })
+    res.end(body)
+  }
+
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
@@ -481,7 +507,7 @@ function override (old, fn, opts) {
     instance[kFourOhFour].arrange404(instance)
   }
 
-  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance)
+  for (const hook of instance[kGlobalHooks].onRegister) hook.call(this, instance, opts)
 
   return instance
 }

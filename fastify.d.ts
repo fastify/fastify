@@ -4,6 +4,7 @@
 
 /// <reference types="node" />
 
+import * as ajv from 'ajv'
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
@@ -184,6 +185,9 @@ declare namespace fastify {
     request: FastifyRequest
   }
   type TrustProxyFunction = (addr: string, index: number) => boolean
+  type ServerFactoryHandlerFunction = (request: http.IncomingMessage | http2.Http2ServerRequest, response: http.ServerResponse | http2.Http2ServerResponse) => void
+  type ServerFactoryFunction = (handler: ServerFactoryHandlerFunction, options: ServerOptions) => http.Server | http2.Http2Server
+
   interface ServerOptions {
     caseSensitive?: boolean,
     ignoreTrailingSlash?: boolean,
@@ -207,7 +211,14 @@ declare namespace fastify {
     },
     modifyCoreObjects?: boolean,
     return503OnClosing?: boolean,
-    genReqId?: () => number | string
+    genReqId?: () => number | string,
+    requestIdHeader?: string,
+    requestIdLogLabel?: string,
+    serverFactory?: ServerFactoryFunction,
+    ajv?: {
+      customOptions?: ajv.Options,
+      plugins?: Array<Array<any>|String>
+    }
   }
   interface ServerOptionsAsSecure extends ServerOptions {
     https: http2.SecureServerOptions
@@ -249,6 +260,9 @@ declare namespace fastify {
   > {
     schema?: RouteSchema
     attachValidation?: boolean
+    onSend?:
+      | FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
+      | Array<FastifyMiddlewareWithPayload<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
     onRequest?:
       | FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>
       | Array<FastifyMiddleware<HttpServer, HttpRequest, HttpResponse, Query, Params, Headers, Body>>
@@ -273,6 +287,7 @@ declare namespace fastify {
     logLevel?: string
     logSerializers?: Object
     config?: any
+    version?: string
     prefixTrailingSlash?: 'slash' | 'no-slash' | 'both'
   }
 
@@ -545,6 +560,11 @@ declare namespace fastify {
      * Apply the given middleware to routes matching the given path
      */
     use(path: string, middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
+
+    /**
+     * Apply the given middleware to routes matching the given multiple path
+     */
+    use(path: string[], middleware: Middleware<HttpServer, HttpRequest, HttpResponse>): void
 
     /**
      * Registers a plugin

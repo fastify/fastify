@@ -7,14 +7,14 @@ Hooks are registered with the `fastify.addHook` method and allow you to listen t
 By using hooks you can interact directly with the lifecycle of Fastify. There are Request/Reply hooks and application hooks:
 
 - [Request/Reply Hooks](#requestreply-hooks)
-  - [onRequest](#onRequest)
-  - [preParsing](#preParsing)
-  - [preValidation](#preValidation)
-  - [preHandler](#preHandler)
-  - [preSerialization](#preSerialization)
-  - [onError](#onError)
-  - [onSend](#onSend)
-  - [onResponse](#onResponse)
+  - [onRequest](#onrequest)
+  - [preParsing](#preparsing)
+  - [preValidation](#prevalidation)
+  - [preHandler](#prehandler)
+  - [preSerialization](#preserialization)
+  - [onError](#onerror)
+  - [onSend](#onsend)
+  - [onResponse](#onresponse)
 - [Application Hooks](#application-hooks)
   - [onClose](#onclose)
   - [onRoute](#onroute)
@@ -284,6 +284,20 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
+
+If you are authoring a plugin and you need to customize application routes, like modifying the options or adding new route hooks, this is the right place.
+
+```js
+fastify.addHook('onRoute', (routeOptions) => {
+  function onPreSerialization(request, reply, payload, done) {
+    // Your code
+    done(null, payload)
+  }
+  // preSerialization can be an array or undefined
+  routeOptions.preSerialization = [...(routeOptions.preSerialization || []), onPreSerialization]
+})
+```
+
 <a name="on-register"></a>
 ### onRegister
 Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
@@ -299,19 +313,22 @@ fastify.register(async (instance, opts) => {
   instance.register(async (instance, opts) => {
     instance.data.push('world')
     console.log(instance.data) // ['hello', 'world']
-  })
-})
+  }, { prefix: '/hola' })
+}, { prefix: '/ciao' })
 
 fastify.register(async (instance, opts) => {
   console.log(instance.data) // []
-})
+}, { prefix: '/hello' })
 
-fastify.addHook('onRegister', (instance) => {
+fastify.addHook('onRegister', (instance, opts) => {
   // Create a new array from the old one
   // but without keeping the reference
   // allowing the user to have encapsulated
   // instances of the `data` property
   instance.data = instance.data.slice()
+
+  // the options of the new registered instance
+  console.log(opts.prefix)
 })
 ```
 
@@ -363,7 +380,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
   // Your code
-  done()
+  done(null, payload)
 })
 
 fastify.route({
@@ -397,7 +414,7 @@ fastify.route({
   //   done()
   // }],
   preSerialization: (request, reply, payload, done) => {
-    // Manipulate the payload
+    // This hook will always be executed after the shared `preSerialization` hooks
     done(null, payload)
   },
   handler: function (request, reply) {

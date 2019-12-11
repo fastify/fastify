@@ -441,11 +441,11 @@ fastify.post('/the/url', {
 
 ##### Validation messages with other validation libraries
 
-Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are ultimely run through a `schemaErrorsText` function which is responsible for building human-friendly error messages. However, the `schemaErrorsText` function is written with `ajv` in mind : as a result, you may run into strange-looking responses when using other validation librairies.
+Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are eventually run through the `schemaErrorsText` function which is responsible for building human-friendly error messages. However, the `schemaErrorsText` function is written with `ajv` in mind : as a result, you may run into strange-looking responses when using other validation librairies.
 
 To circumvent this issue, you have 2 main options :
 
-1. make sure the function returned by your custom `schemaCompiler` returns errors in the exact same structure and format as `ajv` (although this could prove to be difficult and tricky due to mismatches between validation engines)
+1. make sure the validation function (returned by your custom `schemaCompiler`) returns errors in the exact same structure and format as `ajv` (although this could prove to be difficult and tricky due to mismatches between validation engines)
 2. or use a custom `errorHandler` to intercept and format your 'custom' validation errors
 
 To help you in writing a custom `errorHandler`, Fastify adds 2 properties to all validation errors:

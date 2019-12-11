@@ -57,6 +57,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](http://bookshelfjs.org/) orm support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
+- [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Fastify [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like protection of endpoints via either a preSerialization & preHandler hook, sanitizing the inputs and outputs of your application based on user rights.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).

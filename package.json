@@ -134,7 +134,8 @@
     "tap-mocha-reporter": "^3.0.7",
     "then-sleep": "^1.0.1",
     "typescript": "^3.7.3",
-    "x-xss-protection": "^1.1.0"
+    "x-xss-protection": "^1.1.0",
+    "yup": "^0.27.0"
   },
   "dependencies": {
     "abstract-logging": "^2.0.0",

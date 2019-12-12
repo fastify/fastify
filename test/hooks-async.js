@@ -1,6 +1,5 @@
 'use strict'
 
-const split = require('split2')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 const fs = require('fs')
@@ -510,39 +509,26 @@ function asyncHookTest (t) {
     })
   })
 
-  test('Should log a warning if is an async function with `next`', t => {
+  test('Should throw an error if is an async function with `next`', t => {
+    const expectedError = {
+      message: /^Async function has too many arguments. Async hooks should not use the 'next' argument./,
+      stack: /test(\\|\/)hooks-async\.js/m
+    }
+
     t.test('3 arguments', t => {
-      t.plan(3)
-      const stream = split(JSON.parse)
-      const fastify = Fastify({
-        logger: { stream }
-      })
+      t.plan(1)
+      const fastify = Fastify({})
 
-      stream.on('data', line => {
-        t.strictEqual(line.level, 40)
-        t.true(line.msg.startsWith("Async function has too many arguments. Async hooks should not use the 'next' argument."))
-        t.true(/test(\\|\/)hooks-async\.js/.test(line.msg))
-      })
-
-      fastify.addHook('onRequest', async (req, reply, next) => {})
+      t.throws(() => fastify.addHook('onRequest', async (req, reply, next) => {}), expectedError)
     })
 
     t.test('4 arguments', t => {
-      t.plan(9)
-      const stream = split(JSON.parse)
-      const fastify = Fastify({
-        logger: { stream }
-      })
+      t.plan(3)
+      const fastify = Fastify({})
 
-      stream.on('data', line => {
-        t.strictEqual(line.level, 40)
-        t.true(line.msg.startsWith("Async function has too many arguments. Async hooks should not use the 'next' argument."))
-        t.true(/test(\\|\/)hooks-async\.js/.test(line.msg))
-      })
-
-      fastify.addHook('onSend', async (req, reply, payload, next) => {})
-      fastify.addHook('preSerialization', async (req, reply, payload, next) => {})
-      fastify.addHook('onError', async (req, reply, error, next) => {})
+      t.throws(() => fastify.addHook('onSend', async (req, reply, payload, next) => {}), expectedError)
+      t.throws(() => fastify.addHook('preSerialization', async (req, reply, payload, next) => {}), expectedError)
+      t.throws(() => fastify.addHook('onError', async (req, reply, payload, next) => {}), expectedError)
     })
 
     t.end()

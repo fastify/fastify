@@ -3,6 +3,7 @@
 const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const Joi = require('joi')
+const yup = require('yup')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -52,6 +53,29 @@ module.exports.payloadMethod = function (method, t) {
     }
   }
 
+  const yupOptions = {
+    strict: true, // don't coerce
+    abortEarly: false, // return all errors
+    stripUnknown: true, // remove additional properties
+    recursive: true
+  }
+
+  const optsWithYupValidator = {
+    schema: {
+      body: yup.object().shape({
+        hello: yup.string().required()
+      }).required()
+    },
+    schemaCompiler: schema => data => {
+      try {
+        const result = schema.validateSync(data, yupOptions)
+        return { value: result }
+      } catch (e) {
+        return { error: e }
+      }
+    }
+  }
+
   test(`${upMethod} can be created`, t => {
     t.plan(1)
     try {
@@ -62,6 +86,9 @@ module.exports.payloadMethod = function (method, t) {
         reply.send(req.body)
       })
       fastify[loMethod]('/joi', optsWithJoiValidator, function (req, reply) {
+        reply.send(req.body)
+      })
+      fastify[loMethod]('/yup', optsWithYupValidator, function (req, reply) {
         reply.send(req.body)
       })
 
@@ -222,6 +249,42 @@ module.exports.payloadMethod = function (method, t) {
         t.deepEqual(body, {
           error: 'Bad Request',
           message: 'child "hello" fails because ["hello" must be a string]',
+          statusCode: 400
+        })
+      })
+    })
+
+    test(`${upMethod} - input-validation yup schema compiler ok`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/yup',
+        body: {
+          hello: '42'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 42 })
+      })
+    })
+
+    test(`${upMethod} - input-validation yup schema compiler ko`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/yup',
+        body: {
+          hello: 44
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: 'hello must be a `string` type, but the final value was: `44`.',
           statusCode: 400
         })
       })

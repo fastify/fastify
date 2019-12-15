@@ -69,6 +69,41 @@ test('not evaluate json-schema $schema keyword', t => {
   })
 })
 
+test('validation context in validation result', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  // custom error handler to expose validation context in response, so we can test it later
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equal(err instanceof Error, true)
+    t.equal(err.validationContext, 'body')
+    reply.send()
+  })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.code(200).send(req.body.hello)
+    },
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  })
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    // body lacks required field, will fail validation
+    body: {}
+  }, (err, res) => {
+    t.error(err)
+  })
+})
+
 test('Should handle $merge keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({

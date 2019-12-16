@@ -98,6 +98,32 @@ await fastify.ready()
 
 await fastify.listen(3000)
 ```
+
+<a name="error-handling"></a>
+#### ESM support
+
+ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above!
+
+```js
+// main.mjs
+import Fastify from 'fastify'
+const fastify = Fastify()
+
+fastify.register(import('./plugin.mjs'))
+
+fastify.listen(3000, console.log)
+
+
+// plugin.mjs
+async function plugin (fastify, opts) {
+  fastify.get('/', async (req, reply) => {
+    return { hello: 'world' }
+  })
+}
+
+export default plugin
+```
+
 <a name="create-plugin"></a>
 ### Create a plugin
 Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an `options` object and the `done` callback.<br>

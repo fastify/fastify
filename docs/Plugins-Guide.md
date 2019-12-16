@@ -92,7 +92,7 @@ fastify.register((instance, opts, done) => {
 Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
 Let's step back for a moment and dig deeper into this: every time you use the `register` API, a new context is created which avoids the negative situations mentioned above.
 
-Do note that encapsulation applies to the ancestors and siblings, but not the children. 
+Do note that encapsulation applies to the ancestors and siblings, but not the children.
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
@@ -292,6 +292,22 @@ fastify.register(require('your-plugin'), parent => {
 })
 ```
 In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
+
+<a name="error-handling"></a>
+#### ESM support
+
+ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above! Just export your plugin as ESM module and you are good to go!
+
+```js
+// plugin.mjs
+async function plugin (fastify, opts) {
+  fastify.get('/', async (req, reply) => {
+    return { hello: 'world' }
+  })
+}
+
+export default plugin
+```
 
 <a name="handle-errors"></a>
 ## Handle errors

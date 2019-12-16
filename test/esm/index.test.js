@@ -7,7 +7,11 @@ if (semver.lt(process.versions.node, '13.3.0')) {
   t.skip('Skip because Node version <= 13.3.0')
   t.end()
 } else {
-  global.import('./esm.mjs').catch((err) => {
+  // Node v8 throw a `SyntaxError: Unexpected token import`
+  // even if this branch is never touch in the code,
+  // by using `eval` we can avoid this issue.
+  // eslint-disable-next-line
+  new Function('module', 'return import(module)')('./esm.mjs').catch((err) => {
     process.nextTick(() => {
       throw err
     })

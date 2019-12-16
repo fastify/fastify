@@ -1,5 +1,3 @@
-'use strict'
-
 async function plugin (fastify, opts) {
   fastify.decorate('foo', opts.foo)
 }

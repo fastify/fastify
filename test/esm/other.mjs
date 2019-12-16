@@ -1,5 +1,3 @@
-'use strict'
-
 import t from 'tap'
 
 async function other (fastify, opts) {

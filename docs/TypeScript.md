@@ -326,14 +326,24 @@ import fastify from 'fastify'
 const server = fastify()
 ```
 
-##### Example 2: HTTPS/HTTP2 server
+##### Example 2: HTTPS sever
+
+In order to use HTTPS or HTTP2, import the appropriate type system from `@types/node` and pass it to the first generic parameter.
+```typescript
+import fastify from 'fastify'
+import * as https from 'https'
+
+const http2FastifyServer = fastify<https.Server>({ https: true })
+```
+
+##### Example 2: HTTP2 server
 
 In order to use HTTPS or HTTP2, import the appropriate type system from `@types/node` and pass it to the first generic parameter.
 ```typescript
 import fastify from 'fastify'
 import http2 from 'http2'
 
-const http2FastifyServer = fastify<http2.Http2Server>({ https: true })
+const http2FastifyServer = fastify<http2.Http2Server>({ http2: true })
 ```
 
 ##### Example 3: Extended HTTP server

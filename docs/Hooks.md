@@ -52,7 +52,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
+**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
 
 ### preParsing
 ```js
@@ -73,6 +73,9 @@ fastify.addHook('preParsing', async (request, reply) => {
   return
 })
 ```
+
+**Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+
 ### preValidation
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
@@ -92,7 +95,6 @@ fastify.addHook('preValidation', async (request, reply) => {
   return
 })
 ```
-**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
 
 ### preHandler
 ```js

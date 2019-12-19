@@ -2,13 +2,14 @@
 
 ## TypeScript
 
-The Fastify framework is written in plain JavaScript and as such type definitions are not as easy to maintain; however, since version 2 and beyond, maintainers and contributors have put in a great effort to improve the types.
+The Fastify framework is written in vavilla JavaScript, and as such type definitions are not as easy to maintain; however, since version 2 and beyond, maintainers and contributors have put in a great effort to improve the types.
 
-In its current state, the type systems between Fastify v2.x and future v3.x contain breaking changes. Version 3.x type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more! As the team works on improving framework and type definition synergy, sometimes parts of the API will not be typed or may be typed incorrectly. We encourage you to **contribute** to help us fill in the gaps. Just make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly! 
+The type system was changed in Fastify version 3. The new type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more! As the team works on improving framework and type definition synergy, sometimes parts of the API will not be typed or may be typed incorrectly. We encourage you to **contribute** to help us fill in the gaps. Just make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly! 
 
 > The documentation in this section covers Fastify version 3.x typings
 
-> Plugins may or may not include typings. See [Plugin Types](#plugin-types) for more information.
+> Plugins may or may not include typings. See [Plugin Types](#plugin-types) for more information. We encourage users to send pull requests to improve typings support.
+
 
 ## Learn By Example
 
@@ -245,7 +246,7 @@ Generics are documented by their default value as well as their constraint value
 
 Find detailed documentation on the generics used for this type system in the main [fastify]() api method and the [FastifyMiddleware]() section
 
-### How to import
+#### How to import
 
 The Fastify API is powered by the `fastify()` method. In JavaScript you would import it using `const fastify = require('fastify')`. In TypeScript it is recommended to use the `import/from` syntax instead so types can be resolved. There are a couple supported import methods with the Fastify type system.
 
@@ -325,26 +326,54 @@ import fastify from 'fastify'
 
 const server = fastify()
 ```
+Check out the Learn By Example - [Getting Started](#getting-started) example for a more detailed http server walkthrough.
 
 ##### Example 2: HTTPS sever
 
-In order to use HTTPS or HTTP2, import the appropriate type system from `@types/node` and pass it to the first generic parameter.
-```typescript
-import fastify from 'fastify'
-import * as https from 'https'
+1. Create the following imports from `@types/node` and `fastify`
+    ```typescript
+    import fs from 'fs'
+    import https from 'https'
+    import path from 'path'
+    import fastify from 'fastify'
+    ```
+2. Follow the steps in this official [Node.js https server guide](https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/) to create the `key.pem` and `cert.pem` files
+3. Instantiate a Fastify https server and add a route:
+    ```typescript
+    const server = fastify<https.Server>({
+      https: {
+        key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
+      }
+    })
 
-const http2FastifyServer = fastify<https.Server>({ https: true })
-```
+    server.get('/', async function (request, reply) {
+      return { hello: 'world' }
+    })
+
+    server.listen(8080, (err, address) => {
+      if(err) {
+        console.error(err)
+        process.exit(0)
+      }
+      console.log(`Server listening at ${address}`)
+    })
+    ```
+4. Build and run! Test your server out by querying with: `curl -k https://localhost:8080`
 
 ##### Example 2: HTTP2 server
 
-In order to use HTTPS or HTTP2, import the appropriate type system from `@types/node` and pass it to the first generic parameter.
-```typescript
-import fastify from 'fastify'
-import http2 from 'http2'
+Interested in creating an HTTP2 server? It is as easy as replacing the `https` server generic with an `http2` one:
 
-const http2FastifyServer = fastify<http2.Http2Server>({ http2: true })
+```diff
+- import https from 'https'
++ import http2 from 'http2'
+
+- const server = fastify<https.Server>({ 
++ const server = fastify<http2.Http2SecureServer>({
 ```
+
+For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) documentation page.
 
 ##### Example 3: Extended HTTP server
 

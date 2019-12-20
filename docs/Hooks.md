@@ -264,9 +264,9 @@ You can hook into the application-lifecycle as well. It's important to note that
 
 ### onClose
 Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
-The first argument is the Fastify instance, the second one the `done` callback.
+The first argument is `done` callback. [The new version of avvio (since v6) removes the instance from the onClose hook as the first parameter.](https://medium.com/@fastifyjs/8275d613fba4)
 ```js
-fastify.addHook('onClose', (instance, done) => {
+fastify.addHook('onClose', (done) => {
   // Some code
   done()
 })

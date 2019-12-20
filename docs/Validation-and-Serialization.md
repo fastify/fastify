@@ -51,8 +51,12 @@ const bodyJsonSchema = {
 }
 
 const queryStringJsonSchema = {
-  name: { type: 'string' },
-  excitement: { type: 'integer' }
+  type: 'object',
+  required: ['name']
+  properties: {
+    name: { type: 'string' },
+    excitement: { type: 'integer' }
+  }
 }
 
 const paramsJsonSchema = {

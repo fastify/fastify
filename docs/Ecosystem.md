@@ -111,6 +111,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes) Fastify reverse routes plugin, allows to defined named routes and build path using name and parameters.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint) Choose the JSON schema to use based on request parameters.
+- [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session) Create a secure stateless cookie session for Fastify
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
@@ -121,7 +122,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools) Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy subdomain http requests to another server (useful if you want to point multiple subdomains to the same IP address, while running different servers on the same machine).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser) Parse XML payload / request body into JS / JSON object.
-- [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue) [Nuxt.js](https://nuxtjs.org) plugin for fastify. Controll the routes nuxt should use.
+- [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue) [Nuxt.js](https://nuxtjs.org) plugin for fastify. Control the routes nuxt should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web Application Messaging Protocol router for fastify.
 - [`fast-water`](https://github.com/tswayne/fast-water) A fastify plugin for waterline. Decorates fastify with waterline models.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.

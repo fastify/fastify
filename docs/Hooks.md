@@ -43,16 +43,16 @@ Or `async/await`:
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
   // Some code
-  await asyncMethod()
-  // Error occurred
-  if (err) {
+  try {
+    await asyncMethod()
+  } catch (err) {
     throw new Error('Some errors occurred.')
   }
   return
 })
 ```
 
-**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
+**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
 
 ### preParsing
 ```js
@@ -65,14 +65,17 @@ Or `async/await`:
 ```js
 fastify.addHook('preParsing', async (request, reply) => {
   // Some code
-  await asyncMethod()
-  // Error occurred
-  if (err) {
+  try {
+    await asyncMethod()
+  } catch (err) {
     throw new Error('Some errors occurred.')
   }
   return
 })
 ```
+
+**Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+
 ### preValidation
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
@@ -84,15 +87,14 @@ Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
   // Some code
-  await asyncMethod()
-  // Error occurred
-  if (err) {
+  try {
+    await asyncMethod()
+  } catch (err) {
     throw new Error('Some errors occurred.')
   }
   return
 })
 ```
-**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
 
 ### preHandler
 ```js
@@ -105,9 +107,9 @@ Or `async/await`:
 ```js
 fastify.addHook('preHandler', async (request, reply) => {
   // Some code
-  await asyncMethod()
-  // Error occurred
-  if (err) {
+  try {
+    await asyncMethod()
+  } catch (err) {
     throw new Error('Some errors occurred.')
   }
   return
@@ -197,9 +199,9 @@ Or `async/await`:
 ```js
 fastify.addHook('onResponse', async (request, reply) => {
   // Some code
-  await asyncMethod()
-  // Error occurred
-  if (err) {
+  try {
+    await asyncMethod()
+  } catch (err) {
     throw new Error('Some errors occurred.')
   }
   return

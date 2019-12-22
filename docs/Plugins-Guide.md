@@ -11,6 +11,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [Hooks](#hooks)
 - [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
+- [ESM support](#esm-support)
 - [Handle errors](#handle-errors)
 - [Let's start!](#start)
 
@@ -293,8 +294,8 @@ fastify.register(require('your-plugin'), parent => {
 ```
 In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
 
-<a name="error-handling"></a>
-#### ESM support
+<a name="esm-support"></a>
+## ESM support
 
 ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above! Just export your plugin as ESM module and you are good to go!
 

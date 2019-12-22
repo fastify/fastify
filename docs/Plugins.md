@@ -99,7 +99,7 @@ await fastify.ready()
 await fastify.listen(3000)
 ```
 
-<a name="error-handling"></a>
+<a name="esm-support"></a>
 #### ESM support
 
 ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above!

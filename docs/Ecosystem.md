@@ -120,6 +120,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen) Automatically generate a browser-compatible, trusted, self-signed, localhost-only, TLS certificate.
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools) Useful functions for Twitch Extension Backend Services (EBS).
+- [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin) Fastify plugin to work with TypeORM.
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy subdomain http requests to another server (useful if you want to point multiple subdomains to the same IP address, while running different servers on the same machine).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser) Parse XML payload / request body into JS / JSON object.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue) [Nuxt.js](https://nuxtjs.org) plugin for fastify. Control the routes nuxt should use.

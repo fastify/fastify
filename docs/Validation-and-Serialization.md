@@ -59,6 +59,17 @@ const queryStringJsonSchema = {
   }
 }
 
+/* If you don't need required query strings,
+ * A short hand syntax is also there:
+
+const queryStringJsonSchema = {
+  name: { type: 'string' },
+  excitement: { type: 'integer' }
+}
+
+*/
+
+
 const paramsJsonSchema = {
   type: 'object',
   properties: {

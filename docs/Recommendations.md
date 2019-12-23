@@ -21,7 +21,7 @@ ports (i.e. HTTP _and_ HTTPS), and various other scenarios and combinations
 thereof. Further, the temptation is to then expose these applications directly
 to the Internet to handle requests.
 
-The Fastify **strongly** considers this to be an anti-pattern and extremely
+The Fastify team **strongly** considers this to be an anti-pattern and extremely
 bad practice:
 
 1. It adds unnecessary complexity to the application by diluting its focus.

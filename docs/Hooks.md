@@ -43,11 +43,7 @@ Or `async/await`:
 ```js
 fastify.addHook('onRequest', async (request, reply) => {
   // Some code
-  try {
-    await asyncMethod()
-  } catch (err) {
-    throw new Error('Some errors occurred.')
-  }
+  await asyncMethod()
   return
 })
 ```
@@ -65,11 +61,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preParsing', async (request, reply) => {
   // Some code
-  try {
-    await asyncMethod()
-  } catch (err) {
-    throw new Error('Some errors occurred.')
-  }
+  await asyncMethod()
   return
 })
 ```
@@ -87,11 +79,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
   // Some code
-  try {
-    await asyncMethod()
-  } catch (err) {
-    throw new Error('Some errors occurred.')
-  }
+  await asyncMethod()
   return
 })
 ```
@@ -107,11 +95,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preHandler', async (request, reply) => {
   // Some code
-  try {
-    await asyncMethod()
-  } catch (err) {
-    throw new Error('Some errors occurred.')
-  }
+  await asyncMethod()
   return
 })
 ```
@@ -199,11 +183,7 @@ Or `async/await`:
 ```js
 fastify.addHook('onResponse', async (request, reply) => {
   // Some code
-  try {
-    await asyncMethod()
-  } catch (err) {
-    throw new Error('Some errors occurred.')
-  }
+  await asyncMethod()
   return
 })
 ```

@@ -10,6 +10,11 @@ jobs:
       matrix:
         node-version: [6.x, 8.x, 10.x, 12.x, 13.x]
         os: [ubuntu-latest, windows-latest, macOS-latest]
+        exclude:
+          # Excludes node 6 on Windows
+          # FIXME if this ever become a problem
+          - os: windows-latest
+            node-version: 6.x
 
     steps:
       - uses: actions/checkout@v1

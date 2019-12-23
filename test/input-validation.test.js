@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const ajvMergePatch = require('ajv-merge-patch')
 
 test('case insensitive header validation', t => {
   t.plan(2)
@@ -65,5 +66,130 @@ test('not evaluate json-schema $schema keyword', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, 'world')
+  })
+})
+
+test('Should handle $merge keywords in body', t => {
+  t.plan(5)
+  const fastify = Fastify({
+    ajv: {
+      plugins: [
+        ajvMergePatch
+      ]
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body: {
+        $merge: {
+          source: {
+            type: 'object',
+            properties: {
+              q: {
+                type: 'string'
+              }
+            }
+          },
+          with: {
+            required: ['q']
+          }
+        }
+      }
+    },
+    handler (req, reply) {
+      reply.send({ ok: 1 })
+    }
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 400)
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      body: {
+        q: 'foo'
+      }
+    }, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 200)
+    })
+  })
+})
+
+test('Should handle $patch keywords in body', t => {
+  t.plan(5)
+  const fastify = Fastify({
+    ajv: {
+      plugins: [
+        ajvMergePatch
+      ]
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    schema: {
+      body: {
+        $patch: {
+          source: {
+            type: 'object',
+            properties: {
+              q: {
+                type: 'string'
+              }
+            }
+          },
+          with: [
+            {
+              op: 'add',
+              path: '/properties/q',
+              value: { type: 'number' }
+            }
+          ]
+        }
+      }
+    },
+    handler (req, reply) {
+      reply.send({ ok: 1 })
+    }
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      body: {
+        q: 'foo'
+      }
+    }, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 400)
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      body: {
+        q: 10
+      }
+    }, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 200)
+    })
   })
 })

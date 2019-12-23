@@ -51,9 +51,24 @@ const bodyJsonSchema = {
 }
 
 const queryStringJsonSchema = {
+  type: 'object',
+  required: ['name']
+  properties: {
+    name: { type: 'string' },
+    excitement: { type: 'integer' }
+  }
+}
+
+/* If you don't need required query strings,
+ * A short hand syntax is also there:
+
+const queryStringJsonSchema = {
   name: { type: 'string' },
   excitement: { type: 'integer' }
 }
+
+*/
+
 
 const paramsJsonSchema = {
   type: 'object',

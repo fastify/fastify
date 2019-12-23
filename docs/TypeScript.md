@@ -2,7 +2,7 @@
 
 ## TypeScript
 
-The Fastify framework is written in vavilla JavaScript, and as such type definitions are not as easy to maintain; however, since version 2 and beyond, maintainers and contributors have put in a great effort to improve the types.
+The Fastify framework is written in vanilla JavaScript, and as such type definitions are not as easy to maintain; however, since version 2 and beyond, maintainers and contributors have put in a great effort to improve the types.
 
 The type system was changed in Fastify version 3. The new type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more! As the team works on improving framework and type definition synergy, sometimes parts of the API will not be typed or may be typed incorrectly. We encourage you to **contribute** to help us fill in the gaps. Just make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly! 
 
@@ -64,7 +64,7 @@ This example will get you up and running with Fastify and TypeScript. It results
 
 🎉 You now have a working Typescript Fastify server! This example demonstrates the simplicity of the version 3.x type system. By default, the type system assumes you are using an `http` server. The later examples will demonstrate how to create more complex servers such as `https` and `http2`, how to specify route schemas, and more!
 
-> For more examples on initializing Fastify with TypeScript (such as enabling HTTP2) check out the detailed API section [here]((#fastifyopts-fastifyoptions-fastifyinstance))
+> For more examples on initializing Fastify with TypeScript (such as enabling HTTP2) check out the detailed API section [here]()
 
 ### Using Generics
 

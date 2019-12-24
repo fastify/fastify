@@ -1066,7 +1066,7 @@ test('Wrong parseAs parameter', t => {
     t.fail('should throw')
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-    t.is(err.message, `The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.`)
+    t.is(err.message, "The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.")
   }
 })
 

@@ -221,7 +221,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     })
 
     if (loMethod === 'options') {
-      test(`OPTIONS returns 415 - should return 415 if Content-Type is not json or plain text`, t => {
+      test('OPTIONS returns 415 - should return 415 if Content-Type is not json or plain text', t => {
         t.plan(2)
         sget({
           method: upMethod,
@@ -328,7 +328,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })
@@ -344,7 +344,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })
@@ -361,7 +361,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })
@@ -378,7 +378,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })
@@ -395,7 +395,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })
@@ -412,7 +412,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         t.strictDeepEqual(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
-          message: `Body cannot be empty when content-type is set to 'application/json'`,
+          message: 'Body cannot be empty when content-type is set to \'application/json\'',
           statusCode: 400
         })
       })

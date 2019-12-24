@@ -75,13 +75,26 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 
 Defines what action the framework must take when parsing a JSON object
 with `__proto__`. This functionality is provided by
-[bourne](https://github.com/hapijs/bourne).
+[secure-json-parse](https://github.com/fastify/secure-json-parse).
 See https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061
 for more details about prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
 
 + Default: `'error'`
+
+<a name="factory-on-constructor-poisoning"></a>
+### `onConstructorPoisoning`
+
+Defines what action the framework must take when parsing a JSON object
+with `constructor`. This functionality is provided by
+[secure-json-parse](https://github.com/fastify/secure-json-parse).
+See https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061
+for more details about prototype poisoning attacks.
+
+Possible values are `'error'`, `'remove'` and `'ignore'`.
+
++ Default: `'ignore'`
 
 <a name="factory-logger"></a>
 ### `logger`
@@ -104,7 +117,7 @@ are not present on the object, they will be added accordingly:
     for incoming requests. The default function generates sequential identifiers.
     * `level`: the minimum logging level. If not set, it will be set to `'info'`.
     * `serializers`: a hash of serialization functions. By default, serializers
-      are added for `req` (incoming request objects), `res` (outgoing repsonse
+      are added for `req` (incoming request objects), `res` (outgoing response
       objets), and `err` (standard `Error` objects). When a log method receives
       an object with any of these properties then the respective serializer will
       be used for that property. For example:
@@ -150,14 +163,14 @@ custom `onRequest` and `onResponse` hooks.
 
 ```js
 // Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, next) => {
+fastify.addHook('onRequest', (req, reply, done) => {
   req.log.info({ url: req.req.url, id: req.id }, 'received request')
-  next()
+  done()
 })
 
-fastify.addHook('onResponse', (req, reply, next) => {
+fastify.addHook('onResponse', (req, reply, done) => {
   req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
-  next()
+  done()
 })
 ```
 
@@ -230,7 +243,7 @@ Especially in distributed systems, you may want to override the default id gener
 ```js
 let i = 0
 const fastify = require('fastify')({
-  genReqId: function (req) { return req.headers['request-id'] || i++ }
+  genReqId: function (req) { return i++ }
 })
 ```
 
@@ -352,6 +365,50 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
+<a name="factory-return-503-on-closing"></a>
+### `return503OnClosing`
+
+Returns 503 after calling `close` server method.
+If `false`, the server routes the incoming request as usual.
+
++ Default: `true`
+
+<a name="factory-ajv"></a>
+### `ajv`
+
+Configure the ajv instance used by Fastify without providing a custom one.
+
++ Default:
+
+```js
+{
+  customOptions: {
+    removeAdditional: true,
+    useDefaults: true,
+    coerceTypes: true,
+    allErrors: true,
+    nullable: true
+  },
+  plugins: []
+}
+```
+
+```js
+const fastify = require('fastify')({
+  ajv: {
+    customOptions: {
+      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
+    },
+    plugins: [
+      require('ajv-merge-patch')
+      [require('ajv-keywords'), 'instanceof'];
+      // Usage: [plugin, pluginOptions] - Plugin with options
+      // Usage: plugin - Plugin without options
+    ]
+  }
+})
+```
+
 ## Instance
 
 ### Server Methods
@@ -368,16 +425,16 @@ It is always executed before the method `fastify.ready`.
 
 ```js
 fastify
-  .register((instance, opts, next) => {
+  .register((instance, opts, done) => {
     console.log('Current plugin')
-    next()
+    done()
   })
   .after(err => {
     console.log('After current plugin')
   })
-  .register((instance, opts, next) => {
+  .register((instance, opts, done) => {
     console.log('Next plugin')
-    next()
+    done()
   })
   .ready(err => {
     console.log('Everything has been loaded')
@@ -516,6 +573,7 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
+See [`return503OnClosing` flags](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-return-503-on-closing) for changing this behaviour.
 
 If it is called without any arguments, it will return a Promise:
 
@@ -538,7 +596,7 @@ A plugin can be a set of routes, a server decorator or whatever, check [here](ht
 
 <a name="use"></a>
 #### use
-Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middlewares.md).
+Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middleware.md).
 
 <a name="addHook"></a>
 #### addHook
@@ -551,26 +609,38 @@ The full path that will be prefixed to a route.
 Example:
 
 ```js
-fastify.register(function (instance, opts, next) {
+fastify.register(function (instance, opts, done) {
   instance.get('/foo', function (request, reply) {
     // Will log "prefix: /v1"
     request.log.info('prefix: %s', instance.prefix)
     reply.send({ prefix: instance.prefix })
   })
 
-  instance.register(function (instance, opts, next) {
+  instance.register(function (instance, opts, done) {
     instance.get('/bar', function (request, reply) {
       // Will log "prefix: /v1/v2"
       request.log.info('prefix: %s', instance.prefix)
       reply.send({ prefix: instance.prefix })
     })
 
-    next()
+    done()
   }, { prefix: '/v2' })
 
-  next()
+  done()
 }, { prefix: '/v1' })
 ```
+
+<a name="pluginName"></a>
+#### pluginName
+Name of the current plugin. There are three ways to define a name (in order).
+
+1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the metadata `name` is used.
+2. If you `module.exports` a plugin the filename is used.
+3. If you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
+
+*Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to indentify the root cause when you deal with many plugins.
+
+Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
 
 <a name="log"></a>
 #### log
@@ -585,9 +655,26 @@ Fake http injection (for testing purposes) [here](https://github.com/fastify/fas
 `fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.<br/>
 To learn more, see [shared schema example](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#shared-schema) in the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
 
+<a name="set-reply-serializer"></a>
+#### setReplySerializer
+Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](https://github.com/fastify/fastify/blob/master/docs/Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
+Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) for errors.
+
+```js
+fastify.setReplySerializer(function (payload, statusCode){
+  // serialize the payload with a sync function
+  return `my serialized ${statusCode} content: ${payload}`
+})
+```
+
 <a name="set-schema-compiler"></a>
 #### setSchemaCompiler
 Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
+
+<a name="set-schema-resolver"></a>
+#### setSchemaResolver
+Set the schema `$ref` resolver for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-resolver).
+
 
 <a name="schema-compiler"></a>
 #### schemaCompiler
@@ -602,24 +689,24 @@ You can also register a [`preValidation`](https://www.fastify.io/docs/latest/Hoo
 
 ```js
 fastify.setNotFoundHandler({
-  preValidation: (req, reply, next) => {
+  preValidation: (req, reply, done) => {
     // your code
-    next()
+    done()
   },
-  preHandler: (req, reply, next) => {
+  preHandler: (req, reply, done) => {
     // your code
-    next()
+    done()
   }
 }, function (request, reply) {
     // Default not found handler with preValidation and preHandler hooks
 })
 
-fastify.register(function (instance, options, next) {
+fastify.register(function (instance, options, done) {
   instance.setNotFoundHandler(function (request, reply) {
     // Handle not found request without preValidation and preHandler hooks
     // to URLs that begin with '/v1'
   })
-  next()
+  done()
 }, { prefix: '/v1' })
 ```
 

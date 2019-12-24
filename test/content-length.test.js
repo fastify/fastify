@@ -34,7 +34,7 @@ test('default 413 with bodyLimit option', t => {
   })
 })
 
-test('default 413 with wrong content-length', t => {
+test('default 400 with wrong content-length', t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -102,7 +102,7 @@ test('custom 413 with bodyLimit option', t => {
   })
 })
 
-test('custom 413 with wrong content-length', t => {
+test('custom 400 with wrong content-length', t => {
   t.plan(4)
 
   const fastify = Fastify()

@@ -2,9 +2,9 @@
 
 ## Decorators
 
-If you need to add functionality to the Fastify instance, the `decorate` API is what you need.
+If you need to add functionality to the Fastify instance, the `decorate` API is what you want.
 
-The API allows you to add new properties to the Fastify instance. A value is not restricted to a function and could also be an object or a string, for example.
+The API allows you to add new properties to the Fastify instance. Possible values are not restricted by type and could be functions, objects or strings, for example.
 
 <a name="usage"></a>
 ### Usage
@@ -13,11 +13,11 @@ The API allows you to add new properties to the Fastify instance. A value is not
 Just call the `decorate` API and pass the name of the new property and its value.
 ```js
 fastify.decorate('utility', () => {
-  // something very useful
+  // Something very useful
 })
 ```
 
-As said above, you can also decorate the instance with non-function values:
+As mentioned above, you can also decorate the instance with non-function values:
 ```js
 fastify.decorate('conf', {
   db: 'some.db',
@@ -25,7 +25,7 @@ fastify.decorate('conf', {
 })
 ```
 
-Once you decorate the instance, you can access the value by using the name you passed as a parameter:
+Once the instance was decorated, you can access the new value by using the name you passed as a parameter:
 ```js
 fastify.utility()
 
@@ -34,14 +34,14 @@ console.log(fastify.conf.db)
 
 <a name="decorate-reply"></a>
 **decorateReply**
-As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
+As the name suggests, this API can be used to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
 ```js
 fastify.decorateReply('utility', function () {
-  // something very useful
+  // Something very useful
 })
 ```
 
-Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
+Note: using an arrow function will break the binding of `this` to the Fastify `Reply` instance.
 
 <a name="decorate-request"></a>
 **decorateRequest**
@@ -52,12 +52,12 @@ fastify.decorateRequest('utility', function () {
 })
 ```
 
-Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
+Note: using an arrow function will break the binding of `this` to the Fastify `Request` instance.
 
 <a name="decorators-encapsulation"></a>
-#### Decorators and encapsulation
+#### Decorators and Encapsulation
 
-If you define a decorator (using decorate, decorateRequest or decorateReply) with the same name more than once in the same **encapsulated** plugin, fastify will throw an exception.
+If you define a decorator (using `decorate`, `decorateRequest` or `decorateReply`) with the same name more than once in the same **encapsulated** plugin, Fastify will throw an exception.
 
 As an example, the following will throw:
 
@@ -65,7 +65,7 @@ As an example, the following will throw:
 const server = require('fastify')()
 
 server.decorateReply('view', function (template, args) {
-  // Amazing view rendering engine.
+  // Amazing view rendering engine
 })
 
 server.get('/', (req, reply) => {
@@ -75,7 +75,7 @@ server.get('/', (req, reply) => {
 // Somewhere else in our codebase, we define another
 // view decorator. This throws.
 server.decorateReply('view', function (template, args) {
-  // another rendering engine
+  // Another rendering engine
 })
 
 server.listen(3000)
@@ -96,7 +96,7 @@ server.register(async function (server, opts) {
   // plugin. This will not throw as outside of this encapsulated
   // plugin view is the old one, while inside it is the new one.
   server.decorateReply('view', function (template, args) {
-    // another rendering engine
+    // Another rendering engine
   })
 
   server.get('/', (req, reply) => {
@@ -137,9 +137,9 @@ As an example let's add a user property to the `Request` object:
 fastify.decorateRequest('user', '')
 
 // Update our property
-fastify.addHook('preHandler', (req, reply, next) => {
+fastify.addHook('preHandler', (req, reply, done) => {
   req.user = 'Bob Dylan'
-  next()
+  done()
 })
 // And finally access it
 fastify.get('/', (req, reply) => {

@@ -4,9 +4,10 @@
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 > ## ⚠  Security Notice
+> Treat the schema definition as application code.
 > As both validation and serialization features dynamically evaluate
-> code with `new Function()`, it is not safe to use them with
-> user-provided data. See [Ajv](http://npm.im/ajv) and
+> code with `new Function()`, it is not safe to use
+> user-provided schemas. See [Ajv](http://npm.im/ajv) and
 > [fast-json-stringify](http://npm.im/fast-json-stringify) for more
 > details.
 
@@ -14,7 +15,7 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 ### Validation
 The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator. Validating the input is very easy: just add the fields that you need inside the route schema, and you are done! The supported validations are:
 - `body`: validates the body of the request if it is a POST or a PUT.
-- `querystring`: validates the query string. This can be a complete JSON Schema object (with a `type` property of `'object'` and a `'properties'` object containing parameters) or a simpler variation in which the `type` and `properties` attributes are forgone and the query parameters are listed at the top level (see the example below).
+- `querystring` or `query`: validates the query string. This can be a complete JSON Schema object (with a `type` property of `'object'` and a `'properties'` object containing parameters) or a simpler variation in which the `type` and `properties` attributes are forgone and the query parameters are listed at the top level (see the example below).
 - `params`: validates the route params.
 - `headers`: validates the request headers.
 
@@ -31,7 +32,7 @@ const bodyJsonSchema = {
       maxItems: 3,
       items: { type: 'integer' }
     },
-    nullableKey: { type: ['number', 'null'] },
+    nullableKey: { type: ['number', 'null'] }, // or { type: 'number', nullable: true }
     multipleTypesKey: { type: ['boolean', 'number'] },
     multipleRestrictedTypesKey: {
       oneOf: [
@@ -155,7 +156,7 @@ fastify.route({
   handler: () => {}
 })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
 
   /**
    * In children's scope can use schemas defined in upper scope like 'greetings'.
@@ -179,7 +180,7 @@ fastify.register((instance, opts, next) => {
     handler: () => {}
   })
 
-  next()
+  done()
 })
 ```
 
@@ -219,16 +220,16 @@ The function `getSchemas` returns the shared schemas available in the selected s
 fastify.addSchema({ $id: 'one', my: 'hello' })
 fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
 
-fastify.register((instance, opts, next) => {
+fastify.register((instance, opts, done) => {
   instance.addSchema({ $id: 'two', my: 'ciao' })
   instance.get('/sub', (request, reply) => { reply.send(instance.getSchemas()) })
 
-  instance.register((subinstance, opts, next) => {
+  instance.register((subinstance, opts, done) => {
     subinstance.addSchema({ $id: 'three', my: 'hola' })
     subinstance.get('/deep', (request, reply) => { reply.send(subinstance.getSchemas()) })
-    next()
+    done()
   })
-  next()
+  done()
 })
 ```
 This example will returns:
@@ -238,6 +239,77 @@ This example will returns:
 | /     | one             |
 | /sub  | one, two        |
 | /deep | one, two, three |
+
+<a name="ajv-plugins"></a>
+#### Ajv Plugins
+
+You can provide a list of plugins you want to use with Ajv:
+
+> Refer to [`ajv options`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to check plugins format
+
+```js
+const fastify = require('fastify')({
+  ajv: {
+    plugins: [
+      require('ajv-merge-patch')
+    ]
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      $patch: {
+        source: {
+          type: 'object',
+          properties: {
+            q: {
+              type: 'string'
+            }
+          }
+        },
+        with: [
+          {
+            op: 'add',
+            path: '/properties/q',
+            value: { type: 'number' }
+          }
+        ]
+      }
+    }
+  },
+  handler (req, reply) {
+    reply.send({ ok: 1 })
+  }
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: {
+      $merge: {
+        source: {
+          type: 'object',
+          properties: {
+            q: {
+              type: 'string'
+            }
+          }
+        },
+        with: {
+          required: ['q']
+        }
+      }
+    }
+  },
+  handler (req, reply) {
+    reply.send({ ok: 1 })
+  }
+})
+```
 
 <a name="schema-compiler"></a>
 #### Schema Compiler
@@ -251,11 +323,14 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
   removeAdditional: true, // remove additional properties
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   coerceTypes: true, // change data type of data to match type keyword
-  allErrors: true    // check for all errors
+  allErrors: true,   // check for all errors
+  nullable: true     // support keyword "nullable" from Open API 3 specification.
 }
 ```
 
-This baseline configuration cannot be modified. If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
+This baseline configuration can be modified by providing [`ajv.customOptions`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to your Fastify factory.
+
+If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 
 ```js
 const fastify = require('fastify')()
@@ -265,7 +340,8 @@ const ajv = new Ajv({
   removeAdditional: true,
   useDefaults: true,
   coerceTypes: true,
-  allErrors: true
+  allErrors: true,
+  nullable: true,
   // any other options
   // ...
 })
@@ -277,6 +353,7 @@ fastify.setSchemaCompiler(function (schema) {
 // Alternatively, you can set the schema compiler using the setter property:
 fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 ```
+_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of fastify, since fastify's default validator is no longer used, and fastify's `addSchema` method has no idea what validator you are using._
 
 But maybe you want to change the validation library. Perhaps you like `Joi`. In this case, you can use it to validate the url parameters, body, and query string!
 
@@ -296,6 +373,68 @@ fastify.post('/the/url', {
 In that case the function returned by `schemaCompiler` returns an object like:
 * `error`: filled with an instance of `Error` or a string that describes the validation error
 * `value`: the coerced value that passed the validation
+
+<a name="schema-resolver"></a>
+#### Schema Resolver
+
+The `schemaResolver` is a function that works together with the `schemaCompiler`: you can't use it
+with the default schema compiler. This feature is useful when you use complex schemas with `$ref` keyword
+in your routes and a custom validator.
+
+This is needed because all the schemas you add to your custom compiler are unknown to Fastify but it
+need to resolve the `$ref` paths.
+
+```js
+const fastify = require('fastify')()
+const Ajv = require('ajv')
+const ajv = new Ajv()
+
+ajv.addSchema({
+  $id: 'urn:schema:foo',
+  definitions: {
+    foo: { type: 'string' }
+  },
+  type: 'object',
+  properties: {
+    foo: { $ref: '#/definitions/foo' }
+  }
+})
+ajv.addSchema({
+  $id: 'urn:schema:response',
+  type: 'object',
+  required: ['foo'],
+  properties: {
+    foo: { $ref: 'urn:schema:foo#/definitions/foo' }
+  }
+})
+ajv.addSchema({
+  $id: 'urn:schema:request',
+  type: 'object',
+  required: ['foo'],
+  properties: {
+    foo: { $ref: 'urn:schema:foo#/definitions/foo' }
+  }
+})
+
+fastify.setSchemaCompiler(schema => ajv.compile(schema))
+fastify.setSchemaResolver((ref) => {
+  return ajv.getSchema(ref).schema
+})
+
+fastify.route({
+  method: 'POST',
+  url: '/',
+  schema: {
+    body: ajv.getSchema('urn:schema:request').schema,
+    response: {
+      '2xx': ajv.getSchema('urn:schema:response').schema
+    }
+  },
+  handler (req, reply) {
+    reply.send({ foo: 'bar' })
+  }
+})
+```
 
 <a name="serialization"></a>
 ### Serialization

@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint no-prototype-builtins: 0 */
+
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -14,6 +16,29 @@ test('require a plugin', t => {
   fastify.ready(() => {
     t.ok(fastify.test)
   })
+})
+
+test('plugin metadata - ignore prefix', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  fastify.register(plugin, { prefix: 'foo' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, function (err, res) {
+    t.error(err)
+    t.equals(res.payload, 'hello')
+  })
+
+  function plugin (instance, opts, next) {
+    instance.get('/', function (request, reply) {
+      reply.send('hello')
+    })
+    next()
+  }
 })
 
 test('fastify.register with fastify-plugin should not incapsulate his code', t => {
@@ -307,6 +332,154 @@ test('check dependencies - should throw', t => {
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
+  })
+})
+
+test('set the plugin name based on the plugin displayName symbol', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register(fp((fastify, opts, next) => {
+    t.strictEqual(fastify.pluginName, 'plugin-A')
+    fastify.register(fp((fastify, opts, next) => {
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
+      next()
+    }, { name: 'plugin-AB' }))
+    fastify.register(fp((fastify, opts, next) => {
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      next()
+    }, { name: 'plugin-AC' }))
+    next()
+  }, { name: 'plugin-A' }))
+
+  fastify.register(fp((fastify, opts, next) => {
+    t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
+    next()
+  }, { name: 'plugin-B' }))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('plugin name will change when using no encapsulation', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register(fp((fastify, opts, next) => {
+    // store it in a different variable will hold the correct name
+    const pluginName = fastify.pluginName
+    fastify.register(fp((fastify, opts, next) => {
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
+      next()
+    }, { name: 'plugin-AB' }))
+    fastify.register(fp((fastify, opts, next) => {
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      next()
+    }, { name: 'plugin-AC' }))
+    setImmediate(() => {
+      // normally we would expect the name plugin-A
+      // but we operate on the same instance in each plugin
+      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.strictEqual(pluginName, 'plugin-A')
+    })
+    next()
+  }, { name: 'plugin-A' }))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('plugin name is undefined when accessing in no plugin context', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  t.strictEqual(fastify.pluginName, undefined)
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('set the plugin name based on the plugin function name', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.register(function myPluginA (fastify, opts, next) {
+    t.strictEqual(fastify.pluginName, 'myPluginA')
+    fastify.register(function myPluginAB (fastify, opts, next) {
+      t.strictEqual(fastify.pluginName, 'myPluginAB')
+      next()
+    })
+    setImmediate(() => {
+      // exact name due to encapsulation
+      t.strictEqual(fastify.pluginName, 'myPluginA')
+    })
+    next()
+  })
+
+  fastify.register(function myPluginB (fastify, opts, next) {
+    t.strictEqual(fastify.pluginName, 'myPluginB')
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('approximate a plugin name when no meta data is available', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.register((fastify, opts, next) => {
+    // A
+    t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+    t.is(fastify.pluginName.includes('// A'), true)
+    fastify.register((fastify, opts, next) => {
+      // B
+      t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+      t.is(fastify.pluginName.includes('// B'), true)
+      next()
+    })
+    setImmediate(() => {
+      t.is(fastify.pluginName.startsWith('(fastify, opts, next)'), true)
+      t.is(fastify.pluginName.includes('// A'), true)
+    })
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
+  })
+})
+
+test('approximate a plugin name also when fastify-plugin has no meta data', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register(fp((fastify, opts, next) => {
+    t.is(fastify.pluginName, 'plugin.test')
+    fastify.register(fp(function B (fastify, opts, next) {
+      // function has name
+      t.is(fastify.pluginName, 'plugin.test -> B')
+      next()
+    }))
+    setImmediate(() => {
+      t.is(fastify.pluginName, 'plugin.test -> B')
+    })
+    next()
+  }))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.close()
   })
 })
 

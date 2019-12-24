@@ -418,7 +418,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
 
   var fastify = null
   var stream = split(JSON.parse)
-  var payload = { 'hello': 'world' }
+  var payload = { hello: 'world' }
   try {
     fastify = Fastify({
       logger: {

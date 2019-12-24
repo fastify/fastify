@@ -4,12 +4,15 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
+  - [.statusCode](#statusCode)
   - [.header(key, value)](#headerkey-value)
+  - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
   - [.redirect(dest)](#redirectdest)
   - [.callNotFound()](#callnotfound)
+  - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
@@ -21,7 +24,8 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  
+  - [.then](#then)
+
 <a name="introduction"></a>
 ### Introduction
 The second parameter of the handler function is `Reply`.
@@ -30,7 +34,9 @@ and properties:
 
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
+- `.statusCode` - Read and set the HTTP status code.
 - `.header(name, value)` - Sets a response header.
+- `.headers(object)` - Sets all the keys of the object as a response headers.
 - `.getHeader(name)` - Retrieve value of already set header.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
@@ -42,7 +48,8 @@ and properties:
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
 - `.res` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
-- `.log` - the logger instance of the incoming request
+- `.log` - The logger instance of the incoming request.
+- `.request` - The incoming request.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -66,6 +73,15 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ### .code(statusCode)
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
+<a name="statusCode"></a>
+### .statusCode
+This property reads and sets the HTTP status code. It is an alias for `reply.code()` when used as a setter.
+```js
+if (reply.statusCode >= 299) {
+  reply.statusCode = 500
+}
+```
+
 <a name="header"></a>
 ### .header(key, value)
 Sets a response header. If the value is omitted or undefined it is coerced
@@ -73,11 +89,21 @@ to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
 
+<a name="headers"></a>
+### .headers(object)
+Sets all the keys of the object as response headers. [`.header`](#headerkey-value) will be called under the hood.
+```js
+reply.headers({
+  'x-foo': 'foo',
+  'x-bar': 'bar'
+})
+```
+
 <a name="getHeader"></a>
 ### .getHeader(key)
 Retrieves the value of a previously set header.
 ```js
-reply.header('x-foo', 'foo')
+reply.header('x-foo', 'foo') // setHeader: key, value
 reply.getHeader('x-foo') // 'foo'
 ```
 
@@ -107,6 +133,14 @@ reply.redirect('/home')
 Invokes the custom not found handler.
 ```js
 reply.callNotFound()
+```
+
+<a name="getResponseTime"></a>
+### .getResponseTime()
+Invokes the custom response time getter to calculate the amount of time passed since the request was started.
+
+```js
+const milliseconds = reply.getResponseTime()
 ```
 
 <a name="type"></a>
@@ -215,11 +249,12 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 ```js
 {
   error: String        // the http error message
+  code: String         // the Fastify error code
   message: String      // the user error message
   statusCode: Number   // the http status code
 }
 ```
-You can add some custom property to the Error object, such as `statusCode` and `headers`, that will be used to enhance the http response.<br>
+You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -274,17 +309,15 @@ The type of the sent payload (after serialization and going through any [`onSend
 Fastify natively handles promises and supports async-await.<br>
 *Note that in the following examples we are not using reply.send.*
 ```js
+const delay = promisify(setTimeout)
+
 fastify.get('/promises', options, function (request, reply) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
+ return delay(200).then(() => { return { hello: 'world' }})
 })
 
 fastify.get('/async-await', options, async function (request, reply) {
-  var res = await new Promise(function (resolve) {
-    setTimeout(resolve, 200, { hello: 'world' })
-  })
-  return res
+  await delay(200)
+  return { hello: 'world' }
 })
 ```
 
@@ -300,3 +333,21 @@ fastify.get('/teapot', async function (request, reply) => {
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).
+
+<a name="then"></a>
+### .then(fullfilled, rejected)
+
+As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
+The `await` syntax calls the `reply.then()`.
+
+`reply.then(fullfilled, rejected)` accepts two parameters:
+
+- `fullfilled` will be called when a response has been fully sent,
+- `rejected` will be called if the underlying stream had an error, e.g.
+the socket has been destroyed.
+
+For more details, see:
+
+- https://github.com/fastify/fastify/issues/1864 for the discussion about this feature
+- https://promisesaplus.com/ for the definition of thenables
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then for the signature

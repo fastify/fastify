@@ -567,6 +567,40 @@ test('Should set a custom logLevel for a plugin', t => {
   })
 })
 
+test('Should set a custom logSerializers for a plugin', t => {
+  t.plan(3)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'XHello')
+    }
+  })
+
+  const logger = pino({ level: 'error' }, splitStream)
+
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/plugin', (req, reply) => {
+      req.log.info({ test: 'Hello' }) // we should see this log
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logLevel: 'info', logSerializers: { test: value => 'X' + value } })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/plugin'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
 test('Should set a custom logLevel for every plugin', t => {
   const lines = ['incoming request', 'request completed', 'info', 'debug']
   t.plan(18)
@@ -627,6 +661,281 @@ test('Should set a custom logLevel for every plugin', t => {
   fastify.inject({
     method: 'GET',
     url: '/debug'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should set a custom logSerializers for every plugin', t => {
+  const lines = ['Hello', 'XHello', 'ZHello']
+  t.plan(9)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, lines.shift())
+    }
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', (req, reply) => {
+    req.log.warn({ test: 'Hello' })
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/test1', (req, reply) => {
+      req.log.info({ test: 'Hello' })
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logSerializers: { test: value => 'X' + value } })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/test2', (req, reply) => {
+      req.log.info({ test: 'Hello' })
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logSerializers: { test: value => 'Z' + value } })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test1'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test2'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should override serializers from route', t => {
+  t.plan(3)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'ZHello')
+    }
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.get('/', {
+      logSerializers: {
+        test: value => 'Z' + value // should override
+      }
+    }, (req, reply) => {
+      req.log.info({ test: 'Hello' })
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }, { logSerializers: { test: value => 'X' + value } })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should override serializers from plugin', t => {
+  t.plan(3)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'ZHello')
+    }
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(function (instance, opts, next) {
+    instance.register(context1, {
+      logSerializers: {
+        test: value => 'Z' + value // should override
+      }
+    })
+    next()
+  }, { logSerializers: { test: value => 'X' + value } })
+
+  function context1 (instance, opts, next) {
+    instance.get('/', (req, reply) => {
+      req.log.info({ test: 'Hello' })
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should use serializers from plugin and route', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'XHello')
+    }
+    if (line.test2) {
+      t.is(line.test2, 'ZHello')
+    }
+  })
+
+  const logger = pino({ level: 'info' }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.register(context1, {
+    logSerializers: { test: value => 'X' + value }
+  })
+
+  function context1 (instance, opts, next) {
+    instance.get('/', {
+      logSerializers: {
+        test2: value => 'Z' + value
+      }
+    }, (req, reply) => {
+      req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should use serializers from instance fastify and route', t => {
+  t.plan(4)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test) {
+      t.is(line.test, 'XHello')
+    }
+    if (line.test2) {
+      t.is(line.test2, 'ZHello')
+    }
+  })
+
+  const logger = pino({
+    level: 'info',
+    serializers: {
+      test: value => 'X' + value,
+      test2: value => 'This should be override - ' + value
+    }
+  }, splitStream)
+  const fastify = Fastify({
+    logger
+  })
+
+  fastify.get('/', {
+    logSerializers: {
+      test2: value => 'Z' + value
+    }
+  }, (req, reply) => {
+    req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('Should use serializers inherit from contexts', t => {
+  t.plan(5)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    if (line.test && line.test2 && line.test3) {
+      t.is(line.test, 'XHello')
+      t.is(line.test2, 'YHello')
+      t.is(line.test3, 'ZHello')
+    }
+  })
+
+  const logger = pino({
+    level: 'info',
+    serializers: {
+      test: value => 'X' + value
+    }
+  }, splitStream)
+
+  const fastify = Fastify({ logger })
+  fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })
+
+  function context1 (instance, opts, next) {
+    instance.get('/', {
+      logSerializers: {
+        test3: value => 'Z' + value
+      }
+    }, (req, reply) => {
+      req.log.info({ test: 'Hello', test2: 'Hello', test3: 'Hello' }) // { test: 'XHello', test2: 'YHello', test3: 'ZHello' }
+      reply.send({ hello: 'world' })
+    })
+    next()
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
@@ -783,7 +1092,11 @@ test('Should set a custom log level for a specific route', t => {
 test('The default 404 handler logs the incoming request', t => {
   t.plan(5)
 
-  const expectedMessages = ['incoming request', 'Not Found', 'request completed']
+  const expectedMessages = [
+    'incoming request',
+    'Route GET:/not-found not found',
+    'request completed'
+  ]
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
@@ -1072,6 +1385,38 @@ test('should not log the error if error handler is defined', t => {
   })
 })
 
+test('should not rely on raw request to log errors', t => {
+  t.plan(7)
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    modifyCoreObjects: false,
+    logger: {
+      stream: stream,
+      level: 'info'
+    }
+  })
+  fastify.get('/error', function (req, reply) {
+    t.ok(req.log)
+    reply.status(415).send(new Error('something happened'))
+  })
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    stream.once('data', listenAtLogLine => {
+      t.ok(listenAtLogLine, 'listen at log message is ok')
+      stream.once('data', line => {
+        t.equal(line.msg, 'incoming request', 'message is set')
+        stream.once('data', line => {
+          t.equal(line.level, 30, 'level is correct')
+          t.equal(line.msg, 'something happened', 'message is set')
+          t.deepEqual(line.res, { statusCode: 415 }, 'status code is set')
+        })
+      })
+    })
+  })
+})
+
 test('should redact the authorization header if so specified', t => {
   t.plan(7)
   const stream = split(JSON.parse)
@@ -1111,7 +1456,7 @@ test('should redact the authorization header if so specified', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port,
       headers: {
-        'authorization': 'Bearer abcde'
+        authorization: 'Bearer abcde'
       }
     }, (err, response, body) => {
       t.error(err)

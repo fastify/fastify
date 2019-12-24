@@ -1,5 +1,7 @@
 .editorconfig
 .gitattributes
+.git
+.DS_Store
 .gitignore
 .github
 .nyc_output

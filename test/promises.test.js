@@ -42,6 +42,24 @@ fastify.get('/double', function (req, reply) {
   return Promise.resolve({ hello: '42' })
 })
 
+fastify.get('/thenable', opts, function (req, reply) {
+  setImmediate(function () {
+    reply.send({ hello: 'world' })
+  })
+  return reply
+})
+
+fastify.get('/thenable-error', opts, function (req, reply) {
+  setImmediate(function () {
+    reply.send(new Error('kaboom'))
+  })
+  return reply
+})
+
+fastify.get('/return-reply', opts, function (req, reply) {
+  return reply.send({ hello: 'world' })
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -80,6 +98,43 @@ fastify.listen(0, err => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.deepEqual(JSON.parse(body), { hello: '42' })
+    })
+  })
+
+  test('thenable', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('thenable (error)', t => {
+    t.plan(2)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/thenable-error'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+  })
+
+  test('return-reply', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + body.length)
+      t.deepEqual(JSON.parse(body), { hello: 'world' })
     })
   })
 })

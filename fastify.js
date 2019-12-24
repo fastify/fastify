@@ -382,7 +382,7 @@ function fastify (options) {
     return this
 
     function _addHook (name, fn) {
-      this[kHooks].add(name, fn.bind(this))
+      this[kHooks].add(name, fn)
       this[kChildren].forEach(child => _addHook.call(child, name, fn))
     }
   }

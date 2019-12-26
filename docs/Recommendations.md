@@ -5,7 +5,7 @@
 This document contains a set recommendations, or best practices, when using
 Fastify.
 
-* [Use A Reverse Proxy][#reverseproxy]
+* [Use A Reverse Proxy](#reverseproxy)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>

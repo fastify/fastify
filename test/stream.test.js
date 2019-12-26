@@ -382,12 +382,12 @@ test('should support send module 200 and 404', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    const stream = send(req.req, __filename)
+    const stream = send(req.raw, __filename)
     reply.code(200).send(stream)
   })
 
   fastify.get('/error', function (req, reply) {
-    const stream = send(req.req, 'non-existing-file')
+    const stream = send(req.raw, 'non-existing-file')
     reply.code(200).send(stream)
   })
 

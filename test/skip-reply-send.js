@@ -19,7 +19,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
 
   app.get('/', (req, reply) => {
     reply.sent = true
-    reply.res.end('hello world')
+    reply.raw.end('hello world')
 
     return Promise.resolve('this will be skipped')
   })
@@ -48,7 +48,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
 
   app.get('/', (req, reply) => {
     reply.sent = true
-    reply.res.end('hello world')
+    reply.raw.end('hello world')
 
     return Promise.resolve()
   })
@@ -82,7 +82,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
 
   app.get('/', (req, reply) => {
     reply.sent = true
-    reply.res.end('hello world')
+    reply.raw.end('hello world')
 
     return Promise.reject(new Error('kaboom'))
   })

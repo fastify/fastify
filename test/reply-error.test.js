@@ -323,7 +323,7 @@ test('should set the status code and the headers from the error object (from cus
 
   fastify.setErrorHandler((err, request, reply) => {
     t.is(err.message, 'ouch')
-    t.is(reply.res.statusCode, 401)
+    t.is(reply.raw.statusCode, 401)
     const error = new Error('kaboom')
     error.headers = { hello: 'world' }
     error.statusCode = 400

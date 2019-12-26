@@ -25,12 +25,11 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(8)
+  t.plan(7)
   const req = new Request('params', 'req', 'query', 'headers', 'log')
   t.type(req, Request)
   t.equal(req.params, 'params')
   t.deepEqual(req.raw, 'req')
-  t.deepEqual(req.req, req.raw)
   t.equal(req.query, 'query')
   t.equal(req.headers, 'headers')
   t.equal(req.log, 'log')

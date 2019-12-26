@@ -169,7 +169,7 @@ fastify.addHook('onRequest', (req, reply, done) => {
 })
 
 fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
+  req.log.info({ url: req.req.originalUrl, statusCode: res.raw.statusCode }, 'request completed')
   done()
 })
 ```
@@ -345,7 +345,7 @@ fastify.get('/', (request, reply) => {
   console.log(request.raw.ips)
   console.log(request.raw.hostname)
   request.raw.log('Hello')
-  reply.res.log('World')
+  reply.raw.log('World')
 })
 ```
 

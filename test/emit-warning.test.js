@@ -9,7 +9,7 @@ test('Should emit a warning when accessing request.req instead of request.raw', 
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FST_WARN')
+    t.strictEqual(warning.code, 'FSTDEP001')
     t.strictEqual(warning.message, 'You are accessing the Node.js core request object via "request.req", Use "request.raw" instead.')
   }
 
@@ -34,7 +34,7 @@ test('Should emit a warning when accessing reply.res instead of reply.raw', t =>
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FST_WARN')
+    t.strictEqual(warning.code, 'FSTDEP002')
     t.strictEqual(warning.message, 'You are accessing the Node.js core response object via "reply.res", Use "reply.raw" instead.')
   }
 

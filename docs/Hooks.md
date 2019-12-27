@@ -252,7 +252,7 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 ## Application Hooks
 
-You can hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.
+You can hook into the application-lifecycle as well.
 
 - [onClose](#onclose)
 - [onRoute](#onroute)
@@ -271,7 +271,7 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 <a name="on-route"></a>
 ### onRoute
-Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
+Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback. This hook is encapsulated.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
   //Some code
@@ -301,7 +301,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 <a name="on-register"></a>
 ### onRegister
 Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
-This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
+This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context, thus this hook is encapsulated.<br/>
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
@@ -331,7 +331,7 @@ fastify.addHook('onRegister', (instance) => {
 
 <a name="scope"></a>
 ## Scope
-Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (request, reply, done) {

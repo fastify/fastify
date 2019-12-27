@@ -376,7 +376,7 @@ test('onRoute hook should be called / 2', t => {
 })
 
 test('onRoute hook should be called / 3', t => {
-  t.plan(6)
+  t.plan(5)
   const fastify = Fastify()
 
   function handler (req, reply) {
@@ -401,6 +401,77 @@ test('onRoute hook should be called / 3', t => {
         done()
       }, 10)
     })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should be called (encapsulation support) / 4', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('onRoute', () => {
+    t.pass()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {
+      t.pass()
+    })
+    instance.get('/nested', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should be called (encapsulation support) / 5', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/first', function (req, reply) {
+    reply.send()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', () => {
+      t.pass()
+    })
+    instance.get('/nested', opts, function (req, reply) {
+      reply.send()
+    })
+    next()
+  })
+
+  fastify.get('/second', function (req, reply) {
+    reply.send()
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
+test('onRoute hook should be called (encapsulation support) / 6', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/first', function (req, reply) {
+    reply.send()
+  })
+
+  fastify.addHook('onRoute', () => {
+    t.fail('This should not be called')
+  })
 
   fastify.ready(err => {
     t.error(err)
@@ -2593,14 +2664,16 @@ test('onRegister hook should be called / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, done) => {
-    done()
+  const pluginOpts = { prefix: 'hello', custom: 'world' }
+
+  fastify.addHook('onRegister', (instance, opts) => {
+    t.ok(instance.addHook)
+    t.deepEquals(opts, pluginOpts)
   })
 
-  fastify.addHook('onRegister', instance => {
-    // duck typing for the win!
-    t.ok(instance.addHook)
-  })
+  fastify.register((instance, opts, next) => {
+    next()
+  }, pluginOpts)
 
   fastify.ready(err => {
     t.error(err)
@@ -2608,23 +2681,23 @@ test('onRegister hook should be called / 1', t => {
 })
 
 test('onRegister hook should be called / 2', t => {
-  t.plan(5)
+  t.plan(4)
   const fastify = Fastify()
-
-  fastify.register((instance, opts, done) => {
-    instance.register((instance, opts, done) => {
-      done()
-    })
-    done()
-  })
-
-  fastify.register((instance, opts, done) => {
-    done()
-  })
 
   fastify.addHook('onRegister', instance => {
     // duck typing for the win!
     t.ok(instance.addHook)
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.register((instance, opts, next) => {
+      next()
+    })
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    next()
   })
 
   fastify.ready(err => {
@@ -2638,24 +2711,24 @@ test('onRegister hook should be called / 3', t => {
 
   fastify.decorate('data', [])
 
-  fastify.register((instance, opts, done) => {
-    instance.data.push(1)
-    instance.register((instance, opts, done) => {
-      instance.data.push(2)
-      t.deepEqual(instance.data, [1, 2])
-      done()
-    })
-    t.deepEqual(instance.data, [1])
-    done()
-  })
-
-  fastify.register((instance, opts, done) => {
-    t.deepEqual(instance.data, [])
-    done()
-  })
-
   fastify.addHook('onRegister', instance => {
     instance.data = instance.data.slice()
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.data.push(1)
+    instance.register((instance, opts, next) => {
+      instance.data.push(2)
+      t.deepEqual(instance.data, [1, 2])
+      next()
+    })
+    t.deepEqual(instance.data, [1])
+    next()
+  })
+
+  fastify.register((instance, opts, next) => {
+    t.deepEqual(instance.data, [])
+    next()
   })
 
   fastify.ready(err => {
@@ -2663,21 +2736,20 @@ test('onRegister hook should be called / 3', t => {
   })
 })
 
-test('onRegister hook should be called / 4', t => {
-  t.plan(2)
+test('onRegister hook should be called (encapsulation)', t => {
+  t.plan(1)
   const fastify = Fastify()
 
-  function plugin (instance, opts, done) {
-    done()
+  function plugin (instance, opts, next) {
+    next()
   }
   plugin[Symbol.for('skip-override')] = true
 
-  fastify.register(plugin)
-
-  fastify.addHook('onRegister', instance => {
-    // duck typing for the win!
-    t.ok(instance.addHook)
+  fastify.addHook('onRegister', (instance, opts) => {
+    t.fail('This should not be called')
   })
+
+  fastify.register(plugin)
 
   fastify.ready(err => {
     t.error(err)

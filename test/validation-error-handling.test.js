@@ -294,7 +294,7 @@ test('should return a defined output message parsing JOI errors', t => {
 
   fastify.post('/', {
     schema: { body },
-    schemaCompiler: schema => data => Joi.validate(data, schema)
+    schemaCompiler: schema => data => schema.validate(data)
   },
   function (req, reply) {
     t.fail()
@@ -306,7 +306,7 @@ test('should return a defined output message parsing JOI errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"child \\"name\\" fails because [\\"name\\" is required]"}')
+    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
   })
 })
 
@@ -323,7 +323,7 @@ test('should return a defined output message parsing JOI error details', t => {
   fastify.post('/', {
     schema: { body },
     schemaCompiler: schema => data => {
-      const validation = Joi.validate(data, schema)
+      const validation = schema.validate(data)
       return { error: validation.error.details }
     }
   },

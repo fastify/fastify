@@ -221,7 +221,7 @@ module.exports.payloadMethod = function (method, t) {
         t.strictEqual(response.statusCode, 400)
         t.deepEqual(body, {
           error: 'Bad Request',
-          message: 'child "hello" fails because ["hello" must be a string]',
+          message: '"hello" must be a string',
           statusCode: 400
         })
       })

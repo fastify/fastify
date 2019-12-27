@@ -77,7 +77,7 @@ t.test('get schemaCompiler is empty for schemaCompilere settle on routes', t => 
     work: Joi.string()
   }).required()
 
-  const schemaCompiler = schema => data => Joi.validate(data, schema)
+  const schemaCompiler = schema => data => schema.validate(data)
 
   fastify.post('/', {
     schema: { body },

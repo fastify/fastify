@@ -262,8 +262,14 @@ test('does not mutate joi schemas', t => {
 
   const fastify = Fastify()
   function schemaCompiler (schema) {
+    // Needed to extract the params part,
+    // without the JSON-schema encapsulation
+    // that is automatically added by the short
+    // form of params.
+    schema = joi.object(schema.properties)
+
     return function (data, opts) {
-      return joi.validate(data, schema)
+      return schema.validate(data)
     }
   }
 

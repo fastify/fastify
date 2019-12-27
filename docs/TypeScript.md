@@ -367,11 +367,9 @@ This section is a detailed account of all the types available to you in Fastify 
 
 All `http`, `https`, and `http2` types are inferred from `@types/node`
 
-Generics are documented by their default value as well as their constraint value(s). Read these articles for more information on TypeScript generics.
+[Generics](#generics) are documented by their default value as well as their constraint value(s). Read these articles for more information on TypeScript generics.
 - [Generic Parameter Default](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-3.html#generic-parameter-defaults)
 - [Generic Constraints](https://www.typescriptlang.org/docs/handbook/generics.html#generic-constraints)
-
-Find detailed documentation on the generics used for this type system in the main [fastify]() api method and the [FastifyMiddleware]() section
 
 #### How to import
 
@@ -427,23 +425,55 @@ The Fastify API is powered by the `fastify()` method. In JavaScript you would im
     f.listen(8080, () => { console.log('running') })
     ```
 
+#### Generics
+
+Many type definitions share the same generic parameters; they are all documented, in detail, within this section.
+
+Most definitions depend on `@node/types` modules `http`, `https`, and `http2`
+
+##### RawServer 
+Underlying Node.js server type
+
+Default: `http.Server`
+
+Constraints: `http.Server`, `https.Server`, `http2.Http2Server`, `http2.Http2SecureServer`
+
+Enforces generic parameters: [`RawRequest`](#rawrequest), [`RawReply`](#rawreply)
+
+##### RawRequest
+Underlying Node.js request type
+
+Default: [`RawRequestDefaultExpression`](#fastifyrawrequestdefaultexpression)
+
+Constraints: `http.IncomingMessage`, `http2.Http2ServerRequest`
+
+Enforced by: [`RawServer`](#rawserver)
+
+##### RawReply
+Underlying Node.js response type 
+
+Default: [`RawReplyDefaultExpression`](#fastifyrawreplydefaultexpression)
+
+Constraints: `http.ServerResponse`, `http2.Http2ServerResponse`
+
+Enforced by: [`RawServer`](#rawserver)
+
+##### Logger
+Fastify logging utility
+
+Default: [`FastifyLoggerOptions`](#fastifyloggeroptions)
+
+Enforced by: [`RawServer`](#rawserver)
+
 #### fastify<RawServer, RawRequest, RawReply, Logger>(opts?: FastifyOptions): FastifyInstance
 
 The main Fastify API method. By default creates an HTTP server. Supports an extensive generic type system to either specify the server as HTTPS/HTTP2, or allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
 
 ##### Generics
-- RawServer - Underlying Node.js server type
-  - Default: `http.Server`
-  - Constraints: `http.Server`, `https.Server`, `http2.Http2Server`, `http2.Http2SecureServer`
-  - Enforces: `RawRequest`, `RawReply`
-- RawRequest - Underlying Node.js request type - _enforced by RawServer_
-  - Default: `RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest`
-  - Constraints: `http.IncomingMessage`, `http2.Http2ServerRequest`
-- RawReply - Underlying Node.js response type - _enforced by RawServer_
-  - Default: `RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse`
-  - Constraints: `http.ServerResponse`, `http2.Http2ServerResponse`
-- Logger - Fastify logging utility - _enforced by RawServer_
-  - Default: [`FastifyLoggerOptions<RawServer>`](#fastifyloggeroptions)
+- [RawServer](#rawserver)
+- [RawRequest](#rawrequest)
+- [RawReply](#rawreply)
+- [Logger](#logger)
 
 ##### Example 1: Standard HTTP server
 
@@ -488,7 +518,7 @@ Check out the Learn By Example - [Getting Started](#getting-started) example for
     ```
 4. Build and run! Test your server out by querying with: `curl -k https://localhost:8080`
 
-##### Example 2: HTTP2 server
+##### Example 3: HTTP2 server
 
 Interested in creating an HTTP2 server? It is as easy as replacing the `https` server generic with an `http2` one:
 
@@ -502,7 +532,7 @@ Interested in creating an HTTP2 server? It is as easy as replacing the `https` s
 
 For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) documentation page.
 
-##### Example 3: Extended HTTP server
+##### Example 4: Extended HTTP server
 
 Not only can you specify the server type, but also the request and reply types. Thus, allowing you to specify special properties, methods, and more! When specified at server instantiation, the custome type becomes available on all further instances of the custom type.
 ```typescript
@@ -521,7 +551,7 @@ server.get('/', async (request, reply) => {
 })
 ```
 
-##### Example 4: Specifying logger types
+##### Example 5: Specifying logger types
 
 Fastify uses the [Pino]() logging library under the hood. While the Fastify type system does provide the neecessary types for you to use the included logger, if you'd like the specificity of the Pino types install them from `@types/pino` and pass the `pino.Logger` type to the fourth generic parameter. This generic also supports custom logging utilities such as creating custom serializers. See the [Logging]() documentation for more info.
 
@@ -540,7 +570,101 @@ server.get('/', async (request, reply) => {
 })
 ```
 
-#### fastify.FastifyServerOptions
+##### fastify.HTTPMethods
+Intersection type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
+
+```typescript
+import { HTTPMethods } from 'fastify'
+```
+
+##### fastify.RawServerBase
+Dependant on `@types/node` modules `http`, `https`, `http2`
+
+Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
+
+```typescript
+import { RawServerBase } from 'fastify'
+```
+
+##### fastify.RawServerDefault
+Dependant on `@types/node` modules `http`
+
+Type alias for `http.Server`
+
+```typescript
+import { RawServerDefault } from 'fastify'
+```
+
+#### fastify.FastifyRequest
+
+##### RawRequestDefaultExpression<RawServer> [src](./../types/utils.d.ts#L23)
+Dependant on `@types/node` modules `http`, `https`, `http2`
+
+Generic parameter `RawServer` defaults to [`RawServerDefault`](#rawserverdefault)
+
+If `RawServer` is of type `http.Server` or `https.Server`, then this expression returns `http.IncommingMessage`, otherwise, it returns `http2.Http2ServerRequest`.
+
+```typescript
+import http from 'http'
+import http2 from 'http2'
+import { RawRequestDefaultExpression } from 'fastify'
+
+RawRequestDefaultExpression<http.Server> // -> http.IncommingMessage
+RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
+```
+
+#### fastify.FastifyReply
+
+##### RawReplyDefaultExpression<RawServer> [src](./../types/utils.d.ts#L27)
+Dependant on `@types/node` modules `http`, `https`, `http2`
+
+Generic parameter `RawServer` defaults to [`RawServerDefault`](#rawserverdefault)
+
+If `RawServer` is of type `http.Server` or `https.Server`, then this expression returns `http.ServerResponse`, otherwise, it returns `http2.Http2ServerResponse`.
+
+```typescript
+import http from 'http'
+import http2 from 'http2'
+import { RawReplyDefaultExpression } from 'fastify'
+
+RawReplyDefaultExpression<http.Server> // -> http.ServerResponse
+RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
+```
+
+#### Utils
+
+Utility types mainly used for internal generic expressions.
+
+##### ContextConfigDefault
+
+Type alias for `unknown`
+
+##### RequestBodyDefault
+
+Type alias for `unknown`
+
+Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
+
+##### RequestQuerystringDefault
+
+Type alias for `unknown`
+
+Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
+
+##### RequestParamsDefault
+
+Type alias for `unknown`
+
+Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
+
+##### RequestHeadersDefault
+
+Type alias for `unknown`
+
+Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
+
+#### fastify.FastifyServerOptions<RawServer, Logger>
+
 
 #### fastify.FastifyInstance
 

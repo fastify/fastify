@@ -344,8 +344,8 @@ fastify.get('/', (request, reply) => {
   console.log(request.raw.ip)
   console.log(request.raw.ips)
   console.log(request.raw.hostname)
-  request.raw.log('Hello')
-  reply.raw.log('World')
+  request.raw.log.info('Hello')
+  reply.raw.log.info('World')
 })
 ```
 

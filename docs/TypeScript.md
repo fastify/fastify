@@ -36,7 +36,7 @@ This example will get you up and running with Fastify and TypeScript. It results
   ```
 3. Initialize a TypeScript configuration file:
   ```bash
-  ./node_modules/typescript/bin/tsc --init
+  npx typescript --init
   ```
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
@@ -255,7 +255,7 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
   ```
 3. Initialize a TypeScript configuration file:
   ```bash
-  ./node_modules/typescript/bin/tsc --init
+  npx typescript --init
   ```
   Once the file is generated, enable the `"declaration"` option in the `"compilerOptions"` object.
   ```json

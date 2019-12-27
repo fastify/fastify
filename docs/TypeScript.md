@@ -234,6 +234,133 @@ Some additional notes:
 
 ### Plugins
 
+One of Fastify's most distinguishable features is its extensive plugin ecosystem. Plugin types are fully supported, and take advantage of the [declaration merging]() pattern. This example is broken up into three parts: Creating a TypeScript Fastify Plugin, Creating Type Definitions for a Fastify Plugin, and Using a Fastify Plugin in a TypeScript Project. 
+
+#### Creating a TypeScript Fastify Plugin
+
+1. Initialize a new npm project and install required dependencies
+  ```bash
+  npm init -y
+  npm i fastify fastify-plugin
+  npm i -D typescript
+  ```
+2. Add a `build` script to the `"scripts"` section and `'index.d.ts'` to the `"types"` section of the `package.json` file:
+  ```json
+  {
+    "types": "index.d.ts",
+    "scripts": {
+      "build": "tsc -p tsconfig.json"
+    }
+  }
+  ```
+3. Initialize a TypeScript configuration file:
+  ```bash
+  ./node_modules/typescript/bin/tsc --init
+  ```
+  Once the file is generated, enable the `"declaration"` option in the `"compilerOptions"` object.
+  ```json
+  {
+    "compileOptions": {
+      "declaration": true
+    }
+  }
+  ```
+4. Create an `index.ts` file - this will contain the plugin code
+5. Add the following code to `index.ts`
+  ```typescript
+  import { FastifyPlugin } from 'fastify'
+  import fp from 'fastify-plugin'
+
+  // using declaration merging, add your plugin props to the appropriate fastify interfaces
+  declare module 'fastify' {
+    interface FastifyRequestInterface {
+      myPluginProp: string
+    }
+    interface FastifyReplyInterface {
+      myPluginProp: number
+    }
+  }
+
+  // define plugin
+  const myPlugin: FastifyPlugin = (fastify, options, done) => {
+    fastify.decorateRequest('myPluginProp', 'super_secret_value')
+    fastify.decorateReply('myPluginProp', 5000)
+
+    done()
+  }
+
+  // export plugin using fastify-plugin
+  export default fp(myPlugin, '3.x')
+  ```
+6. Run `npm run build` to compile the plugin code and produce both a JavaScript source file and a type definition file.
+7. With the plugin now complete you can [publish to npm] or use it locally.
+  > You do not _need_ to publish your plugin to npm to use it. You can include it in a Fastify project and reference it as you would any piece of code! As a TypeScript user, make sure the declartion override exists somewhere that will be included in your project compilation so the TypeScript interpreter can process it.
+
+#### Creating Type Definitions for a Fastify Plugin
+
+This plugin guide is for Fastify plugins written in JavaScript. The steps outlined in this example are for adding TypeScript support for users consuming your plugin.
+
+1. Initialize a new npm project and install required dependencies
+  ```bash
+  npm init -y
+  npm i fastify-plugin
+  ```
+2. Create two files `index.js` and `index.d.ts`
+3. Modify the package json to include these files under the `main` and `types` properties (the name does not have to be `index` explicitly, but it is recommended the files have the same name):
+  ```json
+  {
+    "main": "index.js",
+    "types": "index.d.ts"
+  }
+  ```
+4. Open `index.js` and add the following code:
+  ```javascript
+  // fastify-plugin is highly recommended for any plugin you write
+  const fp = require('fastify-plugin')
+
+  function myPlugin (instance, options, next) {
+
+    // decorate the fastify instance with a custom function called myPluginFunc
+    instance.decorate('myPluginFunc', (input) => {
+      return input.toUpperCase()
+    })
+
+    next()
+  }
+  
+  module.exports = fp(myPlugin, {
+    fastify: '3.x'
+  })
+  ```
+5. Open `index.d.ts` and add the following code:
+  ```typescript
+  // Not necessary, but exporting whatever extra types is supported 
+  export interface myPluginFunc {
+    (input: string): string
+  }
+
+  // Most importantly, use declaration merging to add the custom property to the Fastify type system
+  declare module 'fastify' {
+    interface FastifyIntstance {
+      myPluginFunc: myPluginFunc
+    }
+  }
+  ```
+
+With those files completed, the plugin is now ready to be consumed by any TypeScript project! 
+
+The Fastify plugin system enables developers to decorate the Fasitfy instance, and the request/reply instances. Due to the complexity of the Fastify type system if you are trying to merge `FastifyRequest` or `FastifyReply` you'll need to merge `FastifyRequestInterface` or `FastifyReplyInterface` instead. For more information check out this blog post on [Declaration Mering and Generic Inheritance](https://dev.to/ethanarrowood/is-declaration-merging-and-generic-inheritance-at-the-same-time-impossible-53cp).
+
+#### Using a Plugin
+
+Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript. Import the plugin with `import/from` and you're all set -- except there is one exception users should be aware of. 
+
+Fastify plugins use declaration merging to modify existing Fastify type interfaces (check out the previous two examples for more details). Declaration merging is not very _smart_, meaning if the pluing type definition for a plugin is within the scope of the TypeScript interpreter, then the plugin types will be included **regardless** of if the plugin is being used or not. This is an unfortunate limitation of using TypeScript and is unavoidable as of right now.
+
+However, there are a couple of suggestions to help improve this experience:
+- Make sure the `no-unused-vars` rule is enabled in [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin are actually being loaded.
+- Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin dependencies are being used somewhere in your project.
+
 ## API Type System Documentation
 
 This section is a detailed account of all the types available to you in Fastify version 3.x

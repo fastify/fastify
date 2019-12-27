@@ -330,7 +330,7 @@ fastify.addHook('onRegister', (instance) => {
 ```
 
 <a name="scope"></a>
-### Scope
+## Scope
 Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
@@ -339,7 +339,34 @@ fastify.addHook('onRequest', function (request, reply, done) {
   done()
 })
 ```
-Note: using an arrow function will break the binding of this to the Fastify instance.
+
+Note that the Fastify context in each hook is the same as the plugin where the route was registered, for example:
+
+```js
+fastify.addHook('onRequest', async function (req, reply) {
+  if (req.raw.url === '/nested') {
+    assert.strictEqual(this.foo, 'bar')
+  } else {
+    assert.strictEqual(this.foo, undefined)
+  }
+})
+
+fastify.get('/', async function (req, reply) {
+  assert.strictEqual(this.foo, undefined)
+  return { hello: 'world' }
+})
+
+fastify.register(async function plugin (fastify, opts) {
+  fastify.decorate('foo', 'bar')
+
+  fastify.get('/nested', async function (req, reply) {
+    assert.strictEqual(this.foo, 'bar')
+    return { hello: 'world' }
+  })
+})
+```
+
+Warn: if you declare the function with an [arrow function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), the `this` will not be Fastify, but the one of the current scope.
 
 <a name="route-hooks"></a>
 

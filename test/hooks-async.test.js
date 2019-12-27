@@ -460,3 +460,28 @@ test('Should log a warning if is an async function with `done`', t => {
 
   t.end()
 })
+
+test('The this should be the same of the encapsulation level', async t => {
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', async function (req, reply) {
+    if (req.raw.url === '/nested') {
+      t.strictEqual(this.foo, 'bar')
+    } else {
+      t.strictEqual(this.foo, undefined)
+    }
+  })
+
+  fastify.register(plugin)
+  fastify.get('/', (req, reply) => reply.send('ok'))
+
+  async function plugin (fastify, opts) {
+    fastify.decorate('foo', 'bar')
+    fastify.get('/nested', (req, reply) => reply.send('ok'))
+  }
+
+  await fastify.inject({ method: 'GET', path: '/' })
+  await fastify.inject({ method: 'GET', path: '/nested' })
+  await fastify.inject({ method: 'GET', path: '/' })
+  await fastify.inject({ method: 'GET', path: '/nested' })
+})

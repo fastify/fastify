@@ -47,7 +47,8 @@ and properties:
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
-- `.res` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
+- `.raw` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
+- `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
 
@@ -190,7 +191,7 @@ As an example:
 ```js
 app.get('/', (req, reply) => {
   reply.sent = true
-  reply.res.end('hello world')
+  reply.raw.end('hello world')
 
   return Promise.resolve('this will be skipped')
 })

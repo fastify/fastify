@@ -824,7 +824,7 @@ test('middlewares should run in the order in which they are defined', t => {
     })
 
     instance.get('/', function (request, reply) {
-      t.strictEqual(request.req.previous, 5)
+      t.strictEqual(request.raw.previous, 5)
       reply.send({ hello: 'world' })
     })
 

@@ -25,6 +25,6 @@ export type FastifyReply<
   status(statusCode: number): FastifyReply<RawServer, RawReply>;
   type(contentType: string): FastifyReply<RawServer, RawReply>;
   context: FastifyContext<ContextConfig>;
-  res: RawReply;
+  raw: RawReply;
   sent: boolean;
 }

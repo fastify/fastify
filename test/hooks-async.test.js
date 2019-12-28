@@ -348,7 +348,7 @@ test('onRequest respond with a stream', t => {
       // stream.pipe(res)
       // res.once('finish', resolve)
       reply.send(stream)
-      reply.res.once('finish', () => resolve())
+      reply.raw.once('finish', () => resolve())
     })
   })
 
@@ -397,7 +397,7 @@ test('preHandler respond with a stream', t => {
     return new Promise((resolve, reject) => {
       const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
       reply.send(stream)
-      reply.res.once('finish', () => {
+      reply.raw.once('finish', () => {
         t.is(order.shift(), 2)
         resolve()
       })

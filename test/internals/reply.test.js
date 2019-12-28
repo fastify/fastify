@@ -15,7 +15,7 @@ const {
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(13)
+  t.plan(14)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -30,7 +30,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.serialize, 'function')
   t.is(typeof reply.getResponseTime, 'function')
   t.is(typeof reply[kReplyHeaders], 'object')
-  t.strictEqual(reply.res, response)
+  t.deepEqual(reply.raw, response)
+  t.deepEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
 })
@@ -409,7 +410,7 @@ test('stream with content type should not send application/octet-stream', t => {
   })
 })
 
-test('stream using reply.res.writeHead should return customize headers', t => {
+test('stream using reply.raw.writeHead should return customize headers', t => {
   t.plan(6)
 
   const fastify = require('../..')()
@@ -424,7 +425,7 @@ test('stream using reply.res.writeHead should return customize headers', t => {
     reply.log.warn = function mockWarn (message) {
       t.equal(message, 'response will send, but you shouldn\'t use res.writeHead in stream mode')
     }
-    reply.res.writeHead(200, {
+    reply.raw.writeHead(200, {
       location: '/'
     })
     reply.send(stream)
@@ -1008,7 +1009,7 @@ test('should throw error when attempting to set reply.sent more than once', t =>
       t.is(err.code, 'FST_ERR_REP_ALREADY_SENT')
       t.strictEqual(err.message, 'Reply was already sent.')
     }
-    reply.res.end()
+    reply.raw.end()
   })
 
   fastify.inject('/', (err, res) => {

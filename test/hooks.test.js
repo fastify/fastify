@@ -1535,7 +1535,7 @@ test('preHandler respond with a stream', t => {
   fastify.addHook('preHandler', (req, reply, done) => {
     const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
     reply.send(stream)
-    reply.res.once('finish', () => {
+    reply.raw.once('finish', () => {
       t.is(order.shift(), 2)
       done()
     })

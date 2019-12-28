@@ -164,12 +164,12 @@ custom `onRequest` and `onResponse` hooks.
 ```js
 // Examples of hooks to replicate the disabled functionality.
 fastify.addHook('onRequest', (req, reply, done) => {
-  req.log.info({ url: req.req.url, id: req.id }, 'received request')
+  req.log.info({ url: req.raw.url, id: req.id }, 'received request')
   done()
 })
 
 fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
+  req.log.info({ url: req.raw.originalUrl, statusCode: res.raw.statusCode }, 'request completed')
   done()
 })
 ```
@@ -344,8 +344,8 @@ fastify.get('/', (request, reply) => {
   console.log(request.raw.ip)
   console.log(request.raw.ips)
   console.log(request.raw.hostname)
-  request.raw.log('Hello')
-  reply.res.log('World')
+  request.raw.log.info('Hello')
+  reply.raw.log.info('World')
 })
 ```
 

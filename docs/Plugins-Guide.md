@@ -9,7 +9,6 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [Register](#register)
 - [Decorators](#decorators)
 - [Hooks](#hooks)
-- [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
 - [Handle errors](#handle-errors)
 - [Let's start!](#start)
@@ -92,7 +91,7 @@ fastify.register((instance, opts, done) => {
 Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
 Let's step back for a moment and dig deeper into this: every time you use the `register` API, a new context is created which avoids the negative situations mentioned above.
 
-Do note that encapsulation applies to the ancestors and siblings, but not the children. 
+Do note that encapsulation applies to the ancestors and siblings, but not the children.
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
@@ -237,16 +236,6 @@ fastify.get('/plugin2', (request, reply) => {
 Now your hook will run just for the first route!
 
 As you probably noticed by now, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.<br>
-
-<a name="middleware"></a>
-## Middleware
-Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middleware.md) Express/Restify/Connect middleware out-of-the-box, which means that you can just drop-in your old code and it will work! *(faster, by the way)*<br>
-Let's say that you are arriving from Express, and you already have some Middleware which does exactly what you need, and you don't want to redo all the work.
-How we can do that? Check out our middleware engine, [middie](https://github.com/fastify/middie).
-```js
-const yourMiddleware = require('your-middleware')
-fastify.use(yourMiddleware)
-```
 
 <a name="distribution"></a>
 ## How to handle encapsulation and distribution

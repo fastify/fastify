@@ -56,7 +56,6 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const modifyCoreObjects = options.modifyCoreObjects !== false
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory()
@@ -84,12 +83,10 @@ function fastify (options) {
 
   // Update the options with the fixed values
   options.logger = logger
-  options.modifyCoreObjects = modifyCoreObjects
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
   options.querystringParser = querystringParser
   options.requestIdLogLabel = requestIdLogLabel
-  options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
 

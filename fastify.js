@@ -40,6 +40,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_MISSING_MIDDLEWARE
+  }
+} = require('./lib/errors')
 
 function fastify (options) {
   // Options validations
@@ -205,6 +210,7 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
+    use: use,
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
@@ -321,6 +327,10 @@ function fastify (options) {
       return this.ready()
         .then(() => lightMyRequest(httpHandler, opts))
     }
+  }
+
+  function use () {
+    throw new FST_ERR_MISSING_MIDDLEWARE()
   }
 
   // wrapper that we expose to the user for hooks handling

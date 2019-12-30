@@ -41,6 +41,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_SYNC_PLUGIN
+  }
+} = require('./lib/errors')
 
 function fastify (options) {
   // Options validations
@@ -188,6 +193,7 @@ function fastify (options) {
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
+    registerSync: registerSync,
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
@@ -322,6 +328,18 @@ function fastify (options) {
       return this.ready()
         .then(() => lightMyRequest(httpHandler, opts))
     }
+  }
+
+  function registerSync (fn, opts = {}) {
+    if (fn.length === 3 || fn.constructor.name === 'AsyncFunction') {
+      throw new FST_ERR_SYNC_PLUGIN()
+    }
+    const instance = override(this, fn, opts)
+    const result = fn(instance, opts)
+    if (result && typeof result.then === 'function') {
+      throw new FST_ERR_SYNC_PLUGIN()
+    }
+    return this
   }
 
   // wrapper tha we expose to the user for middlewares handling

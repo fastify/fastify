@@ -188,7 +188,7 @@ const serverFactory = (handler, opts) => {
   return server
 }
 
-const fastify = Fastify({ serverFactory, modifyCoreObjects: false })
+const fastify = Fastify({ serverFactory })
 
 fastify.get('/', (req, reply) => {
   reply.send({ hello: 'world' })
@@ -198,7 +198,6 @@ fastify.listen(3000)
 ```
 
 Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
-*Note that we have also added `modifyCoreObjects: false` because in some serverless environments such as Google Cloud Functions, some Node.js core properties are not writable.*
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
@@ -327,41 +326,6 @@ const versioning = {
 
 const fastify = require('fastify')({
   versioning
-})
-```
-
-<a name="factory-modify-core-objects"></a>
-### `modifyCoreObjects`
-
-+ Default: `true`
-
-By default, Fastify will add the `ip`, `ips`, `hostname`, and `log` properties to Node's raw request object (see [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md)) and the `log` property to Node's raw response object. Set to `false` to prevent these properties from being added to the Node core objects.
-
-```js
-const fastify = Fastify({ modifyCoreObjects: true }) // the default
-
-fastify.get('/', (request, reply) => {
-  console.log(request.raw.ip)
-  console.log(request.raw.ips)
-  console.log(request.raw.hostname)
-  request.raw.log.info('Hello')
-  reply.raw.log.info('World')
-})
-```
-
-Disable this option could help in serverless environments such as Google Cloud Functions, where `ip` and `ips` are not writable properties.
-
-**Note that these properties are deprecated and will be removed in the next major version of Fastify along with this option.** It is recommended to use the same properties on Fastify's [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead.
-
-```js
-const fastify = Fastify({ modifyCoreObjects: false })
-
-fastify.get('/', (request, reply) => {
-  console.log(request.ip)
-  console.log(request.ips)
-  console.log(request.hostname)
-  request.log('Hello')
-  reply.log('World')
 })
 ```
 

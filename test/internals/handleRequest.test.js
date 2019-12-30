@@ -25,16 +25,20 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(8)
-  const req = new Request('params', 'req', 'query', 'headers', 'log')
+  t.plan(12)
+  const req = new Request('id', 'params', 'req', 'query', 'headers', 'log', 'ip', 'ips', 'hostname')
   t.type(req, Request)
-  t.equal(req.params, 'params')
+  t.strictEqual(req.id, 'id')
+  t.strictEqual(req.params, 'params')
   t.strictEqual(req.raw, 'req')
   t.strictEqual(req.req, 'req')
-  t.equal(req.query, 'query')
-  t.equal(req.headers, 'headers')
-  t.equal(req.log, 'log')
-  t.strictDeepEqual(req.body, null)
+  t.strictEqual(req.query, 'query')
+  t.strictEqual(req.headers, 'headers')
+  t.strictEqual(req.log, 'log')
+  t.strictEqual(req.ip, 'ip')
+  t.strictEqual(req.ips, 'ips')
+  t.strictEqual(req.hostname, 'hostname')
+  t.strictEqual(req.body, null)
 })
 
 test('handleRequest function - sent reply', t => {

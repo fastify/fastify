@@ -1,3 +1,5 @@
+'use strict'
+
 const { test } = require('tap')
 const Fastify = require('..')
 
@@ -11,8 +13,8 @@ test('Should accept a custom genReqId function', t => {
   })
 
   fastify.get('/', (req, reply) => {
-    t.ok(req.raw.id)
-    reply.send({ id: req.raw.id })
+    t.ok(req.id)
+    reply.send({ id: req.id })
   })
 
   fastify.listen(0, err => {

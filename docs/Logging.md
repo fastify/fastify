@@ -59,7 +59,7 @@ const fastify = require('fastify')({
 
 By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Server.md#gen-request-id) for customization options.
 
-The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify `Request` object, while the object receivedby `res` is the Fastify `reply` object.  
+The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) object, while the object received by `res` is the Fastify [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) object.  
 This behaviour can be customized by specifying custom serializers.
 ```js
 const fastify = require('fastify')({

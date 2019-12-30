@@ -44,9 +44,9 @@ test('Request object', t => {
   t.strictEqual(request.ips, 'ips')
   t.strictEqual(request.hostname, 'hostname')
   t.strictEqual(request.body, null)
-  t.strictEqual(req.method, 'GET')
-  t.strictEqual(req.url, '/')
-  t.deepEqual(req.connection, req.connection)
+  t.strictEqual(request.method, 'GET')
+  t.strictEqual(request.url, '/')
+  t.deepEqual(request.connection, req.connection)
 })
 
 test('handleRequest function - sent reply', t => {

@@ -465,7 +465,10 @@ Default: [`FastifyLoggerOptions`](#fastifyloggeroptions)
 
 Enforced by: [`RawServer`](#rawserver)
 
-#### fastify<RawServer, RawRequest, RawReply, Logger>(opts?: FastifyOptions): FastifyInstance
+---
+
+#### fastify<RawServer, RawRequest, RawReply, Logger>(opts?: FastifyOptions): FastifyInstance 
+[src](./../fastify.d.ts#L19)
 
 The main Fastify API method. By default creates an HTTP server. Supports an extensive generic type system to either specify the server as HTTPS/HTTP2, or allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
 
@@ -570,14 +573,18 @@ server.get('/', async (request, reply) => {
 })
 ```
 
-##### fastify.HTTPMethods
+##### fastify.HTTPMethods 
+[src](./../types/utils.d.ts#L8)
+
 Intersection type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
 
 ```typescript
 import { HTTPMethods } from 'fastify'
 ```
 
-##### fastify.RawServerBase
+##### fastify.RawServerBase 
+[src](./../types/utils.d.ts#L13)
+
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
 Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
@@ -586,7 +593,9 @@ Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Ht
 import { RawServerBase } from 'fastify'
 ```
 
-##### fastify.RawServerDefault
+##### fastify.RawServerDefault 
+[src](./../types/utils.d.ts#L18)
+
 Dependant on `@types/node` modules `http`
 
 Type alias for `http.Server`
@@ -595,9 +604,53 @@ Type alias for `http.Server`
 import { RawServerDefault } from 'fastify'
 ```
 
-#### fastify.FastifyRequest
+---
 
-##### RawRequestDefaultExpression<RawServer> [src](./../types/utils.d.ts#L23)
+#### FastifyRequest
+
+##### fastify.FastifyRequest<RawServer, RawRequest, RequestGeneric> 
+[src](./../types/request.d.tsL#29)
+
+`FastifyRequest` is a type definition that makes use of generic inheritance. The type is based on the `RawRequest` generic and then adds additional properties through the [`FastifyRequestInterface`](#fastify.fastifyrequestinterface) definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`](#fastify.decoraterequest) method) you need to use declaration merging on the interface ([`FastifyRequestInterface`](#fastify.fastifyrequestinterface)) instead of this type.
+
+For more detailed example check out the Learn By Example section: [Plugins](#plugins)
+
+###### Generics
+- [RawServer](#rawserver)
+- [RawRequest](#rawrequest)
+- [RequestGeneric](#requestgenericinterface)
+
+##### fastify.RequestGenericInterface<RawServer, RawRequest, RequestGeneric> 
+[src](./../types/request.d.tsL#4)
+
+Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All ommitted properties are defaulted to `unknown`. The corresponding property names are: `Body`, `Querystring`, `Params`, `Headers`.
+
+If you want to see a detailed example of using this interface check out the Learn by Example section: [JSON Schema](#jsonschema).
+
+##### fastify.FastifyRequestInterface
+[src](./../types/request.d.tsL#15)
+
+This interface contains the custom properties that Fastify adds to the standard Node.js request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
+
+If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`](#fastify.decoraterequest) method) you need to use declaration merging on this interface, **not** [`FastifRequest`](#fastify.fastifyrequest).
+
+###### Generics
+- [RawServer](#rawserver)
+- [RawRequest](#rawrequest)
+- [RequestGeneric](#requestgenericinterface)
+
+###### Properties
+- body: `RequestGeneric['Body']`
+- id: `any`
+- log: `FastifyLoggerOptions<RawServer>`
+- params: `RequestGeneric['Params']`
+- query: `RequestGeneric['Querystring']`
+- raw: `RawRequest`
+- headers: `RawRequest['headers'] & RequestGeneric['Headers']`
+
+##### faastify.RawRequestDefaultExpression<RawServer> 
+[src](./../types/utils.d.ts#L23)
+
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`](#rawserverdefault)
@@ -613,9 +666,14 @@ RawRequestDefaultExpression<http.Server> // -> http.IncommingMessage
 RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 ```
 
-#### fastify.FastifyReply
+---
 
-##### RawReplyDefaultExpression<RawServer> [src](./../types/utils.d.ts#L27)
+#### fastify.FastifyReply 
+[src](./../types/reply.d.ts)
+
+##### RawReplyDefaultExpression<RawServer> 
+[src](./../types/utils.d.ts#L27)
+
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
 Generic parameter `RawServer` defaults to [`RawServerDefault`](#rawserverdefault)
@@ -631,46 +689,9 @@ RawReplyDefaultExpression<http.Server> // -> http.ServerResponse
 RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 ```
 
-#### Utils
-
-Utility types mainly used for internal generic expressions.
-
-##### ContextConfigDefault
-
-Type alias for `unknown`
-
-##### RequestBodyDefault
-
-Type alias for `unknown`
-
-Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
-
-##### RequestQuerystringDefault
-
-Type alias for `unknown`
-
-Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
-
-##### RequestParamsDefault
-
-Type alias for `unknown`
-
-Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
-
-##### RequestHeadersDefault
-
-Type alias for `unknown`
-
-Used in [`RequestGenericInterface`](#fastifyrequestgenericinterface)
-
 #### fastify.FastifyServerOptions<RawServer, Logger>
 
-
 #### fastify.FastifyInstance
-
-#### fastify.FastifyRequest
-
-#### fastify.FastifyReply
 
 #### fastify.FastifyPlugin
 

@@ -573,14 +573,12 @@ server.get('/', async (request, reply) => {
 })
 ```
 
+---
+
 ##### fastify.HTTPMethods 
 [src](./../types/utils.d.ts#L8)
 
 Intersection type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
-
-```typescript
-import { HTTPMethods } from 'fastify'
-```
 
 ##### fastify.RawServerBase 
 [src](./../types/utils.d.ts#L13)
@@ -589,10 +587,6 @@ Dependant on `@types/node` modules `http`, `https`, `http2`
 
 Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
 
-```typescript
-import { RawServerBase } from 'fastify'
-```
-
 ##### fastify.RawServerDefault 
 [src](./../types/utils.d.ts#L18)
 
@@ -600,34 +594,47 @@ Dependant on `@types/node` modules `http`
 
 Type alias for `http.Server`
 
-```typescript
-import { RawServerDefault } from 'fastify'
-```
-
 ---
 
 #### FastifyRequest
 
 ##### fastify.FastifyRequest<RawServer, RawRequest, RequestGeneric> 
-[src](./../types/request.d.tsL#29)
+[src](./../types/request.d.ts#L29)
 
-`FastifyRequest` is a type definition that makes use of generic inheritance. The type is based on the `RawRequest` generic and then adds additional properties through the [`FastifyRequestInterface`](#fastify.fastifyrequestinterface) definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`](#fastify.decoraterequest) method) you need to use declaration merging on the interface ([`FastifyRequestInterface`](#fastify.fastifyrequestinterface)) instead of this type.
+`FastifyRequest` is a type definition that makes use of generic inheritance. The type is based on the [`RawRequest`]() generic and then adds additional properties through the [`FastifyRequestInterface`](#fastify.fastifyrequestinterface) definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`](#fastify.decoraterequest) method) you need to use declaration merging on the interface ([`FastifyRequestInterface`](#fastify.fastifyrequestinterface)) instead of this type.
 
-For more detailed example check out the Learn By Example section: [Plugins](#plugins)
+A basic example is provided in the [`FastifyRequestInterface`](#fastify.fastifyrequestinterface) section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
 
 ###### Generics
 - [RawServer](#rawserver)
 - [RawRequest](#rawrequest)
 - [RequestGeneric](#requestgenericinterface)
 
-##### fastify.RequestGenericInterface<RawServer, RawRequest, RequestGeneric> 
-[src](./../types/request.d.tsL#4)
+##### fastify.RequestGenericInterface
+[src](./../types/request.d.ts#L4)
 
 Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All ommitted properties are defaulted to `unknown`. The corresponding property names are: `Body`, `Querystring`, `Params`, `Headers`.
 
+```typescript
+import fastify, { RequestGenericInterface } from 'fastify'
+
+const server = fastify()
+
+const requestGeneric: RequestGenericInterface = {
+  Querystring: {
+    name: string
+  }
+}
+
+server.get<requestGeneric>('/', async (request, reply) => {
+  const { name } = request.query // the name prop now exists on the query prop
+  return name.toUpperCase()
+})
+```
+
 If you want to see a detailed example of using this interface check out the Learn by Example section: [JSON Schema](#jsonschema).
 
-##### fastify.FastifyRequestInterface
+##### fastify.FastifyRequestInterface<RawServer, RawRequest, RequestGeneric>
 [src](./../types/request.d.tsL#15)
 
 This interface contains the custom properties that Fastify adds to the standard Node.js request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
@@ -648,7 +655,28 @@ If you need to add custom properties to the FastifyRequest object (such as when 
 - raw: `RawRequest`
 - headers: `RawRequest['headers'] & RequestGeneric['Headers']`
 
-##### faastify.RawRequestDefaultExpression<RawServer> 
+###### Example
+```typescript
+import fastify from 'fastify'
+
+const server = fastify()
+
+server.decorateRequest('someProp', 'hello!')
+
+server.get('/', async (request, reply) => {
+  const { someProp } = request // need to use declaration merging to add this prop to the request interface
+  return someProp
+})
+
+// this declaration must be in scope of the typescript interpreter to work
+declare module 'fastify' {
+  interface FastifyRequestInterface { // you must reference the interface and not the type
+    someProp: string
+  }
+}
+```
+
+##### fastify.RawRequestDefaultExpression<RawServer> 
 [src](./../types/utils.d.ts#L23)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
@@ -668,10 +696,56 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 
 ---
 
-#### fastify.FastifyReply 
-[src](./../types/reply.d.ts)
+#### FastifyReply
 
-##### RawReplyDefaultExpression<RawServer> 
+##### fastify.FastifyReply<RawServer, RawReply, ContextConfig>
+[src](./../types/reply.d.ts#L32)
+
+`FastifyReply` is a type definition that makes use of generic inheritance. The type is based on the [`RawReply`](#rawreply) generic and then adds additional properties through the [`FastifyReplyInterface`](#fastify.fastifyreplyinterface) definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRepl`](#fastify.decoratereply) method) you need to use declaration merging on the interface ([`FastifyReplyInterface`](#fastify.fastifyreplyinterface)) instead of this type.
+
+A basic example is provided in the [`FastifyReplyInterface`](#fastify.fastifyreplyinterface) section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
+
+###### Generics
+- [RawServer](#rawserver)
+- [RawRequest](#rawrequest)
+- [ContextConfig](#contextconfig)
+
+##### fastify.FastifyReplyInterface<RawServer, RawReply, ContextConfig>
+[src](./../types/reply.d.ts#L8)
+
+This interface contains the custom properties that Fastify adds to the standard Node.js reply object. The properties added here disregard what kind of reply object (http vs http2).
+
+If you need to add custom properties to the FastifyReply object (such as when using the [`decorateReply`](#fastify.decoratereply) method) you need to use declaration merging on this interface, **not** the [`FastifReply`](#fastify.fastifyreply) type alias.
+
+###### Generics
+- [RawServer](#rawserver)
+- [RawRequest](#rawrequest)
+- [ContextConfig](#contextconfig)
+
+###### Properties
+
+###### Example
+```typescript
+import fastify from 'fastify'
+
+const server = fastify()
+
+server.decorateReply('someProp', 'world')
+
+server.get('/', async (request, reply) => {
+  const { someProp } = reply // need to use declaration merging to add this prop to the reply interface
+  return someProp
+})
+
+// this declaration must be in scope of the typescript interpreter to work
+declare module 'fastify' {
+  interface FastifyReplyInterface { // you must reference the interface and not the type
+    someProp: string
+  }
+}
+```
+
+##### fastify.RawReplyDefaultExpression<RawServer> 
 [src](./../types/utils.d.ts#L27)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`

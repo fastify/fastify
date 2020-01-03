@@ -59,13 +59,14 @@ const fastify = require('fastify')({
 
 By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](https://github.com/fastify/fastify/blob/master/docs/Server.md#gen-request-id) for customization options.
 
-The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. This behaviour can be customized by specifying custom serializers.
+The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) object, while the object received by `res` is the Fastify [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) object.  
+This behaviour can be customized by specifying custom serializers.
 ```js
 const fastify = require('fastify')({
   logger: {
     serializers: {
-      req: function (req) {
-        return { url: req.url }
+      req (request) {
+        return { url: request.url }
       }
     }
   }
@@ -78,23 +79,23 @@ const fastify = require('fastify')({
   logger: {
     prettyPrint: true,
     serializers: {
-      res(res) {
+      res (reply) {
         // The default
         return {
-          statusCode: res.statusCode
+          statusCode: reply.statusCode
         }
       },
-      req(req) {
+      req (request) {
         return {
-          method: req.method,
-          url: req.url,
-          path: req.path,
-          parameters: req.parameters,
-          // Including the headers in the log could be in violation 
+          method: request.method,
+          url: request.url,
+          path: request.path,
+          parameters: request.parameters,
+          // Including the headers in the log could be in violation
           // of privacy laws, e.g. GDPR. You should use the "redact" option to
           // remove sensitive fields. It could also leak authentication data in
           // the logs.
-          headers: req.headers
+          headers: request.headers
         };
       }
     }
@@ -151,14 +152,14 @@ const fastify = Fastify({
     redact: ['req.headers.authorization'],
     level: 'info',
     serializers: {
-      req (req) {
+      req (request) {
         return {
-          method: req.method,
-          url: req.url,
-          headers: req.headers,
-          hostname: req.hostname,
-          remoteAddress: req.ip,
-          remotePort: req.connection.remotePort
+          method: request.method,
+          url: request.url,
+          headers: request.headers,
+          hostname: request.hostname,
+          remoteAddress: request.ip,
+          remotePort: request.connection.remotePort
         }
       }
     }

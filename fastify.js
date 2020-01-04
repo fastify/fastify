@@ -13,6 +13,8 @@ const {
   kLogSerializers,
   kHooks,
   kSchemas,
+  kValidatorCompiler,
+  kSerializerCompiler,
   kSchemaCompiler,
   kSchemaResolver,
   kReplySerializerDefault,
@@ -129,7 +131,7 @@ function fastify (options) {
     [kLogLevel]: '',
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
-    [kSchemas]: schemas,
+    [kSchemas]: schemas, // TODO
     [kSchemaCompiler]: null,
     [kSchemaResolver]: null,
     [kReplySerializerDefault]: null,
@@ -182,8 +184,10 @@ function fastify (options) {
     // schemas
     addSchema: addSchema,
     getSchemas: schemas.getSchemas.bind(schemas),
-    setSchemaCompiler: setSchemaCompiler,
-    setSchemaResolver: setSchemaResolver,
+    setValidatorCompiler: setValidatorCompiler,
+    setSerializerCompiler: setSerializerCompiler,
+    setSchemaCompiler: setSchemaCompiler, // TODO remove
+    setSchemaResolver: setSchemaResolver, // TODO remove
     setReplySerializer: setReplySerializer,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
@@ -416,17 +420,29 @@ function fastify (options) {
   }
 
   // wrapper that we expose to the user for schemas compiler handling
+  /** @depreacated */
   function setSchemaCompiler (schemaCompiler) {
     throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
-
     this[kSchemaCompiler] = schemaCompiler
     return this
   }
 
+  /** @depreacated */
   function setSchemaResolver (schemaRefResolver) {
     throwIfAlreadyStarted('Cannot call "setSchemaResolver" when fastify instance is already started!')
-
     this[kSchemaResolver] = schemaRefResolver
+    return this
+  }
+
+  function setValidatorCompiler (validatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
+    this[kValidatorCompiler] = validatorCompiler
+    return this
+  }
+
+  function setSerializerCompiler (serializerCompiler) {
+    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
+    this[kSerializerCompiler] = serializerCompiler
     return this
   }
 

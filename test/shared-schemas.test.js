@@ -1233,3 +1233,27 @@ test('Cross shared schema reference with encapsulation references', t => {
 
   fastify.ready(t.error)
 })
+
+test('shared schema should be ignored in enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    schema: {
+      $id: '/ProgrammingLanguage',
+      description: 'Programming Language',
+      type: 'string',
+      enum: ['Javascript', 'C++', 'C#']
+    },
+    handler: (req, reply) => {
+      reply.send('ok')
+    }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, 'ok')
+  })
+})

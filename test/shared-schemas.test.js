@@ -1234,26 +1234,67 @@ test('Cross shared schema reference with encapsulation references', t => {
   fastify.ready(t.error)
 })
 
-test('shared schema should be ignored in enum', t => {
+test('shared schema should be ignored in string enum', t => {
   t.plan(2)
   const fastify = Fastify()
 
   fastify.route({
     method: 'GET',
-    url: '/',
+    url: '/:lang',
     schema: {
-      $id: '/ProgrammingLanguage',
-      description: 'Programming Language',
-      type: 'string',
-      enum: ['Javascript', 'C++', 'C#']
+      params: {
+        type: 'object',
+        properties: {
+          lang: {
+            type: 'string',
+            enum: ['Javascript', 'C++', 'C#']
+          }
+        }
+      }
     },
     handler: (req, reply) => {
-      reply.send('ok')
+      reply.send(req.params.lang)
     }
   })
 
-  fastify.inject('/', (err, res) => {
+  fastify.inject('/C%23', (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, 'ok')
+    t.strictEqual(res.payload, 'C#')
+  })
+})
+
+test('shared schema should NOT be ignored in != string enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'C',
+    type: 'object',
+    properties: {
+      lang: {
+        type: 'string',
+        enum: ['Javascript', 'C++', 'C#']
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/:lang',
+    schema: {
+      body: 'C#'
+    },
+    handler: (req, reply) => {
+      reply.send(req.body.lang)
+    }
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    payload: { lang: 'C#' }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, 'C#')
   })
 })

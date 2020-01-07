@@ -673,29 +673,19 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 
 #### FastifyReply
 
-##### fastify.FastifyReply<RawServer, RawReply, ContextConfig>
+##### fastify.FastifyReply<[RawServer](#rawserver), [RawReply](#rawreply), [ContextConfig](#contextconfig)>
 [src](./../types/reply.d.ts#L32)
 
 `FastifyReply` is a type definition that makes use of generic inheritance. The type is based on the [`RawReply`](#rawreply) generic and then adds additional properties through the [`FastifyReplyInterface`](#fastify.fastifyreplyinterface) definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRepl`](#fastify.decoratereply) method) you need to use declaration merging on the interface ([`FastifyReplyInterface`](#fastify.fastifyreplyinterface)) instead of this type.
 
 A basic example is provided in the [`FastifyReplyInterface`](#fastify.fastifyreplyinterface) section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
 
-###### Generics
-- [RawServer](#rawserver)
-- [RawRequest](#rawrequest)
-- [ContextConfig](#contextconfig)
-
-##### fastify.FastifyReplyInterface<RawServer, RawReply, ContextConfig>
+##### fastify.FastifyReplyInterface<[RawServer](#rawserver), [RawReply](#rawreply), [ContextConfig](#contextconfig)>
 [src](./../types/reply.d.ts#L8)
 
 This interface contains the custom properties that Fastify adds to the standard Node.js reply object. The properties added here disregard what kind of reply object (http vs http2).
 
 If you need to add custom properties to the FastifyReply object (such as when using the [`decorateReply`](#fastify.decoratereply) method) you need to use declaration merging on this interface, **not** the [`FastifyReply`](#fastify.fastifyreply) type alias.
-
-###### Generics
-- [RawServer](#rawserver)
-- [RawRequest](#rawrequest)
-- [ContextConfig](#contextconfig)
 
 ###### Example
 ```typescript

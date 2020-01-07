@@ -14,7 +14,8 @@ fastify.inject({
   url: String,
   query: Object,
   payload: Object,
-  headers: Object
+  headers: Object,
+  cookies: Object
 }, (error, response) => {
   // your tests
 })
@@ -29,7 +30,8 @@ fastify
     url: String,
     query: Object,
     payload: Object,
-    headers: Object
+    headers: Object,
+    cookies: Object
   })
   .then(response => {
     // your tests
@@ -89,7 +91,7 @@ tap.test('GET `/` route', t => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
     t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(response.payload), { hello: 'world' })
+    t.deepEqual(response.json(), { hello: 'world' })
   })
 })
 ```

@@ -440,6 +440,13 @@ interface Body {
   }
 }
 
+server.get('/', (req, reply) => {
+  type ResponseShape = {
+    hello: string
+  }
+  reply.send<ResponseShape>({ hello: 'world' })
+})
+
 // Query, Params, Headers, and Body can be provided as generics
 server.get<Query, Params, Headers, Body>('/', ({ query, params, headers, body }, reply) => {
   const bar: number = query.bar

@@ -178,7 +178,7 @@ declare namespace fastify {
     redirect(statusCode: number, url: string): FastifyReply<HttpResponse>
     serialize(payload: any): string
     serializer(fn: Function): FastifyReply<HttpResponse>
-    send(payload?: any): FastifyReply<HttpResponse>
+    send<T>(payload?: T): FastifyReply<HttpResponse>
     sent: boolean
     res: HttpResponse
     context: FastifyContext

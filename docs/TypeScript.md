@@ -708,7 +708,7 @@ declare module 'fastify' {
 }
 ```
 
-##### fastify.RawReplyDefaultExpression<RawServer> 
+##### fastify.RawReplyDefaultExpression<[`RawServer`][RawServerGeneric]> 
 [src](./../types/utils.d.ts#L27)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
@@ -814,21 +814,22 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 <!-- Links -->
 
-[Fastify]: [#fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyoptions-fastifyinstance]
-[RawServerGeneric]: [#rawserver]
-[RawRequestGeneric]: [#rawrequest]
-[RawReplyGeneric]: [#rawreply]
-[LoggerGeneric]: [#logger]
-[HTTPMethods]: [#fastifyhttpmethods]
-[RawServerBase]: [#fastifyrawserverbase]
-[RawServerDefault]: [#fastifyrawserverdefault]
+[Fastify]: #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyoptions-fastifyinstance
+[RawServerGeneric]: #rawserver
+[RawRequestGeneric]: #rawrequest
+[RawReplyGeneric]: #rawreply
+[LoggerGeneric]: #logger
+[HTTPMethods]: #fastifyhttpmethods
+[RawServerBase]: #fastifyrawserverbase
+[RawServerDefault]: #fastifyrawserverdefault
 [FastifyRequest]: #fastifyfastifyrequestrawserver-rawrequest-requestgeneric
 [FastifyRequestInterface]: #fastifyfastifyrequestinterfacerawserver-rawrequest-requestgeneric
 [FastifyRequestGenericInterface]: #fastifyrequestgenericinterface
 [RawRequestDefaultExpression]: #fastifyrawrequestdefaultexpressionrawserver
-[FastifyReply]: [#fastifyfastifyreplyrawserver-rawreply-contextconfig]
-[FastifyReplyInterface]: [#fastifyfastifyreplyinterfacerawserver-rawreply-contextconfig]
-[RawReplyDefaultExpression]: [#fastifyrawreplydefaultexpression]
-[FastifyOptions]: [#fastifyfastifyoptions]
-[FastifyInstance]: [#fastifyfastifyinstance]
-[FastifyLoggerOptions]: [#fastifyfastifyloggeroptions]
+[FastifyReply]: #fastifyfastifyreplyrawserver-rawreply-contextconfig
+[FastifyReplyInterface]: #fastifyfastifyreplyinterfacerawserver-rawreply-contextconfig
+[RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression
+[FastifyOptions]: #fastifyfastifyoptions
+[FastifyInstance]: #fastifyfastifyinstance
+[FastifyLoggerOptions]: #fastifyfastifyloggeroptions
+[ContextConfigGeneric]: #ContextConfigGeneric

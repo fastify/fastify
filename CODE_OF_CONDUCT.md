@@ -11,7 +11,7 @@ Refer to the sections on reporting and escalation in this document for the speci
 
 ### Project Spaces
 
-For reporting issues in spaces related to Fastify please use the email `hello@matteocollina.com` or `tommydelved@gmail.com`. Fastify handle CoC issues related to the spaces that it maintain. Projects maintainers commit to:
+For reporting issues in spaces related to Fastify please use the email `hello@matteocollina.com` or `tommydelved@gmail.com`. Fastify handles CoC issues related to the spaces that it maintains. Projects maintainers commit to:
 
 - maintain the confidentiality with regard to the reporter of an incident
 - to participate in the path for escalation as outlined in

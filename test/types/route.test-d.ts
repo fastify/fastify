@@ -44,6 +44,10 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     bar: number;
   }
 
+  interface PayloadInterface {
+    hello: string;
+  }
+
   interface RouteGeneric {
     Body: BodyInterface;
     Querystring: QuerystringInterface;
@@ -95,6 +99,8 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+
+      res.send<PayloadInterface>({ hello: 'world' })
     }
   })
 })

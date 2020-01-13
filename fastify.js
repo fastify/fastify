@@ -210,7 +210,6 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-    use: use,
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
@@ -222,29 +221,34 @@ function fastify (options) {
     initialConfig: getSecuredInitialConfig(options)
   }
 
-  Object.defineProperty(fastify, 'schemaCompiler', {
-    get: function () {
-      return this[kSchemaCompiler]
-    },
-    set: function (schemaCompiler) {
-      this.setSchemaCompiler(schemaCompiler)
-    }
-  })
-
-  Object.defineProperty(fastify, 'prefix', {
-    get: function () {
-      return this[kRoutePrefix]
-    }
-  })
-
-  Object.defineProperty(fastify, 'pluginName', {
-    get: function () {
-      if (this[kPluginNameChain].length > 1) {
-        return this[kPluginNameChain].join(' -> ')
+  Object.defineProperties(fastify, {
+    schemaCompiler: {
+      get () {
+        return this[kSchemaCompiler]
+      },
+      set (schemaCompiler) {
+        this.setSchemaCompiler(schemaCompiler)
       }
-      return this[kPluginNameChain][0]
+    },
+    prefix: {
+      get () {
+        return this[kRoutePrefix]
+      }
+    },
+    pluginName: {
+      get () {
+        if (this[kPluginNameChain].length > 1) {
+          return this[kPluginNameChain].join(' -> ')
+        }
+        return this[kPluginNameChain][0]
+      }
     }
   })
+
+  // We are adding `use` to the fastify prototype so the user
+  // can still access it (and get the expected error), but `decorate`
+  // will not detect it, and allow the user to override it.
+  Object.setPrototypeOf(fastify, { use })
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:

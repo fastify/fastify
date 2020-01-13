@@ -467,7 +467,7 @@ Enforced by: [`RawServer`][RawServerGeneric]
 
 ---
 
-#### fastify<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyOptions][FastifyOptions]): [FastifyInstance][FastifyInstance]
+#### fastify<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyServerOptions][FastifyServerOptions]): [FastifyInstance][FastifyInstance]
 [src](./../fastify.d.ts#L19)
 
 The main Fastify API method. By default creates an HTTP server. Supports an extensive generic type system to either specify the server as HTTPS/HTTP2, or allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
@@ -590,6 +590,16 @@ Type alias for `http.Server`
 
 ---
 
+#### fastify.FastifyServerOptions<[RawServer][RawServerGeneric], [Logger][LoggerGeneric]>
+
+[src](../fastify.d.ts#L29)
+
+An interface of properties used in the instantiation of the Fastify server. Is used in the main [`fastify()`][Fastify] method. The `RawServer` and `Logger` generic parameters are passed down through that method. Certain properties are dependant on the generics such as the `http2` and `https` properties. If these properties are enabled, but the incorrect server type is passed to the `fastify()` method `RawServer` generic parameter, then an error will be thrown.
+
+See the main [fastify][Fastify] method type definition section for examples on instatiating a Fastify server with TypeScript.
+
+---
+
 #### FastifyRequest
 
 ##### fastify.FastifyRequest<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]> 
@@ -708,7 +718,7 @@ declare module 'fastify' {
 }
 ```
 
-##### fastify.RawReplyDefaultExpression<[`RawServer`][RawServerGeneric]> 
+##### fastify.RawReplyDefaultExpression<[RawServer][RawServerGeneric]> 
 [src](./../types/utils.d.ts#L27)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
@@ -727,8 +737,6 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 ```
 
 ---
-
-#### fastify.FastifyServerOptions<RawServer, Logger>
 
 #### fastify.FastifyInstance
 
@@ -814,7 +822,7 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 <!-- Links -->
 
-[Fastify]: #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyoptions-fastifyinstance
+[Fastify]: #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
 [RawServerGeneric]: #rawserver
 [RawRequestGeneric]: #rawrequest
 [RawReplyGeneric]: #rawreply
@@ -829,7 +837,7 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 [FastifyReply]: #fastifyfastifyreplyrawserver-rawreply-contextconfig
 [FastifyReplyInterface]: #fastifyfastifyreplyinterfacerawserver-rawreply-contextconfig
 [RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression
-[FastifyOptions]: #fastifyfastifyoptions
+[FastifyServerOptions]: #fastifyfastifyserveroptions-rawserver-logger
 [FastifyInstance]: #fastifyfastifyinstance
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric

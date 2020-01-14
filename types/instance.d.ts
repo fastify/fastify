@@ -4,7 +4,7 @@ import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
-import { AddHook } from './hooks'
+import { addHook } from './hooks'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
@@ -74,7 +74,7 @@ export interface FastifyInstance<
   patch: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
 
-  addHook: AddHook<RawServer, RawRequest, RawReply>;
+  addHook: addHook<RawServer, RawRequest, RawReply>;
 
   /**
    * Set the 404 handler

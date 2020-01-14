@@ -13,7 +13,7 @@ export interface ValidationResult {
 
 /**
  * FastifyError is a custom error object that includes status code and validation results.
- */
+*/
 export interface FastifyError extends Error {
   statusCode?: number;
   /**

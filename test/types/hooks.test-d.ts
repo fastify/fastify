@@ -1,43 +1,76 @@
-import fastify from '../../fastify'
+import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
+import { expectType } from 'tsd'
+import { FastifyInstance } from '../../types/instance'
+import { FastifyError } from '../../types/error'
 
-// Not sure how else to test this other than just making sure these definitions are valid
+const server = fastify()
 
-fastify().addHook('onRequest', (request, reply, done) => {
+server.addHook('onRequest', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<(err?: FastifyError) => void>(done)
+})
+
+server.addHook('preParsing', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<(err?: FastifyError) => void>(done)
+})
+
+server.addHook('preValidation', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<(err?: FastifyError) => void>(done)
+})
+
+server.addHook('preHandler', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<(err?: FastifyError) => void>(done)
+})
+
+server.addHook('onResponse', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<(err?: FastifyError) => void>(done)
+})
+
+server.addHook('onError', (request, reply, error, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<FastifyError>(error)
+  expectType<() => void>(done)
+})
+
+// Test payload generic pass through for preSerialization and onSend
+
+type TestPayloadType = {
+  foo: string,
+  bar: number
+}
+
+server.addHook('preSerialization', (request, reply, payload, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<TestPayloadType>(payload)
+  done()
+})
+
+server.addHook('onSend', (request, reply, payload, done) => {
   // some code
   done()
 })
 
-fastify().addHook('preParsing', (request, reply, done) => {
-  // some code
-  done()
+server.addHook('onRoute', (opts) => {
+  expectType<RouteOptions & { path: string, prefix: string}>(opts)
 })
 
-fastify().addHook('preValidation', (request, reply, done) => {
-  // some code
-  done()
+server.addHook('onRegister', (instance, done) => {
+  expectType<FastifyInstance>(instance)
+  expectType<(err?: FastifyError) => void>(done)
 })
 
-fastify().addHook('preHandler', (request, reply, done) => {
-  // some code
-  done()
-})
-
-fastify().addHook('preSerialization', (request, reply, payload, done) => {
-  // some code
-  done()
-})
-
-fastify().addHook('onError', (request, reply, error, done) => {
-  // some code
-  done()
-})
-
-fastify().addHook('onSend', (request, reply, payload, done) => {
-  // some code
-  done()
-})
-
-fastify().addHook('onResponse', (request, reply, done) => {
-  // some code
-  done()
+server.addHook('onClose', (instance, done) => {
+  expectType<FastifyInstance>(instance)
+  expectType<(err?: FastifyError) => void>(done)
 })

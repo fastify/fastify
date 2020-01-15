@@ -110,6 +110,6 @@ export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasC
 export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
-export { onCloseHookHandler, onRouteHookHandler, onRequestHookHandler, onSendHookHandler, onErrorHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler, AddHook, addHookHandler } from './types/hooks'
+export { onCloseHookHandler, onRouteHookHandler, onRequestHookHandler, onSendHookHandler, onErrorHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler, addHook } from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { fastify }

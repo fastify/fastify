@@ -74,11 +74,12 @@ type DoneFuncWithErrOrRes = (
  *  Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
  */
 export interface preSerializationHookHandler<
+  PreSerializationPayload,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
-  <PreSerializationPayload>(
+  (
     request: FastifyRequest<RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawReply>,
     payload: PreSerializationPayload,
@@ -91,14 +92,15 @@ export interface preSerializationHookHandler<
  * Note: If you change the payload, you may only change it to a string, a Buffer, a stream, or null.
  */
 export interface onSendHookHandler<
+  OnSendPayload,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
-  <onSendPayload>(
+  (
     request: FastifyRequest<RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawReply>,
-    payload: onSendPayload,
+    payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
   ): void
 }
@@ -174,33 +176,122 @@ export interface onCloseHookHandler<
 }
 
 // Add Hook type defs
+
+export interface addHookGenericInterface<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger = FastifyLoggerOptions<RawServer>
+> {
+  Payload?: unknown,
+  RawServer: RawServer,
+  RawRequest: RawRequest,
+  RawReply: RawReply,
+  Logger?: Logger
+}
+
+// export interface addHook<
+//   RawServer extends RawServerBase = RawServerDefault,
+//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+//   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+//   Logger = FastifyLoggerOptions<RawServer>
+// > {
+//   <Name extends FastifyHooksStrings>(
+//     name: Name,
+//     hook: addHookHandler<Name, RawServer, RawRequest, RawReply, Logger>
+//   ): FastifyInstance<RawServer, RawRequest, RawReply>;
+// }
+
+// type addHook<
+//   Payload = unknown,
+//   RawServer extends RawServerBase = RawServerDefault,
+//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+//   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+//   Logger = FastifyLoggerOptions<RawServer>
+// > = Payload extends unknown ? (
+//   <Name extends FastifyHooksStrings>(
+//     name: Name,
+//     hook: addHookHandler<Name, RawServer, RawRequest, RawReply, Logger>
+//   ) => FastifyInstance<RawServer, RawRequest, RawReply>
+// ) : (
+//   <Name extends FastifyHooksStrings>(
+//     name: Name,
+//     hook: addHookHandlerWithPayload<Payload, Name, RawServer, RawRequest, RawReply, Logger>
+//   ) => FastifyInstance<RawServer, RawRequest, RawReply>
+// )
+
+// type addHookHandler<
+//   Name extends FastifyHooksStrings,
+//   RawServer extends RawServerBase = RawServerDefault,
+//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+//   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+//   Logger = FastifyLoggerOptions<RawServer>
+// > = Name extends 'onError' ? onErrorHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'onRequest' ? onRequestHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'onResponse' ? onResponseHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'onRoute' ? onRouteHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'onClose' ? onCloseHookHandler<RawServer, RawRequest, RawReply, Logger>
+//   : Name extends 'preHandler' ? preHandlerHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'preValidation' ? preValidationHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'preParsing' ? preParsingHookHandler<RawServer, RawRequest, RawReply>
+//   : Name extends 'onRegister' ? onRegisterHookHandler<RawServer, RawRequest, RawReply, Logger>
+//   : never
+
+// type addHookHandlerWithPayload<
+//   Payload,
+//   Name extends FastifyHooksStrings,
+//   RawServer extends RawServerBase = RawServerDefault,
+//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+//   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+//   Logger = FastifyLoggerOptions<RawServer>
+// > = Name extends 'onSend' ? onSendHookHandler<Payload, RawServer, RawRequest, RawReply>
+//   : Name extends 'preSerialization' ? preSerializationHookHandler<Payload, RawServer, RawRequest, RawReply>
+//   : never
+
 export interface addHook<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
 > {
-  <Name extends FastifyHooksStrings>(
-    name: Name,
-    hook: addHookHandler<Name, RawServer, RawRequest, RawReply, Logger>
+  (
+    name: 'onError',
+    hook: onErrorHookHandler<RawServer, RawRequest, RawReply>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 }
-
-type addHookHandler<
-  Name extends FastifyHooksStrings,
+export interface addHook<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
-> = Name extends 'onError' ? onErrorHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onSend' ? onSendHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onRequest' ? onRequestHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onResponse' ? onResponseHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onRoute' ? onRouteHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onClose' ? onCloseHookHandler<RawServer, RawRequest, RawReply, Logger>
-  : Name extends 'preHandler' ? preHandlerHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'preSerialization' ? preSerializationHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'preValidation' ? preValidationHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'preParsing' ? preParsingHookHandler<RawServer, RawRequest, RawReply>
-  : Name extends 'onRegister' ? onRegisterHookHandler<RawServer, RawRequest, RawReply, Logger>
-  : never
+> {
+  (
+    name: 'onResponse',
+    hook: onResponseHookHandler<RawServer, RawRequest, RawReply>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+}
+
+// export interface preSerializationHookHandler<
+//   RawServer extends RawServerBase = RawServerDefault,
+//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+//   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
+// > {
+//   <PreSerializationPayload>(
+//     request: FastifyRequest<RawServer, RawRequest>,
+//     reply: FastifyReply<RawServer, RawReply>,
+//     payload: PreSerializationPayload,
+//     done: DoneFuncWithErrOrRes
+//   ): void
+// }
+
+export interface addHook<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger = FastifyLoggerOptions<RawServer>
+> {
+  (
+    name: 'preSerialization',
+    hook: preSerializationHookHandler<any, RawServer, RawRequest, RawReply>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+}

@@ -1,7 +1,8 @@
 import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
-import { expectType } from 'tsd'
+import { expectType, expectError } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from '../../types/error'
+import { preSerializationHookHandler } from '../../types/hooks'
 
 const server = fastify()
 
@@ -49,11 +50,20 @@ type TestPayloadType = {
   bar: number
 }
 
-server.addHook('preSerialization', (request, reply, payload, done) => {
+// const preSerializationHook: preSerializationHookHandler<TestPayloadType> = (request, reply, payload, done) => {
+//   expectType<FastifyRequest>(request)
+//   expectType<FastifyReply>(reply)
+//   expectType<TestPayloadType>(payload)
+//   expectError(done())
+// }
+
+// server.addHook('preSerialization', preSerializationHook)
+
+server.addHook('preSerialization', function (request, reply, payload, done) {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload)
-  done()
+  expectError(done())
 })
 
 server.addHook('onSend', (request, reply, payload, done) => {

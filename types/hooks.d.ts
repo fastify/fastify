@@ -8,11 +8,6 @@ import { FastifyLoggerOptions } from './logger'
 
 type HookHandlerDoneFunction = (err?: FastifyError) => void
 
-export enum FastifyHooks {
-  onRoute, onRegister, onClose, onRequest, preParsing, preValidation, preSerialization, preHandler, onSend, onResponse, onError
-}
-export type FastifyHooksStrings = keyof typeof FastifyHooks
-
 // Lifecycle Hooks
 
 /**

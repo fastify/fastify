@@ -21,6 +21,19 @@ fastify.inject({
 })
 ```
 
+you can also use chaining methods if you do not pass the callback function
+
+```js
+fastify
+  .inject()
+  .get('/')
+  .headers({ foo: 'bar' })
+  .query({ foo: 'bar' })
+  .end((err, res) => {
+    console.log(res.payload)
+  })
+```
+
 or in the promisified version
 
 ```js

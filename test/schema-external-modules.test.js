@@ -1,87 +1,18 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('tap')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
-
-test('case insensitive header validation', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    handler: (req, reply) => {
-      reply.code(200).send(req.headers.foobar)
-    },
-    schema: {
-      headers: {
-        type: 'object',
-        required: ['FooBar'],
-        properties: {
-          FooBar: { type: 'string' }
-        }
-      }
-    }
-  })
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      FooBar: 'Baz'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, 'Baz')
-  })
-})
-
-test('not evaluate json-schema $schema keyword', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  fastify.route({
-    method: 'POST',
-    url: '/',
-    handler: (req, reply) => {
-      reply.code(200).send(req.body.hello)
-    },
-    schema: {
-      body: {
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  })
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    body: {
-      hello: 'world'
-    }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.payload, 'world')
-  })
-})
 
 test('Should handle $merge keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+      plugins: [ajvMergePatch]
     }
   })
 
-  fastify.route({
-    method: 'POST',
-    url: '/',
+  fastify.post('/', {
     schema: {
       body: {
         $merge: {
@@ -99,9 +30,7 @@ test('Should handle $merge keywords in body', t => {
         }
       }
     },
-    handler (req, reply) {
-      reply.send({ ok: 1 })
-    }
+    handler (req, reply) { reply.send({ ok: 1 }) }
   })
 
   fastify.ready(err => {
@@ -118,9 +47,7 @@ test('Should handle $merge keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      body: {
-        q: 'foo'
-      }
+      payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
       t.equals(res.statusCode, 200)
@@ -132,15 +59,11 @@ test('Should handle $patch keywords in body', t => {
   t.plan(5)
   const fastify = Fastify({
     ajv: {
-      plugins: [
-        ajvMergePatch
-      ]
+      plugins: [ajvMergePatch]
     }
   })
 
-  fastify.route({
-    method: 'POST',
-    url: '/',
+  fastify.post('/', {
     schema: {
       body: {
         $patch: {
@@ -162,9 +85,7 @@ test('Should handle $patch keywords in body', t => {
         }
       }
     },
-    handler (req, reply) {
-      reply.send({ ok: 1 })
-    }
+    handler (req, reply) { reply.send({ ok: 1 }) }
   })
 
   fastify.ready(err => {
@@ -173,9 +94,7 @@ test('Should handle $patch keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      body: {
-        q: 'foo'
-      }
+      payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
       t.equals(res.statusCode, 400)
@@ -184,9 +103,7 @@ test('Should handle $patch keywords in body', t => {
     fastify.inject({
       method: 'POST',
       url: '/',
-      body: {
-        q: 10
-      }
+      payload: { q: 10 }
     }, (err, res) => {
       t.error(err)
       t.equals(res.statusCode, 200)

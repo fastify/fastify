@@ -75,6 +75,24 @@ test('Cannot add multiple times the same id', t => {
   }
 })
 
+test('Cannot add schema for query and querystring', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    handler: () => {},
+    schema: {
+      query: { foo: { type: 'string' } },
+      querystring: { foo: { type: 'string' } }
+    }
+  })
+
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
+    t.is(err.message, 'Schema with \'querystring\' already present!')
+  })
+})
+
 test('Should throw of the schema does not exists in input', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -498,5 +516,94 @@ test('shared schema should NOT be ignored in != string enum', t => {
   }, (err, res) => {
     t.error(err)
     t.deepEqual(res.json(), { lang: 'C#' })
+  })
+})
+
+test('case insensitive header validation', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.get('/', {
+    handler: (req, reply) => {
+      reply.code(200).send(req.headers.foobar)
+    },
+    schema: {
+      headers: {
+        type: 'object',
+        required: ['FooBar'],
+        properties: {
+          FooBar: { type: 'string' }
+        }
+      }
+    }
+  })
+  fastify.inject({
+    url: '/',
+    method: 'GET',
+    headers: {
+      FooBar: 'Baz'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, 'Baz')
+  })
+})
+
+test('not evaluate json-schema $schema keyword', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.post('/', {
+    handler: echoBody,
+    schema: {
+      body: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          hello: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  })
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    body: { hello: 'world', foo: 'bar' }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), { hello: 'world' })
+  })
+})
+
+test('validation context in validation result', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  // custom error handler to expose validation context in response, so we can test it later
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equal(err instanceof Error, true)
+    t.ok(err.validation, 'detailed errors')
+    t.equal(err.validationContext, 'body')
+    reply.send()
+  })
+  fastify.get('/', {
+    handler: echoParams,
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  })
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    payload: {} // body lacks required field, will fail validation
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
   })
 })

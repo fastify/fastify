@@ -111,6 +111,7 @@ A schema with the same `$id` already exists.
 
 No schema with the provided `$id` exists.
 
+// TODO remove
 <a name="FST_ERR_SCH_BUILD"></a>
 #### FST_ERR_SCH_BUILD
 

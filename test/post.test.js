@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO move these tests
+
 const t = require('tap')
 const Joi = require('@hapi/joi')
 require('./helper').payloadMethod('post', t)
@@ -7,7 +9,7 @@ require('./input-validation').payloadMethod('post', t)
 
 const Fastify = require('..')
 
-t.test('cannot call setSchemaCompiler after binding', t => {
+t.test('cannot call setValidatorCompiler after binding', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -17,7 +19,7 @@ t.test('cannot call setSchemaCompiler after binding', t => {
     t.error(err)
 
     try {
-      fastify.setSchemaCompiler(() => { })
+      fastify.setValidatorCompiler(() => { })
       t.fail()
     } catch (e) {
       t.pass()

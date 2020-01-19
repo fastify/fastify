@@ -443,3 +443,60 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
 
   fastify.ready(err => t.error(err))
 })
+
+test('shared schema should be ignored in string enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:lang', {
+    handler: echoParams,
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          lang: {
+            type: 'string',
+            enum: ['Javascript', 'C++', 'C#']
+          }
+        }
+      }
+    }
+  })
+
+  fastify.inject('/C%23', (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), { lang: 'C#' })
+  })
+})
+
+test('shared schema should NOT be ignored in != string enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'C',
+    type: 'object',
+    properties: {
+      lang: {
+        type: 'string',
+        enum: ['Javascript', 'C++', 'C#']
+      }
+    }
+  })
+
+  fastify.post('/:lang', {
+    handler: echoBody,
+    schema: {
+      body: fastify.getSchema('C')
+    }
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    payload: { lang: 'C#' }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), { lang: 'C#' })
+  })
+})

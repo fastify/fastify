@@ -2,7 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
-const symbols = require('../lib/symbols.js')
+// const symbols = require('../lib/symbols.js')
 
 test('basic test', t => {
   t.plan(3)

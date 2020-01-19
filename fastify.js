@@ -218,15 +218,6 @@ function fastify (options) {
     initialConfig: getSecuredInitialConfig(options)
   }
 
-  Object.defineProperty(fastify, 'schemaCompiler', {
-    get: function () {
-      return this[kSchemaCompiler]
-    },
-    set: function (schemaCompiler) {
-      this.setSchemaCompiler(schemaCompiler)
-    }
-  })
-
   Object.defineProperty(fastify, 'prefix', {
     get: function () {
       return this[kRoutePrefix]

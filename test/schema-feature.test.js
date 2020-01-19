@@ -176,6 +176,98 @@ test('Should not change the input schemas', t => {
   })
 })
 
+test('Customize validator compiler in instance and route', t => {
+  t.plan(28)
+  const fastify = Fastify()
+
+  fastify.setValidatorCompiler((method, url, httpPart, schema) => {
+    t.equals(method, 'POST') // run 4 times
+    t.equals(url, '/:id') // run 4 times
+    switch (httpPart) {
+      case 'body':
+        t.pass('body evaluated')
+        return body => {
+          t.deepEqual(body, { foo: ['bar', 'BAR'] })
+          return true
+        }
+      case 'params':
+        t.pass('params evaluated')
+        return params => {
+          t.deepEqual(params, { id: 1234 })
+          return true
+        }
+      case 'querystring':
+        t.pass('querystring evaluated')
+        return query => {
+          t.deepEqual(query, { lang: 'en' })
+          return true
+        }
+      case 'headers':
+        t.pass('headers evaluated')
+        return headers => {
+          t.like(headers, { x: 'hello' })
+          return true
+        }
+      case '2xx':
+        t.fail('the validator doesn\'t process the response')
+        break
+      default:
+        t.fail(`unknown httpPart ${httpPart}`)
+    }
+  })
+
+  fastify.post('/:id', {
+    handler: echoBody,
+    schema: {
+      query: { lang: { type: 'string', enum: ['it', 'en'] } },
+      headers: { x: { type: 'string' } },
+      params: { id: { type: 'number' } },
+      body: { foo: { type: 'array' } },
+      response: {
+        '2xx': { foo: { type: 'array', items: { type: 'string' } } }
+      }
+    }
+  })
+
+  fastify.get('/wow/:id', {
+    handler: echoParams,
+    validatorCompiler: (method, url, httpPart, schema) => {
+      t.equals(method, 'GET') // run 3 times (params, headers, query)
+      t.equals(url, '/wow/:id') // run 4 times
+      return () => { return true } // ignore the validation
+    },
+    schema: {
+      query: { lang: { type: 'string', enum: ['it', 'en'] } },
+      headers: { x: { type: 'string' } },
+      params: { id: { type: 'number' } },
+      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
+    }
+  })
+
+  fastify.inject({
+    url: '/1234',
+    method: 'POST',
+    headers: { x: 'hello' },
+    query: { lang: 'en' },
+    payload: { foo: ['bar', 'BAR'] }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(res.json(), { foo: ['bar', 'BAR'] })
+  })
+
+  fastify.inject({
+    url: '/wow/should-be-a-num',
+    method: 'GET',
+    headers: { x: 'hello' },
+    query: { lang: 'jp' } // not in the enum
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200) // the validation is always true
+    t.deepEqual(res.json(), {})
+  })
+})
+
 test('Use the same schema across multiple routes', t => {
   t.plan(4)
   const fastify = Fastify()

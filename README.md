@@ -120,7 +120,7 @@ In a similar way, all Fastify 2.x related changes should be based on **`branch 2
 
 ### Core features
 
-- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 30 thousand requests per second.
+- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 76+ thousand requests per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
 - **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
@@ -172,6 +172,7 @@ matters to you.
 * <a href="https://github.com/fastify/fastify/blob/master/docs/LTS.md"><code><b>Long Term Support</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
 * <a href="https://github.com/fastify/fastify/blob/master/docs/Serverless.md"><code><b>Serverless</b></code></a>
+* <a href="https://github.com/fastify/fastify/blob/master/docs/Recommendations.md"><code><b>Recommendations</b></code></a>
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
 

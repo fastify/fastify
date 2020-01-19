@@ -25,16 +25,28 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(8)
-  const req = new Request('params', 'req', 'query', 'headers', 'log')
-  t.type(req, Request)
-  t.equal(req.params, 'params')
-  t.strictEqual(req.raw, 'req')
-  t.strictEqual(req.req, 'req')
-  t.equal(req.query, 'query')
-  t.equal(req.headers, 'headers')
-  t.equal(req.log, 'log')
-  t.strictDeepEqual(req.body, null)
+  t.plan(15)
+  const req = {
+    method: 'GET',
+    url: '/',
+    connection: { foo: 'bar' }
+  }
+  const request = new Request('id', 'params', req, 'query', 'headers', 'log', 'ip', 'ips', 'hostname')
+  t.type(request, Request)
+  t.strictEqual(request.id, 'id')
+  t.strictEqual(request.params, 'params')
+  t.deepEqual(request.raw, req)
+  t.deepEqual(request.req, req)
+  t.strictEqual(request.query, 'query')
+  t.strictEqual(request.headers, 'headers')
+  t.strictEqual(request.log, 'log')
+  t.strictEqual(request.ip, 'ip')
+  t.strictEqual(request.ips, 'ips')
+  t.strictEqual(request.hostname, 'hostname')
+  t.strictEqual(request.body, null)
+  t.strictEqual(request.method, 'GET')
+  t.strictEqual(request.url, '/')
+  t.deepEqual(request.connection, req.connection)
 })
 
 test('handleRequest function - sent reply', t => {

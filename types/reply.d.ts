@@ -19,7 +19,7 @@ export type FastifyReply<
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawReply>;
   redirect(url: string): FastifyReply<RawServer, RawReply>;
   removeHeader(key: string): void;
-  send(payload?: any): FastifyReply<RawServer, RawReply>;
+  send<T>(payload?: T): FastifyReply<RawServer, RawReply>;
   serialize(payload: any): string;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawReply>;
   status(statusCode: number): FastifyReply<RawServer, RawReply>;

@@ -277,9 +277,9 @@ test('The request id header key can be customized', t => {
   t.tearDown(() => fastify.close())
 
   fastify.get('/', (req, reply) => {
-    t.equal(req.raw.id, REQUEST_ID)
+    t.equal(req.id, REQUEST_ID)
     req.log.info('some log message')
-    reply.send({ id: req.raw.id })
+    reply.send({ id: req.id })
   })
 
   fastify.inject({
@@ -1389,7 +1389,6 @@ test('should not rely on raw request to log errors', t => {
   t.plan(7)
   const stream = split(JSON.parse)
   const fastify = Fastify({
-    modifyCoreObjects: false,
     logger: {
       stream: stream,
       level: 'info'

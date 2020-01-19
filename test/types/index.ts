@@ -640,6 +640,8 @@ if (typeof server.hasContentTypeParser('foo/bar') !== 'boolean') {
 
 server.printRoutes()
 
+server.registeredRoutes()
+
 server.ready(function (err) {
   if (err) throw err
 })

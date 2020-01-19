@@ -17,6 +17,7 @@ You have two ways to declare a route with Fastify, the shorthand method and the 
   - [Custom Log Serializer](#custom-log-serializer)
 - [Route handler configuration](#routes-config)
 - [Route's Versioning](#version)
+- [Analyzing Routes](#analyzing-routes)
 
 <a name="full-declaration"></a>
 ### Full declaration
@@ -433,3 +434,55 @@ If the request will not have the `Accept-Version` header, a 404 error will be re
 
 #### Custom
 It's possible to define a custom versioning logic. This can be done through the [`versioning`](https://github.com/fastify/fastify/blob/master/docs/Server.md#versioning) configuration, when creating a fastify server instance.
+
+<a name="analyzing-routes"></a>
+### Analyzing Routes
+
+#### Getting Routes
+
+An array of registered routes can be dumped with the `fastify.registeredRoutes` method:
+
+```js
+fastify.get('/hello', helloHandler)
+fasttify.ready(() => {
+  console.log(fastify.registeredRoutes())
+})
+```
+
+The method returns an array of objects with keys: `method`, `path`, `opts`, `handler` and `store`. 
+
+The above would print an array similar to the following:
+
+```js
+[{  method: 'GET',
+    path: '/hello',
+    opts: { version: undefined },
+    handler: [Function: routeHandler],
+    store: Context {...} 
+}]
+```
+
+#### Printing Routes
+
+A ASCII tree map of routes can be generated with the `fastify.printRoutes` method:
+
+```js
+fastify.get('/test', handler1)
+fastify.get('/test/:hello', handler2)
+fastify.get('/hello/:world', handler3)
+fastify.ready(() => {
+  console.log(fastify.printRoutes())
+})
+```
+
+The above would output the following:
+
+```
+└── /
+    ├── test (GET)
+    │   └── /
+    │       └── :hello (GET)
+    └── hello/
+        └── :world (GET)
+```
+

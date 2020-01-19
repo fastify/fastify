@@ -736,7 +736,12 @@ declare namespace fastify {
     /**
      * Prints the representation of the internal radix tree used by the router
      */
-    printRoutes(): string
+    printRoutes(): string;
+
+    /**
+     * Outputs an array of registered routes
+     */
+    registeredRoutes(): Array<object>
   }
 }
 

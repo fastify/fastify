@@ -223,6 +223,8 @@ function build (options) {
     inject: inject,
     // pretty print of the registered routes
     printRoutes: router.printRoutes,
+    // output array of the registered routes
+    registeredRoutes: () => router.routes,
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,

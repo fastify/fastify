@@ -420,14 +420,14 @@ function fastify (options) {
   }
 
   // wrapper that we expose to the user for schemas compiler handling
-  /** @depreacated */
+  // TODO remove
   function setSchemaCompiler (schemaCompiler) {
     throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
     this[kSchemaCompiler] = schemaCompiler
     return this
   }
 
-  /** @depreacated */
+  // TODO remove
   function setSchemaResolver (schemaRefResolver) {
     throwIfAlreadyStarted('Cannot call "setSchemaResolver" when fastify instance is already started!')
     this[kSchemaResolver] = schemaRefResolver

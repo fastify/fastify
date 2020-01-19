@@ -2,7 +2,7 @@
 
 ## Routes
 
-The routes methods will configure the endpoints of your application. 
+The routes methods will configure the endpoints of your application.
 You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
 
 - [Full Declaration](#full-declaration)
@@ -48,7 +48,8 @@ They need to be in
 * `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
 * `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
 * `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
-* `onResponse(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
+* `onSend(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
+* `onResponse(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
 * `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
@@ -328,10 +329,10 @@ In some context, you may need to log a large object but it could be a waste of r
 ```js
 const fastify = require('fastify')({ logger: true })
 
-fastify.register(require('./routes/user'), { 
+fastify.register(require('./routes/user'), {
   logSerializers: {
     user: (value) => `My serializer one - ${value.name}`
-  } 
+  }
 })
 fastify.register(require('./routes/events'), {
   logSerializers: {
@@ -345,7 +346,7 @@ fastify.listen(3000)
 You can inherit serializers by context:
 
 ```js
-const fastify = Fastify({ 
+const fastify = Fastify({
   logger: {
     level: 'info',
     serializers: {
@@ -360,13 +361,13 @@ const fastify = Fastify({
         }
       }
     }
-  } 
+  }
 })
 
-fastify.register(context1, { 
+fastify.register(context1, {
   logSerializers: {
     user: value => `My serializer father - ${value}`
-  } 
+  }
 })
 
 async function context1 (fastify, opts) {

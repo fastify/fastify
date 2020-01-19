@@ -189,8 +189,8 @@ application.
 ## Contributing
 TypeScript related changes can be considered to fall into one of two categories:
 
-* Core - The typings bundled with fastify
-* Plugins - Fastify ecosystem plugins
+* [`Core`](#core-types) - The typings bundled with fastify
+* [`Plugins`](#plugin-types) - Fastify ecosystem plugins
 
 Make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly!
 
@@ -215,7 +215,7 @@ Some types might not be available yet, so don't be shy about contributing.
 ### Authoring Plugin Types
 Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `FastifyInstance` objects can be achieved as shown below.
 
-This code shows the typings for the `fastify-static` plugin.
+This code shows the typings for the [`fastify-static`](https://github.com/fastify/fastify-static) plugin.
 
 ```ts
 // require fastify typings

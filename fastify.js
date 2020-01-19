@@ -15,8 +15,6 @@ const {
   kSchemas,
   kValidatorCompiler,
   kSerializerCompiler,
-  kSchemaCompiler,
-  kSchemaResolver,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -132,8 +130,8 @@ function fastify (options) {
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemas, // TODO
-    [kSchemaCompiler]: null,
-    [kSchemaResolver]: null,
+    [kValidatorCompiler]: null,
+    [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -183,11 +181,10 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
+    getSchema: getSchema,
     getSchemas: schemas.getSchemas.bind(schemas),
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
-    setSchemaCompiler: setSchemaCompiler, // TODO remove
-    setSchemaResolver: setSchemaResolver, // TODO remove
     setReplySerializer: setReplySerializer,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
@@ -385,6 +382,11 @@ function fastify (options) {
     return this
   }
 
+  function getSchema (schemaId) {
+    // TODO it must change for performance
+    return this[kSchemas].getSchemas().find(s => s.$id === schemaId)
+  }
+
   function handleClientError (err, socket) {
     const body = JSON.stringify({
       error: http.STATUS_CODES['400'],
@@ -417,21 +419,6 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
-  }
-
-  // wrapper that we expose to the user for schemas compiler handling
-  // TODO remove
-  function setSchemaCompiler (schemaCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
-    this[kSchemaCompiler] = schemaCompiler
-    return this
-  }
-
-  // TODO remove
-  function setSchemaResolver (schemaRefResolver) {
-    throwIfAlreadyStarted('Cannot call "setSchemaResolver" when fastify instance is already started!')
-    this[kSchemaResolver] = schemaRefResolver
-    return this
   }
 
   function setValidatorCompiler (validatorCompiler) {

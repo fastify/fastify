@@ -1,9 +1,8 @@
 'use strict'
 
-const t = require('tap')
-// const Joi = require('@hapi/joi')
+const { test } = require('tap')
 const Fastify = require('..')
-const test = t.test
+const symbols = require('../lib/symbols.js')
 
 test('basic test', t => {
   t.plan(3)

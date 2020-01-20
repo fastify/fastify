@@ -181,7 +181,7 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
-    getSchema: getSchema,
+    getSchema: schemas.getSchema.bind(schemas),
     getSchemas: schemas.getSchemas.bind(schemas),
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
@@ -371,11 +371,6 @@ function fastify (options) {
     this[kSchemas].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
-  }
-
-  function getSchema (schemaId) {
-    // TODO it must change for performance
-    return this[kSchemas].getSchemas().find(s => s.$id === schemaId)
   }
 
   function handleClientError (err, socket) {

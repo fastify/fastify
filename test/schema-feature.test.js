@@ -15,24 +15,25 @@ const echoBody = (req, reply) => { reply.send(req.body) }
   })
 })
 
-test('The schemas should be added to an internal array', t => {
+test('The schemas should be added to an internal storage', t => {
   t.plan(1)
   const fastify = Fastify()
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.deepEqual(fastify[kSchemas].store, [schema])
+  t.deepEqual(fastify[kSchemas].store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  const schemas = [
-    { $id: 'id', my: 'schema' },
-    { $id: 'abc', my: 'schema' },
-    { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
-  ]
-  schemas.forEach(schema => { fastify.addSchema(schema) })
+  const schemas = {
+    id: { $id: 'id', my: 'schema' },
+    abc: { $id: 'abc', my: 'schema' },
+    bcd: { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
+  }
+
+  Object.values(schemas).forEach(schema => { fastify.addSchema(schema) })
   t.deepEqual(fastify.getSchemas(), schemas)
 })
 
@@ -51,14 +52,14 @@ test('The schema should be accessible by id via getSchema', t => {
   t.deepEqual(fastify.getSchema('foo'), undefined)
 })
 
-test('Should NOT throw if the $id property is missing', t => {
+test('Should throw if the $id property is missing', t => {
   t.plan(1)
   const fastify = Fastify()
   try {
     fastify.addSchema({ type: 'string' })
-    t.pass()
-  } catch (err) {
     t.fail()
+  } catch (err) {
+    t.is(err.code, 'FST_ERR_SCH_MISSING_ID')
   }
 })
 
@@ -172,7 +173,7 @@ test('Should not change the input schemas', t => {
     t.error(err)
     t.deepEqual(res.json(), { name: 'Foo' })
     t.ok(theSchema.$id, 'the $id is not removed')
-    t.deepEqual(fastify.getSchemas()[0], theSchema)
+    t.deepEqual(fastify.getSchema('helloSchema'), theSchema)
   })
 })
 
@@ -399,10 +400,10 @@ test('Encapsulation isolation for getSchemas', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.deepEqual(fastify.getSchemas(), [schemas.z])
-    t.deepEqual(pluginDeepOneSide.getSchemas(), [schemas.z, schemas.a])
-    t.deepEqual(pluginDeepOne.getSchemas(), [schemas.z, schemas.b])
-    t.deepEqual(pluginDeepTwo.getSchemas(), [schemas.z, schemas.b, schemas.c])
+    t.deepEqual(fastify.getSchemas(), { z: schemas.z })
+    t.deepEqual(pluginDeepOneSide.getSchemas(), { z: schemas.z, a: schemas.a })
+    t.deepEqual(pluginDeepOne.getSchemas(), { z: schemas.z, b: schemas.b })
+    t.deepEqual(pluginDeepTwo.getSchemas(), { z: schemas.z, b: schemas.b, c: schemas.c })
   })
 })
 

@@ -7,10 +7,14 @@ export interface FastifyRegister<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
-  <Options = FastifyPluginOptions>(plugin: FastifyPlugin<Options, RawServer>, opts?: (RegisterOptions & Options) | (() => RegisterOptions & Options)): void;
+  <Options = FastifyPluginOptions>(
+    plugin: FastifyPlugin<Options, RawServer>, 
+    opts?: FastifyRegisterOptions<Options>
+  ): void;
 }
 
-export interface RegisterOptions {
+export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() => RegisterOptions & Options)
+interface RegisterOptions {
   prefix?: string;
   logLevel?: LogLevels;
 }

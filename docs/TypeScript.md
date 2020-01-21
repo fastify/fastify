@@ -598,6 +598,16 @@ An interface of properties used in the instantiation of the Fastify server. Is u
 
 See the main [fastify][Fastify] method type definition section for examples on instatiating a Fastify server with TypeScript.
 
+#### fastify.FastifyInstance<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface], [Logger][LoggerGeneric]>
+
+[src](../types/instance.d.ts#L16)
+
+Interface that represents the Fastify server object. This is the returned server instance from the [`fastify()`][Fastify] method. This type is an interface so it can be extended via [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html) if your code makes use of the `decorate` method. 
+
+Through the use of generic cascading, all methods attached to the instance inherit the generic properties from instantiation. This means that by specifying the server, request, or reply types, all methods will know how to type those objects.
+
+Check out the main [Learn by Example](#learn-by-example) section for detailed guides, or the more simplified [fastify][Fastify] method examples for additional details on this interface.
+
 ---
 
 #### FastifyRequest
@@ -738,11 +748,53 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 ---
 
-#### fastify.FastifyInstance
+#### FastifyPlugin
 
-#### fastify.FastifyPlugin
+Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the [`fastify.register()`][FastifyRegister] method.
+
+#### fastify.FastifyPlugin<[Options][FastifyPluginOptions], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>
+[src](../types/plugin.d.ts#L10)
+
+Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
+
+When creating plugins for Fastify, it is recommended to use the `fastify-plugin` module. Additionally, there is a guide to creating plugins with TypeScript and Fastify available in the Learn by Example, [Plugins](#plugins) section.
 
 #### fastify.FastifyPluginOptions
+[src](../types/plugin.d.ts#L23)
+
+A loosely typed object used to constrain the `options` parameter of [`fastify.register()`][FastifyRegister] to an object. When creating a plugin, define its options as an extension of this interface (`interface MyPluginOptions extends FastifyPluginOptions`) so they can be passed to the register method.
+
+---
+
+#### FastifyRegister
+
+#### fastify.FastifyRegister<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+[src](../types/register.d.ts#L5)
+
+This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`.
+
+Below is an example of the options inference in action:
+
+```typescript
+const server = fastify()
+
+const plugin: FastifyPlugin<{
+  option1: string;
+  option2: boolean;
+}> = function (instance, opts, next) { }
+
+fastify().register(plugin, {}) // Error - options object is missing required properties
+fastify().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties
+```
+
+See the Learn By Example, [Plugins](#plugins) section for more detailed examples of creating TypeScript plugins in Fastify.
+
+#### fastify.FastifytRegisterOptions<Options>
+[src](../types/register.d.ts#L16)
+
+This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`. This type can also be specified as a function that returns the previously described intersection.
+
+---
 
 #### fastify.FastifyLoggerOptions
 

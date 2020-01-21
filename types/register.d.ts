@@ -2,6 +2,11 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyPlugin, FastifyPluginOptions } from './plugin'
 import { LogLevels } from './logger'
 
+/**
+ * FastifyRegister
+ * 
+ * Function for adding a plugin to fastify. The options are inferred from the passed in FastifyPlugin parameter.
+ */
 export interface FastifyRegister<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,

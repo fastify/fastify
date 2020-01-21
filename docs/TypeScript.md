@@ -893,3 +893,8 @@ This type is the intersection of the `Options` generic and a non-exported interf
 [FastifyInstance]: #fastifyfastifyinstance
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
+[FastifyPlugin]: ##fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
+[FastifyPluginOptions]: #fastifyfastifypluginoptions
+[FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
+[FastifyRegisterOptions]: #fastifyfastifytregisteroptions
+[LogLevels]: #

@@ -467,12 +467,14 @@ Enforced by: [`RawServer`][RawServerGeneric]
 
 ---
 
-#### fastify<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyServerOptions][FastifyServerOptions]): [FastifyInstance][FastifyInstance]
+#### Fastify
+
+##### fastify<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyServerOptions][FastifyServerOptions]): [FastifyInstance][FastifyInstance]
 [src](./../fastify.d.ts#L19)
 
 The main Fastify API method. By default creates an HTTP server. Supports an extensive generic type system to either specify the server as HTTPS/HTTP2, or allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
 
-##### Example 1: Standard HTTP server
+###### Example 1: Standard HTTP server
 
 No need to specify the `Server` generic as the type system defaults to HTTP.
 ```typescript
@@ -482,7 +484,7 @@ const server = fastify()
 ```
 Check out the Learn By Example - [Getting Started](#getting-started) example for a more detailed http server walkthrough.
 
-##### Example 2: HTTPS sever
+###### Example 2: HTTPS sever
 
 1. Create the following imports from `@types/node` and `fastify`
     ```typescript
@@ -515,7 +517,7 @@ Check out the Learn By Example - [Getting Started](#getting-started) example for
     ```
 4. Build and run! Test your server out by querying with: `curl -k https://localhost:8080`
 
-##### Example 3: HTTP2 server
+###### Example 3: HTTP2 server
 
 Interested in creating an HTTP2 server? It is as easy as replacing the `https` server generic with an `http2` one:
 
@@ -529,7 +531,7 @@ Interested in creating an HTTP2 server? It is as easy as replacing the `https` s
 
 For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) documentation page.
 
-##### Example 4: Extended HTTP server
+###### Example 4: Extended HTTP server
 
 Not only can you specify the server type, but also the request and reply types. Thus, allowing you to specify special properties, methods, and more! When specified at server instantiation, the custome type becomes available on all further instances of the custom type.
 ```typescript
@@ -548,7 +550,7 @@ server.get('/', async (request, reply) => {
 })
 ```
 
-##### Example 5: Specifying logger types
+###### Example 5: Specifying logger types
 
 Fastify uses the [Pino]() logging library under the hood. While the Fastify type system does provide the neecessary types for you to use the included logger, if you'd like the specificity of the Pino types install them from `@types/pino` and pass the `pino.Logger` type to the fourth generic parameter. This generic also supports custom logging utilities such as creating custom serializers. See the [Logging]() documentation for more info.
 
@@ -590,7 +592,7 @@ Type alias for `http.Server`
 
 ---
 
-#### fastify.FastifyServerOptions<[RawServer][RawServerGeneric], [Logger][LoggerGeneric]>
+##### fastify.FastifyServerOptions<[RawServer][RawServerGeneric], [Logger][LoggerGeneric]>
 
 [src](../fastify.d.ts#L29)
 
@@ -598,7 +600,7 @@ An interface of properties used in the instantiation of the Fastify server. Is u
 
 See the main [fastify][Fastify] method type definition section for examples on instatiating a Fastify server with TypeScript.
 
-#### fastify.FastifyInstance<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface], [Logger][LoggerGeneric]>
+##### fastify.FastifyInstance<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface], [Logger][LoggerGeneric]>
 
 [src](../types/instance.d.ts#L16)
 
@@ -610,7 +612,7 @@ Check out the main [Learn by Example](#learn-by-example) section for detailed gu
 
 ---
 
-#### FastifyRequest
+#### Request
 
 ##### fastify.FastifyRequest<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]> 
 [src](./../types/request.d.ts#L29)
@@ -691,7 +693,7 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 
 ---
 
-#### FastifyReply
+#### Reply
 
 ##### fastify.FastifyReply<[RawServer][RawServerGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
 [src](./../types/reply.d.ts#L32)
@@ -748,27 +750,27 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 ---
 
-#### FastifyPlugin
+#### Plugin
 
 Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the [`fastify.register()`][FastifyRegister] method.
 
-#### fastify.FastifyPlugin<[Options][FastifyPluginOptions], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>
+##### fastify.FastifyPlugin<[Options][FastifyPluginOptions], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>
 [src](../types/plugin.d.ts#L10)
 
 Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
 
 When creating plugins for Fastify, it is recommended to use the `fastify-plugin` module. Additionally, there is a guide to creating plugins with TypeScript and Fastify available in the Learn by Example, [Plugins](#plugins) section.
 
-#### fastify.FastifyPluginOptions
+##### fastify.FastifyPluginOptions
 [src](../types/plugin.d.ts#L23)
 
 A loosely typed object used to constrain the `options` parameter of [`fastify.register()`][FastifyRegister] to an object. When creating a plugin, define its options as an extension of this interface (`interface MyPluginOptions extends FastifyPluginOptions`) so they can be passed to the register method.
 
 ---
 
-#### FastifyRegister
+#### Register
 
-#### fastify.FastifyRegister<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+##### fastify.FastifyRegister<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
 This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`.
@@ -789,88 +791,63 @@ fastify().register(plugin, { option1: '', option2: true }) // OK - options objec
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples of creating TypeScript plugins in Fastify.
 
-#### fastify.FastifytRegisterOptions<Options>
+##### fastify.FastifytRegisterOptions<Options>
 [src](../types/register.d.ts#L16)
 
 This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`. This type can also be specified as a function that returns the previously described intersection.
 
 ---
 
-#### fastify.FastifyLoggerOptions
+#### Logger
 
-#### fastify.FastifyLogFn
+##### fastify.FastifyLoggerOptions
 
-#### fastify.LogLevels
+##### fastify.FastifyLogFn
 
-#### fastify.FastifyMiddleware
+##### fastify.LogLevels
 
-#### fastify.FastifyMiddlewareWithPayload
+---
 
-#### fastify.FastifyContext
+#### Context
 
-#### fastify.RouteHandlerMethod
+##### fastify.FastifyContext
 
-#### fastify.RouteOptions
+---
 
-#### fastify.RouteShorthandMethod
+#### Routing
 
-#### fastify.RouteShorthandOptions
+##### fastify.RouteHandlerMethod
 
-#### fastify.RouteShorthandOptionsWithHandler
+##### fastify.RouteOptions
 
-#### fastify.RegisterOptions
+##### fastify.RouteShorthandMethod
 
-#### fastify.FastifyBodyParser
+##### fastify.RouteShorthandOptions
 
-#### fastify.FastifyContentTypeParser
+##### fastify.RouteShorthandOptionsWithHandler
 
-#### fastify.AddContentTypeParser
+---
 
-#### fastify.hasContentTypeParser
+#### Parsers
 
-#### fastify.FastifyError
+##### fastify.FastifyBodyParser
 
-#### fastify.ValidationResult
+##### fastify.FastifyContentTypeParser
 
-#### fastify.FastifySchema
+##### fastify.AddContentTypeParser
 
-#### fastify.FastifySchemaCompiler
+##### fastify.hasContentTypeParser
 
-#### fastify.HTTPMethods
+---
 
-#### fastify.RawServerBase
+#### Errors
 
-#### fastify.RawRequestDefaultExpression
+##### fastify.FastifyError
 
-#### fastify.RawReplyDefaultExpression
+---
 
-#### fastify.RawServerDefault
-
-#### fastify.onCloseHookHandler
-
-#### fastify.onRouteHookHandler
-
-#### fastify.onRequestHookHandler
-
-#### fastify.onSendHookHandler
-
-#### fastify.onErrorHookHandler
-
-#### fastify.preHandlerHookHandler
-
-#### fastify.preParsingHookHandler
-
-#### fastify.preSerializationHookHandler
-
-#### fastify.preValidationHookHandler
-
-#### fastify.AddHook
-
-#### fastify.addHookHandler
-
-#### fastify.FastifyServerFactory
-
-#### fastify.FastifyServerFactoryHandler
+#### Hooks
+<!-- fill in after #2042 is merged -->
 
 <!-- Links -->
 

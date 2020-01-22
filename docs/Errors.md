@@ -106,11 +106,6 @@ The schema provided does not have `$id` property.
 
 A schema with the same `$id` already exists.
 
-<a name="FST_ERR_SCH_NOT_PRESENT"></a>
-#### FST_ERR_SCH_NOT_PRESENT
-
-No schema with the provided `$id` exists.
-
 // TODO remove
 <a name="FST_ERR_SCH_BUILD"></a>
 #### FST_ERR_SCH_BUILD

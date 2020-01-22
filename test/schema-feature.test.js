@@ -15,6 +15,23 @@ const echoBody = (req, reply) => { reply.send(req.body) }
   })
 })
 
+;['setValidatorCompiler', 'setSerializerCompiler'].forEach(f => {
+  test(`cannot call ${f} after binding`, t => {
+    t.plan(2)
+    const fastify = Fastify()
+    t.tearDown(fastify.close.bind(fastify))
+    fastify.listen(0, err => {
+      t.error(err)
+      try {
+        fastify[f](() => { })
+        t.fail()
+      } catch (e) {
+        t.pass()
+      }
+    })
+  })
+})
+
 test('The schemas should be added to an internal storage', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -50,6 +67,53 @@ test('The schema should be accessible by id via getSchema', t => {
   t.deepEqual(fastify.getSchema('abc'), schemas[1])
   t.deepEqual(fastify.getSchema('id'), schemas[0])
   t.deepEqual(fastify.getSchema('foo'), undefined)
+})
+
+test('get validatorCompiler after setValidatorCompiler', t => {
+  t.plan(2)
+  const myCompiler = () => { }
+  const fastify = Fastify()
+  fastify.setValidatorCompiler(myCompiler)
+  const sc = fastify.validatorCompiler
+  t.ok(Object.is(myCompiler, sc))
+  fastify.ready(err => t.error(err))
+})
+
+test('get serializerCompiler after setSerializerCompiler', t => {
+  t.plan(2)
+  const myCompiler = () => { }
+  const fastify = Fastify()
+  fastify.setSerializerCompiler(myCompiler)
+  const sc = fastify.serializerCompiler
+  t.ok(Object.is(myCompiler, sc))
+  fastify.ready(err => t.error(err))
+})
+
+test('get compilers is empty when settle on routes', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: { type: 'object', properties: { hello: { type: 'string' } } },
+      response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
+    },
+    validatorCompiler: (method, url, httpPart, schema) => {},
+    serializerCompiler: (method, url, httpPart, schema) => {}
+  }, function (req, reply) {
+    reply.send('ok')
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {},
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(fastify.validatorCompiler, null)
+    t.equal(fastify.serializerCompiler, null)
+  })
 })
 
 test('Should throw if the $id property is missing', t => {

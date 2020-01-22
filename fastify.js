@@ -218,12 +218,6 @@ function fastify (options) {
     initialConfig: getSecuredInitialConfig(options)
   }
 
-  Object.defineProperty(fastify, 'prefix', {
-    get: function () {
-      return this[kRoutePrefix]
-    }
-  })
-
   Object.defineProperty(fastify, 'pluginName', {
     get: function () {
       if (this[kPluginNameChain].length > 1) {
@@ -231,6 +225,18 @@ function fastify (options) {
       }
       return this[kPluginNameChain][0]
     }
+  })
+
+  ;[
+    { f: 'prefix', s: kRoutePrefix },
+    { f: 'validatorCompiler', s: kValidatorCompiler },
+    { f: 'serializerCompiler', s: kSerializerCompiler }
+  ].forEach(({ f, s }) => {
+    Object.defineProperty(fastify, f, {
+      get: function () {
+        return this[s]
+      }
+    })
   })
 
   // Install and configure Avvio

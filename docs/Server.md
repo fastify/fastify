@@ -409,6 +409,15 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="http2-session-timeout"></a>
+### `http2SessionTimeout`
+
+Set a default
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming http2 session. The session will be closed on the timeout. Default: `5000` ms.
+
+Note that this is needed to offer the graceful "close" experience when
+using http2. Node core defaults this to `0`.
+
 ## Instance
 
 ### Server Methods

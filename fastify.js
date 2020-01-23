@@ -99,6 +99,8 @@ function build (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
 
+  const initialConfig = getSecuredInitialConfig(options)
+
   // Default router
   const router = buildRouting({
     config: {
@@ -115,10 +117,11 @@ function build (options) {
 
   // HTTP server and its handler
   const httpHandler = router.routing
+
+  // we need to set this before calling createServer
+  options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
-    server.on('clientError', handleClientError)
-  }
+  server.on('clientError', handleClientError)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemas = new Schemas()
@@ -227,7 +230,7 @@ function build (options) {
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
     // Set fastify initial configuration options read-only object
-    initialConfig: getSecuredInitialConfig(options)
+    initialConfig
   }
 
   Object.defineProperty(fastify, 'schemaCompiler', {

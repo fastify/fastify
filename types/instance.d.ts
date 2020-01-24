@@ -87,9 +87,14 @@ export interface FastifyInstance<
   ): void;
 
   /**
-   * Set the schema compiler for all routes.
+   * Set the schema validator for all routes.
    */
-  setSchemaCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply>;
+  setValidatorCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply>;
+  
+  /**
+   * Set the schema serializer for all routes.
+   */
+  setSerializerCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
    * Add a content type parser

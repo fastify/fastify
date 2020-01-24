@@ -109,7 +109,7 @@
     "events.once": "^2.0.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.5.0",
-    "fluent-schema": "^0.9.0",
+    "fluent-schema": "^0.10.0",
     "form-data": "^3.0.0",
     "frameguard": "^3.0.0",
     "h2url": "^0.2.0",

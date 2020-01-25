@@ -7,7 +7,7 @@ const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
 const validation = require('../../lib/validation')
-const { Schemas } = require('../../lib/schemas')
+const { normalizeSchema } = require('../../lib/schemas')
 const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {
@@ -96,7 +96,7 @@ test('build schema - query schema', t => {
       }
     }
   }
-  opts.schema = new Schemas().normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
@@ -111,7 +111,7 @@ test('build schema - query schema abbreviated', t => {
       }
     }
   }
-  opts.schema = new Schemas().normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
@@ -143,7 +143,7 @@ test('build schema - querystring schema abbreviated', t => {
       }
     }
   }
-  opts.schema = new Schemas().normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
@@ -168,7 +168,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
         }
       }
     }
-    opts.schema = new Schemas().normalizeSchema(opts.schema)
+    opts.schema = normalizeSchema(opts.schema)
   } catch (err) {
     t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
     t.is(err.message, 'Schema with \'querystring\' already present!')

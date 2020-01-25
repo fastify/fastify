@@ -69,7 +69,7 @@ test('The schema should be accessible by id via getSchema', t => {
   t.deepEqual(fastify.getSchema('foo'), undefined)
 })
 
-test('get validatorCompiler after setValidatorCompiler', t => {
+test('Get validatorCompiler after setValidatorCompiler', t => {
   t.plan(2)
   const myCompiler = () => { }
   const fastify = Fastify()
@@ -79,7 +79,7 @@ test('get validatorCompiler after setValidatorCompiler', t => {
   fastify.ready(err => t.error(err))
 })
 
-test('get serializerCompiler after setSerializerCompiler', t => {
+test('Get serializerCompiler after setSerializerCompiler', t => {
   t.plan(2)
   const myCompiler = () => { }
   const fastify = Fastify()
@@ -89,7 +89,7 @@ test('get serializerCompiler after setSerializerCompiler', t => {
   fastify.ready(err => t.error(err))
 })
 
-test('get compilers is empty when settle on routes', t => {
+test('Get compilers is empty when settle on routes', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -238,6 +238,39 @@ test('Should not change the input schemas', t => {
     t.deepEqual(res.json(), { name: 'Foo' })
     t.ok(theSchema.$id, 'the $id is not removed')
     t.deepEqual(fastify.getSchema('helloSchema'), theSchema)
+  })
+})
+
+test('First level $ref', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      id: { type: 'number' }
+    }
+  })
+
+  fastify.get('/:id', {
+    handler: (req, reply) => {
+      reply.send({ id: req.params.id * 2, ignore: 'it' })
+    },
+    schema: {
+      params: { $ref: 'test#' },
+      response: {
+        200: { $ref: 'test#' }
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/123'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), { id: 246 })
   })
 })
 
@@ -425,7 +458,47 @@ test('Encapsulation isolation', t => {
     next()
   })
 
-  fastify.ready(t.error)
+  fastify.ready(err => t.error(err))
+})
+
+test('Add schema after register', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    instance.get('/:id', {
+      handler: echoParams,
+      schema: {
+        params: { $ref: 'test#' }
+      }
+    })
+
+    // add it to the parent instance
+    fastify.addSchema({
+      $id: 'test',
+      type: 'object',
+      properties: {
+        id: { type: 'number' }
+      }
+    })
+
+    try {
+      instance.addSchema({ $id: 'test' })
+    } catch (err) {
+      t.is(err.code, 'FST_ERR_SCH_ALREADY_PRESENT')
+      t.is(err.message, 'Schema with id \'test\' already declared!')
+    }
+    next()
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/4242'
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEqual(res.json(), { id: 4242 })
+  })
 })
 
 test('Encapsulation isolation for getSchemas', t => {
@@ -619,7 +692,7 @@ test('Get schema anyway should not add `properties` if anyOf is present', t => {
   fastify.ready(err => t.error(err))
 })
 
-test('shared schema should be ignored in string enum', t => {
+test('Shared schema should be ignored in string enum', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -644,7 +717,7 @@ test('shared schema should be ignored in string enum', t => {
   })
 })
 
-test('shared schema should NOT be ignored in != string enum', t => {
+test('Shared schema should NOT be ignored in != string enum', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -676,7 +749,7 @@ test('shared schema should NOT be ignored in != string enum', t => {
   })
 })
 
-test('case insensitive header validation', t => {
+test('Case insensitive header validation', t => {
   t.plan(2)
   const fastify = Fastify()
   fastify.get('/', {
@@ -705,7 +778,7 @@ test('case insensitive header validation', t => {
   })
 })
 
-test('not evaluate json-schema $schema keyword', t => {
+test('Not evaluate json-schema $schema keyword', t => {
   t.plan(2)
   const fastify = Fastify()
   fastify.post('/', {
@@ -733,7 +806,7 @@ test('not evaluate json-schema $schema keyword', t => {
   })
 })
 
-test('validation context in validation result', t => {
+test('Validation context in validation result', t => {
   t.plan(5)
   const fastify = Fastify()
   // custom error handler to expose validation context in response, so we can test it later
@@ -762,5 +835,120 @@ test('validation context in validation result', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
+  })
+})
+
+test('The schema build should not modify the input', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  const first = {
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: {
+        type: 'number'
+      }
+    }
+  }
+
+  fastify.addSchema(first)
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    allOf: [
+      {
+        type: 'object',
+        properties: {
+          second: {
+            type: 'number'
+          }
+        }
+      },
+      { $ref: 'first#' }
+    ]
+  })
+
+  fastify.get('/', {
+    schema: {
+      description: 'get',
+      body: { $ref: 'second#' },
+      response: {
+        200: { $ref: 'second#' }
+      }
+    },
+    handler: (request, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.patch('/', {
+    schema: {
+      description: 'patch',
+      body: { $ref: 'first#' },
+      response: {
+        200: { $ref: 'first#' }
+      }
+    },
+    handler: (request, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  t.ok(first.$id)
+  fastify.ready(err => {
+    t.error(err)
+    t.ok(first.$id)
+  })
+})
+
+test('Cross schema reference with encapsulation references', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.addSchema({ $id: 'http://foo/item', type: 'object', properties: { foo: { type: 'string' } } })
+
+  const refItem = { $ref: 'http://foo/item#' }
+
+  fastify.addSchema({
+    $id: 'itemList',
+    type: 'array',
+    items: refItem
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.addSchema({
+      $id: 'encapsulation',
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        item: refItem,
+        secondItem: refItem
+      }
+    })
+
+    const multipleRef = {
+      type: 'object',
+      properties: {
+        a: { $ref: 'itemList#' },
+        b: refItem,
+        c: refItem,
+        d: refItem
+      }
+    }
+
+    instance.get('/get', { schema: { response: { 200: multipleRef } } }, () => { })
+    instance.get('/double-get', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
+    instance.post('/post', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
+    instance.post('/double', { schema: { response: { 200: { $ref: 'encapsulation' } } } }, () => { })
+    next()
+  }, { prefix: '/foo' })
+
+  fastify.post('/post', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
+  fastify.get('/get', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
+
+  fastify.ready(err => {
+    t.error(err)
   })
 })

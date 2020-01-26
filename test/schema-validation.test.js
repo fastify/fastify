@@ -788,3 +788,61 @@ test('Use $ref to /definitions', t => {
     })
   })
 })
+
+test('Custom AJV settings - pt1', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema: {
+      body: { num: { type: 'integer' } }
+    },
+    handler: (req, reply) => {
+      t.equals(req.body.num, 12)
+      reply.send(req.body)
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      num: '12'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEqual(res.json(), { num: 12 })
+  })
+})
+
+test('Custom AJV settings - pt2', t => {
+  t.plan(2)
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        coerceTypes: false
+      }
+    }
+  })
+
+  fastify.post('/', {
+    schema: {
+      body: { num: { type: 'integer' } }
+    },
+    handler: (req, reply) => {
+      t.fail('the handler is not called because the "12" is not coerced to number')
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: {
+      num: '12'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 400)
+  })
+})

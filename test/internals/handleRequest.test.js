@@ -11,7 +11,7 @@ const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
-function schemaCompiler (method, url, httpPart, schema) {
+function schemaValidator (method, url, httpPart, schema) {
   const validateFuncion = ajv.compile(schema)
   const fn = function (body) {
     const isOk = validateFuncion(body)
@@ -94,7 +94,7 @@ test('handler function - invalid schema', t => {
     onError: [],
     attachValidation: false
   }
-  buildSchema(context, schemaCompiler)
+  buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' }
   }
@@ -122,7 +122,7 @@ test('handler function - reply', t => {
     onSend: [],
     onError: []
   }
-  buildSchema(context, schemaCompiler)
+  buildSchema(context, schemaValidator)
   internals.handler({}, new Reply(res, context, {}))
 })
 
@@ -146,7 +146,7 @@ test('handler function - preValidationCallback with finished response', t => {
     onSend: [],
     onError: []
   }
-  buildSchema(context, schemaCompiler)
+  buildSchema(context, schemaValidator)
   internals.handler({}, new Reply(res, context, {}))
 })
 

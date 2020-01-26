@@ -52,7 +52,7 @@ test('Use the same schema id in different places', t => {
       response: {
         200: {
           type: 'array',
-          items: { $ref: 'test#' }
+          items: { $ref: 'test' }
         }
       }
     }
@@ -251,3 +251,6 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     })
   })
 })
+
+// TODO fastify.setSerializerCompiler(myCompiler)
+// TODO setSerializerCompiler by route

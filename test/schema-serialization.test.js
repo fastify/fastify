@@ -252,5 +252,94 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
   })
 })
 
-// TODO fastify.setSerializerCompiler(myCompiler)
-// TODO setSerializerCompiler by route
+test('Custom setSerializerCompiler', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  const outSchema = {
+    $id: 'test',
+    type: 'object',
+    whatever: 'need to be parsed by the custom serializer'
+  }
+
+  fastify.setSerializerCompiler((method, url, httpPart, schema) => {
+    t.equals(method, 'GET')
+    t.equals(url, '/foo/:id')
+    t.equals(httpPart, '200')
+    t.deepEqual(schema, outSchema)
+    return data => JSON.stringify(data)
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.get('/:id', {
+      handler (req, reply) {
+        reply.send({ id: 1 })
+      },
+      schema: {
+        response: {
+          200: outSchema
+        }
+      }
+    })
+    t.ok(instance.serializerCompiler, 'the serializer is set by the parent')
+    next()
+  }, { prefix: '/foo' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/foo/123'
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.payload, JSON.stringify({ id: 1 }))
+  })
+})
+
+test('Custom serializer per route', async t => {
+  const fastify = Fastify()
+
+  const outSchema = {
+    $id: 'test',
+    type: 'object',
+    properties: {
+      mean: { type: 'string' }
+    }
+  }
+
+  fastify.get('/default', {
+    handler (req, reply) { reply.send({ mean: 'default' }) },
+    schema: { response: { 200: outSchema } }
+  })
+
+  let hit = 0
+  fastify.register((instance, opts, next) => {
+    instance.setSerializerCompiler((method, url, httpPart, schema) => {
+      hit++
+      return data => JSON.stringify({ mean: 'custom' })
+    })
+    instance.get('/custom', {
+      handler (req, reply) { reply.send({}) },
+      schema: { response: { 200: outSchema } }
+    })
+    instance.get('/route', {
+      handler (req, reply) { reply.send({}) },
+      serializerCompiler: (method, url, httpPart, schema) => {
+        hit++
+        return data => JSON.stringify({ mean: 'route' })
+      },
+      schema: { response: { 200: outSchema } }
+    })
+
+    next()
+  })
+
+  let res = await fastify.inject('/default')
+  t.equals(res.json().mean, 'default')
+
+  res = await fastify.inject('/custom')
+  t.equals(res.json().mean, 'custom')
+
+  res = await fastify.inject('/route')
+  t.equals(res.json().mean, 'route')
+
+  t.equals(hit, 2, 'the custom and route serializer has been called')
+})

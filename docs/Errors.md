@@ -106,11 +106,15 @@ The schema provided does not have `$id` property.
 
 A schema with the same `$id` already exists.
 
-// TODO remove
-<a name="FST_ERR_SCH_BUILD"></a>
-#### FST_ERR_SCH_BUILD
+<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
+#### FST_ERR_SCH_VALIDATION_BUILD
 
-The JSON schema provided to one route is not valid.
+The JSON schema provided for validation to one route is not valid.
+
+<a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
+#### FST_ERR_SCH_SERIALIZATION_BUILD
+
+The JSON schema provided for serialization to one route is not valid.
 
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED

@@ -129,7 +129,7 @@ function fastify (options) {
     [kLogLevel]: '',
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
-    [kSchemas]: schemas, // TODO
+    [kSchemas]: schemas,
     [kValidatorCompiler]: null,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,

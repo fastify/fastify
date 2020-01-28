@@ -227,16 +227,14 @@ function fastify (options) {
     }
   })
 
-  ;[
-    { f: 'prefix', s: kRoutePrefix },
-    { f: 'validatorCompiler', s: kValidatorCompiler },
-    { f: 'serializerCompiler', s: kSerializerCompiler }
-  ].forEach(({ f, s }) => {
-    Object.defineProperty(fastify, f, {
-      get: function () {
-        return this[s]
-      }
-    })
+  Object.defineProperty(fastify, 'prefix', {
+    get: function () { return this[kRoutePrefix] }
+  })
+  Object.defineProperty(fastify, 'validatorCompiler', {
+    get: function () { return this[kValidatorCompiler] }
+  })
+  Object.defineProperty(fastify, 'serializerCompiler', {
+    get: function () { return this[kSerializerCompiler] }
   })
 
   // Install and configure Avvio

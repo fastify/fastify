@@ -173,7 +173,7 @@ test('Should throw of the schema does not exists in input', t => {
 
   fastify.ready(err => {
     t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.is(err.message, "Failed building the validation schema for GET: /:id, due error can't resolve reference #notExist from id #")
+    t.is(err.message, "Failed building the validation schema for GET: /:id, due to error can't resolve reference #notExist from id #")
   })
 })
 
@@ -194,7 +194,7 @@ test('Should throw of the schema does not exists in output', t => {
 
   fastify.ready(err => {
     t.is(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.is(err.message, "Failed building the serialization schema for GET: /:id, due error Cannot read property 'type' of undefined") // error from fast-json-strinfigy
+    t.is(err.message, "Failed building the serialization schema for GET: /:id, due to error Cannot read property 'type' of undefined") // error from fast-json-strinfigy
   })
 })
 
@@ -440,7 +440,7 @@ test('Encapsulation should intervene', t => {
 
   fastify.ready(err => {
     t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.is(err.message, "Failed building the validation schema for GET: /:id, due error can't resolve reference encapsulation#/properties/id from id #")
+    t.is(err.message, "Failed building the validation schema for GET: /:id, due to error can't resolve reference encapsulation#/properties/id from id #")
   })
 })
 

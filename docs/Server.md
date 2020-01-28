@@ -617,7 +617,7 @@ Fake http injection (for testing purposes) [here](https://github.com/fastify/fas
 <a name="add-schema"></a>
 #### addSchema
 `fastify.addSchema(schemaObj)`, adds a JSON schema to the Fastify instance. This allows you to reuse it everywhere in your application just by using the standard `$ref` keyword.<br/>
-To learn more, checkout the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
+To learn more, read the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
 
 <a name="get-schemas"></a>
 #### getSchemas
@@ -641,11 +641,11 @@ fastify.setReplySerializer(function (payload, statusCode){
 
 <a name="set-validator-compiler"></a>
 #### setValidatorCompiler
-Set the schema validator compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator).
+Set the schema validator compiler for all routes. See [#schema-validator](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator).
 
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
-Set the schema serializer compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer).
+Set the schema serializer compiler for all routes. See [#schema-serializer](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer).
 
 <a name="validator-compiler"></a>
 #### validatorCompiler

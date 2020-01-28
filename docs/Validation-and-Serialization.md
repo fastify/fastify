@@ -17,7 +17,7 @@ The validation and the serialization tasks are processed by two different, and c
 - [Ajv](https://www.npmjs.com/package/ajv) for the validation of a request
 - [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for the serialization of a response's body
 
-These two separated processes share only the JSON shemas you will add to fastify's instance through `.addSchema(schema)`.
+These two separate entities share only the JSON shemas added to Fastify's instance through `.addSchema(schema)`.
 
 <a name="shared-schema"></a>
 #### Adding a shared schema
@@ -25,7 +25,7 @@ Thanks to the `addSchema` API, you can add multiple schemas to the Fastify insta
 As usual, this API is encapsulated.
 
 The shared schemas can be reused through the JSON Schema [**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8) keyword.
-Here an overview on _how_ references to it:
+Here an overview on _how_ references work:
 
 + `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the current schema
 + `myField: { $ref: '#/definitions/foo'}` will search for field `definitions.foo` inside the current schema
@@ -79,9 +79,9 @@ fastify.post('/', {
 <a name="get-shared-schema"></a>
 #### Retrieving the shared schemas
 
-If the validator and the serializer will be customized, the `.addSchema` will not be useful since the actors are no more
-under the Fastify controls.
-So, to access the schemas added to the Fastify's instance, you can simply use `.getSchemas()`:
+If the validator and the serializer are customized, the `.addSchema` method will not be useful since the actors are no longer
+controlled by Fastify.
+So, to access the schemas added to the Fastify instance, you can simply use `.getSchemas()`:
 
 ```js
 fastify.addSchema({
@@ -96,7 +96,7 @@ const mySchemas = fastify.getSchemas()
 const mySchema = fastify.getSchema('schemaId')
 ```
 
-As usual, also this function `getSchemas` is encapsulated and returns the shared schemas available in the selected scope:
+As usual, the function `getSchemas` is encapsulated and returns the shared schemas available in the selected scope:
 
 ```js
 fastify.addSchema({ $id: 'one', my: 'hello' })
@@ -322,8 +322,8 @@ In that case the function returned by `validatorCompiler` returns an object like
 
 <a name="serialization"></a>
 ### Serialization
-Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options.
-We encourage you to use an output schema, as it will increase your throughput by **100-400%** depending on your payload and will prevent accidental disclosure of sensitive information.
+Usually you will send your data to the clients as JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options.
+We encourage you to use an output schema, as it can drastically increase throughput and help prevent accidental disclosure of sensitive information.
 
 Example:
 ```js
@@ -366,7 +366,7 @@ fastify.post('/the/url', { schema }, handler)
 <a name="schema-serializer"></a>
 #### Schema Serializer
 
-The `schemaSerializer` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have define a `response` JSON schema.
+The `schemaSerializer` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have defined a `response` JSON schema.
 
 ```js
 fastify.setSerializerCompiler((method, url, httpPart, schema) => {

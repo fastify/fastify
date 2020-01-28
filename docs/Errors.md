@@ -109,12 +109,12 @@ A schema with the same `$id` already exists.
 <a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
 #### FST_ERR_SCH_VALIDATION_BUILD
 
-The JSON schema provided for validation to one route is not valid.
+The JSON schema provided for validation to a route is not valid.
 
 <a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
 #### FST_ERR_SCH_SERIALIZATION_BUILD
 
-The JSON schema provided for serialization to one route is not valid.
+The JSON schema provided for serialization of a route response is not valid.
 
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED

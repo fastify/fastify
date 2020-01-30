@@ -16,13 +16,53 @@ import { FastifyServerFactory } from './types/serverFactory'
  * @param opts Fastify server options
  * @returns Fastify server instance
  */
-export default function fastify<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger = FastifyLoggerOptions<RawServer>
->(opts?: FastifyServerOptions<RawServer, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+declare function fastify<
+  Server extends http2.Http2SecureServer,
+  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
+  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
+  Logger = FastifyLoggerOptions<Server>,
+>(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
+declare function fastify<
+  Server extends http2.Http2Server,
+  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
+  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
+  Logger = FastifyLoggerOptions<Server>,
+>(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
+declare function fastify<
+  Server extends https.Server,
+  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
+  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
+  Logger = FastifyLoggerOptions<Server>,
+>(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
+declare function fastify<
+  Server extends http.Server,
+  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
+  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
+  Logger = FastifyLoggerOptions<Server>,
+>(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
+export default fastify
 
+type FastifyHttp2SecureOptions<
+  Server extends http2.Http2SecureServer,
+  Logger
+> = FastifyServerOptions<Server, Logger> & {
+  http2: true,
+  https: http2.SecureServerOptions
+}
+
+type FastifyHttp2Options<
+  Server extends http2.Http2Server,
+  Logger
+> = FastifyServerOptions<Server, Logger> & {
+  http2: true
+}
+
+type FastifyHttpsOptions<
+  Server extends https.Server,
+  Logger
+> = FastifyServerOptions<Server, Logger> & {
+  https: https.ServerOptions
+}
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
@@ -30,12 +70,6 @@ export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   Logger = FastifyLoggerOptions<RawServer>
 > = {
-  http2?: RawServer extends http2.Http2Server ? true : false,
-  https?: RawServer extends https.Server 
-    ? https.ServerOptions
-    : RawServer extends http2.Http2SecureServer
-      ? http2.SecureServerOptions
-      : null,
   ignoreTrailingSlash?: boolean,
   bodyLimit?: number,
   pluginTimeout?: number,

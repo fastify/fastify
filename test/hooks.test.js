@@ -574,6 +574,39 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
+test('onRoute hook should able to change the route url', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (route) => {
+      t.strictEqual(route.url, '/föö')
+      route.url = encodeURI(route.url)
+    })
+
+    instance.get('/föö', (request, reply) => {
+      reply.send('here /föö')
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + encodeURI('/föö')
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'here /föö')
+    })
+  })
+})
+
 test('onRoute hook that throws should be caught ', t => {
   t.plan(1)
   const fastify = Fastify()

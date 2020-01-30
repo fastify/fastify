@@ -98,7 +98,7 @@ Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **
 
 *Follow the steps below to deploy to Google Cloud Run if you are already familiar with gcloud or just follow their [quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
 
-### Adjust Fastfiy server
+### Adjust Fastify server
 
 In order for Fastify to properly listen for requests within the container, be sure to set the correct port and address:
 

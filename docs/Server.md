@@ -621,7 +621,7 @@ To learn more, read the [Validation and Serialization](https://github.com/fastif
 
 <a name="get-schemas"></a>
 #### getSchemas
-`fastify.getSchemas()`, returns a JSON with all the schemas added with `.addSchema`. The keys of the JSON are the `$id`s of the JSON schema provided.
+`fastify.getSchemas()`, returns a hash of all schemas added via `.addSchema`. The keys of the hash are the `$id`s of the JSON Schema provided.
 
 <a name="get-schema"></a>
 #### getSchema

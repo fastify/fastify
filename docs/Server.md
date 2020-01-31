@@ -650,20 +650,20 @@ Set the schema serializer compiler for all routes. See [#schema-serializer](http
 
 <a name="validator-compiler"></a>
 #### validatorCompiler
-This property can be used to get the schema validator. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled in a function to validate a JSON.
-The input `schema` can access all the shared schema added with [`.addSchema`](#add-schema) function.
+This property can be used to get the schema validator. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
 <a name="serializer-compiler"></a>
 #### serializerCompiler
-This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled in a function to serialize a JSON.
-The input `schema` can access all the shared schema added with [`.addSchema`](#add-schema) function.
+This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
 `fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md#lifecycle).
 
-You can also register a [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hook for the 404 handler.
+You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
 ```js
 fastify.setNotFoundHandler({

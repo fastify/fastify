@@ -343,3 +343,81 @@ test('Custom serializer per route', async t => {
 
   t.equals(hit, 2, 'the custom and route serializer has been called')
 })
+
+test('Reply serializer win over serializer ', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  fastify.setReplySerializer(function (payload, statusCode) {
+    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    return 'instance serializator'
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            work: { type: 'string' }
+          }
+        }
+      }
+    },
+    serializerCompiler: (method, url, httpPart, schema) => {
+      t.ok(method, 'the custom compiler has been created')
+      return () => {
+        t.fail('the serializer must not be called when there is a reply serializer')
+        return 'fail'
+      }
+    }
+  }, function (req, reply) {
+    reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.deepEqual(res.payload, 'instance serializator')
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
+test('Reply serializer win over serializer ', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+  fastify.setReplySerializer(function (payload, statusCode) {
+    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    return 'instance serializator'
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            work: { type: 'string' }
+          }
+        }
+      }
+    },
+    serializerCompiler: (method, url, httpPart, schema) => {
+      t.ok(method, 'the custom compiler has been created')
+      return () => {
+        t.fail('the serializer must not be called when there is a reply serializer')
+        return 'fail'
+      }
+    }
+  }, function (req, reply) {
+    reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.deepEqual(res.payload, 'instance serializator')
+    t.strictEqual(res.statusCode, 200)
+  })
+})

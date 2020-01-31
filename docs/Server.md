@@ -646,6 +646,7 @@ Set the schema validator compiler for all routes. See [#schema-validator](https:
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
 Set the schema serializer compiler for all routes. See [#schema-serializer](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer).
+**Note:** [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 <a name="validator-compiler"></a>
 #### validatorCompiler

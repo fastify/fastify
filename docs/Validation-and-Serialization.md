@@ -120,7 +120,7 @@ fastify.register((instance, opts, done) => {
 
 
 ### Validation
-The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator.
+The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON Schema validator.
 Validating the input is very easy: just add the fields that you need inside the route schema, and you are done!
 
 The supported validations are:
@@ -366,7 +366,7 @@ fastify.post('/the/url', { schema }, handler)
 <a name="schema-serializer"></a>
 #### Schema Serializer
 
-The `schemaSerializer` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have defined a `response` JSON schema.
+The `schemaSerializer` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have defined a `response` JSON Schema.
 
 ```js
 fastify.setSerializerCompiler((method, url, httpPart, schema) => {
@@ -548,7 +548,7 @@ const refToSharedSchemaDefinitions = {
 <a name="resources"></a>
 ### Resources
 - [JSON Schema](http://json-schema.org/)
-- [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
+- [Understanding JSON Schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
 - [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)

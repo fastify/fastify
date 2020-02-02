@@ -5,7 +5,7 @@ test('Should accept a custom genReqId function', t => {
   t.plan(4)
 
   const fastify = Fastify({
-    genReqId: function () {
+    genReqId: function (req) {
       return 'a'
     }
   })

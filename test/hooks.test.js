@@ -2727,6 +2727,35 @@ test('onRegister hook should be called / 4', t => {
   })
 })
 
+test('reply.send should throw if undefined error is thrown', t => {
+  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
+
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, reply, next) {
+    return Promise.reject()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'FST_ERR_SEND_UNDEFINED_ERR: Undefined error has occured',
+      statusCode: 500
+    })
+  })
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

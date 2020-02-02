@@ -448,3 +448,28 @@ test('Should handle root $patch keywords in header', t => {
     })
   })
 })
+
+test('Add schema order should not break the startup', t => {
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { random: 'options' } }, () => {})
+
+  fastify.register(async f => f.addSchema({
+    $id: 'https://example.com/bson/objectId',
+    type: 'string',
+    pattern: '\\b[0-9A-Fa-f]{24}\\b'
+  }))
+
+  fastify.get('/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { $ref: 'https://example.com/bson/objectId#' }
+        }
+      }
+    }
+  }, () => {})
+
+  fastify.ready(err => { t.error(err) })
+})

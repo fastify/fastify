@@ -24,10 +24,10 @@ const customLogger: CustomLogger = {
 }
 
 const serverWithCustomLogger = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-CustomLogger
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  CustomLogger
 >({ logger: customLogger })
 
 expectType<CustomLogger>(serverWithCustomLogger.log)

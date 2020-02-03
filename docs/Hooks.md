@@ -232,6 +232,26 @@ fastify.addHook('onRequest', (request, reply, done) => {
 })
 ```
 
+If you are sending a response without `await` on it, make sure to always
+`return reply`:
+
+```js
+fastify.addHook('preHandler', async (request, reply) => {
+  setImmediate(() => { reply.send('hello') })
+
+  // This is needed to signal the handler to wait for a response
+  // to be sent outside of the promise chain
+  return reply
+})
+
+fastify.addHook('preHandler', async (request, reply) => {
+  // the fastify-static plugin will send a file asynchronously,
+  // so we should return reply
+  reply.sendFile('myfile')
+  return reply
+})
+```
+
 ## Application Hooks
 
 You can hook into the application-lifecycle as well. It's important to note that these hooks aren't fully encapsulated. The `this` inside the hooks are encapsulated but the handlers can respond to an event outside the encapsulation boundaries.

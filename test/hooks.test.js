@@ -2727,6 +2727,27 @@ test('onRegister hook should be called / 4', t => {
   })
 })
 
+test('early termination, onRequest', t => {
+  t.plan(3)
+
+  const app = Fastify()
+
+  app.addHook('onRequest', (req, reply) => {
+    setImmediate(() => reply.send('hello world'))
+    return reply
+  })
+
+  app.get('/', (req, reply) => {
+    t.fail('should not happen')
+  })
+
+  app.inject('/', function (err, res) {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.is(res.body.toString(), 'hello world')
+  })
+})
+
 if (semver.gt(process.versions.node, '8.0.0')) {
   require('./hooks-async')(t)
 } else {

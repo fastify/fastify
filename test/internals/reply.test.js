@@ -15,7 +15,7 @@ const {
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(14)
+  t.plan(13)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -31,7 +31,6 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.getResponseTime, 'function')
   t.is(typeof reply[kReplyHeaders], 'object')
   t.deepEqual(reply.raw, response)
-  t.deepEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
 })

@@ -15,7 +15,7 @@ Fastify tries to catch as many uncaught errors it can without hindering performa
 1. synchronous routes, e.g. `app.get('/', () => { throw new Error('kaboom')`
 2. `async` routes, e.g. `app.get('/', async () => { throw new Error('kaboom')`
 
-In those two cases, the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [setErrorHandler](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
+In those two cases, the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
 
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes

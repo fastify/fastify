@@ -65,7 +65,7 @@ const cors = require('cors')
     querystringParser: (str: string) => ({ str: str, strArray: [str] }),
     modifyCoreObjects: true,
     return503OnClosing: true,
-    genReqId: () => {
+    genReqId: (req) => {
       if (Math.random() > 0.5) {
         return Math.random().toString()
       }

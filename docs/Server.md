@@ -236,7 +236,7 @@ Defines the label used for the request identifier when logging the request.
 
 Function for generating the request id. It will receive the incoming request as a parameter.
 
-+ Default: `value of 'request-id' if provided or monotonically increasing integers`
++ Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
 Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
 
@@ -247,7 +247,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will _not_ be called if the 'request-id' header is available.**
+**Note: genReqId will _not_ be called if the header set in <code>[requestIdHeader](#requestidheader)</code> is available (defaults to 'request-id').**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`

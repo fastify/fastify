@@ -211,7 +211,7 @@ declare namespace fastify {
     },
     modifyCoreObjects?: boolean,
     return503OnClosing?: boolean,
-    genReqId?: () => number | string,
+    genReqId?: (req: FastifyRequest) => number | string,
     requestIdHeader?: string,
     requestIdLogLabel?: string,
     serverFactory?: ServerFactoryFunction,

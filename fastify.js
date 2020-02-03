@@ -290,10 +290,6 @@ function build (options) {
     })
   })
 
-  fastify.preReady = function (evt) {
-    avvio.once('preReady', evt)
-  }
-
   // Set the default 404 handler
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)

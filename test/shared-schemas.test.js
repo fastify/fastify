@@ -501,6 +501,48 @@ test('Nested id calls', t => {
   })
 })
 
+test('Use the same schema id in diferent places', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'test',
+    type: 'object',
+    properties: {
+      id: { type: 'number' }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/:id',
+    schema: {
+      response: {
+        200: {
+          type: 'array',
+          items: 'test#'
+        }
+      }
+    },
+    handler: () => {}
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/:id',
+    schema: {
+      body: 'test#',
+      response: {
+        200: 'test#'
+      }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
 
 test('Use shared schema and $ref with $id ($ref to $id)', t => {
   t.plan(2)
@@ -692,9 +734,122 @@ test('The schema resolver should clean the $id key before passing it to the comp
   })
 })
 
+test('Get schema anyway should not add `properties` if allOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
 
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
 
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    allOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
 
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if oneOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    oneOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
+
+test('Get schema anyway should not add `properties` if anyOf is present', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'first',
+    type: 'object',
+    properties: {
+      first: { type: 'number' }
+    }
+  })
+
+  fastify.addSchema({
+    $id: 'second',
+    type: 'object',
+    anyOf: [
+      {
+        type: 'object',
+        properties: {
+          second: { type: 'number' }
+        }
+      },
+      'first#'
+    ]
+  })
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      querystring: 'second#',
+      response: { 200: 'second#' }
+    },
+    handler: () => {}
+  })
+
+  fastify.ready(t.error)
+})
 
 test('Shared schema should be pass to serializer and validator ($ref to shared schema /definitions)', t => {
   t.plan(2)
@@ -1079,3 +1234,67 @@ test('Cross shared schema reference with encapsulation references', t => {
   fastify.ready(t.error)
 })
 
+test('shared schema should be ignored in string enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/:lang',
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          lang: {
+            type: 'string',
+            enum: ['Javascript', 'C++', 'C#']
+          }
+        }
+      }
+    },
+    handler: (req, reply) => {
+      reply.send(req.params.lang)
+    }
+  })
+
+  fastify.inject('/C%23', (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, 'C#')
+  })
+})
+
+test('shared schema should NOT be ignored in != string enum', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.addSchema({
+    $id: 'C',
+    type: 'object',
+    properties: {
+      lang: {
+        type: 'string',
+        enum: ['Javascript', 'C++', 'C#']
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/:lang',
+    schema: {
+      body: 'C#'
+    },
+    handler: (req, reply) => {
+      reply.send(req.body.lang)
+    }
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    payload: { lang: 'C#' }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, 'C#')
+  })
+})

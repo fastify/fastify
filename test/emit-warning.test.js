@@ -3,6 +3,8 @@
 const { test } = require('tap')
 const Fastify = require('..')
 
+process.removeAllListeners('warning')
+
 test('Should emit a warning when accessing request.req instead of request.raw', t => {
   t.plan(4)
 

@@ -25,7 +25,7 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(15)
+  t.plan(14)
   const req = {
     method: 'GET',
     url: '/',
@@ -36,7 +36,6 @@ test('Request object', t => {
   t.strictEqual(request.id, 'id')
   t.strictEqual(request.params, 'params')
   t.deepEqual(request.raw, req)
-  t.deepEqual(request.req, req)
   t.strictEqual(request.query, 'query')
   t.strictEqual(request.headers, 'headers')
   t.strictEqual(request.log, 'log')

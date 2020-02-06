@@ -216,10 +216,10 @@ for example when implementing an authentication hook.
 Replying from an hook implies that the hook chain is __stopped__ and
 the rest of hooks and the handlers are not executed. If the hook is
 using the callback approach, i.e. it is not an `async` function or it
-return a `Promise`, it is as simple as calling `reply.send()` and avoid
+returns a `Promise`, it is as simple as calling `reply.send()` and avoiding
 calling the callback. If the hook is `async`, `reply.send()` __must__ be
-called _before_ the function returns/the promise resolves, otherwise the
-request will proceed; in case `reply.send()` is called outside of the
+called _before_ the function returns or the promise resolves, otherwise the
+request will proceed. When `reply.send()` is called outside of the
 promise chain, it is important to `return reply` otherwise the request .
 
 It is important to __not mix callbacks and `async`/`Promise`__, otherwise

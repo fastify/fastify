@@ -548,7 +548,7 @@ function asyncHookTest (t) {
     t.end()
   })
 
-  t.test('early termination, onRequest', async t => {
+  t.test('early termination, onRequest async', async t => {
     t.plan(2)
 
     const app = Fastify()

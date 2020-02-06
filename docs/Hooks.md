@@ -220,7 +220,8 @@ returns a `Promise`, it is as simple as calling `reply.send()` and avoiding
 calling the callback. If the hook is `async`, `reply.send()` __must__ be
 called _before_ the function returns or the promise resolves, otherwise the
 request will proceed. When `reply.send()` is called outside of the
-promise chain, it is important to `return reply` otherwise the request .
+promise chain, it is important to `return reply` otherwise the request
+will be executed twice.
 
 It is important to __not mix callbacks and `async`/`Promise`__, otherwise
 the hook chain will be executed twice.

@@ -547,6 +547,25 @@ function asyncHookTest (t) {
 
     t.end()
   })
+
+  t.test('early termination, onRequest async', async t => {
+    t.plan(2)
+
+    const app = Fastify()
+
+    app.addHook('onRequest', async (req, reply) => {
+      setImmediate(() => reply.send('hello world'))
+      return reply
+    })
+
+    app.get('/', (req, reply) => {
+      t.fail('should not happen')
+    })
+
+    const res = await app.inject('/')
+    t.is(res.statusCode, 200)
+    t.is(res.body.toString(), 'hello world')
+  })
 }
 
 module.exports = asyncHookTest

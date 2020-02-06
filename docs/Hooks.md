@@ -210,7 +210,23 @@ fastify.addHook('preHandler', (request, reply, done) => {
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
 ### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler, for example when implementing an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, use `res.end`.
+
+If needed, you can respond to a request before you reach the route handler,
+for example when implementing an authentication hook.
+Replying from an hook implies that the hook chain is __stopped__ and
+the rest of hooks and the handlers are not executed. If the hook is
+using the callback approach, i.e. it is not an `async` function or it
+returns a `Promise`, it is as simple as calling `reply.send()` and avoiding
+calling the callback. If the hook is `async`, `reply.send()` __must__ be
+called _before_ the function returns or the promise resolves, otherwise the
+request will proceed. When `reply.send()` is called outside of the
+promise chain, it is important to `return reply` otherwise the request
+will be executed twice.
+
+It is important to __not mix callbacks and `async`/`Promise`__, otherwise
+the hook chain will be executed twice.
+
+If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, use `res.end`.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
@@ -219,7 +235,9 @@ fastify.addHook('onRequest', (request, reply, done) => {
 
 // Works with async functions too
 fastify.addHook('preHandler', async (request, reply) => {
+  await something()
   reply.send({ hello: 'world' })
+  return reply // optional in this case, but it is a good practice
 })
 ```
 
@@ -229,6 +247,26 @@ If you want to respond with a stream, you should avoid using an `async` function
 fastify.addHook('onRequest', (request, reply, done) => {
   const stream = fs.createReadStream('some-file', 'utf8')
   reply.send(stream)
+})
+```
+
+If you are sending a response without `await` on it, make sure to always
+`return reply`:
+
+```js
+fastify.addHook('preHandler', async (request, reply) => {
+  setImmediate(() => { reply.send('hello') })
+
+  // This is needed to signal the handler to wait for a response
+  // to be sent outside of the promise chain
+  return reply
+})
+
+fastify.addHook('preHandler', async (request, reply) => {
+  // the fastify-static plugin will send a file asynchronously,
+  // so we should return reply
+  reply.sendFile('myfile')
+  return reply
 })
 ```
 

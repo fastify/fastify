@@ -69,6 +69,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-error-page`](https://github.com/hemerajs/fastify-error-page) Fastify plugin to print errors in structured HTML to the browser.
 - [`fastify-errors-properties`](https://github.com/ShogunPanda/fastify-errors-properties) A error handling plugin for Fastify that enables additional properties in errors.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of your decorators across all the encapsulated contexts
+- [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest authentication plugin for Fastify, with built-in support for Single sign-on (and great documentation)
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon) Fastify plugin to serve default favicon.
 - [`fastify-feature-flags`](https://gitlab.com/m03geek/fastify-feature-flags) Fastify feature flags plugin with multiple providers support (e.g. env, [config](http://lorenwest.github.io/node-config/), [unleash](https://unleash.github.io/)).
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload) Fastify plugin for uploading files.

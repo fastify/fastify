@@ -31,6 +31,15 @@ This option also applies when the
 
 + Default: `null`
 
+<a name="factory-connection-timeout"></a>
+### `connectionTimeout`
+
+Defines the server timeout in milliseconds. See documentation for
+[`server.timeout` property](https://nodejs.org/dist/latest-v8.x/docs/api/http.html#http_server_timeout)
+to understand the effect of this option.
+
++ Default: `60000` (60 seconds)
+
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`
 
@@ -727,6 +736,7 @@ fastify.ready(() => {
 options passed down by the user to the fastify instance.
 
 Currently the properties that can be exposed are:
+- connectionTimeout
 - bodyLimit
 - caseSensitive
 - http2

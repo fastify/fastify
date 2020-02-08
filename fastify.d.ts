@@ -71,6 +71,7 @@ export type FastifyServerOptions<
   Logger = FastifyLoggerOptions<RawServer>
 > = {
   ignoreTrailingSlash?: boolean,
+  connectionTimeout?: number,
   bodyLimit?: number,
   pluginTimeout?: number,
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',

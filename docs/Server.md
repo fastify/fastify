@@ -36,7 +36,8 @@ This option also applies when the
 
 Defines the server timeout in milliseconds. See documentation for
 [`server.timeout` property](https://nodejs.org/dist/latest-v8.x/docs/api/http.html#http_server_timeout)
-to understand the effect of this option.
+to understand the effect of this option. When `serverFactory` option is
+specified, this option is ignored.
 
 + Default: `60000` (60 seconds)
 

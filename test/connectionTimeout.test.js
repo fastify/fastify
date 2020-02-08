@@ -6,7 +6,7 @@ const t = require('tap')
 const test = t.test
 
 test('connectionTimeout', t => {
-  t.plan(4)
+  t.plan(6)
 
   try {
     Fastify({ connectionTimeout: 1.3 })
@@ -22,20 +22,22 @@ test('connectionTimeout', t => {
     t.ok(err)
   }
 
+  const httpServer = Fastify({ connectionTimeout: 1 }).server
+  t.is(httpServer.timeout, 1)
+
+  const httpsServer = Fastify({ connectionTimeout: 2, https: {} }).server
+  t.is(httpsServer.timeout, 2)
+
+  const http2Server = Fastify({ connectionTimeout: 3, http2: true }).server
+  t.is(http2Server.timeout, 3)
+
   const serverFactory = (handler, _) => {
     const server = http.createServer((req, res) => {
       handler(req, res)
     })
-    server.setTimeout = () => {
-      t.ok('called')
-    }
+    server.setTimeout(5)
     return server
   }
-
-  const fastify = Fastify({ connectionTimeout: 50, serverFactory })
-
-  fastify.listen(0, function (err) {
-    t.error(err)
-    fastify.server.unref()
-  })
+  const customServer = Fastify({ connectionTimeout: 4, serverFactory }).server
+  t.is(customServer.timeout, 5)
 })

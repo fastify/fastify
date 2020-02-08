@@ -56,7 +56,6 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory()
@@ -83,7 +82,7 @@ function fastify (options) {
   const { logger, hasLogger } = createLogger(options)
 
   // Update the options with the fixed values
-  options.connectionTimeout = connectionTimeout
+  options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader

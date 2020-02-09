@@ -39,7 +39,7 @@ Defines the server timeout in milliseconds. See documentation for
 to understand the effect of this option. When `serverFactory` option is
 specified, this option is ignored.
 
-+ Default: `60000` (60 seconds)
++ Default: `0` (no timeout)
 
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`

@@ -13,7 +13,7 @@ const ajv = new Ajv({
 })
 
 const defaultInitOptions = {
-  connectionTimeout: 60000, // 60 sec
+  connectionTimeout: 0, // 0 sec
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,

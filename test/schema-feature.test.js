@@ -952,3 +952,64 @@ test('Cross schema reference with encapsulation references', t => {
     t.error(err)
   })
 })
+
+test('Check how many AJV instances are built', t => {
+  t.plan(5)
+  const fastify = Fastify()
+  addRandomRoute(fastify) // this trigger the schema validation creation
+  t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+
+  fastify.register((instance, opts, next) => {
+    t.ok(instance.validatorCompiler, 'validator already in place')
+    next()
+  })
+  fastify.register((instance, opts, next) => {
+    t.ok(instance.validatorCompiler, 'validator already in place')
+    addRandomRoute(instance)
+    next()
+    instance.register((instance, opts, next) => {
+      t.ok(instance.validatorCompiler, 'validator already in place')
+      addRandomRoute(instance)
+      next()
+    })
+  })
+
+  fastify.ready(err => { t.error(err) })
+})
+
+test('Check how many AJV instances are built #2', t => {
+  t.plan(7)
+  const fastify = Fastify()
+  t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+
+  fastify.register((instance, opts, next) => {
+    addRandomRoute(instance)
+    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    instance.after(() => {
+      t.ok(instance.validatorCompiler, 'validator created')
+    })
+    next()
+  })
+  fastify.register((instance, opts, next) => {
+    addRandomRoute(instance)
+    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    instance.after(() => {
+      t.ok(instance.validatorCompiler, 'validator created')
+    })
+
+    instance.register((instance, opts, next) => {
+      t.ok(instance.validatorCompiler, 'validator already in place')
+      next()
+    })
+    next()
+  })
+
+  fastify.ready(err => { t.error(err) })
+})
+
+function addRandomRoute (server) {
+  server.get(`/${Math.random()}`,
+    { schema: { body: { type: 'object' } } },
+    (req, reply) => reply.send()
+  )
+}

@@ -823,7 +823,15 @@ Intersection type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
 
 #### Context
 
+The context type definition is similar to the other highly dynamic pieces of the type system. Route context is available in the route handler method.
+
 ##### fastify.FastifyContext
+
+[src](../types/context.d.ts#L6)
+
+An interface with a single required property `config` that is set by default to `unknown`. Can be specified either using a generic or an overload.
+
+This type definition is potentially incomplete. If you are using it and can provide more details on how to improve the definition, we strongly encourage you to open an issue in the main [fastify/fastify](https://github.com/fastify/fastify) repository. Thank you in advanced!
 
 ---
 

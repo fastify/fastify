@@ -799,11 +799,25 @@ This type is the intersection of the `Options` generic and a non-exported interf
 
 #### Logger
 
-##### fastify.FastifyLoggerOptions
+Check out the [Specifying Logger Types](#example-5-specifying-logger-types) example for more details on specifying a custom logger.
+
+##### fastify.FastifyLoggerOptions<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric]>
+
+[src](../types/logger.d.ts#L17)
+
+An interface definition for the internal Fastify logger. It is emulative of the [Pino.js](http://getpino.io/#/) logger. When enabled through server options, use it following the general [logger](./Logging.md) documentation.
 
 ##### fastify.FastifyLogFn
 
+[src](../types/logger.d.ts#L7)
+
+An overload function interface that implements the two ways Fastify calls log methods. This interface is passed to all associated log level properties on the FastifyLoggerOptions object.
+
 ##### fastify.LogLevels
+
+[src](../types/logger.d.ts#L12)
+
+Intersection type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
 
 ---
 

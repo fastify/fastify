@@ -83,6 +83,7 @@ function fastify (options) {
 
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
+  options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader

@@ -23,13 +23,13 @@ test('connectionTimeout', t => {
   }
 
   const httpServer = Fastify({ connectionTimeout: 1 }).server
-  t.is(httpServer.timeout, 1)
+  t.equal(httpServer.timeout, 1)
 
   const httpsServer = Fastify({ connectionTimeout: 2, https: {} }).server
-  t.is(httpsServer.timeout, 2)
+  t.equal(httpsServer.timeout, 2)
 
   const http2Server = Fastify({ connectionTimeout: 3, http2: true }).server
-  t.is(http2Server.timeout, 3)
+  t.equal(http2Server.timeout, 3)
 
   const serverFactory = (handler, _) => {
     const server = http.createServer((req, res) => {
@@ -39,5 +39,5 @@ test('connectionTimeout', t => {
     return server
   }
   const customServer = Fastify({ connectionTimeout: 4, serverFactory }).server
-  t.is(customServer.timeout, 5)
+  t.equal(customServer.timeout, 5)
 })

@@ -472,7 +472,7 @@ Enforced by: [`RawServer`][RawServerGeneric]
 ##### fastify<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [Logger][LoggerGeneric]>(opts?: [FastifyServerOptions][FastifyServerOptions]): [FastifyInstance][FastifyInstance]
 [src](./../fastify.d.ts#L19)
 
-The main Fastify API method. By default creates an HTTP server. Supports an extensive generic type system to either specify the server as HTTPS/HTTP2, or allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
+The main Fastify API method. By default creates an HTTP server. Utilizing discriminant unions and overload methods, the type system will automatically infer which type of server (http, https, or http2) is being created purely based on the options based to the method (see the examples below for more information). It also supports an extensive generic type system to allow the user to extend the underlying Node.js Server, Request, and Reply objects. Additionally, the `Logger` generic exists for custom log types. See the examples and generic breakdown below for more information.
 
 ###### Example 1: Standard HTTP server
 
@@ -489,14 +489,13 @@ Check out the Learn By Example - [Getting Started](#getting-started) example for
 1. Create the following imports from `@types/node` and `fastify`
     ```typescript
     import fs from 'fs'
-    import https from 'https'
     import path from 'path'
     import fastify from 'fastify'
     ```
 2. Follow the steps in this official [Node.js https server guide](https://nodejs.org/en/knowledge/HTTP/servers/how-to-create-a-HTTPS-server/) to create the `key.pem` and `cert.pem` files
 3. Instantiate a Fastify https server and add a route:
     ```typescript
-    const server = fastify<https.Server>({
+    const server = fastify({
       https: {
         key: fs.readFileSync(path.join(__dirname, 'key.pem')),
         cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
@@ -519,14 +518,14 @@ Check out the Learn By Example - [Getting Started](#getting-started) example for
 
 ###### Example 3: HTTP2 server
 
-Interested in creating an HTTP2 server? It is as easy as replacing the `https` server generic with an `http2` one:
+There are two types of HTTP2 server types, insecure and secure. Both require specifying the `http2` property as `true` in the `options` object. The `https` property is used for creating a secure http2 server; omitting the `https` property will create an insecure http2 server.
 
-```diff
-- import https from 'https'
-+ import http2 from 'http2'
-
-- const server = fastify<https.Server>({ 
-+ const server = fastify<http2.Http2SecureServer>({
+```typescript
+const insecureServer = fastify({ http2: true })
+const secureServer = fastify({
+  http2: true,
+  https: {} // use the `key.pem` and `cert.pem` files from the https section
+})
 ```
 
 For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) documentation page.
@@ -552,7 +551,7 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses the [Pino]() logging library under the hood. While the Fastify type system does provide the neecessary types for you to use the included logger, if you'd like the specificity of the Pino types install them from `@types/pino` and pass the `pino.Logger` type to the fourth generic parameter. This generic also supports custom logging utilities such as creating custom serializers. See the [Logging]() documentation for more info.
+Fastify uses the [Pino](http://getpino.io/#/) logging library under the hood. While the Fastify type system does provide the neecessary types for you to use the included logger, if you'd like the specificity of the Pino types install them from `@types/pino` and pass the `pino.Logger` type to the fourth generic parameter. This generic also supports custom logging utilities such as creating custom serializers. See the [Logging]() documentation for more info.
 
 ```typescript
 import fastify from 'fastify'
@@ -596,7 +595,7 @@ Type alias for `http.Server`
 
 [src](../fastify.d.ts#L29)
 
-An interface of properties used in the instantiation of the Fastify server. Is used in the main [`fastify()`][Fastify] method. The `RawServer` and `Logger` generic parameters are passed down through that method. Certain properties are dependant on the generics such as the `http2` and `https` properties. If these properties are enabled, but the incorrect server type is passed to the `fastify()` method `RawServer` generic parameter, then an error will be thrown.
+An interface of properties used in the instantiation of the Fastify server. Is used in the main [`fastify()`][Fastify] method. The `RawServer` and `Logger` generic parameters are passed down through that method.
 
 See the main [fastify][Fastify] method type definition section for examples on instatiating a Fastify server with TypeScript.
 

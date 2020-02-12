@@ -693,7 +693,7 @@ declare namespace fastify {
     /**
      * Set a function that will be called whenever an error happens
      */
-    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setErrorHandler(handler: (error: any, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set a function that will be called whenever an error happens

@@ -519,6 +519,30 @@ server.setErrorHandler((err, request, reply) => {
   }
 })
 
+// Libraries may define their own error types
+class AuthenticationError extends Error {
+  public constructor (public data: string) {
+    super()
+  }
+}
+
+class DatabaseError extends Error {
+  public constructor (public query: string) {
+    super()
+  }
+}
+
+// Users can deal with those errors via error handlers
+server.setErrorHandler<AuthenticationError | DatabaseError>((err, request, reply) => {
+  if (err instanceof AuthenticationError) {
+    server.log.error(err.data)
+    reply.send(err.message)
+  } else {
+    server.log.error(err.query)
+    reply.send(err.message)
+  }
+})
+
 server.setReplySerializer((payload, statusCode) => {
   if (statusCode === 201) {
     return `Created ${payload}`

@@ -160,6 +160,7 @@
       "boom",
       "joi",
       "@types/node",
+      "semver",
       "tap",
       "tap-mocha-reporter",
       "@typescript-eslint/eslint-plugin",

@@ -433,8 +433,7 @@ fastify.register(async (instance, opts) => {
 })
 
 await fastify.after()
-  console.log('After current plugin')
-})
+console.log('After current plugin')
 
 fastify.register(async (instance, opts) => {
   console.log('Next plugin')

@@ -425,6 +425,25 @@ fastify
   })
 ```
 
+In case `after()` is called without a function, it returns a `Promise`:
+
+```js
+fastify.register(async (instance, opts) => {
+  console.log('Current plugin')
+})
+
+await fastify.after()
+console.log('After current plugin')
+
+fastify.register(async (instance, opts) => {
+  console.log('Next plugin')
+})
+
+await fastify.ready()
+
+console.log('Everything has been loaded')
+```
+
 <a name="ready"></a>
 #### ready
 Function called when all the plugins have been loaded.

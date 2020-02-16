@@ -181,7 +181,7 @@ We've seen how to extend server functionality and how to handle the encapsulatio
 ## Hooks
 You just built an amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
-fastify.decorate('util', (request, key, value) => { request.key = value })
+fastify.decorate('util', (request, key, value) => { request[key] = value })
 
 fastify.get('/plugin1', (request, reply) => {
   fastify.util(request, 'timestamp', new Date())

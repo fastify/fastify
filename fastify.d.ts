@@ -688,7 +688,7 @@ declare namespace fastify {
     /**
      * Set the 404 handler
      */
-    setNotFoundHandler(handler: (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setNotFoundHandler(handler: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set a function that will be called whenever an error happens

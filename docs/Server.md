@@ -31,6 +31,26 @@ This option also applies when the
 
 + Default: `null`
 
+<a name="factory-connection-timeout"></a>
+### `connectionTimeout`
+
+Defines the server timeout in milliseconds. See documentation for
+[`server.timeout` property](https://nodejs.org/api/http.html#http_server_timeout)
+to understand the effect of this option. When `serverFactory` option is
+specified, this option is ignored.
+
++ Default: `0` (no timeout)
+
+<a name="factory-keep-alive-timeout"></a>
+### `keepAliveTimeout`
+
+Defines the server keep-alive timeout in milliseconds. See documentation for
+[`server.timeout` property](https://nodejs.org/api/http.html#http_server_keepalivetimeout)
+to understand the effect of this option. This option only applies when HTTP/1
+is in use. Also, when `serverFactory` option is specified, this option is ignored.
+
++ Default: `5000` (5 seconds)
+
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`
 
@@ -405,6 +425,25 @@ fastify
   })
 ```
 
+In case `after()` is called without a function, it returns a `Promise`:
+
+```js
+fastify.register(async (instance, opts) => {
+  console.log('Current plugin')
+})
+
+await fastify.after()
+console.log('After current plugin')
+
+fastify.register(async (instance, opts) => {
+  console.log('Next plugin')
+})
+
+await fastify.ready()
+
+console.log('Everything has been loaded')
+```
+
 <a name="ready"></a>
 #### ready
 Function called when all the plugins have been loaded.
@@ -723,6 +762,8 @@ fastify.ready(() => {
 options passed down by the user to the fastify instance.
 
 Currently the properties that can be exposed are:
+- connectionTimeout
+- keepAliveTimeout
 - bodyLimit
 - caseSensitive
 - http2

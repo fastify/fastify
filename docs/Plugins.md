@@ -90,14 +90,22 @@ fastify.listen(3000, (err, address) => {
 })
 ```
 
-*async-await* is supported only by `ready` and `listen`.
+<a name="async-await"></a>
+### async/await
+
+*async/await* is supported by `after`, `ready` and `listen`, as well as
+`fastify` being a [Thenable](https://promisesaplus.com/).
+
 ```js
-fastify.register(require('my-plugin'))
+await fastify.register(require('my-plugin'))
+
+await fastify.after()
 
 await fastify.ready()
 
 await fastify.listen(3000)
 ```
+
 <a name="create-plugin"></a>
 ### Create a plugin
 Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an `options` object and the `done` callback.<br>

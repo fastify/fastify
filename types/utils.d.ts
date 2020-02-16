@@ -20,11 +20,20 @@ export type RawServerDefault = http.Server
 /**
  * The default request type based on the server type. Utilizes generic constraining.
  */
-export type RawRequestDefaultExpression<RawServer = RawServerDefault> = RawServer extends http.Server | https.Server ? http.IncomingMessage : http2.Http2ServerRequest
+export type RawRequestDefaultExpression<
+  RawServer extends RawServerBase = RawServerDefault
+> = RawServer extends http.Server | https.Server ? http.IncomingMessage 
+  : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerRequest
+  : never
+
 /**
  * The default reply type based on the server type. Utilizes generic constraining.
  */
-export type RawReplyDefaultExpression<RawServer = RawServerDefault> = RawServer extends http.Server | https.Server ? http.ServerResponse : http2.Http2ServerResponse
+export type RawReplyDefaultExpression<
+  RawServer extends RawServerBase = RawServerDefault
+> = RawServer extends http.Server | https.Server ? http.ServerResponse 
+  : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerResponse
+  : never
 
 export type RequestBodyDefault = unknown
 export type RequestQuerystringDefault = unknown

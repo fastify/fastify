@@ -13,6 +13,8 @@ const ajv = new Ajv({
 })
 
 const defaultInitOptions = {
+  connectionTimeout: 0, // 0 sec
+  keepAliveTimeout: 5000, // 5 sec
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,
@@ -42,6 +44,8 @@ const schema = {
   type: 'object',
   additionalProperties: false,
   properties: {
+    connectionTimeout: { type: 'integer', default: defaultInitOptions.connectionTimeout },
+    keepAliveTimeout: { type: 'integer', default: defaultInitOptions.keepAliveTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     http2: { type: 'boolean' },

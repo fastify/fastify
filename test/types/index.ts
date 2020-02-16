@@ -505,7 +505,9 @@ server.get('/test-decorated-inputs', (req, reply) => {
   (reply as DecoratedReply).utility()
 })
 
-server.setNotFoundHandler((req, reply) => {
+server.setNotFoundHandler(function (req, reply) {
+  this.log.error('not found')
+  reply.code(404).send()
 })
 
 server.setErrorHandler((err, request, reply) => {

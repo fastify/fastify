@@ -58,3 +58,23 @@ test('Should honor maxParamLength option', t => {
     t.strictEqual(res.statusCode, 404)
   })
 })
+
+test('Should honor frameworkErrors.onBadUrl option', t => {
+  t.plan(1)
+  const fastify = Fastify({
+    frameworkErrors: {
+      onBadUrl: (path, req, res) => {
+        t.strictEqual(path, '%world')
+      }
+    }
+  })
+
+  fastify.get('/test/:id', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test/%world'
+  })
+})

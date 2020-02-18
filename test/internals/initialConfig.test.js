@@ -29,7 +29,8 @@ test('without options passed to Fastify, initialConfig should expose default val
     pluginTimeout: 10000,
     requestIdHeader: 'request-id',
     requestIdLogLabel: 'reqId',
-    http2SessionTimeout: 5000
+    http2SessionTimeout: 5000,
+    frameworkErrors: {}
   }
 
   t.deepEquals(Fastify().initialConfig, fastifyDefaultOptions)
@@ -234,7 +235,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       pluginTimeout: 10000,
       requestIdHeader: 'request-id',
       requestIdLogLabel: 'reqId',
-      http2SessionTimeout: 5000
+      http2SessionTimeout: 5000,
+      frameworkErrors: {}
     })
   } catch (error) {
     t.fail()

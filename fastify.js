@@ -73,6 +73,7 @@ function build (options) {
     customOptions: {},
     plugins: []
   }, options.ajv)
+  const frameworkErrors = options.frameworkErrors || {}
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
@@ -98,6 +99,7 @@ function build (options) {
   options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
+  options.frameworkErrors = frameworkErrors
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -105,7 +107,7 @@ function build (options) {
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
-      onBadUrl: onBadUrl,
+      onBadUrl: options.frameworkErrors.onBadUrl || onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,

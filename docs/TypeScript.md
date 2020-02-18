@@ -110,8 +110,8 @@ const opts: fastify.RouteShorthandOptions = {
 server.get<Query, Params, Headers, Body>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type Query!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type Body!
   console.log(request.headers) // this is of type Headers!
+  console.log(request.body) // this is of type Body!
   reply.code(200).send({ pong: 'it worked!' })
 })
 ```
@@ -143,8 +143,8 @@ const opts: fastify.RouteShorthandOptions = {
 server.get<fastify.DefaultQuery, Params, unknown>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type fastify.DefaultQuery!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type unknown!
-  console.log(request.headers) // this is of type fastify.DefaultHeader because typescript will use the default type value!
+  console.log(request.headers) // this is of type unknown!
+  console.log(request.body) // this is of type fastify.DefaultBody because typescript will use the default type value!
   reply.code(200).send({ pong: 'it worked!' })
 })
 
@@ -155,8 +155,8 @@ server.get<fastify.DefaultQuery, Params, unknown>('/ping/:bar', opts, (request, 
 server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type unknown!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type unknown!
   console.log(request.headers) // this is of type unknown!
+  console.log(request.body) // this is of type unknown!
   reply.code(200).send({ pong: 'it worked!' })
 })
 ```

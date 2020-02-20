@@ -9,10 +9,7 @@ export interface FastifySchema {
   querystring?: unknown;
   params?: unknown;
   headers?: unknown;
-  response?: {
-    [code: number]: unknown;
-    [code: string]: unknown;
-  }
+  response?: unknown;
 }
 
 /**

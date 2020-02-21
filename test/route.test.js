@@ -290,3 +290,41 @@ test('does not mutate joi schemas', t => {
     t.deepEqual(JSON.parse(result.payload), { hello: 'world' })
   })
 })
+
+test('multiple routes with one schema', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  const schema = {
+    query: {
+      id: { type: 'number' }
+    }
+  }
+
+  fastify.route({
+    schema,
+    method: 'GET',
+    path: '/first/:id',
+    handler (req, res) {
+      res.send({ hello: 'world' })
+    }
+  })
+
+  fastify.route({
+    schema,
+    method: 'GET',
+    path: '/second/:id',
+    handler (req, res) {
+      res.send({ hello: 'world' })
+    }
+  })
+
+  fastify.ready(error => {
+    t.error(error)
+    t.strictSame(schema, {
+      query: { id: { type: 'number' } },
+      querystring: { type: 'object', properties: { id: { type: 'number' } } }
+    })
+  })
+})

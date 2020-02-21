@@ -2783,3 +2783,36 @@ if (semver.gt(process.versions.node, '8.0.0')) {
   t.pass('Skip because Node version < 8')
   t.end()
 }
+
+test('onRoute should have compiled schemas - replace-way', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  let routeConfigLink
+  fastify.addHook('onRoute', function (route) {
+    routeConfigLink = route
+  })
+
+  fastify.addSchema({
+    $id: 'mySchema',
+    type: 'object',
+    properties: {
+      host: { type: 'number' }
+    }
+  })
+
+  fastify.get('/', {
+    schema: { query: 'mySchema#' }
+  }, (req, reply) => { reply.send('hello') })
+
+  fastify.ready((err) => {
+    t.error(err)
+
+    t.deepEqual(routeConfigLink.schema.query, {
+      type: 'object',
+      properties: {
+        host: { type: 'number' }
+      }
+    })
+  })
+})

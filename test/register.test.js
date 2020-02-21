@@ -128,31 +128,23 @@ test('awaitable register and after', async t => {
 
 test('awaitable after error handling', async t => {
   const fastify = Fastify()
-  let first = false
-  let second = false
-  let third = false
 
-  // Note that this does not throw in case of error,
-  // all errors are currently collected to ready() because it's
-  // not really possible to do anything about them.
-  await fastify.register(async (instance, opts, next) => {
-    first = true
-    throw new Error('kaboom')
-  })
-  t.is(first, true)
+  const e = new Error('kaboom')
 
-  fastify.register(async (instance, opts, next) => {
-    second = true
+  // TODO this should throw for some reason, and it's not.
+  await fastify.register(async (instance, opts) => {
+    throw e
   })
 
-  await fastify.after()
-  // TODO this is a bug, it should be false
-  t.is(second, true)
+  fastify.register(async (instance, opts) => {
+    t.fail('should not be executed')
+  })
+
+  await t.rejects(fastify.after(), e)
 
   fastify.register(async (instance, opts, next) => {
-    third = true
+    t.fail('should not be executed')
   })
 
   await t.rejects(fastify.ready())
-  t.is(third, false)
 })

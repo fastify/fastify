@@ -953,7 +953,7 @@ test('Cross schema reference with encapsulation references', t => {
   })
 })
 
-test('Check how many AJV instances are built', t => {
+test('Check how many AJV instances are built #1', t => {
   t.plan(5)
   const fastify = Fastify()
   addRandomRoute(fastify) // this trigger the schema validation creation

@@ -112,7 +112,7 @@ tap.test('GET `/` route', t => {
 ### Testing with a running server
 Fastify can also be tested after starting the server with `fastify.listen()` or after initializing routes and plugins with `fastify.ready()`. 
 
-Note: `fastify.inject`, `fastify.listen`, or `fastify.ready` must be invoked before the callback of `register(plugin).after(callback)` will execute.
+Note: `fastify.inject`, `fastify.listen`, or `fastify.ready` must be invoked before the callback of `fastify.register(plugin).after(callback)` will execute.
 
 
 #### Example:

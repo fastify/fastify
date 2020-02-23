@@ -320,13 +320,11 @@ test('multiple routes with one schema', t => {
     }
   })
 
-  fastify.listen(0, error => {
+  fastify.ready(error => {
     t.error(error)
     t.strictSame(schema, {
-      query: {
-        id: { type: 'number' }
-      }
+      query: { id: { type: 'number' } },
+      querystring: { type: 'object', properties: { id: { type: 'number' } } }
     })
-    fastify.server.unref()
   })
 })

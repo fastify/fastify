@@ -526,12 +526,12 @@ declare namespace fastify {
      * internally waits for the .ready() event. The callback is the same as the
      * Node core.
      */
-    listen(callback: (err: Error, address: string) => void): void
-    listen(port: number, callback: (err: Error, address: string) => void): void
-    listen(port: number, address: string, callback: (err: Error, address: string) => void): void
-    listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void
-    listen(options: ListenOptions, callback: (err: Error, address: string) => void): void
-    listen(sockFile: string, callback: (err: Error, address: string) => void): void
+    listen(callback: (err: Error | null, address: string) => void): void
+    listen(port: number, callback: (err: Error | null, address: string) => void): void
+    listen(port: number, address: string, callback: (err: Error | null, address: string) => void): void
+    listen(port: number, address: string, backlog: number, callback: (err: Error | null, address: string) => void): void
+    listen(options: ListenOptions, callback: (err: Error | null, address: string) => void): void
+    listen(sockFile: string, callback: (err: Error | null, address: string) => void): void
     listen(port: number, address?: string, backlog?: number): Promise<string>
     listen(sockFile: string): Promise<string>
     listen(options: ListenOptions): Promise<string>
@@ -541,9 +541,9 @@ declare namespace fastify {
      * been loaded. It receives an error parameter if something went wrong.
      */
     ready(): Promise<FastifyInstance<HttpServer, HttpRequest, HttpResponse>>
-    ready(readyListener: (err: Error) => void): void
-    ready(readyListener: (err: Error, done: Function) => void): void
-    ready(readyListener: (err: Error, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
+    ready(readyListener: (err: Error | null) => void): void
+    ready(readyListener: (err: Error | null, done: Function) => void): void
+    ready(readyListener: (err: Error | null, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
 
     /**
      * Call this function to close the server instance and run the "onClose" callback
@@ -575,9 +575,9 @@ declare namespace fastify {
      * `Register a callback that will be executed just after a register.
      * It can take up to three parameters
      */
-    after(afterListener: (err: Error) => void): void
-    after(afterListener: (err: Error, done: Function) => void): void
-    after(afterListener: (err: Error, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
+    after(afterListener: (err: Error | null) => void): void
+    after(afterListener: (err: Error | null, done: Function) => void): void
+    after(afterListener: (err: Error | null, context: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, done: Function) => void): void
 
     /**
      * Decorate this fastify instance with new properties. Throws an execption if
@@ -678,7 +678,7 @@ declare namespace fastify {
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void
+    inject(opts: HTTPInjectOptions | string, cb: (err: Error | null, res: HTTPInjectResponse) => void): void
 
     /**
      * Useful for testing http requests without running a sever

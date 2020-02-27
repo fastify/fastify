@@ -3,6 +3,11 @@
 const test = require('tap').test
 const sget = require('simple-get')
 const Fastify = require('../')
+const {
+  codes: {
+    FST_ERR_BAD_URL
+  }
+} = require('../lib/errors')
 
 test('Should honor ignoreTrailingSlash option', t => {
   t.plan(4)
@@ -59,12 +64,14 @@ test('Should honor maxParamLength option', t => {
   })
 })
 
-test('Should honor frameworkErrors.onBadUrl option', t => {
+test('Should honor frameworkErrors option', t => {
   t.plan(1)
   const fastify = Fastify({
-    frameworkErrors: {
-      onBadUrl: (path, req, res) => {
-        t.strictEqual(path, '%world')
+    frameworkErrors: function (error, req, res) {
+      if (error instanceof FST_ERR_BAD_URL) {
+        t.ok(true)
+      } else {
+        t.fail()
       }
     }
   })

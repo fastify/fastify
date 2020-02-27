@@ -42,6 +42,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_BAD_URL
+  }
+} = require('./lib/errors')
 
 function build (options) {
   // Options validations
@@ -73,7 +78,6 @@ function build (options) {
     customOptions: {},
     plugins: []
   }, options.ajv)
-  const frameworkErrors = options.frameworkErrors || {}
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
@@ -99,7 +103,6 @@ function build (options) {
   options.modifyCoreObjects = modifyCoreObjects
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
-  options.frameworkErrors = frameworkErrors
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -107,7 +110,7 @@ function build (options) {
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
-      onBadUrl: options.frameworkErrors.onBadUrl || onBadUrl,
+      onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
@@ -231,6 +234,7 @@ function build (options) {
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
+    frameworkErrors: null,
     // Set fastify initial configuration options read-only object
     initialConfig
   }
@@ -433,6 +437,9 @@ function build (options) {
   }
 
   function onBadUrl (path, req, res) {
+    if (options.frameworkErrors) {
+      return options.frameworkErrors(new FST_ERR_BAD_URL(path), req, res)
+    }
     const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',

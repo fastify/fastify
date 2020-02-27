@@ -122,10 +122,27 @@ reply.getHeader('x-foo') // undefined
 Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
-### .redirect(dest)
+### .redirect([code ,] dest)
 Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
+
+Example (no `reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
 reply.redirect('/home')
+```
+
+Example (no `reply.code()` call) sets status code to `303` and redirects to `/home`
+```js
+reply.redirect(303, '/home')
+```
+
+Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
+```js
+reply.code(303).redirect('/home')
+```
+
+Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
+```js
+reply.code(303).redirect(302, '/home')
 ```
 
 <a name="call-not-found"></a>

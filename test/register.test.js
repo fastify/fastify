@@ -149,7 +149,7 @@ test('awaitable register error handling', async t => {
     t.fail('should not be executed')
   })
 
-  await t.rejects(fastify.ready())
+  await thenableRejects(t, fastify.ready(), e)
 })
 
 test('awaitable after error handling', async t => {

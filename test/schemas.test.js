@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const fp = require('fastify-plugin')
 
 const ajvMergePatch = require('ajv-merge-patch')
 const AJV = require('ajv')
@@ -450,15 +451,16 @@ test('Should handle root $patch keywords in header', t => {
 })
 
 test('Add schema order should not break the startup', t => {
+  t.plan(1)
   const fastify = Fastify()
 
   fastify.get('/', { schema: { random: 'options' } }, () => {})
 
-  fastify.register(async f => f.addSchema({
+  fastify.register(fp(async f => f.addSchema({
     $id: 'https://example.com/bson/objectId',
     type: 'string',
     pattern: '\\b[0-9A-Fa-f]{24}\\b'
-  }))
+  })))
 
   fastify.get('/:id', {
     schema: {

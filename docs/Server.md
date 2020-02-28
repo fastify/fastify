@@ -418,6 +418,28 @@ Set a default
 Note that this is needed to offer the graceful "close" experience when
 using http2. Node core defaults this to `0`.
 
+<a name="framework-errors"></a>
+### `frameworkErrors`
+
++ Default: `null`
+
+Configure custom error handlers.
+
+*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+
+```js
+const fastify = require('fastify')({
+  frameworkErrors: function (error, req, res) {
+    if (error instanceof FST_ERR_BAD_URL) {
+      // custom error handling
+    } else {
+      reply.send(err)
+    }
+  }
+})
+```
+
+
 ## Instance
 
 ### Server Methods

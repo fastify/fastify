@@ -16,6 +16,11 @@ If routes are declared as `async` though - the error will safely be caught by th
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes
 
+<a name="FST_ERR_BAD_URL"></a>
+#### FST_ERR_BAD_URL
+
+The router received an invalid url.
+
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
 

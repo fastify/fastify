@@ -423,7 +423,8 @@ using http2. Node core defaults this to `0`.
 
 + Default: `null`
 
-Configure custom error handlers.
+Fastify provides default error handlers for the most common use cases.
+Using this option it is possible to override one or more of those handlers with custom code.
 
 *Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
 
@@ -431,7 +432,11 @@ Configure custom error handlers.
 const fastify = require('fastify')({
   frameworkErrors: function (error, req, res) {
     if (error instanceof FST_ERR_BAD_URL) {
-      // custom error handling
+      const headers = {
+        'Content-Type': 'text/plain'
+      }
+      res.writeHead(400, headers)
+      return res.end("Provided url is not valid")
     } else {
       reply.send(err)
     }

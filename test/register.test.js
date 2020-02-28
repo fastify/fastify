@@ -126,13 +126,38 @@ test('awaitable register and after', async t => {
   t.is(third, true)
 })
 
+function thenableRejects (t, promise, error) {
+  return t.rejects(async () => { await promise }, error)
+}
+
+test('awaitable register error handling', async t => {
+  const fastify = Fastify()
+
+  const e = new Error('kaboom')
+
+  await thenableRejects(t, fastify.register(async (instance, opts) => {
+    throw e
+  }), e)
+
+  fastify.register(async (instance, opts) => {
+    t.fail('should not be executed')
+  })
+
+  await t.rejects(fastify.after(), e)
+
+  fastify.register(async (instance, opts, next) => {
+    t.fail('should not be executed')
+  })
+
+  await t.rejects(fastify.ready())
+})
+
 test('awaitable after error handling', async t => {
   const fastify = Fastify()
 
   const e = new Error('kaboom')
 
-  // TODO this should throw for some reason, and it's not.
-  await fastify.register(async (instance, opts) => {
+  fastify.register(async (instance, opts) => {
     throw e
   })
 

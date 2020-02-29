@@ -65,7 +65,7 @@ test('route', t => {
     }
   })
 
-  test('invalid schema - route', t => {
+  test('invalid schema - route', { skip: true }, t => {
     t.plan(1)
     try {
       fastify.route({
@@ -81,7 +81,7 @@ test('route', t => {
         }
       })
       fastify.after(err => {
-        t.ok(err instanceof Error)
+        t.type(err, Error)
       })
     } catch (e) {
       t.fail()

@@ -169,7 +169,7 @@ fastify.addHook('onRequest', (req, reply, done) => {
 })
 
 fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.req.originalUrl, statusCode: res.res.statusCode }, 'request completed')
+  req.log.info({ url: req.req.originalUrl, statusCode: reply.res.statusCode }, 'request completed')
   done()
 })
 ```
@@ -236,7 +236,7 @@ Defines the label used for the request identifier when logging the request.
 
 Function for generating the request id. It will receive the incoming request as a parameter.
 
-+ Default: `value of 'request-id' if provided or monotonically increasing integers`
++ Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
 Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
 
@@ -247,7 +247,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will _not_ be called if the 'request-id' header is available.**
+**Note: genReqId will _not_ be called if the header set in <code>[requestIdHeader](#requestidheader)</code> is available (defaults to 'request-id').**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
@@ -408,6 +408,15 @@ const fastify = require('fastify')({
   }
 })
 ```
+
+<a name="http2-session-timeout"></a>
+### `http2SessionTimeout`
+
+Set a default
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming http2 session. The session will be closed on the timeout. Default: `5000` ms.
+
+Note that this is needed to offer the graceful "close" experience when
+using http2. Node core defaults this to `0`.
 
 ## Instance
 

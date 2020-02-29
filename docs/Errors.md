@@ -120,3 +120,8 @@ The JSON schema provided to one route is not valid.
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 
 A promise may not be fulfilled with 'undefined' when statusCode is not 204.
+
+<a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
+#### FST_ERR_SEND_UNDEFINED_ERR
+
+Undefined error has occured.

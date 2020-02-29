@@ -65,7 +65,7 @@ const cors = require('cors')
     querystringParser: (str: string) => ({ str: str, strArray: [str] }),
     modifyCoreObjects: true,
     return503OnClosing: true,
-    genReqId: () => {
+    genReqId: (req) => {
       if (Math.random() > 0.5) {
         return Math.random().toString()
       }
@@ -505,7 +505,9 @@ server.get('/test-decorated-inputs', (req, reply) => {
   (reply as DecoratedReply).utility()
 })
 
-server.setNotFoundHandler((req, reply) => {
+server.setNotFoundHandler(function (req, reply) {
+  this.log.error('not found')
+  reply.code(404).send()
 })
 
 server.setErrorHandler((err, request, reply) => {
@@ -516,6 +518,30 @@ server.setErrorHandler((err, request, reply) => {
     reply.send(err.validation)
   } else {
     reply.send(err)
+  }
+})
+
+// Libraries may define their own error types
+class AuthenticationError extends Error {
+  public constructor (public data: string) {
+    super()
+  }
+}
+
+class DatabaseError extends Error {
+  public constructor (public query: string) {
+    super()
+  }
+}
+
+// Users can deal with those errors via error handlers
+server.setErrorHandler<AuthenticationError | DatabaseError>((err, request, reply) => {
+  if (err instanceof AuthenticationError) {
+    server.log.error(err.data)
+    reply.send(err.message)
+  } else {
+    server.log.error(err.query)
+    reply.send(err.message)
   }
 })
 

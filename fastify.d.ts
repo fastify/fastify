@@ -211,7 +211,7 @@ declare namespace fastify {
     },
     modifyCoreObjects?: boolean,
     return503OnClosing?: boolean,
-    genReqId?: () => number | string,
+    genReqId?: (req: FastifyRequest) => number | string,
     requestIdHeader?: string,
     requestIdLogLabel?: string,
     serverFactory?: ServerFactoryFunction,
@@ -688,12 +688,12 @@ declare namespace fastify {
     /**
      * Set the 404 handler
      */
-    setNotFoundHandler(handler: (request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setNotFoundHandler(handler: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set a function that will be called whenever an error happens
      */
-    setErrorHandler(handler: (error: FastifyError, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
+    setErrorHandler<E = FastifyError>(handler: (error: E, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void
 
     /**
      * Set a function that will be called whenever an error happens

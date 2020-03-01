@@ -837,15 +837,40 @@ This type definition is potentially incomplete. If you are using it and can prov
 
 #### Routing
 
-##### fastify.RouteHandlerMethod
+One of the core principles in Fastify is its routing capabilities. Most of the types defined in this section are used under-the-hood by the Fastify instance `.route` and `.get/.post/.etc` methods.
 
-##### fastify.RouteOptions
+##### fastify.RouteHandlerMethod<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 
-##### fastify.RouteShorthandMethod
+[src](../types/route.d.ts#L105)
 
-##### fastify.RouteShorthandOptions
+A type declaration for the route handler methods. Has two arguments, `request` and `reply` which are typed by `FastifyRequest` and `FastifyReply` respectfully. The generics parameters are passed through to these arguments. The method returns either `void` or `Promise<any>` for synchronous and asynchronous handlers respectfully.
 
-##### fastify.RouteShorthandOptionsWithHandler
+##### fastify.RouteOptions<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
+
+[src](../types/route.d.ts#L78)
+
+An interface than extends [RouteShorthandOptions][RoutShorthandOptions] and adds the follow three required properties:
+1. `method` which corresponds to a singular [HTTPMethod][HTTPMethods] or a list of [HTTPMethods][HTTPMethods]
+2. `url` a string for the route
+3. `handler` the route handler method, see [RouteHandlerMethod][] for more details
+
+##### fastify.RouteShorthandMethod<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric]>
+
+[src](../types/route.d.ts#12)
+
+An overloaded function interface for three kinds of shorthand route methods to be used in conjunction with the `.get/.post/.etc` methods.
+
+##### fastify.RouteShorthandOptions<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
+
+[src](../types/route.d.ts#55)
+
+An interface that covers all of the base options for a route. Each property on this interface is optional, and it serves as the base for the [RouteOptions][] and [RouteShorthandOptionsWithHandler][] interfaces.
+
+##### fastify.RouteShorthandOptionsWithHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
+
+[src](../types/route.d.ts#93)
+
+This interface adds a single, required property to the [RouteShorthandOptions][] interface `handler` which is of type [RouteHandlerMethod][]
 
 ---
 

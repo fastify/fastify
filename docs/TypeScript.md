@@ -876,13 +876,33 @@ This interface adds a single, required property to the [RouteShorthandOptions][]
 
 #### Parsers
 
-##### fastify.FastifyBodyParser
+##### RawBody
 
-##### fastify.FastifyContentTypeParser
+A generic type that is either a `string` or `Buffer`
 
-##### fastify.AddContentTypeParser
+##### fastify.FastifyBodyParser<[RawBody][RawBodyGeneric], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
+
+[src](../types/content-type-parser.d.ts#L7)
+
+A function type definition for specifying a body parser method. Use the `RawBody` generic to specify the type of the body beig parsed.
+
+##### fastify.FastifyContentTypeParser<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
+
+[src](../types/content-type-parser.d.ts#L17)
+
+A function type definition for specifying a body parser method. Content is typed via the `RawRequest` generic.
+
+##### fastify.AddContentTypeParser<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
+
+[src](../types/content-type-parser.d.ts#L46)
+
+An overloaded interface function definition for the `addContentTypeParser` method. If `parseAs` is passed to the `opts` parameter, the defintion uses [FastifyBodyParser][] for the `parser` parameter; otherwise, it uses [FastifyContentTypeParser][].
 
 ##### fastify.hasContentTypeParser
+
+[src](../types/content-type-parser.d.ts#L63)
+
+A method for checking the existince of a type parser of a certain content type
 
 ---
 

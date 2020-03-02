@@ -7,7 +7,7 @@ const joi = require('joi')
 const Fastify = require('..')
 
 test('route', t => {
-  t.plan(10)
+  t.plan(9)
   const test = t.test
   const fastify = Fastify()
 
@@ -62,29 +62,6 @@ test('route', t => {
       t.fail()
     } catch (e) {
       t.pass()
-    }
-  })
-
-  test('invalid schema - route', t => {
-    t.plan(1)
-    try {
-      fastify.route({
-        method: 'GET',
-        url: '/invalid',
-        schema: {
-          querystring: {
-            id: 'string'
-          }
-        },
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      })
-      fastify.after(err => {
-        t.ok(err instanceof Error)
-      })
-    } catch (e) {
-      t.fail()
     }
   })
 
@@ -187,6 +164,29 @@ test('route', t => {
         t.deepEqual(JSON.parse(body), { hello: 'world' })
       })
     })
+  })
+})
+
+test('invalid schema - route', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.route({
+    handler: () => {},
+    method: 'GET',
+    url: '/invalid',
+    schema: {
+      querystring: {
+        id: 'string'
+      }
+    }
+  })
+  fastify.after(err => {
+    t.notOk(err, 'the error is throw on preReady')
+  })
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_BUILD')
+    t.isLike(err.message, /Failed building the schema for GET: \/invalid/)
   })
 })
 

@@ -141,7 +141,7 @@
   "dependencies": {
     "abstract-logging": "^2.0.0",
     "ajv": "^6.10.2",
-    "avvio": "^6.3.0",
+    "avvio": "^6.3.1",
     "fast-json-stringify": "^1.16.0",
     "find-my-way": "^2.2.0",
     "flatstr": "^1.0.12",

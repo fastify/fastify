@@ -456,11 +456,14 @@ test('Add schema order should not break the startup', t => {
 
   fastify.get('/', { schema: { random: 'options' } }, () => {})
 
-  fastify.register(fp(async f => f.addSchema({
-    $id: 'https://example.com/bson/objectId',
-    type: 'string',
-    pattern: '\\b[0-9A-Fa-f]{24}\\b'
-  })))
+  fastify.register(fp((f, opts) => {
+    f.addSchema({
+      $id: 'https://example.com/bson/objectId',
+      type: 'string',
+      pattern: '\\b[0-9A-Fa-f]{24}\\b'
+    })
+    return Promise.resolve() // avoid async for node 6
+  }))
 
   fastify.get('/:id', {
     schema: {

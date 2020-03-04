@@ -6,6 +6,7 @@ import * as fastify from '../../fastify'
 import * as http from 'http'
 import * as http2 from 'http2'
 import { readFileSync } from 'fs'
+import * as LightMyRequest from 'light-my-request'
 
 // were importing cors using require, which causes it to be an `any`. This is done because `cors` exports
 // itself as an express.RequestHandler which is not compatible with the fastify TypeScript types
@@ -609,10 +610,19 @@ server.listen({
 }).then((address: string) => console.log(address))
 
 // http injections
+server.inject({ url: '/test' }, (err: Error, res: LightMyRequest.Response) => {
+  server.log.debug(err)
+  server.log.debug(res.payload)
+})
+
+// http injections with the fastify types
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)
   server.log.debug(res.payload)
 })
+
+server.inject({ url: '/testAgain' })
+  .then((res: LightMyRequest.Response) => console.log(res.payload))
 
 server.inject({ url: '/testAgain' })
   .then((res: fastify.HTTPInjectResponse) => console.log(res.payload))

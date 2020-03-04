@@ -8,6 +8,7 @@ import * as ajv from 'ajv'
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
+import * as LightMyRequest from 'light-my-request'
 
 declare function fastify<
   HttpServer extends (http.Server | http2.Http2Server) = http.Server,
@@ -35,6 +36,10 @@ declare namespace fastify {
   type DefaultBody = any
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
+
+  // // Keep the original name of the interfaces to avoid braking change
+  interface HTTPInjectOptions extends LightMyRequest.InjectOptions {}
+  interface HTTPInjectResponse extends LightMyRequest.Response {}
 
   interface ValidationResult {
     keyword: string;
@@ -315,42 +320,6 @@ declare namespace fastify {
     [key: string]: any,
     prefix?: string,
     logSerializers?: Object
-  }
-
-  /**
-   * Fake http inject options
-   */
-  interface HTTPInjectOptions {
-    url: string,
-    method?: HTTPMethod,
-    authority?: string,
-    headers?: DefaultHeaders,
-    query?: DefaultQuery,
-    remoteAddress?: string,
-    payload?: string | object | Buffer | NodeJS.ReadableStream
-    simulate?: {
-      end?: boolean,
-      split?: boolean,
-      error?: boolean,
-      close?: boolean
-    },
-    validate?: boolean
-  }
-
-  /**
-   * Fake http inject response
-   */
-  interface HTTPInjectResponse {
-    raw: {
-      req: NodeJS.ReadableStream,
-      res: http.ServerResponse
-    },
-    headers: Record<string, string>,
-    statusCode: number,
-    statusMessage: string,
-    payload: string,
-    rawPayload: Buffer,
-    trailers: object
   }
 
   /**

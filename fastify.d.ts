@@ -37,6 +37,10 @@ declare namespace fastify {
 
   type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'
 
+  // // Keep the original name of the interfaces to avoid braking change
+  interface HTTPInjectOptions extends LightMyRequest.InjectOptions {}
+  interface HTTPInjectResponse extends LightMyRequest.Response {}
+
   interface ValidationResult {
     keyword: string;
     dataPath: string;
@@ -643,12 +647,12 @@ declare namespace fastify {
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: LightMyRequest.InjectOptions | string, cb: (err: Error, res: LightMyRequest.Response) => void): void
+    inject(opts: HTTPInjectOptions | string, cb: (err: Error, res: HTTPInjectResponse) => void): void
 
     /**
      * Useful for testing http requests without running a sever
      */
-    inject(opts: LightMyRequest.InjectOptions | string): Promise<LightMyRequest.Response>
+    inject(opts: HTTPInjectOptions | string): Promise<HTTPInjectResponse>
 
     /**
      * Set the 404 handler

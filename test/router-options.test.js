@@ -65,23 +65,30 @@ test('Should honor maxParamLength option', t => {
 })
 
 test('Should honor frameworkErrors option', t => {
-  t.plan(1)
+  t.plan(3)
   const fastify = Fastify({
-    frameworkErrors: function (error, req, res) {
-      if (error instanceof FST_ERR_BAD_URL) {
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_BAD_URL) {
         t.ok(true)
       } else {
         t.fail()
       }
+      res.end(err.message)
     }
   })
 
-  fastify.get('/test/:id', (req, reply) => {
-    reply.send({ hello: 'world' })
+  fastify.get('/test/:id', (req, res) => {
+    res.end('{ hello: \'world\' }')
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/test/%world'
-  })
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/%world'
+    },
+    (err, res) => {
+      t.error(err)
+      t.deepEquals(res.body, 'FST_ERR_BAD_URL: \'%world\' is not a valid url component')
+    }
+  )
 })

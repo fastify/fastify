@@ -234,7 +234,6 @@ function build (options) {
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
-    frameworkErrors: null,
     // Set fastify initial configuration options read-only object
     initialConfig
   }

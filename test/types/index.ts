@@ -615,8 +615,17 @@ server.inject({ url: '/test' }, (err: Error, res: LightMyRequest.Response) => {
   server.log.debug(res.payload)
 })
 
+// http injections with the fastify types
+server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
+  server.log.debug(err)
+  server.log.debug(res.payload)
+})
+
 server.inject({ url: '/testAgain' })
   .then((res: LightMyRequest.Response) => console.log(res.payload))
+
+server.inject({ url: '/testAgain' })
+  .then((res: fastify.HTTPInjectResponse) => console.log(res.payload))
 
 server.setSchemaCompiler(function (schema: object) {
   return () => true

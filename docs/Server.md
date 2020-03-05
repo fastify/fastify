@@ -436,9 +436,9 @@ const fastify = require('fastify')({
         'Content-Type': 'text/plain'
       }
       res.writeHead(400, headers)
-      return res.end("Provided url is not valid")
+      return res.send("Provided url is not valid")
     } else {
-      res.end(err)
+      res.send(err)
     }
   }
 })

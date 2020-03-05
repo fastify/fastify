@@ -73,12 +73,12 @@ test('Should honor frameworkErrors option', t => {
       } else {
         t.fail()
       }
-      res.end(err.message)
+      res.send(err.message)
     }
   })
 
   fastify.get('/test/:id', (req, res) => {
-    res.end('{ hello: \'world\' }')
+    res.send('{ hello: \'world\' }')
   })
 
   fastify.inject(
@@ -88,7 +88,7 @@ test('Should honor frameworkErrors option', t => {
     },
     (err, res) => {
       t.error(err)
-      t.deepEquals(res.body, 'FST_ERR_BAD_URL: \'%world\' is not a valid url component')
+      t.equals(res.body, 'FST_ERR_BAD_URL: \'%world\' is not a valid url component')
     }
   )
 })

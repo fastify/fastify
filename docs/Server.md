@@ -432,10 +432,7 @@ Using this option it is possible to override one or more of those handlers with 
 const fastify = require('fastify')({
   frameworkErrors: function (error, req, res) {
     if (error instanceof FST_ERR_BAD_URL) {
-      const headers = {
-        'Content-Type': 'text/plain'
-      }
-      res.writeHead(400, headers)
+      res.code(400)
       return res.send("Provided url is not valid")
     } else {
       res.send(err)

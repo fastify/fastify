@@ -29,7 +29,46 @@ How can you efficiently handle the resources of your server, knowing that you ar
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
+### Quick start
+
+Create a folder and make it your current working directory:
+
+```
+mkdir my-app
+cd my-app
+```
+
+Generate a fastify project with `npm init`:
+
+```sh
+npm init fastify
+```
+
+Install dependencies:
+
+```js
+npm install
+```
+
+To start the app in dev mode:
+
+```sh
+npm run dev
+```
+
+For production mode:
+
+```sh
+npm start
+```
+
+Under the hood `npm init` downloads and runs [Fastify Create](https://github.com/fastify/fastify-create),
+which in turn uses the generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
+
+
 ### Install
+
+If installing in an existing project, then Fastify can be installed into the project as a dependency:
 
 Install with npm:
 ```
@@ -80,29 +119,6 @@ fastify.listen(3000, (err, address) => {
 
 Do you want to know more? Head to the <a href="https://github.com/fastify/fastify/blob/master/docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 
-### Quick start with Fastify CLI
-
-Good tools make API development quicker and easier to maintain than doing everything manually.
-
-The [Fastify CLI](https://github.com/fastify/fastify-cli) is a command line interface tool that can create new projects, manage plugins, and perform a variety of development tasks testing and running the application.
-
-The goal in this guide is to build and run a simple Fastify project, using the [Fastify CLI](https://github.com/fastify/fastify-cli), while adhering to the Style Guide recommendations that benefit every Fastify project.
-
-### Example
-
-Open a terminal window.
-
-```
-npm install fastify-cli --global
-```
-
-Generate a new project and default app by running the following command:
-
-```
-fastify generate
-```
-
-For more information, see the [Fastify CLI documentation](https://github.com/fastify/fastify-cli).
 
 ### Fastify v1.x
 
@@ -191,6 +207,7 @@ Team members are listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/), <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__David Mark Clements__](https://github.com/davidmarkclements), <https://twitter.com/davidmarkclem>, <https://www.npmjs.com/~davidmarkclements>
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Dustin Deus__](https://github.com/StarpTech), <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>

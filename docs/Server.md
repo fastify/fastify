@@ -418,6 +418,30 @@ Set a default
 Note that this is needed to offer the graceful "close" experience when
 using http2. Node core defaults this to `0`.
 
+<a name="framework-errors"></a>
+### `frameworkErrors`
+
++ Default: `null`
+
+Fastify provides default error handlers for the most common use cases.
+Using this option it is possible to override one or more of those handlers with custom code.
+
+*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+
+```js
+const fastify = require('fastify')({
+  frameworkErrors: function (error, req, res) {
+    if (error instanceof FST_ERR_BAD_URL) {
+      res.code(400)
+      return res.send("Provided url is not valid")
+    } else {
+      res.send(err)
+    }
+  }
+})
+```
+
+
 ## Instance
 
 ### Server Methods

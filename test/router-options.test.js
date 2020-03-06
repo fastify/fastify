@@ -3,6 +3,11 @@
 const test = require('tap').test
 const sget = require('simple-get')
 const Fastify = require('../')
+const {
+  codes: {
+    FST_ERR_BAD_URL
+  }
+} = require('../lib/errors')
 
 test('Should honor ignoreTrailingSlash option', t => {
   t.plan(4)
@@ -57,4 +62,33 @@ test('Should honor maxParamLength option', t => {
     t.error(error)
     t.strictEqual(res.statusCode, 404)
   })
+})
+
+test('Should honor frameworkErrors option', t => {
+  t.plan(3)
+  const fastify = Fastify({
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_BAD_URL) {
+        t.ok(true)
+      } else {
+        t.fail()
+      }
+      res.send(err.message)
+    }
+  })
+
+  fastify.get('/test/:id', (req, res) => {
+    res.send('{ hello: \'world\' }')
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/test/%world'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equals(res.body, 'FST_ERR_BAD_URL: \'%world\' is not a valid url component')
+    }
+  )
 })

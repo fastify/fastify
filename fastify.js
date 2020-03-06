@@ -42,6 +42,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_BAD_URL
+  }
+} = require('./lib/errors')
 
 function build (options) {
   // Options validations
@@ -73,6 +78,7 @@ function build (options) {
     customOptions: {},
     plugins: []
   }, options.ajv)
+  const frameworkErrors = options.frameworkErrors
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
@@ -431,6 +437,20 @@ function build (options) {
   }
 
   function onBadUrl (path, req, res) {
+    if (frameworkErrors) {
+      req.id = genReqId(req)
+      req.originalUrl = req.url
+      var childLogger = logger.child({ reqId: req.id })
+      if (modifyCoreObjects) {
+        req.log = res.log = childLogger
+      }
+
+      childLogger.info({ req }, 'incoming request')
+
+      const request = new Request(null, req, null, req.headers, childLogger)
+      const reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
+      return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+    }
     const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',

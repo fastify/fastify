@@ -38,7 +38,7 @@ fastify.get('/', function (req, reply) {
 
 Since the above example mutates the request object after it has already
 been instantiated, the JavaScript engine must deoptimize access to the request
-object. By using the decoration API this deoptiization is avoided:
+object. By using the decoration API this deoptimization is avoided:
 
 ```js
 // Decorate request with a 'user' property

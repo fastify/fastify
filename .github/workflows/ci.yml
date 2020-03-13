@@ -2,6 +2,9 @@ name: ci
 
 on: [push, pull_request]
 
+env:
+  CI: true
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -26,7 +29,7 @@ jobs:
 
       - name: Install
         run: |
-          npm install
+          npm install --ignore-scripts
 
       - name: Check licenses
         run: |

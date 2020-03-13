@@ -201,6 +201,36 @@ function testBeforeHandlerHook (hook) {
     })
   })
 
+  test(`${hook} option should handle throwing objects`, t => {
+    t.plan(4)
+    const fastify = Fastify()
+
+    const myError = { myError: 'kaboom' }
+
+    fastify.setErrorHandler(async (error, request, reply) => {
+      t.deepEqual(error, myError)
+      reply.send(error)
+    })
+
+    fastify.get('/', {
+      [hook]: async () => {
+        // eslint-disable-next-line no-throw-literal
+        throw myError
+      }
+    }, (req, reply) => {
+      t.fail('the handler must not be called')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 500)
+      t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: '', statusCode: 500 })
+    })
+  })
+
   test(`${hook} option should handle errors with custom status code`, t => {
     t.plan(3)
     const fastify = Fastify()

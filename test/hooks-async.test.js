@@ -274,6 +274,32 @@ test('preSerialization hooks should handle errors', t => {
   })
 })
 
+test('preValidation hooks should handle throwing null', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setErrorHandler(async (error, request, reply) => {
+    t.ok(error instanceof Error)
+    reply.send(error)
+  })
+
+  fastify.addHook('preValidation', async () => {
+    // eslint-disable-next-line no-throw-literal
+    throw null
+  })
+
+  fastify.get('/', function (request, reply) { t.fail('the handler must not be called') })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: '', statusCode: 500 })
+  })
+})
+
 test('onRequest hooks should be able to block a request (last hook)', t => {
   t.plan(5)
   const fastify = Fastify()

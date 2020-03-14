@@ -16,7 +16,7 @@
 <div align="center">
 
 [![NPM version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
-[![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify) [![Gitter](https://badges.gitter.im/gitterHQ/gitter.svg)](https://gitter.im/fastify)
+[![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
 
@@ -192,8 +192,8 @@ matters to you.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
 
 ## Support
-- [Fastify help](https://github.com/fastify/help)
-- [Gitter Chat](https://gitter.im/fastify)
+Please visit [Fastify help](https://github.com/fastify/help) to view prior
+support issues and to ask new support questions.
 
 ## Team
 

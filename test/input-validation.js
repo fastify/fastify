@@ -36,7 +36,7 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    schemaCompiler: function (schema) {
+    validatorCompiler: function (method, url, httpPart, schema) {
       return ajv.compile(schema)
     }
   }
@@ -47,7 +47,7 @@ module.exports.payloadMethod = function (method, t) {
         hello: Joi.string().required()
       }).required()
     },
-    schemaCompiler: function (schema) {
+    validatorCompiler: function (method, url, httpPart, schema) {
       return schema.validate.bind(schema)
     }
   }
@@ -66,7 +66,7 @@ module.exports.payloadMethod = function (method, t) {
       })
 
       fastify.register(function (fastify2, opts, next) {
-        fastify2.setSchemaCompiler(function schema (schema) {
+        fastify2.setValidatorCompiler(function schema (method, url, httpPart, schema) {
           return body => ({ error: new Error('From custom schema compiler!') })
         })
         const withInstanceCustomCompiler = {
@@ -88,7 +88,7 @@ module.exports.payloadMethod = function (method, t) {
               additionalProperties: false
             }
           },
-          schemaCompiler: function (schema) {
+          validatorCompiler: function (method, url, httpPart, schema) {
             return function (body) {
               return { error: new Error('Always fail!') }
             }

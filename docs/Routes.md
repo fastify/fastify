@@ -51,7 +51,8 @@ They need to be in
 * `onSend(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
 * `onResponse(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
-* `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
+* `validatorCompiler(method, url, httpPart, schema)`: function that builds schemas for request validations. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator) documentation.
+* `serializerCompiler(method, url, httpPart, schema)`: function that builds schemas for response serialization. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer) documentation.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.

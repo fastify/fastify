@@ -7,7 +7,7 @@ const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
 const validation = require('../../lib/validation')
-const { Schemas } = require('../../lib/schemas')
+const { normalizeSchema } = require('../../lib/schemas')
 const symbols = require('../../lib/validation').symbols
 
 test('Symbols', t => {
@@ -19,19 +19,29 @@ test('Symbols', t => {
   t.is(typeof symbols.headersSchema, 'symbol')
 })
 
-test('build schema - missing schema', t => {
-  t.plan(1)
-  const opts = {}
-  validation.build(opts)
-  t.is(typeof opts[symbols.responseSchema], 'undefined')
-})
+;['compileSchemasForValidation',
+  'compileSchemasForSerialization'].forEach(func => {
+  test(`${func} schema - missing schema`, t => {
+    t.plan(2)
+    const context = {}
+    validation[func](context)
+    t.is(typeof context[symbols.bodySchema], 'undefined')
+    t.is(typeof context[symbols.responseSchema], 'undefined')
+  })
 
-test('build schema - missing output schema', t => {
-  t.plan(1)
-  const opts = { schema: {} }
-  validation.build(opts, null, new Schemas())
-  t.is(typeof opts[symbols.responseSchema], 'undefined')
+  test(`${func} schema - missing output schema`, t => {
+    t.plan(1)
+    const context = { schema: {} }
+    validation[func](context, null)
+    t.is(typeof context[symbols.responseSchema], 'undefined')
+  })
 })
+// buildSchemaValidatorCompiler
+// buildSchemaSerializerCompiler
+// ,
+// ,
+// validate,
+// serialize
 
 test('build schema - output schema', t => {
   t.plan(2)
@@ -53,7 +63,7 @@ test('build schema - output schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  validation.compileSchemasForSerialization(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
   t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })
@@ -70,7 +80,7 @@ test('build schema - payload schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
@@ -86,7 +96,8 @@ test('build schema - query schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  opts.schema = normalizeSchema(opts.schema)
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -100,7 +111,8 @@ test('build schema - query schema abbreviated', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  opts.schema = normalizeSchema(opts.schema)
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -117,7 +129,7 @@ test('build schema - querystring schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -131,7 +143,8 @@ test('build schema - querystring schema abbreviated', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  opts.schema = normalizeSchema(opts.schema)
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -155,7 +168,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
         }
       }
     }
-    validation.build(opts, schema => ajv.compile(schema), new Schemas())
+    opts.schema = normalizeSchema(opts.schema)
   } catch (err) {
     t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
     t.is(err.message, 'Schema with \'querystring\' already present!')
@@ -174,7 +187,7 @@ test('build schema - params schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.is(typeof opts[symbols.paramsSchema], 'function')
 })
 
@@ -190,7 +203,7 @@ test('build schema - headers schema', t => {
       }
     }
   }
-  validation.build(opts, schema => ajv.compile(schema), new Schemas())
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
   t.is(typeof opts[symbols.headersSchema], 'function')
 })
 
@@ -206,10 +219,10 @@ test('build schema - headers are lowercase', t => {
       }
     }
   }
-  validation.build(opts, schema => {
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
     t.ok(schema.properties['content-type'], 'lowercase content-type exists')
     return () => {}
-  }, new Schemas())
+  })
 })
 
 test('build schema - headers are not lowercased in case of custom object', t => {
@@ -221,10 +234,10 @@ test('build schema - headers are not lowercased in case of custom object', t => 
       headers: new Headers()
     }
   }
-  validation.build(opts, schema => {
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
     t.type(schema, Headers)
     return () => {}
-  }, new Schemas())
+  })
 })
 
 test('build schema - uppercased headers are not included', t => {
@@ -239,8 +252,8 @@ test('build schema - uppercased headers are not included', t => {
       }
     }
   }
-  validation.build(opts, schema => {
+  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
     t.notOk('Content-Type' in schema.properties, 'uppercase does not exist')
     return () => {}
-  }, new Schemas())
+  })
 })

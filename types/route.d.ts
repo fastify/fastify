@@ -64,7 +64,8 @@ export interface RouteShorthandOptions<
   preValidation?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   preHandler?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   preSerialization?: FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
-  schemaCompiler?: FastifySchemaCompiler;
+  validatorCompiler?: FastifySchemaCompiler;
+  serializerCompiler?: FastifySchemaCompiler;
   bodyLimit?: number;
   logLevel?: LogLevels;
   config?: ContextConfig;

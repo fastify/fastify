@@ -13,8 +13,8 @@ const {
   kLogSerializers,
   kHooks,
   kSchemas,
-  kSchemaCompiler,
-  kSchemaResolver,
+  kValidatorCompiler,
+  kSerializerCompiler,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -136,8 +136,8 @@ function fastify (options) {
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
-    [kSchemaCompiler]: null,
-    [kSchemaResolver]: null,
+    [kValidatorCompiler]: null,
+    [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -186,9 +186,10 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
+    getSchema: schemas.getSchema.bind(schemas),
     getSchemas: schemas.getSchemas.bind(schemas),
-    setSchemaCompiler: setSchemaCompiler,
-    setSchemaResolver: setSchemaResolver,
+    setValidatorCompiler: setValidatorCompiler,
+    setSerializerCompiler: setSerializerCompiler,
     setReplySerializer: setReplySerializer,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
@@ -221,19 +222,6 @@ function fastify (options) {
   }
 
   Object.defineProperties(fastify, {
-    schemaCompiler: {
-      get () {
-        return this[kSchemaCompiler]
-      },
-      set (schemaCompiler) {
-        this.setSchemaCompiler(schemaCompiler)
-      }
-    },
-    prefix: {
-      get () {
-        return this[kRoutePrefix]
-      }
-    },
     pluginName: {
       get () {
         if (this[kPluginNameChain].length > 1) {
@@ -244,10 +232,15 @@ function fastify (options) {
     }
   })
 
-  // We are adding `use` to the fastify prototype so the user
-  // can still access it (and get the expected error), but `decorate`
-  // will not detect it, and allow the user to override it.
-  Object.setPrototypeOf(fastify, { use })
+  Object.defineProperty(fastify, 'prefix', {
+    get: function () { return this[kRoutePrefix] }
+  })
+  Object.defineProperty(fastify, 'validatorCompiler', {
+    get: function () { return this[kValidatorCompiler] }
+  })
+  Object.defineProperty(fastify, 'serializerCompiler', {
+    get: function () { return this[kSerializerCompiler] }
+  })
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -409,18 +402,15 @@ function fastify (options) {
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
   }
 
-  // wrapper that we expose to the user for schemas compiler handling
-  function setSchemaCompiler (schemaCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
-
-    this[kSchemaCompiler] = schemaCompiler
+  function setValidatorCompiler (validatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
+    this[kValidatorCompiler] = validatorCompiler
     return this
   }
 
-  function setSchemaResolver (schemaRefResolver) {
-    throwIfAlreadyStarted('Cannot call "setSchemaResolver" when fastify instance is already started!')
-
-    this[kSchemaResolver] = schemaRefResolver
+  function setSerializerCompiler (serializerCompiler) {
+    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
+    this[kSerializerCompiler] = serializerCompiler
     return this
   }
 

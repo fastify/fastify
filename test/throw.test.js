@@ -42,8 +42,8 @@ test('Fastify should throw for an invalid schema, printing the error route - hea
   fastify.get('/not-loaded', { schema: { headers: badSchema } }, () => {})
 
   fastify.ready(err => {
-    t.is(err.code, 'FST_ERR_SCH_BUILD')
-    t.isLike(err.message, /Failed building the schema for GET: \//)
+    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.isLike(err.message, /Failed building the validation schema for GET: \//)
   })
 })
 
@@ -66,8 +66,8 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   }, { prefix: 'hello' })
 
   fastify.ready(err => {
-    t.is(err.code, 'FST_ERR_SCH_BUILD')
-    t.isLike(err.message, /Failed building the schema for POST: \/hello\/form/)
+    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.isLike(err.message, /Failed building the validation schema for POST: \/hello\/form/)
   })
 })
 

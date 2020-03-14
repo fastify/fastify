@@ -192,7 +192,8 @@ matters to you.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
 
 ## Support
-- [Fastify help](https://github.com/fastify/help)
+Please visit [Fastify help](https://github.com/fastify/help) to view prior
+support issues and to ask new support questions.
 
 ## Team
 

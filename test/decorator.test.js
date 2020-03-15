@@ -709,7 +709,7 @@ test('after can access to a decorated instance and previous plugin decoration', 
     })
 })
 
-test('decorate* should throw if called after ready', t => {
+test('decorate* should throw if called after ready', async t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -719,21 +719,21 @@ test('decorate* should throw if called after ready', t => {
     })
   })
 
-  fastify.ready().then(() => {
-    try {
-      fastify.decorate('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-    try {
-      fastify.decorateRequest('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-    try {
-      fastify.decorateReply('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-  })
+  await fastify.listen(0)
+  try {
+    fastify.decorate('test', true)
+  } catch (e) {
+    t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+  }
+  try {
+    fastify.decorateRequest('test', true)
+  } catch (e) {
+    t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+  }
+  try {
+    fastify.decorateReply('test', true)
+  } catch (e) {
+    t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+  }
+  fastify.close()
 })

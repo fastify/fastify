@@ -20,6 +20,11 @@ In those two cases, the error will safely be caught by the promise and routed to
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes
 
+<a name="FST_ERR_BAD_URL"></a>
+#### FST_ERR_BAD_URL
+
+The router received an invalid url.
+
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
 
@@ -120,7 +125,17 @@ The JSON schema provided for validation to a route is not valid.
 
 The JSON schema provided for serialization of a route response is not valid.
 
+<a name="FST_ERR_SCH_BUILD"></a>
+#### FST_ERR_SCH_BUILD
+
+The JSON schema provided to one route is not valid.
+
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 
 A promise may not be fulfilled with 'undefined' when statusCode is not 204.
+
+<a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
+#### FST_ERR_SEND_UNDEFINED_ERR
+
+Undefined error has occured.

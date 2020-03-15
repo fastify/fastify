@@ -36,12 +36,6 @@ test('Symbols', t => {
     t.is(typeof context[symbols.responseSchema], 'undefined')
   })
 })
-// buildSchemaValidatorCompiler
-// buildSchemaSerializerCompiler
-// ,
-// ,
-// validate,
-// serialize
 
 test('build schema - output schema', t => {
   t.plan(2)

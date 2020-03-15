@@ -41,6 +41,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_BAD_URL
+  }
+} = require('./lib/errors')
 
 function fastify (options) {
   // Options validations
@@ -66,6 +71,7 @@ function fastify (options) {
     customOptions: {},
     plugins: []
   }, options.ajv)
+  const frameworkErrors = options.frameworkErrors
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
@@ -92,6 +98,8 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
 
+  const initialConfig = getSecuredInitialConfig(options)
+
   // Default router
   const router = buildRouting({
     config: {
@@ -108,10 +116,11 @@ function fastify (options) {
 
   // HTTP server and its handler
   const httpHandler = router.routing
+
+  // we need to set this before calling createServer
+  options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
-    server.on('clientError', handleClientError)
-  }
+  server.on('clientError', handleClientError)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemas = new Schemas()
@@ -217,7 +226,7 @@ function fastify (options) {
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
     // Set fastify initial configuration options read-only object
-    initialConfig: getSecuredInitialConfig(options)
+    initialConfig
   }
 
   Object.defineProperty(fastify, 'pluginName', {
@@ -399,6 +408,16 @@ function fastify (options) {
   }
 
   function onBadUrl (path, req, res) {
+    if (frameworkErrors) {
+      var id = genReqId(req)
+      var childLogger = logger.child({ reqId: id })
+
+      childLogger.info({ req }, 'incoming request')
+
+      const request = new Request(id, req, null, req.headers, childLogger)
+      const reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
+      return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+    }
     const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',

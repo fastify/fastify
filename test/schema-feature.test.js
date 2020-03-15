@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Fastify = require('..')
+const fp = require('fastify-plugin')
 const { kSchemas } = require('../lib/symbols.js')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
@@ -954,27 +955,40 @@ test('Cross schema reference with encapsulation references', t => {
 })
 
 test('Check how many AJV instances are built #1', t => {
-  t.plan(5)
+  t.plan(12)
   const fastify = Fastify()
   addRandomRoute(fastify) // this trigger the schema validation creation
   t.notOk(fastify.validatorCompiler, 'validator not initlialized')
 
+  const instances = []
   fastify.register((instance, opts, next) => {
-    t.ok(instance.validatorCompiler, 'validator already in place')
+    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    instances.push(instance)
     next()
   })
   fastify.register((instance, opts, next) => {
-    t.ok(instance.validatorCompiler, 'validator already in place')
+    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
     addRandomRoute(instance)
+    instances.push(instance)
     next()
     instance.register((instance, opts, next) => {
-      t.ok(instance.validatorCompiler, 'validator already in place')
+      t.notOk(fastify.validatorCompiler, 'validator not initlialized')
       addRandomRoute(instance)
+      instances.push(instance)
       next()
     })
   })
 
-  fastify.ready(err => { t.error(err) })
+  fastify.ready(err => {
+    t.error(err)
+
+    t.ok(fastify.validatorCompiler, 'validator initlialized on preReady')
+    fastify.validatorCompiler.checkPointer = true
+    instances.forEach(i => {
+      t.ok(i.validatorCompiler, 'validator initlialized on preReady')
+      t.equals(i.validatorCompiler.checkPointer, true, 'validator is only one for all the instances')
+    })
+  })
 })
 
 test('Check how many AJV instances are built #2', t => {
@@ -984,21 +998,21 @@ test('Check how many AJV instances are built #2', t => {
 
   fastify.register((instance, opts, next) => {
     addRandomRoute(instance)
-    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    t.notOk(instance.validatorCompiler, 'validator not initlialized')
     instance.after(() => {
-      t.ok(instance.validatorCompiler, 'validator created')
+      t.notOk(instance.validatorCompiler, 'validator not initlialized')
     })
     next()
   })
   fastify.register((instance, opts, next) => {
     addRandomRoute(instance)
-    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    t.notOk(instance.validatorCompiler, 'validator not initlialized')
     instance.after(() => {
-      t.ok(instance.validatorCompiler, 'validator created')
+      t.notOk(instance.validatorCompiler, 'validator not initlialized')
     })
 
     instance.register((instance, opts, next) => {
-      t.ok(instance.validatorCompiler, 'validator already in place')
+      t.notOk(instance.validatorCompiler, 'validator not initlialized')
       next()
     })
     next()
@@ -1013,3 +1027,32 @@ function addRandomRoute (server) {
     (req, reply) => reply.send()
   )
 }
+
+test('Add schema order should not break the startup', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/', { schema: { random: 'options' } }, () => {})
+
+  fastify.register(fp((f, opts) => {
+    f.addSchema({
+      $id: 'https://example.com/bson/objectId',
+      type: 'string',
+      pattern: '\\b[0-9A-Fa-f]{24}\\b'
+    })
+    return Promise.resolve() // avoid async for node 6
+  }))
+
+  fastify.get('/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { $ref: 'https://example.com/bson/objectId#' }
+        }
+      }
+    }
+  }, () => {})
+
+  fastify.ready(err => { t.error(err) })
+})

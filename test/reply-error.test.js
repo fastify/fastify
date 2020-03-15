@@ -393,3 +393,32 @@ test('should throw an error if the custom serializer does not serialize the payl
     t.fail('should not be called')
   })
 })
+
+// Issue 2078 https://github.com/fastify/fastify/issues/2078
+// Supported error code list: http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+const invalidErrorCodes = [
+  undefined,
+  null,
+  'error_code',
+  700 // out of the 100-600 range
+]
+invalidErrorCodes.forEach((invalidCode) => {
+  test(`should throw error if error code is ${invalidCode}`, t => {
+    t.plan(2)
+    const fastify = Fastify()
+    fastify.get('/', (request, reply) => {
+      try {
+        return reply.code(invalidCode).send('You should not read this')
+      } catch (err) {
+        t.is(err.code, 'FST_ERR_BAD_STATUS_CODE')
+        t.is(err.message, 'Called reply with malformed status code')
+      }
+    })
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (e, res) => {
+      t.fail('should not be called')
+    })
+  })
+})

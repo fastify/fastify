@@ -11,6 +11,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [Hooks](#hooks)
 - [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
+- [ESM support](#esm-support)
 - [Handle errors](#handle-errors)
 - [Let's start!](#start)
 
@@ -92,7 +93,7 @@ fastify.register((instance, opts, done) => {
 Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
 Let's step back for a moment and dig deeper into this: every time you use the `register` API, a new context is created which avoids the negative situations mentioned above.
 
-Do note that encapsulation applies to the ancestors and siblings, but not the children. 
+Do note that encapsulation applies to the ancestors and siblings, but not the children.
 ```js
 fastify.register((instance, opts, done) => {
   instance.decorate('util', (a, b) => a + b)
@@ -180,7 +181,7 @@ We've seen how to extend server functionality and how to handle the encapsulatio
 ## Hooks
 You just built an amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
-fastify.decorate('util', (request, key, value) => { request.key = value })
+fastify.decorate('util', (request, key, value) => { request[key] = value })
 
 fastify.get('/plugin1', (request, reply) => {
   fastify.util(request, 'timestamp', new Date())
@@ -292,6 +293,22 @@ fastify.register(require('your-plugin'), parent => {
 })
 ```
 In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
+
+<a name="esm-support"></a>
+## ESM support
+
+ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above! Just export your plugin as ESM module and you are good to go!
+
+```js
+// plugin.mjs
+async function plugin (fastify, opts) {
+  fastify.get('/', async (req, reply) => {
+    return { hello: 'world' }
+  })
+}
+
+export default plugin
+```
 
 <a name="handle-errors"></a>
 ## Handle errors

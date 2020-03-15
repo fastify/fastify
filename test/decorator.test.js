@@ -719,21 +719,24 @@ test('decorate* should throw if called after ready', t => {
     })
   })
 
-  fastify.ready().then(() => {
-    try {
-      fastify.decorate('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-    try {
-      fastify.decorateRequest('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-    try {
-      fastify.decorateReply('test', true)
-    } catch (e) {
-      t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
-    }
-  })
+  fastify.listen(0)
+    .then(() => {
+      try {
+        fastify.decorate('test', true)
+      } catch (e) {
+        t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+      }
+      try {
+        fastify.decorateRequest('test', true)
+      } catch (e) {
+        t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+      }
+      try {
+        fastify.decorateReply('test', true)
+      } catch (e) {
+        t.is(e.message, "FST_ERR_DEC_AFTER_START: The decorator 'test' has been added after start!")
+      }
+      return fastify.close()
+    })
+    .catch(err => t.fail(err))
 })

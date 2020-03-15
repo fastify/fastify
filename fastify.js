@@ -242,6 +242,11 @@ function fastify (options) {
     get: function () { return this[kSerializerCompiler] }
   })
 
+  // We are adding `use` to the fastify prototype so the user
+  // can still access it (and get the expected error), but `decorate`
+  // will not detect it, and allow the user to override it.
+  Object.setPrototypeOf(fastify, { use })
+
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register

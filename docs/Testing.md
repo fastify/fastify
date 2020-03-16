@@ -116,32 +116,27 @@ Fastify can also be tested after starting the server with `fastify.listen()` or 
 
 Uses **app.js** from the previous example.
 
-**test-listen.js** (testing with [`Request`](https://www.npmjs.com/package/request))
+**test-listen.js** (testing with [`Got`](https://www.npmjs.com/package/got))
 ```js
 const tap = require('tap')
-const request = require('request')
+const got = require('got')
 const buildFastify = require('./app')
 
-tap.test('GET `/` route', t => {
-  t.plan(5)
-  
+tap.test('GET `/` route', async t => {
   const fastify = buildFastify()
   
   t.tearDown(() => fastify.close())
   
-  fastify.listen(0, (err) => {
-    t.error(err)
-    
-    request({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-    })
-  })
+  try {
+    await fastify.listen(3000)
+    const response = await got('http://localhost:3000');
+    t.strictEqual(response.statusCode, 200)
+    t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(JSON.parse(response.body), { hello: 'world' })
+    t.end()
+  } catch (err) {
+     t.error(err)
+  }
 })
 ```
 

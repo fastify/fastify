@@ -597,10 +597,6 @@ Function useful if you need to decorate the fastify instance, Reply or Request, 
 Fastify allows the user to extend its functionality with plugins.
 A plugin can be a set of routes, a server decorator or whatever, check [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 
-<a name="use"></a>
-#### use
-Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middleware.md).
-
 <a name="addHook"></a>
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).

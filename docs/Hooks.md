@@ -208,7 +208,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
 
 ### Respond to a request from a hook
-If needed, you can respond to a request before you reach the route handler, for example when implementing an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`; if you are using a middleware, use `res.end`.
+If needed, you can respond to a request before you reach the route handler, for example when implementing an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {

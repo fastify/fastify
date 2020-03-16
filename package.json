@@ -150,7 +150,6 @@
     "find-my-way": "^2.2.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^3.4.1",
-    "middie": "^4.0.1",
     "pino": "^5.13.2",
     "proxy-addr": "^2.0.5",
     "readable-stream": "^3.4.0",

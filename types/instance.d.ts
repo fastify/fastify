@@ -51,7 +51,11 @@ export interface FastifyInstance<
   ready(readyListener: (err: Error) => void): void;
 
   register: FastifyRegister<RawServer, RawRequest, RawReply>;
-  use: FastifyRegister<RawServer, RawRequest, RawReply>;
+  /**
+   * This method is now deprecated and will throw a `FST_ERR_MISSING_MIDDLEWARE` error.
+   * Visit fastify.io/docs/latest/Middleware/ for more info.
+   */
+  use: void;
 
   route<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

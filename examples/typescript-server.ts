@@ -12,7 +12,6 @@
  */
 
 import * as fastify from '../fastify'
-import * as cors from 'cors'
 import { createReadStream } from 'fs'
 import * as http from 'http'
 
@@ -44,7 +43,6 @@ function getStreamHandler (req, reply) {
   reply.code(200).send(stream)
 }
 
-server.use(cors())
 server.get('/', opts, getHelloHandler)
 server.get('/stream', getStreamHandler)
 

@@ -19,7 +19,6 @@ const {
   kContentTypeParser,
   kReply,
   kRequest,
-  kMiddlewares,
   kFourOhFour,
   kState,
   kOptions,
@@ -41,6 +40,11 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_MISSING_MIDDLEWARE
+  }
+} = require('./lib/errors')
 
 function fastify (options) {
   // Options validations
@@ -142,7 +146,6 @@ function fastify (options) {
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
-    [kMiddlewares]: [],
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
@@ -207,8 +210,6 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-    // middleware support
-    use: use,
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
@@ -220,12 +221,14 @@ function fastify (options) {
     initialConfig: getSecuredInitialConfig(options)
   }
 
-  Object.defineProperty(fastify, 'pluginName', {
-    get: function () {
-      if (this[kPluginNameChain].length > 1) {
-        return this[kPluginNameChain].join(' -> ')
+  Object.defineProperties(fastify, {
+    pluginName: {
+      get () {
+        if (this[kPluginNameChain].length > 1) {
+          return this[kPluginNameChain].join(' -> ')
+        }
+        return this[kPluginNameChain][0]
       }
-      return this[kPluginNameChain][0]
     }
   })
 
@@ -238,6 +241,11 @@ function fastify (options) {
   Object.defineProperty(fastify, 'serializerCompiler', {
     get: function () { return this[kSerializerCompiler] }
   })
+
+  // We are adding `use` to the fastify prototype so the user
+  // can still access it (and get the expected error), but `decorate`
+  // will not detect it, and allow the user to override it.
+  Object.setPrototypeOf(fastify, { use })
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -322,22 +330,8 @@ function fastify (options) {
     }
   }
 
-  // wrapper tha we expose to the user for middlewares handling
-  function use (url, fn) {
-    throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
-    if (typeof url === 'string') {
-      const prefix = this[kRoutePrefix]
-      url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
-    }
-    return this.after((err, done) => {
-      addMiddleware.call(this, [url, fn])
-      done(err)
-    })
-
-    function addMiddleware (middleware) {
-      this[kMiddlewares].push(middleware)
-      this[kChildren].forEach(child => addMiddleware.call(child, middleware))
-    }
+  function use () {
+    throw new FST_ERR_MISSING_MIDDLEWARE()
   }
 
   // wrapper that we expose to the user for hooks handling
@@ -461,7 +455,6 @@ function override (old, fn, opts) {
   instance[kHooks] = buildHooks(instance[kHooks])
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
-  instance[kMiddlewares] = old[kMiddlewares].slice()
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])

@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Testing
-Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
+Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap) & [Mocha](https://www.npmjs.com/package/mocha), which are used in the examples below).
 
 <a name="inject"></a>
 ### Testing with http injection
@@ -116,7 +116,9 @@ Fastify can also be tested after starting the server with `fastify.listen()` or 
 
 Uses **app.js** from the previous example.
 
-**test-listen.js** (testing with [`Got`](https://www.npmjs.com/package/got))
+Let's compare 3 examples with different test frameworks:
+
+**test-listen.js** (with [`Got`](https://www.npmjs.com/package/got) & [`Tap`](https://www.npmjs.com/package/tap))
 ```js
 const tap = require('tap')
 const got = require('got')
@@ -128,8 +130,8 @@ tap.test('GET `/` route', async t => {
   t.tearDown(() => fastify.close())
   
   try {
-    await fastify.listen(3000)
-    const response = await got('http://localhost:3000');
+    await fastify.listen(0);
+    const response = await got(`http://localhost:${fastify.server.address().port}`);
     t.strictEqual(response.statusCode, 200)
     t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(response.body), { hello: 'world' })
@@ -138,6 +140,32 @@ tap.test('GET `/` route', async t => {
      t.error(err)
   }
 })
+```
+
+**test-listen.js** (with [`Got`](https://www.npmjs.com/package/got) & [`Mocha`](https://www.npmjs.com/package/mocha))
+```js
+const got = require('got')
+const buildFastify = require('./app')
+const assert = require('assert').strict;
+
+
+describe('Fastify server tests', function() {
+    before(async function() {
+        await fastify.listen(0);
+    });
+
+    it('GET `/` route', async function() {
+        const response = await got(`http://localhost:${fastify.server.address().port}`);
+
+        assert.equal(response.statusCode, 200, 'StatusCode is not 200');
+        assert.equal(response.headers['content-type'], 'application/json; charset=utf-8', 'Content-Type is not JSON');
+        assert.deepEqual(JSON.parse(response.body), { hello: 'world' }, 'Expected another body');
+    });
+
+    after(function() {
+        fastify.close()
+    });
+});
 ```
 
 **test-ready.js** (testing with [`SuperTest`](https://www.npmjs.com/package/supertest))

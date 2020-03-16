@@ -116,7 +116,7 @@ Fastify can also be tested after starting the server with `fastify.listen()` or 
 
 Uses **app.js** from the previous example.
 
-Let's compare 3 examples with different test frameworks:
+Let's compare 2 examples using different test frameworks:
 
 **test-listen.js** (with [`Got`](https://www.npmjs.com/package/got) & [`Tap`](https://www.npmjs.com/package/tap))
 ```js

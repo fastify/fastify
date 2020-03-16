@@ -9,7 +9,6 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [Register](#register)
 - [Decorators](#decorators)
 - [Hooks](#hooks)
-- [Middlewares](#middlewares)
 - [How to handle encapsulation and distribution](#distribution)
 - [ESM support](#esm-support)
 - [Handle errors](#handle-errors)
@@ -238,16 +237,6 @@ fastify.get('/plugin2', (request, reply) => {
 Now your hook will run just for the first route!
 
 As you probably noticed by now, `request` and `reply` are not the standard Nodejs *request* and *response* objects, but Fastify's objects.<br>
-
-<a name="middleware"></a>
-## Middleware
-Fastify [supports](https://github.com/fastify/fastify/blob/master/docs/Middleware.md) Express/Restify/Connect middleware out-of-the-box, which means that you can just drop-in your old code and it will work! *(faster, by the way)*<br>
-Let's say that you are arriving from Express, and you already have some Middleware which does exactly what you need, and you don't want to redo all the work.
-How we can do that? Check out our middleware engine, [middie](https://github.com/fastify/middie).
-```js
-const yourMiddleware = require('your-middleware')
-fastify.use(yourMiddleware)
-```
 
 <a name="distribution"></a>
 ## How to handle encapsulation and distribution

@@ -130,8 +130,8 @@ tap.test('GET `/` route', async t => {
   t.tearDown(() => fastify.close())
   
   try {
-    await fastify.listen(0);
-    const response = await got(`http://localhost:${fastify.server.address().port}`);
+    await fastify.listen(0)
+    const response = await got(`http://localhost:${fastify.server.address().port}`)
     t.strictEqual(response.statusCode, 200)
     t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
     t.deepEqual(JSON.parse(response.body), { hello: 'world' })
@@ -151,20 +151,20 @@ const assert = require('assert').strict;
 
 describe('Fastify server tests', function() {
     before(async function() {
-        await fastify.listen(0);
-    });
+        await fastify.listen(0)
+    })
 
     it('GET `/` route', async function() {
-        const response = await got(`http://localhost:${fastify.server.address().port}`);
+        const response = await got(`http://localhost:${fastify.server.address().port}`)
 
-        assert.equal(response.statusCode, 200, 'StatusCode is not 200');
-        assert.equal(response.headers['content-type'], 'application/json; charset=utf-8', 'Content-Type is not JSON');
-        assert.deepEqual(JSON.parse(response.body), { hello: 'world' }, 'Expected another body');
-    });
+        assert.equal(response.statusCode, 200, 'StatusCode is not 200')
+        assert.equal(response.headers['content-type'], 'application/json; charset=utf-8', 'Content-Type is not JSON')
+        assert.deepEqual(JSON.parse(response.body), { hello: 'world' }, 'Expected another body')
+    })
 
     after(function() {
         fastify.close()
-    });
+    })
 });
 ```
 

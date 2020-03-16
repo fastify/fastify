@@ -61,7 +61,8 @@ export interface RouteShorthandOptions<
 > {
   schema?: FastifySchema;
   attachValidation?: boolean;
-  schemaCompiler?: FastifySchemaCompiler;
+  validatorCompiler?: FastifySchemaCompiler;
+  serializerCompiler?: FastifySchemaCompiler;
   bodyLimit?: number;
   logLevel?: LogLevels;
   config?: ContextConfig;

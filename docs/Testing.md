@@ -129,16 +129,12 @@ tap.test('GET `/` route', async t => {
   
   t.tearDown(() => fastify.close())
   
-  try {
-    await fastify.listen(0)
-    const response = await got(`http://localhost:${fastify.server.address().port}`)
-    t.strictEqual(response.statusCode, 200)
-    t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(response.body), { hello: 'world' })
-    t.end()
-  } catch (err) {
-     t.error(err)
-  }
+  await fastify.listen(0)
+  const response = await got(`http://localhost:${fastify.server.address().port}`)
+  t.strictEqual(response.statusCode, 200)
+  t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+  t.deepEqual(JSON.parse(response.body), { hello: 'world' })
+  t.end()
 })
 ```
 

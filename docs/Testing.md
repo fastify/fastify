@@ -148,6 +148,7 @@ const got = require('got')
 const buildFastify = require('./app')
 const assert = require('assert').strict;
 
+const fastify = buildFastify();
 
 describe('Fastify server tests', function() {
   before(async function() {

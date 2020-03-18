@@ -1,6 +1,7 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
+import * as LightMyRequest from 'light-my-request'
 
 import { FastifyRequest } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'

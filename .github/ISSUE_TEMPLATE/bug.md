@@ -20,7 +20,7 @@ Steps to reproduce the behavior:
 Paste your code here:
 
 ```js
-
+// Please make sure that this code can run on its own.
 ```
 
 ## Expected behavior

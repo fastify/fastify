@@ -238,6 +238,45 @@ test('Example Joi', t => {
   fastify.ready(err => t.error(err))
 })
 
+test('Example yup', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const handler = () => {}
+
+  const yup = require('yup')
+  // Validation options to match ajv's baseline options used in Fastify
+  const yupOptions = {
+    strict: false,
+    abortEarly: false, // return all errors
+    stripUnknown: true, // remove additional properties
+    recursive: true
+  }
+
+  fastify.post('/the/url', {
+    schema: {
+      body: yup.object({
+        age: yup.number().integer().required(),
+        sub: yup.object().shape({
+          name: yup.string().required()
+        }).required()
+      })
+    },
+    validatorCompiler: (method, url, httpPart, schema) => {
+      return function (data) {
+        // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
+        try {
+          const result = schema.validateSync(data, yupOptions)
+          return { value: result }
+        } catch (e) {
+          return { error: e }
+        }
+      }
+    }
+  }, handler)
+
+  fastify.ready(err => t.error(err))
+})
+
 test('Example - serialization', t => {
   t.plan(1)
   const fastify = Fastify()

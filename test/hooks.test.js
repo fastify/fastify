@@ -644,6 +644,39 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
+test('onRoute hook should able to change the route url', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (route) => {
+      t.strictEqual(route.url, '/föö')
+      route.url = encodeURI(route.url)
+    })
+
+    instance.get('/föö', (request, reply) => {
+      reply.send('here /föö')
+    })
+
+    next()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + encodeURI('/föö')
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(body.toString(), 'here /föö')
+    })
+  })
+})
+
 test('onRoute hook that throws should be caught ', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -2634,20 +2667,18 @@ test('onRegister hook should be called / 1', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  const pluginOpts = { prefix: 'hello', custom: 'world' }
-
   fastify.addHook('onRegister', (instance, opts) => {
+    // duck typing for the win!
     t.ok(instance.addHook)
     t.deepEquals(opts, pluginOpts)
   })
 
+  const pluginOpts = { prefix: 'hello', custom: 'world' }
   fastify.register((instance, opts, next) => {
     next()
   }, pluginOpts)
 
-  fastify.ready(err => {
-    t.error(err)
-  })
+  fastify.ready(err => { t.error(err) })
 })
 
 test('onRegister hook should be called / 2', t => {
@@ -2723,5 +2754,55 @@ test('onRegister hook should be called (encapsulation)', t => {
 
   fastify.ready(err => {
     t.error(err)
+  })
+})
+
+test('early termination, onRequest', t => {
+  t.plan(3)
+
+  const app = Fastify()
+
+  app.addHook('onRequest', (req, reply) => {
+    setImmediate(() => reply.send('hello world'))
+    return reply
+  })
+
+  app.get('/', (req, reply) => {
+    t.fail('should not happen')
+  })
+
+  app.inject('/', function (err, res) {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.is(res.body.toString(), 'hello world')
+  })
+})
+
+test('reply.send should throw if undefined error is thrown', t => {
+  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
+
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, reply, next) {
+    return Promise.reject()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'Undefined error has occured',
+      statusCode: 500
+    })
   })
 })

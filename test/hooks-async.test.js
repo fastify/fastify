@@ -443,7 +443,7 @@ test('Should log a warning if is an async function with `done`', t => {
   })
 
   t.test('4 arguments', t => {
-    t.plan(2)
+    t.plan(3)
     const fastify = Fastify()
 
     try {
@@ -456,9 +456,33 @@ test('Should log a warning if is an async function with `done`', t => {
     } catch (e) {
       t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
+    try {
+      fastify.addHook('onError', async (req, reply, payload, done) => {})
+    } catch (e) {
+      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    }
   })
 
   t.end()
+})
+
+test('early termination, onRequest async', async t => {
+  t.plan(2)
+
+  const app = Fastify()
+
+  app.addHook('onRequest', async (req, reply) => {
+    setImmediate(() => reply.send('hello world'))
+    return reply
+  })
+
+  app.get('/', (req, reply) => {
+    t.fail('should not happen')
+  })
+
+  const res = await app.inject('/')
+  t.is(res.statusCode, 200)
+  t.is(res.body.toString(), 'hello world')
 })
 
 test('The this should be the same of the encapsulation level', async t => {

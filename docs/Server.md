@@ -255,7 +255,7 @@ Defines the label used for the request identifier when logging the request.
 
 Function for generating the request id. It will receive the incoming request as a parameter.
 
-+ Default: `value of 'request-id' if provided or monotonically increasing integers`
++ Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
 Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
 
@@ -266,7 +266,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will _not_ be called if the 'request-id' header is available.**
+**Note: genReqId will _not_ be called if the header set in <code>[requestIdHeader](#requestidheader)</code> is available (defaults to 'request-id').**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
@@ -392,6 +392,83 @@ const fastify = require('fastify')({
   }
 })
 ```
+
+<a name="factory-return-503-on-closing"></a>
+### `return503OnClosing`
+
+Returns 503 after calling `close` server method.
+If `false`, the server routes the incoming request as usual.
+
++ Default: `true`
+
+<a name="factory-ajv"></a>
+### `ajv`
+
+Configure the ajv instance used by Fastify without providing a custom one.
+
++ Default:
+
+```js
+{
+  customOptions: {
+    removeAdditional: true,
+    useDefaults: true,
+    coerceTypes: true,
+    allErrors: true,
+    nullable: true
+  },
+  plugins: []
+}
+```
+
+```js
+const fastify = require('fastify')({
+  ajv: {
+    customOptions: {
+      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
+    },
+    plugins: [
+      require('ajv-merge-patch')
+      [require('ajv-keywords'), 'instanceof'];
+      // Usage: [plugin, pluginOptions] - Plugin with options
+      // Usage: plugin - Plugin without options
+    ]
+  }
+})
+```
+
+<a name="http2-session-timeout"></a>
+### `http2SessionTimeout`
+
+Set a default
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming http2 session. The session will be closed on the timeout. Default: `5000` ms.
+
+Note that this is needed to offer the graceful "close" experience when
+using http2. Node core defaults this to `0`.
+
+<a name="framework-errors"></a>
+### `frameworkErrors`
+
++ Default: `null`
+
+Fastify provides default error handlers for the most common use cases.
+Using this option it is possible to override one or more of those handlers with custom code.
+
+*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+
+```js
+const fastify = require('fastify')({
+  frameworkErrors: function (error, req, res) {
+    if (error instanceof FST_ERR_BAD_URL) {
+      res.code(400)
+      return res.send("Provided url is not valid")
+    } else {
+      res.send(err)
+    }
+  }
+})
+```
+
 
 ## Instance
 

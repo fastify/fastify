@@ -1,12 +1,12 @@
 # V3 Migration Guide
 
-This guide is aimed to help migrating from Fastify v2 to v3.
+This guide is aimed to help migration from Fastify v2 to v3.
 
-Before beginning please ensure that any deprecation warnings from v2 are fixed as we have removed all deprecated features and they will no longer work after upgrading. (#1750)
+Before beginning please ensure that any deprecation warnings from v2 are fixed as we have removed all deprecated features and they will no longer work after upgrading. ([#1750](https://github.com/fastify/fastify/pull/1750))
 
 ## Breaking changes
 
-### Changed middleware support (#2014)
+### Changed middleware support ([#2014](https://github.com/fastify/fastify/pull/2014))
 
 From Fastify v3, middleware support does not come out of the box with the framework itself.
 
@@ -25,9 +25,49 @@ await fastify.register(require("fastify-express"));
 fastify.use(require("cors")());
 ```
 
-### Changed schema substitution (#2023)
+### Changed logging serialisation ([#2017](https://github.com/fastify/fastify/pull/2017))
 
-We have dropped support for non-standard `replace-way` shared schema substitution and replaced it with standard compliant `$ref-way` references.
+We have updated our logging [Serializers](https://github.com/fastify/fastify/blob/master/docs/Logging.md) to now receive Fastify [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead of native ones.
+
+If you have created custom serializers they will need updating if they expect properties that aren't exposed by the Fastify objects themselves.
+
+**v2:**
+
+```js
+const fastify = require("fastify")({
+  logger: {
+    serializers: {
+      res(res) {
+        return {
+          statusCode: res.statusCode,
+          customProp: res.customProp
+        };
+      }
+    }
+  }
+});
+```
+
+**v3:**
+
+```js
+const fastify = require("fastify")({
+  logger: {
+    serializers: {
+      res(reply) {
+        return {
+          statusCode: reply.statusCode, // No change required
+          customProp: reply.raw.customProp // Log custom property from res object
+        };
+      }
+    }
+  }
+});
+```
+
+### Changed schema substitution ([#2023](https://github.com/fastify/fastify/pull/2023))
+
+We have dropped support for non-standard `replace-way` shared schema substitution and replaced it with standard compliant JSON Schema `$ref` based substitution.
 
 **v2:**
 
@@ -49,7 +89,7 @@ const schema = {
 fastify.route({ method, url, schema, handler });
 ```
 
-### Changed schema validation options (#2023)
+### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
 
 We have replaced `setSchemaCompiler` and `setSchemaResolver` options with `setValidatorCompiler` to enable future tooling improvements.
 
@@ -78,7 +118,7 @@ fastify.setValidatorCompiler((method, url, httpPart, schema) =>
 );
 ```
 
-### Changed hooks behaviour (#2004)
+### Changed hooks behaviour ([#2004](https://github.com/fastify/fastify/pull/2004))
 
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change slightly in order to support hook encapsulation.
 
@@ -91,10 +131,9 @@ TODO: Our types have been completely rewritten
 
 ## Further additions and improvements
 
-- Hooks now have consistent context irregardless of how they are registered (#2005)
-- Deprecated `request.req` and `reply.res` for [`request.raw`](Request.md) and [`reply.raw`](Reply.md) (#2008)
-- Removed `modifyCoreObjects` option (#2015)
-- [Serializers](Logging.md) now receive Fastify request and response objects instead of native ones (#2017)
-- Added [`connectionTimeout`](Server.md#factory-connection-timeout) option (#2086)
-- Added [`keepAliveTimeout`](Server.md#factory-keep-alive-timeout) option (#2086)
-- Added async-await support for [plugins](Plugins.md#async-await) (#2093)
+- Hooks now have consistent context irregardless of how they are registered ([#2005](https://github.com/fastify/fastify/pull/2005))
+- Deprecated `request.req` and `reply.res` for [`request.raw`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply.raw`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))
+- Removed `modifyCoreObjects` option ([#2015](https://github.com/fastify/fastify/pull/2015))
+- Added [`connectionTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-connection-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added [`keepAliveTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-keep-alive-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added async-await support for [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#async-await) ([#2093](https://github.com/fastify/fastify/pull/2093))

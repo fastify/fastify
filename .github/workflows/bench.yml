@@ -1,0 +1,16 @@
+name: "test-local"
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: npm i
+    - name: execute command
+      uses: Eomm/action-journalist@v0.0.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        command: npm run bench

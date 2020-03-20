@@ -25,7 +25,7 @@ await fastify.register(require("fastify-express"));
 fastify.use(require("cors")());
 ```
 
-### Changed logging serialisation ([#2017](https://github.com/fastify/fastify/pull/2017))
+### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
 
 We have updated our logging [Serializers](https://github.com/fastify/fastify/blob/master/docs/Logging.md) to now receive Fastify [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead of native ones.
 

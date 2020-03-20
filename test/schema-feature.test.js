@@ -958,21 +958,21 @@ test('Check how many AJV instances are built #1', t => {
   t.plan(12)
   const fastify = Fastify()
   addRandomRoute(fastify) // this trigger the schema validation creation
-  t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+  t.notOk(fastify.validatorCompiler, 'validator not initialized')
 
   const instances = []
   fastify.register((instance, opts, next) => {
-    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    t.notOk(fastify.validatorCompiler, 'validator not initialized')
     instances.push(instance)
     next()
   })
   fastify.register((instance, opts, next) => {
-    t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+    t.notOk(fastify.validatorCompiler, 'validator not initialized')
     addRandomRoute(instance)
     instances.push(instance)
     next()
     instance.register((instance, opts, next) => {
-      t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+      t.notOk(fastify.validatorCompiler, 'validator not initialized')
       addRandomRoute(instance)
       instances.push(instance)
       next()
@@ -982,38 +982,64 @@ test('Check how many AJV instances are built #1', t => {
   fastify.ready(err => {
     t.error(err)
 
-    t.ok(fastify.validatorCompiler, 'validator initlialized on preReady')
+    t.ok(fastify.validatorCompiler, 'validator initialized on preReady')
     fastify.validatorCompiler.checkPointer = true
     instances.forEach(i => {
-      t.ok(i.validatorCompiler, 'validator initlialized on preReady')
+      t.ok(i.validatorCompiler, 'validator initialized on preReady')
       t.equals(i.validatorCompiler.checkPointer, true, 'validator is only one for all the instances')
     })
   })
 })
 
-test('Check how many AJV instances are built #2', t => {
-  t.plan(7)
+test('Check how many AJV instances are built #2 - verify validatorPool', t => {
+  t.plan(13)
   const fastify = Fastify()
-  t.notOk(fastify.validatorCompiler, 'validator not initlialized')
+  t.notOk(fastify.validatorCompiler, 'validator not initialized')
 
-  fastify.register((instance, opts, next) => {
+  fastify.register(function sibling1 (instance, opts, next) {
     addRandomRoute(instance)
-    t.notOk(instance.validatorCompiler, 'validator not initlialized')
+    t.notOk(instance.validatorCompiler, 'validator not initialized')
+    instance.ready(() => {
+      t.ok(instance.validatorCompiler, 'validator is initialized')
+      instance.validatorCompiler.sharedPool = 1
+    })
     instance.after(() => {
-      t.notOk(instance.validatorCompiler, 'validator not initlialized')
+      t.notOk(instance.validatorCompiler, 'validator not initialized')
     })
     next()
   })
-  fastify.register((instance, opts, next) => {
+
+  fastify.register(function sibling2 (instance, opts, next) {
     addRandomRoute(instance)
-    t.notOk(instance.validatorCompiler, 'validator not initlialized')
+    t.notOk(instance.validatorCompiler, 'validator not initialized')
+    instance.ready(() => {
+      t.equals(instance.validatorCompiler.sharedPool, 1, 'this context must share the validator with the same schemas')
+      instance.validatorCompiler.sharedPool = 2
+    })
     instance.after(() => {
-      t.notOk(instance.validatorCompiler, 'validator not initlialized')
+      t.notOk(instance.validatorCompiler, 'validator not initialized')
     })
 
     instance.register((instance, opts, next) => {
-      t.notOk(instance.validatorCompiler, 'validator not initlialized')
+      t.notOk(instance.validatorCompiler, 'validator not initialized')
+      instance.ready(() => {
+        t.equals(instance.validatorCompiler.sharedPool, 2, 'this context must share the validator of the parent')
+      })
       next()
+    })
+    next()
+  })
+
+  fastify.register(function sibling3 (instance, opts, next) {
+    addRandomRoute(instance)
+
+    // this trigger to dont't reuse the same compiler pool
+    instance.addSchema({ $id: 'diff', type: 'object' })
+
+    t.notOk(instance.validatorCompiler, 'validator not initialized')
+    instance.ready(() => {
+      t.ok(instance.validatorCompiler, 'validator is initialized')
+      t.notOk(instance.validatorCompiler.sharedPool, 'this context has its own compiler')
     })
     next()
   })

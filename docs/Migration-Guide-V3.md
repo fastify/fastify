@@ -15,14 +15,14 @@ If you use Express middleware in your application, please install and register t
 **v2:**
 
 ```js
-fastify.use(require("cors")());
+fastify.use(require('cors')());
 ```
 
 **v3:**
 
 ```js
-await fastify.register(require("fastify-express"));
-fastify.use(require("cors")());
+await fastify.register(require('fastify-express'));
+fastify.use(require('cors')());
 ```
 
 ### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
@@ -34,7 +34,7 @@ If you have created custom serializers they will need updating if they expect pr
 **v2:**
 
 ```js
-const fastify = require("fastify")({
+const fastify = require('fastify')({
   logger: {
     serializers: {
       res(res) {
@@ -51,7 +51,7 @@ const fastify = require("fastify")({
 **v3:**
 
 ```js
-const fastify = require("fastify")({
+const fastify = require('fastify')({
   logger: {
     serializers: {
       res(reply) {
@@ -73,7 +73,7 @@ We have dropped support for non-standard `replace-way` shared schema substitutio
 
 ```js
 const schema = {
-  body: "schemaId#"
+  body: 'schemaId#'
 };
 fastify.route({ method, url, schema, handler });
 ```
@@ -83,7 +83,7 @@ fastify.route({ method, url, schema, handler });
 ```js
 const schema = {
   body: {
-    $ref: "schemaId#"
+    $ref: 'schemaId#'
   }
 };
 fastify.route({ method, url, schema, handler });
@@ -98,8 +98,8 @@ We have replaced `setSchemaCompiler` and `setSchemaResolver` options with `setVa
 ```js
 const fastify = Fastify();
 const ajv = new AJV();
-ajv.addSchema(fastClone(schemaA));
-ajv.addSchema(fastClone(schemaB));
+ajv.addSchema(schemaA);
+ajv.addSchema(schemaB);
 
 fastify.setSchemaCompiler(schema => ajv.compile(schema));
 fastify.setSchemaResolver(ref => ajv.getSchema(ref).schema);
@@ -127,7 +127,54 @@ From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change sl
 
 ### Changed TypeScript support
 
-TODO: Our types have been completely rewritten
+The type system was changed in Fastify version 3. The new type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more!
+
+**v2:**
+
+```ts
+interface PingQuerystring {
+  foo?: number;
+}
+
+interface PingParams {
+  bar?: string;
+}
+
+interface PingHeaders {
+  a?: string;
+}
+
+interface PingBody {
+  baz?: string;
+}
+
+server.get<PingQuerystring, PingParams, PingHeaders, PingBody>(
+  '/ping/:bar',
+  opts,
+  (request, reply) => {
+    console.log(request.query); // This is of type `PingQuerystring`
+    console.log(request.params); // This is of type `PingParams`
+    console.log(request.headers); // This is of type `PingHeaders`
+    console.log(request.body); // This is of type `PingBody`
+  }
+);
+```
+
+**v3:**
+
+```ts
+server.get<{
+  Querystring: PingQuerystring;
+  Params: PingParams;
+  Headers: PingHeaders;
+  Body: PingBody;
+}>('/ping/:bar', opts, async (request, reply) => {
+  console.log(request.query); // This is of type `PingQuerystring`
+  console.log(request.params); // This is of type `PingParams`
+  console.log(request.headers); // This is of type `PingHeaders`
+  console.log(request.body); // This is of type `PingBody`
+});
+```
 
 ## Further additions and improvements
 

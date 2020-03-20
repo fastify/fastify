@@ -996,8 +996,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   const fastify = Fastify()
   t.notOk(fastify.validatorCompiler, 'validator not initialized')
 
-  // SIBLING 1
-  fastify.register((instance, opts, next) => {
+  fastify.register(function sibling1 (instance, opts, next) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
     instance.ready(() => {
@@ -1010,8 +1009,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
     next()
   })
 
-  // SIBLING 2
-  fastify.register((instance, opts, next) => {
+  fastify.register(function sibling2 (instance, opts, next) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
     instance.ready(() => {
@@ -1032,8 +1030,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
     next()
   })
 
-  // SIBLING 3
-  fastify.register((instance, opts, next) => {
+  fastify.register(function sibling3 (instance, opts, next) {
     addRandomRoute(instance)
 
     // this trigger to dont't reuse the same compiler pool

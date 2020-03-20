@@ -62,7 +62,7 @@ For production mode:
 npm start
 ```
 
-Under the hood `npm init` downloads and runs [Fastify Create](https://github.com/fastify/fastify-create),
+Under the hood `npm init` downloads and runs [Fastify Create](https://github.com/fastify/create-fastify),
 which in turn uses the generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
 
 

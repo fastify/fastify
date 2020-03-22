@@ -1156,7 +1156,7 @@ test('cannot set notFoundHandler after binding', t => {
     t.error(err)
 
     try {
-      fastify.setNotFoundHandler(() => { })
+      fastify.setNotFoundHandler(() => {})
       t.fail()
     } catch (e) {
       t.pass()
@@ -1565,6 +1565,36 @@ test('reply.notFound invoked the notFound handler', t => {
 
   fastify.inject({
     url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 404)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Not Found',
+      message: 'kaboom',
+      statusCode: 404
+    })
+  })
+})
+
+test('isNotFound should be present in request object and true if route doesn\'t exist', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', (req, reply, done) => {
+    if (req.isNotFound) {
+      reply.code(404).send(new Error('kaboom'))
+    }
+    done()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    url: '/notFound',
     method: 'GET'
   }, (err, res) => {
     t.error(err)

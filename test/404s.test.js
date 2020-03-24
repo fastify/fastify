@@ -570,18 +570,13 @@ test('encapsulated custom 404 without - prefix hook and handler context', t => {
   })
 })
 
-test('run hooks and middleware on default 404', t => {
-  t.plan(8)
+test('run hooks on default 404', t => {
+  t.plan(7)
 
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, res, next) {
     t.pass('onRequest called')
-    next()
-  })
-
-  fastify.use(function (req, res, next) {
-    t.pass('middleware called')
     next()
   })
 
@@ -621,19 +616,14 @@ test('run hooks and middleware on default 404', t => {
   })
 })
 
-test('run non-encapsulated plugin hooks and middleware on default 404', t => {
-  t.plan(7)
+test('run non-encapsulated plugin hooks on default 404', t => {
+  t.plan(6)
 
   const fastify = Fastify()
 
   fastify.register(fp(function (instance, options, next) {
     instance.addHook('onRequest', function (req, res, next) {
       t.pass('onRequest called')
-      next()
-    })
-
-    instance.use(function (req, res, next) {
-      t.pass('middleware called')
       next()
     })
 
@@ -669,19 +659,14 @@ test('run non-encapsulated plugin hooks and middleware on default 404', t => {
   })
 })
 
-test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
-  t.plan(13)
+test('run non-encapsulated plugin hooks on custom 404', t => {
+  t.plan(11)
 
   const fastify = Fastify()
 
   const plugin = fp((instance, opts, next) => {
     instance.addHook('onRequest', function (req, res, next) {
       t.pass('onRequest called')
-      next()
-    })
-
-    instance.use(function (req, res, next) {
-      t.pass('middleware called')
       next()
     })
 
@@ -722,18 +707,13 @@ test('run non-encapsulated plugin hooks and middleware on custom 404', t => {
   })
 })
 
-test('run hooks and middleware with encapsulated 404', t => {
-  t.plan(13)
+test('run hook with encapsulated 404', t => {
+  t.plan(11)
 
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, res, next) {
     t.pass('onRequest called')
-    next()
-  })
-
-  fastify.use(function (req, res, next) {
-    t.pass('middleware called')
     next()
   })
 
@@ -762,11 +742,6 @@ test('run hooks and middleware with encapsulated 404', t => {
       next()
     })
 
-    f.use(function (req, res, next) {
-      t.pass('middleware 2 called')
-      next()
-    })
-
     f.addHook('preHandler', function (request, reply, next) {
       t.pass('preHandler 2 called')
       next()
@@ -779,77 +754,6 @@ test('run hooks and middleware with encapsulated 404', t => {
 
     f.addHook('onResponse', function (request, reply, next) {
       t.pass('onResponse 2 called')
-      next()
-    })
-
-    next()
-  }, { prefix: '/test' })
-
-  t.tearDown(fastify.close.bind(fastify))
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    sget({
-      method: 'PUT',
-      url: 'http://localhost:' + fastify.server.address().port + '/test',
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 404)
-    })
-  })
-})
-
-test('run middlewares on default 404', t => {
-  t.plan(4)
-
-  const fastify = Fastify()
-
-  fastify.use(function (req, res, next) {
-    t.pass('middleware called')
-    next()
-  })
-
-  fastify.get('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  t.tearDown(fastify.close.bind(fastify))
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    sget({
-      method: 'PUT',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: JSON.stringify({ hello: 'world' }),
-      headers: { 'Content-Type': 'application/json' }
-    }, (err, response, body) => {
-      t.error(err)
-      t.strictEqual(response.statusCode, 404)
-    })
-  })
-})
-
-test('run middlewares with encapsulated 404', t => {
-  t.plan(5)
-
-  const fastify = Fastify()
-
-  fastify.use(function (req, res, next) {
-    t.pass('middleware called')
-    next()
-  })
-
-  fastify.register(function (f, opts, next) {
-    f.setNotFoundHandler(function (req, reply) {
-      reply.code(404).send('this was not found 2')
-    })
-
-    f.use(function (req, res, next) {
-      t.pass('middleware 2 called')
       next()
     })
 

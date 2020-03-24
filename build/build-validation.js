@@ -25,7 +25,8 @@ const defaultInitOptions = {
   onConstructorPoisoning: 'ignore',
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
-  requestIdLogLabel: 'reqId'
+  requestIdLogLabel: 'reqId',
+  http2SessionTimeout: 5000
 }
 
 function customRule0 (schemaParamValue, validatedParamValue, validationSchemaObject, currentDataPath, validatedParamObject, validatedParam) {
@@ -78,7 +79,8 @@ const schema = {
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { type: 'string', default: defaultInitOptions.requestIdHeader },
-    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel }
+    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
+    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout }
   }
 }
 

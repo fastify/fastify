@@ -13,13 +13,12 @@ const {
   kLogSerializers,
   kHooks,
   kSchemas,
-  kSchemaCompiler,
-  kSchemaResolver,
+  kValidatorCompiler,
+  kSerializerCompiler,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
   kRequest,
-  kMiddlewares,
   kFourOhFour,
   kState,
   kOptions,
@@ -41,6 +40,12 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const { defaultInitOptions } = getSecuredInitialConfig
+const {
+  codes: {
+    FST_ERR_BAD_URL,
+    FST_ERR_MISSING_MIDDLEWARE
+  }
+} = require('./lib/errors')
 
 function fastify (options) {
   // Options validations
@@ -66,6 +71,7 @@ function fastify (options) {
     customOptions: {},
     plugins: []
   }, options.ajv)
+  const frameworkErrors = options.frameworkErrors
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
@@ -92,6 +98,8 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
 
+  const initialConfig = getSecuredInitialConfig(options)
+
   // Default router
   const router = buildRouting({
     config: {
@@ -108,10 +116,11 @@ function fastify (options) {
 
   // HTTP server and its handler
   const httpHandler = router.routing
+
+  // we need to set this before calling createServer
+  options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  if (Number(process.version.match(/v(\d+)/)[1]) >= 6) {
-    server.on('clientError', handleClientError)
-  }
+  server.on('clientError', handleClientError)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemas = new Schemas()
@@ -132,8 +141,8 @@ function fastify (options) {
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
-    [kSchemaCompiler]: null,
-    [kSchemaResolver]: null,
+    [kValidatorCompiler]: null,
+    [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -142,7 +151,6 @@ function fastify (options) {
     ),
     [kReply]: Reply.buildReply(Reply),
     [kRequest]: Request.buildRequest(Request),
-    [kMiddlewares]: [],
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
@@ -183,9 +191,10 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
+    getSchema: schemas.getSchema.bind(schemas),
     getSchemas: schemas.getSchemas.bind(schemas),
-    setSchemaCompiler: setSchemaCompiler,
-    setSchemaResolver: setSchemaResolver,
+    setValidatorCompiler: setValidatorCompiler,
+    setSerializerCompiler: setSerializerCompiler,
     setReplySerializer: setReplySerializer,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
@@ -206,8 +215,6 @@ function fastify (options) {
     decorateRequest: decorator.decorateRequest,
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
-    // middleware support
-    use: use,
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
@@ -216,32 +223,34 @@ function fastify (options) {
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
     // Set fastify initial configuration options read-only object
-    initialConfig: getSecuredInitialConfig(options)
+    initialConfig
   }
 
-  Object.defineProperty(fastify, 'schemaCompiler', {
-    get: function () {
-      return this[kSchemaCompiler]
-    },
-    set: function (schemaCompiler) {
-      this.setSchemaCompiler(schemaCompiler)
+  Object.defineProperties(fastify, {
+    pluginName: {
+      get () {
+        if (this[kPluginNameChain].length > 1) {
+          return this[kPluginNameChain].join(' -> ')
+        }
+        return this[kPluginNameChain][0]
+      }
     }
   })
 
   Object.defineProperty(fastify, 'prefix', {
-    get: function () {
-      return this[kRoutePrefix]
-    }
+    get: function () { return this[kRoutePrefix] }
+  })
+  Object.defineProperty(fastify, 'validatorCompiler', {
+    get: function () { return this[kValidatorCompiler] }
+  })
+  Object.defineProperty(fastify, 'serializerCompiler', {
+    get: function () { return this[kSerializerCompiler] }
   })
 
-  Object.defineProperty(fastify, 'pluginName', {
-    get: function () {
-      if (this[kPluginNameChain].length > 1) {
-        return this[kPluginNameChain].join(' -> ')
-      }
-      return this[kPluginNameChain][0]
-    }
-  })
+  // We are adding `use` to the fastify prototype so the user
+  // can still access it (and get the expected error), but `decorate`
+  // will not detect it, and allow the user to override it.
+  Object.setPrototypeOf(fastify, { use })
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -326,22 +335,8 @@ function fastify (options) {
     }
   }
 
-  // wrapper tha we expose to the user for middlewares handling
-  function use (url, fn) {
-    throwIfAlreadyStarted('Cannot call "use" when fastify instance is already started!')
-    if (typeof url === 'string') {
-      const prefix = this[kRoutePrefix]
-      url = prefix + (url === '/' && prefix.length > 0 ? '' : url)
-    }
-    return this.after((err, done) => {
-      addMiddleware.call(this, [url, fn])
-      done(err)
-    })
-
-    function addMiddleware (middleware) {
-      this[kMiddlewares].push(middleware)
-      this[kChildren].forEach(child => addMiddleware.call(child, middleware))
-    }
+  function use () {
+    throw new FST_ERR_MISSING_MIDDLEWARE()
   }
 
   // wrapper that we expose to the user for hooks handling
@@ -403,6 +398,16 @@ function fastify (options) {
   }
 
   function onBadUrl (path, req, res) {
+    if (frameworkErrors) {
+      var id = genReqId(req)
+      var childLogger = logger.child({ reqId: id })
+
+      childLogger.info({ req }, 'incoming request')
+
+      const request = new Request(id, req, null, req.headers, childLogger)
+      const reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
+      return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
+    }
     const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`
     res.writeHead(400, {
       'Content-Type': 'application/json',
@@ -417,18 +422,15 @@ function fastify (options) {
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
   }
 
-  // wrapper that we expose to the user for schemas compiler handling
-  function setSchemaCompiler (schemaCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSchemaCompiler" when fastify instance is already started!')
-
-    this[kSchemaCompiler] = schemaCompiler
+  function setValidatorCompiler (validatorCompiler) {
+    throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
+    this[kValidatorCompiler] = validatorCompiler
     return this
   }
 
-  function setSchemaResolver (schemaRefResolver) {
-    throwIfAlreadyStarted('Cannot call "setSchemaResolver" when fastify instance is already started!')
-
-    this[kSchemaResolver] = schemaRefResolver
+  function setSerializerCompiler (serializerCompiler) {
+    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
+    this[kSerializerCompiler] = serializerCompiler
     return this
   }
 
@@ -468,7 +470,6 @@ function override (old, fn, opts) {
   instance[kHooks] = buildHooks(instance[kHooks])
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
-  instance[kMiddlewares] = old[kMiddlewares].slice()
   instance[kSchemas] = buildSchemas(old[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])

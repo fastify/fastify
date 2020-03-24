@@ -255,7 +255,7 @@ Defines the label used for the request identifier when logging the request.
 
 Function for generating the request id. It will receive the incoming request as a parameter.
 
-+ Default: `value of 'request-id' if provided or monotonically increasing integers`
++ Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
 Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
 
@@ -266,7 +266,7 @@ const fastify = require('fastify')({
 })
 ```
 
-**Note: genReqId will _not_ be called if the 'request-id' header is available.**
+**Note: genReqId will _not_ be called if the header set in <code>[requestIdHeader](#requestidheader)</code> is available (defaults to 'request-id').**
 
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
@@ -393,6 +393,83 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="factory-return-503-on-closing"></a>
+### `return503OnClosing`
+
+Returns 503 after calling `close` server method.
+If `false`, the server routes the incoming request as usual.
+
++ Default: `true`
+
+<a name="factory-ajv"></a>
+### `ajv`
+
+Configure the ajv instance used by Fastify without providing a custom one.
+
++ Default:
+
+```js
+{
+  customOptions: {
+    removeAdditional: true,
+    useDefaults: true,
+    coerceTypes: true,
+    allErrors: true,
+    nullable: true
+  },
+  plugins: []
+}
+```
+
+```js
+const fastify = require('fastify')({
+  ajv: {
+    customOptions: {
+      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
+    },
+    plugins: [
+      require('ajv-merge-patch')
+      [require('ajv-keywords'), 'instanceof'];
+      // Usage: [plugin, pluginOptions] - Plugin with options
+      // Usage: plugin - Plugin without options
+    ]
+  }
+})
+```
+
+<a name="http2-session-timeout"></a>
+### `http2SessionTimeout`
+
+Set a default
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming http2 session. The session will be closed on the timeout. Default: `5000` ms.
+
+Note that this is needed to offer the graceful "close" experience when
+using http2. Node core defaults this to `0`.
+
+<a name="framework-errors"></a>
+### `frameworkErrors`
+
++ Default: `null`
+
+Fastify provides default error handlers for the most common use cases.
+Using this option it is possible to override one or more of those handlers with custom code.
+
+*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+
+```js
+const fastify = require('fastify')({
+  frameworkErrors: function (error, req, res) {
+    if (error instanceof FST_ERR_BAD_URL) {
+      res.code(400)
+      return res.send("Provided url is not valid")
+    } else {
+      res.send(err)
+    }
+  }
+})
+```
+
+
 ## Instance
 
 ### Server Methods
@@ -423,6 +500,25 @@ fastify
   .ready(err => {
     console.log('Everything has been loaded')
   })
+```
+
+In case `after()` is called without a function, it returns a `Promise`:
+
+```js
+fastify.register(async (instance, opts) => {
+  console.log('Current plugin')
+})
+
+await fastify.after()
+console.log('After current plugin')
+
+fastify.register(async (instance, opts) => {
+  console.log('Next plugin')
+})
+
+await fastify.ready()
+
+console.log('Everything has been loaded')
 ```
 
 <a name="ready"></a>
@@ -578,10 +674,6 @@ Function useful if you need to decorate the fastify instance, Reply or Request, 
 Fastify allows the user to extend its functionality with plugins.
 A plugin can be a set of routes, a server decorator or whatever, check [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md).
 
-<a name="use"></a>
-#### use
-Function to add middlewares to Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Middleware.md).
-
 <a name="addHook"></a>
 #### addHook
 Function to add a specific hook in the lifecycle of Fastify, check [here](https://github.com/fastify/fastify/blob/master/docs/Hooks.md).
@@ -636,8 +728,16 @@ Fake http injection (for testing purposes) [here](https://github.com/fastify/fas
 
 <a name="add-schema"></a>
 #### addSchema
-`fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.<br/>
-To learn more, see [shared schema example](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#shared-schema) in the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
+`fastify.addSchema(schemaObj)`, adds a JSON schema to the Fastify instance. This allows you to reuse it everywhere in your application just by using the standard `$ref` keyword.<br/>
+To learn more, read the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation.
+
+<a name="get-schemas"></a>
+#### getSchemas
+`fastify.getSchemas()`, returns a hash of all schemas added via `.addSchema`. The keys of the hash are the `$id`s of the JSON Schema provided.
+
+<a name="get-schema"></a>
+#### getSchema
+`fastify.getSchema(id)`, return the JSON schema added with `.addSchema` and the matching `id`. It returns `undefined` if it is not found.
 
 <a name="set-reply-serializer"></a>
 #### setReplySerializer
@@ -651,25 +751,31 @@ fastify.setReplySerializer(function (payload, statusCode){
 })
 ```
 
-<a name="set-schema-compiler"></a>
-#### setSchemaCompiler
-Set the schema compiler for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler).
+<a name="set-validator-compiler"></a>
+#### setValidatorCompiler
+Set the schema validator compiler for all routes. See [#schema-validator](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator).
 
-<a name="set-schema-resolver"></a>
-#### setSchemaResolver
-Set the schema `$ref` resolver for all routes [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-resolver).
+<a name="set-serializer-resolver"></a>
+#### setSerializerCompiler
+Set the schema serializer compiler for all routes. See [#schema-serializer](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer).
+**Note:** [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
+<a name="validator-compiler"></a>
+#### validatorCompiler
+This property can be used to get the schema validator. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
-<a name="schema-compiler"></a>
-#### schemaCompiler
-This property can be used to set the schema compiler, it is a shortcut for the `setSchemaCompiler` method, and get the schema compiler back for all routes.
+<a name="serializer-compiler"></a>
+#### serializerCompiler
+This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
 `fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md#lifecycle).
 
-You can also register a [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [preHandler](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hook for the 404 handler.
+You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
 ```js
 fastify.setNotFoundHandler({

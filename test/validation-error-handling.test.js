@@ -1,9 +1,8 @@
 'use strict'
 
-const t = require('tap')
+const { test } = require('tap')
 const Joi = require('@hapi/joi')
 const Fastify = require('..')
-const test = t.test
 
 const schema = {
   body: {
@@ -294,7 +293,9 @@ test('should return a defined output message parsing JOI errors', t => {
 
   fastify.post('/', {
     schema: { body },
-    schemaCompiler: schema => data => schema.validate(data)
+    validatorCompiler: (method, url, httpPart, schema) => {
+      return data => schema.validate(data)
+    }
   },
   function (req, reply) {
     t.fail()
@@ -322,9 +323,11 @@ test('should return a defined output message parsing JOI error details', t => {
 
   fastify.post('/', {
     schema: { body },
-    schemaCompiler: schema => data => {
-      const validation = schema.validate(data)
-      return { error: validation.error.details }
+    validatorCompiler: (method, url, httpPart, schema) => {
+      return data => {
+        const validation = schema.validate(data)
+        return { error: validation.error.details }
+      }
     }
   },
   function (req, reply) {

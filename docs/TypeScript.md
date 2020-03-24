@@ -465,6 +465,11 @@ Default: [`FastifyLoggerOptions`][FastifyLoggerOptions]
 
 Enforced by: [`RawServer`][RawServerGeneric]
 
+##### RawBody
+A generic parameter for the content-type-parser methods.
+
+Constraints: `string | Buffer`
+
 ---
 
 #### Fastify
@@ -697,7 +702,7 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 ##### fastify.FastifyReply<[RawServer][RawServerGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
 [src](./../types/reply.d.ts#L32)
 
-`FastifyReply` is a type definition that makes use of generic inheritance. The type is based on the [`RawReply`][RawReplyGeneric] generic and then adds additional properties through the [`FastifyReplyInterface`][FastifyReplyInterface] definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateReply`][DecorateReply] method) you need to use declaration merging on the interface ([`FastifyReplyInterface`][FastifyReplyInterface]) instead of this type.
+`FastifyReply` is a type definition that makes use of generic inheritance. The type is based on the [`RawReply`][RawReplyGeneric] generic and then adds additional properties through the [`FastifyReplyInterface`][FastifyReplyInterface] definition. If you need to add custom properties to the FastifyRequest object (such as when using the `decorateReply` method) you need to use declaration merging on the interface ([`FastifyReplyInterface`][FastifyReplyInterface]) instead of this type.
 
 A basic example is provided in the [`FastifyReplyInterface`][FastifyReplyInterface] section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
 
@@ -706,7 +711,7 @@ A basic example is provided in the [`FastifyReplyInterface`][FastifyReplyInterfa
 
 This interface contains the custom properties that Fastify adds to the standard Node.js reply object. The properties added here disregard what kind of reply object (http vs http2).
 
-If you need to add custom properties to the FastifyReply object (such as when using the [`decorateReply`][DecorateReply] method) you need to use declaration merging on this interface, **not** the [`FastifyReply`][FastifyReply] type alias.
+If you need to add custom properties to the FastifyReply object (such as when using the `decorateReply` method) you need to use declaration merging on this interface, **not** the [`FastifyReply`][FastifyReply] type alias.
 
 ###### Example
 ```typescript
@@ -772,7 +777,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 ##### fastify.FastifyRegister<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
-This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`.
+This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].
 
 Below is an example of the options inference in action:
 
@@ -793,7 +798,7 @@ See the Learn By Example, [Plugins](#plugins) section for more detailed examples
 ##### fastify.FastifytRegisterOptions<Options>
 [src](../types/register.d.ts#L16)
 
-This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel: [LogLevels][LogLevels]`. This type can also be specified as a function that returns the previously described intersection.
+This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels]. This type can also be specified as a function that returns the previously described intersection.
 
 ---
 
@@ -849,7 +854,7 @@ A type declaration for the route handler methods. Has two arguments, `request` a
 
 [src](../types/route.d.ts#L78)
 
-An interface than extends [RouteShorthandOptions][RoutShorthandOptions] and adds the follow three required properties:
+An interface than extends RouteShorthandOptions and adds the follow three required properties:
 1. `method` which corresponds to a singular [HTTPMethod][HTTPMethods] or a list of [HTTPMethods][HTTPMethods]
 2. `url` a string for the route
 3. `handler` the route handler method, see [RouteHandlerMethod][] for more details
@@ -864,13 +869,13 @@ An overloaded function interface for three kinds of shorthand route methods to b
 
 [src](../types/route.d.ts#55)
 
-An interface that covers all of the base options for a route. Each property on this interface is optional, and it serves as the base for the [RouteOptions][] and [RouteShorthandOptionsWithHandler][] interfaces.
+An interface that covers all of the base options for a route. Each property on this interface is optional, and it serves as the base for the RouteOptions and RouteShorthandOptionsWithHandler interfaces.
 
 ##### fastify.RouteShorthandOptionsWithHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 
 [src](../types/route.d.ts#93)
 
-This interface adds a single, required property to the [RouteShorthandOptions][] interface `handler` which is of type [RouteHandlerMethod][]
+This interface adds a single, required property to the RouteShorthandOptions interface `handler` which is of type RouteHandlerMethod
 
 ---
 
@@ -1026,6 +1031,7 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when 
 [RawRequestGeneric]: #rawrequest
 [RawReplyGeneric]: #rawreply
 [LoggerGeneric]: #logger
+[RawBodyGeneric]: #rawbody
 [HTTPMethods]: #fastifyhttpmethods
 [RawServerBase]: #fastifyrawserverbase
 [RawServerDefault]: #fastifyrawserverdefault

@@ -145,7 +145,7 @@
     "fast-json-stringify": "^1.18.0",
     "find-my-way": "^2.2.2",
     "flatstr": "^1.0.12",
-    "light-my-request": "^3.7.2",
+    "light-my-request": "^3.7.3",
     "middie": "^4.1.0",
     "pino": "^5.17.0",
     "proxy-addr": "^2.0.6",

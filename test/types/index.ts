@@ -627,6 +627,10 @@ server.inject({ url: '/testAgain' })
 server.inject({ url: '/testAgain' })
   .then((res: fastify.HTTPInjectResponse) => console.log(res.payload))
 
+// test query params
+server.inject({ url: '/testAgain', query: { param: 'value' } })
+  .then((res: LightMyRequest.Response) => console.log(res.payload))
+
 server.setSchemaCompiler(function (schema: object) {
   return () => true
 })

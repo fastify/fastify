@@ -910,6 +910,20 @@ A method for checking the existince of a type parser of a certain content type
 
 ##### fastify.FastifyError
 
+[src](../types/error.d.ts#L17)
+
+FastifyError is a custom error object that includes status code and validation results.
+
+It extends the Node.js `Error` type, and adds two additional, optional properties: `statusCode: number` and `validation: ValiationResult[]`. 
+
+##### fastify.ValidationResult
+
+[src](../types/error.d.ts#L4)
+
+The route validation internally relies upon Ajv, which is a high-performance JSON schema validator.
+
+This interface is passed to instance of FastifyError.
+
 ---
 
 #### Hooks
@@ -946,7 +960,7 @@ Notice: in the `preValidation` hook, request.body will always be null, because t
 
 `preHandler` is the fourth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
 
-##### fastify.preSerializationHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: [PreSerializationPayload][PreSerializationPayload], done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
+##### fastify.preSerializationHookhandler<PreSerializationPayload, [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: PreSerializationPayload, done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L94)
 
@@ -954,7 +968,7 @@ Notice: in the `preValidation` hook, request.body will always be null, because t
 
 Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
 
-##### fastify.onSendHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: [OnSendPayload][OnSendPayload], done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
+##### fastify.onSendHookhandler<OnSendPayload, [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: OnSendPayload, done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L114)
 
@@ -1030,5 +1044,6 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when 
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
 [FastifyRegisterOptions]: #fastifyfastifytregisteroptions
-[LogLevels]: #
-[FastifyError]: #
+[LogLevels]: #fastifyloglevels
+[FastifyError]: #fastifyfastifyerror
+[RouteOptions]: #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig

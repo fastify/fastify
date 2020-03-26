@@ -791,13 +791,8 @@ test('reply.getHeaders returns correct values', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.inject('/headers', (err) => {
     t.error(err)
-    fastify.server.unref()
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/headers'
-    }, () => {})
   })
 })
 

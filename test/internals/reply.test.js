@@ -766,6 +766,41 @@ test('reply.getHeader returns correct values', t => {
   })
 })
 
+test('reply.getHeaders returns correct values', t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+
+    t.strictDeepEqual(reply.getHeaders(), {
+      'x-foo': 'foo'
+    })
+
+    reply.header('x-bar', 'bar')
+    reply.raw.setHeader('x-foo', 'foo2')
+    reply.raw.setHeader('x-baz', 'baz')
+
+    t.strictDeepEqual(reply.getHeaders(), {
+      'x-foo': 'foo',
+      'x-bar': 'bar',
+      'x-baz': 'baz'
+    })
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {})
+  })
+})
+
 test('reply.removeHeader can remove the value', t => {
   t.plan(5)
 

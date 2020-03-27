@@ -15,6 +15,10 @@ export type FastifyReply<
   hasHeader(key: string): boolean;
   header(key: string, value: any): FastifyReply<RawServer, RawReply>;
   getHeader(key: string): string | undefined;
+  getHeaders(): {
+    // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
+    [key: string]: number | string | string[] | undefined;
+  };
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawReply>;
   redirect(url: string): FastifyReply<RawServer, RawReply>;

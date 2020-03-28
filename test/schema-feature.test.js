@@ -991,6 +991,44 @@ test('Check how many AJV instances are built #1', t => {
   })
 })
 
+test('new hook', { only: 1 }, t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.get(`/${Math.random()}`,
+    { schema: { body: { type: 'object' }, response: { 200: { type: 'object' } } } },
+    (req, reply) => reply.send()
+  )
+
+  fastify.addHook('onCompilerReady', function (type) {
+    if (type === 'validator') {
+      t.equal(type, 'validator')
+      t.ok(this.validatorCompiler)
+    } else {
+      t.equal(type, 'serializer')
+      t.ok(this.serializerCompiler)
+    }
+  })
+
+  // fastify.register(async (i, o) => {
+  //   i.addHook('onCompilerReady', function (type) {
+  //     if (type === 'validator') {
+  //       t.equal(type, 'validator')
+  //       t.ok(this.validatorCompiler)
+  //     } else {
+  //       t.equal(type, 'serializer')
+  //       t.ok(this.serializerCompiler)
+  //     }
+  //   })
+
+  //   i.register(async (i, o) => {})
+  // })
+  // fastify.register(async (i, o) => {})
+
+  fastify.ready()
+})
+
 test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   t.plan(13)
   const fastify = Fastify()

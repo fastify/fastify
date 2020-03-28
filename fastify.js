@@ -424,6 +424,14 @@ function fastify (options) {
 
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
+
+    if (!this[kValidatorCompiler]) {
+      this.ready(() => {
+        for (const hook of this[kHooks].onCompilerReady) hook.call(this, 'validator', validatorCompiler)
+        this[kChildren].forEach(child => { for (const asd of child[kHooks].onCompilerReady) asd.call(child, 'validator') })
+      })
+    }
+
     this[kValidatorCompiler] = validatorCompiler
     return this
   }
@@ -431,6 +439,8 @@ function fastify (options) {
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
     this[kSerializerCompiler] = serializerCompiler
+
+    for (const hook of this[kHooks].onCompilerReady) hook.call(this, 'serializer', serializerCompiler)
     return this
   }
 
@@ -454,6 +464,8 @@ function fastify (options) {
 // Everything that need to be encapsulated must be handled in this function.
 function override (old, fn, opts) {
   const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
+
+  console.log(fn.toString())
 
   if (shouldSkipOverride) {
     // after every plugin registration we will enter a new name

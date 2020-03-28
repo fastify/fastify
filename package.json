@@ -132,7 +132,7 @@
     "split2": "^3.1.0",
     "standard": "^14.3.3",
     "tap": "^12.5.2",
-    "tap-mocha-reporter": "^3.0.7",
+    "tap-mocha-reporter": "^5.0.1",
     "then-sleep": "^1.0.1",
     "typescript": "^3.8.3",
     "x-xss-protection": "^1.1.0",

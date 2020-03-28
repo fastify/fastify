@@ -103,7 +103,7 @@
     "concurrently": "^5.1.0",
     "cors": "^2.8.5",
     "coveralls": "^3.0.11",
-    "dns-prefetch-control": "^0.2.0",
+    "dns-prefetch-control": "^0.3.0",
     "eslint": "^6.7.2",
     "eslint-import-resolver-node": "^0.3.3",
     "events.once": "^2.0.2",

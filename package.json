@@ -154,19 +154,6 @@
     "secure-json-parse": "^2.1.0",
     "tiny-lru": "^7.0.2"
   },
-  "greenkeeper": {
-    "ignore": [
-      "autocannon",
-      "boom",
-      "joi",
-      "@types/node",
-      "semver",
-      "tap",
-      "tap-mocha-reporter",
-      "@typescript-eslint/eslint-plugin",
-      "lolex"
-    ]
-  },
   "standard": {
     "ignore": [
       "lib/configValidator.js"

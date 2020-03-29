@@ -296,7 +296,12 @@ test('preValidation hooks should handle throwing null', t => {
   }, (err, res) => {
     t.error(err)
     t.is(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: '', statusCode: 500 })
+    t.deepEqual(res.json(), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'Undefined error has occured',
+      statusCode: 500
+    })
   })
 })
 

@@ -216,8 +216,8 @@ function testBeforeHandlerHook (hook) {
     const myError = { myError: 'kaboom' }
 
     fastify.setErrorHandler(async (error, request, reply) => {
-      t.deepEqual(error, myError)
-      reply.send(error)
+      t.deepEqual(error, myError, 'the error object throws by the user')
+      reply.send({ this: 'is', my: 'error' })
     })
 
     fastify.get('/', {
@@ -235,7 +235,30 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       t.is(res.statusCode, 500)
-      t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: '', statusCode: 500 })
+      t.deepEqual(res.json(), { this: 'is', my: 'error' })
+    })
+  })
+
+  test(`${hook} option should handle throwing objects by default`, t => {
+    t.plan(3)
+    const fastify = Fastify()
+
+    fastify.get('/', {
+      [hook]: async () => {
+        // eslint-disable-next-line no-throw-literal
+        throw { myError: 'kaboom', message: 'i am an error' }
+      }
+    }, (req, reply) => {
+      t.fail('the handler must not be called')
+    })
+
+    fastify.inject({
+      url: '/',
+      method: 'GET'
+    }, (err, res) => {
+      t.error(err)
+      t.is(res.statusCode, 500)
+      t.deepEqual(res.json(), { error: 'Internal Server Error', message: 'i am an error', statusCode: 500 })
     })
   })
 

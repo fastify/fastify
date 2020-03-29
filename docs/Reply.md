@@ -362,6 +362,13 @@ fastify.get('/teapot', async function (request, reply) => {
   err.message = 'short and stout'
   throw err
 })
+
+fastify.get('/botnet', async function (request, reply) => {
+  throw { appCode: 400, message: 'short and stout' }
+  // will return to the client:
+  // { error: 'Internal Server Error', message: 'short and stout', statusCode: 500 }
+  // to customize it you need setup your own setErrorHandler
+})
 ```
 
 If you want to know more please review [Routes#async-await](https://github.com/fastify/fastify/blob/master/docs/Routes.md#async-await).

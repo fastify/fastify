@@ -365,9 +365,7 @@ fastify.get('/teapot', async function (request, reply) => {
 
 fastify.get('/botnet', async function (request, reply) => {
   throw { appCode: 400, message: 'short and stout' }
-  // will return to the client:
-  // { error: 'Internal Server Error', message: 'short and stout', statusCode: 500 }
-  // to customize it you need setup your own setErrorHandler
+  // will return to the client the same json
 })
 ```
 

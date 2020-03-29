@@ -258,7 +258,7 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       t.is(res.statusCode, 500)
-      t.deepEqual(res.json(), { error: 'Internal Server Error', message: 'i am an error', statusCode: 500 })
+      t.deepEqual(res.json(), { myError: 'kaboom', message: 'i am an error' })
     })
   })
 

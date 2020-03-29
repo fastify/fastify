@@ -1,4 +1,4 @@
-import { InjectOptions, InjectPayload } from 'light-my-request'
+import { InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
@@ -39,8 +39,8 @@ export interface FastifyInstance<
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
 
-  inject(opts: InjectOptions | string, cb: (err: Error, response: InjectPayload) => void): void;
-  inject(opts: InjectOptions | string): Promise<InjectPayload>;
+  inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void;
+  inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
 
   listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void;
   listen(port: number, address: string, callback: (err: Error, address: string) => void): void;

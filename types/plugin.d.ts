@@ -8,7 +8,7 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
 export interface FastifyPlugin<
-  Options extends FastifyPluginOptions,
+  Options extends FastifyPluginOptions = {},
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>

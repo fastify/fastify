@@ -62,9 +62,6 @@ export interface FastifyInstance<
     ContextConfig = ContextConfigDefault
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-  // Would love to implement something like the following:
-  // [key in RouteMethodsLower]: RouteShorthandMethod<RawServer, RawRequest, RawReply> | RouteShorthandMethodWithOptions<RawServer, RawRequest, RawReply>,
-
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   post: RouteShorthandMethod<RawServer, RawRequest, RawReply>;

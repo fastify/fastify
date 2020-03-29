@@ -98,14 +98,14 @@ export type FastifyServerOptions<
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
 /* Export all additional types */
-export { FastifyRequest, RequestGenericInterface } from './types/request'
-export { FastifyReply } from './types/reply'
+export { FastifyRequest, FastifyRequestInterface, RequestGenericInterface } from './types/request'
+export { FastifyReply, FastifyReplyInterface } from './types/reply'
 export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLogFn, LogLevels } from './types/logger'
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
-export { RegisterOptions } from './types/register'
+export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
 export { FastifyError, ValidationResult } from './types/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'

@@ -12,11 +12,11 @@ export interface RequestGenericInterface {
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
-export type FastifyRequest<
+export interface FastifyRequestInterface<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface
-> = RawRequest & {
+> {
   body: RequestGeneric['Body'];
   id: any;
   log: FastifyLoggerOptions<RawServer>;
@@ -25,3 +25,9 @@ export type FastifyRequest<
   raw: RawRequest;
   headers: RawRequest['headers'] & RequestGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
 }
+
+export type FastifyRequest<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface
+> = RawRequest & FastifyRequestInterface<RawServer, RawRequest, RequestGeneric>

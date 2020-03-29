@@ -7,7 +7,7 @@ const joi = require('@hapi/joi')
 const Fastify = require('..')
 
 test('route', t => {
-  t.plan(10)
+  t.plan(9)
   const test = t.test
   const fastify = Fastify()
 
@@ -62,29 +62,6 @@ test('route', t => {
       t.fail()
     } catch (e) {
       t.pass()
-    }
-  })
-
-  test('invalid schema - route', t => {
-    t.plan(1)
-    try {
-      fastify.route({
-        method: 'GET',
-        url: '/invalid',
-        schema: {
-          querystring: {
-            id: 'string'
-          }
-        },
-        handler: function (req, reply) {
-          reply.send({ hello: 'world' })
-        }
-      })
-      fastify.after(err => {
-        t.ok(err instanceof Error)
-      })
-    } catch (e) {
-      t.fail()
     }
   })
 
@@ -190,6 +167,29 @@ test('route', t => {
   })
 })
 
+test('invalid schema - route', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.route({
+    handler: () => {},
+    method: 'GET',
+    url: '/invalid',
+    schema: {
+      querystring: {
+        id: 'string'
+      }
+    }
+  })
+  fastify.after(err => {
+    t.notOk(err, 'the error is throw on preReady')
+  })
+  fastify.ready(err => {
+    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.isLike(err.message, /Failed building the validation schema for GET: \/invalid/)
+  })
+})
+
 test('path can be specified in place of uri', t => {
   t.plan(3)
   const fastify = Fastify()
@@ -261,19 +261,21 @@ test('does not mutate joi schemas', t => {
   t.plan(4)
 
   const fastify = Fastify()
-  function schemaCompiler (schema) {
+  function validatorCompiler (method, url, httpPart, schema) {
     // Needed to extract the params part,
     // without the JSON-schema encapsulation
     // that is automatically added by the short
     // form of params.
     schema = joi.object(schema.properties)
 
-    return function (data, opts) {
+    return validateHttpData
+
+    function validateHttpData (data) {
       return schema.validate(data)
     }
   }
 
-  fastify.setSchemaCompiler(schemaCompiler)
+  fastify.setValidatorCompiler(validatorCompiler)
 
   fastify.route({
     path: '/foo/:an_id',
@@ -294,5 +296,40 @@ test('does not mutate joi schemas', t => {
     t.error(err)
     t.strictEqual(result.statusCode, 200)
     t.deepEqual(JSON.parse(result.payload), { hello: 'world' })
+  })
+})
+
+test('multiple routes with one schema', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  const schema = {
+    query: {
+      id: { type: 'number' }
+    }
+  }
+
+  fastify.route({
+    schema,
+    method: 'GET',
+    path: '/first/:id',
+    handler (req, res) {
+      res.send({ hello: 'world' })
+    }
+  })
+
+  fastify.route({
+    schema,
+    method: 'GET',
+    path: '/second/:id',
+    handler (req, res) {
+      res.send({ hello: 'world' })
+    }
+  })
+
+  fastify.ready(error => {
+    t.error(error)
+    t.deepEquals(schema, schema)
   })
 })

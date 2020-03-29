@@ -21,6 +21,7 @@ import { Server, IncomingMessage, ServerResponse } from 'http'
 // Create a http server. We pass the relevant typings for our http version used.
 // By passing types we get correctly typed access to the underlying http objects in routes.
 // If using http2 we'd pass <http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>
+// For https pass http2.Http2SecureServer or http.SecureServer instead of Server.
 const server: fastify.FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({})
 
 const opts: fastify.RouteShorthandOptions = {
@@ -109,8 +110,8 @@ const opts: fastify.RouteShorthandOptions = {
 server.get<Query, Params, Headers, Body>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type Query!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type Body!
   console.log(request.headers) // this is of type Headers!
+  console.log(request.body) // this is of type Body!
   reply.code(200).send({ pong: 'it worked!' })
 })
 ```
@@ -142,8 +143,8 @@ const opts: fastify.RouteShorthandOptions = {
 server.get<fastify.DefaultQuery, Params, unknown>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type fastify.DefaultQuery!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type unknown!
-  console.log(request.headers) // this is of type fastify.DefaultHeader because typescript will use the default type value!
+  console.log(request.headers) // this is of type unknown!
+  console.log(request.body) // this is of type fastify.DefaultBody because typescript will use the default type value!
   reply.code(200).send({ pong: 'it worked!' })
 })
 
@@ -154,8 +155,8 @@ server.get<fastify.DefaultQuery, Params, unknown>('/ping/:bar', opts, (request, 
 server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query) // this is of type unknown!
   console.log(request.params) // this is of type Params!
-  console.log(request.body) // this is of type unknown!
   console.log(request.headers) // this is of type unknown!
+  console.log(request.body) // this is of type unknown!
   reply.code(200).send({ pong: 'it worked!' })
 })
 ```
@@ -218,26 +219,43 @@ Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `Fa
 This code shows the typings for the [`fastify-static`](https://github.com/fastify/fastify-static) plugin.
 
 ```ts
+/// <reference types="node" />
+
 // require fastify typings
-import fastify = require("fastify");
-// require necessary http typings
+import * as fastify from 'fastify';
+
+// require necessary http, http2, https typings
 import { Server, IncomingMessage, ServerResponse } from "http";
+import { Http2SecureServer, Http2Server, Http2ServerRequest, Http2ServerResponse } from "http2";
+import * as https from "https";
+
+type HttpServer = Server | Http2Server | Http2SecureServer | https.Server;
+type HttpRequest = IncomingMessage | Http2ServerRequest;
+type HttpResponse = ServerResponse | Http2ServerResponse;
 
 // extend fastify typings
 declare module "fastify" {
-    interface FastifyReply<HttpResponse> {
-        sendFile(filename: string): FastifyReply<HttpResponse>;
-    }
+  interface FastifyReply<HttpResponse> {
+    sendFile(filename: string): FastifyReply<HttpResponse>;
+  }
 }
 
 // declare plugin type using fastify.Plugin
-declare const fastifyStatic: fastify.Plugin<Server, IncomingMessage, ServerResponse, {
+declare function fastifyStatic(): fastify.Plugin<
+  Server,
+  IncomingMessage,
+  ServerResponse,
+  {
     root: string;
     prefix?: string;
     serve?: boolean;
     decorateReply?: boolean;
     schemaHide?: boolean;
     setHeaders?: (...args: any[]) => void;
+    redirect?: boolean;
+    wildcard?: boolean | string;
+
+    // Passed on to `send`
     acceptRanges?: boolean;
     cacheControl?: boolean;
     dotfiles?: boolean;
@@ -247,7 +265,12 @@ declare const fastifyStatic: fastify.Plugin<Server, IncomingMessage, ServerRespo
     index?: string[];
     lastModified?: boolean;
     maxAge?: string | number;
-}>;
+  }
+>;
+
+declare namespace fastifyStatic {
+  interface FastifyStaticOptions {}
+}
 
 // export plugin type
 export = fastifyStatic;

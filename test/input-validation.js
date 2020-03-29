@@ -3,6 +3,7 @@
 const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const Joi = require('@hapi/joi')
+const yup = require('yup')
 
 module.exports.payloadMethod = function (method, t) {
   const test = t.test
@@ -36,7 +37,7 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    schemaCompiler: function (schema) {
+    validatorCompiler: function (method, url, httpPart, schema) {
       return ajv.compile(schema)
     }
   }
@@ -47,8 +48,33 @@ module.exports.payloadMethod = function (method, t) {
         hello: Joi.string().required()
       }).required()
     },
-    schemaCompiler: function (schema) {
+    validatorCompiler: function (method, url, httpPart, schema) {
       return schema.validate.bind(schema)
+    }
+  }
+
+  const yupOptions = {
+    strict: true, // don't coerce
+    abortEarly: false, // return all errors
+    stripUnknown: true, // remove additional properties
+    recursive: true
+  }
+
+  const optsWithYupValidator = {
+    schema: {
+      body: yup.object().shape({
+        hello: yup.string().required()
+      }).required()
+    },
+    validatorCompiler: function (method, url, httpPart, schema) {
+      return data => {
+        try {
+          const result = schema.validateSync(data, yupOptions)
+          return { value: result }
+        } catch (e) {
+          return { error: e }
+        }
+      }
     }
   }
 
@@ -64,9 +90,12 @@ module.exports.payloadMethod = function (method, t) {
       fastify[loMethod]('/joi', optsWithJoiValidator, function (req, reply) {
         reply.send(req.body)
       })
+      fastify[loMethod]('/yup', optsWithYupValidator, function (req, reply) {
+        reply.send(req.body)
+      })
 
       fastify.register(function (fastify2, opts, next) {
-        fastify2.setSchemaCompiler(function schema (schema) {
+        fastify2.setValidatorCompiler(function schema (method, url, httpPart, schema) {
           return body => ({ error: new Error('From custom schema compiler!') })
         })
         const withInstanceCustomCompiler = {
@@ -88,7 +117,7 @@ module.exports.payloadMethod = function (method, t) {
               additionalProperties: false
             }
           },
-          schemaCompiler: function (schema) {
+          validatorCompiler: function (method, url, httpPart, schema) {
             return function (body) {
               return { error: new Error('Always fail!') }
             }
@@ -222,6 +251,42 @@ module.exports.payloadMethod = function (method, t) {
         t.deepEqual(body, {
           error: 'Bad Request',
           message: '"hello" must be a string',
+          statusCode: 400
+        })
+      })
+    })
+
+    test(`${upMethod} - input-validation yup schema compiler ok`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/yup',
+        body: {
+          hello: '42'
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body, { hello: 42 })
+      })
+    })
+
+    test(`${upMethod} - input-validation yup schema compiler ko`, t => {
+      t.plan(3)
+      sget({
+        method: upMethod,
+        url: 'http://localhost:' + fastify.server.address().port + '/yup',
+        body: {
+          hello: 44
+        },
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 400)
+        t.deepEqual(body, {
+          error: 'Bad Request',
+          message: 'hello must be a `string` type, but the final value was: `44`.',
           statusCode: 400
         })
       })

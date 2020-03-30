@@ -364,7 +364,7 @@ fastify.get('/teapot', async function (request, reply) => {
 })
 
 fastify.get('/botnet', async function (request, reply) => {
-  throw { appCode: 400, message: 'short and stout' }
+  throw { appCode: 418, message: 'short and stout' }
   // will return to the client the same json
 })
 ```

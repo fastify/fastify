@@ -22,3 +22,5 @@ update_configs:
           dependency_name: "@typescript-eslint/eslint-plugin"
       - match:
           dependency_name: "lolex"
+      - match:
+          dependency_name: "pino"

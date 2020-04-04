@@ -15,6 +15,8 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
   - [onError](#onerror)
   - [onSend](#onsend)
   - [onResponse](#onresponse)
+  - [Manage Errors from a hook](#manage-errors-from-a-hook)
+  - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
   - [onClose](#onclose)
   - [onRoute](#onroute)
@@ -206,8 +208,14 @@ fastify.addHook('preHandler', (request, reply, done) => {
   done(new Error('Some error'))
 })
 ```
-
 *The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+
+Or if you're using `async/await` you can just throw an error:
+```js
+fastify.addHook('onResponse', async (request, reply) => {
+  throw new Error('Some error')
+})
+```
 
 ### Respond to a request from a hook
 

@@ -353,7 +353,7 @@ fastify.get('/async-await', options, async function (request, reply) {
 })
 ```
 
-Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an _Error_ object that has `statusCode` (or `status`) and `message` properties to modify the reply. Throwing plain objects is not supported, it must be an instance of _Error_, see:
+Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an object that has `statusCode` (or `status`) and `message` properties to modify the reply.
 
 ```js
 fastify.get('/teapot', async function (request, reply) => {
@@ -361,6 +361,11 @@ fastify.get('/teapot', async function (request, reply) => {
   err.statusCode = 418
   err.message = 'short and stout'
   throw err
+})
+
+fastify.get('/botnet', async function (request, reply) => {
+  throw { appCode: 418, message: 'short and stout' }
+  // will return to the client the same json
 })
 ```
 

@@ -38,7 +38,7 @@ const schemaRequest = {
 }
 
 test('Should use the ref resolver - response', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
   const ajv = new AJV()
   ajv.addSchema(fastClone(schemaParent))
@@ -46,7 +46,7 @@ test('Should use the ref resolver - response', t => {
 
   fastify.setSchemaCompiler(schema => ajv.compile(schema))
   fastify.setSchemaResolver((ref) => {
-    t.equals(ref, 'urn:schema:foo')
+    t.ok(['urn:schema:response', 'urn:schema:foo'].includes(ref))
     return ajv.getSchema(ref).schema
   })
 
@@ -55,7 +55,7 @@ test('Should use the ref resolver - response', t => {
     url: '/',
     schema: {
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
+        '2xx': { $ref: 'urn:schema:response#' }
       }
     },
     handler (req, reply) {
@@ -67,7 +67,7 @@ test('Should use the ref resolver - response', t => {
 })
 
 test('Should use the ref resolver - body', t => {
-  t.plan(3)
+  t.plan(4)
   const fastify = Fastify()
   const ajv = new AJV()
   ajv.addSchema(fastClone(schemaParent))
@@ -75,7 +75,7 @@ test('Should use the ref resolver - body', t => {
 
   fastify.setSchemaCompiler(schema => ajv.compile(schema))
   fastify.setSchemaResolver((ref) => {
-    t.equals(ref, 'urn:schema:foo')
+    t.ok(['urn:schema:response', 'urn:schema:foo'].includes(ref))
     return ajv.getSchema(ref).schema
   })
 
@@ -83,7 +83,7 @@ test('Should use the ref resolver - body', t => {
     method: 'POST',
     url: '/',
     schema: {
-      body: ajv.getSchema('urn:schema:response').schema
+      body: { $ref: 'urn:schema:response#' }
     },
     handler (req, reply) {
       reply.send({ foo: 'bar' })
@@ -116,7 +116,7 @@ test('Encapsulation', t => {
       method: 'POST',
       url: '/',
       schema: {
-        body: ajv.getSchema('urn:schema:response').schema
+        body: { $ref: 'urn:schema:response#' }
       },
       handler (req, reply) {
         reply.send({ foo: 'bar' })
@@ -128,7 +128,7 @@ test('Encapsulation', t => {
         method: 'POST',
         url: '/two',
         schema: {
-          body: ajv.getSchema('urn:schema:response').schema
+          body: { $ref: 'urn:schema:response#' }
         },
         handler (req, reply) {
           reply.send({ foo: 'bar' })
@@ -241,9 +241,9 @@ test('Triple $ref deep', t => {
     method: 'POST',
     url: '/',
     schema: {
-      body: ajv.getSchema('urn:schema:request').schema,
+      body: { $ref: 'urn:schema:request#' },
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
+        '2xx': { $ref: 'urn:schema:response#' }
       }
     },
     handler (req, reply) {
@@ -273,7 +273,7 @@ test('Triple $ref deep', t => {
 })
 
 test('$ref with a simple $id', t => {
-  t.plan(4)
+  t.plan(6)
   const fastify = Fastify()
   const ajv = new AJV()
   ajv.addSchema(fastClone(schemaUsed))
@@ -296,7 +296,7 @@ test('$ref with a simple $id', t => {
 
   fastify.setSchemaCompiler(schema => ajv.compile(schema))
   fastify.setSchemaResolver((ref) => {
-    t.equals(ref, 'urn:schema:foo')
+    t.ok(['urn:schema:request', 'urn:schema:response', 'urn:schema:foo'].includes(ref))
     return ajv.getSchema(ref).schema
   })
 
@@ -304,9 +304,9 @@ test('$ref with a simple $id', t => {
     method: 'POST',
     url: '/',
     schema: {
-      body: ajv.getSchema('urn:schema:request').schema,
+      body: { $ref: 'urn:schema:request#' },
       response: {
-        '2xx': ajv.getSchema('urn:schema:response').schema
+        '2xx': { $ref: 'urn:schema:response#' }
       }
     },
     handler (req, reply) {

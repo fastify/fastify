@@ -14,4 +14,4 @@ export interface FastifySchema {
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler = (method: string, url: string, httpPart: string, schema: FastifySchema) => unknown
+export type FastifySchemaCompiler = (schema: FastifySchema, method: string, url: string, httpPart: string) => unknown

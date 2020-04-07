@@ -426,3 +426,18 @@ invalidErrorCodes.forEach((invalidCode) => {
     })
   })
 })
+
+test('should not throw error for status code in range', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.get('/', (request, reply) => {
+    return reply.code(525).send('Hello World')
+  })
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (e, res) => {
+    t.is(525, res.statusCode)
+    t.is('Hello World', res.body)
+  })
+})

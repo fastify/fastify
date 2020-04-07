@@ -1,10 +1,10 @@
-import fastify, { FastifyPlugin, FastifyInstance } from '../../fastify'
+import fastify, { FastifyPlugin, FastifyInstance, FastifyPluginOptions } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import { expectType, expectError } from 'tsd'
 
 // FastifyPlugin & FastifyRegister
-interface TestOptions {
+interface TestOptions extends FastifyPluginOptions {
   option1: string;
   option2: boolean;
 }

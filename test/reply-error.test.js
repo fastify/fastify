@@ -415,7 +415,7 @@ invalidErrorCodes.forEach((invalidCode) => {
       } catch (err) {
         t.is(err.name, 'FastifyError [FST_ERR_BAD_STATUS_CODE]')
         t.is(err.code, 'FST_ERR_BAD_STATUS_CODE')
-        t.is(err.message, 'FST_ERR_BAD_STATUS_CODE: Called reply with malformed status code')
+        t.is(err.message, `FST_ERR_BAD_STATUS_CODE: Called reply with an invalid status code: ${String(invalidCode)}`)
       }
     })
     fastify.inject({
@@ -424,20 +424,5 @@ invalidErrorCodes.forEach((invalidCode) => {
     }, (e, res) => {
       t.fail('should not be called')
     })
-  })
-})
-
-test('should not throw error for status code in range', t => {
-  t.plan(2)
-  const fastify = Fastify()
-  fastify.get('/', (request, reply) => {
-    return reply.code(525).send('Hello World')
-  })
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (e, res) => {
-    t.is(525, res.statusCode)
-    t.is('Hello World', res.body)
   })
 })

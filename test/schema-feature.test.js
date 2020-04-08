@@ -992,41 +992,45 @@ test('Check how many AJV instances are built #1', t => {
 })
 
 test('new hook', { only: 1 }, t => {
-  t.plan(8)
+  t.plan(6)
 
   const fastify = Fastify()
 
-  fastify.get(`/${Math.random()}`,
-    { schema: { body: { type: 'object' }, response: { 200: { type: 'object' } } } },
-    (req, reply) => reply.send()
-  )
-
-  fastify.addHook('onCompilerReady', function (type) {
-    if (type === 'validator') {
-      t.equal(type, 'validator')
-      t.ok(this.validatorCompiler)
-    } else {
-      t.equal(type, 'serializer')
-      t.ok(this.serializerCompiler)
+  fastify.get(`/${Math.random()}`, {
+    handler: (req, reply) => reply.send(),
+    schema: {
+      body: { type: 'object' },
+      response: { 200: { type: 'object' } }
     }
   })
 
-  // fastify.register(async (i, o) => {
-  //   i.addHook('onCompilerReady', function (type) {
-  //     if (type === 'validator') {
-  //       t.equal(type, 'validator')
-  //       t.ok(this.validatorCompiler)
-  //     } else {
-  //       t.equal(type, 'serializer')
-  //       t.ok(this.serializerCompiler)
-  //     }
-  //   })
+  fastify.addHook('onCompilerReady', function (done) {
+    t.ok(this.validatorCompiler)
+    t.ok(this.serializerCompiler)
+    done()
+  })
 
-  //   i.register(async (i, o) => {})
-  // })
-  // fastify.register(async (i, o) => {})
+  let hookCallCounter = 0
+  fastify.register(async (i, o) => {
+    i.addHook('onCompilerReady', function (done) {
+      t.ok(this.validatorCompiler)
+      t.ok(this.serializerCompiler)
+      done()
+    })
 
-  fastify.ready()
+    i.register(async (i, o) => {})
+
+    i.addHook('onCompilerReady', function (done) {
+      hookCallCounter++
+      done()
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    t.equals(hookCallCounter, 2, 'it is called twice')
+    fastify.close()
+  })
 })
 
 test('Check how many AJV instances are built #2 - verify validatorPool', t => {

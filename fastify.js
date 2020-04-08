@@ -31,7 +31,7 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
-const { Hooks, buildHooks } = require('./lib/hooks')
+const { Hooks, buildHooks, hookRunnerApplication } = require('./lib/hooks')
 const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
@@ -266,7 +266,12 @@ function fastify (options) {
   })
   // Override to allow the plugin incapsulation
   avvio.override = override
-  avvio.on('start', () => (fastify[kState].started = true))
+  avvio.on('start', () => {
+    hookRunnerApplication('onCompilerReady', fastify, () => {
+      // ?
+    })
+    fastify[kState].started = true
+  })
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
@@ -425,22 +430,14 @@ function fastify (options) {
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
 
-    if (!this[kValidatorCompiler]) {
-      this.ready(() => {
-        for (const hook of this[kHooks].onCompilerReady) hook.call(this, 'validator', validatorCompiler)
-        this[kChildren].forEach(child => { for (const asd of child[kHooks].onCompilerReady) asd.call(child, 'validator') })
-      })
-    }
-
     this[kValidatorCompiler] = validatorCompiler
     return this
   }
 
   function setSerializerCompiler (serializerCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
-    this[kSerializerCompiler] = serializerCompiler
+    throwIfAlreadyStarted('Cannot call "setSerializerCpompiler" when fastify instance is already started!')
 
-    for (const hook of this[kHooks].onCompilerReady) hook.call(this, 'serializer', serializerCompiler)
+    this[kSerializerCompiler] = serializerCompiler
     return this
   }
 
@@ -464,8 +461,6 @@ function fastify (options) {
 // Everything that need to be encapsulated must be handled in this function.
 function override (old, fn, opts) {
   const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
-
-  console.log(fn.toString())
 
   if (shouldSkipOverride) {
     // after every plugin registration we will enter a new name

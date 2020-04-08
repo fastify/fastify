@@ -31,18 +31,21 @@ A "month" is to be a period of 30 consecutive days.
 
 ### Schedule
 
-| Version | Release Date | End Of LTS Date | Node.js         |
-| :------ | :----------- | :-------------- | :-------------- |
-| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11 |
-| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 11    |
+| Version | Release Date | End Of LTS Date | Node.js              |
+| :------ | :----------- | :-------------- | :------------------- |
+| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11      |
+| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 11, 12, 13 |
 
 <a name="supported-os"></a>
 
 ### CI tested operating systems
 
-| CI             | OS      | Version                | Package Manager           | Node.js   |
-|----------------|---------|------------------------|---------------------------|-----------|
-| Github Actions | Linux   | Ubuntu 16.04           | npm                       | 6,8,10,12 |
-| Github Actions | Linux   | Ubuntu 16.04           | yarn,pnpm                 | 8,10      |
-| Github Actions | Windows | Windows Server 2016 R2 | npm                       | 6,8,10,12 |
-| Github Actions | MacOS   | macOS X Mojave 10.14   | npm                       | 6,8,10,12 |
+| OS      | Version                | Package Manager           | Node.js   |
+|---------|------------------------|---------------------------|-----------|
+| Linux   | Ubuntu 16.04           | npm                       | 6,8,10,12 |
+| Linux   | Ubuntu 16.04           | pnpm                      | 8,10,12   |
+| Linux   | Ubuntu 16.04           | yarn                      | 8,10,12   |
+| Windows | Windows Server 2016 R2 | npm                       | 6,8,10,12 |
+| MacOS   | macOS X Mojave 10.14   | npm                       | 6,8,10,12 |
+
+Using yarn might require passing the `--ignore-engines` flag.

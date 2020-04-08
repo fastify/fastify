@@ -162,7 +162,8 @@ function build (options) {
     [kFourOhFour]: fourOhFour,
     [kGlobalHooks]: {
       onRoute: [],
-      onRegister: []
+      onRegister: [],
+      onReady: []
     },
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
@@ -298,6 +299,11 @@ function build (options) {
       }
     })
   })
+  avvio.ready(function (err, instance, done) {
+    if (err) return done(err)
+    for (const hook of instance[kGlobalHooks].onReady) hook.call(this, instance)
+    done()
+  })
 
   // Set the default 404 handler
   fastify.setNotFoundHandler()
@@ -395,6 +401,9 @@ function build (options) {
     } else if (name === 'onRegister') {
       this[kHooks].validate(name, fn)
       this[kGlobalHooks].onRegister.push(fn)
+    } else if (name === 'onReady') {
+      this[kHooks].validate(name, fn)
+      this[kGlobalHooks].onReady.push(fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)

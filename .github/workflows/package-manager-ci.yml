@@ -12,14 +12,14 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x, 10.x]
+        node-version: [8.x, 10.x, 12.x]
         os: [ubuntu-16.04]
 
     steps:
       - uses: actions/checkout@v1
 
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -38,14 +38,14 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x, 10.x]
+        node-version: [10.x, 12.x]
         os: [ubuntu-16.04]
 
     steps:
       - uses: actions/checkout@v1
 
       - name: Use Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 

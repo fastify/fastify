@@ -415,7 +415,7 @@ invalidErrorCodes.forEach((invalidCode) => {
       } catch (err) {
         t.is(err.name, 'FastifyError [FST_ERR_BAD_STATUS_CODE]')
         t.is(err.code, 'FST_ERR_BAD_STATUS_CODE')
-        t.is(err.message, 'FST_ERR_BAD_STATUS_CODE: Called reply with malformed status code')
+        t.is(err.message, `FST_ERR_BAD_STATUS_CODE: Called reply with an invalid status code: ${String(invalidCode)}`)
       }
     })
     fastify.inject({

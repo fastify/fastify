@@ -142,7 +142,7 @@
     "abstract-logging": "^2.0.0",
     "ajv": "^6.12.0",
     "avvio": "^6.3.1",
-    "fast-json-stringify": "^1.18.0",
+    "fast-json-stringify": "^2.0.0",
     "find-my-way": "^2.2.2",
     "flatstr": "^1.0.12",
     "light-my-request": "^3.7.3",

@@ -44,10 +44,8 @@ A "month" is to be a period of 30 consecutive days.
 |---------|------------------------|---------------------------|-----------|
 | Linux   | Ubuntu 16.04           | npm                       | 6,8,10,12 |
 | Linux   | Ubuntu 16.04           | pnpm                      | 8,10,12   |
-| Linux   | Ubuntu 16.04           | yarn                      | 10,12     |
+| Linux   | Ubuntu 16.04           | yarn                      | 8,10,12   |
 | Windows | Windows Server 2016 R2 | npm                       | 6,8,10,12 |
 | MacOS   | macOS X Mojave 10.14   | npm                       | 6,8,10,12 |
 
-Unfortunately it is not possible to provide Long Term Support for
-applications installed with Yarn as thee drop support of Node.js releases
-in minor versions.
+Using yarn might require passing the `--ignore-engines` flag.

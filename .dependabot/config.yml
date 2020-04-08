@@ -24,3 +24,5 @@ update_configs:
           dependency_name: "lolex"
       - match:
           dependency_name: "pino"
+      - match:
+          dependency_name: "fast-json-stringify"

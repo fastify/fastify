@@ -18,7 +18,7 @@ export interface FastifyInstance<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
-> {
+  > {
   server: RawServer;
   prefix: string;
   log: Logger;
@@ -50,7 +50,7 @@ export interface FastifyInstance<
   ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>;
   ready(readyListener: (err: Error) => void): void;
 
-  register: FastifyRegister<RawServer, RawRequest, RawReply>;
+  register: FastifyRegister;
   /**
    * This method is now deprecated and will throw a `FST_ERR_MISSING_MIDDLEWARE` error.
    * Visit fastify.io/docs/latest/Middleware/ for more info.
@@ -223,7 +223,7 @@ export interface FastifyInstance<
    * Set the schema validator for all routes.
    */
   setValidatorCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply>;
-  
+
   /**
    * Set the schema serializer for all routes.
    */

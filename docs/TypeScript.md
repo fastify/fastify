@@ -281,10 +281,15 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
     }
   }
 
+  // define options
+  export interface MyPluginOptions {
+    myPluginOption: string
+  }
+
   // define plugin
-  const myPlugin: FastifyPlugin = (fastify, options, done) => {
+  const myPlugin: FastifyPlugin<MyPluginOptions> = (fastify, options, done) => {
     fastify.decorateRequest('myPluginProp', 'super_secret_value')
-    fastify.decorateReply('myPluginProp', 5000)
+    fastify.decorateReply('myPluginProp', options.myPluginOption)
 
     done()
   }
@@ -758,7 +763,7 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the [`fastify.register()`][FastifyRegister] method.
 
-##### fastify.FastifyPlugin<[Options][FastifyPluginOptions], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>
+##### fastify.FastifyPlugin<[Options][FastifyPluginOptions]>
 [src](../types/plugin.d.ts#L10)
 
 Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
@@ -774,7 +779,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 
 #### Register
 
-##### fastify.FastifyRegister<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
 This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].

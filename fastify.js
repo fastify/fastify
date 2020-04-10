@@ -342,7 +342,7 @@ function fastify (options) {
     let resolveReady
     let rejectReady
 
-    fastify.boot(function (err, ctx, done) {
+    fastify.boot(function (err) {
       if (err) { // this error could be returned during startup of plugins
         manageErr(err)
         return

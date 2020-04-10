@@ -991,7 +991,7 @@ test('Check how many AJV instances are built #1', t => {
   })
 })
 
-test('onReady hook has the compilers ready', { only: 1 }, t => {
+test('onReady hook has the compilers ready', t => {
   t.plan(6)
 
   const fastify = Fastify()

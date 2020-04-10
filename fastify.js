@@ -202,7 +202,36 @@ function fastify (options) {
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
-    ready: null,
+    ready: function (func) {
+      // it must be the last function to be executed
+      let resolveReady
+      let rejectReady
+      fastify.boot((err) => {
+        if (err) {
+          manageErr(err)
+          return
+        }
+        hookRunnerApplication('onReady', fastify, manageErr)
+      })
+
+      if (!func) {
+        return new Promise((resolve, reject) => {
+          resolveReady = resolve
+          rejectReady = reject
+        })
+      }
+
+      function manageErr (err) {
+        if (func) {
+          func(err)
+        } else {
+          if (err) {
+            return rejectReady(err)
+          }
+          resolveReady()
+        }
+      }
+    },
     onClose: null,
     close: null,
     // http server
@@ -262,19 +291,14 @@ function fastify (options) {
   const avvio = Avvio(fastify, {
     autostart: false,
     timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
-    expose: { use: 'register' }
+    expose: {
+      ready: 'boot',
+      use: 'register'
+    }
   })
   // Override to allow the plugin incapsulation
   avvio.override = override
-  avvio.on('start', () => {
-    fastify[kState].started = true // we don't accept new decorator or hooks
-
-    hookRunnerApplication('onReady', fastify, (err) => {
-      if (err) {
-        // TODO error starting
-      }
-    })
-  })
+  avvio.on('start', () => (fastify[kState].started = true))
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {

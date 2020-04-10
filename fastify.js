@@ -459,14 +459,12 @@ function fastify (options) {
 
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
-
     this[kValidatorCompiler] = validatorCompiler
     return this
   }
 
   function setSerializerCompiler (serializerCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSerializerCpompiler" when fastify instance is already started!')
-
+    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
     this[kSerializerCompiler] = serializerCompiler
     return this
   }

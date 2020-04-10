@@ -267,10 +267,13 @@ function fastify (options) {
   // Override to allow the plugin incapsulation
   avvio.override = override
   avvio.on('start', () => {
-    hookRunnerApplication('onCompilerReady', fastify, () => {
-      // ?
+    fastify[kState].started = true // we don't accept new decorator or hooks
+
+    hookRunnerApplication('onReady', fastify, (err) => {
+      if (err) {
+        // TODO error starting
+      }
     })
-    fastify[kState].started = true
   })
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
@@ -361,6 +364,9 @@ function fastify (options) {
     if (name === 'onClose') {
       this[kHooks].validate(name, fn)
       this.onClose(fn)
+    } else if (name === 'onReady') {
+      this[kHooks].validate(name, fn)
+      this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)

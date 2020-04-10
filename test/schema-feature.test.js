@@ -991,7 +991,7 @@ test('Check how many AJV instances are built #1', t => {
   })
 })
 
-test('new hook', { only: 1 }, t => {
+test('onReady hook has the compilers ready', { only: 1 }, t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1004,7 +1004,7 @@ test('new hook', { only: 1 }, t => {
     }
   })
 
-  fastify.addHook('onCompilerReady', function (done) {
+  fastify.addHook('onReady', function (done) {
     t.ok(this.validatorCompiler)
     t.ok(this.serializerCompiler)
     done()
@@ -1012,7 +1012,7 @@ test('new hook', { only: 1 }, t => {
 
   let hookCallCounter = 0
   fastify.register(async (i, o) => {
-    i.addHook('onCompilerReady', function (done) {
+    i.addHook('onReady', function (done) {
       t.ok(this.validatorCompiler)
       t.ok(this.serializerCompiler)
       done()
@@ -1020,7 +1020,7 @@ test('new hook', { only: 1 }, t => {
 
     i.register(async (i, o) => {})
 
-    i.addHook('onCompilerReady', function (done) {
+    i.addHook('onReady', function (done) {
       hookCallCounter++
       done()
     })
@@ -1028,7 +1028,7 @@ test('new hook', { only: 1 }, t => {
 
   fastify.listen(0, err => {
     t.error(err)
-    t.equals(hookCallCounter, 2, 'it is called twice')
+    t.equals(hookCallCounter, 1, 'it is called once')
     fastify.close()
   })
 })

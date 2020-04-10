@@ -1026,10 +1026,9 @@ test('onReady hook has the compilers ready', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.ready(err => {
     t.error(err)
     t.equals(hookCallCounter, 1, 'it is called once')
-    fastify.close()
   })
 })
 

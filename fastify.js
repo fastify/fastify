@@ -202,36 +202,7 @@ function fastify (options) {
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
-    ready: function (func) {
-      // it must be the last function to be executed
-      let resolveReady
-      let rejectReady
-      fastify.boot((err) => {
-        if (err) {
-          manageErr(err)
-          return
-        }
-        hookRunnerApplication('onReady', fastify, manageErr)
-      })
-
-      if (!func) {
-        return new Promise((resolve, reject) => {
-          resolveReady = resolve
-          rejectReady = reject
-        })
-      }
-
-      function manageErr (err) {
-        if (func) {
-          func(err)
-        } else {
-          if (err) {
-            return rejectReady(err)
-          }
-          resolveReady()
-        }
-      }
-    },
+    ready,
     onClose: null,
     close: null,
     // http server
@@ -367,6 +338,38 @@ function fastify (options) {
     }
   }
 
+  function ready (cb) {
+    let resolveReady
+    let rejectReady
+
+    fastify.boot(function (err, ctx, done) {
+      if (err) { // this error could be returned during startup of plugins
+        manageErr(err)
+        return
+      }
+      // it must be the last function to be executed
+      hookRunnerApplication('onReady', fastify, manageErr)
+    })
+
+    if (!cb) {
+      return new Promise(function (resolve, reject) {
+        resolveReady = resolve
+        rejectReady = reject
+      })
+    }
+
+    function manageErr (err) {
+      if (cb) {
+        cb(err)
+      } else {
+        if (err) {
+          return rejectReady(err)
+        }
+        resolveReady()
+      }
+    }
+  }
+
   function use () {
     throw new FST_ERR_MISSING_MIDDLEWARE()
   }
@@ -377,6 +380,10 @@ function fastify (options) {
 
     if (name === 'onSend' || name === 'preSerialization' || name === 'onError') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
+        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      }
+    } else if (name === 'onReady') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
     } else {

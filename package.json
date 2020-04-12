@@ -100,6 +100,7 @@
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",
     "autocannon": "^4.0.0",
+    "benchmark": "^2.1.4",
     "branch-comparer": "^0.4.0",
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",

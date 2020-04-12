@@ -11,7 +11,15 @@ export interface FastifySchema {
   headers?: unknown;
 }
 
+export interface FastifyRouteSchemaDef {
+  schema: FastifySchema;
+  method: string;
+  url: string;
+  httpPart?: string;
+  httpStatus?: string;
+}
+
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler = (schema: FastifySchema, method: string, url: string, httpPart: string) => unknown
+export type FastifySchemaCompiler = (routeSchema: FastifyRouteSchemaDef) => unknown

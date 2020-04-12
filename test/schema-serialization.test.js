@@ -262,7 +262,7 @@ test('Custom setSerializerCompiler', t => {
     whatever: 'need to be parsed by the custom serializer'
   }
 
-  fastify.setSerializerCompiler((schema, method, url, httpStatus) => {
+  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
     t.equals(method, 'GET')
     t.equals(url, '/foo/:id')
     t.equals(httpStatus, '200')
@@ -312,7 +312,7 @@ test('Custom serializer per route', async t => {
 
   let hit = 0
   fastify.register((instance, opts, next) => {
-    instance.setSerializerCompiler((schema, method, url, httpStatus) => {
+    instance.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
       hit++
       return data => JSON.stringify({ mean: 'custom' })
     })
@@ -322,7 +322,7 @@ test('Custom serializer per route', async t => {
     })
     instance.get('/route', {
       handler (req, reply) { reply.send({}) },
-      serializerCompiler: (schema, method, url, httpPart) => {
+      serializerCompiler: ({ schema, method, url, httpPart }) => {
         hit++
         return data => JSON.stringify({ mean: 'route' })
       },
@@ -365,7 +365,7 @@ test('Reply serializer win over serializer ', t => {
         }
       }
     },
-    serializerCompiler: (schema, method, url, httpPart) => {
+    serializerCompiler: ({ schema, method, url, httpPart }) => {
       t.ok(method, 'the custom compiler has been created')
       return () => {
         t.fail('the serializer must not be called when there is a reply serializer')
@@ -404,7 +404,7 @@ test('Reply serializer win over serializer ', t => {
         }
       }
     },
-    serializerCompiler: (schema, method, url, httpPart) => {
+    serializerCompiler: ({ schema, method, url, httpPart }) => {
       t.ok(method, 'the custom compiler has been created')
       return () => {
         t.fail('the serializer must not be called when there is a reply serializer')

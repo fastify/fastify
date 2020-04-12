@@ -292,7 +292,7 @@ const ajv = new Ajv({
   // any other options
   // ...
 })
-fastify.setValidatorCompiler((method, url, httpPart, schema) => {
+fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
@@ -312,7 +312,7 @@ fastify.post('/the/url', {
       hello: Joi.string().required()
     }).required()
   },
-  validatorCompiler: (method, url, httpPart, schema) => {
+  validatorCompiler: ({ schema, method, url, httpPart }) => {
     return (data) => Joi.validate(data, schema)
   }
 }, handler)
@@ -337,7 +337,7 @@ fastify.post('/the/url', {
       }).required()
     })
   },
-  validatorCompiler: (method, url, httpPart, schema) => {
+  validatorCompiler: ({ schema, method, url, httpPart }) => {
     return function (data) {
       // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
       try {
@@ -445,7 +445,7 @@ fastify.post('/the/url', { schema }, handler)
 The `serializerCompiler` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have defined a `response` JSON Schema.
 
 ```js
-fastify.setSerializerCompiler((method, url, httpPart, schema) => {
+fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
   return data => JSON.stringify(data)
 })
 

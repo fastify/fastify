@@ -57,7 +57,7 @@ test('build schema - output schema', t => {
       }
     }
   }
-  validation.compileSchemasForSerialization(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForSerialization(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
   t.is(typeof opts[symbols.responseSchema]['201'], 'function')
 })
@@ -74,7 +74,7 @@ test('build schema - payload schema', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.is(typeof opts[symbols.bodySchema], 'function')
 })
 
@@ -91,7 +91,7 @@ test('build schema - query schema', t => {
     }
   }
   opts.schema = normalizeSchema(opts.schema)
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -106,7 +106,7 @@ test('build schema - query schema abbreviated', t => {
     }
   }
   opts.schema = normalizeSchema(opts.schema)
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -123,7 +123,7 @@ test('build schema - querystring schema', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -138,7 +138,7 @@ test('build schema - querystring schema abbreviated', t => {
     }
   }
   opts.schema = normalizeSchema(opts.schema)
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.is(typeof opts[symbols.querystringSchema], 'function')
 })
@@ -181,7 +181,7 @@ test('build schema - params schema', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.is(typeof opts[symbols.paramsSchema], 'function')
 })
 
@@ -197,7 +197,7 @@ test('build schema - headers schema', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => ajv.compile(schema))
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.is(typeof opts[symbols.headersSchema], 'function')
 })
 
@@ -213,7 +213,7 @@ test('build schema - headers are lowercase', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.ok(schema.properties['content-type'], 'lowercase content-type exists')
     return () => {}
   })
@@ -228,7 +228,7 @@ test('build schema - headers are not lowercased in case of custom object', t => 
       headers: new Headers()
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.type(schema, Headers)
     return () => {}
   })
@@ -246,7 +246,7 @@ test('build schema - uppercased headers are not included', t => {
       }
     }
   }
-  validation.compileSchemasForValidation(opts, (method, url, httpPart, schema) => {
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
     t.notOk('Content-Type' in schema.properties, 'uppercase does not exist')
     return () => {}
   })

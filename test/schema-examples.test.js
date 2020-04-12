@@ -230,7 +230,7 @@ test('Example Joi', t => {
         hello: Joi.string().required()
       }).required()
     },
-    validatorCompiler: (method, url, httpPart, schema) => {
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
       return (data) => Joi.validate(data, schema)
     }
   }, handler)
@@ -261,7 +261,7 @@ test('Example yup', t => {
         }).required()
       })
     },
-    validatorCompiler: (method, url, httpPart, schema) => {
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
       return function (data) {
         // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
         try {
@@ -327,7 +327,7 @@ test('Example - serializator', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.setSerializerCompiler((method, url, httpPart, schema) => {
+  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
     return data => JSON.stringify(data)
   })
 

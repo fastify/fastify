@@ -762,12 +762,12 @@ Set the schema serializer compiler for all routes. See [#schema-serializer](http
 
 <a name="validator-compiler"></a>
 #### validatorCompiler
-This property can be used to get the schema validator. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+This property can be used to get the schema validator. If not set, it will be `null` until the server starts, then it will be a function with the signature `function ({ schema, method, url, httpPart })` that returns the input `schema` compiled to a function for validating data.
 The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
 <a name="serializer-compiler"></a>
 #### serializerCompiler
-This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function (method, url, httpPart, schema)` that returns the input `schema` compiled to a function for validating data.
+This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function ({ schema, method, url, httpPart })` that returns the input `schema` compiled to a function for validating data.
 The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
 
 <a name="set-not-found-handler"></a>

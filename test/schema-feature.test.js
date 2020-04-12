@@ -100,8 +100,8 @@ test('Get compilers is empty when settle on routes', t => {
       body: { type: 'object', properties: { hello: { type: 'string' } } },
       response: { '2xx': { foo: { type: 'array', items: { type: 'string' } } } }
     },
-    validatorCompiler: (method, url, httpPart, schema) => {},
-    serializerCompiler: (method, url, httpPart, schema) => {}
+    validatorCompiler: ({ schema, method, url, httpPart }) => {},
+    serializerCompiler: ({ schema, method, url, httpPart }) => {}
   }, function (req, reply) {
     reply.send('ok')
   })
@@ -279,7 +279,7 @@ test('Customize validator compiler in instance and route', t => {
   t.plan(28)
   const fastify = Fastify()
 
-  fastify.setValidatorCompiler((method, url, httpPart, schema) => {
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     t.equals(method, 'POST') // run 4 times
     t.equals(url, '/:id') // run 4 times
     switch (httpPart) {
@@ -330,7 +330,7 @@ test('Customize validator compiler in instance and route', t => {
 
   fastify.get('/wow/:id', {
     handler: echoParams,
-    validatorCompiler: (method, url, httpPart, schema) => {
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
       t.equals(method, 'GET') // run 3 times (params, headers, query)
       t.equals(url, '/wow/:id') // run 4 times
       return () => { return true } // ignore the validation

@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x, 10.x]
+        node-version: [8.x, 10.x, 12.x]
         os: [ubuntu-16.04]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -38,11 +38,11 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [8.x, 10.x]
+        node-version: [8.x, 10.x, 12.x]
         os: [ubuntu-16.04]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -52,7 +52,7 @@ jobs:
       - name: Install with yarn
         run: |
           curl -o- -L https://yarnpkg.com/install.sh | bash
-          yarn install
+          yarn install --ignore-engines
 
       - name: Run tests
         run: |

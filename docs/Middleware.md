@@ -23,6 +23,30 @@ await fastify.register(require('middie'))
 fastify.use(require('cors')())
 ```
 
+Remember that middleware can be encapsulated, this means that you can decide where your middleware should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
+
+Fastify middleware also do not expose the `send` method or other methods specific to the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects internally, but this is done after the middleware phase. If you need to create middleware, you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook which already has the [Request](./Request.md#request) and [Reply](./Reply.md#reply) Fastify instances. For more information, see [Hooks](./Hooks.md#hooks).
+
+<a name="restrict-usage"></a>
+#### Restrict middleware execution to a certain path(s)
+If you need to run a middleware only under certain path(s), just pass the path as first parameter to `use` and you are done!
+
+*Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcards are not supported in multiple paths.*
+
+```js
+const path = require('path')
+const serveStatic = require('serve-static')
+
+// Single path
+fastify.use('/css', serveStatic(path.join(__dirname, '/assets')))
+
+// Wildcard path
+fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
+
+// Multiple paths
+fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
+```
+
 ### Alternativies
 
 Fastify offers some alternatives to the most commonly used middlewares, such as [`fastify-helmet`](https://github.com/fastify/fastify-helmet) in case of [`helmet`](https://github.com/helmetjs/helmet), [`fastify-cors`](https://github.com/fastify/fastify-cors) for [`cors`](https://github.com/expressjs/cors) and [`fastify-static`](https://github.com/fastify/fastify-static) for [`serve-static`](https://github.com/expressjs/serve-static).

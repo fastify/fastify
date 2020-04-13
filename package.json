@@ -149,7 +149,7 @@
     "ajv": "^6.10.2",
     "avvio": "7.0.0-alpha.5",
     "fast-json-stringify": "^2.0.0",
-    "find-my-way": "^2.2.0",
+    "find-my-way": "^3.0.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^3.4.1",
     "pino": "^6.0.0",

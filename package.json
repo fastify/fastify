@@ -92,7 +92,7 @@
     "node": ">=10.16.0"
   },
   "devDependencies": {
-    "@hapi/joi": "^16.0.0",
+    "@hapi/joi": "^17.1.1",
     "@types/node": "^12.12.22",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
     "@typescript-eslint/parser": "^2.13.0",

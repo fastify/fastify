@@ -104,7 +104,7 @@
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",
     "coveralls": "^3.0.6",
-    "dns-prefetch-control": "^0.2.0",
+    "dns-prefetch-control": "^0.3.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-import-resolver-node": "^0.3.2",

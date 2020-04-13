@@ -31,7 +31,7 @@ Enter Fastify. Fastify is a web framework highly focused on providing the best d
 
 ### Requirements
 
-Node.js 8 LTS (8.16.0) or later; recommended 10 LTS (10.16.0) or later.
+Node.js v10 LTS (10.16.0) or later.
 
 ### Quick start
 
@@ -126,8 +126,8 @@ Do you want to know more? Head to the <a href="https://github.com/fastify/fastif
 
 ### Fastify v1.x and v2.x
 
-Code for Fastify's **v1.x** is in [Branch 1.x](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
-In a similar way, all Fastify 2.x related changes should be based on **`branch 2.x`**.
+Code for Fastify's **v1.x** is in [**`branch 1.x`**](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
+In a similar way, all Fastify **v2.x** related changes should be based on [**`branch 2.x`**](https://github.com/fastify/fastify/tree/2.x).
 
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration). If you are running Fastify in a container (Docker, [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).

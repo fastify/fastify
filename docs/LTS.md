@@ -33,9 +33,9 @@ A "month" is to be a period of 30 consecutive days.
 
 | Version | Release Date | End Of LTS Date | Node.js             |
 | :------ | :----------- | :-------------- | :------------------ |
-| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11, 12 |
-| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 11, 12    |
-| 3.0.0   | TBD          | TBD             | 8, 10, 12           |
+| 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 10, 12 |
+| 2.0.0   | 2019-02-25   | TBD             | 6, 8, 10, 12    |
+| 3.0.0   | TBD          | TBD             | 10, 12, 14         |
 
 <a name="supported-os"></a>
 
@@ -43,7 +43,7 @@ A "month" is to be a period of 30 consecutive days.
 
 | CI             | OS      | Version                | Package Manager           | Node.js   |
 |----------------|---------|------------------------|---------------------------|-----------|
-| Github Actions | Linux   | Ubuntu 16.04           | npm                       | 8,10,12 |
-| Github Actions | Linux   | Ubuntu 16.04           | yarn,pnpm                 | 8,10      |
-| Github Actions | Windows | Windows Server 2016 R2 | npm                       | 8,10,12 |
-| Github Actions | MacOS   | macOS X Mojave 10.14   | npm                       | 8,10,12 |
+| Github Actions | Linux   | Ubuntu 16.04           | npm                       | 10,12 |
+| Github Actions | Linux   | Ubuntu 16.04           | yarn,pnpm                 | 10      |
+| Github Actions | Windows | Windows Server 2016 R2 | npm                       | 10,12 |
+| Github Actions | MacOS   | macOS X Mojave 10.14   | npm                       | 10,12 |

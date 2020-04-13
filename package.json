@@ -109,7 +109,7 @@
     "eslint-config-standard": "^14.1.1",
     "eslint-import-resolver-node": "^0.3.2",
     "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-node": "^9.1.0",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
     "events.once": "^2.0.2",

@@ -113,7 +113,7 @@ const ajv = new AJV();
 ajv.addSchema(schemaA);
 ajv.addSchema(schemaB);
 
-fastify.setValidatorCompiler((method, url, httpPart, schema) =>
+fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => 
   ajv.compile(schema)
 );
 ```

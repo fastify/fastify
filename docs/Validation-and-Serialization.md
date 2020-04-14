@@ -312,7 +312,7 @@ fastify.post('/the/url', {
       hello: Joi.string().required()
     }).required()
   },
-  validatorCompiler: (method, url, httpPart, schema) => {
+  validatorCompiler: ({ schema, method, url, httpPart }) => {
     return data => schema.validate(data)
   }
 }, handler)

@@ -293,7 +293,7 @@ test('should return a defined output message parsing JOI errors', t => {
 
   fastify.post('/', {
     schema: { body },
-    validatorCompiler: (method, url, httpPart, schema) => {
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => schema.validate(data)
     }
   },
@@ -323,7 +323,7 @@ test('should return a defined output message parsing JOI error details', t => {
 
   fastify.post('/', {
     schema: { body },
-    validatorCompiler: (method, url, httpPart, schema) => {
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
       return data => {
         const validation = schema.validate(data)
         return { error: validation.error.details }

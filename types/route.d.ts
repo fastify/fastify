@@ -1,10 +1,10 @@
 import { FastifyInstance } from './instance'
-import { FastifyMiddleware, FastifyMiddlewareWithPayload } from './middleware'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevels } from './logger'
+import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
 
 /**
  * Fastify Router Shorthand method type that is similar to the Express/Restify approach
@@ -61,9 +61,6 @@ export interface RouteShorthandOptions<
 > {
   schema?: FastifySchema;
   attachValidation?: boolean;
-  preValidation?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
-  preHandler?: FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddleware<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
-  preSerialization?: FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | FastifyMiddlewareWithPayload<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   validatorCompiler?: FastifySchemaCompiler;
   serializerCompiler?: FastifySchemaCompiler;
   bodyLimit?: number;
@@ -71,6 +68,16 @@ export interface RouteShorthandOptions<
   config?: ContextConfig;
   version?: string;
   prefixTrailingSlash?: boolean;
+
+  // hooks
+  onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preParsing?: preParsingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preParsingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preSerialization?: preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  onResponse?: onResponseHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | onResponseHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  onError?: onErrorHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | onErrorHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
 }
 
 /**

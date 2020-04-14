@@ -274,6 +274,58 @@ test('preSerialization hooks should handle errors', t => {
   })
 })
 
+test('preValidation hooks should handle throwing null', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setErrorHandler(async (error, request, reply) => {
+    t.ok(error instanceof Error)
+    reply.send(error)
+  })
+
+  fastify.addHook('preValidation', async () => {
+    // eslint-disable-next-line no-throw-literal
+    throw null
+  })
+
+  fastify.get('/', function (request, reply) { t.fail('the handler must not be called') })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 500)
+    t.deepEqual(res.json(), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'Undefined error has occured',
+      statusCode: 500
+    })
+  })
+})
+
+test('preValidation hooks should handle throwing a string', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preValidation', async () => {
+    // eslint-disable-next-line no-throw-literal
+    throw 'this is an error'
+  })
+
+  fastify.get('/', function (request, reply) { t.fail('the handler must not be called') })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 500)
+    t.equal(res.payload, 'this is an error')
+  })
+})
+
 test('onRequest hooks should be able to block a request (last hook)', t => {
   t.plan(5)
   const fastify = Fastify()

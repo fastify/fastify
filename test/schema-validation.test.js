@@ -90,7 +90,7 @@ test('External AJV instance', t => {
   fastify.addSchema(schemaA)
   fastify.addSchema(schemaBRefToA)
 
-  fastify.setValidatorCompiler((method, url, httpPart, schema) => {
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     return ajv.compile(schema)
   })
 
@@ -136,7 +136,7 @@ test('Encapsulation', t => {
   fastify.addSchema(schemaBRefToA)
 
   fastify.register((instance, opts, next) => {
-    const validator = (method, url, httpPart, schema) => {
+    const validator = ({ schema, method, url, httpPart }) => {
       return ajv.compile(schema)
     }
     instance.setValidatorCompiler(validator)
@@ -158,7 +158,7 @@ test('Encapsulation', t => {
         }
       })
 
-      const anotherValidator = (method, url, httpPart, schema) => {
+      const anotherValidator = ({ schema, method, url, httpPart }) => {
         return () => { return true } // always valid
       }
       instance.post('/three', {
@@ -257,7 +257,7 @@ test('Triple $ref with a simple $id', t => {
   fastify.addSchema(schemaBRefToA)
   fastify.addSchema(schemaCRefToB)
 
-  fastify.setValidatorCompiler((method, url, httpPart, schema) => {
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     return ajv.compile(schema)
   })
 

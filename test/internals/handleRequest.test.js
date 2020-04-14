@@ -11,7 +11,7 @@ const sget = require('simple-get').concat
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
-function schemaValidator (method, url, httpPart, schema) {
+function schemaValidator ({ schema, method, url, httpPart }) {
   const validateFuncion = ajv.compile(schema)
   const fn = function (body) {
     const isOk = validateFuncion(body)

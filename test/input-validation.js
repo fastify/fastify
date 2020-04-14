@@ -37,7 +37,7 @@ module.exports.payloadMethod = function (method, t) {
         additionalProperties: false
       }
     },
-    validatorCompiler: function (method, url, httpPart, schema) {
+    validatorCompiler: function ({ schema, method, url, httpPart }) {
       return ajv.compile(schema)
     }
   }
@@ -48,7 +48,7 @@ module.exports.payloadMethod = function (method, t) {
         hello: Joi.string().required()
       }).required()
     },
-    validatorCompiler: function (method, url, httpPart, schema) {
+    validatorCompiler: function ({ schema, method, url, httpPart }) {
       return schema.validate.bind(schema)
     }
   }
@@ -66,7 +66,7 @@ module.exports.payloadMethod = function (method, t) {
         hello: yup.string().required()
       }).required()
     },
-    validatorCompiler: function (method, url, httpPart, schema) {
+    validatorCompiler: function ({ schema, method, url, httpPart }) {
       return data => {
         try {
           const result = schema.validateSync(data, yupOptions)
@@ -95,7 +95,7 @@ module.exports.payloadMethod = function (method, t) {
       })
 
       fastify.register(function (fastify2, opts, next) {
-        fastify2.setValidatorCompiler(function schema (method, url, httpPart, schema) {
+        fastify2.setValidatorCompiler(function schema ({ schema, method, url, httpPart }) {
           return body => ({ error: new Error('From custom schema compiler!') })
         })
         const withInstanceCustomCompiler = {
@@ -117,7 +117,7 @@ module.exports.payloadMethod = function (method, t) {
               additionalProperties: false
             }
           },
-          validatorCompiler: function (method, url, httpPart, schema) {
+          validatorCompiler: function ({ schema, method, url, httpPart }) {
             return function (body) {
               return { error: new Error('Always fail!') }
             }

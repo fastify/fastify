@@ -542,7 +542,7 @@ For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) docume
 
 ###### Example 4: Extended HTTP server
 
-Not only can you specify the server type, but also the request and reply types. Thus, allowing you to specify special properties, methods, and more! When specified at server instantiation, the custome type becomes available on all further instances of the custom type.
+Not only can you specify the server type, but also the request and reply types. Thus, allowing you to specify special properties, methods, and more! When specified at server instantiation, the custom type becomes available on all further instances of the custom type.
 ```typescript
 import fastify from 'fastify'
 import http from 'http'
@@ -607,7 +607,7 @@ Type alias for `http.Server`
 
 An interface of properties used in the instantiation of the Fastify server. Is used in the main [`fastify()`][Fastify] method. The `RawServer` and `Logger` generic parameters are passed down through that method.
 
-See the main [fastify][Fastify] method type definition section for examples on instatiating a Fastify server with TypeScript.
+See the main [fastify][Fastify] method type definition section for examples on instantiating a Fastify server with TypeScript.
 
 ##### fastify.FastifyInstance<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface], [Logger][LoggerGeneric]>
 
@@ -661,7 +661,7 @@ declare module 'fastify' {
 ##### fastify.RequestGenericInterface
 [src](./../types/request.d.ts#L4)
 
-Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All ommitted properties are defaulted to `unknown`. The corresponding property names are: `Body`, `Querystring`, `Params`, `Headers`.
+Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All omitted properties are defaulted to `unknown`. The corresponding property names are: `Body`, `Querystring`, `Params`, `Headers`.
 
 ```typescript
 import fastify, { RequestGenericInterface } from 'fastify'
@@ -782,7 +782,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
-This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional propeties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].
+This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].
 
 Below is an example of the options inference in action:
 
@@ -894,7 +894,7 @@ A generic type that is either a `string` or `Buffer`
 
 [src](../types/content-type-parser.d.ts#L7)
 
-A function type definition for specifying a body parser method. Use the `RawBody` generic to specify the type of the body beig parsed.
+A function type definition for specifying a body parser method. Use the `RawBody` generic to specify the type of the body being parsed.
 
 ##### fastify.FastifyContentTypeParser<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
 
@@ -906,13 +906,13 @@ A function type definition for specifying a body parser method. Content is typed
 
 [src](../types/content-type-parser.d.ts#L46)
 
-An overloaded interface function definition for the `addContentTypeParser` method. If `parseAs` is passed to the `opts` parameter, the defintion uses [FastifyBodyParser][] for the `parser` parameter; otherwise, it uses [FastifyContentTypeParser][].
+An overloaded interface function definition for the `addContentTypeParser` method. If `parseAs` is passed to the `opts` parameter, the definition uses [FastifyBodyParser][] for the `parser` parameter; otherwise, it uses [FastifyContentTypeParser][].
 
 ##### fastify.hasContentTypeParser
 
 [src](../types/content-type-parser.d.ts#L63)
 
-A method for checking the existince of a type parser of a certain content type
+A method for checking the existence of a type parser of a certain content type
 
 ---
 

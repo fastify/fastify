@@ -25,10 +25,11 @@ export interface FastifyInstance<
 
   addSchema(schema: FastifySchema): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-  after(err: Error): FastifyInstance<RawServer, RawRequest, RawReply>;
+  after(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
+  after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-  close(closeListener?: () => void): void;
-  close<T>(): Promise<T>; // what is this use case? Not documented on Server#close
+  close(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
+  close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
   decorate(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply>;
@@ -47,10 +48,10 @@ export interface FastifyInstance<
   listen(port: number, callback: (err: Error, address: string) => void): void;
   listen(port: number, address?: string, backlog?: number): Promise<string>;
 
-  ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply>>;
-  ready(readyListener: (err: Error) => void): void;
+  ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
+  ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-  register: FastifyRegister;
+  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>>;
   /**
    * This method is now deprecated and will throw a `FST_ERR_MISSING_MIDDLEWARE` error.
    * Visit fastify.io/docs/latest/Middleware/ for more info.
@@ -187,19 +188,19 @@ export interface FastifyInstance<
     hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-   /**
-   * Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed before the registered code.
-   * This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
-   * Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
-   */
+  /**
+  * Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed before the registered code.
+  * This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
+  * Note: This hook will not be called if a plugin is wrapped inside fastify-plugin.
+  */
   addHook(
     name: 'onRegister',
     hook: onRegisterHookHandler<RawServer, RawRequest, RawReply, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
-   /**
-   * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
-   */
+  /**
+  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
+  */
   addHook(
     name: 'onClose',
     hook: onCloseHookHandler<RawServer, RawRequest, RawReply, Logger>

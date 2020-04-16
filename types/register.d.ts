@@ -6,14 +6,15 @@ import { LogLevels } from './logger'
  * 
  * Function for adding a plugin to fastify. The options are inferred from the passed in FastifyPlugin parameter.
  */
-export interface FastifyRegister {
+export interface FastifyRegister<T = void> {
   <Options extends FastifyPluginOptions>(
     plugin: FastifyPlugin<Options>,
     opts?: FastifyRegisterOptions<Options>
-  ): void;
+  ): T;
 }
 
 export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() => RegisterOptions & Options)
+
 interface RegisterOptions {
   prefix?: string;
   logLevel?: LogLevels;

@@ -655,6 +655,11 @@ declare namespace fastify {
     inject(opts: HTTPInjectOptions | string): Promise<HTTPInjectResponse>
 
     /**
+     * Useful for testing http requests without running a sever
+     */
+    inject(): LightMyRequest.Chain;
+
+    /**
      * Set the 404 handler
      */
     setNotFoundHandler(handler: (this: FastifyInstance<HttpServer, HttpRequest, HttpResponse>, request: FastifyRequest<HttpRequest>, reply: FastifyReply<HttpResponse>) => void): void

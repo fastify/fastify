@@ -615,6 +615,12 @@ server.inject({ url: '/test' }, (err: Error, res: LightMyRequest.Response) => {
   server.log.debug(res.payload)
 })
 
+// http builder injections
+server.inject().get('/test').end((err: Error, res: LightMyRequest.Response) => {
+  server.log.debug(err)
+  server.log.debug(res.payload)
+})
+
 // http injections with the fastify types
 server.inject({ url: '/test' }, (err: Error, res: fastify.HTTPInjectResponse) => {
   server.log.debug(err)

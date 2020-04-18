@@ -17,7 +17,7 @@ The validation and the serialization tasks are processed by two different, and c
 - [Ajv](https://www.npmjs.com/package/ajv) for the validation of a request
 - [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for the serialization of a response's body
 
-These two separate entities share only the JSON shemas added to Fastify's instance through `.addSchema(schema)`.
+These two separate entities share only the JSON schemas added to Fastify's instance through `.addSchema(schema)`.
 
 <a name="shared-schema"></a>
 #### Adding a shared schema
@@ -354,7 +354,7 @@ fastify.post('/the/url', {
 
 ##### Validation messages with other validation libraries
 
-Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are eventually run through the `schemaErrorsText` function which is responsible for building human-friendly error messages. However, the `schemaErrorsText` function is written with `ajv` in mind : as a result, you may run into odd or incomplete error messages when using other validation librairies.
+Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are eventually run through the `schemaErrorsText` function which is responsible for building human-friendly error messages. However, the `schemaErrorsText` function is written with `ajv` in mind : as a result, you may run into odd or incomplete error messages when using other validation libraries.
 
 To circumvent this issue, you have 2 main options :
 
@@ -379,7 +379,7 @@ const errorHandler = (error, request, reply) => {
   if (validation) {
     response = {
       // validationContext will be 'body' or 'params' or 'headers' or 'query'
-      message: `A validation error occured when validating the ${validationContext}...`,
+      message: `A validation error occurred when validating the ${validationContext}...`,
       // this is the result of your validation library...
       errors: validation
     }
@@ -430,7 +430,7 @@ const schema = {
       }
     },
     201: {
-      // the contract sintax
+      // the contract syntax
       value: { type: 'string' }
     }
   }
@@ -467,7 +467,7 @@ fastify.get('/user', {
 *If you need a custom serializer in a very specific part of your code, you can set one with [`reply.serializer(...)`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#serializerfunc).*
 
 ### Error Handling
-When schema validation fails for a request, Fastify will automtically return a  status 400 response including the result from the validator in the payload. As an example, if you have the following schema for your route
+When schema validation fails for a request, Fastify will automatically return a  status 400 response including the result from the validator in the payload. As an example, if you have the following schema for your route
 
 ```js
 const schema = {
@@ -519,7 +519,7 @@ If you want custom error response in schema without headaches and quickly, you c
 ### JSON Schema support
 
 JSON Schema has some type of utilities in order to optimize your schemas that,
-in conjuction with the Fastify's shared schema, let you reuse all your schemas easily.
+in conjunction with the Fastify's shared schema, let you reuse all your schemas easily.
 
 | Use Case                          | Validator | Serializer |
 |-----------------------------------|-----------|------------|

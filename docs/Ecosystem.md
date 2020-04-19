@@ -76,6 +76,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload) Fastify plugin for uploading files.
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
 - [`fastify-firestore`](https://github.com/now-ims/fastify-firestore) Fastify plugin for [Google Cloud Firestore](https://cloud.google.com/nodejs/docs/reference/firestore/0.13.x/).
+- [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace) [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference) Connector for Fastify.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage) Fastify plugin that exposes a GCP Cloud Storage client instance.
 - [`fastify-gql`](https://github.com/mcollina/fastify-gql) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
@@ -94,6 +95,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from a directory and inject the fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and [lured](https://github.com/enobufs/lured).
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
+- [`fastify-method-override`](https://github.com/corsicanec82/fastify-method-override) Plugin for Fastify, which allows use HTTP verbs, such as DELETE, PATCH, HEAD, PUT, OPTIONS in case the client doesn't support them.
 - [`fastify-metrics`](https://gitlab.com/m03geek/fastify-metrics) Plugin for exporting [Prometheus](https://prometheus.io) metrics.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api) Fastify plugin to create REST API methods based on Mongoose MongoDB models.
@@ -108,6 +110,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
+- [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.

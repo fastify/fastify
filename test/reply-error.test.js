@@ -411,7 +411,7 @@ invalidErrorCodes.forEach((invalidCode) => {
         return reply.code(invalidCode).send('You should not read this')
       } catch (err) {
         t.is(err.code, 'FST_ERR_BAD_STATUS_CODE')
-        t.is(err.message, 'Called reply with malformed status code')
+        t.is(err.message, 'Called reply with an invalid status code: ' + invalidCode)
       }
     })
     fastify.inject({

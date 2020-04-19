@@ -4,19 +4,21 @@ const t = require('tap')
 const Fastify = require('../fastify')
 const wait = require('util').promisify(setTimeout)
 
-t.test('onReady should be called', t => {
+t.test('onReady should be called in order', t => {
   t.plan(7)
   const fastify = Fastify()
 
+  let order = 0
+
   fastify.addHook('onReady', function (done) {
-    t.pass('called in root')
+    t.equals(order++, 0, 'called in root')
     t.equals(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
     childOne.addHook('onReady', function (done) {
-      t.pass('called in childOne')
+      t.equals(order++, 1, 'called in childOne')
       t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
     })
@@ -24,7 +26,7 @@ t.test('onReady should be called', t => {
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onReady', async function () {
         await wait(100)
-        t.pass('async called in childTwo')
+        t.equals(order++, 2, 'called in childTwo')
         t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
     })
@@ -33,7 +35,7 @@ t.test('onReady should be called', t => {
   fastify.ready(err => t.error(err))
 })
 
-t.test('onReady should manage error in sync', { skip: 1 }, t => {
+t.test('onReady should manage error in sync', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -61,7 +63,7 @@ t.test('onReady should manage error in sync', { skip: 1 }, t => {
   })
 })
 
-t.test('onReady should manage error in async', { skip: 1 }, t => {
+t.test('onReady should manage error in async', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -89,7 +91,7 @@ t.test('onReady should manage error in async', { skip: 1 }, t => {
   })
 })
 
-t.test('onReady should manage sync error', { skip: 1 }, t => {
+t.test('onReady should manage sync error', t => {
   t.plan(4)
   const fastify = Fastify()
 

@@ -363,7 +363,9 @@ function fastify (options) {
       })
     }
 
+    let single = false
     function manageErr (err) {
+      if (single) return
       if (cb) {
         cb(err)
       } else {
@@ -372,6 +374,7 @@ function fastify (options) {
         }
         resolveReady()
       }
+      single = true
     }
   }
 

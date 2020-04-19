@@ -352,20 +352,18 @@ function fastify (options) {
     }
 
     function runHooks () {
+      // start loading
       fastify.boot((err, done) => {
         if (err) {
           manageErr(err)
         } else {
-          // we need to wait all the `.register` calls
           hookRunnerApplication('onReady', fastify, manageErr)
         }
         done()
       })
     }
 
-    let single = false
     function manageErr (err) {
-      if (single) return
       if (cb) {
         cb(err)
       } else {
@@ -374,7 +372,6 @@ function fastify (options) {
         }
         resolveReady()
       }
-      single = true
     }
   }
 

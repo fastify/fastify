@@ -120,14 +120,21 @@ t.test('onReady should manage sync error', t => {
 })
 
 t.test('onReady can not add decorators or application hooks', t => {
-  t.plan(2)
+  t.plan(3)
   const fastify = Fastify()
 
   fastify.addHook('onReady', function (done) {
     t.pass('called in root')
+    fastify.decorate('test', () => {})
+
     fastify.addHook('onReady', async function () {
       t.fail('it will be not called')
     })
+    done()
+  })
+
+  fastify.addHook('onReady', function (done) {
+    t.ok(this.hasDecorator('test'))
     done()
   })
 

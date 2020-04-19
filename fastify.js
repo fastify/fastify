@@ -342,19 +342,24 @@ function fastify (options) {
     let resolveReady
     let rejectReady
 
-    fastify.boot(function (err) {
-      if (err) { // this error could be returned during startup of plugins
-        manageErr(err)
-        return
-      }
-      // it must be the last function to be executed
-      hookRunnerApplication('onReady', fastify, manageErr)
-    })
+    setImmediate(runHooks)
 
     if (!cb) {
       return new Promise(function (resolve, reject) {
         resolveReady = resolve
         rejectReady = reject
+      })
+    }
+
+    function runHooks () {
+      fastify.boot((err, done) => {
+        if (err) {
+          manageErr(err)
+        } else {
+          // we need to wait all the `.register` calls
+          hookRunnerApplication('onReady', fastify, manageErr)
+        }
+        done()
       })
     }
 

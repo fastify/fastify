@@ -33,7 +33,7 @@ t.test('onReady should be called', t => {
   fastify.ready(err => t.error(err))
 })
 
-t.test('onReady should manage error in sync', t => {
+t.test('onReady should manage error in sync', { skip: 1 }, t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -61,7 +61,7 @@ t.test('onReady should manage error in sync', t => {
   })
 })
 
-t.test('onReady should manage error in async', t => {
+t.test('onReady should manage error in async', { skip: 1 }, t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -89,7 +89,7 @@ t.test('onReady should manage error in async', t => {
   })
 })
 
-t.test('onReady should manage sync error', t => {
+t.test('onReady should manage sync error', { skip: 1 }, t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -117,14 +117,14 @@ t.test('onReady should manage sync error', t => {
   })
 })
 
-t.test('onReady can add decorators or application hooks', t => {
-  t.plan(3)
+t.test('onReady can not add decorators or application hooks', t => {
+  t.plan(2)
   const fastify = Fastify()
 
   fastify.addHook('onReady', function (done) {
     t.pass('called in root')
     fastify.addHook('onReady', async function () {
-      t.pass('called in root')
+      t.fail('it will be not called')
     })
     done()
   })
@@ -164,17 +164,17 @@ t.test('onReady throw loading error', t => {
   }
 })
 
-t.test('onReady does not call done', { skip: true }, t => {
+t.test('onReady does not call done', t => {
   t.plan(3)
-  const fastify = Fastify()
+  const fastify = Fastify({ pluginTimeout: 500 })
 
   fastify.addHook('onReady', function (done) {
     t.pass('called in root')
-    // done()
+    // done() // don't call done to test timeout
   })
 
   fastify.ready(err => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+    t.equal(err.code, 'ERR_AVVIO_READY_TIMEOUT')
   })
 })

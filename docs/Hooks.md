@@ -291,15 +291,22 @@ You can hook into the application-lifecycle as well.
 
 ### onReady
 Triggered before the server start listening for requests. It can not change the routes or add new hooks.
-The functions added to this hook will be waited. 
+The hooks are executed serially and after the complete execution of them the server will listen.
 The first argument is the `done` callback and the `this` binded to the function is the Fastify instance to which
 the hook has been added.
 
 ```js
+// callback style
 fastify.addHook('onReady', (done) => {
   // Some code
   this.validatorCompiler === fastify.validatorCompiler
   done()
+})
+
+// or async/await style
+fastify.addHook('onReady', async () => {
+  // Some async code
+  await loadCacheFromDatabase()
 })
 ```
 

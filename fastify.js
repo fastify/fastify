@@ -202,7 +202,7 @@ function fastify (options) {
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
-    ready,
+    ready: null,
     onClose: null,
     close: null,
     // http server
@@ -234,17 +234,16 @@ function fastify (options) {
         }
         return this[kPluginNameChain][0]
       }
+    },
+    prefix: {
+      get: function () { return this[kRoutePrefix] }
+    },
+    validatorCompiler: {
+      get: function () { return this[kValidatorCompiler] }
+    },
+    serializerCompiler: {
+      get: function () { return this[kSerializerCompiler] }
     }
-  })
-
-  Object.defineProperty(fastify, 'prefix', {
-    get: function () { return this[kRoutePrefix] }
-  })
-  Object.defineProperty(fastify, 'validatorCompiler', {
-    get: function () { return this[kValidatorCompiler] }
-  })
-  Object.defineProperty(fastify, 'serializerCompiler', {
-    get: function () { return this[kSerializerCompiler] }
   })
 
   // We are adding `use` to the fastify prototype so the user
@@ -263,13 +262,14 @@ function fastify (options) {
     autostart: false,
     timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
     expose: {
-      ready: 'boot',
       use: 'register'
     }
   })
   // Override to allow the plugin incapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
+  const boot = fastify.ready // the avvio ready function
+  fastify.ready = ready // overwrite the avvio ready function
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
@@ -353,11 +353,11 @@ function fastify (options) {
 
     function runHooks () {
       // start loading
-      fastify.boot((err, done) => {
+      boot((err, done) => {
         if (err) {
           manageErr(err)
         } else {
-          hookRunnerApplication('onReady', fastify, manageErr)
+          hookRunnerApplication('onReady', boot, fastify, manageErr)
         }
         done()
       })

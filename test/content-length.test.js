@@ -3,6 +3,11 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const semver = require('semver')
+
+if (semver.gt(process.versions.node, '8.0.0')) {
+  require('./content-length')
+}
 
 test('default 413 with bodyLimit option', t => {
   t.plan(4)

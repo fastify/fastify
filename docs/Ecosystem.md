@@ -17,8 +17,9 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-cors`](https://github.com/fastify/fastify-cors) Enables the use of CORS in a Fastify application.
-- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
 - [`fastify-elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
+- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
+- [`fastify-etag`](https://github.com/fastify/fastify-etag) Automatically generate etags for HTTP responses.
 - [`fastify-flash`](https://github.com/fastify/fastify-flash) Set and get flash messages using the session.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify.

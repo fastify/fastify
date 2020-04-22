@@ -3,6 +3,11 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const semver = require('semver')
+
+if (semver.gt(process.versions.node, '8.0.0')) {
+  require('./content-length')
+}
 
 test('default 413 with bodyLimit option', t => {
   t.plan(4)
@@ -138,25 +143,4 @@ test('custom 400 with wrong content-length', t => {
       statusCode: 400
     })
   })
-})
-
-test('#2214 - wrong content-length', t => {
-  const fastify = Fastify()
-
-  fastify.get('/', async () => {
-    const error = new Error('MY_ERROR_MESSAGE')
-    error.headers = {
-      'content-length': 2
-    }
-    throw error
-  })
-
-  fastify.inject({
-    method: 'GET',
-    path: '/'
-  })
-    .then(response => {
-      t.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
-      t.end()
-    })
 })

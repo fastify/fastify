@@ -30,6 +30,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart support for Fastify.
 - [`fastify-oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
+- [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes) Plugin to cherry pick classes from objectionjs ORM.
 - [`fastify-postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server.
 - [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
 - [`fastify-response-validation`](https://github.com/fastify/fastify-response-validation) A simple plugin that enables response validation for Fastify.

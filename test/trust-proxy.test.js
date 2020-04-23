@@ -5,11 +5,12 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')
 
-const sgetForwardedRequest = (app, forHeader, path) => {
+const sgetForwardedRequest = (app, forHeader, forProto, path) => {
   sget({
     method: 'GET',
     headers: {
       'X-Forwarded-For': forHeader,
+      'X-Forwarded-Proto': forProto,
       'X-Forwarded-Host': 'example.com'
     },
     url: 'http://localhost:' + app.server.address().port + path
@@ -39,22 +40,26 @@ const testRequestValues = (t, req, options) => {
     }
     t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarded-for')
   }
+  if (options.protocol) {
+    t.ok(req.protocol, 'proto is defined')
+    t.equal(req.protocol, options.protocol, 'gets protocol from x-forwarded-proto')
+  }
 }
 
 test('trust proxy, add properties to node req', (t) => {
-  t.plan(15)
+  t.plan(19)
   const modifyCoreObjects = true
   const app = fastify({
     trustProxy: true,
     modifyCoreObjects
   })
   app.get('/trustproxy', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', modifyCoreObjects })
+    testRequestValues(t, req, { ip: '1.1.1.1', hostname: 'example.com', protocol: 'http', modifyCoreObjects })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'], modifyCoreObjects })
+    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'], protocol: 'https', modifyCoreObjects })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
@@ -63,8 +68,8 @@ test('trust proxy, add properties to node req', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
-    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain')
+    sgetForwardedRequest(app, '1.1.1.1', 'http', '/trustproxy')
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', 'https', '/trustproxychain')
   })
 })
 
@@ -88,8 +93,8 @@ test('trust proxy, not add properties to node req', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
-    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxychain')
+    sgetForwardedRequest(app, '1.1.1.1', 'http', '/trustproxy')
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', 'http', '/trustproxychain')
   })
 })
 
@@ -109,7 +114,7 @@ test('trust proxy chain', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '192.168.1.1, 1.1.1.1', '/trustproxychain')
+    sgetForwardedRequest(app, '192.168.1.1, 1.1.1.1', 'http', '/trustproxychain')
   })
 })
 
@@ -128,7 +133,7 @@ test('trust proxy function', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '1.1.1.1', '/trustproxyfunc')
+    sgetForwardedRequest(app, '1.1.1.1', 'http', '/trustproxyfunc')
   })
 })
 
@@ -147,7 +152,7 @@ test('trust proxy number', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxynumber')
+    sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', 'http', '/trustproxynumber')
   })
 })
 
@@ -166,6 +171,6 @@ test('trust proxy IP addresses', (t) => {
   app.listen(0, (err) => {
     app.server.unref()
     t.error(err)
-    sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs')
+    sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', 'http', '/trustproxyipaddrs')
   })
 })

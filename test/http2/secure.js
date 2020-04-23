@@ -26,6 +26,10 @@ fastify.get('/', function (req, reply) {
   reply.code(200).send(msg)
 })
 
+fastify.get('/protocol', function (req, reply) {
+  reply.code(200).send(req.protocol)
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -39,5 +43,16 @@ fastify.listen(0, err => {
     t.strictEqual(res.headers[':status'], 200)
     t.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
     t.deepEqual(JSON.parse(res.body), msg)
+  })
+
+  test('https protocol', async (t) => {
+    t.plan(1)
+
+    const protocol = 'https'
+
+    const url = `${protocol}://localhost:${fastify.server.address().port}/protocol`
+    const res = await h2url.concat({ url })
+
+    t.strictEqual(res.body, protocol)
   })
 })

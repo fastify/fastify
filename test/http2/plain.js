@@ -24,6 +24,10 @@ fastify.get('/hostname', function (req, reply) {
   reply.code(200).send(req.hostname)
 })
 
+fastify.get('/protocol', function (req, reply) {
+  reply.code(200).send(req.protocol)
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -49,5 +53,17 @@ fastify.listen(0, err => {
     const res = await h2url.concat({ url })
 
     t.strictEqual(res.body, hostname)
+  })
+
+  test('http protocol', async (t) => {
+    t.plan(1)
+
+    const protocol = 'http'
+    const hostname = `localhost:${fastify.server.address().port}`
+
+    const url = `${protocol}://${hostname}/protocol`
+    const res = await h2url.concat({ url })
+
+    t.strictEqual(res.body, protocol)
   })
 })

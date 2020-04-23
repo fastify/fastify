@@ -132,6 +132,11 @@ declare namespace fastify {
     | ((req: HttpRequest, done: (err: Error | null, body?: any) => void) => void)
     | ((req: HttpRequest) => Promise<any>)
 
+  enum RequestProtocol {
+    https = 'https',
+    http = 'http'
+  }
+
   interface FastifyContext {
     config: any
   }
@@ -159,6 +164,7 @@ declare namespace fastify {
     ip: string
     ips: string[]
     hostname: string
+    protocol: RequestProtocol
 
     raw: HttpRequest
     req: HttpRequest

@@ -4,25 +4,3 @@ update_configs:
     directory: "/"
     update_schedule: "daily"
     ignored_updates:
-      - match:
-          dependency_name: "autocannon"
-      - match:
-          dependency_name: "boom"
-      - match:
-          dependency_name: "joi"
-      - match:
-          dependency_name: "@types/*"
-      - match:
-          dependency_name: "semver"
-      - match:
-          dependency_name: "tap"
-      - match:
-          dependency_name: "tap-mocha-reporter"
-      - match:
-          dependency_name: "@typescript-eslint/eslint-plugin"
-      - match:
-          dependency_name: "lolex"
-      - match:
-          dependency_name: "pino"
-      - match:
-          dependency_name: "fast-json-stringify"

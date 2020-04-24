@@ -3,4 +3,3 @@ update_configs:
   - package_manager: "javascript"
     directory: "/"
     update_schedule: "daily"
-    ignored_updates:

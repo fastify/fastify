@@ -201,6 +201,18 @@ export interface onRegisterHookHandler<
 }
 
 /**
+ * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
+ */
+export interface onReadyHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  Logger = FastifyLoggerOptions<RawServer>
+> {
+  (
+    done: HookHandlerDoneFunction
+  ): Promise<unknown> | void
+}
+
+/**
  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.
  */
 export interface onCloseHookHandler<

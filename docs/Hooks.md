@@ -290,9 +290,9 @@ You can hook into the application-lifecycle as well.
 - [onRegister](#onregister)
 
 ### onReady
-Triggered before the server start listening for requests. It can not change the routes or add new hooks.
-The hooks are executed serially and after the complete execution of them the server will listen.
-The first argument is the `done` callback and the `this` binded to the function is the Fastify instance to which
+Triggered before the server starts listening for requests. It cannot change the routes or add new hooks.
+Registered hook functions are executed serially. Only after all `onReady` hook functions have completed will the server start listening for requests.
+Hook functions accept one argument: a callback, `done`, to be invoked after the hook function is complete. Hook functions are invoked with `this` bound to the associated Fastify instance.
 the hook has been added.
 
 ```js

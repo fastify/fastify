@@ -7,7 +7,7 @@ const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const lolex = require('lolex')
+const lolex = require('@sinonjs/fake-timers')
 
 test('require a plugin', t => {
   t.plan(1)

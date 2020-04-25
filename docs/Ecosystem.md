@@ -17,8 +17,9 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-cors`](https://github.com/fastify/fastify-cors) Enables the use of CORS in a Fastify application.
-- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
 - [`fastify-elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
+- [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
+- [`fastify-etag`](https://github.com/fastify/fastify-etag) Automatically generate etags for HTTP responses.
 - [`fastify-flash`](https://github.com/fastify/fastify-flash) Set and get flash messages using the session.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify.
@@ -29,6 +30,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart support for Fastify.
 - [`fastify-oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
+- [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes) Plugin to cherry pick classes from objectionjs ORM.
 - [`fastify-postgres`](https://github.com/fastify/fastify-postgres) Fastify PostgreSQL connection plugin, with this you can share the same PostgreSQL connection pool in every part of your server.
 - [`fastify-rate-limit`](https://github.com/fastify/fastify-rate-limit) A low overhead rate limiter for your routes.
 - [`fastify-response-validation`](https://github.com/fastify/fastify-response-validation) A simple plugin that enables response validation for Fastify.
@@ -83,6 +85,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect HTTP requests to HTTPS, both using the same port number, or different response on HTTP and HTTPS.
+- [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context) Fastify plugin for "simulating" a thread of execution to allow for true http context to take place per api call within the fastify lifecycle of calls.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect) Fastify plugin for auto redirect from http to https
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify InfluxDB plugin connecting to an InfluxDB instance via the Influx default package.
@@ -136,3 +139,4 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
+- [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage) An [i18next](https://www.i18next.com) based i18n (internationalization) middleware to be used with Node.js web frameworks like express or `Fastify` and also for Deno.

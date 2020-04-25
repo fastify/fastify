@@ -1,4 +1,4 @@
-import { InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
+import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
@@ -42,6 +42,7 @@ export interface FastifyInstance<
 
   inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void;
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
+  inject(): LightMyRequestChain;
 
   listen(port: number, address: string, backlog: number, callback: (err: Error, address: string) => void): void;
   listen(port: number, address: string, callback: (err: Error, address: string) => void): void;

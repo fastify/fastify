@@ -342,7 +342,8 @@ function fastify (options) {
     let resolveReady
     let rejectReady
 
-    setImmediate(runHooks)
+    // run the hooks after returning the promise
+    process.nextTick(runHooks)
 
     if (!cb) {
       return new Promise(function (resolve, reject) {

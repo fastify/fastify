@@ -84,10 +84,7 @@ The type system heavily relies on generic properties to provide the most accurat
     ```
 3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance. 
     ```typescript
-    server.get<{ 
-      Querystring: IQuerystring,
-      Headers: IHeaders
-    }>('/auth', async (request, reply) => {
+    server.get<IQuerystring,IHeaders}>('/auth', async (request, reply) => {
       const { username, password } = request.query
       const customerHeader = request.headers['H-Custom']
       // do something with request data
@@ -103,11 +100,8 @@ The type system heavily relies on generic properties to provide the most accurat
     And it should return back `logged in!`
 6. But wait theres more! The generic interfaces are also available inside route level hook methods. Modify the previous route by adding a `preValidation` hook:
     ```typescript
-    server.get<{ 
-      Querystring: IQuerystring,
-      Headers: IHeaders
-    }>('/auth', {
-      preValidation: (request, reply) => {
+    server.get<IQuerystring, IHeaders>('/auth', {
+      preValidation: (request, replyi, done) => {
         const { username, password } = request.query
         done(username !== 'admin' ? new Error('Must be admin') : undefined) // only validate `admin` account
       }
@@ -178,10 +172,7 @@ In the last example we used interfaces to define the types for the request query
 
     const server = fastify()
 
-    server.get<{ 
-      Querystring: QuerystringSchemaInterface,
-      Headers: HeadersSchemaInterface
-    }>('/auth', {
+    server.get<QuerystringSchemaInterface, HeadersSchemaInterface>('/auth', {
       schema: {
         querystring: QuerystringSchema,
         headers: HeadersSchema
@@ -196,10 +187,7 @@ In the last example we used interfaces to define the types for the request query
       return `logged in!`
     }) 
 
-    server.route<{ 
-      Querystring: QuerystringSchemaInterface,
-      Headers: HeadersSchemaInterface
-    }>({
+    server.route<QuerystringSchemaInterface, HeadersSchemaInterface>({
       method: 'GET',
       url: '/auth2',
       schema: {

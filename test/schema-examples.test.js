@@ -15,7 +15,7 @@ test('Example - URI $id', t => {
   })
 
   fastify.post('/', {
-    handler () {},
+    handler () { },
     schema: {
       body: {
         type: 'array',
@@ -39,7 +39,7 @@ test('Example - string $id', t => {
   })
 
   fastify.post('/', {
-    handler () {},
+    handler () { },
     schema: {
       body: { $ref: 'commonSchema#' },
       headers: { $ref: 'commonSchema#' }
@@ -98,7 +98,7 @@ test('Example - get schema encapsulated', async t => {
 test('Example - validation', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   const bodyJsonSchema = {
     type: 'object',
@@ -221,7 +221,7 @@ test('Example - ajv config', t => {
 test('Example Joi', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   const Joi = require('@hapi/joi')
   fastify.post('/the/url', {
@@ -231,7 +231,7 @@ test('Example Joi', t => {
       }).required()
     },
     validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return (data) => Joi.validate(data, schema)
+      return data => schema.validate(data)
     }
   }, handler)
 
@@ -241,7 +241,7 @@ test('Example Joi', t => {
 test('Example yup', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   const yup = require('yup')
   // Validation options to match ajv's baseline options used in Fastify
@@ -280,7 +280,7 @@ test('Example yup', t => {
 test('Example - serialization', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   const schema = {
     response: {
@@ -301,7 +301,7 @@ test('Example - serialization', t => {
 test('Example - serialization 2', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   const schema = {
     response: {
@@ -351,7 +351,7 @@ test('Example - serializator', t => {
 test('Example - schemas examples', t => {
   t.plan(1)
   const fastify = Fastify()
-  const handler = () => {}
+  const handler = () => { }
 
   fastify.addSchema({
     $id: 'http://foo/common.json',

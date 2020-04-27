@@ -91,7 +91,7 @@ fastify.route({ method, url, schema, handler });
 
 ### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-We have replaced `setSchemaCompiler` and `setSchemaResolver` options with `setValidatorCompiler` to enable future tooling improvements.
+We have replaced `setSchemaCompiler` and `setSchemaResolver` options with `setValidatorCompiler` to enable future tooling improvements. To deepen this change [read the article](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 

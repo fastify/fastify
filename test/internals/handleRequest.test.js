@@ -128,6 +128,8 @@ test('handler function - reply', t => {
 test('handler function - preValidationCallback with finished response', t => {
   t.plan(0)
   const res = {}
+  res.writableEnded = true
+  res.writable = false
   res.finished = true
   res.end = () => {
     t.fail()

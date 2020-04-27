@@ -6,6 +6,7 @@ const querystring = require('querystring')
 let lightMyRequest
 
 const {
+  kAvvioBoot,
   kChildren,
   kBodyLimit,
   kRoutePrefix,
@@ -154,6 +155,7 @@ function fastify (options) {
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
+    [kAvvioBoot]: null,
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)
@@ -268,7 +270,7 @@ function fastify (options) {
   // Override to allow the plugin incapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
-  const boot = fastify.ready // the avvio ready function
+  fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
@@ -354,11 +356,11 @@ function fastify (options) {
 
     function runHooks () {
       // start loading
-      boot((err, done) => {
+      fastify[kAvvioBoot]((err, done) => {
         if (err) {
           manageErr(err)
         } else {
-          hookRunnerApplication('onReady', boot, fastify, manageErr)
+          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
         }
         done()
       })
@@ -511,6 +513,7 @@ function override (old, fn, opts) {
 
   const instance = Object.create(old)
   old[kChildren].push(instance)
+  instance.ready = old[kAvvioBoot].bind(instance)
   instance[kChildren] = []
   instance[kReply] = Reply.buildReply(instance[kReply])
   instance[kRequest] = Request.buildRequest(instance[kRequest])

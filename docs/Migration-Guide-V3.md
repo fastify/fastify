@@ -67,7 +67,7 @@ const fastify = require('fastify')({
 
 ### Changed schema substitution ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-We have dropped support for non-standard `replace-way` shared schema substitution and replaced it with standard compliant JSON Schema `$ref` based substitution. To deepen this change [read the article](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+We have dropped support for non-standard `replace-way` shared schema substitution and replaced it with standard compliant JSON Schema `$ref` based substitution. To better understand this change read [Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 

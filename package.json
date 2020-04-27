@@ -94,7 +94,7 @@
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^6.0.1",
-    "@types/node": "^12.12.37",
+    "@types/node": "^13.13.4",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
     "JSONStream": "^1.3.5",
@@ -116,7 +116,7 @@
     "events.once": "^2.0.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^1.6.0",
-    "fluent-schema": "^0.10.0",
+    "fluent-schema": "^1.0.0",
     "form-data": "^3.0.0",
     "frameguard": "^3.1.0",
     "h2url": "^0.2.0",

@@ -1040,10 +1040,9 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   fastify.register(function sibling1 (instance, opts, next) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
-    instance.addHook('onReady', function one (done) {
+    instance.ready(() => {
       t.ok(instance.validatorCompiler, 'validator is initialized')
       instance.validatorCompiler.sharedPool = 1
-      done()
     })
     instance.after(() => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
@@ -1054,20 +1053,18 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   fastify.register(function sibling2 (instance, opts, next) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
-    instance.addHook('onReady', function two (done) {
+    instance.ready(() => {
       t.equals(instance.validatorCompiler.sharedPool, 1, 'this context must share the validator with the same schemas')
       instance.validatorCompiler.sharedPool = 2
-      done()
     })
     instance.after(() => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
     })
 
-    instance.register(function childOf2 (instance, opts, next) {
+    instance.register((instance, opts, next) => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
-      instance.addHook('onReady', function three (done) {
+      instance.ready(() => {
         t.equals(instance.validatorCompiler.sharedPool, 2, 'this context must share the validator of the parent')
-        done()
       })
       next()
     })
@@ -1081,10 +1078,9 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
     instance.addSchema({ $id: 'diff', type: 'object' })
 
     t.notOk(instance.validatorCompiler, 'validator not initialized')
-    instance.addHook('onReady', function four (done) {
+    instance.ready(() => {
       t.ok(instance.validatorCompiler, 'validator is initialized')
       t.notOk(instance.validatorCompiler.sharedPool, 'this context has its own compiler')
-      done()
     })
     next()
   })

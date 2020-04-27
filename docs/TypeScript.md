@@ -52,7 +52,7 @@ This example will get you up and running with Fastify and TypeScript. It results
   server.listen(8080, (err, address) => {
     if(err) {
       console.error(err)
-      process.exit(0)
+      process.exit(1)
     }
     console.log(`Server listening at ${address}`)
   })

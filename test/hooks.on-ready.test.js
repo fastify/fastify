@@ -35,6 +35,90 @@ t.test('onReady should be called in order', t => {
   fastify.ready(err => t.error(err))
 })
 
+t.test('async onReady should be called in order', async t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  let order = 0
+
+  fastify.addHook('onReady', async function () {
+    await wait(100)
+    t.equals(order++, 0, 'called in root')
+    t.equals(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+  })
+
+  fastify.register(async (childOne, o) => {
+    childOne.addHook('onReady', async function () {
+      await wait(100)
+      t.equals(order++, 1, 'called in childOne')
+      t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+    })
+
+    childOne.register(async (childTwo, o) => {
+      childTwo.addHook('onReady', async function () {
+        await wait(100)
+        t.equals(order++, 2, 'called in childTwo')
+        t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+      })
+    })
+  })
+
+  await fastify.ready()
+  t.pass('ready')
+})
+
+t.test('mix ready and onReady', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  let order = 0
+
+  fastify.addHook('onReady', async function () {
+    await wait(100)
+    order++
+  })
+
+  await fastify.ready()
+  t.equals(order, 1)
+
+  await fastify.ready()
+  t.equals(order, 2)
+})
+
+t.test('listen and onReady order', async t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+  let order = 0
+
+  fastify.register((instance, opts, next) => {
+    instance.ready(checkOrder.bind(null, 0))
+    instance.addHook('onReady', checkOrder.bind(null, 4))
+
+    instance.register((subinstance, opts, next) => {
+      subinstance.ready(checkOrder.bind(null, 1))
+      subinstance.addHook('onReady', checkOrder.bind(null, 5))
+
+      subinstance.register((realSubInstance, opts, next) => {
+        realSubInstance.ready(checkOrder.bind(null, 2))
+        realSubInstance.addHook('onReady', checkOrder.bind(null, 6))
+        next()
+      })
+      next()
+    })
+    next()
+  })
+
+  fastify.addHook('onReady', checkOrder.bind(null, 3))
+
+  await fastify.listen(0)
+  await fastify.close()
+
+  function checkOrder (shouldbe) {
+    t.equals(order, shouldbe)
+    order++
+  }
+})
+
 t.test('onReady should manage error in sync', t => {
   t.plan(4)
   const fastify = Fastify()

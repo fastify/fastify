@@ -384,7 +384,11 @@ function fastify (options) {
       message: 'Client Error',
       statusCode: 400
     })
-    logger.debug({ err }, 'client error')
+
+    // Most devs do not know what to do with this error.
+    // In the vast majority of cases, it's a network error and/or some
+    // config issue on the the load balancer side.
+    logger.trace({ err }, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 

@@ -1,6 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
+const semver = require('semver')
 const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
@@ -128,9 +129,13 @@ test('handler function - reply', t => {
 test('handler function - preValidationCallback with finished response', t => {
   t.plan(0)
   const res = {}
-  res.writableEnded = true
-  res.writable = false
-  res.finished = true
+  // Be sure to check only `writableEnded` where is available
+  if (semver.gte(process.versions.node, '12.9.0')) {
+    res.writableEnded = true
+  } else {
+    res.writable = false
+    res.finished = true
+  }
   res.end = () => {
     t.fail()
   }

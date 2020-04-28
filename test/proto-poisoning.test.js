@@ -82,7 +82,7 @@ test('proto-poisoning ignore', t => {
   })
 })
 
-test('constructor-poisoning ignore (default in v2)', t => {
+test('constructor-poisoning error (default in v3)', t => {
   t.plan(3)
 
   const fastify = Fastify()
@@ -102,7 +102,7 @@ test('constructor-poisoning ignore (default in v2)', t => {
       body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.statusCode, 400)
     })
   })
 })
@@ -135,7 +135,7 @@ test('constructor-poisoning error', t => {
 test('constructor-poisoning remove', t => {
   t.plan(4)
 
-  const fastify = Fastify({ onProtoPoisoning: 'remove' })
+  const fastify = Fastify({ onConstructorPoisoning: 'remove' })
   t.tearDown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {

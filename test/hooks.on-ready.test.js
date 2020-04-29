@@ -81,11 +81,11 @@ t.test('mix ready and onReady', async t => {
   t.equals(order, 1)
 
   await fastify.ready()
-  t.equals(order, 2)
+  t.equals(order, 1, 'ready hooks execute once')
 })
 
 t.test('listen and onReady order', async t => {
-  t.plan(7)
+  t.plan(9)
 
   const fastify = Fastify()
   let order = 0
@@ -110,7 +110,11 @@ t.test('listen and onReady order', async t => {
 
   fastify.addHook('onReady', checkOrder.bind(null, 3))
 
+  await fastify.ready()
+  t.pass('trigger the onReady')
   await fastify.listen(0)
+  t.pass('do not trigger the onReady')
+
   await fastify.close()
 
   function checkOrder (shouldbe) {

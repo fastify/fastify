@@ -360,7 +360,11 @@ function fastify (options) {
         if (err) {
           manageErr(err)
         } else {
-          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
+          if (!fastify[kState].started) {
+            hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
+          } else {
+            manageErr(err)
+          }
         }
         done()
       })

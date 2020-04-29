@@ -357,14 +357,10 @@ function fastify (options) {
     function runHooks () {
       // start loading
       fastify[kAvvioBoot]((err, done) => {
-        if (err) {
+        if (err || fastify[kState].started) {
           manageErr(err)
         } else {
-          if (!fastify[kState].started) {
-            hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
-          } else {
-            manageErr(err)
-          }
+          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
         }
         done()
       })

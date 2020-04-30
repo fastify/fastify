@@ -176,6 +176,36 @@ server.get<{
 });
 ```
 
+### Manage uncaught exception ([#2073](https://github.com/fastify/fastify/pull/2073))
+
+In sync route handlers, if an error was thrown the server crashed by design without calling the configured `.setErrorHandler()`. This has changed and now all unexpected errors in sync and async routes are managed.
+
+**v2:**
+
+```js
+fastify.setErrorHandler((error, request, reply) => {
+  // this is NOT called
+  reply.send(error)
+})
+fastify.get('/', (request, reply) => {
+  const maybeAnArray = request.body.something ? [] : 'I am a string'
+  maybeAnArray.substr() // Thrown: [].substr is not a function and crash the server
+})
+```
+
+**v3:**
+
+```js
+fastify.setErrorHandler((error, request, reply) => {
+  // this IS called
+  reply.send(error)
+})
+fastify.get('/', (request, reply) => {
+  const maybeAnArray = request.body.something ? [] : 'I am a string'
+  maybeAnArray.substr() // Thrown: [].substr is not a function, but it is handled
+})
+```
+
 ## Further additions and improvements
 
 - Hooks now have consistent context irregardless of how they are registered ([#2005](https://github.com/fastify/fastify/pull/2005))
@@ -184,3 +214,4 @@ server.get<{
 - Added [`connectionTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-connection-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
 - Added [`keepAliveTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-keep-alive-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
 - Added async-await support for [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#async-await) ([#2093](https://github.com/fastify/fastify/pull/2093))
+- Added the feature to throw object as error ([#2134](https://github.com/fastify/fastify/pull/2134))

@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const Fastify = require('../fastify')
-const wait = require('util').promisify(setTimeout)
+const immediate = require('util').promisify(setImmediate)
 
 t.test('onReady should be called in order', t => {
   t.plan(7)
@@ -25,7 +25,7 @@ t.test('onReady should be called in order', t => {
 
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onReady', async function () {
-        await wait(100)
+        await immediate()
         t.equals(order++, 2, 'called in childTwo')
         t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
@@ -42,21 +42,21 @@ t.test('async onReady should be called in order', async t => {
   let order = 0
 
   fastify.addHook('onReady', async function () {
-    await wait(100)
+    await immediate()
     t.equals(order++, 0, 'called in root')
     t.equals(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
   })
 
   fastify.register(async (childOne, o) => {
     childOne.addHook('onReady', async function () {
-      await wait(100)
+      await immediate()
       t.equals(order++, 1, 'called in childOne')
       t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
     })
 
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onReady', async function () {
-        await wait(100)
+        await immediate()
         t.equals(order++, 2, 'called in childTwo')
         t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
@@ -73,7 +73,7 @@ t.test('mix ready and onReady', async t => {
   let order = 0
 
   fastify.addHook('onReady', async function () {
-    await wait(100)
+    await immediate()
     order++
   })
 
@@ -116,6 +116,44 @@ t.test('listen and onReady order', async t => {
   t.pass('do not trigger the onReady')
 
   await fastify.close()
+
+  function checkOrder (shouldbe) {
+    t.equals(order, shouldbe)
+    order++
+  }
+})
+
+t.test('multiple ready calls', async t => {
+  t.plan(11)
+
+  const fastify = Fastify()
+  let order = 0
+
+  fastify.register(async (instance, opts) => {
+    instance.ready(checkOrder.bind(null, 1))
+    instance.addHook('onReady', checkOrder.bind(null, 6))
+
+    await instance.register(async (subinstance, opts) => {
+      subinstance.ready(checkOrder.bind(null, 2))
+      subinstance.addHook('onReady', checkOrder.bind(null, 7))
+    })
+
+    t.equals(order, 0, 'ready and hooks not triggered yet')
+    order++
+  })
+
+  fastify.addHook('onReady', checkOrder.bind(null, 3))
+  fastify.addHook('onReady', checkOrder.bind(null, 4))
+  fastify.addHook('onReady', checkOrder.bind(null, 5))
+
+  await fastify.ready()
+  t.pass('trigger the onReady')
+
+  await fastify.ready()
+  t.pass('do not trigger the onReady')
+
+  await fastify.ready()
+  t.pass('do not trigger the onReady')
 
   function checkOrder (shouldbe) {
     t.equals(order, shouldbe)

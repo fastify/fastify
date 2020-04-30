@@ -178,7 +178,7 @@ server.get<{
 
 ### Manage uncaught exception ([#2073](https://github.com/fastify/fastify/pull/2073))
 
-In sync route handler if an error was thrown the server crashed by design withut calling the `.setErrorHandler()` configured. This has changed and now all unexpected error in sync and async routes are managed.
+In sync route handlers, if an error was thrown the server crashed by design without calling the configured `.setErrorHandler()`. This has changed and now all unexpected errors in sync and async routes are managed.
 
 **v2:**
 

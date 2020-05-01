@@ -109,7 +109,7 @@ If you are using the `preSerialization` hook, you can change (or replace) the pa
 
 ```js
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  const err = null;
+  const err = null
   const newPayload = { wrapped: payload }
   done(err, newPayload)
 })
@@ -291,19 +291,21 @@ You can hook into the application-lifecycle as well.
 
 ### onReady
 Triggered before the server starts listening for requests. It cannot change the routes or add new hooks.
-Registered hook functions are executed serially. Only after all `onReady` hook functions have completed will the server start listening for requests.
-Hook functions accept one argument: a callback, `done`, to be invoked after the hook function is complete. Hook functions are invoked with `this` bound to the associated Fastify instance.
+Registered hook functions are executed serially.
+Only after all `onReady` hook functions have completed will the server start listening for requests.
+Hook functions accept one argument: a callback, `done`, to be invoked after the hook function is complete.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 
 ```js
 // callback style
-fastify.addHook('onReady', (done) => {
+fastify.addHook('onReady', function (done) {
   // Some code
-  this.validatorCompiler === fastify.validatorCompiler
-  done()
+  const err = null;
+  done(err)
 })
 
 // or async/await style
-fastify.addHook('onReady', async () => {
+fastify.addHook('onReady', async function () {
   // Some async code
   await loadCacheFromDatabase()
 })

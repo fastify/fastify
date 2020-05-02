@@ -4,6 +4,9 @@ const t = require('tap')
 const Fastify = require('../..')
 const http2 = require('http2')
 const semver = require('semver')
+const { promisify } = require('util')
+const connect = promisify(http2.connect)
+const once = require('events.once')
 
 t.test('http/2 request while fastify closing', t => {
   let fastify
@@ -98,4 +101,54 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 
     t.end()
   })
+})
+
+// Skipped because there is likely a bug on Node 8.
+t.test('http/2 closes successfully with async await', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+  const fastify = Fastify({
+    http2SessionTimeout: 100,
+    http2: true
+  })
+
+  await fastify.listen(0)
+
+  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const session = await connect(url)
+  // An error might or might not happen, as it's OS dependent.
+  session.on('error', () => {})
+  await fastify.close()
+})
+
+// Skipped because there is likely a bug on Node 8.
+t.test('http/2 server side session emits a timeout event', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+  let _resolve
+  const p = new Promise((resolve) => { _resolve = resolve })
+
+  const fastify = Fastify({
+    http2SessionTimeout: 100,
+    http2: true
+  })
+
+  fastify.get('/', async (req) => {
+    req.raw.stream.session.on('timeout', () => _resolve())
+    return {}
+  })
+
+  await fastify.listen(0)
+
+  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const session = await connect(url)
+  const req = session.request({
+    ':method': 'GET',
+    ':path': '/'
+  }).end()
+
+  const [headers] = await once(req, 'response')
+  t.strictEqual(headers[':status'], 200)
+  req.resume()
+
+  // An error might or might not happen, as it's OS dependent.
+  session.on('error', () => {})
+  await p
+  await fastify.close()
 })

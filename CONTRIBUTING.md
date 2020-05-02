@@ -22,6 +22,10 @@ There are a few basic ground-rules for contributors:
 
 Code for Fastify's **v1.x** is in [branch 1.x](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
 
+### Fastify v2.x
+
+Code for Fastify's **v2.x** is in [branch 2.x](https://github.com/fastify/fastify/tree/2.x), so all Fastify 2.x related changes should be based on **`branch 2.x`**.
+
 ## Releases
 
 Declaring formal releases remains the prerogative of the lead maintainers. Do not bump version numbers in pull requests.

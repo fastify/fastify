@@ -15,7 +15,7 @@ const {
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(14)
+  t.plan(13)
   const response = { res: 'res' }
   function context () {}
   function request () {}
@@ -31,7 +31,6 @@ test('Once called, Reply should return an object with methods', t => {
   t.is(typeof reply.getResponseTime, 'function')
   t.is(typeof reply[kReplyHeaders], 'object')
   t.deepEqual(reply.raw, response)
-  t.deepEqual(reply.res, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
 })
@@ -521,13 +520,13 @@ test('plain string with content type and custom serializer should be serialized'
   })
 })
 
-test('plain string with content type application/json should be serialized as json', t => {
+test('plain string with content type application/json should NOT be serialized as json', t => {
   t.plan(4)
 
   const fastify = require('../..')()
 
   fastify.get('/', function (req, reply) {
-    reply.type('application/json').send('hello world!')
+    reply.type('application/json').send('{"key": "hello world!"}')
   })
 
   fastify.listen(0, err => {
@@ -540,7 +539,31 @@ test('plain string with content type application/json should be serialized as js
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), '"hello world!"')
+      t.deepEqual(body.toString(), '{"key": "hello world!"}')
+    })
+  })
+})
+
+test('non-string with content type application/json SHOULD be serialized as json', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('application/json').send({ key: 'hello world!' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.deepEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
     })
   })
 })
@@ -740,6 +763,36 @@ test('reply.getHeader returns correct values', t => {
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, () => {})
+  })
+})
+
+test('reply.getHeaders returns correct values', t => {
+  t.plan(3)
+
+  const fastify = require('../../')()
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+
+    t.strictDeepEqual(reply.getHeaders(), {
+      'x-foo': 'foo'
+    })
+
+    reply.header('x-bar', 'bar')
+    reply.raw.setHeader('x-foo', 'foo2')
+    reply.raw.setHeader('x-baz', 'baz')
+
+    t.strictDeepEqual(reply.getHeaders(), {
+      'x-foo': 'foo',
+      'x-bar': 'bar',
+      'x-baz': 'baz'
+    })
+
+    reply.send()
+  })
+
+  fastify.inject('/headers', (err) => {
+    t.error(err)
   })
 })
 

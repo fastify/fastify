@@ -14,10 +14,24 @@ fastify.inject({
   url: String,
   query: Object,
   payload: Object,
-  headers: Object
+  headers: Object,
+  cookies: Object
 }, (error, response) => {
   // your tests
 })
+```
+
+`.inject` methods can also be chained by omitting the callback function:
+
+```js
+fastify
+  .inject()
+  .get('/')
+  .headers({ foo: 'bar' })
+  .query({ foo: 'bar' })
+  .end((err, res) => { // the .end call will trigger the request
+    console.log(res.payload)
+  })
 ```
 
 or in the promisified version
@@ -29,7 +43,8 @@ fastify
     url: String,
     query: Object,
     payload: Object,
-    headers: Object
+    headers: Object,
+    cookies: Object
   })
   .then(response => {
     // your tests
@@ -89,7 +104,7 @@ tap.test('GET `/` route', t => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
     t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(response.payload), { hello: 'world' })
+    t.deepEqual(response.json(), { hello: 'world' })
   })
 })
 ```

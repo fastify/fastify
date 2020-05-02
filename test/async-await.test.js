@@ -204,6 +204,72 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   })
 })
 
+test('await reply if we will be calling reply.send in the future', t => {
+  const lines = ['incoming request', 'request completed']
+  t.plan(lines.length + 2)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, lines.shift())
+  })
+
+  const server = Fastify({
+    logger: {
+      stream: splitStream
+    }
+  })
+  const payload = { hello: 'world' }
+
+  server.get('/', async function awaitMyFunc (req, reply) {
+    setImmediate(function () {
+      reply.send(payload)
+    })
+
+    await reply
+  })
+
+  server.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('await reply if we will be calling reply.send in the future (error case)', t => {
+  const lines = ['incoming request', 'kaboom', 'request completed']
+  t.plan(lines.length + 2)
+
+  const splitStream = split(JSON.parse)
+  splitStream.on('data', (line) => {
+    t.is(line.msg, lines.shift())
+  })
+
+  const server = Fastify({
+    logger: {
+      stream: splitStream
+    }
+  })
+
+  server.get('/', async function awaitMyFunc (req, reply) {
+    setImmediate(function () {
+      reply.send(new Error('kaboom'))
+    })
+
+    await reply
+  })
+
+  server.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 500)
+  })
+})
+
 test('support reply decorators with await', t => {
   t.plan(2)
 

@@ -20,6 +20,10 @@ fastify.get('/', function (req, reply) {
   reply.code(200).send(msg)
 })
 
+fastify.get('/hostname', function (req, reply) {
+  reply.code(200).send(req.hostname)
+})
+
 fastify.listen(0, err => {
   t.error(err)
   fastify.server.unref()
@@ -34,5 +38,16 @@ fastify.listen(0, err => {
     t.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
 
     t.deepEqual(JSON.parse(res.body), msg)
+  })
+
+  test('http hostname', async (t) => {
+    t.plan(1)
+
+    const hostname = `localhost:${fastify.server.address().port}`
+
+    const url = `http://${hostname}/hostname`
+    const res = await h2url.concat({ url })
+
+    t.strictEqual(res.body, hostname)
   })
 })

@@ -1,21 +1,19 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test } = require('tap')
 const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
-const buildSchema = require('../../lib/validation').build
-const { Schemas } = require('../../lib/schemas')
+const buildSchema = require('../../lib/validation').compileSchemasForValidation
 const sget = require('simple-get').concat
 
 const Ajv = require('ajv')
 const ajv = new Ajv({ coerceTypes: true })
 
-function schemaCompiler (schema) {
+function schemaValidator ({ schema, method, url, httpPart }) {
   const validateFuncion = ajv.compile(schema)
-  var fn = function (body) {
+  const fn = function (body) {
     const isOk = validateFuncion(body)
     if (isOk) return
     return false
@@ -25,7 +23,7 @@ function schemaCompiler (schema) {
 }
 
 test('Request object', t => {
-  t.plan(15)
+  t.plan(14)
   const req = {
     method: 'GET',
     url: '/',
@@ -36,7 +34,6 @@ test('Request object', t => {
   t.strictEqual(request.id, 'id')
   t.strictEqual(request.params, 'params')
   t.deepEqual(request.raw, req)
-  t.deepEqual(request.req, req)
   t.strictEqual(request.query, 'query')
   t.strictEqual(request.headers, 'headers')
   t.strictEqual(request.log, 'log')
@@ -75,6 +72,10 @@ test('handler function - invalid schema', t => {
   res.writeHead = () => {}
   res.log = { error: () => {}, info: () => {} }
   const context = {
+    config: {
+      method: 'GET',
+      url: '/an-url'
+    },
     schema: {
       body: {
         type: 'object',
@@ -92,8 +93,7 @@ test('handler function - invalid schema', t => {
     onError: [],
     attachValidation: false
   }
-  const schemas = new Schemas()
-  buildSchema(context, schemaCompiler, schemas)
+  buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' }
   }
@@ -121,7 +121,7 @@ test('handler function - reply', t => {
     onSend: [],
     onError: []
   }
-  buildSchema(context, schemaCompiler)
+  buildSchema(context, schemaValidator)
   internals.handler({}, new Reply(res, context, {}))
 })
 
@@ -145,7 +145,7 @@ test('handler function - preValidationCallback with finished response', t => {
     onSend: [],
     onError: []
   }
-  buildSchema(context, schemaCompiler)
+  buildSchema(context, schemaValidator)
   internals.handler({}, new Reply(res, context, {}))
 })
 

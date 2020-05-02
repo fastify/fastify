@@ -19,6 +19,8 @@ test('without options passed to Fastify, initialConfig should expose default val
   t.plan(1)
 
   const fastifyDefaultOptions = {
+    connectionTimeout: 0,
+    keepAliveTimeout: 5000,
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
     disableRequestLogging: false,
@@ -28,14 +30,15 @@ test('without options passed to Fastify, initialConfig should expose default val
     onConstructorPoisoning: 'ignore',
     pluginTimeout: 10000,
     requestIdHeader: 'request-id',
-    requestIdLogLabel: 'reqId'
+    requestIdLogLabel: 'reqId',
+    http2SessionTimeout: 5000
   }
 
   t.deepEquals(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(16)
+  t.plan(18)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -69,6 +72,8 @@ test('Fastify.initialConfig should expose all options', t => {
     },
     ignoreTrailingSlash: true,
     maxParamLength: 200,
+    connectionTimeout: 0,
+    keepAliveTimeout: 5000,
     bodyLimit: 1049600,
     onProtoPoisoning: 'remove',
     serverFactory,
@@ -91,6 +96,8 @@ test('Fastify.initialConfig should expose all options', t => {
   t.strictEqual(fastify.initialConfig.https, true)
   t.strictEqual(fastify.initialConfig.ignoreTrailingSlash, true)
   t.strictEqual(fastify.initialConfig.maxParamLength, 200)
+  t.strictEqual(fastify.initialConfig.connectionTimeout, 0)
+  t.strictEqual(fastify.initialConfig.keepAliveTimeout, 5000)
   t.strictEqual(fastify.initialConfig.bodyLimit, 1049600)
   t.strictEqual(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.strictEqual(fastify.initialConfig.caseSensitive, true)
@@ -223,6 +230,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
     t.type(fastify, 'object')
     t.deepEqual(fastify.initialConfig, {
+      connectionTimeout: 0,
+      keepAliveTimeout: 5000,
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
       disableRequestLogging: false,
@@ -232,7 +241,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       onConstructorPoisoning: 'ignore',
       pluginTimeout: 10000,
       requestIdHeader: 'request-id',
-      requestIdLogLabel: 'reqId'
+      requestIdLogLabel: 'reqId',
+      http2SessionTimeout: 5000
     })
   } catch (error) {
     t.fail()

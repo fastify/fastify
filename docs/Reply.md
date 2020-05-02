@@ -8,6 +8,7 @@
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
+  - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
   - [.redirect(dest)](#redirectdest)
@@ -38,6 +39,7 @@ and properties:
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as a response headers.
 - `.getHeader(name)` - Retrieve value of already set header.
+- `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
@@ -108,6 +110,18 @@ reply.header('x-foo', 'foo') // setHeader: key, value
 reply.getHeader('x-foo') // 'foo'
 ```
 
+<a name="getHeaders"></a>
+### .getHeaders()
+
+Gets a shallow copy of all current response headers, including those set via the raw `http.ServerResponse`. Note that headers set via Fastify take precedence over those set via `http.ServerResponse`.
+
+```js
+reply.header('x-foo', 'foo')
+reply.header('x-bar', 'bar')
+reply.raw.setHeader('x-foo', 'foo2')
+reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
+```
+
 <a name="getHeader"></a>
 ### .removeHeader(key)
 
@@ -123,10 +137,27 @@ reply.getHeader('x-foo') // undefined
 Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
-### .redirect(dest)
+### .redirect([code ,] dest)
 Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
+
+Example (no `reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
 reply.redirect('/home')
+```
+
+Example (no `reply.code()` call) sets status code to `303` and redirects to `/home`
+```js
+reply.redirect(303, '/home')
+```
+
+Example (`reply.code()` call) sets status code to `303` and redirects to `/home`
+```js
+reply.code(303).redirect('/home')
+```
+
+Example (`reply.code()` call) sets status code to `302` and redirects to `/home`
+```js
+reply.code(303).redirect(302, '/home')
 ```
 
 <a name="call-not-found"></a>
@@ -330,6 +361,11 @@ fastify.get('/teapot', async function (request, reply) => {
   err.statusCode = 418
   err.message = 'short and stout'
   throw err
+})
+
+fastify.get('/botnet', async function (request, reply) => {
+  throw { appCode: 418, message: 'short and stout' }
+  // will return to the client the same json
 })
 ```
 

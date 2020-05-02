@@ -13,6 +13,8 @@ const ajv = new Ajv({
 })
 
 const defaultInitOptions = {
+  connectionTimeout: 0, // 0 sec
+  keepAliveTimeout: 5000, // 5 sec
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,
@@ -23,7 +25,8 @@ const defaultInitOptions = {
   onConstructorPoisoning: 'ignore',
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
-  requestIdLogLabel: 'reqId'
+  requestIdLogLabel: 'reqId',
+  http2SessionTimeout: 5000
 }
 
 function customRule0 (schemaParamValue, validatedParamValue, validationSchemaObject, currentDataPath, validatedParamObject, validatedParam) {
@@ -42,6 +45,8 @@ const schema = {
   type: 'object',
   additionalProperties: false,
   properties: {
+    connectionTimeout: { type: 'integer', default: defaultInitOptions.connectionTimeout },
+    keepAliveTimeout: { type: 'integer', default: defaultInitOptions.keepAliveTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     http2: { type: 'boolean' },
@@ -74,7 +79,8 @@ const schema = {
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { type: 'string', default: defaultInitOptions.requestIdHeader },
-    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel }
+    requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
+    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout }
   }
 }
 

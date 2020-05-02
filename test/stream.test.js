@@ -148,7 +148,7 @@ test('Destroying streams prematurely', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'warn'
+        level: 'info'
       }
     })
   } catch (e) {
@@ -158,9 +158,11 @@ test('Destroying streams prematurely', t => {
   const http = require('http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.once('data', line => {
-    t.equal(line.msg, 'response terminated with an error with headers already sent')
-    t.equal(line.level, 40)
+  logStream.on('data', line => {
+    if (line.res) {
+      t.equal(line.msg, 'stream closed prematurely')
+      t.equal(line.level, 30)
+    }
   })
 
   fastify.get('/', function (request, reply) {
@@ -208,7 +210,7 @@ test('Destroying streams prematurely should call close method', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'warn'
+        level: 'info'
       }
     })
   } catch (e) {
@@ -218,9 +220,11 @@ test('Destroying streams prematurely should call close method', t => {
   const http = require('http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.once('data', line => {
-    t.equal(line.msg, 'response terminated with an error with headers already sent')
-    t.equal(line.level, 40)
+  logStream.on('data', line => {
+    if (line.res) {
+      t.equal(line.msg, 'stream closed prematurely')
+      t.equal(line.level, 30)
+    }
   })
 
   fastify.get('/', function (request, reply) {
@@ -268,7 +272,7 @@ test('Destroying streams prematurely should call abort method', t => {
     fastify = Fastify({
       logger: {
         stream: logStream,
-        level: 'warn'
+        level: 'info'
       }
     })
   } catch (e) {
@@ -278,9 +282,11 @@ test('Destroying streams prematurely should call abort method', t => {
   const http = require('http')
 
   // Test that "premature close" errors are logged with level warn
-  logStream.once('data', line => {
-    t.equal(line.msg, 'response terminated with an error with headers already sent')
-    t.equal(line.level, 40)
+  logStream.on('data', line => {
+    if (line.res) {
+      t.equal(line.msg, 'stream closed prematurely')
+      t.equal(line.level, 30)
+    }
   })
 
   fastify.get('/', function (request, reply) {

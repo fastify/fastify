@@ -318,7 +318,7 @@ test('The request id header key can be customized along with a custom id generat
   const fastify = Fastify({
     logger: { stream: stream, level: 'info' },
     requestIdHeader: 'my-custom-request-id',
-    genReqId () {
+    genReqId (req) {
       return 'foo'
     }
   })

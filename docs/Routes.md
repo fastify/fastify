@@ -51,7 +51,8 @@ They need to be in
 * `onSend(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
 * `onResponse(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
-* `schemaCompiler(schema)`: the function that build the schema for the validations. See [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-compiler)
+* `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator) documentation.
+* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer) documentation.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
@@ -154,28 +155,28 @@ To register a **parametric** path, use the *colon* before the parameter name. Fo
 
 ```js
 // parametric
-fastify.get('/example/:userId', (request, reply) => {}))
-fastify.get('/example/:userId/:secretToken', (request, reply) => {}))
+fastify.get('/example/:userId', (request, reply) => {})
+fastify.get('/example/:userId/:secretToken', (request, reply) => {})
 
 // wildcard
-fastify.get('/example/*', (request, reply) => {}))
+fastify.get('/example/*', (request, reply) => {})
 ```
 
 Regular expression routes are supported as well, but pay attention, RegExp are very expensive in term of performance!
 ```js
 // parametric with regexp
-fastify.get('/example/:file(^\\d+).png', (request, reply) => {}))
+fastify.get('/example/:file(^\\d+).png', (request, reply) => {})
 ```
 
 It's possible to define more than one parameter within the same couple of slash ("/"). Such as:
 ```js
-fastify.get('/example/near/:lat-:lng/radius/:r', (request, reply) => {}))
+fastify.get('/example/near/:lat-:lng/radius/:r', (request, reply) => {})
 ```
 *Remember in this case to use the dash ("-") as parameters separator.*
 
 Finally it's possible to have multiple parameters with RegExp.
 ```js
-fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (request, reply) => {}))
+fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (request, reply) => {})
 ```
 In this case as parameter separator it's possible to use whatever character is not matched by the regular expression.
 
@@ -372,7 +373,8 @@ fastify.register(context1, {
 
 async function context1 (fastify, opts) {
   fastify.get('/', (req, reply) => {
-    req.log.info({ user: 'call father serializer', key: 'another key' }) // shows: { user: 'My serializer father - call father  serializer', key: 'another key' }
+    req.log.info({ user: 'call father serializer', key: 'another key' })
+    // shows: { user: 'My serializer father - call father  serializer', key: 'another key' }
     reply.send({})
   })
 }

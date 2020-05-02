@@ -5,11 +5,19 @@
 const t = require('tap')
 const test = t.test
 const decorator = require('../../lib/decorate')
+const {
+  kState
+} = require('../../lib/symbols')
 
 test('decorate should add the given method to its instance', t => {
   t.plan(1)
   function build () {
     server.add = decorator.add
+    server[kState] = {
+      listening: false,
+      closing: false,
+      started: false
+    }
     return server
     function server () {}
   }
@@ -23,6 +31,11 @@ test('decorate is chainable', t => {
   t.plan(3)
   function build () {
     server.add = decorator.add
+    server[kState] = {
+      listening: false,
+      closing: false,
+      started: false
+    }
     return server
     function server () {}
   }
@@ -49,6 +62,11 @@ test('checkExistence should find the instance if not given', t => {
   function build () {
     server.add = decorator.add
     server.check = decorator.exist
+    server[kState] = {
+      listening: false,
+      closing: false,
+      started: false
+    }
     return server
     function server () {}
   }
@@ -83,6 +101,11 @@ test('decorate should internally call checkDependencies', t => {
   t.plan(2)
   function build () {
     server.add = decorator.add
+    server[kState] = {
+      listening: false,
+      closing: false,
+      started: false
+    }
     return server
     function server () {}
   }
@@ -101,7 +124,13 @@ test('decorate should internally call checkDependencies', t => {
 test('decorate should recognize getter/setter objects', t => {
   t.plan(6)
 
-  const one = {}
+  const one = {
+    [kState]: {
+      listening: false,
+      closing: false,
+      started: false
+    }
+  }
   decorator.add.call(one, 'foo', {
     getter: () => this._a,
     setter: (val) => {
@@ -115,7 +144,13 @@ test('decorate should recognize getter/setter objects', t => {
   t.is(one.foo, 'a')
 
   // getter only
-  const two = {}
+  const two = {
+    [kState]: {
+      listening: false,
+      closing: false,
+      started: false
+    }
+  }
   decorator.add.call(two, 'foo', {
     getter: () => 'a getter'
   })

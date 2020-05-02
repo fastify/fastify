@@ -10,11 +10,20 @@ Uncaught errors are likely to cause memory leaks, file descriptor leaks and othe
 
 Fastify follows an all-or-nothing approach and aims to be lean and optimal as much as possible. Thus, the developer is responsible for making sure that the errors are handled properly. Most of the errors are usually a result of unexpected input data, so we recommend specifying a [JSON.schema validation](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) for your input data.
 
-Note that Fastify doesn't catch uncaught errors within callback-based routes for you, so any uncaught errors will result in a crash.
-If routes are declared as `async` though - the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [setErrorHandler](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
+Fastify tries to catch as many uncaught errors it can without hindering performance. This includes:
+
+1. synchronous routes, e.g. `app.get('/', () => { throw new Error('kaboom') })`
+2. `async` routes, e.g. `app.get('/', async () => { throw new Error('kaboom') })`
+
+In those two cases, the error will safely be caught by the promise and routed to the default error handler of Fastify for a generic `Internal Server Error` response. For customizing this behaviour, you should use [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler).
 
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes
+
+<a name="FST_ERR_BAD_URL"></a>
+#### FST_ERR_BAD_URL
+
+The router received an invalid url.
 
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
@@ -106,10 +115,15 @@ The schema provided does not have `$id` property.
 
 A schema with the same `$id` already exists.
 
-<a name="FST_ERR_SCH_NOT_PRESENT"></a>
-#### FST_ERR_SCH_NOT_PRESENT
+<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
+#### FST_ERR_SCH_VALIDATION_BUILD
 
-No schema with the provided `$id` exists.
+The JSON schema provided for validation to a route is not valid.
+
+<a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
+#### FST_ERR_SCH_SERIALIZATION_BUILD
+
+The JSON schema provided for serialization of a route response is not valid.
 
 <a name="FST_ERR_SCH_BUILD"></a>
 #### FST_ERR_SCH_BUILD
@@ -120,3 +134,8 @@ The JSON schema provided to one route is not valid.
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 
 A promise may not be fulfilled with 'undefined' when statusCode is not 204.
+
+<a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
+#### FST_ERR_SEND_UNDEFINED_ERR
+
+Undefined error has occured.

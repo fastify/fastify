@@ -162,8 +162,8 @@ async function dbConnector (fastify, options) {
   fastify.decorate('mongo', db)
 }
 
-// Wrapping a plugin function with fastify-plugin exposes the decorators,
-// hooks, and middlewares declared inside the plugin to the parent scope.
+// Wrapping a plugin function with fastify-plugin exposes the decorators
+// and hooks, declared inside the plugin to the parent scope.
 module.exports = fastifyPlugin(dbConnector)
 ```
 
@@ -206,7 +206,7 @@ To guarantee a consistent and predictable behaviour of your application, we high
 └── plugins (from the Fastify ecosystem)
 └── your plugins (your custom plugins)
 └── decorators
-└── hooks and middlewares
+└── hooks
 └── your services
 ```
 In this way, you will always have access to all of the properties declared in the current scope.<br/>
@@ -215,21 +215,21 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 └── plugins (from the Fastify ecosystem)
 └── your plugins (your custom plugins)
 └── decorators
-└── hooks and middlewares
+└── hooks
 └── your services
     │
     └──  service A
     │     └── plugins (from the Fastify ecosystem)
     │     └── your plugins (your custom plugins)
     │     └── decorators
-    │     └── hooks and middlewares
+    │     └── hooks
     │     └── your services
     │
     └──  service B
           └── plugins (from the Fastify ecosystem)
           └── your plugins (your custom plugins)
           └── decorators
-          └── hooks and middlewares
+          └── hooks
           └── your services
 ```
 

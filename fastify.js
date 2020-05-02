@@ -97,6 +97,7 @@ function fastify (options) {
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
+  options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -120,7 +121,9 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  server.on('clientError', handleClientError)
+  server.on('clientError', function _clientErrorHandler (err, socket) {
+    return options.clientErrorHandler.call(this, err, socket, logger)
+  })
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemas = new Schemas()
@@ -378,7 +381,7 @@ function fastify (options) {
     return this
   }
 
-  function handleClientError (err, socket) {
+  function defaultClientErrorHandler (err, socket, logger) {
     const body = JSON.stringify({
       error: http.STATUS_CODES['400'],
       message: 'Client Error',

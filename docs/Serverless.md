@@ -6,7 +6,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 
 - [AWS Lambda](#aws-lambda)
 - [Google Cloud Run](#google-cloud-run)
-- [Zeit Now](#zeit-now)
+- [Vercel](#vercel)
 
 ### Attention Readers:
 > Fastify is not designed to run on serverless environments.
@@ -79,7 +79,7 @@ We just require [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fasti
 (make sure you install the dependency `npm i --save aws-lambda-fastify`) and our
 [`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call the
 exported `awsLambdaFastify` function with the `app` as the only parameter.
-The resulting `proxy` function has the correct signature to be used as lambda `handler` function. 
+The resulting `proxy` function has the correct signature to be used as lambda `handler` function.
 This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
@@ -89,7 +89,7 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 ### Considerations
 
-- API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams). 
+- API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
 - API Gateway has a timeout of 29 seconds, so it's important to provide a reply during this time.
 
 ## Google Cloud Run
@@ -192,9 +192,9 @@ gcloud beta run deploy --image gcr.io/PROJECT-ID/APP-NAME --platform managed
 
 Your app will be accessible from the URL GCP provides.
 
-## Zeit Now
+## Vercel
 
-[now](https://zeit.co/home) provides zero configuration deployment for
+[Vercel](https://vercel.com) provides zero configuration deployment for
 Node.js applications. In order to use now, it is as simple as
 configuring your `now.json` file like the following:
 

@@ -21,8 +21,7 @@ const defaultInitOptions = {
   ignoreTrailingSlash: false,
   maxParamLength: 100,
   onProtoPoisoning: 'error',
-  // TODO v3: default should be 'error'
-  onConstructorPoisoning: 'ignore',
+  onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
   requestIdLogLabel: 'reqId',

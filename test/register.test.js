@@ -173,3 +173,19 @@ test('awaitable after error handling', async t => {
 
   await t.rejects(fastify.ready())
 })
+
+test('chainable register', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.register(async () => {
+    t.pass('first loaded')
+  }).register(async () => {
+    t.pass('second loaded')
+  }).register(async () => {
+    t.pass('third loaded')
+  })
+
+  await fastify.ready()
+})

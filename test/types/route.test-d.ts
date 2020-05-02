@@ -103,6 +103,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      expectType<number>(res.statusCode)
     },
     onError: (req, res, done) => {
       expectType<BodyInterface>(req.body)

@@ -121,9 +121,6 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
-  server.on('clientError', function _clientErrorHandler (err, socket) {
-    return options.clientErrorHandler.call(this, err, socket, logger)
-  })
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemas = new Schemas()
@@ -297,6 +294,9 @@ function fastify (options) {
     throwIfAlreadyStarted
   })
 
+  // Delay configuring clientError handler so that it can access fastify state.
+  server.on('clientError', options.clientErrorHandler.bind(fastify))
+
   return fastify
 
   function throwIfAlreadyStarted (msg) {
@@ -381,7 +381,7 @@ function fastify (options) {
     return this
   }
 
-  function defaultClientErrorHandler (err, socket, logger) {
+  function defaultClientErrorHandler (err, socket) {
     const body = JSON.stringify({
       error: http.STATUS_CODES['400'],
       message: 'Client Error',
@@ -391,7 +391,7 @@ function fastify (options) {
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the the load balancer side.
-    logger.trace({ err }, 'client error')
+    this.log.trace({ err }, 'client error')
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 

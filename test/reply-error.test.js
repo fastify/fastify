@@ -138,10 +138,10 @@ test('Should set the response from client error handler', t => {
   })
   const response = `HTTP/1.1 400 Bad Request\r\nContent-Length: ${responseBody.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${responseBody}`
 
-  function clientErrorHandler (err, socket, logger) {
+  function clientErrorHandler (err, socket) {
     t.type(err, Error)
 
-    logger.warn({ err }, 'Handled client error')
+    this.log.warn({ err }, 'Handled client error')
     socket.end(response)
   }
 

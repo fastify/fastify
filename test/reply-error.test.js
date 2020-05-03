@@ -131,16 +131,18 @@ test('Should reply 400 on client error', t => {
 test('Should set the response from client error handler', t => {
   t.plan(5)
 
+  const responseBody = JSON.stringify({
+    error: 'Ended Request',
+    message: 'Serious Client Error',
+    statusCode: 400
+  })
+  const response = `HTTP/1.1 400 Bad Request\r\nContent-Length: ${responseBody.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${responseBody}`
+
   function clientErrorHandler (err, socket, logger) {
     t.type(err, Error)
 
-    const body = JSON.stringify({
-      error: 'Ended Request',
-      message: 'Serious Client Error',
-      statusCode: 400
-    })
     logger.warn({ err }, 'Handled client error')
-    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${body}`)
+    socket.end(response)
   }
 
   const logStream = split(JSON.parse)
@@ -164,12 +166,7 @@ test('Should set the response from client error handler', t => {
     })
 
     client.once('end', () => {
-      const body = JSON.stringify({
-        error: 'Ended Request',
-        message: 'Serious Client Error',
-        statusCode: 400
-      })
-      t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${body}`, chunks)
+      t.equal(response, chunks)
       fastify.close()
     })
   })

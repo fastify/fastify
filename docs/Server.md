@@ -469,6 +469,46 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="client-error-handler"></a>
+### `clientErrorHandler`
+
+Set a [clientErrorHandler](https://nodejs.org/api/http.html#http_event_clienterror) that listens to `error` events emitted by client connections and responds with a `400`.
+
+Using this option it is possible to override the default `clientErrorHandler`.
+
++ Default:
+```js
+function defaultClientErrorHandler (err, socket) {
+  const body = JSON.stringify({
+    error: http.STATUS_CODES['400'],
+    message: 'Client Error',
+    statusCode: 400
+  })
+  this.log.trace({ err }, 'client error')
+  socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+}
+```
+
+*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body.*
+
+```js
+const fastify = require('fastify')({
+  clientErrorHandler: function (err, socket) {
+    const body = JSON.stringify({
+      error: {
+        message: 'Client error',
+        code: '400'
+      }
+    })
+
+    // `this` is bound to fastify instance
+    this.log.trace({ err }, 'client error')
+
+    // the handler is responsible for generating a valid HTTP response
+    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+  }
+})
+```
 
 ## Instance
 

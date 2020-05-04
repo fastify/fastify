@@ -658,7 +658,53 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [here](https://github.com/epoberezkin/ajv-errors)
+If you want custom error response in schema without headaches and quickly, you can take a look at [here](https://github.com/epoberezkin/ajv-errors).
+
+Below is an example to add custom error messages for each property. Inline comments describe how you can configure your schema to show different error message for each case
+
+```js
+const Ajv = require('ajv')
+const AjvErrors = require('ajv-errors')
+...
+
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        errorMessage: {
+          type: 'Bad name'
+        }
+      },
+      age: {
+        type: 'number',
+        errorMessage: {
+          type: 'Bad age', // specify custom message for
+          min: 'Too young' // all constraints except required
+        }
+      }
+    },
+    required: ['name', 'age'],
+    errorMessage: {
+      required: {
+        name: 'Why no name!', // specify error message for when the
+        age: 'Why no age!' // property is missing from input
+      }
+    }
+  }
+}
+
+...
+
+const ajv = new Ajv({ allErrors: true, jsonPointers: true })
+// enhance the ajv instance
+AjvErrors(ajv)
+
+fastify.setSchemaCompiler(function (schema) {
+  return ajv.compile(schema)
+})
+```
 
 ### JSON Schema and Shared Schema support
 

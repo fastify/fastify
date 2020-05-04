@@ -660,7 +660,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 
 If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors).
 
-Below is an example showing how to add custom error messages for each property of a schema by supplying a custom AJV instance. Inline comments describe how to can configure the schema to show a different error message for each case:
+Below is an example showing how to add custom error messages for each property of a schema by supplying a custom AJV instance. Inline comments describe how to configure the schema to show a different error message for each case:
 
 ```js
 const Ajv = require('ajv')
@@ -700,6 +700,48 @@ ajvErrors(ajv)
 
 fastify.setSchemaCompiler(function (schema) {
   return ajv.compile(schema)
+})
+```
+
+If you want to return localized error messages, take a look at [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)
+
+```js
+const Ajv = require('ajv')
+const localize = require('ajv-i18n')
+
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+      },
+      age: {
+        type: 'number',
+      }
+    },
+    required: ['name', 'age'],
+  }
+}
+
+const ajv = new Ajv({ allErrors: true, jsonPointers: true })
+
+fastify.setSchemaCompiler(function (schema) {
+  const validate =  ajv.compile(schema)
+
+  function validator (data) {
+    const result = validate(data)
+
+    if (!result) {
+      localize.ru(validate.errors);
+      ajv.errorsText(validate.errors, { separator: '\n' })
+    }
+
+    validator.errors = validate.errors
+    return result
+  }
+
+  return validator
 })
 ```
 

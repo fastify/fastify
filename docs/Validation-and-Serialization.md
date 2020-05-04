@@ -658,13 +658,20 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors).
+If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/master/validation-messages/custom-errors-messages.js) usage.
 
-Below is an example showing how to add custom error messages for each property of a schema by supplying a custom AJV instance. Inline comments describe how to configure the schema to show a different error message for each case:
+Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
+Inline comments in the schema below describe how to configure it to show a different error message for each case:
 
 ```js
-const Ajv = require('ajv')
-const ajvErrors = require('ajv-errors')
+const fastify = Fastify({
+  ajv: {
+    customOptions: { allErrors: true, jsonPointers: true },
+    plugins: [
+      require('ajv-errors')
+    ]
+  }
+})
 
 const schema = {
   body: {
@@ -694,19 +701,16 @@ const schema = {
   }
 }
 
-const ajv = new Ajv({ allErrors: true, jsonPointers: true })
-// extend the AJV instance with custom errors support
-ajvErrors(ajv)
-
-fastify.setSchemaCompiler(function (schema) {
-  return ajv.compile(schema)
+fastify.post('/', { schema, }, (request, reply) => {
+  reply.send({
+    hello: 'world'
+  })
 })
 ```
 
 If you want to return localized error messages, take a look at [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)
 
 ```js
-const Ajv = require('ajv')
 const localize = require('ajv-i18n')
 
 const schema = {
@@ -727,21 +731,15 @@ const schema = {
 const ajv = new Ajv({ allErrors: true, jsonPointers: true })
 
 fastify.setSchemaCompiler(function (schema) {
-  const validate =  ajv.compile(schema)
+  return ajv.compile(schema)
+})
 
-  function validator (data) {
-    const result = validate(data)
-
-    if (!result) {
-      localize.ru(validate.errors);
-      ajv.errorsText(validate.errors, { separator: '\n' })
-    }
-
-    validator.errors = validate.errors
-    return result
+fastify.setErrorHandler(function (error, request, reply) {
+  if (error.validation) {
+    localize.ru(error.validation)
+    ajv.errorsText(error.validation, { separator: '\n' })
+    reply.status(400).send(error.validation)
   }
-
-  return validator
 })
 ```
 

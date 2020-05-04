@@ -5,6 +5,7 @@ const test = t.test
 const net = require('net')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
+const split = require('split2')
 
 const codes = Object.keys(statusCodes)
 codes.forEach(code => {
@@ -124,6 +125,55 @@ test('Should reply 400 on client error', t => {
       t.equal(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`, chunks)
       fastify.close()
     })
+  })
+})
+
+test('Should set the response from client error handler', t => {
+  t.plan(5)
+
+  const responseBody = JSON.stringify({
+    error: 'Ended Request',
+    message: 'Serious Client Error',
+    statusCode: 400
+  })
+  const response = `HTTP/1.1 400 Bad Request\r\nContent-Length: ${responseBody.length}\r\nContent-Type: application/json; charset=utf-8\r\n\r\n${responseBody}`
+
+  function clientErrorHandler (err, socket) {
+    t.type(err, Error)
+
+    this.log.warn({ err }, 'Handled client error')
+    socket.end(response)
+  }
+
+  const logStream = split(JSON.parse)
+  const fastify = Fastify({
+    clientErrorHandler,
+    logger: {
+      stream: logStream,
+      level: 'warn'
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    const client = net.connect(fastify.server.address().port)
+    client.end('oooops!')
+
+    var chunks = ''
+    client.on('data', chunk => {
+      chunks += chunk
+    })
+
+    client.once('end', () => {
+      t.equal(response, chunks)
+      fastify.close()
+    })
+  })
+
+  logStream.once('data', line => {
+    t.equal('Handled client error', line.msg)
+    t.equal(40, line.level, 'Log level is not warn')
   })
 })
 

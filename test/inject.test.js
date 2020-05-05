@@ -70,7 +70,7 @@ test('should support builder-style injection', t => {
   const startPromise = new Promise((resolve, reject) => {
     fastify.ready((err, res) => {
       if (err) {
-        reject(err)
+        return reject(err)
       }
       resolve()
     })

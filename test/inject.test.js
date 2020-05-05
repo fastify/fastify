@@ -440,3 +440,17 @@ test('should support builder-style injection with non-ready app', async (t) => {
   t.strictEqual(res.statusCode, 200)
   t.strictEqual(res.headers['content-length'], '17')
 })
+
+test('should handle errors in builder-style injection correctly', async (t) => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.register((instance, opts, next) => {
+    next(new Error('Kaboom'))
+  })
+
+  try {
+    await fastify.inject().get('/')
+  } catch (err) {
+    t.ok(err)
+  }
+})

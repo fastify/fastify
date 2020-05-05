@@ -59,7 +59,7 @@ test('inject get request', t => {
 })
 
 test('should support builder-style injection', t => {
-  t.plan(4)
+  t.plan(3)
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
@@ -76,11 +76,10 @@ test('should support builder-style injection', t => {
     })
   })
 
-  return startPromise.then(() => {
+  startPromise.then(() => {
     fastify
       .inject().get('/').end()
-      .then((err, res) => {
-        t.error(err)
+      .then((res) => {
         t.deepEqual(payload, JSON.parse(res.payload))
         t.strictEqual(res.statusCode, 200)
         t.strictEqual(res.headers['content-length'], '17')

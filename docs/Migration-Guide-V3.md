@@ -89,6 +89,17 @@ const schema = {
 fastify.route({ method, url, schema, handler });
 ```
 
+If you use `fastify-swagger` to generate API documentation, you need to use `fastify.getSchema` instead of `$ref`.
+
+**v3 when fastify-swagger is used:**
+```js
+const schema = {
+  body: fastify.getSchema('schemaId')
+}
+
+fastify.route({ method, url, schema, handler });
+```
+
 ### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
 
 We have replaced `setSchemaCompiler` and `setSchemaResolver` options with `setValidatorCompiler` to enable future tooling improvements. To deepen this change [read the article](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).

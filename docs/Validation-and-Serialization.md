@@ -713,6 +713,12 @@ If you want to return localized error messages, take a look at [ajv-i18n](https:
 ```js
 const localize = require('ajv-i18n')
 
+const fastify = Fastify({
+  ajv: {
+    customOptions: { allErrors: true }
+  }
+})
+
 const schema = {
   body: {
     type: 'object',
@@ -728,16 +734,9 @@ const schema = {
   }
 }
 
-const ajv = new Ajv({ allErrors: true, jsonPointers: true })
-
-fastify.setSchemaCompiler(function (schema) {
-  return ajv.compile(schema)
-})
-
 fastify.setErrorHandler(function (error, request, reply) {
   if (error.validation) {
     localize.ru(error.validation)
-    ajv.errorsText(error.validation, { separator: '\n' })
     reply.status(400).send(error.validation)
   }
 })

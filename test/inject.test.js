@@ -58,6 +58,36 @@ test('inject get request', t => {
   })
 })
 
+test('should support builder-style injection', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  const startPromise = new Promise((resolve, reject) => {
+    fastify.ready((err, res) => {
+      if (err) {
+        reject(err)
+      }
+      resolve()
+    })
+  })
+
+  return startPromise.then(() => {
+    fastify
+      .inject().get('/').end()
+      .then((err, res) => {
+        t.error(err)
+        t.deepEqual(payload, JSON.parse(res.payload))
+        t.strictEqual(res.statusCode, 200)
+        t.strictEqual(res.headers['content-length'], '17')
+      })
+  })
+})
+
 test('inject get request - code check', t => {
   t.plan(4)
   const fastify = Fastify()

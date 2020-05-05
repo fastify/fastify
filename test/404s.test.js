@@ -1220,6 +1220,7 @@ test('preHandler option for setNotFoundHandler', t => {
     })
   })
 
+  // https://github.com/fastify/fastify/issues/2229
   t.test('preHandler hook in setNotFoundHandler should be called when callNotFound', t => {
     t.plan(2)
     const fastify = Fastify()

@@ -817,6 +817,8 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 
 You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
+_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#call-not-found)_. In which case only preHandler will be run.
+
 ```js
 fastify.setNotFoundHandler({
   preValidation: (req, reply, done) => {

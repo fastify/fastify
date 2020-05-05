@@ -126,7 +126,7 @@ The type system heavily relies on generic properties to provide the most accurat
 In the last example we used interfaces to define the types for the request querystring and headers. Many users will already be using JSON Schemas to define these properties, and luckily there is a way to transform existing JSON Schemas into TypeScript interfaces!
 
 1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
-2. Install the `compile-schemas-to-typesciprt` module:
+2. Install the `compile-schemas-to-typescript` module:
     ```
     npm i -D compile-schemas-to-typescript
     ```

@@ -410,7 +410,7 @@ test('should throw error if callback specified and if ready errors', t => {
   })
 })
 
-test('should support builder-style injection', t => {
+test('should support builder-style injection with ready app', async (t) => {
   t.plan(3)
   const fastify = Fastify()
   const payload = { hello: 'world' }
@@ -419,14 +419,24 @@ test('should support builder-style injection', t => {
     reply.send(payload)
   })
 
-  fastify.ready()
-    .then(() => {
-      fastify
-        .inject().get('/').end()
-        .then((res) => {
-          t.deepEqual(payload, JSON.parse(res.payload))
-          t.strictEqual(res.statusCode, 200)
-          t.strictEqual(res.headers['content-length'], '17')
-        })
-    })
+  await fastify.ready()
+  const res = await fastify.inject().get('/').end()
+  t.deepEqual(payload, JSON.parse(res.payload))
+  t.strictEqual(res.statusCode, 200)
+  t.strictEqual(res.headers['content-length'], '17')
+})
+
+test('should support builder-style injection with non-ready app', async (t) => {
+  t.plan(3)
+  const fastify = Fastify()
+  const payload = { hello: 'world' }
+
+  fastify.get('/', (req, reply) => {
+    reply.send(payload)
+  })
+
+  const res = await fastify.inject().get('/').end()
+  t.deepEqual(payload, JSON.parse(res.payload))
+  t.strictEqual(res.statusCode, 200)
+  t.strictEqual(res.headers['content-length'], '17')
 })

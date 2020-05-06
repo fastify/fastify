@@ -4,7 +4,7 @@
 ## Factory
 
 The Fastify module exports a factory function that is used to create new
-<a href="/Server.md"><code><b>Fastify server</b></code></a>
+<a href="./Server.md"><code><b>Fastify server</b></code></a>
 instances. This factory function accepts an options object which is used to
 customize the resulting instance. This document describes the properties
 available in that options object.

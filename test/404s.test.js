@@ -1290,7 +1290,7 @@ test('onSend hooks run when an encapsulated route invokes the notFound handler',
 
 // https://github.com/fastify/fastify/issues/713
 test('preHandler option for setNotFoundHandler', t => {
-  t.plan(8)
+  t.plan(10)
 
   t.test('preHandler option', t => {
     t.plan(2)
@@ -1313,6 +1313,69 @@ test('preHandler option for setNotFoundHandler', t => {
       t.error(err)
       var payload = JSON.parse(res.payload)
       t.deepEqual(payload, { preHandler: true, hello: 'world' })
+    })
+  })
+
+  // https://github.com/fastify/fastify/issues/2229
+  t.test('preHandler hook in setNotFoundHandler should be called when callNotFound', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.setNotFoundHandler({
+      preHandler: (req, reply, done) => {
+        req.body.preHandler = true
+        done()
+      }
+    }, function (req, reply) {
+      reply.code(404).send(req.body)
+    })
+
+    fastify.post('/', function (req, reply) {
+      reply.callNotFound()
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.error(err)
+      var payload = JSON.parse(res.payload)
+      t.deepEqual(payload, { preHandler: true, hello: 'world' })
+    })
+  })
+
+  t.test('preHandler hook in setNotFoundHandler should accept an array of functions and be called when callNotFound', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.setNotFoundHandler({
+      preHandler: [
+        (req, reply, done) => {
+          req.body.preHandler1 = true
+          done()
+        },
+        (req, reply, done) => {
+          req.body.preHandler2 = true
+          done()
+        }
+      ]
+    }, function (req, reply) {
+      reply.code(404).send(req.body)
+    })
+
+    fastify.post('/', function (req, reply) {
+      reply.callNotFound()
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { hello: 'world' }
+    }, (err, res) => {
+      t.error(err)
+      var payload = JSON.parse(res.payload)
+      t.deepEqual(payload, { preHandler1: true, preHandler2: true, hello: 'world' })
     })
   })
 

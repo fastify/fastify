@@ -147,7 +147,8 @@ reply.code(303).redirect(302, '/home')
 
 <a name="call-not-found"></a>
 ### .callNotFound()
-Invokes the custom not found handler.
+Invokes the custom not found handler. Note that it will only call `preHandler` hook specified in [`setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#set-not-found-handler).
+
 ```js
 reply.callNotFound()
 ```

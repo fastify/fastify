@@ -137,7 +137,9 @@ test('should return localized error messages with ajv-i18n', t => {
     if (error.validation) {
       localize.ru(error.validation)
       reply.status(400).send(error.validation)
+      return
     }
+    reply.send(error)
   })
 
   fastify.post('/', { schema }, function (req, reply) {

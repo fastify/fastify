@@ -658,7 +658,91 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [here](https://github.com/epoberezkin/ajv-errors)
+If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/master/validation-messages/custom-errors-messages.js) usage.
+
+Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
+Inline comments in the schema below describe how to configure it to show a different error message for each case:
+
+```js
+const fastify = Fastify({
+  ajv: {
+    customOptions: { allErrors: true, jsonPointers: true },
+    plugins: [
+      require('ajv-errors')
+    ]
+  }
+})
+
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        errorMessage: {
+          type: 'Bad name'
+        }
+      },
+      age: {
+        type: 'number',
+        errorMessage: {
+          type: 'Bad age', // specify custom message for
+          min: 'Too young' // all constraints except required
+        }
+      }
+    },
+    required: ['name', 'age'],
+    errorMessage: {
+      required: {
+        name: 'Why no name!', // specify error message for when the
+        age: 'Why no age!' // property is missing from input
+      }
+    }
+  }
+}
+
+fastify.post('/', { schema, }, (request, reply) => {
+  reply.send({
+    hello: 'world'
+  })
+})
+```
+
+If you want to return localized error messages, take a look at [ajv-i18n](https://github.com/epoberezkin/ajv-i18n)
+
+```js
+const localize = require('ajv-i18n')
+
+const fastify = Fastify({
+  ajv: {
+    customOptions: { allErrors: true }
+  }
+})
+
+const schema = {
+  body: {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+      },
+      age: {
+        type: 'number',
+      }
+    },
+    required: ['name', 'age'],
+  }
+}
+
+fastify.setErrorHandler(function (error, request, reply) {
+  if (error.validation) {
+    localize.ru(error.validation)
+    reply.status(400).send(error.validation)
+    return
+  }
+  reply.send(error)
+})
+```
 
 ### JSON Schema and Shared Schema support
 

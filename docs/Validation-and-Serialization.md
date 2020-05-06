@@ -738,7 +738,9 @@ fastify.setErrorHandler(function (error, request, reply) {
   if (error.validation) {
     localize.ru(error.validation)
     reply.status(400).send(error.validation)
+    return
   }
+  reply.send(error)
 })
 ```
 

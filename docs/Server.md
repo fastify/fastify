@@ -95,7 +95,7 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 
 Defines what action the framework must take when parsing a JSON object
 with `__proto__`. This functionality is provided by
-[secure-json-parse](../fastify/secure-json-parse).
+[secure-json-parse](https://github.com/fastify/secure-json-parse).
 See https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061
 for more details about prototype poisoning attacks.
 
@@ -108,7 +108,7 @@ Possible values are `'error'`, `'remove'` and `'ignore'`.
 
 Defines what action the framework must take when parsing a JSON object
 with `constructor`. This functionality is provided by
-[secure-json-parse](../fastify/secure-json-parse).
+[secure-json-parse](https://github.com/fastify/secure-json-parse).
 See https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061
 for more details about prototype poisoning attacks.
 

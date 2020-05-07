@@ -6,6 +6,7 @@ const querystring = require('querystring')
 let lightMyRequest
 
 const {
+  kAvvioBoot,
   kChildren,
   kBodyLimit,
   kRoutePrefix,
@@ -31,7 +32,7 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
-const { Hooks, buildHooks } = require('./lib/hooks')
+const { Hooks, buildHooks, hookRunnerApplication } = require('./lib/hooks')
 const { Schemas, buildSchemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
@@ -154,6 +155,7 @@ function fastify (options) {
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
+    [kAvvioBoot]: null,
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)
@@ -234,17 +236,16 @@ function fastify (options) {
         }
         return this[kPluginNameChain][0]
       }
+    },
+    prefix: {
+      get: function () { return this[kRoutePrefix] }
+    },
+    validatorCompiler: {
+      get: function () { return this[kValidatorCompiler] }
+    },
+    serializerCompiler: {
+      get: function () { return this[kSerializerCompiler] }
     }
-  })
-
-  Object.defineProperty(fastify, 'prefix', {
-    get: function () { return this[kRoutePrefix] }
-  })
-  Object.defineProperty(fastify, 'validatorCompiler', {
-    get: function () { return this[kValidatorCompiler] }
-  })
-  Object.defineProperty(fastify, 'serializerCompiler', {
-    get: function () { return this[kSerializerCompiler] }
   })
 
   // We are adding `use` to the fastify prototype so the user
@@ -262,11 +263,15 @@ function fastify (options) {
   const avvio = Avvio(fastify, {
     autostart: false,
     timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
-    expose: { use: 'register' }
+    expose: {
+      use: 'register'
+    }
   })
   // Override to allow the plugin incapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
+  fastify[kAvvioBoot] = fastify.ready // the avvio ready function
+  fastify.ready = ready // overwrite the avvio ready function
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
@@ -345,6 +350,44 @@ function fastify (options) {
     }
   }
 
+  function ready (cb) {
+    let resolveReady
+    let rejectReady
+
+    // run the hooks after returning the promise
+    process.nextTick(runHooks)
+
+    if (!cb) {
+      return new Promise(function (resolve, reject) {
+        resolveReady = resolve
+        rejectReady = reject
+      })
+    }
+
+    function runHooks () {
+      // start loading
+      fastify[kAvvioBoot]((err, done) => {
+        if (err || fastify[kState].started) {
+          manageErr(err)
+        } else {
+          hookRunnerApplication('onReady', fastify[kAvvioBoot], fastify, manageErr)
+        }
+        done()
+      })
+    }
+
+    function manageErr (err) {
+      if (cb) {
+        cb(err)
+      } else {
+        if (err) {
+          return rejectReady(err)
+        }
+        resolveReady()
+      }
+    }
+  }
+
   function use () {
     throw new FST_ERR_MISSING_MIDDLEWARE()
   }
@@ -357,6 +400,10 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
+    } else if (name === 'onReady') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
+        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
@@ -366,6 +413,9 @@ function fastify (options) {
     if (name === 'onClose') {
       this[kHooks].validate(name, fn)
       this.onClose(fn)
+    } else if (name === 'onReady') {
+      this[kHooks].validate(name, fn)
+      this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)
@@ -477,6 +527,7 @@ function override (old, fn, opts) {
 
   const instance = Object.create(old)
   old[kChildren].push(instance)
+  instance.ready = old[kAvvioBoot].bind(instance)
   instance[kChildren] = []
   instance[kReply] = Reply.buildReply(instance[kReply])
   instance[kRequest] = Request.buildRequest(instance[kRequest])

@@ -18,6 +18,7 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
   - [Manage Errors from a hook](#manage-errors-from-a-hook)
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
+  - [onReady](#onready)
   - [onClose](#onclose)
   - [onRoute](#onroute)
   - [onRegister](#onregister)
@@ -108,7 +109,7 @@ If you are using the `preSerialization` hook, you can change (or replace) the pa
 
 ```js
 fastify.addHook('preSerialization', (request, reply, payload, done) => {
-  const err = null;
+  const err = null
   const newPayload = { wrapped: payload }
   done(err, newPayload)
 })
@@ -283,12 +284,34 @@ fastify.addHook('preHandler', async (request, reply) => {
 
 You can hook into the application-lifecycle as well.
 
+- [onReady](#onready)
 - [onClose](#onclose)
 - [onRoute](#onroute)
 - [onRegister](#onregister)
 
-<a name="on-close"></a>
+### onReady
+Triggered before the server starts listening for requests. It cannot change the routes or add new hooks.
+Registered hook functions are executed serially.
+Only after all `onReady` hook functions have completed will the server start listening for requests.
+Hook functions accept one argument: a callback, `done`, to be invoked after the hook function is complete.
+Hook functions are invoked with `this` bound to the associated Fastify instance.
 
+```js
+// callback style
+fastify.addHook('onReady', function (done) {
+  // Some code
+  const err = null;
+  done(err)
+})
+
+// or async/await style
+fastify.addHook('onReady', async function () {
+  // Some async code
+  await loadCacheFromDatabase()
+})
+```
+
+<a name="on-close"></a>
 ### onClose
 Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
@@ -298,6 +321,7 @@ fastify.addHook('onClose', (instance, done) => {
   done()
 })
 ```
+
 <a name="on-route"></a>
 ### onRoute
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback. This hook is encapsulated.

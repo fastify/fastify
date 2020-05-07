@@ -85,6 +85,11 @@ server.addHook('onRegister', (instance, done) => {
   expectType<void>(done(new Error()))
 })
 
+server.addHook('onReady', function (done) {
+  expectType<(err?: FastifyError) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
   expectType<(err?: FastifyError) => void>(done)

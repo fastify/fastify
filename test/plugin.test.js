@@ -7,7 +7,7 @@ const test = t.test
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const fp = require('fastify-plugin')
-const lolex = require('@sinonjs/fake-timers')
+const fakeTimer = require('@sinonjs/fake-timers')
 
 test('require a plugin', t => {
   t.plan(1)
@@ -760,7 +760,7 @@ test('pluginTimeout', t => {
 
 test('pluginTimeout default', t => {
   t.plan(2)
-  const clock = lolex.install()
+  const clock = fakeTimer.install()
 
   const fastify = Fastify()
   fastify.register(function (app, opts, next) {

@@ -668,9 +668,9 @@ test('Should set a custom logLevel for every plugin', t => {
   })
 })
 
-test('Should set a custom logSerializers for every plugin', t => {
+test('Should set a custom logSerializers for every plugin', async t => {
   const lines = ['Hello', 'XHello', 'ZHello']
-  t.plan(9)
+  t.plan(6)
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
@@ -705,32 +705,23 @@ test('Should set a custom logSerializers for every plugin', t => {
     next()
   }, { logSerializers: { test: value => 'Z' + value } })
 
-  fastify.inject({
+  let res = await fastify.inject({
     method: 'GET',
     url: '/'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
   })
+  t.deepEqual(res.json(), { hello: 'world' })
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'GET',
     url: '/test1'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
   })
+  t.deepEqual(res.json(), { hello: 'world' })
 
-  fastify.inject({
+  res = await fastify.inject({
     method: 'GET',
     url: '/test2'
-  }, (err, res) => {
-    t.error(err)
-    const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
   })
+  t.deepEqual(res.json(), { hello: 'world' })
 })
 
 test('Should override serializers from route', t => {

@@ -1,6 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
+const localize = require('ajv-i18n')
 const Fastify = require('..')
 
 test('Example - URI $id', t => {
@@ -442,4 +443,114 @@ test('Example - schemas examples', t => {
   })
 
   fastify.ready(err => t.error(err))
+})
+
+test('should return custom error messages with ajv-errors', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    ajv: {
+      customOptions: { allErrors: true, jsonPointers: true },
+      plugins: [
+        require('ajv-errors')
+      ]
+    }
+  })
+
+  const schema = {
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        work: { type: 'string' },
+        age: {
+          type: 'number',
+          errorMessage: {
+            type: 'bad age - should be num'
+          }
+        }
+      },
+      required: ['name', 'work'],
+      errorMessage: {
+        required: {
+          name: 'name please',
+          work: 'work please',
+          age: 'age please'
+        }
+      }
+    }
+  }
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'salman',
+      age: 'bad'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'body/age bad age - should be num, body name please, body work please'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})
+
+test('should return localized error messages with ajv-i18n', t => {
+  t.plan(3)
+
+  const schema = {
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        work: { type: 'string' }
+      },
+      required: ['name', 'work']
+    }
+  }
+
+  const fastify = Fastify({
+    ajv: {
+      customOptions: { allErrors: true }
+    }
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    if (error.validation) {
+      localize.ru(error.validation)
+      reply.status(400).send(error.validation)
+      return
+    }
+    reply.send(error)
+  })
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      name: 'salman'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), [{
+      dataPath: '',
+      keyword: 'required',
+      message: 'должно иметь обязательное поле work',
+      params: { missingProperty: 'work' },
+      schemaPath: '#/required'
+    }])
+    t.strictEqual(res.statusCode, 400)
+  })
 })

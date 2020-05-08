@@ -67,6 +67,10 @@ defaults
   option        dontlognull
   retries       3
   option redispatch
+  # The following option make haproxy close connections to backend servers
+  # instead of keeping them open. This can alleviate unexpected connection
+  # reset errors in the Node process.
+  option http-server-close
   maxconn       2000
   timeout connect 5000
   timeout client 50000

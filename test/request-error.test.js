@@ -77,31 +77,31 @@ test('default 400 on request error with custom error handler', t => {
 
 test('default clientError handler ignores ECONNRESET', t => {
   t.plan(3)
-  
+
   let logs = ''
   let response = ''
 
-  const fastify = Fastify({ 
-    bodyLimit: 1, 
-    keepAliveTimeout: 100, 
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100,
     logger: {
       level: 'trace',
       stream: {
-        write() {
+        write () {
           logs += JSON.stringify(arguments)
         }
       }
-    }    
+    }
   })
 
   fastify.get('/', (request, reply) => {
     reply.send('OK')
-    
+
     process.nextTick(() => {
       const error = new Error()
       error.code = 'ECONNRESET'
 
-      fastify.server.emit('clientError', error, request.raw.socket);      
+      fastify.server.emit('clientError', error, request.raw.socket)
     })
   })
 

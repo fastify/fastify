@@ -390,6 +390,7 @@ function fastify (options) {
 
   function defaultClientErrorHandler (err, socket) {
     // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
+    // See: https://github.com/nodejs/node/issues/33302
     if (err.code === 'ECONNRESET') {
       return
     }

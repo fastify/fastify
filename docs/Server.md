@@ -479,7 +479,7 @@ Using this option it is possible to override the default `clientErrorHandler`.
 + Default:
 ```js
 function defaultClientErrorHandler (err, socket) {
-  if(err.code === 'ECONNRESET') {
+  if (err.code === 'ECONNRESET') {
     return
   }
 
@@ -490,7 +490,7 @@ function defaultClientErrorHandler (err, socket) {
   })
   this.log.trace({ err }, 'client error')
 
-  if(socket.writable) {
+  if (socket.writable) {
     socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
   }
 }

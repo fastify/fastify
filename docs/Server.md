@@ -479,17 +479,24 @@ Using this option it is possible to override the default `clientErrorHandler`.
 + Default:
 ```js
 function defaultClientErrorHandler (err, socket) {
+  if (err.code === 'ECONNRESET') {
+    return
+  }
+
   const body = JSON.stringify({
     error: http.STATUS_CODES['400'],
     message: 'Client Error',
     statusCode: 400
   })
   this.log.trace({ err }, 'client error')
-  socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+
+  if (socket.writable) {
+    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+  }
 }
 ```
 
-*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body.*
+*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket it's still writable as it may already have been destroyed.*
 
 ```js
 const fastify = require('fastify')({

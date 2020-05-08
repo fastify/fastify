@@ -1,5 +1,6 @@
 'use strict'
 
+const { connect } = require('net')
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -71,5 +72,57 @@ test('default 400 on request error with custom error handler', t => {
       message: 'Simulated',
       statusCode: 400
     })
+  })
+})
+
+test('default clientError handler ignores ECONNRESET', t => {
+  t.plan(3)
+
+  let logs = ''
+  let response = ''
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100,
+    logger: {
+      level: 'trace',
+      stream: {
+        write () {
+          logs += JSON.stringify(arguments)
+        }
+      }
+    }
+  })
+
+  fastify.get('/', (request, reply) => {
+    reply.send('OK')
+
+    process.nextTick(() => {
+      const error = new Error()
+      error.code = 'ECONNRESET'
+
+      fastify.server.emit('clientError', error, request.raw.socket)
+    })
+  })
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+    fastify.server.unref()
+
+    const client = connect(fastify.server.address().port)
+
+    client.on('data', chunk => {
+      response += chunk.toString('utf-8')
+    })
+
+    client.on('end', () => {
+      t.match(response, /^HTTP\/1.1 200 OK/)
+      t.notMatch(logs, /ECONNRESET/)
+    })
+
+    client.resume()
+    client.write('GET / HTTP/1.1\r\n')
+    client.write('Connection: close\r\n')
+    client.write('\r\n\r\n')
   })
 })

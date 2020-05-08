@@ -439,6 +439,13 @@ function fastify (options) {
   }
 
   function defaultClientErrorHandler (err, socket) {
+    // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
+    // https://github.com/fastify/fastify/issues/2036
+    // https://github.com/nodejs/node/issues/33302
+    if (err.code === 'ECONNRESET') {
+      return
+    }
+
     const body = JSON.stringify({
       error: http.STATUS_CODES['400'],
       message: 'Client Error',
@@ -449,7 +456,11 @@ function fastify (options) {
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the the load balancer side.
     this.log.trace({ err }, 'client error')
-    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+
+    // If the socket is not writable, there is no reason to try to send data.
+    if (socket.writable) {
+      socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+    }
   }
 
   // If the router does not match any route, every request will land here

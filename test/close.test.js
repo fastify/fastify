@@ -77,6 +77,29 @@ test('close order', t => {
   })
 })
 
+test('close order - async', async t => {
+  t.plan(3)
+  const fastify = Fastify()
+  const order = [1, 2, 3]
+
+  fastify.register(function (f, opts, next) {
+    f.addHook('onClose', async instance => {
+      t.is(order.shift(), 1)
+    })
+
+    next()
+  })
+
+  fastify.addHook('onClose', () => {
+    t.is(order.shift(), 2)
+  })
+
+  await fastify.listen(0)
+  await fastify.close()
+
+  t.is(order.shift(), 3)
+})
+
 test('should not throw an error if the server is not listening', t => {
   t.plan(2)
   const fastify = Fastify()

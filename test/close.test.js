@@ -95,7 +95,7 @@ test('close order - async', async t => {
   })
 
   await fastify.listen(0)
-  await fastify.close(0)
+  await fastify.close()
 
   t.is(order.shift(), 3)
 })

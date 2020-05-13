@@ -79,7 +79,7 @@ function fastify (options) {
     throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
   }
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.customOptions}'`)
+    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
   }
   ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
     return Array.isArray(plugin) ? plugin : [plugin]

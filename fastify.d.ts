@@ -8,6 +8,9 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
+import * as ajv from 'ajv'
+import { FastifyError } from './types/error'
+import { FastifyReply } from './types/reply'
 
 /**
  * Fastify factor function for the standard fastify http, https, or http2 server instance.
@@ -71,18 +74,22 @@ export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   Logger = FastifyLoggerOptions<RawServer>
 > = {
+  http2?: boolean,
+  https?: https.ServerOptions
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
-  bodyLimit?: number,
   pluginTimeout?: number,
+  bodyLimit?: number,
+  maxParamLength?: number,
   disableRequestLogging?: boolean,
-  requestIdLogLabel?: string;
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   logger?: boolean | Logger,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
+  requestIdLogLabel?: string;
   genReqId?: (req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: string | string[] },
@@ -94,7 +101,18 @@ export type FastifyServerOptions<
       empty(): void
     },
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
-  }
+  },
+  return503OnClosing?: boolean,
+  ajv?: {
+    customOptions?: ajv.Options,
+    plugins?: Function[]
+  },
+  http2SessionTimeout?: number,
+  frameworkErrors?: (
+    error: FastifyError,
+    req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
+    res: FastifyReply<RawServer, RawReplyDefaultExpression<RawServer>>
+  ) => void,
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

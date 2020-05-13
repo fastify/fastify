@@ -20,14 +20,23 @@ expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must b
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
 // server options
+fastify({ http2: true })
+fastify({
+  https: {
+    ca: 'foo',
+    cert: 'bar'
+  }
+})
 fastify({ ignoreTrailingSlash: true })
 fastify({ connectionTimeout: 1000 })
 fastify({ keepAliveTimeout: 1000 })
-fastify({ bodyLimit: 100 })
 fastify({ pluginTimeout: 1000 })
+fastify({ bodyLimit: 100 })
+fastify({ maxParamLength: 100 })
 fastify({ disableRequestLogging: true })
 fastify({ requestIdLogLabel: 'request-id' })
 fastify({ onProtoPoisoing: 'error' })
+fastify({ onConstructorPoisoning: 'error' })
 fastify({ logger: true })
 fastify({ serverFactory: () => http.createServer() })
 fastify({ caseSensitive: true })
@@ -43,6 +52,17 @@ fastify({
       del: () => {},
       empty: () => {}
     }),
-    deriveVersion: () => 'foo',
+    deriveVersion: () => 'foo'
   }
 })
+fastify({ return503OnClosing: true })
+fastify({
+  ajv: {
+    customOptions: {
+      nullable: false
+    },
+    plugins: [() => {}]
+  }
+})
+fastify({ http2SessionTimeout: 1000 })
+fastify({ frameworkErrors: () => {} })

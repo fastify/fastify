@@ -396,7 +396,7 @@ function fastify (options) {
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
-    if (name === 'onSend' || name === 'preSerialization' || name === 'onError') {
+    if (name === 'onSend' || name === 'preSerialization' || name === 'preDecoding' || name === 'onError') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }

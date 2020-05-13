@@ -37,6 +37,10 @@ fastify
     console.log('onRequest')
     next()
   })
+  .addHook('preDecoding', function (request, reply, raw, next) {
+    console.log('preDecoding')
+    next(null, raw)
+  })
   .addHook('preParsing', function (request, reply, next) {
     console.log('preParsing')
     next()

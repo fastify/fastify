@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from '../../fastify'
+import fastify, { FastifyInstance, FastifyServerOptions } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
@@ -18,3 +18,31 @@ expectType<LightMyRequestChain>(fastify({ http2: true, https: {}}).inject())
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
+
+// server options
+fastify({ ignoreTrailingSlash: true })
+fastify({ connectionTimeout: 1000 })
+fastify({ keepAliveTimeout: 1000 })
+fastify({ bodyLimit: 100 })
+fastify({ pluginTimeout: 1000 })
+fastify({ disableRequestLogging: true })
+fastify({ requestIdLogLabel: 'request-id' })
+fastify({ onProtoPoisoing: 'error' })
+fastify({ logger: true })
+fastify({ serverFactory: () => http.createServer() })
+fastify({ caseSensitive: true })
+fastify({ requestIdHeader: 'request-id' })
+fastify({ genReqId: () => 'request-id' });
+fastify({ trustProxy: true })
+fastify({ querystringParser: () => ({ foo: 'bar' }) })
+fastify({
+  versioning: {
+    storage: () => ({
+      get: () => 'foo',
+      set: () => {},
+      del: () => {},
+      empty: () => {}
+    }),
+    deriveVersion: () => 'foo',
+  }
+})

@@ -393,50 +393,6 @@ const fastify = require('fastify')({
 })
 ```
 
-<a name="factory-return-503-on-closing"></a>
-### `return503OnClosing`
-
-Returns 503 after calling `close` server method.
-If `false`, the server routes the incoming request as usual.
-
-+ Default: `true`
-
-<a name="factory-ajv"></a>
-### `ajv`
-
-Configure the ajv instance used by Fastify without providing a custom one.
-
-+ Default:
-
-```js
-{
-  customOptions: {
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true,
-    allErrors: true,
-    nullable: true
-  },
-  plugins: []
-}
-```
-
-```js
-const fastify = require('fastify')({
-  ajv: {
-    customOptions: {
-      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
-    },
-    plugins: [
-      require('ajv-merge-patch')
-      [require('ajv-keywords'), 'instanceof'];
-      // Usage: [plugin, pluginOptions] - Plugin with options
-      // Usage: plugin - Plugin without options
-    ]
-  }
-})
-```
-
 <a name="http2-session-timeout"></a>
 ### `http2SessionTimeout`
 

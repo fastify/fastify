@@ -88,7 +88,7 @@ export type FastifyServerOptions<
   querystringParser?: (str: string) => { [key: string]: string | string[] },
   versioning?: {
     storage(): {
-      get(version: string): Function | null,
+      get(version: string): string | null,
       set(version: string, store: Function): void
       del(version: string): void,
       empty(): void

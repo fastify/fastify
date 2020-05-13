@@ -57,7 +57,7 @@ export interface preDecodingHookHandler<
   (
     request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
-    raw: Readable,
+    payload: Readable,
     done: DoneFuncWithErrOrReadable
   ): Promise<Readable> | void;
 }

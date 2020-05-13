@@ -61,23 +61,23 @@ If you are using the `preDecoding` hook, you can transform the request payload s
 For instance, you can uncompress the request body:
 
 ```js
-fastify.addHook('preDecoding', (request, reply, raw, done) => {
+fastify.addHook('preDecoding', (request, reply, payload, done) => {
   if(request.headers['content-encoding'] !== 'gzip') {
-    done(null, raw)
+    done(null, payload)
   }
 
   // Some code
-  done(null, raw.pipe(zlib.createGunzip()))
+  done(null, payload.pipe(zlib.createGunzip()))
 })
 ```
 Or `async/await`:
 ```js
-fastify.addHook('preDecoding', async (request, reply, raw) => {
+fastify.addHook('preDecoding', async (request, reply, payload) => {
   if(request.headers['content-encoding'] !== 'gzip') {
-    return raw
+    return payload
   }
 
-  return raw.pipe(zlib.createGunzip())
+  return payload.pipe(zlib.createGunzip())
 })
 ```
 
@@ -457,7 +457,7 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 <a name="route-hooks"></a>
 
 ## Route level hooks
-You can declare one or more custom [onRequest](#onRequest), [onReponse](#onResponse), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
+You can declare one or more custom [onRequest](#onRequest), [onResponse](#onResponse), [preDecoding](#preDecoding), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
 If you do so, those hooks are always executed as the last hook in their category. <br/>
 This can be useful if you need to implement authentication, where the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
@@ -471,6 +471,11 @@ fastify.addHook('onRequest', (request, reply, done) => {
 fastify.addHook('onResponse', (request, reply, done) => {
   // your code
   done()
+})
+
+fastify.addHook('preDecoding', (request, reply, payload, done) => {
+  // Your code
+  done(null, payload)
 })
 
 fastify.addHook('preParsing', (request, reply, done) => {
@@ -503,6 +508,10 @@ fastify.route({
   },
   onResponse: function (request, reply, done) {
     // this hook will always be executed after the shared `onResponse` hooks
+    done()
+  },
+  preDecoding: function (request, reply, payload, done) {
+    // This hook will always be executed after the shared `preDecoding` hooks
     done()
   },
   preParsing: function (request, reply, done) {

@@ -22,12 +22,12 @@ server.addHook('onRequest', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('preDecoding', (request, reply, raw, done) => {
+server.addHook('preDecoding', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<Readable>(raw)
+  expectType<Readable>(payload)
   expectType<void>(done(new Error()))
-  expectType<void>(done(null, raw))
+  expectType<void>(done(null, payload))
   expectError(done())
 })
 
@@ -114,11 +114,11 @@ server.addHook('onRequest', async (request, reply) => {
   return;
 })
 
-server.addHook('preDecoding', async (request, reply, raw) => {
+server.addHook('preDecoding', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<Readable>(raw)
-  return raw
+  expectType<Readable>(payload)
+  return payload
 })
 
 server.addHook('preParsing', async (request, reply) => {

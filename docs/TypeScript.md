@@ -946,7 +946,7 @@ This interface is passed to instance of FastifyError.
 
 Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
 
-##### fastify.preDecodingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], raw: Readable, done: (err?: [FastifyError][FastifyError], raw?: Readable) => void): Promise\<Readable\> | void
+##### fastify.preDecodingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: Readable, done: (err?: [FastifyError][FastifyError], payload?: Readable) => void): Promise\<Readable\> | void
 
 [src](../types/hooks.d.ts#L35)
 
@@ -967,7 +967,6 @@ Notice: in the `preParsing` hook, request.body will always be null, because the 
 `preValidation` is the fourth hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
 
 Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
-
 
 ##### fastify.preHandlerHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 

@@ -32,9 +32,9 @@ test('hooks', t => {
   }
 
   try {
-    fastify.addHook('preDecoding', function (request, reply, raw, done) {
+    fastify.addHook('preDecoding', function (request, reply, payload, done) {
       t.ok('preDecoding called')
-      done(null, raw)
+      done(null, payload)
     })
     t.pass()
   } catch (e) {

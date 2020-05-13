@@ -44,6 +44,7 @@ They need to be in
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
 * `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
+* `preDecoding(request, reply, raw, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#predecoding) called before reading the request payload, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
 * `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.

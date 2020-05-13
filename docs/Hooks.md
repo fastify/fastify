@@ -8,6 +8,7 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
 
 - [Request/Reply Hooks](#requestreply-hooks)
   - [onRequest](#onrequest)
+  - [preDecoding](#predecoding)
   - [preParsing](#preparsing)
   - [preValidation](#prevalidation)
   - [preHandler](#prehandler)
@@ -53,6 +54,35 @@ fastify.addHook('onRequest', async (request, reply) => {
 
 **Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
 
+### preDecoding
+
+If you are using the `preDecoding` hook, you can transform the request payload stream before it is parsed. It receives the request and reply objects as other hooks, and a stream with the current request payload. It must return a stream.
+
+For instance, you can uncompress the request body:
+
+```js
+fastify.addHook('preDecoding', (request, reply, raw, done) => {
+  if(request.headers['content-encoding'] !== 'gzip') {
+    done(null, raw)
+  }
+
+  // Some code
+  done(null, raw.pipe(zlib.createGunzip()))
+})
+```
+Or `async/await`:
+```js
+fastify.addHook('preDecoding', async (request, reply, raw) => {
+  if(request.headers['content-encoding'] !== 'gzip') {
+    return raw
+  }
+
+  return raw.pipe(zlib.createGunzip())
+})
+```
+
+**Notice:** you should also add `receivedEncodedLength` property to the returned stream. The property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
+
 ### preParsing
 ```js
 fastify.addHook('preParsing', (request, reply, done) => {
@@ -69,7 +99,7 @@ fastify.addHook('preParsing', async (request, reply) => {
 })
 ```
 
-**Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+**Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
 
 ### preValidation
 ```js
@@ -86,7 +116,7 @@ fastify.addHook('preValidation', async (request, reply) => {
   return
 })
 ```
-**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preHandler) hook.
+**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preHandler](#preHandler) hook.
 
 ### preHandler
 ```js
@@ -114,7 +144,7 @@ fastify.addHook('preSerialization', (request, reply, payload, done) => {
   done(err, newPayload)
 })
 ```
-Or `async/await`
+Or `async/await`:
 ```js
 fastify.addHook('preSerialization', async (request, reply, payload) => {
   return { wrapped: payload }

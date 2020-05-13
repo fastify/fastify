@@ -946,20 +946,25 @@ This interface is passed to instance of FastifyError.
 
 Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
 
+##### fastify.preDecodingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], raw: Readable, done: (err?: [FastifyError][FastifyError], raw?: Readable) => void): Promise\<Readable\> | void
+
+[src](../types/hooks.d.ts#L35)
+
+You can transform the request payload stream before it is parsed with the `preDecoding` hook. It is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preParsing`.
+
 ##### fastify.preParsingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L35)
 
-preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
+`preParsing` is the third hook to be executed in the request lifecycle. The previous hook was `preDecoding`, the next hook will be `preValidation`.
 
 Notice: in the `preParsing` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
- 
 
 ##### fastify.preValidationHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L53)
 
-`preValidation` is the third hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
+`preValidation` is the fourth hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
 
 Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
 
@@ -968,13 +973,13 @@ Notice: in the `preValidation` hook, request.body will always be null, because t
 
 [src](../types/hooks.d.ts#L70)
 
-`preHandler` is the fourth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
+`preHandler` is the fifth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
 
 ##### fastify.preSerializationHookhandler<PreSerializationPayload, [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], payload: PreSerializationPayload, done: (err: [FastifyError][FastifyError] | null, res?: unknown) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L94)
 
-`preSerialization` is the fifth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
+`preSerialization` is the sixth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
 
 Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
 
@@ -982,7 +987,7 @@ Note: the hook is NOT called if the payload is a string, a Buffer, a stream or n
 
 [src](../types/hooks.d.ts#L114)
 
-You can change the payload with the `onSend` hook. It is the sixth hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
+You can change the payload with the `onSend` hook. It is the seventh hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
 
 Note: If you change the payload, you may only change it to a string, a Buffer, a stream, or null.
 
@@ -990,7 +995,7 @@ Note: If you change the payload, you may only change it to a string, a Buffer, a
 
 [src](../types/hooks.d.ts#L134)
 
-`onResponse` is the seventh and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
+`onResponse` is the eighth and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
 
 The onResponse hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
 

@@ -58,7 +58,8 @@ type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger
 > = FastifyServerOptions<Server, Logger> & {
-  http2: true
+  http2: true,
+  http2SessionTimeout?: number,
 }
 
 type FastifyHttpsOptions<
@@ -74,8 +75,6 @@ export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   Logger = FastifyLoggerOptions<RawServer>
 > = {
-  http2?: boolean,
-  https?: https.ServerOptions
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
@@ -107,7 +106,6 @@ export type FastifyServerOptions<
     customOptions?: ajv.Options,
     plugins?: Function[]
   },
-  http2SessionTimeout?: number,
   frameworkErrors?: (
     error: FastifyError,
     req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,

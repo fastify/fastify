@@ -12,7 +12,7 @@ expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerRespons
 // https server
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ https: {} }))
 // http2 server
-expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
+expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
 expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, https: {}}))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {}}).inject())
 
@@ -64,5 +64,4 @@ fastify({
     plugins: [() => {}]
   }
 })
-fastify({ http2SessionTimeout: 1000 })
 fastify({ frameworkErrors: () => {} })

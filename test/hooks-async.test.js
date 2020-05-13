@@ -1,5 +1,6 @@
 'use strict'
 
+const { Readable } = require('stream')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
@@ -159,6 +160,58 @@ test('onRequest hooks should be able to block a request', t => {
     t.error(err)
     t.is(res.statusCode, 200)
     t.is(res.payload, 'hello')
+  })
+})
+
+test('preDecoding hooks should be able to modify the payload', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preDecoding', async (req, reply, payload) => {
+    const stream = new Readable()
+
+    stream.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    stream.push(JSON.stringify({ hello: 'another world' }))
+    stream.push(null)
+
+    return stream
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+  })
+})
+
+test('preDecoding hooks should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preDecoding', async (req, reply, payload) => {
+    throw new Error('kaboom')
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
   })
 })
 
@@ -495,9 +548,14 @@ test('Should log a warning if is an async function with `done`', t => {
   })
 
   t.test('4 arguments', t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify()
 
+    try {
+      fastify.addHook('preDecoding', async (req, reply, payload, done) => {})
+    } catch (e) {
+      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    }
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {

@@ -13,7 +13,7 @@ const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 
 test('hooks', t => {
-  t.plan(38)
+  t.plan(39)
   const fastify = Fastify()
 
   try {
@@ -25,6 +25,16 @@ test('hooks', t => {
       } else {
         done()
       }
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+
+  try {
+    fastify.addHook('preDecoding', function (request, reply, raw, done) {
+      t.ok('preDecoding called')
+      done(null, raw)
     })
     t.pass()
   } catch (e) {
@@ -1205,7 +1215,7 @@ test('onSend hook should receive valid request and reply objects if a custom con
   fastify.decorateRequest('testDecorator', 'testDecoratorVal')
   fastify.decorateReply('testDecorator', 'testDecoratorVal')
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     done(new Error('content type parser failed'))
   })
 
@@ -2325,6 +2335,149 @@ test('onError hook with setErrorHandler', t => {
     })
   })
   t.end()
+})
+
+test('preDecoding hook should run before parsing and be able to modify the payload', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preDecoding', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push(JSON.stringify({ hello: 'another world' }))
+    modified.push(null)
+    done(null, modified)
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send(req.body)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+  })
+})
+
+test('preDecoding hooks should run in the order in which they are defined', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preDecoding', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push('{"hello":')
+    done(null, modified)
+  })
+
+  fastify.addHook('preDecoding', function (req, reply, payload, done) {
+    payload.push('"another world"}')
+    payload.push(null)
+    done(null, payload)
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send(req.body)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+  })
+})
+
+test('preDecoding hooks should support encapsulation', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.addHook('preDecoding', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push('{"hello":"another world"}')
+    modified.push(null)
+    done(null, modified)
+  })
+
+  fastify.post('/first', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.register((instance, opts, done) => {
+    instance.addHook('preDecoding', function (req, reply, payload, done) {
+      const modified = new stream.Readable()
+      modified.receivedEncodedLength = payload.receivedEncodedLength || parseInt(req.headers['content-length'], 10)
+      modified.push('{"hello":"encapsulated world"}')
+      modified.push(null)
+      done(null, modified)
+    })
+
+    instance.post('/second', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    done()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/second',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'encapsulated world' })
+    })
+  })
 })
 
 test('preParsing hook should support encapsulation / 1', t => {

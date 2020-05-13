@@ -3,7 +3,6 @@
 const fs = require('fs')
 const t = require('tap')
 const test = t.test
-const semver = require('semver')
 const sget = require('simple-get').concat
 const Fastify = require('..')
 
@@ -26,9 +25,8 @@ function plainTextParser (request, callback) {
   }
 }
 
-if (semver.gt(process.versions.node, '8.0.0')) {
-  require('./custom-parser-async')
-}
+process.removeAllListeners('warning')
+
 test('contentTypeParser method should exist', t => {
   t.plan(1)
   const fastify = Fastify()
@@ -38,6 +36,71 @@ test('contentTypeParser method should exist', t => {
 test('contentTypeParser should add a custom parser', t => {
   t.plan(3)
   const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.options('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    t.tearDown(() => fastify.close())
+
+    t.test('in POST', t => {
+      t.plan(3)
+
+      sget({
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/jsoff'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      })
+    })
+
+    t.test('in OPTIONS', t => {
+      t.plan(3)
+
+      sget({
+        method: 'OPTIONS',
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/jsoff'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      })
+    })
+  })
+})
+
+test('contentTypeParser should add a custom parser - deprecated syntax', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.strictEqual(warning.name, 'FastifyDeprecation')
+    t.strictEqual(warning.code, 'FSTDEP003')
+  }
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -90,6 +153,8 @@ test('contentTypeParser should add a custom parser', t => {
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
       })
+
+      process.removeListener('warning', onWarning)
     })
   })
 })
@@ -106,8 +171,8 @@ test('contentTypeParser should handle multiple custom parsers', t => {
     reply.send(req.body)
   })
 
-  function customParser (req, done) {
-    jsonParser(req, function (err, body) {
+  function customParser (req, payload, done) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   }
@@ -159,8 +224,8 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
     reply.send(req.body)
   })
 
-  function customParser (req, done) {
-    jsonParser(req, function (err, body) {
+  function customParser (req, payload, done) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   }
@@ -207,7 +272,7 @@ test('contentTypeParser should handle errors', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/jsoff', function (req, done) {
+  fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
     done(new Error('kaboom!'), {})
   })
 
@@ -263,8 +328,8 @@ test('contentTypeParser should support encapsulation, second try', t => {
       reply.send(req.body)
     })
 
-    instance.addContentTypeParser('application/jsoff', function (req, done) {
-      jsonParser(req, function (err, body) {
+    instance.addContentTypeParser('application/jsoff', function (req, payload, done) {
+      jsonParser(payload, function (err, body) {
         done(err, body)
       })
     })
@@ -299,8 +364,8 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    jsonParser(req, function (err, body) {
+  fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
@@ -370,10 +435,10 @@ test('catch all content type parser', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     var data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => {
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
       done(null, data)
     })
   })
@@ -418,16 +483,16 @@ test('catch all content type parser should not interfere with other conte type p
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     var data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => {
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
       done(null, data)
     })
   })
 
-  fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    jsonParser(req, function (err, body) {
+  fastify.addContentTypeParser('application/jsoff', function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
@@ -472,10 +537,10 @@ test('\'*\' catch undefined Content-Type requests', t => {
 
   t.tearDown(fastify.close.bind(fastify))
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     var data = ''
-    req.on('data', chunk => { data += chunk })
-    req.on('end', () => {
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
       done(null, data)
     })
   })
@@ -533,9 +598,9 @@ test('Can override the default json parser', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/json', function (req, done) {
+  fastify.addContentTypeParser('application/json', function (req, payload, done) {
     t.ok('called')
-    jsonParser(req, function (err, body) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
@@ -567,9 +632,9 @@ test('Can override the default plain text parser', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('text/plain', function (req, done) {
+  fastify.addContentTypeParser('text/plain', function (req, payload, done) {
     t.ok('called')
-    plainTextParser(req, function (err, body) {
+    plainTextParser(payload, function (err, body) {
       done(err, body)
     })
   })
@@ -598,9 +663,9 @@ test('Can override the default json parser in a plugin', t => {
   const fastify = Fastify()
 
   fastify.register((instance, opts, next) => {
-    instance.addContentTypeParser('application/json', function (req, done) {
+    instance.addContentTypeParser('application/json', function (req, payload, done) {
       t.ok('called')
-      jsonParser(req, function (err, body) {
+      jsonParser(payload, function (err, body) {
         done(err, body)
       })
     })
@@ -635,16 +700,16 @@ test('Can\'t override the json parser multiple times', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.addContentTypeParser('application/json', function (req, done) {
-    jsonParser(req, function (err, body) {
+  fastify.addContentTypeParser('application/json', function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
   try {
-    fastify.addContentTypeParser('application/json', function (req, done) {
+    fastify.addContentTypeParser('application/json', function (req, payload, done) {
       t.ok('called')
-      jsonParser(req, function (err, body) {
+      jsonParser(payload, function (err, body) {
         done(err, body)
       })
     })
@@ -658,16 +723,16 @@ test('Can\'t override the plain text parser multiple times', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.addContentTypeParser('text/plain', function (req, done) {
-    plainTextParser(req, function (err, body) {
+  fastify.addContentTypeParser('text/plain', function (req, payload, done) {
+    plainTextParser(payload, function (err, body) {
       done(err, body)
     })
   })
 
   try {
-    fastify.addContentTypeParser('text/plain', function (req, done) {
+    fastify.addContentTypeParser('text/plain', function (req, payload, done) {
       t.ok('called')
-      plainTextParser(req, function (err, body) {
+      plainTextParser(payload, function (err, body) {
         done(err, body)
       })
     })
@@ -1031,9 +1096,9 @@ test('The charset should not interfere with the content type handling', t => {
     reply.send(req.body)
   })
 
-  fastify.addContentTypeParser('application/json', function (req, done) {
+  fastify.addContentTypeParser('application/json', function (req, payload, done) {
     t.ok('called')
-    jsonParser(req, function (err, body) {
+    jsonParser(payload, function (err, body) {
       done(err, body)
     })
   })

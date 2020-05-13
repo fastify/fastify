@@ -28,7 +28,7 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (requ
       done(e)
     }
   })
-  req.on('error', done)
+  payload.on('error', done)
 })
 
 fastify

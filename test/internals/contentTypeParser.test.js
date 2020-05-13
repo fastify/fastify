@@ -47,6 +47,7 @@ test('rawBody function', t => {
   internals.rawBody(
     request,
     reply,
+    rs,
     reply.context._parserOptions,
     parser,
     done

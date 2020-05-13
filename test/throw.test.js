@@ -121,7 +121,7 @@ test('Should throw on duplicate content type parser', t => {
   t.plan(1)
 
   const fastify = Fastify()
-  function customParser (req, done) { done(null, '') }
+  function customParser (req, payload, done) { done(null, '') }
 
   fastify.addContentTypeParser('application/qq', customParser)
   try {

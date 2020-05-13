@@ -2,6 +2,7 @@ import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMet
 import { expectType, expectError } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
+import { Readable } from 'stream'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -69,6 +70,15 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<string>(res.context.config.foo)
+      expectType<number>(res.context.config.bar)
+    },
+    preDecoding: (req, res, payload, done) => {
+      expectType<BodyInterface>(req.body)
+      expectType<QuerystringInterface>(req.query)
+      expectType<ParamsInterface>(req.params)
+      expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+      expectType<Readable>(payload)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
     },

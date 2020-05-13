@@ -2,6 +2,7 @@ import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fasti
 import { expectType, expectError } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from '../../types/error'
+import { Readable } from 'stream'
 
 const server = fastify()
 
@@ -19,6 +20,15 @@ server.addHook('onRequest', (request, reply, done) => {
   expectType<FastifyReply>(reply)
   expectType<(err?: FastifyError) => void>(done)
   expectType<void>(done(new Error()))
+})
+
+server.addHook('preDecoding', (request, reply, raw, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<Readable>(raw)
+  expectType<void>(done(new Error()))
+  expectType<void>(done(null, raw))
+  expectError(done())
 })
 
 server.addHook('preParsing', (request, reply, done) => {
@@ -102,6 +112,13 @@ server.addHook('onRequest', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   return;
+})
+
+server.addHook('preDecoding', async (request, reply, raw) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<Readable>(raw)
+  return raw
 })
 
 server.addHook('preParsing', async (request, reply) => {

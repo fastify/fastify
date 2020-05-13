@@ -11,6 +11,18 @@ import { Readable } from 'stream'
 
 type HookHandlerDoneFunction = (err?: FastifyError) => void
 
+// This is used within the `preSerialization` and `onSend` hook handlers
+interface DoneFuncWithErrOrRes {
+  (err: FastifyError): void;
+  (err: null, res: unknown): void;
+}
+
+// This is used within the `preDecoding` hook handlers
+interface DoneFuncWithErrOrReadable {
+  (err: FastifyError): void;
+  (err: null, res: Readable): void;
+}
+
 // Lifecycle Hooks
 
 /**
@@ -46,7 +58,7 @@ export interface preDecodingHookHandler<
     request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     raw: Readable,
-    done: HookHandlerDoneFunction
+    done: DoneFuncWithErrOrReadable
   ): Promise<Readable> | void;
 }
 
@@ -101,12 +113,6 @@ export interface preHandlerHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
-}
-
-// This is used within the `preSerialization` and `onSend` hook handlers
-interface DoneFuncWithErrOrRes {
-  (err: FastifyError): void;
-  (err: null, res: unknown): void;
 }
 
 /**

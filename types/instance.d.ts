@@ -18,7 +18,7 @@ export interface FastifyInstance<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
-  > {
+> {
   server: RawServer;
   prefix: string;
   log: Logger;

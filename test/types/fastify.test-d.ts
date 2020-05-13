@@ -38,6 +38,28 @@ fastify({ requestIdLogLabel: 'request-id' })
 fastify({ onProtoPoisoing: 'error' })
 fastify({ onConstructorPoisoning: 'error' })
 fastify({ logger: true })
+fastify({
+  logger: {
+    level: 'info',
+    genReqId: () => 'request-id',
+    serializers: {
+      req: () => {},
+      res: () => {},
+      err: () => {},
+    }
+  }
+})
+fastify({
+  logger: {
+    info: () => {},
+    warn: () => {},
+    error: () => {},
+    fatal: () => {},
+    trace: () => {},
+    debug: () => {},
+    child: this
+  }
+})
 fastify({ serverFactory: () => http.createServer() })
 fastify({ caseSensitive: true })
 fastify({ requestIdHeader: 'request-id' })

@@ -1,5 +1,6 @@
 import { FastifyError } from './error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
+import { FastifyRequest } from './request'
 
 /**
  * Standard Fastify logging function
@@ -11,6 +12,16 @@ export interface FastifyLogFn {
 
 export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
+export interface FastifyLoggerInstance {
+  info: FastifyLogFn;
+  warn: FastifyLogFn;
+  error: FastifyLogFn;
+  fatal: FastifyLogFn;
+  trace: FastifyLogFn;
+  debug: FastifyLogFn;
+  child: FastifyLoggerInstance;
+}
+
 /**
  * Fastify Custom Logger options.
  */
@@ -18,7 +29,7 @@ export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
-> {
+> extends FastifyLoggerInstance {
   serializers?: {
     req: (req: RawRequest) => {
       method: string;
@@ -38,12 +49,6 @@ export interface FastifyLoggerOptions<
       statusCode: string | number;
     };
   };
-  info: FastifyLogFn;
-  error: FastifyLogFn;
-  debug: FastifyLogFn;
-  fatal: FastifyLogFn;
-  warn: FastifyLogFn;
-  trace: FastifyLogFn;
-  child: FastifyLogFn | FastifyLoggerOptions<RawServer>;
-  genReqId?: string;
+  level?: string;
+  genReqId?: (req: FastifyRequest<RawServer, RawRequest>) => string;
 }

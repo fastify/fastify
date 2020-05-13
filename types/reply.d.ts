@@ -27,7 +27,8 @@ export interface FastifyReplyInterface<
   serialize(payload: any): string;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawReply>;
   status(statusCode: number): FastifyReply<RawServer, RawReply>;
-  statusCode: number
+  statusCode: number;
+  getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawReply>;
   context: FastifyContext<ContextConfig>;
   raw: RawReply;

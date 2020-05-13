@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
-import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onReadyHookHandler } from './hooks'
+import { onRequestHookHandler, preDecodingHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onReadyHookHandler } from './hooks'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
@@ -18,7 +20,7 @@ export interface FastifyInstance<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerOptions<RawServer>
-  > {
+> {
   server: RawServer;
   prefix: string;
   log: Logger;
@@ -78,7 +80,7 @@ export interface FastifyInstance<
   // Lifecycle addHooks
 
   /**
-   * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preParsing`.
+   * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preDecoding`.
    *  Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
    */
   addHook<
@@ -90,7 +92,19 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
+   * You can transform the request payload stream before it is parsed with the `preDecoding` hook. It is the second hook to be executed in the request lifecycle.
+   * The previous hook was `onRequest`, the next hook will be `preParsing`.
+   */
+  addHook<
+    RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+    ContextConfig = ContextConfigDefault
+  >(
+    name: 'preDecoding',
+    hook: preDecodingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+
+  /**
+   * `preParsing` is the third hook to be executed in the request lifecycle. The previous hook was `preDecoding`, the next hook will be `preValidation`.
    * Notice: in the `preParsing` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
    */
   addHook<
@@ -102,7 +116,7 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * `preValidation` is the third hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
+   * `preValidation` is the fourth hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
    * Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
    */
   addHook<
@@ -114,7 +128,7 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * `preHandler` is the fourth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
+   * `preHandler` is the fifth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
    */
   addHook<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
@@ -125,7 +139,7 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * `preSerialization` is the fifth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
+   * `preSerialization` is the sixth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
    *  Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
    */
   addHook<
@@ -138,7 +152,7 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * You can change the payload with the `onSend` hook. It is the sixth hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
+   * You can change the payload with the `onSend` hook. It is the seventh hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
    * Note: If you change the payload, you may only change it to a string, a Buffer, a stream, or null.
    */
   addHook<
@@ -151,7 +165,7 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   /**
-   * `onResponse` is the seventh and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
+   * `onResponse` is the eighth and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
    * The onResponse hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
    */
   addHook<

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Buffer } from 'buffer'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression } from './utils'
+import { FastifyRequest, RequestGenericInterface } from './request'
 
 /**
  * Body parser method that operatoes on request body
@@ -8,13 +11,24 @@ export type FastifyBodyParser<
   RawBody extends string | Buffer,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-> = ((req: RawRequest, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
-| ((req: RawRequest, rawBody: RawBody) => Promise<any>)
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+> = ((request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, rawBody: RawBody, done: (err: Error | null, body?: any) => void) => void)
+| ((request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, rawBody: RawBody) => Promise<any>)
 
 /**
  * Content Type Parser method that operates on request content
  */
 export type FastifyContentTypeParser<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+> = ((request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, payload: RawRequest) => Promise<any>)
+| ((request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, payload: RawRequest, done: (err: Error | null, body?: any) => void) => void)
+
+/**
+ * Content Type Parser method that operates on request content - Deprecated Version
+ */
+export type FastifyDeprecatedContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > = ((req: RawRequest) => Promise<any>)
@@ -32,7 +46,7 @@ export interface AddContentTypeParser<
     opts: {
       bodyLimit?: number;
     },
-    parser: FastifyContentTypeParser<RawServer, RawRequest>
+    parser: FastifyContentTypeParser<RawServer, RawRequest> | FastifyDeprecatedContentTypeParser<RawServer, RawRequest>
   ): void;
 }
 
@@ -40,7 +54,10 @@ export interface AddContentTypeParser<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > {
-  (contentType: string | string[], parser: FastifyContentTypeParser<RawServer, RawRequest>): void;
+  (
+    contentType: string | string[],
+    parser: FastifyContentTypeParser<RawServer, RawRequest> | FastifyDeprecatedContentTypeParser<RawServer, RawRequest>
+  ): void;
 }
 
 export interface AddContentTypeParser<

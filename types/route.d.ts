@@ -4,7 +4,7 @@ import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevels } from './logger'
-import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
+import { preDecodingHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
 
 /**
  * Fastify Router Shorthand method type that is similar to the Express/Restify approach
@@ -71,6 +71,7 @@ export interface RouteShorthandOptions<
 
   // hooks
   onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
+  preDecoding?: preDecodingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preDecodingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   preParsing?: preParsingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preParsingHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];
   preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>[];

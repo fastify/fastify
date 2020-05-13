@@ -1,17 +1,20 @@
-import { FastifyInstance } from './instance'
-import { RouteOptions } from './route'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyRequest, RequestGenericInterface } from './request'
-import { FastifyReply } from './reply'
+/* eslint-disable @typescript-eslint/class-name-casing */
+
 import { FastifyError } from './error'
+import { FastifyInstance } from './instance'
 import { FastifyLoggerOptions } from './logger'
+import { FastifyReply } from './reply'
+import { FastifyRequest, RequestGenericInterface } from './request'
+import { RouteOptions } from './route'
+import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { Readable } from 'stream'
 
 type HookHandlerDoneFunction = (err?: FastifyError) => void
 
 // Lifecycle Hooks
 
 /**
- * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preParsing`.
+ * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preDecoding`.
  *  Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
 export interface onRequestHookHandler<
@@ -22,14 +25,33 @@ export interface onRequestHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
- * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
+ * You can transform the request payload stream before it is parsed with the `preDecoding` hook. It is the second hook to be executed in the request lifecycle.
+ * The previous hook was `onRequest`, the next hook will be `preParsing`.
+ */
+export interface preDecodingHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  ContextConfig = ContextConfigDefault
+> {
+  (
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
+    raw: Readable,
+    done: HookHandlerDoneFunction
+  ): Promise<Readable> | void;
+}
+
+/**
+ * `preParsing` is the third hook to be executed in the request lifecycle. The previous hook was `preDecoding`, the next hook will be `preValidation`.
  * Notice: in the `preParsing` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
 export interface preParsingHookHandler<
@@ -40,14 +62,14 @@ export interface preParsingHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
- * `preValidation` is the third hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
+ * `preValidation` is the fourth hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
  * Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
 export interface preValidationHookHandler<
@@ -58,14 +80,14 @@ export interface preValidationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
- * `preHandler` is the fourth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
+ * `preHandler` is the fifth hook to be executed in the request lifecycle. The previous hook was `preValidation`, the next hook will be `preSerialization`.
  */
 export interface preHandlerHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
@@ -75,10 +97,10 @@ export interface preHandlerHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 // This is used within the `preSerialization` and `onSend` hook handlers
@@ -88,7 +110,7 @@ interface DoneFuncWithErrOrRes {
 }
 
 /**
- * `preSerialization` is the fifth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
+ * `preSerialization` is the sixth hook to be executed in the request lifecycle. The previous hook was `preHandler`, the next hook will be `onSend`.
  *  Note: the hook is NOT called if the payload is a string, a Buffer, a stream or null.
  */
 export interface preSerializationHookHandler<
@@ -104,11 +126,11 @@ export interface preSerializationHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: PreSerializationPayload,
     done: DoneFuncWithErrOrRes
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
- * You can change the payload with the `onSend` hook. It is the sixth hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
+ * You can change the payload with the `onSend` hook. It is the seventh hook to be executed in the request lifecycle. The previous hook was `preSerialization`, the next hook will be `onResponse`.
  * Note: If you change the payload, you may only change it to a string, a Buffer, a stream, or null.
  */
 export interface onSendHookHandler<
@@ -124,11 +146,11 @@ export interface onSendHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
- * `onResponse` is the seventh and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
+ * `onResponse` is the eighth and last hook in the request hook lifecycle. The previous hook was `onSend`, there is no next hook.
  * The onResponse hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
  */
 export interface onResponseHookHandler<
@@ -139,10 +161,10 @@ export interface onResponseHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -163,7 +185,7 @@ export interface onErrorHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     error: FastifyError,
     done: () => void
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 // Application Hooks
@@ -177,10 +199,10 @@ export interface onRouteHookHandler<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
-> { 
+> {
   (
     opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> & { path: string; prefix: string }
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -195,9 +217,9 @@ export interface onRegisterHookHandler<
   Logger = FastifyLoggerOptions<RawServer>
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, 
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void // documentation is missing the `done` method
+  ): Promise<unknown> | void; // documentation is missing the `done` method
 }
 
 /**
@@ -209,7 +231,7 @@ export interface onReadyHookHandler<
 > {
   (
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -224,5 +246,5 @@ export interface onCloseHookHandler<
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }

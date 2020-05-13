@@ -66,9 +66,6 @@ fastify({
     messageKey: 'message'
   }
 })
-fastify({
-  logger: pino()
-})
 fastify({ serverFactory: () => http.createServer() })
 fastify({ caseSensitive: true })
 fastify({ requestIdHeader: 'request-id' })

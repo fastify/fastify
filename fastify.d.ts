@@ -76,6 +76,7 @@ export type FastifyServerOptions<
   keepAliveTimeout?: number,
   bodyLimit?: number,
   pluginTimeout?: number,
+  disableRequestLogging?: boolean,
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',
   logger?: boolean | Logger,
   serverFactory?: FastifyServerFactory<RawServer>,

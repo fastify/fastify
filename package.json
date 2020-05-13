@@ -147,6 +147,7 @@
     "yup": "^0.28.4"
   },
   "dependencies": {
+    "@types/pino": "^6.0.1",
     "abstract-logging": "^2.0.0",
     "ajv": "^6.12.2",
     "avvio": "^7.0.3",

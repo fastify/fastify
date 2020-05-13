@@ -1,6 +1,7 @@
 import { FastifyError } from './error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 import { FastifyRequest } from './request'
+import { LoggerOptions as PinoLoggerOptions } from 'pino'
 
 /**
  * Standard Fastify logging function
@@ -29,7 +30,7 @@ export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
-> extends FastifyLoggerInstance {
+> extends FastifyLoggerInstance, PinoLoggerOptions {
   serializers?: {
     req: (req: RawRequest) => {
       method: string;
@@ -49,6 +50,5 @@ export interface FastifyLoggerOptions<
       statusCode: string | number;
     };
   };
-  level?: string;
   genReqId?: (req: FastifyRequest<RawServer, RawRequest>) => string;
 }

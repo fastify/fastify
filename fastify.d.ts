@@ -5,7 +5,7 @@ import * as LightMyRequest from 'light-my-request'
 
 import { FastifyRequest } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
-import { FastifyLoggerOptions } from './types/logger'
+import { FastifyLoggerOptions, FastifyLoggerInstance } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import * as ajv from 'ajv'

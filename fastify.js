@@ -547,6 +547,7 @@ function override (old, fn, opts) {
   instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
   instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
   instance[kSchemas] = buildSchemas(old[kSchemas])
+  instance.getSchema = instance[kSchemas].getSchema.bind(instance[kSchemas])
   instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
   instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
   instance[kPluginNameChain] = [pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)]

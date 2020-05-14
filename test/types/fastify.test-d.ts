@@ -2,9 +2,9 @@ import fastify, { FastifyInstance, FastifyServerOptions } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import * as pino from 'pino';
 import { Chain as LightMyRequestChain } from 'light-my-request';
-import { expectType, expectError } from 'tsd'
+import { expectType, expectError, expectAssignable } from 'tsd'
+import { FastifyLoggerOptions } from '../../types/logger';
 
 // FastifyInstance
 // http server
@@ -21,25 +21,19 @@ expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must b
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
 // server options
-fastify({ http2: true })
-fastify({
-  https: {
-    ca: 'foo',
-    cert: 'bar'
-  }
-})
-fastify({ ignoreTrailingSlash: true })
-fastify({ connectionTimeout: 1000 })
-fastify({ keepAliveTimeout: 1000 })
-fastify({ pluginTimeout: 1000 })
-fastify({ bodyLimit: 100 })
-fastify({ maxParamLength: 100 })
-fastify({ disableRequestLogging: true })
-fastify({ requestIdLogLabel: 'request-id' })
-fastify({ onProtoPoisoing: 'error' })
-fastify({ onConstructorPoisoning: 'error' })
-fastify({ logger: true })
-fastify({
+expectAssignable<FastifyInstance>(fastify({ http2: true }))
+expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
+expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ pluginTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ bodyLimit: 100 }))
+expectAssignable<FastifyInstance>(fastify({ maxParamLength: 100 }))
+expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: true }))
+expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({ onProtoPoisoing: 'error' }))
+expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
+expectAssignable<FastifyInstance>(fastify({ logger: true }))
+expectAssignable<FastifyInstance>(fastify({
   logger: {
     level: 'info',
     genReqId: () => 'request-id',
@@ -49,30 +43,24 @@ fastify({
       err: () => {},
     }
   }
-})
-fastify({
-  logger: {
-    info: () => {},
-    warn: () => {},
-    error: () => {},
-    fatal: () => {},
-    trace: () => {},
-    debug: () => {},
-    child: this
-  }
-})
-fastify({
-  logger: {
-    messageKey: 'message'
-  }
-})
-fastify({ serverFactory: () => http.createServer() })
-fastify({ caseSensitive: true })
-fastify({ requestIdHeader: 'request-id' })
-fastify({ genReqId: () => 'request-id' });
-fastify({ trustProxy: true })
-fastify({ querystringParser: () => ({ foo: 'bar' }) })
-fastify({
+}))
+const customLogger = {
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  fatal: () => {},
+  trace: () => {},
+  debug: () => {},
+  child: () => customLogger
+}
+expectAssignable<FastifyInstance>(fastify({ logger: customLogger }))
+expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
+expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
+expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
+expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
+expectAssignable<FastifyInstance>(fastify({
   versioning: {
     storage: () => ({
       get: () => 'foo',
@@ -82,14 +70,14 @@ fastify({
     }),
     deriveVersion: () => 'foo'
   }
-})
-fastify({ return503OnClosing: true })
-fastify({
+}))
+expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
+expectAssignable<FastifyInstance>(fastify({
   ajv: {
     customOptions: {
       nullable: false
     },
     plugins: [() => {}]
   }
-})
-fastify({ frameworkErrors: () => {} })
+}))
+expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => {} }))

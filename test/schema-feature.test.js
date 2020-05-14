@@ -56,7 +56,7 @@ test('The schemas should be accessible via getSchemas', t => {
 })
 
 test('The schema should be accessible by id via getSchema', t => {
-  t.plan(3)
+  t.plan(5)
   const fastify = Fastify()
 
   const schemas = [
@@ -68,6 +68,15 @@ test('The schema should be accessible by id via getSchema', t => {
   t.deepEqual(fastify.getSchema('abc'), schemas[1])
   t.deepEqual(fastify.getSchema('id'), schemas[0])
   t.deepEqual(fastify.getSchema('foo'), undefined)
+
+  fastify.register((instance, opts, next) => {
+    const pluginSchema = { $id: 'cde', my: 'schema' }
+    instance.addSchema(pluginSchema)
+    t.deepEqual(instance.getSchema('cde'), pluginSchema)
+    next()
+  })
+
+  fastify.ready(err => t.error(err))
 })
 
 test('Get validatorCompiler after setValidatorCompiler', t => {

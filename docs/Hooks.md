@@ -81,7 +81,7 @@ fastify.addHook('preDecoding', async (request, reply, payload) => {
 })
 ```
 
-**Notice:** you should also add `receivedEncodedLength` property to the returned stream. The property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
+**Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
 
 ### preParsing
 ```js

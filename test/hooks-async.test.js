@@ -197,7 +197,9 @@ test('preDecoding hooks should handle errors', t => {
   const fastify = Fastify()
 
   fastify.addHook('preDecoding', async (req, reply, payload) => {
-    throw new Error('kaboom')
+    const e = new Error('kaboom')
+    e.statusCode = 501
+    throw e
   })
 
   fastify.post('/', function (request, reply) {
@@ -210,8 +212,8 @@ test('preDecoding hooks should handle errors', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
+    t.is(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
   })
 })
 

@@ -31,7 +31,7 @@ export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
-> extends FastifyLoggerInstance {
+> {
   serializers?: {
     req: (req: RawRequest) => {
       method: string;

@@ -1,14 +1,14 @@
 import { expectType, expectError } from 'tsd'
-import fastify, { FastifyLoggerOptions, FastifyLogFn, LogLevels } from '../../fastify'
+import fastify, { FastifyLoggerOptions, FastifyLogFn, LogLevels, FastifyLoggerInstance } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 
 expectType<FastifyLoggerOptions>(fastify().log)
 
 ;['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
-  expectType<FastifyLogFn>(fastify().log[logLevel as LogLevels])
-  expectType<void>(fastify().log[logLevel as LogLevels](''))
-  expectType<void>(fastify().log[logLevel as LogLevels]({}))
-  expectError(fastify().log[logLevel as LogLevels](0))
+  expectType<FastifyLogFn>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevels])
+  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevels](''))
+  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevels]({}))
+  expectError(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevels](0))
 })
 
 interface CustomLogger {

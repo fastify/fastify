@@ -4,7 +4,7 @@ import * as https from 'https'
 import * as http2 from 'http2'
 import { Chain as LightMyRequestChain } from 'light-my-request';
 import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyLoggerInstance } from '../../types/logger';
+import { FastifyLoggerInstance, FastifyLoggerOptions } from '../../types/logger';
 
 // FastifyInstance
 // http server
@@ -33,14 +33,33 @@ expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ onProtoPoisoing: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, true>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance>(fastify({
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerOptions>>(fastify({
   logger: {
     level: 'info',
     genReqId: () => 'request-id',
     serializers: {
-      req: () => {},
-      res: () => {},
-      err: () => {},
+      req: () => {
+        return {
+          method: 'GET',
+          url: '/',
+          version: '1.0.0',
+          hostname: 'localhost',
+          remoteAddress: '127.0.0.1',
+          remotePort: 3000
+        }
+      },
+      res: () => {
+        return {
+          statusCode: 200
+        }
+      },
+      err: () => {
+        return {
+          type: 'Error',
+          message: 'foo',
+          stack: ''
+        }
+      },
     }
   }
 }))

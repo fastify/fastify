@@ -19,7 +19,7 @@ export interface FastifyLoggerInstance {
   fatal: FastifyLogFn;
   trace: FastifyLogFn;
   debug: FastifyLogFn;
-  child: FastifyLoggerInstance;
+  child(): FastifyLoggerInstance;
 }
 
 /**

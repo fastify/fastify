@@ -4,7 +4,7 @@ import * as https from 'https'
 import * as http2 from 'http2'
 import { Chain as LightMyRequestChain } from 'light-my-request';
 import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyLoggerOptions } from '../../types/logger';
+import { FastifyLoggerInstance } from '../../types/logger';
 
 // FastifyInstance
 // http server
@@ -32,7 +32,7 @@ expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ onProtoPoisoing: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
-expectAssignable<FastifyInstance>(fastify({ logger: true }))
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, true>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance>(fastify({
   logger: {
     level: 'info',
@@ -53,7 +53,7 @@ const customLogger = {
   debug: () => {},
   child: () => customLogger
 }
-expectAssignable<FastifyInstance>(fastify({ logger: customLogger }))
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: customLogger }))
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))

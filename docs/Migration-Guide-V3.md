@@ -27,7 +27,7 @@ fastify.use(require('cors')());
 
 ### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
 
-We have updated our logging [Serializers](https://github.com/fastify/fastify/blob/master/docs/Logging.md) to now receive Fastify [`Request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) objects instead of native ones.
+We have updated our logging [Serializers](./Logging.md) to now receive Fastify [`Request`](./Request.md) and [`Reply`](./Reply.md) objects instead of native ones.
 
 If you have created custom serializers they will need updating if they expect properties that aren't exposed by the Fastify objects themselves.
 
@@ -209,9 +209,9 @@ fastify.get('/', (request, reply) => {
 ## Further additions and improvements
 
 - Hooks now have consistent context irregardless of how they are registered ([#2005](https://github.com/fastify/fastify/pull/2005))
-- Deprecated `request.req` and `reply.res` for [`request.raw`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply.raw`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))
+- Deprecated `request.req` and `reply.res` for [`request.raw`](./Request.md) and [`reply.raw`](./Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))
 - Removed `modifyCoreObjects` option ([#2015](https://github.com/fastify/fastify/pull/2015))
-- Added [`connectionTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-connection-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added [`keepAliveTimeout`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-keep-alive-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added async-await support for [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#async-await) ([#2093](https://github.com/fastify/fastify/pull/2093))
+- Added [`connectionTimeout`](./Server.md#factory-connection-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added [`keepAliveTimeout`](./Server.md#factory-keep-alive-timeout) option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added async-await support for [plugins](./Plugins.md#async-await) ([#2093](https://github.com/fastify/fastify/pull/2093))
 - Added the feature to throw object as error ([#2134](https://github.com/fastify/fastify/pull/2134))

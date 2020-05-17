@@ -7,11 +7,11 @@ The core principles of Fastify are performance, low overhead and providing a goo
 *Need some inspiration? You can use the label ["plugin suggestion"](https://github.com/fastify/fastify/issues?q=is%3Aissue+is%3Aopen+label%3A%22plugin+suggestion%22) in our issue tracker!*
 
 ## Code
-Fastify uses different techniques to optimize its code, many of them are documented in our Guides. We highly recommend you read [the hitchhiker's guide to plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md) to discover all the APIs you can use to build your plugin and learn how use them.
+Fastify uses different techniques to optimize its code, many of them are documented in our Guides. We highly recommend you read [the hitchhiker's guide to plugins](./Plugins-Guide.md) to discover all the APIs you can use to build your plugin and learn how use them.
 
 Have you got some question or are you seeking for a suggestion? We are more than happy to help you! Just open an issue in our [help repository](https://github.com/fastify/help).
 
-Once you submit a plugin to our [ecosystem list](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md), we will review your code and help you improve it if necessary.
+Once you submit a plugin to our [ecosystem list](./Ecosystem.md), we will review your code and help you improve it if necessary.
 
 ## Documentation
 Documentation is extremely important. If your plugin is not well documented we will not accept it to the ecosystem list. Lack of quality documentation makes it more difficult for people to use your plugin, and will likely result in it going unused.<br>

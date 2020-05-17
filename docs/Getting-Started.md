@@ -85,7 +85,7 @@ Fastify offers an easy platform that helps to solve all of the problems outlined
 ### Your first plugin
 As with JavaScript, where everything is an object, with Fastify everything is a plugin.<br>
 Before digging into it, let's see how it works!<br>
-Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](https://github.com/fastify/fastify/blob/master/docs/Routes.md) docs).
+Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](./Routes.md) docs).
 ```js
 const fastify = require('fastify')({
   logger: true
@@ -121,7 +121,7 @@ A typical solution is to use a complex callback, or promises - a system that wil
 Fastify handles this internally, with minimum effort!
 
 Let's rewrite the above example with a database connection.<br>
-*(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md))*
+*(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](./Ecosystem.md))*
 
 First, install `fastify-plugin`:
 
@@ -192,12 +192,12 @@ module.exports = routes
 Wow, that was fast!<br>
 Let's recap what we have done here since we've introduced some new concepts.<br>
 As you can see, we used `register` both for the database connector and the registration of the routes.
-This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](https://github.com/fastify/fastify/blob/master/docs/Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
+This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](./Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
 
 We have also used the `decorate` API to add custom objects to the Fastify namespace, making them available for use everywhere. Use of this API is encouraged to faciliate easy code reuse and to decrease code or logic duplication.
 
-To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
+To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](./Plugins-Guide.md).
 
 <a name="plugin-loading-order"></a>
 ### Loading order of your plugins
@@ -256,7 +256,7 @@ fastify.post('/', opts, async (request, reply) => {
 })
 ```
 This example shows how to pass an options object to the route, which accepts a `schema` key, that contains all of the schemas for route, `body`, `querystring`, `params` and `headers`.<br>
-Read [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) to learn more.
+Read [Validation and Serialization](./Validation-and-Serialization.md) to learn more.
 
 <a name="serialize-data"></a>
 ### Serialize your data
@@ -281,17 +281,17 @@ fastify.get('/', opts, async (request, reply) => {
 })
 ```
 Simply by specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
-Read [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) to learn more.
+Read [Validation and Serialization](./Validation-and-Serialization.md) to learn more.
 
 <a name="extend-server"></a>
 ### Extend your server
 Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.<br>
-In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](https://github.com/fastify/fastify/blob/master/docs/Ecosystem.md)!
+In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](./Ecosystem.md)!
 
 <a name="test-server"></a>
 ### Test your server
 Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.<br>
-Read the [testing](https://github.com/fastify/fastify/blob/master/docs/Testing.md) documentation to learn more!
+Read the [testing](./Testing.md) documentation to learn more!
 
 <a name="cli"></a>
 ### Run your server from CLI

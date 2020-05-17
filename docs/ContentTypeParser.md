@@ -5,7 +5,7 @@ Natively, Fastify only supports `'application/json'` and `'text/plain'` content 
 
 As with the other APIs, `addContentTypeParser` is encapsulated in the scope in which it is declared. This means that if you declare it in the root scope it will be available everywhere, while if you declare it inside a plugin it will be available only in that scope and its children.
 
-Fastify automatically adds the parsed request payload to the [Fastify request](https://github.com/fastify/fastify/blob/master/docs/Request.md) object which you can access with `request.body`.
+Fastify automatically adds the parsed request payload to the [Fastify request](./Request.md) object which you can access with `request.body`.
 
 ### Usage
 ```js
@@ -40,7 +40,7 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 ```
 
 #### Body Parser
-You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
+You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](./Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
@@ -54,11 +54,11 @@ fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function
 ```
 As you can see, now the function signature is `(req, body, done)` instead of `(req, done)`.
 
-See [`example/parser.js`](https://github.com/fastify/fastify/blob/master/examples/parser.js) for an example.
+See [`example/parser.js`](../examples/parser.js) for an example.
 
 ##### Custom Parser Options
 + `parseAs` (string): Either `'string'` or `'buffer'` to designate how the incoming data should be collected. Default: `'buffer'`.
-+ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](https://github.com/fastify/fastify/blob/master/docs/Server.md#bodylimit).
++ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](./Server.md#bodylimit).
 
 #### Catch-All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you can just use the `'*'` content type.

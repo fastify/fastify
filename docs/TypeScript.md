@@ -569,7 +569,9 @@ import http from 'http'
 import pino from 'pino'
 
 const server = fastify<http.Server, http.IncomingMessage, http.ServerResponse, pino.Logger>({
-  logger: true
+  logger: {
+    messageKey: 'message'
+  }
 })
 
 server.get('/', async (request, reply) => {

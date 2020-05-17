@@ -27,10 +27,10 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
 
 ## Request/Reply Hooks
 
-[Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) are the core Fastify objects.<br/>
-`done` is the function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).
+[Request](./Request.md) and [Reply](./Reply.md) are the core Fastify objects.<br/>
+`done` is the function to continue with the [lifecycle](./Lifecycle.md).
 
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
+It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 There are eight different hooks that you can use in Request/Reply *(in order of execution)*:
@@ -210,7 +210,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
   done(new Error('Some error'))
 })
 ```
-*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+*The error will be handled by [`Reply`](./Reply.md#errors).*
 
 Or if you're using `async/await` you can just throw an error:
 ```js
@@ -313,7 +313,7 @@ fastify.addHook('onReady', async function () {
 
 <a name="on-close"></a>
 ### onClose
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -387,7 +387,7 @@ fastify.addHook('onRegister', (instance, opts) => {
 
 <a name="scope"></a>
 ## Scope
-Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (request, reply, done) {

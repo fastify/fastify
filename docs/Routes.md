@@ -32,7 +32,7 @@ fastify.route(options)
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
-  [JSON Schema](http://json-schema.org/) format, check [here](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) for more info.
+  [JSON Schema](http://json-schema.org/) format, check [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST or a
     PUT.
@@ -43,29 +43,29 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `onRequest(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
-* `preParsing(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
-* `preValidation(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
-* `preHandler(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
-* `preSerialization(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
-* `onSend(request, reply, payload, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
-* `onResponse(request, reply, done)`: a [function](https://github.com/fastify/fastify/blob/master/docs/Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
+* `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
+* `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
+* `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
+* `preHandler(request, reply, done)`: a [function](./Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
+* `preSerialization(request, reply, payload, done)`: a [function](./Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
+* `onSend(request, reply, payload, done)`: a [function](./Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
+* `onResponse(request, reply, done)`: a [function](./Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request.
-* `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-validator) documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md#schema-serializer) documentation.
+* `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-validator) documentation.
+* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-serializer) documentation.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
-* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](https://github.com/fastify/fastify/blob/master/docs/Routes.md#version).
+* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](./Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
   * `slash`: Will register only `/prefix/`.
   * `no-slash`: Will register only `/prefix`.
 
-  `request` is defined in [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md).
+  `request` is defined in [Request](./Request.md).
 
-  `reply` is defined in [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md).
+  `reply` is defined in [Reply](./Reply.md).
 
 
 Example:
@@ -302,7 +302,7 @@ See the `prefixTrailingSlash` route option above to change this behaviour.
 It could happen that you need different log levels in your routes, Fastify achieves this in a very straightforward way.<br/>
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/API.md#discussion-3) that you need.
 
-Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#setnotfoundhandler) and [`setErrorHandler`](https://github.com/fastify/fastify/blob/master/docs/Server.md#seterrorhandler) will be affected.
+Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and [`setErrorHandler`](./Server.md#seterrorhandler) will be affected.
 
 ```js
 // server.js
@@ -433,4 +433,4 @@ If you declare multiple versions with the same major or minor, Fastify will alwa
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
 
 #### Custom
-It's possible to define a custom versioning logic. This can be done through the [`versioning`](https://github.com/fastify/fastify/blob/master/docs/Server.md#versioning) configuration, when creating a fastify server instance.
+It's possible to define a custom versioning logic. This can be done through the [`versioning`](./Server.md#versioning) configuration, when creating a fastify server instance.

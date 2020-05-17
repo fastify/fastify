@@ -198,7 +198,7 @@ fastify.post('/the/url', { schema }, handler)
 
 You can provide a list of plugins you want to use with Ajv:
 
-> Refer to [`ajv options`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to check plugins format
+> Refer to [`ajv options`](./Server.md#factory-ajv) to check plugins format
 
 ```js
 const fastify = require('fastify')({
@@ -275,7 +275,7 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
 }
 ```
 
-This baseline configuration can be modified by providing [`ajv.customOptions`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to your Fastify factory.
+This baseline configuration can be modified by providing [`ajv.customOptions`](./Server.md#factory-ajv) to your Fastify factory.
 
 If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 
@@ -464,7 +464,7 @@ fastify.get('/user', {
 })
 ```
 
-*If you need a custom serializer in a very specific part of your code, you can set one with [`reply.serializer(...)`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#serializerfunc).*
+*If you need a custom serializer in a very specific part of your code, you can set one with [`reply.serializer(...)`](./Reply.md#serializerfunc).*
 
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a  status 400 response including the result from the validator in the payload. As an example, if you have the following schema for your route

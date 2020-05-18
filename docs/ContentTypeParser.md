@@ -9,22 +9,23 @@ Fastify automatically adds the parsed request payload to the [Fastify request](.
 
 ### Usage
 ```js
-fastify.addContentTypeParser('application/jsoff', function (req, done) {
-  jsoffParser(req, function (err, body) {
+fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {
+  jsoffParser(payload, function (err, body) {
     done(err, body)
   })
 })
 
 // Handle multiple content types with the same function
-fastify.addContentTypeParser(['text/xml', 'application/xml'], function (req, done) {
-  xmlParser(req, function (err, body) {
+fastify.addContentTypeParser(['text/xml', 'application/xml'], function (request, payload, done) {
+  xmlParser(payload, function (err, body) {
     done(err, body)
   })
 })
 
 // Async is also supported in Node versions >= 8.0.0
-fastify.addContentTypeParser('application/jsoff', async function (req) {
-  var res = await new Promise((resolve, reject) => resolve(req))
+fastify.addContentTypeParser('application/jsoff', async function (request, payload) {
+  var res = await jsoffParserAsync(payload)
+
   return res
 })
 ```
@@ -33,11 +34,15 @@ You can also use the `hasContentTypeParser` API to find if a specific content ty
 
 ```js
 if (!fastify.hasContentTypeParser('application/jsoff')){
-  fastify.addContentTypeParser('application/jsoff', function (req, done) {
-    // Code to parse request body/payload for the given content type
+  fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {
+    jsoffParser(payload, function (err, body) {
+      done(err, body)
+    })
   })
 }
 ```
+
+**Notice**: The old syntaxes `function(req, done)` and `async function(req)` for the parser are still supported but they are deprecated.
 
 #### Body Parser
 You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](./Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
@@ -52,7 +57,6 @@ fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function
   }
 })
 ```
-As you can see, now the function signature is `(req, body, done)` instead of `(req, done)`.
 
 See [`example/parser.js`](../examples/parser.js) for an example.
 
@@ -63,10 +67,10 @@ See [`example/parser.js`](../examples/parser.js) for an example.
 #### Catch-All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you can just use the `'*'` content type.
 ```js
-fastify.addContentTypeParser('*', function (req, done) {
+fastify.addContentTypeParser('*', function (request, payload, done) {
   var data = ''
-  req.on('data', chunk => { data += chunk })
-  req.on('end', () => {
+  payload.on('data', chunk => { data += chunk })
+  payload.on('end', () => {
     done(null, data)
   })
 })
@@ -77,7 +81,7 @@ Using this, all requests that do not have a corresponding content type parser wi
 This is also useful for piping the request stream. You can define a content parser like:
 
 ```js
-fastify.addContentTypeParser('*', function (req, done) {
+fastify.addContentTypeParser('*', function (request, payload, done) {
   done()
 })
 ```
@@ -86,7 +90,7 @@ and then access the core HTTP request directly for piping it where you want:
 
 ```js
 app.post('/hello', (request, reply) => {
-  reply.send(request.req)
+  reply.send(request.raw)
 })
 ```
 
@@ -96,8 +100,8 @@ Here is a complete example that logs incoming [json line](http://jsonlines.org/)
 const split2 = require('split2')
 const pump = require('pump')
 
-fastify.addContentTypeParser('*', (req, done) => {
-  done(null, pump(req, split2(JSON.parse)))
+fastify.addContentTypeParser('*', (request, payload, done) => {
+  done(null, pump(payload, split2(JSON.parse)))
 })
 
 fastify.route({

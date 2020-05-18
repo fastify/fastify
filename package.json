@@ -134,7 +134,7 @@
     "semver": "^7.3.2",
     "send": "^0.17.1",
     "serve-static": "^1.14.1",
-    "simple-get": "^3.0.3",
+    "simple-get": "^4.0.0",
     "snazzy": "^8.0.0",
     "split2": "^3.1.1",
     "standard": "^14.0.0",

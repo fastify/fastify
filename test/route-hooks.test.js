@@ -1,7 +1,10 @@
 'use strict'
 
+const { Readable } = require('stream')
 const test = require('tap').test
 const Fastify = require('../')
+
+process.removeAllListeners('warning')
 
 function endMiddleware (nextOrPayload, next) {
   if (typeof nextOrPayload === 'function') {
@@ -435,6 +438,33 @@ test('preParsing option should be called before preValidation hook', t => {
     t.error(err)
     var payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
+  })
+})
+
+test('preParsing option should be able to modify the payload', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.post('/only', {
+    preParsing: (req, reply, payload, done) => {
+      const stream = new Readable()
+      stream.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+      stream.push(JSON.stringify({ hello: 'another world' }))
+      stream.push(null)
+      done(null, stream)
+    }
+  }, (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/only',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
   })
 })
 

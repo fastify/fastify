@@ -2,6 +2,7 @@ import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fasti
 import { expectType, expectError } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from '../../types/error'
+import { RequestPayload } from '../../types/hooks'
 
 const server = fastify()
 
@@ -21,10 +22,11 @@ server.addHook('onRequest', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('preParsing', (request, reply, done) => {
+server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<(err?: FastifyError) => void>(done)
+  expectType<RequestPayload>(payload)
+  expectType<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
   expectType<void>(done(new Error()))
 })
 
@@ -104,9 +106,10 @@ server.addHook('onRequest', async (request, reply) => {
   return;
 })
 
-server.addHook('preParsing', async (request, reply) => {
+server.addHook('preParsing', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
+  expectType<RequestPayload>(payload)
   return;
 })
 

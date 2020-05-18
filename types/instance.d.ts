@@ -103,7 +103,6 @@ export interface FastifyInstance<
 
   /**
    * `preValidation` is the third hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
-   * Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
    */
   addHook<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

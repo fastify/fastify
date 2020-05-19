@@ -147,7 +147,7 @@ In Fastify v3 the Content Type Parsers have now a single signature for parsers.
 The new signatures is `fn(request, payload, done)` or `async fn(request, payload)`. Note that `request` is now a fastify request, not an `IncomingMessage`.
 The payload is by default a stream. If the `parseAs` option is used in `addContentTypeParser`, then `payload` reflects the option value (string or buffer).
 
-The old signatures `fn(req, [done])` or `fn(req, payload, [done])` (where req is IncomingMessage) are still supported but deprecated.
+The old signatures `fn(req, [done])` or `fn(req, payload, [done])` (where `req` is `IncomingMessage`) are still supported but deprecated.
 
 ### Changed TypeScript support
 

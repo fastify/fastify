@@ -122,7 +122,7 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 
 From Fastify v3, the behavior of `preParsing` hook will change slightly in order to support request payload manipulation.
 
-The hook now takes an additional argument, `payload`, an therefore the new hook signature is `fn(request, reply, payload, done)` or `async fn(request, reply, payload)`.
+The hook now takes an additional argument, `payload`, and therefore the new hook signature is `fn(request, reply, payload, done)` or `async fn(request, reply, payload)`.
 
 The hook can optionally return a new stream via `done(null, stream)` or returning the stream in case of async functions.
 

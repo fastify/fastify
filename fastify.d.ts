@@ -8,6 +8,9 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
+import * as ajv from 'ajv'
+import { FastifyError } from './types/error'
+import { FastifyReply } from './types/reply'
 
 /**
  * Fastify factor function for the standard fastify http, https, or http2 server instance.
@@ -55,7 +58,8 @@ type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger
 > = FastifyServerOptions<Server, Logger> & {
-  http2: true
+  http2: true,
+  http2SessionTimeout?: number,
 }
 
 type FastifyHttpsOptions<
@@ -74,25 +78,39 @@ export type FastifyServerOptions<
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
-  bodyLimit?: number,
   pluginTimeout?: number,
+  bodyLimit?: number,
+  maxParamLength?: number,
+  disableRequestLogging?: boolean,
   onProtoPoisoing?: 'error' | 'remove' | 'ignore',
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   logger?: boolean | Logger,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
+  requestIdLogLabel?: string;
   genReqId?: (req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: string | string[] },
   versioning?: {
     storage(): {
-      get(version: string): Function | null,
+      get(version: string): string | null,
       set(version: string, store: Function): void
       del(version: string): void,
       empty(): void
     },
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
-  }
+  },
+  return503OnClosing?: boolean,
+  ajv?: {
+    customOptions?: ajv.Options,
+    plugins?: Function[]
+  },
+  frameworkErrors?: (
+    error: FastifyError,
+    req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
+    res: FastifyReply<RawServer, RawReplyDefaultExpression<RawServer>>
+  ) => void,
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
@@ -102,7 +120,7 @@ export { FastifyRequest, FastifyRequestInterface, RequestGenericInterface } from
 export { FastifyReply, FastifyReplyInterface } from './types/reply'
 export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
-export { FastifyLoggerOptions, FastifyLogFn, LogLevels } from './types/logger'
+export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevels } from './types/logger'
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'

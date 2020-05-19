@@ -14,7 +14,8 @@ import { FastifyError } from '../../types/error'
  * - `(path, options)`
  */
 
-const routeHandler: RouteHandlerMethod = (request, reply) => {
+const routeHandler: RouteHandlerMethod = function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 }

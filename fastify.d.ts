@@ -82,7 +82,7 @@ export type FastifyServerOptions<
   bodyLimit?: number,
   maxParamLength?: number,
   disableRequestLogging?: boolean,
-  onProtoPoisoing?: 'error' | 'remove' | 'ignore',
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   logger?: boolean | Logger,
   serverFactory?: FastifyServerFactory<RawServer>,

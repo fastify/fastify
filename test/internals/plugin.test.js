@@ -4,8 +4,8 @@ const t = require('tap')
 const test = t.test
 
 const pluginUtilsPublic = require('../../lib/pluginUtils.js')
-const pluginUtils = require('../../lib/pluginUtils')[Symbol.for('internals')]
 const symbols = require('../../lib/symbols.js')
+const pluginUtils = require('../../lib/pluginUtils')[symbols.kTestInternals]
 
 test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   t.plan(2)

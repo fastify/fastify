@@ -9,7 +9,7 @@ const fp = require('fastify-plugin')
 const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
-const internals = require('../lib/warnings')[Symbol.for('internals')]
+const internals = require('../lib/warnings')[symbols.kTestInternals]
 const payload = { hello: 'world' }
 
 process.removeAllListeners('warning')

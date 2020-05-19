@@ -480,7 +480,7 @@ Set a callback function that allows rewriting urls.
 
 ```js
 function rewriteUrl (req) {
-  return '/hello';
+  return req.url === '/hi' ? '/hello' : req.url;
 }
 ```
 

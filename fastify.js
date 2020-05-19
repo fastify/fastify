@@ -113,11 +113,24 @@ function fastify (options) {
       versioning: options.versioning
     }
   })
+
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)
 
   // HTTP server and its handler
-  const httpHandler = router.routing
+  function wrapRouting (routing, options) {
+    const { rewriteUrl } = options
+    if (!rewriteUrl) {
+      return routing
+    }
+    return function preRouting (req, res) {
+      const originalUrl = req.url
+      req.url = rewriteUrl(req)
+      logger.debug({ originalUrl, url: req.url }, 'rewrite url')
+      router.routing(req, res)
+    }
+  }
+  const httpHandler = wrapRouting(router.routing, options)
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout

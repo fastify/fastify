@@ -473,6 +473,17 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="rewrite-url"></a>
+### `rewriteUrl`
+
+Set a callback function that allows rewriting urls.
+
+```js
+function rewriteUrl (req) {
+  return '/hello';
+}
+```
+
 ## Instance
 
 ### Server Methods

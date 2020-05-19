@@ -89,8 +89,6 @@ const schema = {
 fastify.route({ method, url, schema, handler });
 ```
 
-If you use `fastify-swagger` to generate API documentation, you need to use `fastify.getSchema` instead of `$ref`.
-
 **v3 when fastify-swagger is used:**
 ```js
 const schema = {

@@ -1,11 +1,14 @@
 'use strict'
 
+const { Readable } = require('stream')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const Fastify = require('../fastify')
 const fs = require('fs')
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
+process.removeAllListeners('warning')
 
 test('async hooks', t => {
   t.plan(21)
@@ -159,6 +162,91 @@ test('onRequest hooks should be able to block a request', t => {
     t.error(err)
     t.is(res.statusCode, 200)
     t.is(res.payload, 'hello')
+  })
+})
+
+test('preParsing hooks should be able to modify the payload', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const stream = new Readable()
+
+    stream.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    stream.push(JSON.stringify({ hello: 'another world' }))
+    stream.push(null)
+
+    return stream
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+  })
+})
+
+test('preParsing hooks can completely ignore the payload - deprecated syntax', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.strictEqual(warning.name, 'FastifyDeprecation')
+    t.strictEqual(warning.code, 'FSTDEP004')
+  }
+
+  fastify.addHook('preParsing', async (req, reply) => {
+
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+
+    process.removeListener('warning', onWarning)
+  })
+})
+
+test('preParsing hooks should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', async (req, reply, payload) => {
+    const e = new Error('kaboom')
+    e.statusCode = 501
+    throw e
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
   })
 })
 

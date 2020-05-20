@@ -118,12 +118,36 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 );
 ```
 
+### Changed preParsing hook behaviour ([#2286](https://github.com/fastify/fastify/pull/2286))
+
+From Fastify v3, the behavior of `preParsing` hook will change slightly in order to support request payload manipulation.
+
+The hook now takes an additional argument, `payload`, and therefore the new hook signature is `fn(request, reply, payload, done)` or `async fn(request, reply, payload)`.
+
+The hook can optionally return a new stream via `done(null, stream)` or returning the stream in case of async functions.
+
+If the hook returns a new stream, it will be used instead of the original one in following hooks. A sample use case for this is handling compressed requests.
+
+The new stream should add the `receivedEncodedLength` property to the stream that should reflect the actual data size received from the client. For instance, in compressed request it should be the size of the compressed payload. 
+This property can (and should) be dynamically updated during `data` events.
+
+The old syntax of Fastify v2 without payload it is supported but it is deprecated.
+
 ### Changed hooks behaviour ([#2004](https://github.com/fastify/fastify/pull/2004))
 
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change slightly in order to support hook encapsulation.
 
 - `onRoute` - The hook will be called asynchronously, in v1/v2 it's called as soon as a route is registered. This means that if you want to use it, you should register this hook as soon as possible in your code.
 - `onRegister` - Same as the onRoute hook, the only difference is that now the very first call will no longer be the framework itself, but the first registered plugin
+
+### Changed Content Type Parser syntax ([#2286](https://github.com/fastify/fastify/pull/2286))
+
+In Fastify v3 the Content Type Parsers have now a single signature for parsers.
+
+The new signatures is `fn(request, payload, done)` or `async fn(request, payload)`. Note that `request` is now a fastify request, not an `IncomingMessage`.
+The payload is by default a stream. If the `parseAs` option is used in `addContentTypeParser`, then `payload` reflects the option value (string or buffer).
+
+The old signatures `fn(req, [done])` or `fn(req, payload, [done])` (where `req` is `IncomingMessage`) are still supported but deprecated.
 
 ### Changed TypeScript support
 

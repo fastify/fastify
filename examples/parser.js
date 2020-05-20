@@ -8,19 +8,19 @@ const qs = require('qs')
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/
 
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/jsoff' http://localhost:3000/
-fastify.addContentTypeParser('application/jsoff', function (req, done) {
-  jsonParser(req, function (err, body) {
+fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {
+  jsonParser(payload, function (err, body) {
     done(err, body)
   })
 })
 
 // curl -X POST -d 'hello=world' -H'Content-type: application/x-www-form-urlencoded' http://localhost:3000/
-fastify.addContentTypeParser('application/x-www-form-urlencoded', function (req, done) {
+fastify.addContentTypeParser('application/x-www-form-urlencoded', function (request, payload, done) {
   var body = ''
-  req.on('data', function (data) {
+  payload.on('data', function (data) {
     body += data
   })
-  req.on('end', function () {
+  payload.on('end', function () {
     try {
       const parsed = qs.parse(body)
       done(null, parsed)
@@ -28,7 +28,7 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (req,
       done(e)
     }
   })
-  req.on('error', done)
+  payload.on('error', done)
 })
 
 fastify

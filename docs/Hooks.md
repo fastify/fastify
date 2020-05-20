@@ -54,22 +54,33 @@ fastify.addHook('onRequest', async (request, reply) => {
 **Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
 
 ### preParsing
+
+If you are using the `preParsing` hook, you can transform the request payload stream before it is parsed. It receives the request and reply objects as other hooks, and a stream with the current request payload. 
+
+If it returns a value (via `return` or via the callback function), it must return a stream.
+
+For instance, you can uncompress the request body:
+
 ```js
-fastify.addHook('preParsing', (request, reply, done) => {
+fastify.addHook('preParsing', (request, reply, payload, done) => {
   // Some code
-  done()
+  done(null, newPayload)
 })
 ```
 Or `async/await`:
 ```js
-fastify.addHook('preParsing', async (request, reply) => {
+fastify.addHook('preParsing', async (request, reply, payload) => {
   // Some code
   await asyncMethod()
-  return
+  return newPayload
 })
 ```
 
 **Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+
+**Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
+
+**Notice**: The old syntaxes `function(request, reply, done)` and `async function(request, reply)` for the parser are still supported but they are deprecated.
 
 ### preValidation
 ```js
@@ -86,8 +97,6 @@ fastify.addHook('preValidation', async (request, reply) => {
   return
 })
 ```
-**Notice:** in the [preValidation](#preValidation) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preHandler) hook.
-
 ### preHandler
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {
@@ -114,7 +123,7 @@ fastify.addHook('preSerialization', (request, reply, payload, done) => {
   done(err, newPayload)
 })
 ```
-Or `async/await`
+Or `async/await`:
 ```js
 fastify.addHook('preSerialization', async (request, reply, payload) => {
   return { wrapped: payload }

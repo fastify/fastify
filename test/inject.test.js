@@ -328,12 +328,12 @@ test('inject a multipart request using form-body', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     var body = ''
-    req.on('data', d => {
+    payload.on('data', d => {
       body += d
     })
-    req.on('end', () => {
+    payload.on('end', () => {
       done(null, body)
     })
   })

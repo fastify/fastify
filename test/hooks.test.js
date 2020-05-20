@@ -9,11 +9,13 @@ const fp = require('fastify-plugin')
 const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
-
+const internals = require('../lib/warnings')[symbols.kTestInternals]
 const payload = { hello: 'world' }
 
+process.removeAllListeners('warning')
+
 test('hooks', t => {
-  t.plan(38)
+  t.plan(43)
   const fastify = Fastify()
 
   try {
@@ -25,6 +27,18 @@ test('hooks', t => {
       } else {
         done()
       }
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+
+  try {
+    fastify.addHook('preParsing', function (request, reply, payload, done) {
+      request.preParsing = true
+      t.is(request.test, 'the request is coming')
+      t.is(reply.test, 'the reply has come')
+      done()
     })
     t.pass()
   } catch (e) {
@@ -1205,7 +1219,7 @@ test('onSend hook should receive valid request and reply objects if a custom con
   fastify.decorateRequest('testDecorator', 'testDecoratorVal')
   fastify.decorateReply('testDecorator', 'testDecoratorVal')
 
-  fastify.addContentTypeParser('*', function (req, done) {
+  fastify.addContentTypeParser('*', function (req, payload, done) {
     done(new Error('content type parser failed'))
   })
 
@@ -1336,12 +1350,12 @@ test('preParsing hooks should be able to block a request', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.addHook('preParsing', (req, reply, done) => {
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
     reply.send('hello')
     done()
   })
 
-  fastify.addHook('preParsing', (req, reply, done) => {
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
     t.fail('this should not be called')
   })
 
@@ -2025,7 +2039,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
     done()
   })
 
-  fastify.addHook('preParsing', function (request, reply, done) {
+  fastify.addHook('preParsing', function (request, reply, payload, done) {
     t.deepEqual(request.body, null)
     t.deepEqual(request.query, { key: 'value' })
     t.deepEqual(request.params, { greeting: 'hello' })
@@ -2327,12 +2341,186 @@ test('onError hook with setErrorHandler', t => {
   t.end()
 })
 
+test('preParsing hook should run before parsing and be able to modify the payload', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push(JSON.stringify({ hello: 'another world' }))
+    modified.push(null)
+    done(null, modified)
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send(req.body)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+  })
+})
+
+test('preParsing hooks can completely ignore the payload - deprecated syntax', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  internals.emittedWarnings.delete('FSTDEP004')
+
+  function onWarning (warning) {
+    t.strictEqual(warning.name, 'FastifyDeprecation')
+    t.strictEqual(warning.code, 'FSTDEP004')
+  }
+
+  fastify.addHook('preParsing', (req, reply, done) => {
+    done()
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+  })
+})
+
+test('preParsing hooks should run in the order in which they are defined', t => {
+  t.plan(5)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push('{"hello":')
+    done(null, modified)
+  })
+
+  fastify.addHook('preParsing', function (req, reply, payload, done) {
+    payload.push('"another world"}')
+    payload.push(null)
+    done(null, payload)
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/first',
+    handler: function (req, reply) {
+      reply.send(req.body)
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+  })
+})
+
+test('preParsing hooks should support encapsulation', t => {
+  t.plan(9)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', function (req, reply, payload, done) {
+    const modified = new stream.Readable()
+    modified.receivedEncodedLength = parseInt(req.headers['content-length'], 10)
+    modified.push('{"hello":"another world"}')
+    modified.push(null)
+    done(null, modified)
+  })
+
+  fastify.post('/first', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.register((instance, opts, done) => {
+    instance.addHook('preParsing', function (req, reply, payload, done) {
+      const modified = new stream.Readable()
+      modified.receivedEncodedLength = payload.receivedEncodedLength || parseInt(req.headers['content-length'], 10)
+      modified.push('{"hello":"encapsulated world"}')
+      modified.push(null)
+      done(null, modified)
+    })
+
+    instance.post('/second', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    done()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/first',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'another world' })
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/second',
+      body: { hello: 'world' },
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.headers['content-length'], '' + JSON.stringify(body).length)
+      t.deepEqual(body, { hello: 'encapsulated world' })
+    })
+  })
+})
+
 test('preParsing hook should support encapsulation / 1', t => {
   t.plan(5)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
-    instance.addHook('preParsing', (req, reply, done) => {
+    instance.addHook('preParsing', (req, reply, payload, done) => {
       t.strictEqual(req.raw.url, '/plugin')
       done()
     })
@@ -2384,7 +2572,7 @@ test('preParsing hook should support encapsulation / 3', t => {
   const fastify = Fastify()
   fastify.decorate('hello', 'world')
 
-  fastify.addHook('preParsing', function (req, reply, done) {
+  fastify.addHook('preParsing', function (req, reply, payload, done) {
     t.ok(this.hello)
     t.ok(this.hello2)
     req.first = true
@@ -2401,7 +2589,7 @@ test('preParsing hook should support encapsulation / 3', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('hello3', 'world')
-    instance.addHook('preParsing', function (req, reply, done) {
+    instance.addHook('preParsing', function (req, reply, payload, done) {
       t.ok(this.hello)
       t.ok(this.hello2)
       t.ok(this.hello3)

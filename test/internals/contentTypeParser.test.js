@@ -3,7 +3,8 @@
 const t = require('tap')
 const test = t.test
 const { Readable } = require('stream')
-const internals = require('../../lib/contentTypeParser')[Symbol.for('internals')]
+const { kTestInternals } = require('../../lib/symbols')
+const internals = require('../../lib/contentTypeParser')[kTestInternals]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 

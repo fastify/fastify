@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/class-name-casing */
+
+import { Readable } from 'stream'
 import { FastifyInstance } from './instance'
 import { RouteOptions } from './route'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
@@ -7,6 +10,10 @@ import { FastifyError } from './error'
 import { FastifyLoggerOptions } from './logger'
 
 type HookHandlerDoneFunction = (err?: FastifyError) => void
+
+interface RequestPayload extends Readable {
+  receivedEncodedLength?: number;
+}
 
 // Lifecycle Hooks
 
@@ -22,10 +29,10 @@ export interface onRequestHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -40,15 +47,15 @@ export interface preParsingHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
-    done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
+    payload: RequestPayload,
+    done: (err?: FastifyError | null, res?: RequestPayload) => void
+  ): Promise<RequestPayload | unknown> | void;
 }
 
 /**
  * `preValidation` is the third hook to be executed in the request lifecycle. The previous hook was `preParsing`, the next hook will be `preHandler`.
- * Notice: in the `preValidation` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
 export interface preValidationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
@@ -58,10 +65,10 @@ export interface preValidationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -75,10 +82,10 @@ export interface preHandlerHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 // This is used within the `preSerialization` and `onSend` hook handlers
@@ -104,7 +111,7 @@ export interface preSerializationHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: PreSerializationPayload,
     done: DoneFuncWithErrOrRes
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -124,7 +131,7 @@ export interface onSendHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -139,10 +146,10 @@ export interface onResponseHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>, 
-    reply: FastifyReply<RawServer, RawReply, ContextConfig>, 
+    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -163,7 +170,7 @@ export interface onErrorHookHandler<
     reply: FastifyReply<RawServer, RawReply, ContextConfig>,
     error: FastifyError,
     done: () => void
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 // Application Hooks
@@ -177,10 +184,10 @@ export interface onRouteHookHandler<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   ContextConfig = ContextConfigDefault
-> { 
+> {
   (
     opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> & { path: string; prefix: string }
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -195,9 +202,9 @@ export interface onRegisterHookHandler<
   Logger = FastifyLoggerOptions<RawServer>
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, 
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void // documentation is missing the `done` method
+  ): Promise<unknown> | void; // documentation is missing the `done` method
 }
 
 /**
@@ -209,7 +216,7 @@ export interface onReadyHookHandler<
 > {
   (
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }
 
 /**
@@ -224,5 +231,5 @@ export interface onCloseHookHandler<
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void
+  ): Promise<unknown> | void;
 }

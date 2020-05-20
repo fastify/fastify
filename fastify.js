@@ -404,7 +404,7 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
-    } else {
+    } else if (name !== 'preParsing') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }

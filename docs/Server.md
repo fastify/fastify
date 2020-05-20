@@ -481,7 +481,7 @@ Set a callback function that allows rewriting urls.
 > Rewriting a url will modify the `url` property of the `req` object
 
 ```js
-function rewriteUrl (req) {
+function rewriteUrl (req) { // req is the Node.js HTTP request
   return req.url === '/hi' ? '/hello' : req.url;
 }
 ```

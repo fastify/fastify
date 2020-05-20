@@ -144,7 +144,7 @@
     "tsd": "^0.11.0",
     "typescript": "^3.7.4",
     "x-xss-protection": "^1.2.0",
-    "yup": "^0.28.4"
+    "yup": "^0.29.0"
   },
   "dependencies": {
     "abstract-logging": "^2.0.0",

@@ -476,7 +476,9 @@ const fastify = require('fastify')({
 <a name="rewrite-url"></a>
 ### `rewriteUrl`
 
-Set a callback function that allows rewriting urls.
+Set a callback function that allows rewriting urls. 
+
+> Rewriting a url will modify the `url` property of the `req` object
 
 ```js
 function rewriteUrl (req) {

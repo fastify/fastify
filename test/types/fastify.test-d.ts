@@ -14,8 +14,8 @@ expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerRespons
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ https: {} }))
 // http2 server
 expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, https: {}}))
-expectType<LightMyRequestChain>(fastify({ http2: true, https: {}}).inject())
+expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, https: {} }))
+expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
@@ -64,12 +64,12 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
   }
 }))
 const customLogger = {
-  info: () => {},
-  warn: () => {},
-  error: () => {},
-  fatal: () => {},
-  trace: () => {},
-  debug: () => {},
+  info: () => { },
+  warn: () => { },
+  error: () => { },
+  fatal: () => { },
+  trace: () => { },
+  debug: () => { },
   child: () => customLogger
 }
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: customLogger }))
@@ -83,9 +83,9 @@ expectAssignable<FastifyInstance>(fastify({
   versioning: {
     storage: () => ({
       get: () => 'foo',
-      set: () => {},
-      del: () => {},
-      empty: () => {}
+      set: () => { },
+      del: () => { },
+      empty: () => { }
     }),
     deriveVersion: () => 'foo'
   }
@@ -96,7 +96,10 @@ expectAssignable<FastifyInstance>(fastify({
     customOptions: {
       nullable: false
     },
-    plugins: [() => {}]
+    plugins: [() => { }]
   }
 }))
-expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => {} }))
+expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
+expectAssignable<FastifyInstance>(fastify({
+  rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
+}))

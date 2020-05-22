@@ -590,8 +590,15 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
   }
   return function preRouting (req, res) {
     const originalUrl = req.url
-    req.url = rewriteUrl(req)
-    logger.debug({ originalUrl, url: req.url }, 'rewrite url')
+    const url = rewriteUrl(req)
+    if (originalUrl !== url) {
+      logger.debug({ originalUrl, url }, 'rewrite url')
+      if (typeof url === 'string') {
+        req.url = url
+      } else {
+        req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
+      }
+    }
     httpHandler(req, res)
   }
 }

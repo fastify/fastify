@@ -23,7 +23,6 @@ test('Should rewrite url', t => {
   })
 
   fastify.listen(0, function (err) {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -35,6 +34,8 @@ test('Should rewrite url', t => {
       t.strictEqual(response.statusCode, 200)
     })
   })
+
+  t.tearDown(() => fastify.close())
 })
 
 test('Should throw an error', t => {
@@ -55,7 +56,6 @@ test('Should throw an error', t => {
   })
 
   fastify.listen(0, function (err) {
-    fastify.server.unref()
     t.error(err)
 
     sget({
@@ -67,4 +67,6 @@ test('Should throw an error', t => {
       t.strictEqual(body, undefined)
     })
   })
+
+  t.tearDown(() => fastify.close())
 })

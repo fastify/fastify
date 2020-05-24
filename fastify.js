@@ -272,11 +272,6 @@ function build (options) {
     }
   })
 
-  // We are adding `use` to the fastify prototype so the user
-  // can still access it (and get the expected error), but `decorate`
-  // will not detect it, and allow the user to override it.
-  Object.setPrototypeOf(fastify, { use })
-
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register
@@ -287,9 +282,7 @@ function build (options) {
   const avvio = Avvio(fastify, {
     autostart: false,
     timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
-    expose: {
-      use: 'register'
-    }
+    expose: { use: 'register' }
   })
   // Override to allow the plugin incapsulation
   avvio.override = override

@@ -10,7 +10,7 @@ export interface FastifyLogFn {
   (obj: object, msg?: string, ...args: any[]): void;
 }
 
-export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
+export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
 export interface FastifyLoggerInstance {
   info: FastifyLogFn;

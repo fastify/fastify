@@ -783,7 +783,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
-This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].
+This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel].
 
 Below is an example of the options inference in action:
 
@@ -804,7 +804,7 @@ See the Learn By Example, [Plugins](#plugins) section for more detailed examples
 ##### fastify.FastifytRegisterOptions<Options>
 [src](../types/register.d.ts#L16)
 
-This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels]. This type can also be specified as a function that returns the previously described intersection.
+This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel]. This type can also be specified as a function that returns the previously described intersection.
 
 ---
 
@@ -824,7 +824,7 @@ An interface definition for the internal Fastify logger. It is emulative of the 
 
 An overload function interface that implements the two ways Fastify calls log methods. This interface is passed to all associated log level properties on the FastifyLoggerOptions object.
 
-##### fastify.LogLevels
+##### fastify.LogLevel
 
 [src](../types/logger.d.ts#L12)
 
@@ -1054,6 +1054,6 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when 
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
 [FastifyRegisterOptions]: #fastifyfastifytregisteroptions
-[LogLevels]: #fastifyloglevels
+[LogLevel]: #fastifyloglevel
 [FastifyError]: #fastifyfastifyerror
 [RouteOptions]: #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig

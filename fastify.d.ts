@@ -121,7 +121,7 @@ export { FastifyRequest, FastifyRequestInterface, RequestGenericInterface } from
 export { FastifyReply, FastifyReplyInterface } from './types/reply'
 export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
-export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevels } from './types/logger'
+export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'

@@ -3,7 +3,7 @@ import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { LogLevels } from './logger'
+import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
 
 /**
@@ -64,7 +64,7 @@ export interface RouteShorthandOptions<
   validatorCompiler?: FastifySchemaCompiler;
   serializerCompiler?: FastifySchemaCompiler;
   bodyLimit?: number;
-  logLevel?: LogLevels;
+  logLevel?: LogLevel;
   config?: ContextConfig;
   version?: string;
   prefixTrailingSlash?: boolean;

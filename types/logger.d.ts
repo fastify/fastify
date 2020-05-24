@@ -12,6 +12,14 @@ export interface FastifyLogFn {
 
 export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
+export type SerializerFn = (value: unknown) => unknown;
+
+export interface Bindings {
+  level?: LogLevel | string;
+  serializers?: { [key: string]: SerializerFn };
+  [key: string]: unknown;
+}
+
 export interface FastifyLoggerInstance {
   info: FastifyLogFn;
   warn: FastifyLogFn;
@@ -19,7 +27,7 @@ export interface FastifyLoggerInstance {
   fatal: FastifyLogFn;
   trace: FastifyLogFn;
   debug: FastifyLogFn;
-  child(): FastifyLoggerInstance;
+  child(bindings: Bindings): FastifyLoggerInstance;
 }
 
 /**

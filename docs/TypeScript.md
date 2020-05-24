@@ -584,14 +584,14 @@ server.get('/', async (request, reply) => {
 ##### fastify.HTTPMethods 
 [src](./../types/utils.d.ts#L8)
 
-Intersection type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
+Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
 
 ##### fastify.RawServerBase 
 [src](./../types/utils.d.ts#L13)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
-Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
+Union type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
 
 ##### fastify.RawServerDefault 
 [src](./../types/utils.d.ts#L18)
@@ -828,7 +828,7 @@ An overload function interface that implements the two ways Fastify calls log me
 
 [src](../types/logger.d.ts#L12)
 
-Intersection type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
+Union type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
 
 ---
 

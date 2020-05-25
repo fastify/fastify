@@ -1,6 +1,6 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod } from './route'
-import { FastifySchema, FastifySchemaCompiler } from './schema'
+import { FastifySchemaCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerOptions } from './logger'
 import { FastifyRegister } from './register'
@@ -23,7 +23,7 @@ export interface FastifyInstance<
   prefix: string;
   log: Logger;
 
-  addSchema(schema: FastifySchema): FastifyInstance<RawServer, RawRequest, RawReply>;
+  addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply>;

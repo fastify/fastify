@@ -486,6 +486,8 @@ function rewriteUrl (req) { // req is the Node.js HTTP request
 }
 ```
 
+Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it is an instance-wide configuration.
+
 ## Instance
 
 ### Server Methods

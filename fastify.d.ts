@@ -111,6 +111,7 @@ export type FastifyServerOptions<
     req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
     res: FastifyReply<RawServer, RawReplyDefaultExpression<RawServer>>
   ) => void,
+  rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

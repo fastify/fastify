@@ -113,11 +113,12 @@ function fastify (options) {
       versioning: options.versioning
     }
   })
+
   // 404 router, used for handling encapsulated 404 handlers
   const fourOhFour = build404(options)
 
   // HTTP server and its handler
-  const httpHandler = router.routing
+  const httpHandler = wrapRouting(router.routing, options)
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
@@ -581,6 +582,25 @@ function buildRoutePrefix (instancePrefix, pluginPrefix) {
   }
 
   return instancePrefix + pluginPrefix
+}
+
+function wrapRouting (httpHandler, { rewriteUrl, logger }) {
+  if (!rewriteUrl) {
+    return httpHandler
+  }
+  return function preRouting (req, res) {
+    const originalUrl = req.url
+    const url = rewriteUrl(req)
+    if (originalUrl !== url) {
+      logger.debug({ originalUrl, url }, 'rewrite url')
+      if (typeof url === 'string') {
+        req.url = url
+      } else {
+        req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
+      }
+    }
+    httpHandler(req, res)
+  }
 }
 
 /**

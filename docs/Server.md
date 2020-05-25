@@ -473,6 +473,21 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="rewrite-url"></a>
+### `rewriteUrl`
+
+Set a sync callback function that must return a string that allows rewriting urls. 
+
+> Rewriting a url will modify the `url` property of the `req` object
+
+```js
+function rewriteUrl (req) { // req is the Node.js HTTP request
+  return req.url === '/hi' ? '/hello' : req.url;
+}
+```
+
+Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it is an instance-wide configuration.
+
 ## Instance
 
 ### Server Methods

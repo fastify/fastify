@@ -126,9 +126,9 @@ The type system heavily relies on generic properties to provide the most accurat
 In the last example we used interfaces to define the types for the request querystring and headers. Many users will already be using JSON Schemas to define these properties, and luckily there is a way to transform existing JSON Schemas into TypeScript interfaces!
 
 1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
-2. Install the `compile-schemas-to-typescript` module:
+2. Install the `json-schema-to-typescript` module:
     ```
-    npm i -D compile-schemas-to-typescript
+    npm i -D json-schema-to-typescript
     ```
 3. Create a new folder called `schemas` and add two files `headers.json` and `querystring.json`. Copy and paste the following schema definitions into the respective files:
     ```json
@@ -158,11 +158,11 @@ In the last example we used interfaces to define the types for the request query
     ```json
     {
       "scripts": {
-        "compile-schemas": "compile-schemas-to-typescript schemas types"
+        "compile-schemas": "json2ts -i schemas -o types"
       }
     }
     ```
-    This library is a CLI that wraps `json-schema-to-typescript` and adds support for generating types for a directory of schemas. The first CLI argument is the input path, and the second argument is the output path.
+    `json2ts` is a CLI utility included in `json-schema-to-typescript`. `schemas` is the input path, and `types` is the output path.
 5. Run `npm run compile-schemas`. Two new files should have been created in the `types` directory.
 6. Update `index.ts` to have the following code:
     ```typescript
@@ -229,7 +229,6 @@ In the last example we used interfaces to define the types for the request query
 Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](./Validation-and-Serialization.md) documenation for more info.
 
 Some additional notes:
-  - There is an open [pull request](https://github.com/bcherny/json-schema-to-typescript/pull/238) on `json-schema-to-typescript` to add the directory support we implemented in step 4. When it is merged, updates will be made to this documentation to remove the `compile-schemas-to-typescript` package.
   - Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!
 
 ### Plugins

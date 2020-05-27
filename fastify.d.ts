@@ -5,7 +5,7 @@ import * as LightMyRequest from 'light-my-request'
 
 import { FastifyRequest } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
-import { FastifyLoggerOptions } from './types/logger'
+import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import * as ajv from 'ajv'
@@ -24,31 +24,31 @@ declare function fastify<
   Server extends http2.Http2SecureServer,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger = FastifyLoggerOptions<Server>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 >(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger = FastifyLoggerOptions<Server>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 >(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger = FastifyLoggerOptions<Server>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 >(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger = FastifyLoggerOptions<Server>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
 export default fastify
 
 type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
-  Logger
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   https: http2.SecureServerOptions
@@ -56,7 +56,7 @@ type FastifyHttp2SecureOptions<
 
 type FastifyHttp2Options<
   Server extends http2.Http2Server,
-  Logger
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   http2SessionTimeout?: number,
@@ -64,7 +64,7 @@ type FastifyHttp2Options<
 
 type FastifyHttpsOptions<
   Server extends https.Server,
-  Logger
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   https: https.ServerOptions
 }
@@ -73,7 +73,7 @@ type FastifyHttpsOptions<
  */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  Logger = FastifyLoggerOptions<RawServer>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = {
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
@@ -84,7 +84,7 @@ export type FastifyServerOptions<
   disableRequestLogging?: boolean,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
-  logger?: boolean | Logger,
+  logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
@@ -121,7 +121,7 @@ export { FastifyRequest, FastifyRequestInterface, RequestGenericInterface } from
 export { FastifyReply, FastifyReplyInterface } from './types/reply'
 export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
-export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevels } from './types/logger'
+export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext } from './types/context'
 export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'

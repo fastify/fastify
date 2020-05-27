@@ -1,5 +1,5 @@
 import { FastifyPlugin, FastifyPluginOptions } from './plugin'
-import { LogLevels } from './logger'
+import { LogLevel } from './logger'
 
 /**
  * FastifyRegister
@@ -17,5 +17,5 @@ export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() 
 
 interface RegisterOptions {
   prefix?: string;
-  logLevel?: LogLevels;
+  logLevel?: LogLevel;
 }

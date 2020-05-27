@@ -1,4 +1,4 @@
-import { FastifyLoggerOptions } from './logger'
+import { FastifyLoggerInstance } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
 export interface RequestGenericInterface {
@@ -19,7 +19,7 @@ export interface FastifyRequestInterface<
 > {
   body: RequestGeneric['Body'];
   id: any;
-  log: FastifyLoggerOptions<RawServer>;
+  log: FastifyLoggerInstance;
   params: RequestGeneric['Params'];
   query: RequestGeneric['Querystring'];
   raw: RawRequest;

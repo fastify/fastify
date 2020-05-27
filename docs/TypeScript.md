@@ -560,17 +560,20 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses the [Pino](http://getpino.io/#/) logging library under the hood. While the Fastify type system does provide the necessary types for you to use the included logger, if you'd like the specificity of the Pino types install them from `@types/pino` and pass the `pino.Logger` type to the fourth generic parameter. This generic also supports custom logging utilities such as creating custom serializers. See the [Logging](./Logging.md) documentation for more info.
+Fastify uses [Pino](http://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](./Logging.md) documentation for more info.
+
+To use an external instance of Pino, add `@types/pino` to devDependencies and pass the instance to `logger` field:
 
 ```typescript
 import fastify from 'fastify'
-import http from 'http'
 import pino from 'pino'
 
-const server = fastify<http.Server, http.IncomingMessage, http.ServerResponse, pino.Logger>({
-  logger: {
+const server = fastify({
+  logger: pino({
+    level: 'info',
+    redact: ['x-userinfo'],
     messageKey: 'message'
-  }
+  })
 })
 
 server.get('/', async (request, reply) => {
@@ -584,14 +587,14 @@ server.get('/', async (request, reply) => {
 ##### fastify.HTTPMethods 
 [src](./../types/utils.d.ts#L8)
 
-Intersection type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
+Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
 
 ##### fastify.RawServerBase 
 [src](./../types/utils.d.ts#L13)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
-Intersection type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
+Union type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
 
 ##### fastify.RawServerDefault 
 [src](./../types/utils.d.ts#L18)
@@ -783,7 +786,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
-This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels].
+This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel].
 
 Below is an example of the options inference in action:
 
@@ -804,7 +807,7 @@ See the Learn By Example, [Plugins](#plugins) section for more detailed examples
 ##### fastify.FastifytRegisterOptions<Options>
 [src](../types/register.d.ts#L16)
 
-This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevels][LogLevels]. This type can also be specified as a function that returns the previously described intersection.
+This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel]. This type can also be specified as a function that returns the previously described intersection.
 
 ---
 
@@ -824,11 +827,11 @@ An interface definition for the internal Fastify logger. It is emulative of the 
 
 An overload function interface that implements the two ways Fastify calls log methods. This interface is passed to all associated log level properties on the FastifyLoggerOptions object.
 
-##### fastify.LogLevels
+##### fastify.LogLevel
 
 [src](../types/logger.d.ts#L12)
 
-Intersection type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
+Union type of: `'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'`
 
 ---
 
@@ -1054,6 +1057,6 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when 
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
 [FastifyRegisterOptions]: #fastifyfastifytregisteroptions
-[LogLevels]: #fastifyloglevels
+[LogLevel]: #fastifyloglevel
 [FastifyError]: #fastifyfastifyerror
 [RouteOptions]: #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig

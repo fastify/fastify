@@ -9,6 +9,7 @@ export interface FastifySchema {
   querystring?: unknown;
   params?: unknown;
   headers?: unknown;
+  response?: unknown;
 }
 
 export interface FastifyRouteSchemaDef {

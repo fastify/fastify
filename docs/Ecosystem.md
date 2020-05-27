@@ -114,6 +114,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
+- [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.

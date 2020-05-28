@@ -111,3 +111,47 @@ test('error handler binding', t => {
     })
   })
 })
+
+test('encapsulated error handler binding', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+
+  fastify.register(function (app, opts, next) {
+    app.decorate('hello', 'world')
+    t.strictEqual(app.hello, 'world')
+    app.post('/', function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+    app.setErrorHandler(function (err, request, reply) {
+      t.strictEqual(this.hello, 'world')
+      reply
+        .code(err.statusCode)
+        .type('application/json; charset=utf-8')
+        .send(err)
+    })
+    next()
+  })
+
+  t.strictEqual(fastify.hello, undefined)
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    simulate: {
+      error: true
+    },
+    body: {
+      text: '12345678901234567890123456789012345678901234567890'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 400)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'Simulated',
+      statusCode: 400
+    })
+  })
+})

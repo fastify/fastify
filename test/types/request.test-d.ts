@@ -1,6 +1,7 @@
 import { expectType } from 'tsd'
-import fastify, { RouteHandlerMethod, RawRequestDefaultExpression, RequestBodyDefault, FastifyLoggerOptions, RequestGenericInterface } from '../../fastify'
+import fastify, { RouteHandlerMethod, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface } from '../../fastify'
 import { RawServerDefault, RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault, RawReplyDefaultExpression } from '../../types/utils'
+import { FastifyLoggerInstance } from '../../types/logger'
 
 interface RequestBody {
   content: string;
@@ -39,7 +40,7 @@ const getHandler: RouteHandlerMethod = function (request, _reply) {
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystringDefault>(request.query)
   expectType<any>(request.id)
-  expectType<FastifyLoggerOptions<RawServerDefault>>(request.log)
+  expectType<FastifyLoggerInstance>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.connection)
 }
 

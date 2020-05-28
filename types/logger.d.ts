@@ -6,11 +6,19 @@ import { FastifyRequest } from './request'
  * Standard Fastify logging function
  */
 export interface FastifyLogFn {
-  (msg: string, ...args: any[]): void;
-  (obj: object, msg?: string, ...args: any[]): void;
+  (msg: string, ...args: unknown[]): void;
+  (obj: object, msg?: string, ...args: unknown[]): void;
 }
 
-export type LogLevels = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
+export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
+
+export type SerializerFn = (value: unknown) => unknown;
+
+export interface Bindings {
+  level?: LogLevel | string;
+  serializers?: { [key: string]: SerializerFn };
+  [key: string]: unknown;
+}
 
 export interface FastifyLoggerInstance {
   info: FastifyLogFn;
@@ -19,7 +27,7 @@ export interface FastifyLoggerInstance {
   fatal: FastifyLogFn;
   trace: FastifyLogFn;
   debug: FastifyLogFn;
-  child(): FastifyLoggerInstance;
+  child(bindings: Bindings): FastifyLoggerInstance;
 }
 
 /**

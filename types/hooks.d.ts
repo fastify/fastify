@@ -7,7 +7,7 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from './error'
-import { FastifyLoggerOptions } from './logger'
+import { FastifyLoggerInstance } from './logger'
 
 type HookHandlerDoneFunction = (err?: FastifyError) => void
 
@@ -199,7 +199,7 @@ export interface onRegisterHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger = FastifyLoggerOptions<RawServer>
+  Logger = FastifyLoggerInstance
 > {
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
@@ -212,7 +212,7 @@ export interface onRegisterHookHandler<
  */
 export interface onReadyHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
-  Logger = FastifyLoggerOptions<RawServer>
+  Logger = FastifyLoggerInstance
 > {
   (
     done: HookHandlerDoneFunction
@@ -226,7 +226,7 @@ export interface onCloseHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger = FastifyLoggerOptions<RawServer>
+  Logger = FastifyLoggerInstance
 > {
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,

@@ -1,4 +1,4 @@
-import { FastifyLoggerOptions } from './logger'
+import { FastifyLoggerInstance } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 
 export interface RequestGenericInterface {
@@ -22,7 +22,7 @@ export interface FastifyRequestInterface<
   raw: RawRequest;
   query: RequestGeneric['Querystring'];
   headers: RawRequest['headers'] & RequestGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
-  log: FastifyLoggerOptions<RawServer>;
+  log: FastifyLoggerInstance;
   body: RequestGeneric['Body'];
   ip: string;
   ips?: string[];

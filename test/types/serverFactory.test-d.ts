@@ -28,8 +28,8 @@ const serverFactory: FastifyServerFactory<http.Server> = (handler, opts) => {
 const customServer = fastify<http.Server, CustomIncomingMessage, CustomServerResponse>({ serverFactory })
 
 customServer.get('/', function (request, reply) {
-  if (request.fakeMethod) {
-    expectType<CustomType>(request.fakeMethod())
+  if (request.raw.fakeMethod) {
+    expectType<CustomType>(request.raw.fakeMethod())
   }
 
   if (reply.fakeMethod) {

@@ -40,6 +40,7 @@ const getHandler: RouteHandlerMethod = function (request, _reply) {
   expectType<RequestQuerystringDefault>(request.query)
   expectType<any>(request.id)
   expectType<FastifyLoggerOptions<RawServerDefault>>(request.log)
+  expectType<RawRequestDefaultExpression['socket']>(request.connection)
 }
 
 const postHandler: Handler = function (request) {

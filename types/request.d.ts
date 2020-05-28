@@ -17,22 +17,25 @@ export interface FastifyRequestInterface<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface
 > {
-  body: RequestGeneric['Body'];
   id: any;
-  log: FastifyLoggerOptions<RawServer>;
   params: RequestGeneric['Params'];
-  query: RequestGeneric['Querystring'];
   raw: RawRequest;
+  query: RequestGeneric['Querystring'];
   headers: RawRequest['headers'] & RequestGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
-  url: string;
-  method: string;
-  hostname: string;
+  log: FastifyLoggerOptions<RawServer>;
+  body: RequestGeneric['Body'];
   ip: string;
   ips?: string[];
+  hostname: string;
+  url: string;
+  method: string;
+
+  // `connection` is a deprecated alias for `socket` and doesn't exist in `Http2ServerRequest`
+  connection: RawRequest['socket'];
 }
 
 export type FastifyRequest<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface
-> = RawRequest & FastifyRequestInterface<RawServer, RawRequest, RequestGeneric>
+> = FastifyRequestInterface<RawServer, RawRequest, RequestGeneric>

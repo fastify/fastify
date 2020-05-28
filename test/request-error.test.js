@@ -73,3 +73,41 @@ test('default 400 on request error with custom error handler', t => {
     })
   })
 })
+
+test('error handler binding', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.setErrorHandler(function (err, request, reply) {
+    t.strictEqual(this, fastify)
+    reply
+      .code(err.statusCode)
+      .type('application/json; charset=utf-8')
+      .send(err)
+  })
+
+  fastify.post('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    simulate: {
+      error: true
+    },
+    body: {
+      text: '12345678901234567890123456789012345678901234567890'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 400)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(JSON.parse(res.payload), {
+      error: 'Bad Request',
+      message: 'Simulated',
+      statusCode: 400
+    })
+  })
+})

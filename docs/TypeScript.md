@@ -553,7 +553,7 @@ interface customRequest extends http.IncomingMessage {
 const server = fastify<http.Server, customRequest>()
 
 server.get('/', async (request, reply) => {
-  const someValue = request.mySpecialProp // TS knows this is a string, because of the `customRequest` interface
+  const someValue = request.raw.mySpecialProp // TS knows this is a string, because of the `customRequest` interface
   return someValue.toUpperCase()
 })
 ```
@@ -630,14 +630,14 @@ Check out the main [Learn by Example](#learn-by-example) section for detailed gu
 ##### fastify.FastifyRequest<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]> 
 [src](./../types/request.d.ts#L29)
 
-`FastifyRequest` is a type definition that makes use of generic inheritance. The type is based on the [`RawRequest`][RawRequestGeneric] generic and then adds additional properties through the [`FastifyRequestInterface`][FastifyRequestInterface] definition. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`][DecorateRequest] method) you need to use declaration merging on the interface ([`FastifyRequestInterface`][FastifyRequestInterface]) instead of this type.
+`FastifyRequest` is a type definition that makes use of generic inheritance. The type is an alias of [`FastifyRequestInterface`][FastifyRequestInterface] generic interface. If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`][DecorateRequest] method) you need to use declaration merging on the interface ([`FastifyRequestInterface`][FastifyRequestInterface]) instead of this type.
 
 A basic example is provided in the [`FastifyRequestInterface`][FastifyRequestInterface] section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
 
 ##### fastify.FastifyRequestInterface<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]>
 [src](./../types/request.d.tsL#15)
 
-This interface contains the custom properties that Fastify adds to the standard Node.js request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
+This interface contains properties of Fastify request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
 
 If you need to add custom properties to the FastifyRequest object (such as when using the [`decorateRequest`][DecorateRequest] method) you need to use declaration merging on this interface, **not** [`FastifyRequest`][FastifyRequest].
 

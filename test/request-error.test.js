@@ -148,7 +148,7 @@ test('encapsulated error handler binding', t => {
     t.error(err)
     t.strictEqual(res.statusCode, 400)
     t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.deepEqual(res.json(), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400

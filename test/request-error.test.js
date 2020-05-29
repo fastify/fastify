@@ -133,8 +133,6 @@ test('encapsulated error handler binding', t => {
     next()
   })
 
-  t.strictEqual(fastify.hello, undefined)
-
   fastify.inject({
     method: 'POST',
     url: '/',
@@ -153,5 +151,6 @@ test('encapsulated error handler binding', t => {
       message: 'Simulated',
       statusCode: 400
     })
+    t.strictEqual(fastify.hello, undefined)
   })
 })

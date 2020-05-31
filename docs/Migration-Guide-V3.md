@@ -1,16 +1,16 @@
 # V3 Migration Guide
 
-This guide is aimed to help migration from Fastify v2 to v3.
+This guide is intended to help with migration from Fastify v2 to v3.
 
-Before beginning please ensure that any deprecation warnings from v2 are fixed
-as we have removed all deprecated features and they will no longer work after
+Before beginning please ensure that any deprecation warnings from v2 are fixed.
+All v2 deprecations have been removed and they will no longer work after
 upgrading. ([#1750](https://github.com/fastify/fastify/pull/1750))
 
 ## Breaking changes
 
 ### Changed middleware support ([#2014](https://github.com/fastify/fastify/pull/2014))
 
-From Fastify v3, middleware support does not come out of the box with the
+From Fastify v3, middleware support does not come out-of-the-box with the
 framework itself.
 
 If you use Express middleware in your application, please install and register
@@ -20,24 +20,26 @@ the [`fastify-express`](https://github.com/fastify/fastify-express) or
 **v2:**
 
 ```js
+// Using the Express `cors` middleware in Fastify v2.
 fastify.use(require('cors')());
 ```
 
 **v3:**
 
 ```js
+// Using the Express `cors` middleware in Fastify v3.
 await fastify.register(require('fastify-express'));
 fastify.use(require('cors')());
 ```
 
 ### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
 
-We have updated our logging [Serializers](./Logging.md) to now receive Fastify
+The logging [Serializers](./Logging.md) have been updated to now Fastify
 [`Request`](./Request.md) and [`Reply`](./Reply.md) objects instead of
 native ones.
 
-If you have created custom serializers they will need updating if they expect
-properties that aren't exposed by the Fastify objects themselves.
+Any custom serializers must be updated if they rely upon `request` or `reply`
+properties that are present on the native objects but not the Fastify objects.
 
 **v2:**
 
@@ -75,8 +77,8 @@ const fastify = require('fastify')({
 
 ### Changed schema substitution ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-We have dropped support for non-standard `replace-way` shared schema
-substitution and replaced it with standard compliant JSON Schema `$ref` based
+The non-standard `replace-way` shared schema support has been removed. This
+feature has been replace with JSON Schema specification compliant `$ref` based
 substitution. To better understand this change read
 [Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
@@ -102,9 +104,10 @@ fastify.route({ method, url, schema, handler });
 
 ### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-We have replaced `setSchemaCompiler` and `setSchemaResolver` options with
-`setValidatorCompiler` to enable future tooling improvements. To deepen this
-change [read the article](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+The `setSchemaCompiler` and `setSchemaResolver` options have been replaced
+with the `setValidatorCompiler` to enable future tooling improvements.
+To better understand this change read
+[Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 
@@ -133,8 +136,8 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 
 ### Changed preParsing hook behaviour ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-From Fastify v3, the behavior of `preParsing` hook will change slightly in order
-to support request payload manipulation.
+From Fastify v3, the behavior of the `preParsing` hook will change slightly
+in order to support request payload manipulation.
 
 The hook now takes an additional argument, `payload`, and therefore the new hook
 signature is `fn(request, reply, payload, done)` or
@@ -148,34 +151,36 @@ following hooks. A sample use case for this is handling compressed requests.
 
 The new stream should add the `receivedEncodedLength` property to the stream
 that should reflect the actual data size received from the client. For instance,
-in compressed request it should be the size of the compressed payload.
+in a compressed request it should be the size of the compressed payload.
 This property can (and should) be dynamically updated during `data` events.
 
-The old syntax of Fastify v2 without payload it is supported but it is deprecated.
+The old syntax of Fastify v2 without payload is supported but it is deprecated.
 
 ### Changed hooks behaviour ([#2004](https://github.com/fastify/fastify/pull/2004))
 
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
 slightly in order to support hook encapsulation.
 
-- `onRoute` - The hook will be called asynchronously, in v1/v2 it's called as
-soon as a route is registered. This means that if you want to use it, you should
-register this hook as soon as possible in your code.
-- `onRegister` - Same as the onRoute hook, the only difference is that now the
+- `onRoute` - The hook will be called asynchronously. In v2 this hook is called
+as soon as a route is registered. This means that if you want to use it, you
+should register this hook as soon as possible in your code.
+(TODO: this statement is unclear. Are we saying that the v2 hook should be
+registered as soon as possible? Or are we saying the v3 hook should be?)
+- `onRegister` - Same as the onRoute hook. The only difference is that now the
 very first call will no longer be the framework itself, but the first registered
-plugin
+plugin.
 
 ### Changed Content Type Parser syntax ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-In Fastify v3 the Content Type Parsers have now a single signature for parsers.
+In Fastify v3 the content type parsers now have a single signature for parsers.
 
-The new signatures is `fn(request, payload, done)` or `async fn(request, payload)`.
- Note that `request` is now a fastify request, not an `IncomingMessage`.
+The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`.
+Note that `request` is now a fastify request, not an `IncomingMessage`.
 The payload is by default a stream. If the `parseAs` option is used in
 `addContentTypeParser`, then `payload` reflects the option value (string or buffer).
 
 The old signatures `fn(req, [done])` or `fn(req, payload, [done])`
-(where `req` is `IncomingMessage`) are still supported but deprecated.
+(where `req` is `IncomingMessage`) are still supported but are deprecated.
 
 ### Changed TypeScript support
 

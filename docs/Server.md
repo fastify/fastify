@@ -803,13 +803,15 @@ fastify.register(function (instance, options, done) {
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance, and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
 *Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
   // Log error
+  this.log.error(error)
   // Send error response
+  reply.status(409).send({ ok: false })
 })
 ```
 

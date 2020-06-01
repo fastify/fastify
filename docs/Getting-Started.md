@@ -195,7 +195,7 @@ As you can see, we used `register` both for the database connector and the regis
 This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](./Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
 
-We have also used the `decorate` API to add custom objects to the Fastify namespace, making them available for use everywhere. Use of this API is encouraged to faciliate easy code reuse and to decrease code or logic duplication.
+We have also used the `decorate` API to add custom objects to the Fastify namespace, making them available for use everywhere. Use of this API is encouraged to facilitate easy code reuse and to decrease code or logic duplication.
 
 To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](./Plugins-Guide.md).
 

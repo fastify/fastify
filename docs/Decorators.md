@@ -103,7 +103,7 @@ fastify.decorate('utility', fn, ['greet', 'log'])
 ```
 
 If a dependency is not satisfied, the `decorate` method will throw an exception.
-The dependency check is peformed before the server instance is booted. Thus,
+The dependency check is performed before the server instance is booted. Thus,
 it cannot occur during runtime.
 
 #### `decorateReply(name, value, [dependencies])`

@@ -138,4 +138,4 @@ A promise may not be fulfilled with 'undefined' when statusCode is not 204.
 <a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
 #### FST_ERR_SEND_UNDEFINED_ERR
 
-Undefined error has occured.
+Undefined error has occurred.

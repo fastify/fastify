@@ -495,7 +495,7 @@ function build (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this._errorHandler = func
+    this._errorHandler = func.bind(this)
     return this
   }
 }

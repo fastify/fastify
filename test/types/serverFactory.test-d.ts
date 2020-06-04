@@ -32,7 +32,7 @@ customServer.get('/', function (request, reply) {
     expectType<CustomType>(request.raw.fakeMethod())
   }
 
-  if (reply.fakeMethod) {
-    expectType<CustomType>(reply.fakeMethod())
+  if (reply.raw.fakeMethod) {
+    expectType<CustomType>(reply.raw.fakeMethod())
   }
 })

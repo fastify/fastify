@@ -120,5 +120,5 @@ export type RouteHandlerMethod<
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
-  reply: FastifyReply<RawServer, RawReply, ContextConfig>
+  reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
 ) => void | Promise<any>

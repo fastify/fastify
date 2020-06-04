@@ -109,7 +109,7 @@ export type FastifyServerOptions<
   frameworkErrors?: (
     error: FastifyError,
     req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
-    res: FastifyReply<RawServer, RawReplyDefaultExpression<RawServer>>
+    res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
 }

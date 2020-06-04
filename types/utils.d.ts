@@ -22,7 +22,7 @@ export type RawServerDefault = http.Server
  */
 export type RawRequestDefaultExpression<
   RawServer extends RawServerBase = RawServerDefault
-> = RawServer extends http.Server | https.Server ? http.IncomingMessage 
+> = RawServer extends http.Server | https.Server ? http.IncomingMessage
   : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerRequest
   : never
 
@@ -31,7 +31,7 @@ export type RawRequestDefaultExpression<
  */
 export type RawReplyDefaultExpression<
   RawServer extends RawServerBase = RawServerDefault
-> = RawServer extends http.Server | https.Server ? http.ServerResponse 
+> = RawServer extends http.Server | https.Server ? http.ServerResponse
   : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerResponse
   : never
 

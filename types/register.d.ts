@@ -3,7 +3,7 @@ import { LogLevel } from './logger'
 
 /**
  * FastifyRegister
- * 
+ *
  * Function for adding a plugin to fastify. The options are inferred from the passed in FastifyPlugin parameter.
  */
 export interface FastifyRegister<T = void> {

@@ -708,14 +708,14 @@ RawRequestDefaultExpression<http2.Http2Server> // -> http2.Http2ServerRequest
 
 #### Reply
 
-##### fastify.FastifyReply<[RawServer][RawServerGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
+##### fastify.FastifyReply<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 [src](./../types/reply.d.ts#L32)
 
-`FastifyReply` is a type definition that makes use of generic inheritance. The type is based on the [`RawReply`][RawReplyGeneric] generic and then adds additional properties through the [`FastifyReplyInterface`][FastifyReplyInterface] definition. If you need to add custom properties to the FastifyRequest object (such as when using the `decorateReply` method) you need to use declaration merging on the interface ([`FastifyReplyInterface`][FastifyReplyInterface]) instead of this type.
+`FastifyReply` is a type definition that makes use of generic inheritance. The type is an alias of the [RawReplyGeneric] generic interface. If you need to add custom properties to the FastifyReply object (such as when using the `decorateReply` method) you need to use declaration merging on the interface ([`FastifyReplyInterface`][FastifyReplyInterface]) instead of this type.
 
 A basic example is provided in the [`FastifyReplyInterface`][FastifyReplyInterface] section. For a more detailed example check out the Learn By Example section: [Plugins](#plugins)
 
-##### fastify.FastifyReplyInterface<[RawServer][RawServerGeneric], [RawReply][RawReplyGeneric], [ContextConfig][ContextConfigGeneric]>
+##### fastify.FastifyReplyInterface<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>
 [src](./../types/reply.d.ts#L8)
 
 This interface contains the custom properties that Fastify adds to the standard Node.js reply object. The properties added here disregard what kind of reply object (http vs http2).

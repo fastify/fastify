@@ -59,6 +59,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
     expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
+    expectType<string>(req.hostname)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
   })

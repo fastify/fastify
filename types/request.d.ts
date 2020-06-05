@@ -24,6 +24,7 @@ export interface FastifyRequestInterface<
   query: RequestGeneric['Querystring'];
   raw: RawRequest;
   headers: RawRequest['headers'] & RequestGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  hostname: string;
 }
 
 export type FastifyRequest<

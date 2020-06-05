@@ -544,6 +544,57 @@ test('plain string with content type application/json should NOT be serialized a
   })
 })
 
+test('plain string with custom json content type should NOT be serialized as json', t => {
+  t.plan(16)
+
+  const fastify = require('../..')()
+
+  const customSamples = {
+    collectionjson: {
+      mimeType: 'application/vnd.collection+json',
+      sample: '{"collection":{"version":"1.0","href":"http://api.example.com/people/"}}'
+    },
+    hal: {
+      mimeType: 'application/hal+json',
+      sample: '{"_links":{"self":{"href":"https://api.example.com/people/1"}},"name":"John Doe"}'
+    },
+    jsonapi: {
+      mimeType: 'application/vnd.api+json',
+      sample: '{"data":{"type":"people","id":"1"}}'
+    },
+    jsonld: {
+      mimeType: 'application/ld+json',
+      sample: '{"@context":"https://json-ld.org/contexts/person.jsonld","name":"John Doe"}'
+    },
+    siren: {
+      mimeType: 'application/vnd.siren+json',
+      sample: '{"class":"person","properties":{"name":"John Doe"}}'
+    }
+  }
+
+  Object.keys(customSamples).forEach((path) => {
+    fastify.get(`/${path}`, function (req, reply) {
+      reply.type(customSamples[path].mimeType).send(customSamples[path].sample)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    Object.keys(customSamples).forEach((path) => {
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/' + path
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
+        t.deepEqual(body.toString(), customSamples[path].sample)
+      })
+    })
+  })
+})
+
 test('non-string with content type application/json SHOULD be serialized as json', t => {
   t.plan(4)
 
@@ -564,6 +615,57 @@ test('non-string with content type application/json SHOULD be serialized as json
       t.error(err)
       t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
       t.deepEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
+    })
+  })
+})
+
+test('non-string with custom json content type SHOULD be serialized as json', t => {
+  t.plan(16)
+
+  const fastify = require('../..')()
+
+  const customSamples = {
+    collectionjson: {
+      mimeType: 'application/vnd.collection+json',
+      sample: JSON.parse('{"collection":{"version":"1.0","href":"http://api.example.com/people/"}}')
+    },
+    hal: {
+      mimeType: 'application/hal+json',
+      sample: JSON.parse('{"_links":{"self":{"href":"https://api.example.com/people/1"}},"name":"John Doe"}')
+    },
+    jsonapi: {
+      mimeType: 'application/vnd.api+json',
+      sample: JSON.parse('{"data":{"type":"people","id":"1"}}')
+    },
+    jsonld: {
+      mimeType: 'application/ld+json',
+      sample: JSON.parse('{"@context":"https://json-ld.org/contexts/person.jsonld","name":"John Doe"}')
+    },
+    siren: {
+      mimeType: 'application/vnd.siren+json',
+      sample: JSON.parse('{"class":"person","properties":{"name":"John Doe"}}')
+    }
+  }
+
+  Object.keys(customSamples).forEach((path) => {
+    fastify.get(`/${path}`, function (req, reply) {
+      reply.type(customSamples[path].mimeType).send(customSamples[path].sample)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    Object.keys(customSamples).forEach((path) => {
+      sget({
+        method: 'GET',
+        url: 'http://localhost:' + fastify.server.address().port + '/' + path
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
+        t.deepEqual(body.toString(), JSON.stringify(customSamples[path].sample))
+      })
     })
   })
 })

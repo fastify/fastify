@@ -103,7 +103,7 @@
     "ajv-i18n": "^3.5.0",
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",
-    "autocannon": "^4.0.0",
+    "autocannon": "^5.0.0",
     "branch-comparer": "^0.4.0",
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",

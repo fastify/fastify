@@ -17,7 +17,9 @@
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "test:ci": "npm run lint && npm run unit -- --cov --coverage-report=lcovonly && npm run test:typescript",
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
+    "bench:windows": "branchcmp -r 2 -g -s \"npm run benchmark:windows\"",
     "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
+    "benchmark:windows": "concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
     "license-checker": "license-checker --production --onlyAllow=\"MIT;ISC;BSD-3-Clause;BSD-2-Clause\""
   },
   "repository": {
@@ -93,6 +95,7 @@
   },
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
+    "@kibertoad/branch-comparer": "1.0.0",
     "@sinonjs/fake-timers": "^6.0.1",
     "@types/node": "^14.0.1",
     "@types/pino": "^6.0.1",
@@ -104,7 +107,6 @@
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",
     "autocannon": "^4.0.0",
-    "branch-comparer": "^0.4.0",
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",
     "coveralls": "^3.0.14",

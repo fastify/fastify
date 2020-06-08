@@ -95,7 +95,6 @@
   },
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
-    "@kibertoad/branch-comparer": "1.0.0",
     "@sinonjs/fake-timers": "^6.0.1",
     "@types/node": "^14.0.1",
     "@types/pino": "^6.0.1",
@@ -107,6 +106,7 @@
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",
     "autocannon": "^4.0.0",
+    "branch-comparer": "1.0.0",
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",
     "coveralls": "^3.0.14",

@@ -7,7 +7,7 @@ import { RequestGenericInterface, FastifyRequest } from './request'
  * FastifyReply is an instance of the standard http or http2 reply types.
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
  */
-export interface FastifyReplyInterface<
+export interface FastifyReply<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -42,11 +42,3 @@ export interface FastifyReplyInterface<
   serialize(payload: any): string;
   then(fullfilled: () => void, rejected: (err: Error) => void): void;
 }
-
-export type FastifyReply<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
-  ContextConfig = ContextConfigDefault
-> = FastifyReplyInterface<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>

@@ -109,7 +109,7 @@ export type FastifyServerOptions<
   frameworkErrors?: (
     error: FastifyError,
     req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
-    res: FastifyReply<RawServer, RawReplyDefaultExpression<RawServer>>
+    res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
 }
@@ -117,8 +117,8 @@ export type FastifyServerOptions<
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
 /* Export all additional types */
-export { FastifyRequest, FastifyRequestInterface, RequestGenericInterface } from './types/request'
-export { FastifyReply, FastifyReplyInterface } from './types/reply'
+export { FastifyRequest, RequestGenericInterface } from './types/request'
+export { FastifyReply } from './types/reply'
 export { FastifyPlugin, FastifyPluginOptions } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'

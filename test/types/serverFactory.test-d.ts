@@ -10,7 +10,6 @@ interface CustomIncomingMessage extends http.IncomingMessage {
 
 interface CustomServerResponse extends http.ServerResponse {
   fakeMethod?: () => CustomType;
-
 }
 
 const serverFactory: FastifyServerFactory<http.Server> = (handler, opts) => {

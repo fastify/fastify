@@ -161,11 +161,9 @@ The old syntax of Fastify v2 without payload is supported but it is deprecated.
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
 slightly in order to support hook encapsulation.
 
-- `onRoute` - The hook will be called asynchronously. In v2 this hook is called
-as soon as a route is registered. This means that if you want to use it, you
-should register this hook as soon as possible in your code.
-(TODO: this statement is unclear. Are we saying that the v2 hook should be
-registered as soon as possible? Or are we saying the v3 hook should be?)
+- `onRoute` - The hook will be called asynchronously. The hook is now inherited
+when registering a new plugin within the same encapsulation scope. Thus, this
+hook should be registered _before_ registering any plugins.
 - `onRegister` - Same as the onRoute hook. The only difference is that now the
 very first call will no longer be the framework itself, but the first registered
 plugin.

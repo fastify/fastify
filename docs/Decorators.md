@@ -93,6 +93,16 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
+The decorated [Fastify server](./Server.md) is bound to `this` in route [route](./Routes.md) handlers:
+
+```js
+fastify.decorate('db', new DbConnection())
+
+fastify.get('/', async function (request, reply) {
+  reply({hello: await this.db.query('world')})
+})
+```
+
 The `dependencies` parameter is an optional list of decorators that the
 decorator being defined relies upon. This list is simply a list of string names
 of other decorators. In the following example, the "utility" decorator depends

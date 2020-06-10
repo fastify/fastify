@@ -50,7 +50,7 @@ They need to be in
 * `preSerialization(request, reply, payload, done)`: a [function](./Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
 * `onSend(request, reply, payload, done)`: a [function](./Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
 * `onResponse(request, reply, done)`: a [function](./Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
-* `handler(request, reply)`: the function that will handle this request.
+* `handler(request, reply)`: the function that will handle this request. The [Fastify server](./Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-validator) documentation.
 * `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-serializer) documentation.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).

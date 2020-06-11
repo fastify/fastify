@@ -794,7 +794,7 @@ fastify().register(plugin, { option1: '', option2: true }) // OK - options objec
 
 See the Learn By Example, [Plugins](#plugins) section for more detailed examples of creating TypeScript plugins in Fastify.
 
-##### fastify.FastifytRegisterOptions<Options>
+##### fastify.FastifyRegisterOptions<Options>
 [src](../types/register.d.ts#L16)
 
 This type is the intersection of the `Options` generic and a non-exported interface `RegisterOptions` that specifies two optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel]. This type can also be specified as a function that returns the previously described intersection.

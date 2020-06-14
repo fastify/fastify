@@ -125,11 +125,6 @@ The JSON schema provided for validation to a route is not valid.
 
 The JSON schema provided for serialization of a route response is not valid.
 
-<a name="FST_ERR_SCH_BUILD"></a>
-#### FST_ERR_SCH_BUILD
-
-The JSON schema provided to one route is not valid.
-
 <a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULLFILLED
 

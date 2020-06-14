@@ -313,3 +313,22 @@ t.test('onReady does not call done', t => {
     t.equal(err.code, 'ERR_AVVIO_READY_TIMEOUT')
   })
 })
+
+t.test('ready chain order when no await', t => {
+  t.plan(3)
+  const fastify = Fastify({ })
+
+  let i = 0
+  fastify.ready(() => {
+    i++
+    t.equals(i, 1)
+  })
+  fastify.ready(() => {
+    i++
+    t.equals(i, 2)
+  })
+  fastify.ready(() => {
+    i++
+    t.equals(i, 3)
+  })
+})

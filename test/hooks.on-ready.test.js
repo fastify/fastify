@@ -1,5 +1,6 @@
 'use strict'
 
+const semver = require('semver')
 const t = require('tap')
 const Fastify = require('../fastify')
 const immediate = require('util').promisify(setImmediate)
@@ -16,26 +17,30 @@ t.test('onReady should be called in order', t => {
     done()
   })
 
-  fastify.register(async (childOne, o) => {
+  fastify.register((childOne, o, next) => {
     childOne.addHook('onReady', function (done) {
       t.equals(order++, 1, 'called in childOne')
       t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
     })
 
-    childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onReady', async function () {
-        await immediate()
-        t.equals(order++, 2, 'called in childTwo')
-        t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+    childOne.register((childTwo, o, next) => {
+      childTwo.addHook('onReady', function () {
+        return immediate()
+          .then(() => {
+            t.equals(order++, 2, 'called in childTwo')
+            t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+          })
       })
+      next()
     })
+    next()
   })
 
   fastify.ready(err => t.error(err))
 })
 
-t.test('async onReady should be called in order', async t => {
+t.test('async onReady should be called in order', { skip: semver.lt(process.versions.node, '8.0.0') }, async t => {
   t.plan(7)
   const fastify = Fastify()
 
@@ -123,7 +128,7 @@ t.test('listen and onReady order', async t => {
   }
 })
 
-t.test('multiple ready calls', async t => {
+t.test('multiple ready calls', { skip: semver.lt(process.versions.node, '8.0.0') }, async t => {
   t.plan(11)
 
   const fastify = Fastify()
@@ -170,17 +175,23 @@ t.test('onReady should manage error in sync', t => {
     done()
   })
 
-  fastify.register(async (childOne, o) => {
+  fastify.register((childOne, o, next) => {
     childOne.addHook('onReady', function (done) {
       t.pass('called in childOne')
       done(new Error('FAIL ON READY'))
     })
 
-    childOne.register(async (childTwo, o) => {
-      childTwo.addHook('onReady', async function () {
-        t.fail('should not be called')
+    childOne.register((childTwo, o, next) => {
+      childTwo.addHook('onReady', function () {
+        return Promise().resolve()
+          .then(() => {
+            t.fail('should not be called')
+          })
       })
+      next()
     })
+
+    next()
   })
 
   fastify.ready(err => {

@@ -57,7 +57,7 @@ export interface FastifyInstance<
    * This method is now deprecated and will throw a `FST_ERR_MISSING_MIDDLEWARE` error.
    * Visit fastify.io/docs/latest/Middleware/ for more info.
    */
-  use: void;
+  use(...args: unknown[]): void;
 
   route<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

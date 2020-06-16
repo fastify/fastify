@@ -53,11 +53,28 @@ export interface FastifyInstance<
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
+
   /**
-   * This method is now deprecated and will throw a `FST_ERR_MISSING_MIDDLEWARE` error.
-   * Visit fastify.io/docs/latest/Middleware/ for more info.
+   * Mounts an Express-style middleware. However, support for Express-style
+   * middlewares should first be enabled via either
+   * https://github.com/fastify/middie or
+   * https://github.com/fastify/fastiy-express.
    */
-  use(...args: unknown[]): void;
+  use(
+    middleware: (
+      req: RawRequest,
+      res: RawReply,
+      next: (err?: Error | unknown) => void
+    ) => void
+  ): void;
+  use(
+    path: string | string[],
+    middleware: (
+      req: RawRequest,
+      res: RawReply,
+      next: (err?: Error | unknown) => void
+    ) => void
+  ): void;
 
   route<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

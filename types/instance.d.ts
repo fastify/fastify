@@ -66,7 +66,7 @@ export interface FastifyInstance<
       res: RawReply,
       next: (err?: Error | unknown) => void
     ) => void
-  ): void;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   use(
     path: string | string[],
     middleware: (
@@ -74,7 +74,7 @@ export interface FastifyInstance<
       res: RawReply,
       next: (err?: Error | unknown) => void
     ) => void
-  ): void;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   route<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

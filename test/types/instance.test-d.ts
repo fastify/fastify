@@ -14,19 +14,19 @@ expectAssignable<FastifyInstance>(server.addSchema({
     schemas: []
 }))
 
-expectType<void>(server.use((req, res, next) => {
+expectAssignable<FastifyInstance>(server.use((req, res, next) => {
   expectType<IncomingMessage>(req)
   expectType<ServerResponse>(res)
   expectType<void>(next())
   expectType<void>(next(new Error('foo')))
 }))
-expectType<void>(server.use('/foo', (req, res, next) => {
+expectAssignable<FastifyInstance>(server.use('/foo', (req, res, next) => {
   expectType<IncomingMessage>(req)
   expectType<ServerResponse>(res)
   expectType<void>(next())
   expectType<void>(next(new Error('foo')))
 }))
-expectType<void>(server.use(['/foo', '/bar'], (req, res, next) => {
+expectAssignable<FastifyInstance>(server.use(['/foo', '/bar'], (req, res, next) => {
   expectType<IncomingMessage>(req)
   expectType<ServerResponse>(res)
   expectType<void>(next())

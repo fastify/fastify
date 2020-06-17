@@ -55,10 +55,9 @@ export interface FastifyInstance<
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
 
   /**
-   * Mounts an Express-style middleware. However, support for Express-style
-   * middlewares should first be enabled via either
-   * https://github.com/fastify/middie or
-   * https://github.com/fastify/fastiy-express.
+   * This method will throw a `FST_ERR_MISSING_MIDDLEWARE` error unless support
+   * for Express-style middlewares is first enabled. Visit
+   * https://fastify.io/docs/latest/Middleware/ for more info.
    */
   use(
     middleware: (

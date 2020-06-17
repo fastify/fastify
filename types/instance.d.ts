@@ -59,21 +59,7 @@ export interface FastifyInstance<
    * for Express-style middlewares is first enabled. Visit
    * https://fastify.io/docs/latest/Middleware/ for more info.
    */
-  use(
-    middleware: (
-      req: RawRequest,
-      res: RawReply,
-      next: (err?: Error | unknown) => void
-    ) => void
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  use(
-    path: string | string[],
-    middleware: (
-      req: RawRequest,
-      res: RawReply,
-      next: (err?: Error | unknown) => void
-    ) => void
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  use(...args: unknown[]): unknown;
 
   route<
     RequestGeneric extends RequestGenericInterface = RequestGenericInterface,

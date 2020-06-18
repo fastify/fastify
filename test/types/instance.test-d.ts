@@ -1,5 +1,5 @@
 import fastify, { FastifyError, FastifyInstance } from '../../fastify';
-import { expectAssignable } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd';
 
 const server = fastify()
 
@@ -17,5 +17,15 @@ server.setErrorHandler((function (error, request, reply) {
   expectAssignable<FastifyInstance>(this)
 }))
 
-function errorHandler(this: FastifyInstance, error: FastifyError) {}
-server.setErrorHandler(errorHandler)
+server.setErrorHandler<FastifyError>((function (error, request, reply) {
+  expectType<FastifyError>(error)
+}))
+
+function fastifyErrorHandler(this: FastifyInstance, error: FastifyError) {}
+server.setErrorHandler(fastifyErrorHandler)
+
+function nodeJSErrorHandler(error: NodeJS.ErrnoException) {}
+server.setErrorHandler(nodeJSErrorHandler)
+
+function invalidErrorHandler(error: number) {}
+expectError(server.setErrorHandler(invalidErrorHandler))

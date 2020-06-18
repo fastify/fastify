@@ -9,7 +9,7 @@ import { FastifyReply } from './reply'
 import { FastifyError } from './error'
 import { FastifyLoggerInstance } from './logger'
 
-type HookHandlerDoneFunction = (err?: FastifyError) => void
+type HookHandlerDoneFunction = <TError extends Error = FastifyError>(err?: TError) => void
 
 interface RequestPayload extends Readable {
   receivedEncodedLength?: number;
@@ -50,7 +50,7 @@ export interface preParsingHookHandler<
     request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     payload: RequestPayload,
-    done: (err?: FastifyError | null, res?: RequestPayload) => void
+    done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
   ): Promise<RequestPayload | unknown> | void;
 }
 
@@ -90,7 +90,7 @@ export interface preHandlerHookHandler<
 
 // This is used within the `preSerialization` and `onSend` hook handlers
 interface DoneFuncWithErrOrRes {
-  (err: FastifyError): void;
+  <TError extends Error = FastifyError>(err: TError): void;
   (err: null, res: unknown): void;
 }
 
@@ -163,12 +163,13 @@ export interface onErrorHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
-  ContextConfig = ContextConfigDefault
+  ContextConfig = ContextConfigDefault,
+  TError extends Error = FastifyError
 > {
   (
     request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
-    error: FastifyError,
+    error: TError,
     done: () => void
   ): Promise<unknown> | void;
 }

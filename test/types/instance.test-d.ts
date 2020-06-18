@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from '../../fastify'
+import fastify, { FastifyError, FastifyInstance } from '../../fastify';
 import { expectAssignable, expectType } from 'tsd'
 import { IncomingMessage, ServerResponse } from 'http'
 
@@ -16,3 +16,10 @@ expectAssignable<FastifyInstance>(server.addSchema({
 
 expectType<unknown>(server.use(() => {}))
 expectType<unknown>(server.use('/foo', () => {}))
+
+server.setErrorHandler((function (error, request, reply) {
+  expectAssignable<FastifyInstance>(this)
+}))
+
+function errorHandler(this: FastifyInstance, error: FastifyError) {}
+server.setErrorHandler(errorHandler)

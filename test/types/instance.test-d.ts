@@ -1,6 +1,5 @@
 import fastify, { FastifyError, FastifyInstance } from '../../fastify';
 import { expectAssignable, expectError, expectType } from 'tsd';
-import { IncomingMessage, ServerResponse } from 'http'
 
 const server = fastify()
 

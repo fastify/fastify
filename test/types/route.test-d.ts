@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError } from 'tsd'
+import { expectType, expectError, expectAssignable } from 'tsd';
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
 import { RequestPayload } from '../../types/hooks'
@@ -83,7 +83,8 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
       expectType<RequestPayload>(payload)
-      expectType<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
+      expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
+      expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
     },
     preValidation: (req, res, done) => {
       expectType<BodyInterface>(req.body)

@@ -1,5 +1,5 @@
 import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
-import { expectType, expectError } from 'tsd'
+import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from '../../types/error'
 import { RequestPayload } from '../../types/hooks'
@@ -18,7 +18,8 @@ type TestPayloadType = {
 server.addHook('onRequest', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
@@ -26,21 +27,24 @@ server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<RequestPayload>(payload)
-  expectType<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
+  expectAssignable<(err?: FastifyError | null, res?: RequestPayload) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
 server.addHook('preValidation', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
 server.addHook('preHandler', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
@@ -65,7 +69,8 @@ server.addHook<TestPayloadType>('onSend', (request, reply, payload, done) => {
 server.addHook('onResponse', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
@@ -83,18 +88,21 @@ server.addHook('onRoute', (opts) => {
 
 server.addHook('onRegister', (instance, done) => {
   expectType<FastifyInstance>(instance)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
 server.addHook('onReady', function (done) {
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 
 server.addHook('onClose', (instance, done) => {
   expectType<FastifyInstance>(instance)
-  expectType<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
 })
 

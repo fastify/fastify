@@ -224,8 +224,8 @@ export interface FastifyInstance<
   /**
    * Set a function that will be called whenever an error happens
    */
-  setErrorHandler(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: FastifyError, request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
+  setErrorHandler<TError extends Error = FastifyError>(
+    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
   ): void;
 
   /**

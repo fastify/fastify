@@ -3,10 +3,8 @@
 const { test } = require('tap')
 const Fastify = require('..')
 const {
-  codes: {
-    FST_ERR_DEC_ALREADY_PRESENT,
-    FST_ERR_MISSING_MIDDLEWARE
-  }
+  FST_ERR_DEC_ALREADY_PRESENT,
+  FST_ERR_MISSING_MIDDLEWARE
 } = require('../lib/errors')
 
 test('Should throw if the basic use API has not been overridden', t => {

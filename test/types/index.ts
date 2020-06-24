@@ -690,18 +690,9 @@ server.ready(function (err) {
   if (err) throw err
 })
 
-server.ready(function (err: Error, done: Function) {
-  done(err)
-})
-
-server.ready(function (err: Error, context: fastify.FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>, done: Function) {
-  server.log.debug(context)
-  done(err)
-})
-
 server.ready()
   .then((context) => {
-    server.log.debug(context)
+    server.log.debug(typeof context)
   })
   .catch((err) => {
     server.log.error(err)

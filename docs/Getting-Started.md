@@ -131,59 +131,90 @@ npm install --save fastify-plugin
 
 **server.js**
 ```js
-const fastify = require('fastify')({
-  logger: true
-})
+const config = require('./config')
+const fastify = require('fastify')({logger: true})
+const database = require('./database')
+const routes = require('./routes')
 
-fastify.register(require('./our-db-connector'), {
-  url: 'mongodb://localhost:27017/'
-})
-fastify.register(require('./our-first-route'))
+const start = async () => {
+    fastify.register(database)
+    fastify.register(routes)
 
-fastify.listen(3000, function (err, address) {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-  fastify.log.info(`server listening on ${address}`)
-})
-```
-
-**our-db-connector.js**
-```js
-const fastifyPlugin = require('fastify-plugin')
-const MongoClient = require('mongodb').MongoClient
-
-async function dbConnector (fastify, options) {
-  const url = options.url
-  delete options.url
-
-  const db = await MongoClient.connect(url, options)
-  fastify.decorate('mongo', db)
+    try {
+        await fastify.listen(3000, '0.0.0.0')
+    } catch (err) {
+        fastify.log.error(err)
+        process.exit(1)
+    }
 }
 
-// Wrapping a plugin function with fastify-plugin exposes the decorators
-// and hooks, declared inside the plugin to the parent scope.
-module.exports = fastifyPlugin(dbConnector)
+start()
 ```
 
-**our-first-route.js**
+**database.js**
 ```js
-async function routes (fastify, options) {
-  const database = fastify.mongo.db('db')
-  const collection = database.collection('test')
+'use strict'
 
-  fastify.get('/', async (request, reply) => {
-    return { hello: 'world' }
-  })
+/* 
+- In a terminal start up mongodb
 
-  fastify.get('/search/:id', async (request, reply) => {
-    const result = await collection.findOne({ id: request.params.id })
-    if (result.value === null) {
-      throw new Error('Invalid value')
-    }
-    return result.value
-  })
+- create the test database
+> use test_database
+
+- create collection
+> db.createCollection('test_collection')
+
+- insert a row
+db.test_collection.insert({name: 'John Smith'})
+
+- show the newly inserted row and copy the _id string
+> db.test_collection.find().pretty()
+
+- use the _id string in the url example localhost:3000/search/5ef583456f8921125bb83b20
+*/
+
+const fastifyPlugin = require('fastify-plugin')
+
+async function dbConnector(fastify, options) {
+    const { ObjectId, MongoClient } = require('mongodb')
+    const assert = require('assert')
+    const url = 'mongodb://localhost:27017'
+
+    const dbName = 'test_database'
+
+    const client = await MongoClient.connect(url, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    })
+
+    const db = client.db(dbName)
+    fastify.decorate('mongo', db)
+    fastify.decorate('ObjectId', ObjectId)
+}
+
+module.exports = fastifyPlugin(dbConnector)
+
+```
+
+**routes.js**
+```js
+'use strict'
+
+async function routes(fastify, options) {
+    const collection = fastify.mongo.collection('test_collection')
+    fastify.route({
+        method: 'GET',
+        url: '/:id',
+        handler: async (request, reply) => {
+            try {
+                const _id = fastify.ObjectId(request.params.id)
+                const result = await collection.findOne({ _id })
+                return result
+            } catch (error) {
+                throw new Error('Invalid value')
+            }
+        }
+    })
 }
 
 module.exports = routes

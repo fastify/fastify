@@ -131,7 +131,8 @@ npm install --save fastify-plugin
 
 **server.js**
 ```js
-const config = require('./config')
+'use strict'
+
 const fastify = require('fastify')({logger: true})
 const database = require('./database')
 const routes = require('./routes')
@@ -204,7 +205,7 @@ async function routes(fastify, options) {
     const collection = fastify.mongo.collection('test_collection')
     fastify.route({
         method: 'GET',
-        url: '/:id',
+        url: '/search/:id',
         handler: async (request, reply) => {
             try {
                 const _id = fastify.ObjectId(request.params.id)

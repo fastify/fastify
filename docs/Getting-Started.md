@@ -172,8 +172,8 @@ async function routes(fastify, options) {
     return { hello: 'world' }
   })
 
-  fastify.get('/search/:id', async (request, reply) => {
-    const result = await collection.findOne()
+  fastify.get('/search/:name', async (request, reply) => {
+    const result = await collection.findOne({ name: 'John Smith' })
     if (result === null) {
       throw new Error('Invalid value')
     }

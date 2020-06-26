@@ -172,8 +172,6 @@ async function routes(fastify, options) {
   })
 
   fastify.get('/search/:id', async (request, reply) => {
-    // findOne() with no arguments will give us the first document
-    // in our collection
     const result = await collection.findOne()
     if (result === null) {
       throw new Error('Invalid value')

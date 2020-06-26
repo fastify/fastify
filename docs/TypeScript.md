@@ -107,7 +107,7 @@ The type system heavily relies on generic properties to provide the most accurat
       Querystring: IQuerystring,
       Headers: IHeaders
     }>('/auth', {
-      preValidation: (request, reply) => {
+      preValidation: (request, reply, done) => {
         const { username, password } = request.query
         done(username !== 'admin' ? new Error('Must be admin') : undefined) // only validate `admin` account
       }

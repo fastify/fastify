@@ -150,8 +150,6 @@ fastify.listen(3000, function (err, address) {
 
 **our-db-connector.js**
 ```js
-'use strict'
-
 const fastifyPlugin = require('fastify-plugin')
 
 async function dbConnector(fastify, options) {

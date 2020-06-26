@@ -173,15 +173,15 @@ async function routes(fastify, options) {
   })
 
   fastify.get('/animals', async (request, reply) => {
-    const result = collection.find().toArray()
-    if (result === null) {
-      throw new Error('Invalid value')
+    const result = await collection.find().toArray()
+    if (result.length === 0) {
+      throw new Error('No documents found')
     }
     return result
   })
 
   fastify.get('/animals/:animal', async (request, reply) => {
-    const result = collection.findOne({ animal: request.params.animal })
+    const result = await collection.findOne({ animal: request.params.animal })
     if (result === null) {
       throw new Error('Invalid value')
     }

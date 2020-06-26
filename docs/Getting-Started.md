@@ -173,7 +173,7 @@ async function routes(fastify, options) {
   })
 
   fastify.get('/animals', async (request, reply) => {
-    const result = await collection.find().toArray()
+    const result = collection.find().toArray()
     if (result === null) {
       throw new Error('Invalid value')
     }

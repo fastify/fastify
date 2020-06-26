@@ -131,91 +131,57 @@ npm install --save fastify-plugin
 
 **server.js**
 ```js
-'use strict'
+const fastify = require('fastify')({
+  logger: true,
+})
 
-const fastify = require('fastify')({logger: true})
-const database = require('./database')
-const routes = require('./routes')
+fastify.register(require('./our-db-connector'))
+fastify.register(require('./our-first-route'))
 
-const start = async () => {
-    fastify.register(database)
-    fastify.register(routes)
+fastify.listen(3000, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  fastify.log.info(`server listening on ${address}`)
+})
 
-    try {
-        await fastify.listen(3000, '0.0.0.0')
-    } catch (err) {
-        fastify.log.error(err)
-        process.exit(1)
-    }
-}
-
-start()
 ```
 
-**database.js**
+**our-db-connector.js**
 ```js
 'use strict'
-
-/* 
-- In a terminal start up mongodb
-
-- create the test database
-> use test_database
-
-- create collection
-> db.createCollection('test_collection')
-
-- insert a row
-db.test_collection.insert({name: 'John Smith'})
-
-- show the newly inserted row and copy the _id string
-> db.test_collection.find().pretty()
-
-- use the _id string in the url example localhost:3000/search/5ef583456f8921125bb83b20
-*/
 
 const fastifyPlugin = require('fastify-plugin')
 
 async function dbConnector(fastify, options) {
-    const { ObjectId, MongoClient } = require('mongodb')
-    const assert = require('assert')
-    const url = 'mongodb://localhost:27017'
-
-    const dbName = 'test_database'
-
-    const client = await MongoClient.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-
-    const db = client.db(dbName)
-    fastify.decorate('mongo', db)
-    fastify.decorate('ObjectId', ObjectId)
+  fastify.register(require('fastify-mongodb'), {
+    url: 'mongodb://localhost:27017/test_database',
+  })
 }
 
 module.exports = fastifyPlugin(dbConnector)
 
 ```
 
-**routes.js**
+**our-first-route.js**
 ```js
-'use strict'
-
 async function routes(fastify, options) {
-    const collection = fastify.mongo.collection('test_collection')
-    fastify.route({
-        method: 'GET',
-        url: '/search/:id',
-        handler: async (request, reply) => {
-            try {
-                const _id = fastify.ObjectId(request.params.id)
-                const result = await collection.findOne({ _id })
-                return result
-            } catch (error) {
-                throw new Error('Invalid value')
-            }
-        }
-    })
+  const collection = fastify.mongo.db.collection('test_collection')
+
+  fastify.get('/', async (request, reply) => {
+    return { hello: 'world' }
+  })
+
+  fastify.get('/search/:id', async (request, reply) => {
+    // findOne() with no arguments will give us the first document
+    // in our collection
+    const result = await collection.findOne()
+    if (result === null) {
+      throw new Error('Invalid value')
+    }
+    return result
+  })
 }
 
 module.exports = routes

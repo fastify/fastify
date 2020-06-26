@@ -121,12 +121,11 @@ A typical solution is to use a complex callback, or promises - a system that wil
 Fastify handles this internally, with minimum effort!
 
 Let's rewrite the above example with a database connection.<br>
-*(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](./Ecosystem.md))*
 
-First, install `fastify-plugin`:
+First, install `fastify-plugin` and `fastify-mongodb`:
 
 ```
-npm install --save fastify-plugin
+npm i --save fastify-plugin fastify-mongodb
 ```
 
 **server.js**

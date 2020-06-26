@@ -172,7 +172,15 @@ async function routes(fastify, options) {
     return { hello: 'world' }
   })
 
-  fastify.get('/search/:animal', async (request, reply) => {
+  fastify.get('/animals', async (request, reply) => {
+    const result = await collection.find().toArray()
+    if (result === null) {
+      throw new Error('Invalid value')
+    }
+    return result
+  })
+
+  fastify.get('/animals/:animal', async (request, reply) => {
     const result = collection.findOne({ animal: request.params.animal })
     if (result === null) {
       throw new Error('Invalid value')
@@ -182,7 +190,6 @@ async function routes(fastify, options) {
 }
 
 module.exports = routes
-
 ```
 
 Wow, that was fast!<br>

@@ -3,7 +3,7 @@ import { expectType, expectError, expectAssignable } from 'tsd';
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
 import { RequestPayload } from '../../types/hooks'
-import { FastifyError } from '../../types/error'
+import { FastifyError } from 'fastify-error'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.

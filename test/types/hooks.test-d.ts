@@ -1,7 +1,7 @@
 import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
-import { FastifyError } from '../../types/error'
+import { FastifyError } from 'fastify-error'
 import { RequestPayload } from '../../types/hooks'
 
 const server = fastify()

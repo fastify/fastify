@@ -2,7 +2,6 @@
 
 const sget = require('simple-get').concat
 const Ajv = require('ajv')
-const Joi = require('@hapi/joi')
 const yup = require('yup')
 
 module.exports.payloadMethod = function (method, t) {
@@ -42,17 +41,6 @@ module.exports.payloadMethod = function (method, t) {
     }
   }
 
-  const optsWithJoiValidator = {
-    schema: {
-      body: Joi.object().keys({
-        hello: Joi.string().required()
-      }).required()
-    },
-    validatorCompiler: function ({ schema, method, url, httpPart }) {
-      return schema.validate.bind(schema)
-    }
-  }
-
   const yupOptions = {
     strict: true, // don't coerce
     abortEarly: false, // return all errors
@@ -85,9 +73,6 @@ module.exports.payloadMethod = function (method, t) {
         reply.send(req.body)
       })
       fastify[loMethod]('/custom', optsWithCustomValidator, function (req, reply) {
-        reply.send(req.body)
-      })
-      fastify[loMethod]('/joi', optsWithJoiValidator, function (req, reply) {
         reply.send(req.body)
       })
       fastify[loMethod]('/yup', optsWithYupValidator, function (req, reply) {
@@ -217,42 +202,6 @@ module.exports.payloadMethod = function (method, t) {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
         t.deepEqual(body, { hello: 42 })
-      })
-    })
-
-    test(`${upMethod} - input-validation joi schema compiler ok`, t => {
-      t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: '42'
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
-      })
-    })
-
-    test(`${upMethod} - input-validation joi schema compiler ko`, t => {
-      t.plan(3)
-      sget({
-        method: upMethod,
-        url: 'http://localhost:' + fastify.server.address().port + '/joi',
-        body: {
-          hello: 44
-        },
-        json: true
-      }, (err, response, body) => {
-        t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
-          error: 'Bad Request',
-          message: '"hello" must be a string',
-          statusCode: 400
-        })
       })
     })
 

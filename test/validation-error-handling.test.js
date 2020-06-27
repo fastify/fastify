@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('tap')
-const Joi = require('@hapi/joi')
 const Fastify = require('..')
 
 const schema = {
@@ -278,68 +277,5 @@ test('should return a defined output message parsing AJV errors', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\', body should have required property \'work\'"}')
-  })
-})
-
-test('should return a defined output message parsing JOI errors', t => {
-  t.plan(2)
-
-  const body = Joi.object().keys({
-    name: Joi.string().required(),
-    work: Joi.string().required()
-  }).required()
-
-  const fastify = Fastify()
-
-  fastify.post('/', {
-    schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => schema.validate(data)
-    }
-  },
-  function (req, reply) {
-    t.fail()
-  })
-
-  fastify.inject({
-    method: 'POST',
-    payload: {},
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
-  })
-})
-
-test('should return a defined output message parsing JOI error details', t => {
-  t.plan(2)
-
-  const body = Joi.object().keys({
-    name: Joi.string().required(),
-    work: Joi.string().required()
-  }).required()
-
-  const fastify = Fastify()
-
-  fastify.post('/', {
-    schema: { body },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => {
-        const validation = schema.validate(data)
-        return { error: validation.error.details }
-      }
-    }
-  },
-  function (req, reply) {
-    t.fail()
-  })
-
-  fastify.inject({
-    method: 'POST',
-    payload: {},
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
   })
 })

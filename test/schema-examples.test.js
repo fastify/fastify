@@ -219,26 +219,6 @@ test('Example - ajv config', t => {
   fastify.ready(err => t.error(err))
 })
 
-test('Example Joi', t => {
-  t.plan(1)
-  const fastify = Fastify()
-  const handler = () => { }
-
-  const Joi = require('@hapi/joi')
-  fastify.post('/the/url', {
-    schema: {
-      body: Joi.object().keys({
-        hello: Joi.string().required()
-      }).required()
-    },
-    validatorCompiler: ({ schema, method, url, httpPart }) => {
-      return data => schema.validate(data)
-    }
-  }, handler)
-
-  fastify.ready(err => t.error(err))
-})
-
 test('Example yup', t => {
   t.plan(1)
   const fastify = Fastify()

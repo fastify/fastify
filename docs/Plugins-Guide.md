@@ -12,6 +12,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [How to handle encapsulation and distribution](#distribution)
 - [ESM support](#esm-support)
 - [Handle errors](#handle-errors)
+- [Custom errors](#custom-errors)
 - [Let's start!](#start)
 
 <a name="register"></a>
@@ -317,6 +318,16 @@ fastify
   .after(err => {
     if (err) throw err
   })
+```
+
+<a name="custom-errors"></a>
+## Custom errors
+If your plugin needs to expose custom errors, you can easily generate consistent error objects across your codebase and plugins with the [`fastify-error`](https://github.com/fastify/fastify-error) module.
+
+```js
+const createError = require('fastify-error')
+const CustomError = createError('ERROR_CODE', 'message')
+console.log(new CustomError())
 ```
 
 <a name="start"></a>

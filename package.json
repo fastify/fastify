@@ -152,6 +152,7 @@
     "ajv": "^6.12.2",
     "avvio": "^7.0.3",
     "fast-json-stringify": "^2.0.0",
+    "fastify-error": "^0.1.0",
     "find-my-way": "^3.0.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^4.0.0",

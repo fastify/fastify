@@ -165,7 +165,7 @@ module.exports = fastifyPlugin(dbConnector)
 
 **our-first-route.js**
 ```js
-async function routes(fastify, options) {
+async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
 
   fastify.get('/', async (request, reply) => {

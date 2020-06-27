@@ -131,7 +131,7 @@ npm i --save fastify-plugin fastify-mongodb
 **server.js**
 ```js
 const fastify = require('fastify')({
-  logger: true,
+  logger: true
 })
 
 fastify.register(require('./our-db-connector'))

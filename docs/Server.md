@@ -194,6 +194,8 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
+Please note that this setting will also disable an error log written by the the default `onResponse` hook on reply callback errors.
+
 <a name="custom-http-server"></a>
 ### `serverFactory`
 You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>

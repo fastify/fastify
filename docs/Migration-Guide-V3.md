@@ -280,3 +280,5 @@ option ([#2086](https://github.com/fastify/fastify/pull/2086))
 ([#2093](https://github.com/fastify/fastify/pull/2093))
 - Added the feature to throw object as error
 ([#2134](https://github.com/fastify/fastify/pull/2134))
+- Dropped formal support for [joi](https://github.com/hapijs/joi) due to
+  uncertain future ([#2355](https://github.com/fastify/fastify/pull/2355))

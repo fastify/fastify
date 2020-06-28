@@ -121,12 +121,11 @@ A typical solution is to use a complex callback, or promises - a system that wil
 Fastify handles this internally, with minimum effort!
 
 Let's rewrite the above example with a database connection.<br>
-*(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](./Ecosystem.md))*
 
-First, install `fastify-plugin`:
+First, install `fastify-plugin` and `fastify-mongodb`:
 
 ```
-npm install --save fastify-plugin
+npm i --save fastify-plugin fastify-mongodb
 ```
 
 **server.js**
@@ -135,9 +134,7 @@ const fastify = require('fastify')({
   logger: true
 })
 
-fastify.register(require('./our-db-connector'), {
-  url: 'mongodb://localhost:27017/'
-})
+fastify.register(require('./our-db-connector'))
 fastify.register(require('./our-first-route'))
 
 fastify.listen(3000, function (err, address) {
@@ -147,42 +144,48 @@ fastify.listen(3000, function (err, address) {
   }
   fastify.log.info(`server listening on ${address}`)
 })
+
 ```
 
 **our-db-connector.js**
 ```js
 const fastifyPlugin = require('fastify-plugin')
-const MongoClient = require('mongodb').MongoClient
 
 async function dbConnector (fastify, options) {
-  const url = options.url
-  delete options.url
-
-  const db = await MongoClient.connect(url, options)
-  fastify.decorate('mongo', db)
+  fastify.register(require('fastify-mongodb'), {
+    url: 'mongodb://localhost:27017/test_database'
+  })
 }
 
-// Wrapping a plugin function with fastify-plugin exposes the decorators
+// Wrapping a plugin function with fastify-plugin exposes the decorators	
 // and hooks, declared inside the plugin to the parent scope.
 module.exports = fastifyPlugin(dbConnector)
+
 ```
 
 **our-first-route.js**
 ```js
 async function routes (fastify, options) {
-  const database = fastify.mongo.db('db')
-  const collection = database.collection('test')
+  const collection = fastify.mongo.db.collection('test_collection')
 
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })
 
-  fastify.get('/search/:id', async (request, reply) => {
-    const result = await collection.findOne({ id: request.params.id })
-    if (result.value === null) {
+  fastify.get('/animals', async (request, reply) => {
+    const result = await collection.find().toArray()
+    if (result.length === 0) {
+      throw new Error('No documents found')
+    }
+    return result
+  })
+
+  fastify.get('/animals/:animal', async (request, reply) => {
+    const result = await collection.findOne({ animal: request.params.animal })
+    if (result === null) {
       throw new Error('Invalid value')
     }
-    return result.value
+    return result
   })
 }
 

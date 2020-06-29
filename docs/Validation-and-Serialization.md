@@ -338,7 +338,6 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
   removeAdditional: true, // remove additional properties
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   coerceTypes: true, // change data type of data to match type keyword
-  allErrors: true,   // check for all errors
   nullable: true     // support keyword "nullable" from Open API 3 specification.
 }
 ```
@@ -355,7 +354,6 @@ const ajv = new Ajv({
   removeAdditional: true,
   useDefaults: true,
   coerceTypes: true,
-  allErrors: true,
   nullable: true,
   // any other options
   // ...
@@ -666,7 +664,7 @@ Inline comments in the schema below describe how to configure it to show a diffe
 ```js
 const fastify = Fastify({
   ajv: {
-    customOptions: { allErrors: true, jsonPointers: true },
+    customOptions: { jsonPointers: true },
     plugins: [
       require('ajv-errors')
     ]
@@ -713,11 +711,7 @@ If you want to return localized error messages, take a look at [ajv-i18n](https:
 ```js
 const localize = require('ajv-i18n')
 
-const fastify = Fastify({
-  ajv: {
-    customOptions: { allErrors: true }
-  }
-})
+const fastify = Fastify()
 
 const schema = {
   body: {

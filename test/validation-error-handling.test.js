@@ -57,10 +57,10 @@ test('should fail immediately with invalid payload', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.deepEqual(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name', body should have required property 'work'"
+      message: "body should have required property 'name'"
     })
     t.strictEqual(res.statusCode, 400)
   })
@@ -216,19 +216,12 @@ test('should be able to attach validation to request', t => {
   }, (err, res) => {
     t.error(err)
 
-    t.deepEqual(JSON.parse(res.payload), [{
+    t.deepEqual(res.json(), [{
       keyword: 'required',
       dataPath: '',
       schemaPath: '#/required',
       params: { missingProperty: 'name' },
       message: 'should have required property \'name\''
-    },
-    {
-      keyword: 'required',
-      dataPath: '',
-      schemaPath: '#/required',
-      params: { missingProperty: 'work' },
-      message: 'should have required property \'work\''
     }])
     t.strictEqual(res.statusCode, 400)
   })
@@ -255,7 +248,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
     t.deepEqual(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name', body should have required property 'work'"
+      message: "body should have required property 'name'"
     })
     t.strictEqual(res.statusCode, 400)
   })
@@ -285,7 +278,7 @@ test('Attached validation error should take precendence over setErrorHandler', t
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name', body should have required property 'work'")
+    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name'")
     t.strictEqual(res.statusCode, 400)
   })
 })
@@ -378,7 +371,7 @@ test('should return a defined output message parsing AJV errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\', body should have required property \'work\'"}')
+    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\'"}')
   })
 })
 

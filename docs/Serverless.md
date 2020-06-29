@@ -192,6 +192,88 @@ gcloud beta run deploy --image gcr.io/PROJECT-ID/APP-NAME --platform managed
 
 Your app will be accessible from the URL GCP provides.
 
+
+## netlify-lambda
+
+First, please do all preparation steps related to **AWS Lambda**.
+
+Create folder called `functions` then create `server.js` (and your endpoint path will be `server.js`) inside `functions` folder.
+
+### functions/server.js
+
+```js
+export { handler } from '../lambda.js'; // Change `lambda.js` path to your `lambda.js` path
+```
+
+### netlify.toml
+
+```toml
+[build]
+  # This will be run the site build
+  command = "npm run build:functions"
+  # This is the directory is publishing to netlify's CDN
+  # and this is directory of your front of your app
+  # publish = "build"
+  # functions build directory
+  functions = "functions-build" # always appends `-build` folder to your `functions` folder for builds
+```
+
+### webpack.config.netlify.js
+
+**Don't forget add this Webpack config, else a lot of problems can occur**
+
+```js
+const nodeExternals = require('webpack-node-externals');
+const dotenv = require('dotenv-safe');
+const webpack = require('webpack');
+
+const env = process.env.NODE_ENV || 'production';
+const dev = env === 'development';
+
+if (dev) {
+  dotenv.config({ allowEmptyValues: true });
+}
+
+module.exports = {
+  mode: env,
+  devtool: dev ? 'eval-source-map' : 'none',
+  externals: [nodeExternals()],
+  devServer: {
+    proxy: {
+      '/.netlify': {
+        target: 'http://localhost:9000',
+        pathRewrite: { '^/.netlify/functions': '' }
+      }
+    }
+  },
+  module: {
+    rules: []
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.APP_ROOT_PATH': JSON.stringify('/'),
+      'process.env.NETLIFY_ENV': true,
+      'process.env.CONTEXT': env
+    })
+  ]
+};
+```
+
+### Scripts
+
+Add this command to your `package.json` *scripts* 
+
+```json
+"scripts": {
+...
+"build:functions": "netlify-lambda build functions --config ./webpack.config.netlify.js"
+...
+}
+```
+
+Then it should work fine
+
+
 ## Vercel
 
 [Vercel](https://vercel.com) provides zero configuration deployment for

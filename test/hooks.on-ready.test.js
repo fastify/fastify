@@ -191,3 +191,22 @@ t.test('ready chain order when no await', t => {
     t.equals(i, 3)
   })
 })
+
+t.test('ready return the server with callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.ready((err, instance) => {
+    t.error(err)
+    t.deepEquals(instance, fastify)
+  })
+})
+
+t.test('ready return the server with Promise', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.ready()
+    .then(instance => { t.deepEquals(instance, fastify) })
+    .catch(err => { t.fail(err) })
+})

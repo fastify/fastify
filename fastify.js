@@ -403,12 +403,16 @@ function build (options) {
 
     function manageErr (err) {
       if (cb) {
-        cb(err)
+        if (err) {
+          cb(err)
+        } else {
+          cb(undefined, fastify)
+        }
       } else {
         if (err) {
           return rejectReady(err)
         }
-        resolveReady()
+        resolveReady(fastify)
       }
     }
   }

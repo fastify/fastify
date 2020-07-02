@@ -212,7 +212,7 @@ test('should handle response validation error', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
 })
 
@@ -242,7 +242,7 @@ test('should handle response validation error with promises', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"name is required!"}')
+    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
 })
 

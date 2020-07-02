@@ -6,6 +6,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 
 - [AWS Lambda](#aws-lambda)
 - [Google Cloud Run](#google-cloud-run)
+- [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
 
 ### Attention Readers:

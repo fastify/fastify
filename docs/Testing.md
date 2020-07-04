@@ -125,6 +125,9 @@ Finally run `npm test` in the terminal and see your test results!
 
 
 
+
+
+
 The `inject` method can do much more than a simple GET request to a URL:
 ```js
 fastify.inject({

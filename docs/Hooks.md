@@ -51,7 +51,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-**Notice:** in the [onRequest](#onRequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+**Notice:** in the [onRequest](#onrequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
 ### preParsing
 
@@ -76,7 +76,7 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 })
 ```
 
-**Notice:** in the [preParsing](#preParsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#preValidation) hook.
+**Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
 **Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
 
@@ -436,9 +436,9 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 <a name="route-hooks"></a>
 
 ## Route level hooks
-You can declare one or more custom [onRequest](#onRequest), [onReponse](#onResponse), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
+You can declare one or more custom [onRequest](#onrequest), [onReponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler) and [preSerialization](#preserialization) hook(s) that will be **unique** for the route.
 If you do so, those hooks are always executed as the last hook in their category. <br/>
-This can be useful if you need to implement authentication, where the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need.
+This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
 
 ```js

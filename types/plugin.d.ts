@@ -1,5 +1,5 @@
 import { FastifyInstance } from './instance'
-import { FastifyError } from './error'
+import { FastifyError } from 'fastify-error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 
 /**

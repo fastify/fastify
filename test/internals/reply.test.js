@@ -545,7 +545,7 @@ test('plain string with content type application/json should NOT be serialized a
 })
 
 test('plain string with custom json content type should NOT be serialized as json', t => {
-  t.plan(16)
+  t.plan(19)
 
   const fastify = require('../..')()
 
@@ -565,6 +565,10 @@ test('plain string with custom json content type should NOT be serialized as jso
     jsonld: {
       mimeType: 'application/ld+json',
       sample: '{"@context":"https://json-ld.org/contexts/person.jsonld","name":"John Doe"}'
+    },
+    ndjson: {
+      mimeType: 'application/x-ndjson',
+      sample: '{"a":"apple","b":{"bb":"bubble"}}\n{"c":"croissant","bd":{"dd":"dribble"}}'
     },
     siren: {
       mimeType: 'application/vnd.siren+json',

@@ -7,7 +7,7 @@ import { FastifyRegister } from './register'
 import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onReadyHookHandler } from './hooks'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply } from './reply'
-import { FastifyError } from './error'
+import { FastifyError } from 'fastify-error'
 import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
 
 /**

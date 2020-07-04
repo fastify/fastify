@@ -121,9 +121,7 @@ const runTests = async () => {
 runTests()
 ```
 
-Finally run `npm test` in the terminal and run your tests!
-
-
+Finally run `npm test` in the terminal and see your test results!
 
 
 

@@ -121,7 +121,7 @@ const runTests = async () => {
 runTests()
 ```
 
-Finally run `npm test` in the terminal and run your test. Imagine having a 100 routes. By using tests you'll never have to manually check them ever again!
+Finally run `npm test` in the terminal and run your tests!
 
 
 

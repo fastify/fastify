@@ -1,13 +1,131 @@
 <h1 align="center">Fastify</h1>
-
 ## Testing
 Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
 
-<a name="inject"></a>
-### Testing with http injection
+Let's `cd` into a fresh directory called 'testing example' and type `npm init -y` in our terminal.
+
+run `npm install fastify && npm install tap --save-dev`
+
+### Separating concerns makes testing easy
+
+ First we're going to separate our application code from our server code:
+
+fastify.js
+
+```js 
+const fastify = require('fastify')()
+fastify.get('/', async (request, reply) => {
+  return { hello: 'world' }
+})
+module.exports = fastify
+```
+
+index.js
+
+```js
+const server = require('./fastify')
+
+server.listen(3000, (err, address) => {
+  if (err) {
+    console.log(err)
+    process.exit(1)
+  }
+  console.log(`server listening on ${address}`)
+})
+
+```
+
+### Benefits of using fastify.inject()
+
 Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
-To inject a fake http request, use the `inject` method:
+Before introducing any tests, we'll use the `.inject` method to make a fake request to our route:
+
+fastify.test.js
+
+```js
+const fastify = require('./fastify')
+
+const runTests = async () => {
+  await fastify.ready()
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, response) => {
+      if (error) {
+        // handle the error
+      }
+      console.log('status code: ', response.statusCode)
+      console.log('body: ', response.body)
+    }
+  )
+}
+runTests()
+```
+
+First, our tests are within an asynchronous function, giving us access to async/await. 
+
+The `.ready` method insures all registered plugins have booted up and our application is ready to test. Lastly we call the `.inject` method passing the method we want to use and our "/" route. The second argument is a callback passing us the response object.
+
+
+
+Run the test file in your terminal `node fastify.test.js`
+
+```js
+status code:  200
+body:  {"hello":"world"}
+```
+
+
+
+###Testing with http injection
+
+Now we can replace our console.log calls with actual tests!
+
+In your package.json change the "test" script to:
+
+`"test": "tap --reporter=list --watch"`
+
+fastify.test.js
+
+```js
+const test = require('tap')
+const fastify = require('./fastify')
+
+const runTests = async () => {
+  await fastify.ready()
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (error, response) => {
+      if (error) {
+        // handle the error
+      }
+      test.equals(response.statusCode, 200, 'GET "/" route status code is 200')
+      test.equals(
+        response.payload,
+        JSON.stringify({ hello: 'world' }),
+        'GET "/" route payload is { hello: world }'
+      )
+    }
+  )
+}
+runTests()
+```
+
+Finally run `npm test` in the terminal and run your test. Imagine having a 100 routes. By using tests you'll never have to manually check them ever again!
+
+
+
+
+
+The `inject` method can do much more than a simple GET requal on a URL:
 ```js
 fastify.inject({
   method: String,
@@ -64,7 +182,7 @@ try {
 }
 ```
 
-#### Example:
+#### Another Example:
 
 **app.js**
 ```js

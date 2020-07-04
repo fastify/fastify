@@ -15,17 +15,24 @@ run `npm install fastify && npm install tap --save-dev`
 fastify.js
 
 ```js 
-const fastify = require('fastify')()
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' }
-})
-module.exports = fastify
+const Fastify = require('fastify')
+
+function buildFastify() {
+  const fastify = Fastify()
+  fastify.get('/', async (request, reply) => {
+    return { hello: 'world' }
+  })
+
+  return fastify
+}
+
+module.exports = buildFastify
 ```
 
 index.js
 
 ```js
-const server = require('./fastify')
+const server = require('./fastify')()
 
 server.listen(3000, (err, address) => {
   if (err) {
@@ -34,7 +41,6 @@ server.listen(3000, (err, address) => {
   }
   console.log(`server listening on ${address}`)
 })
-
 ```
 
 ### Benefits of using fastify.inject()
@@ -46,9 +52,10 @@ Before introducing any tests, we'll use the `.inject` method to make a fake requ
 fastify.test.js
 
 ```js
-const fastify = require('./fastify')
+const buildFastify = require('./fastify')
 
 const runTests = async () => {
+  const fastify = buildFastify()
   await fastify.ready()
 
   fastify.inject(
@@ -95,9 +102,10 @@ fastify.test.js
 
 ```js
 const test = require('tap')
-const fastify = require('./fastify')
+const buildFastify = require('./fastify')
 
 const runTests = async () => {
+  const fastify = buildFastify()
   await fastify.ready()
 
   fastify.inject(

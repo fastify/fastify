@@ -1,5 +1,7 @@
 <h1 align="center">Fastify</h1>
+
 ## Testing
+
 Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
 
 Let's `cd` into a fresh directory called 'testing example' and type `npm init -y` in our terminal.

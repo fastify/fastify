@@ -75,7 +75,7 @@ const runTests = async () => {
 runTests()
 ```
 
-First, our tests are within an asynchronous function, giving us access to async/await. 
+First, our code will run inside an asynchronous function, giving us access to async/await. 
 
 The `.ready` method insures all registered plugins have booted up and our application is ready to test. Lastly we call the `.inject` method passing the method we want to use and our "/" route. The second argument is a callback passing us the response object.
 

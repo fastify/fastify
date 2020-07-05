@@ -118,12 +118,7 @@ const runTests = async () => {
       if (error) {
         // handle the error
       }
-      test.equals(response.statusCode, 200, 'GET "/" route status code is 200')
-      test.equals(
-        response.payload,
-        JSON.stringify({ hello: 'world' }),
-        'GET "/" route payload is { hello: world }'
-      )
+      test.strictEqual(response.statusCode, 200, 'GET "/" route status code is 200')
     }
   )
 }

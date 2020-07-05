@@ -6,7 +6,7 @@ Testing is one of the most important parts of developing an application. Fastify
 
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init -y` in our terminal.
 
-run `npm install fastify && npm install tap --save-dev`
+run `npm install fastify && npm install tap pino-pretty --save-dev`
 
 ### Separating concerns makes testing easy
 
@@ -18,7 +18,12 @@ app.js
 const Fastify = require('fastify')
 
 function build() {
-  const fastify = Fastify()
+  const fastify = Fastify({
+    logger: {
+      level: 'info',
+      prettyPrint: true
+    }
+  })
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })

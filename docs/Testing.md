@@ -29,7 +29,7 @@ function build() {
 module.exports = build
 ```
 
-index.js
+server.js
 
 ```js
 const server = require('./fastify')()

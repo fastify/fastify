@@ -17,7 +17,7 @@ fastify.js
 ```js 
 const Fastify = require('fastify')
 
-function buildFastify() {
+function build() {
   const fastify = Fastify()
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
@@ -26,7 +26,7 @@ function buildFastify() {
   return fastify
 }
 
-module.exports = buildFastify
+module.exports = build
 ```
 
 index.js
@@ -52,10 +52,10 @@ Before introducing any tests, we'll use the `.inject` method to make a fake requ
 fastify.test.js
 
 ```js
-const buildFastify = require('./fastify')
+const build = require('./fastify')
 
 const runTests = async () => {
-  const fastify = buildFastify()
+  const fastify = build()
   await fastify.ready()
 
   fastify.inject(

@@ -90,6 +90,7 @@ The `.ready` method insures all registered plugins have booted up and our applic
 Run the test file in your terminal `node app.test.js`
 
 ```js
+// pretty logs!
 status code:  200
 body:  {"hello":"world"}
 ```

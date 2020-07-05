@@ -82,7 +82,7 @@ The `.ready` method insures all registered plugins have booted up and our applic
 
 
 
-Run the test file in your terminal `node fastify.test.js`
+Run the test file in your terminal `node app.test.js`
 
 ```js
 status code:  200

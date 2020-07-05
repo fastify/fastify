@@ -57,20 +57,21 @@ const build = require('./app')
 const runTests = async () => {
   const fastify = build()
   await fastify.ready()
-
-  fastify.inject(
+  
+  try {
+  const response = await fastify.inject(
     {
       method: 'GET',
       url: '/'
-    },
-    (error, response) => {
-      if (error) {
-        // handle the error
-      }
-      console.log('status code: ', response.statusCode)
-      console.log('body: ', response.body)
     }
   )
+  console.log('status code: ', response.statusCode)
+  console.log('body: ', response.body)
+} catch (err) {
+  // handle error
+}
+
+  
 }
 runTests()
 ```

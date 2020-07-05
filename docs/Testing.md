@@ -12,7 +12,7 @@ run `npm install fastify && npm install tap --save-dev`
 
  First we're going to separate our application code from our server code:
 
-fastify.js
+app.js
 
 ```js 
 const Fastify = require('fastify')
@@ -32,7 +32,7 @@ module.exports = build
 server.js
 
 ```js
-const server = require('./fastify')()
+const server = require('./app')()
 
 server.listen(3000, (err, address) => {
   if (err) {
@@ -49,10 +49,10 @@ Fastify comes with built-in support for fake http injection thanks to [`light-my
 
 Before introducing any tests, we'll use the `.inject` method to make a fake request to our route:
 
-fastify.test.js
+app.test.js
 
 ```js
-const build = require('./fastify')
+const build = require('./app')
 
 const runTests = async () => {
   const fastify = build()
@@ -98,11 +98,11 @@ In your package.json change the "test" script to:
 
 `"test": "tap --reporter=list --watch"`
 
-fastify.test.js
+app.test.js
 
 ```js
 const test = require('tap')
-const buildFastify = require('./fastify')
+const buildFastify = require('./app')
 
 const runTests = async () => {
   const fastify = buildFastify()

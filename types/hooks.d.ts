@@ -29,7 +29,7 @@ export interface onRequestHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
@@ -47,7 +47,7 @@ export interface preParsingHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     payload: RequestPayload,
     done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
@@ -65,7 +65,7 @@ export interface preValidationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
@@ -82,7 +82,7 @@ export interface preHandlerHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
@@ -107,7 +107,7 @@ export interface preSerializationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     payload: PreSerializationPayload,
     done: DoneFuncWithErrOrRes
@@ -127,7 +127,7 @@ export interface onSendHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
@@ -146,7 +146,7 @@ export interface onResponseHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
@@ -167,7 +167,7 @@ export interface onErrorHookHandler<
   TError extends Error = FastifyError
 > {
   (
-    request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
     error: TError,
     done: () => void

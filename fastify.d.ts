@@ -3,7 +3,7 @@ import * as http2 from 'http2'
 import * as https from 'https'
 import * as LightMyRequest from 'light-my-request'
 
-import { FastifyRequest } from './types/request'
+import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
 import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
@@ -89,7 +89,7 @@ export type FastifyServerOptions<
   caseSensitive?: boolean,
   requestIdHeader?: string,
   requestIdLogLabel?: string;
-  genReqId?: (req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>) => string,
+  genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: string | string[] },
   versioning?: {
@@ -106,9 +106,9 @@ export type FastifyServerOptions<
     customOptions?: ajv.Options,
     plugins?: Function[]
   },
-  frameworkErrors?: (
+  frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
     error: FastifyError,
-    req: FastifyRequest<RawServer, RawRequestDefaultExpression<RawServer>>,
+    req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string

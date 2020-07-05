@@ -219,15 +219,15 @@ export interface FastifyInstance<
   /**
    * Set the 404 handler
    */
-  setNotFoundHandler(
-    handler: (request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
+  setNotFoundHandler<RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
+    handler: (request: FastifyRequest<RequestGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
   ): void;
 
   /**
    * Set a function that will be called whenever an error happens
    */
-  setErrorHandler<TError extends Error = FastifyError>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
+  setErrorHandler<TError extends Error = FastifyError, RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
+    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RequestGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply>) => void
   ): void;
 
   /**

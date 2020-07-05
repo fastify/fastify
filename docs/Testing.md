@@ -103,10 +103,10 @@ app.test.js
 
 ```js
 const test = require('tap')
-const buildFastify = require('./app')
+const build = require('./app')
 
 const runTests = async () => {
-  const fastify = buildFastify()
+  const fastify = build()
   await fastify.ready()
 
   fastify.inject(

@@ -210,3 +210,27 @@ t.test('ready return the server with Promise', t => {
     .then(instance => { t.deepEquals(instance, fastify) })
     .catch(err => { t.fail(err) })
 })
+
+t.test('ready return registered', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register((one, opts, next) => {
+    one.ready().then(itself => { t.deepEquals(itself, one) })
+    next()
+  })
+
+  fastify.register((two, opts, next) => {
+    two.ready().then(itself => { t.deepEquals(itself, two) })
+
+    two.register((twoDotOne, opts, next) => {
+      twoDotOne.ready().then(itself => { t.deepEquals(itself, twoDotOne) })
+      next()
+    })
+    next()
+  })
+
+  fastify.ready()
+    .then(instance => { t.deepEquals(instance, fastify) })
+    .catch(err => { t.fail(err) })
+})

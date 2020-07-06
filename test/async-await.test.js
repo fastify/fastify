@@ -617,3 +617,8 @@ test('customErrorHandler support without throwing', t => {
     )
   })
 })
+
+test('await self', async t => {
+  const app = Fastify()
+  t.is(await app, app)
+})

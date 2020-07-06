@@ -245,7 +245,7 @@ will be executed twice.
 It is important to __not mix callbacks and `async`/`Promise`__, otherwise
 the hook chain will be executed twice.
 
-If needed, you can respond to a request before you reach the route handler, for example when implementing an authentication hook. If you are using `onRequest` or `preHandler` use `reply.send`.
+If you are using `onRequest` or `preHandler` use `reply.send`.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {

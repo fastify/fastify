@@ -627,8 +627,8 @@ Check out the main [Learn by Example](#learn-by-example) section for detailed gu
 
 #### Request
 
-##### fastify.FastifyRequest<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RequestGeneric][FastifyRequestGenericInterface]> 
-[src](./../types/request.d.ts#L29)
+##### fastify.FastifyRequest<[RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]> 
+[src](./../types/request.d.ts#L15)
 
 This interface contains properties of Fastify request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
 
@@ -655,6 +655,15 @@ declare module 'fastify' {
     someProp: string
   }
 }
+
+// Or you can type your request using
+type CustomRequest = FastifyRequest<{
+  Body: { test: boolean };
+}>
+
+server.get('/typedRequest', async (request: CustomRequest, reply: FastifyReply) => {
+  return request.body.test
+})
 ```
 
 ##### fastify.RequestGenericInterface

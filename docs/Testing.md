@@ -113,7 +113,7 @@ In your package.json change the "test" script to:
 app.test.js
 
 ```js
-const test = require('tap')
+const { test } = require('tap')
 const build = require('./app')
 
 const runTests = async () => {
@@ -134,7 +134,10 @@ const runTests = async () => {
       if (error) {
         // handle the error
       }
-      test.strictEqual(response.statusCode, 200, 'GET "/" route status code is 200')
+      test('requests the "/" route', async t => {
+        t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
+        t.end()
+      })
     }
   )
 }

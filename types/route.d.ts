@@ -119,6 +119,6 @@ export type RouteHandlerMethod<
   ContextConfig = ContextConfigDefault
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
-  request: FastifyRequest<RawServer, RawRequest, RequestGeneric>,
+  request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>
 ) => void | Promise<any>

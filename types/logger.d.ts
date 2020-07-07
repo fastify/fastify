@@ -1,6 +1,6 @@
 import { FastifyError } from 'fastify-error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
-import { FastifyRequest } from './request'
+import { FastifyRequest, RequestGenericInterface } from './request'
 
 /**
  * Standard Fastify logging function
@@ -60,5 +60,5 @@ export interface FastifyLoggerOptions<
     };
   };
   level?: string;
-  genReqId?: (req: FastifyRequest<RawServer, RawRequest>) => string;
+  genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequest>) => string;
 }

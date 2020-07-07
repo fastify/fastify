@@ -1,6 +1,6 @@
 import { FastifyInstance } from './instance'
 import { FastifyError } from 'fastify-error'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
+import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 
 /**
  * FastifyPlugin

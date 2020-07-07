@@ -13,9 +13,9 @@ export interface RequestGenericInterface {
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
 export interface FastifyRequest<
+  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface
 > {
   id: any;
   params: RequestGeneric['Params'];

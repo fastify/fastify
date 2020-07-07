@@ -7,7 +7,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
   expectType<FastifyContext<ContextConfigDefault>>(reply.context)
   expectType<FastifyLoggerInstance>(reply.log)
-  expectType<FastifyRequest<RawServerDefault, RawRequestDefaultExpression, RequestGenericInterface>>(reply.request)
+  expectType<FastifyRequest<RequestGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
   expectType<(statusCode: number) => FastifyReply>(reply.code)
   expectType<(statusCode: number) => FastifyReply>(reply.status)
   expectType<number>(reply.statusCode)

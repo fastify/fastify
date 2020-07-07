@@ -2,6 +2,8 @@ import { expectType } from 'tsd'
 import fastify, { RouteHandlerMethod, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface } from '../../fastify'
 import { RawServerDefault, RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault, RawReplyDefaultExpression } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
+import { FastifyRequest } from '../../types/request'
+import { FastifyReply } from '../../types/reply'
 
 interface RequestBody {
   content: string;
@@ -27,6 +29,13 @@ interface RequestData extends RequestGenericInterface {
 }
 
 type Handler = RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestData>
+
+type CustomRequest = FastifyRequest<{
+  Body: RequestBody;
+  Querystring: RequestQuerystring;
+  Params: RequestParams;
+  Headers: RequestHeaders;
+}>
 
 const getHandler: RouteHandlerMethod = function (request, _reply) {
   expectType<string>(request.url)
@@ -55,6 +64,18 @@ const postHandler: Handler = function (request) {
   expectType<string>(request.headers['x-foobar'])
 }
 
+function putHandler(request: CustomRequest, reply: FastifyReply) {
+  expectType<RequestBody>(request.body)
+  expectType<RequestParams>(request.params)
+  expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
+  expectType<RequestQuerystring>(request.query)
+  expectType<string>(request.body.content)
+  expectType<string>(request.query.from)
+  expectType<number>(request.params.id)
+  expectType<string>(request.headers['x-foobar'])
+}
+
 const server = fastify()
 server.get('/get', getHandler)
 server.post('/post', postHandler)
+server.put('/put', putHandler)

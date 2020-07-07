@@ -59,7 +59,7 @@ app.test.js
 ```js
 const build = require('./app')
 
-const runTests = async () => {
+const test = async () => {
   const fastify = build()
   await fastify.ready()
   
@@ -78,7 +78,7 @@ const runTests = async () => {
 
   
 }
-runTests()
+test()
 ```
 
 First, our code will run inside an asynchronous function, giving us access to async/await. 

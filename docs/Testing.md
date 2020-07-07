@@ -17,7 +17,7 @@ app.js
 ```js 
 const Fastify = require('fastify')
 
-function build(opts) {
+function build(opts={}) {
   const fastify = Fastify(opts)
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
@@ -60,12 +60,7 @@ app.test.js
 const build = require('./app')
 
 const runTests = async () => {
-  const fastify = build({
-    logger: {
-      level: 'info',
-      prettyPrint: true
-    }
-  })
+  const fastify = build()
   await fastify.ready()
   
   try {
@@ -95,7 +90,6 @@ The `.ready` method insures all registered plugins have booted up and our applic
 Run the test file in your terminal `node app.test.js`
 
 ```js
-// pretty logs!
 status code:  200
 body:  {"hello":"world"}
 ```
@@ -116,32 +110,25 @@ app.test.js
 const { test } = require('tap')
 const build = require('./app')
 
-const runTests = async () => {
-  const fastify = build({
-    logger: {
-      level: 'info',
-      prettyPrint: true
-    }
-  })
-  await fastify.ready()
+test('requests the "/" route', async t => {
+  const fastify = build()
+    await fastify.ready()
 
-  fastify.inject(
-    {
-      method: 'GET',
-      url: '/'
-    },
-    (error, response) => {
-      if (error) {
-        // handle the error
+    try {
+    const response = await fastify.inject(
+      {
+        method: 'GET',
+        url: '/'
       }
-      test('requests the "/" route', async t => {
-        t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
-        t.end()
-      })
-    }
-  )
-}
-runTests()
+    )
+    t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
+    t.end()
+  } catch (err) {
+    // handle error
+  }
+
+  
+})
 ```
 
 Finally run `npm test` in the terminal and see your test results!

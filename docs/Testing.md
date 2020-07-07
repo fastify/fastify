@@ -17,13 +17,8 @@ app.js
 ```js 
 const Fastify = require('fastify')
 
-function build() {
-  const fastify = Fastify({
-    logger: {
-      level: 'info',
-      prettyPrint: true
-    }
-  })
+function build(opts) {
+  const fastify = Fastify(opts)
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
   })
@@ -37,7 +32,12 @@ module.exports = build
 server.js
 
 ```js
-const server = require('./app')()
+const server = require('./app')({
+    logger: {
+      level: 'info',
+      prettyPrint: true
+    }
+  })
 
 server.listen(3000, (err, address) => {
   if (err) {
@@ -60,7 +60,12 @@ app.test.js
 const build = require('./app')
 
 const runTests = async () => {
-  const fastify = build()
+  const fastify = build({
+    logger: {
+      level: 'info',
+      prettyPrint: true
+    }
+  })
   await fastify.ready()
   
   try {
@@ -112,7 +117,12 @@ const test = require('tap')
 const build = require('./app')
 
 const runTests = async () => {
-  const fastify = build()
+  const fastify = build({
+    logger: {
+      level: 'info',
+      prettyPrint: true
+    }
+  })
   await fastify.ready()
 
   fastify.inject(

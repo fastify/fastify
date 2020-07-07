@@ -149,13 +149,13 @@ __Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the seco
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| hapi               | 18.1.0                     | &#10003;     | 29,998        |
-| Express            | 4.16.4                     | &#10003;     | 38,510        |
-| Restify            | 8.0.0                      | &#10003;     | 39,331        |
-| Koa                | 2.7.0                      | &#10007;     | 50,933        |
-| **Fastify**        | **2.0.0**                  | **&#10003;** | **76,835**    |
+| Express            | 4.17.1                     | &#10003;     | 15,978        |
+| hapi               | 19.1.0                     | &#10003;     | 45,815        |
+| Restify            | 8.5.1                      | &#10003;     | 49,279        |
+| Koa                | 2.13.0                     | &#10007;     | 54,848        |
+| **Fastify**        | **3.0.0**                  | **&#10003;** | **78,956**    |
 | -                  |                            |              |               |
-| `http.Server`      | 10.15.2	                  | &#10007;     | 71,768        |
+| `http.Server`      | 12.18.2	                  | &#10007;     | 70,380        |
 
 Benchmarks taken using https://github.com/fastify/benchmarks. This is a
 synthetic, "hello world" benchmark that aims to evaluate the framework

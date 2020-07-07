@@ -12,3 +12,4 @@ azure-pipelines-yarn-template.yml
 azure-pipelines.yml
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
+.dependabot

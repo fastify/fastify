@@ -14,7 +14,9 @@ run `npm install fastify && npm install tap pino-pretty --save-dev`
 
 app.js
 
-```js 
+```js
+'use strict'
+
 const Fastify = require('fastify')
 
 function build(opts={}) {
@@ -32,6 +34,8 @@ module.exports = build
 server.js
 
 ```js
+'use strict'
+
 const server = require('./app')({
     logger: {
       level: 'info',
@@ -44,7 +48,6 @@ server.listen(3000, (err, address) => {
     console.log(err)
     process.exit(1)
   }
-  server.log.info(`server listening on ${address}`)
 })
 ```
 
@@ -57,26 +60,21 @@ Before introducing any tests, we'll use the `.inject` method to make a fake requ
 app.test.js
 
 ```js
+'use strict'
+
 const build = require('./app')
 
 const test = async () => {
-  const fastify = build()
-  await fastify.ready()
-  
-  try {
-  const response = await fastify.inject(
-    {
-      method: 'GET',
-      url: '/'
-    }
-  )
+  const app = build()
+  await app.ready()
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/'
+  })
+
   console.log('status code: ', response.statusCode)
   console.log('body: ', response.body)
-} catch (err) {
-  // handle error
-}
-
-  
 }
 test()
 ```
@@ -107,32 +105,23 @@ In your package.json change the "test" script to:
 app.test.js
 
 ```js
+'use strict'
+
 const { test } = require('tap')
 const build = require('./app')
 
 test('requests the "/" route', async t => {
-  const fastify = build()
-  await fastify.ready()
+  const app = build()
 
-  try {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/'
-    })
-    t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
-    t.end()
-  } catch (err) {
-    t.fail('it must not throw')
-  }
+  const response = await app.inject({
+    method: 'GET',
+    url: '/'
+  })
+  t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
 })
 ```
 
 Finally run `npm test` in the terminal and see your test results!
-
-
-
-
-
 
 The `inject` method can do much more than a simple GET request to a URL:
 ```js

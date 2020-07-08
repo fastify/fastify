@@ -37,11 +37,11 @@ module.exports = build
 'use strict'
 
 const server = require('./app')({
-    logger: {
-      level: 'info',
-      prettyPrint: true
-    }
-  })
+  logger: {
+    level: 'info',
+    prettyPrint: true
+  }
+})
 
 server.listen(3000, (err, address) => {
   if (err) {

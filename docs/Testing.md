@@ -98,7 +98,7 @@ body:  {"hello":"world"}
 
 Now we can replace our `console.log` calls with actual tests!
 
-In your package.json change the "test" script to:
+In your `package.json` change the "test" script to:
 
 `"test": "tap --reporter=list --watch"`
 

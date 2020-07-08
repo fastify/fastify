@@ -189,7 +189,7 @@ fastify.addHook('onRequest', (req, reply, done) => {
 })
 
 fastify.addHook('onResponse', (req, reply, done) => {
-  req.log.info({ url: req.raw.originalUrl, statusCode: res.raw.statusCode }, 'request completed')
+  req.log.info({ url: req.raw.originalUrl, statusCode: reply.raw.statusCode }, 'request completed')
   done()
 })
 ```

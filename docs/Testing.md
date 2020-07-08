@@ -31,7 +31,7 @@ function build(opts={}) {
 module.exports = build
 ```
 
-server.js
+**server.js**:
 
 ```js
 'use strict'
@@ -57,7 +57,7 @@ Fastify comes with built-in support for fake http injection thanks to [`light-my
 
 Before introducing any tests, we'll use the `.inject` method to make a fake request to our route:
 
-app.test.js
+**app.test.js**:
 
 ```js
 'use strict'
@@ -102,7 +102,7 @@ In your package.json change the "test" script to:
 
 `"test": "tap --reporter=list --watch"`
 
-app.test.js
+**app.test.js**:
 
 ```js
 'use strict'

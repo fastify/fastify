@@ -17,10 +17,10 @@ run `npm install fastify && npm install tap pino-pretty --save-dev`
 ```js
 'use strict'
 
-const Fastify = require('fastify')
+const fastify = require('fastify')
 
 function build(opts={}) {
-  const app = Fastify(opts)
+  const app = fastify(opts)
   app.get('/', async function (request, reply) {
     return { hello: 'world' }
   })

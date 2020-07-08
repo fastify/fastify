@@ -80,7 +80,7 @@ test()
 
 First, our code will run inside an asynchronous function, giving us access to async/await. 
 
-`.inject` insures all registered plugins have booted up and our application is ready to test. Lastly we call the `.inject` method passing the method we want to use and our "/" route. Using await we can store the response without a callback.
+`.inject` insures all registered plugins have booted up and our application is ready to test. Lastly we pass the request method we want to use and a route. Using await we can store the response without a callback.
 
 
 

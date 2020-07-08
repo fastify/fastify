@@ -183,12 +183,12 @@ custom `onRequest` and `onResponse` hooks.
 
 ```js
 // Examples of hooks to replicate the disabled functionality.
-fastify.addHook('onRequest', (req, reply, done) => {
+fastify.addHook('onRequest', (req, res, done) => {
   req.log.info({ url: req.raw.url, id: req.id }, 'received request')
   done()
 })
 
-fastify.addHook('onResponse', (req, reply, done) => {
+fastify.addHook('onResponse', (req, res, done) => {
   req.log.info({ url: req.raw.originalUrl, statusCode: res.raw.statusCode }, 'request completed')
   done()
 })

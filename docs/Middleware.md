@@ -47,6 +47,6 @@ fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
 fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 ```
 
-### Alternativies
+### Alternatives
 
 Fastify offers some alternatives to the most commonly used middlewares, such as [`fastify-helmet`](https://github.com/fastify/fastify-helmet) in case of [`helmet`](https://github.com/helmetjs/helmet), [`fastify-cors`](https://github.com/fastify/fastify-cors) for [`cors`](https://github.com/expressjs/cors) and [`fastify-static`](https://github.com/fastify/fastify-static) for [`serve-static`](https://github.com/expressjs/serve-static).

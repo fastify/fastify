@@ -20,12 +20,12 @@ app.js
 const Fastify = require('fastify')
 
 function build(opts={}) {
-  const fastify = Fastify(opts)
-  fastify.get('/', async function (request, reply) {
+  const app = Fastify(opts)
+  app.get('/', async function (request, reply) {
     return { hello: 'world' }
   })
 
-  return fastify
+  return app
 }
 
 module.exports = build

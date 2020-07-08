@@ -96,7 +96,7 @@ body:  {"hello":"world"}
 
 ### Testing with http injection
 
-Now we can replace our console.log calls with actual tests!
+Now we can replace our `console.log` calls with actual tests!
 
 In your package.json change the "test" script to:
 

@@ -19,7 +19,7 @@ const Fastify = require('fastify')
 
 function build(opts={}) {
   const fastify = Fastify(opts)
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/', async function (request, reply) {
     return { hello: 'world' }
   })
 
@@ -44,7 +44,7 @@ server.listen(3000, (err, address) => {
     console.log(err)
     process.exit(1)
   }
-  console.log(`server listening on ${address}`)
+  server.log.info(`server listening on ${address}`)
 })
 ```
 
@@ -89,7 +89,7 @@ The `.ready` method insures all registered plugins have booted up and our applic
 
 Run the test file in your terminal `node app.test.js`
 
-```js
+```sh
 status code:  200
 body:  {"hello":"world"}
 ```
@@ -112,22 +112,18 @@ const build = require('./app')
 
 test('requests the "/" route', async t => {
   const fastify = build()
-    await fastify.ready()
+  await fastify.ready()
 
-    try {
-    const response = await fastify.inject(
-      {
-        method: 'GET',
-        url: '/'
-      }
-    )
+  try {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/'
+    })
     t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
     t.end()
   } catch (err) {
-    // handle error
+    t.fail('it must not throw')
   }
-
-  
 })
 ```
 

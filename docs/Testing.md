@@ -66,7 +66,6 @@ const build = require('./app')
 
 const test = async () => {
   const app = build()
-  await app.ready()
 
   const response = await app.inject({
     method: 'GET',
@@ -81,7 +80,7 @@ test()
 
 First, our code will run inside an asynchronous function, giving us access to async/await. 
 
-The `.ready` method insures all registered plugins have booted up and our application is ready to test. Lastly we call the `.inject` method passing the method we want to use and our "/" route. Using await we can store the response without a callback.
+`.inject` insures all registered plugins have booted up and our application is ready to test. Lastly we call the `.inject` method passing the method we want to use and our "/" route. Using await we can store the response without a callback.
 
 
 

@@ -12,7 +12,7 @@ run `npm install fastify && npm install tap pino-pretty --save-dev`
 
  First we're going to separate our application code from our server code:
 
-app.js
+**app.js**:
 
 ```js
 'use strict'

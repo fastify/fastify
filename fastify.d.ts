@@ -109,7 +109,7 @@ export type FastifyServerOptions<
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
     error: FastifyError,
     req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,
-    res: FastifyReply
+    res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
 }

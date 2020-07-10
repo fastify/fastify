@@ -1,4 +1,4 @@
-import { FastifyPlugin, FastifyPluginOptions } from './plugin'
+import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
 import { LogLevel } from './logger'
 
 /**
@@ -8,7 +8,15 @@ import { LogLevel } from './logger'
  */
 export interface FastifyRegister<T = void> {
   <Options extends FastifyPluginOptions>(
-    plugin: FastifyPlugin<Options>,
+    plugin: FastifyPluginCallback<Options>,
+    opts?: FastifyRegisterOptions<Options>
+  ): T;
+  <Options extends FastifyPluginOptions>(
+    plugin: FastifyPluginAsync<Options>,
+    opts?: FastifyRegisterOptions<Options>
+  ): T;
+  <Options extends FastifyPluginOptions>(
+    plugin: FastifyPluginCallback<Options> | FastifyPluginAsync<Options>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
 }

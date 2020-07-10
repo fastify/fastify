@@ -221,10 +221,10 @@ server.get<PingQuerystring, PingParams, PingHeaders, PingBody>(
 
 ```ts
 server.get<{
-  Querystring: PingQuerystring;
-  Params: PingParams;
-  Headers: PingHeaders;
-  Body: PingBody;
+  querystring: PingQuerystring;
+  params: PingParams;
+  headers: PingHeaders;
+  body: PingBody;
 }>('/ping/:bar', opts, async (request, reply) => {
   console.log(request.query); // This is of type `PingQuerystring`
   console.log(request.params); // This is of type `PingParams`

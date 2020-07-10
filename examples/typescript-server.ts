@@ -57,10 +57,10 @@ const opts: RouteShorthandOptions = {
 
 // Add our route handler with correct types
 server.get<{
-  Querystring: PingQuerystring;
-  Params: PingParams;
-  Headers: PingHeaders;
-  Body: PingBody;
+  querystring: PingQuerystring;
+  params: PingParams;
+  headers: PingHeaders;
+  body: PingBody;
 }>('/ping/:bar', opts, (request, reply) => {
   console.log(request.query); // this is of type `PingQuerystring`
   console.log(request.params); // this is of type `PingParams`

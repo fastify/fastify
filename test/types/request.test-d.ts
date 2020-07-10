@@ -22,19 +22,19 @@ interface RequestHeaders {
 }
 
 interface RequestData extends RequestGenericInterface {
-  Body: RequestBody;
-  Querystring: RequestQuerystring;
-  Params: RequestParams;
-  Headers: RequestHeaders;
+  body: RequestBody;
+  querystring: RequestQuerystring;
+  params: RequestParams;
+  headers: RequestHeaders;
 }
 
 type Handler = RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestData>
 
 type CustomRequest = FastifyRequest<{
-  Body: RequestBody;
-  Querystring: RequestQuerystring;
-  Params: RequestParams;
-  Headers: RequestHeaders;
+  body: RequestBody;
+  querystring: RequestQuerystring;
+  params: RequestParams;
+  headers: RequestHeaders;
 }>
 
 const getHandler: RouteHandlerMethod = function (request, _reply) {

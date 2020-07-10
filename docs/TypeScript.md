@@ -4,7 +4,7 @@
 
 The Fastify framework is written in vanilla JavaScript, and as such type definitions are not as easy to maintain; however, since version 2 and beyond, maintainers and contributors have put in a great effort to improve the types.
 
-The type system was changed in Fastify version 3. The new type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more! As the team works on improving framework and type definition synergy, sometimes parts of the API will not be typed or may be typed incorrectly. We encourage you to **contribute** to help us fill in the gaps. Just make sure to read our [`CONTRIBUTING.md`](../CONTRIBUTING.md) file before getting started to make sure things go smoothly! 
+The type system was changed in Fastify version 3. The new type system introduces generic constraining and defaulting, plus a new way to define schema types such as a request body, querystring, and more! As the team works on improving framework and type definition synergy, sometimes parts of the API will not be typed or may be typed incorrectly. We encourage you to **contribute** to help us fill in the gaps. Just make sure to read our [`CONTRIBUTING.md`](../CONTRIBUTING.md) file before getting started to make sure things go smoothly!
 
 > The documentation in this section covers Fastify version 3.x typings
 
@@ -13,11 +13,11 @@ The type system was changed in Fastify version 3. The new type system introduces
 
 ## Learn By Example
 
-The best way to learn the Fastify type system is by example! The following four examples should cover the most common Fastify development cases. After the examples there is further, more detailed documentation for the type system. 
+The best way to learn the Fastify type system is by example! The following four examples should cover the most common Fastify development cases. After the examples there is further, more detailed documentation for the type system.
 
 ### Getting Started
 
-This example will get you up and running with Fastify and TypeScript. It results in a blank http Fastify server. 
+This example will get you up and running with Fastify and TypeScript. It results in a blank http Fastify server.
 
 1. Create a new npm project, install Fastify, and install typescript & node.js types as peer dependencies:
   ```bash
@@ -82,18 +82,18 @@ The type system heavily relies on generic properties to provide the most accurat
       'H-Custom': string;
     }
     ```
-3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance. 
+3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `body`, `querystring`, `params`, and `headers`. The interfaces will be passed down through the route method into the route method handler `request` instance.
     ```typescript
-    server.get<{ 
-      Querystring: IQuerystring,
-      Headers: IHeaders
+    server.get<{
+      querystring: IQuerystring,
+      headers: IHeaders
     }>('/auth', async (request, reply) => {
       const { username, password } = request.query
       const customerHeader = request.headers['H-Custom']
       // do something with request data
 
       return `logged in!`
-    }) 
+    })
     ```
 4. Build and run the server code with `npm run build` and `npm run start`
 5. Query the api
@@ -103,9 +103,9 @@ The type system heavily relies on generic properties to provide the most accurat
     And it should return back `logged in!`
 6. But wait theres more! The generic interfaces are also available inside route level hook methods. Modify the previous route by adding a `preValidation` hook:
     ```typescript
-    server.get<{ 
-      Querystring: IQuerystring,
-      Headers: IHeaders
+    server.get<{
+      querystring: IQuerystring,
+      headers: IHeaders
     }>('/auth', {
       preValidation: (request, reply, done) => {
         const { username, password } = request.query
@@ -115,7 +115,7 @@ The type system heavily relies on generic properties to provide the most accurat
       const customerHeader = request.headers['H-Custom']
       // do something with request data
       return `logged in!`
-    }) 
+    })
     ```
 7. Build and run and query with the `username` query string option set to anything other than `admin`. The API should now return a HTTP 500 error `{"statusCode":500,"error":"Internal Server Error","message":"Must be admin"}`
 
@@ -178,9 +178,9 @@ In the last example we used interfaces to define the types for the request query
 
     const server = fastify()
 
-    server.get<{ 
-      Querystring: QuerystringSchemaInterface,
-      Headers: HeadersSchemaInterface
+    server.get<{
+      querystring: QuerystringSchemaInterface,
+      headers: HeadersSchemaInterface
     }>('/auth', {
       schema: {
         querystring: QuerystringSchema,
@@ -194,11 +194,11 @@ In the last example we used interfaces to define the types for the request query
       const customerHeader = request.headers['H-Custom']
       // do something with request data
       return `logged in!`
-    }) 
+    })
 
-    server.route<{ 
-      Querystring: QuerystringSchemaInterface,
-      Headers: HeadersSchemaInterface
+    server.route<{
+      querystring: QuerystringSchemaInterface,
+      headers: HeadersSchemaInterface
     }>({
       method: 'GET',
       url: '/auth2',
@@ -233,7 +233,7 @@ Some additional notes:
 
 ### Plugins
 
-One of Fastify's most distinguishable features is its extensive plugin ecosystem. Plugin types are fully supported, and take advantage of the [declaration merging]() pattern. This example is broken up into three parts: Creating a TypeScript Fastify Plugin, Creating Type Definitions for a Fastify Plugin, and Using a Fastify Plugin in a TypeScript Project. 
+One of Fastify's most distinguishable features is its extensive plugin ecosystem. Plugin types are fully supported, and take advantage of the [declaration merging]() pattern. This example is broken up into three parts: Creating a TypeScript Fastify Plugin, Creating Type Definitions for a Fastify Plugin, and Using a Fastify Plugin in a TypeScript Project.
 
 #### Creating a TypeScript Fastify Plugin
 
@@ -331,14 +331,14 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
 
     next()
   }
-  
+
   module.exports = fp(myPlugin, {
     fastify: '3.x'
   })
   ```
 5. Open `index.d.ts` and add the following code:
   ```typescript
-  // Not necessary, but exporting whatever extra types is supported 
+  // Not necessary, but exporting whatever extra types is supported
   export interface myPluginFunc {
     (input: string): string
   }
@@ -351,13 +351,13 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
   }
   ```
 
-With those files completed, the plugin is now ready to be consumed by any TypeScript project! 
+With those files completed, the plugin is now ready to be consumed by any TypeScript project!
 
 The Fastify plugin system enables developers to decorate the Fastify instance, and the request/reply instances. For more information check out this blog post on [Declaration Merging and Generic Inheritance](https://dev.to/ethanarrowood/is-declaration-merging-and-generic-inheritance-at-the-same-time-impossible-53cp).
 
 #### Using a Plugin
 
-Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript. Import the plugin with `import/from` and you're all set -- except there is one exception users should be aware of. 
+Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript. Import the plugin with `import/from` and you're all set -- except there is one exception users should be aware of.
 
 Fastify plugins use declaration merging to modify existing Fastify type interfaces (check out the previous two examples for more details). Declaration merging is not very _smart_, meaning if the plugin type definition for a plugin is within the scope of the TypeScript interpreter, then the plugin types will be included **regardless** of if the plugin is being used or not. This is an unfortunate limitation of using TypeScript and is unavoidable as of right now.
 
@@ -435,7 +435,7 @@ Many type definitions share the same generic parameters; they are all documented
 
 Most definitions depend on `@node/types` modules `http`, `https`, and `http2`
 
-##### RawServer 
+##### RawServer
 Underlying Node.js server type
 
 Default: `http.Server`
@@ -454,7 +454,7 @@ Constraints: `http.IncomingMessage`, `http2.Http2ServerRequest`
 Enforced by: [`RawServer`][RawServerGeneric]
 
 ##### RawReply
-Underlying Node.js response type 
+Underlying Node.js response type
 
 Default: [`RawReplyDefaultExpression`][RawReplyDefaultExpression]
 
@@ -584,19 +584,19 @@ server.get('/', async (request, reply) => {
 
 ---
 
-##### fastify.HTTPMethods 
+##### fastify.HTTPMethods
 [src](./../types/utils.d.ts#L8)
 
 Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
 
-##### fastify.RawServerBase 
+##### fastify.RawServerBase
 [src](./../types/utils.d.ts#L13)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
 
 Union type of: `http.Server | https.Server | http2.Http2Server | http2.Http2SecureServer`
 
-##### fastify.RawServerDefault 
+##### fastify.RawServerDefault
 [src](./../types/utils.d.ts#L18)
 
 Dependant on `@types/node` modules `http`
@@ -617,7 +617,7 @@ See the main [fastify][Fastify] method type definition section for examples on i
 
 [src](../types/instance.d.ts#L16)
 
-Interface that represents the Fastify server object. This is the returned server instance from the [`fastify()`][Fastify] method. This type is an interface so it can be extended via [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html) if your code makes use of the `decorate` method. 
+Interface that represents the Fastify server object. This is the returned server instance from the [`fastify()`][Fastify] method. This type is an interface so it can be extended via [declaration merging](https://www.typescriptlang.org/docs/handbook/declaration-merging.html) if your code makes use of the `decorate` method.
 
 Through the use of generic cascading, all methods attached to the instance inherit the generic properties from instantiation. This means that by specifying the server, request, or reply types, all methods will know how to type those objects.
 
@@ -627,7 +627,7 @@ Check out the main [Learn by Example](#learn-by-example) section for detailed gu
 
 #### Request
 
-##### fastify.FastifyRequest<[RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]> 
+##### fastify.FastifyRequest<[RequestGeneric][FastifyRequestGenericInterface], [RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric]>
 [src](./../types/request.d.ts#L15)
 
 This interface contains properties of Fastify request object. The properties added here disregard what kind of request object (http vs http2) and disregard what route level it is serving; thus calling `request.body` inside a GET request will not throw an error (but good luck sending a GET request with a body 😉).
@@ -658,7 +658,7 @@ declare module 'fastify' {
 
 // Or you can type your request using
 type CustomRequest = FastifyRequest<{
-  Body: { test: boolean };
+  body: { test: boolean };
 }>
 
 server.get('/typedRequest', async (request: CustomRequest, reply: FastifyReply) => {
@@ -669,7 +669,7 @@ server.get('/typedRequest', async (request: CustomRequest, reply: FastifyReply) 
 ##### fastify.RequestGenericInterface
 [src](./../types/request.d.ts#L4)
 
-Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All omitted properties are defaulted to `unknown`. The corresponding property names are: `Body`, `Querystring`, `Params`, `Headers`.
+Fastify request objects have four dynamic properties: `body`, `params`, `query`, and `headers`. Their respective types are assignable through this interface. It is a named property interface enabling the developer to ignore the properties they do not want to specify. All omitted properties are defaulted to `unknown`.
 
 ```typescript
 import fastify, { RequestGenericInterface } from 'fastify'
@@ -677,7 +677,7 @@ import fastify, { RequestGenericInterface } from 'fastify'
 const server = fastify()
 
 const requestGeneric: RequestGenericInterface = {
-  Querystring: {
+  querystring: {
     name: string
   }
 }
@@ -742,7 +742,7 @@ declare module 'fastify' {
 }
 ```
 
-##### fastify.RawReplyDefaultExpression<[RawServer][RawServerGeneric]> 
+##### fastify.RawReplyDefaultExpression<[RawServer][RawServerGeneric]>
 [src](./../types/utils.d.ts#L27)
 
 Dependant on `@types/node` modules `http`, `https`, `http2`
@@ -927,7 +927,7 @@ A method for checking the existence of a type parser of a certain content type
 
 FastifyError is a custom error object that includes status code and validation results.
 
-It extends the Node.js `Error` type, and adds two additional, optional properties: `statusCode: number` and `validation: ValiationResult[]`. 
+It extends the Node.js `Error` type, and adds two additional, optional properties: `statusCode: number` and `validation: ValiationResult[]`.
 
 ##### fastify.ValidationResult
 
@@ -956,8 +956,8 @@ Notice: in the `onRequest` hook, request.body will always be null, because the b
 preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
 
 Notice: in the `preParsing` hook, request.body will always be null, because the body parsing happens before the `preValidation` hook.
- 
-Notice: you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
+
+Notice: you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
 
 ##### fastify.preValidationHookHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 

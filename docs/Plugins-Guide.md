@@ -336,9 +336,9 @@ console.log(new CustomError())
 If you want to deprecate an API, or you want to warn the user about a specific use case, you can use the [`fastify-warning`](https://github.com/fastify/fastify-warning) module.
 
 ```js
-const { createWarning, emitWarning } = require('fastify-deprecation')
-createWarning('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
-emitWarning('FST_ERROR_CODE')
+const warning = require('fastify-warning')()
+warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
+warning.emit('FST_ERROR_CODE')
 ```
 
 <a name="start"></a>

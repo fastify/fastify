@@ -245,7 +245,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       t.strictEqual(res.statusCode, 400)
       t.deepEqual(res.json(), {
         error: 'Bad Request',
-        message: 'body[0].location.email should match format "email", body[1].location.email should match format "email"',
+        message: 'body[0].location.email should match format "email"',
         statusCode: 400
       })
     })

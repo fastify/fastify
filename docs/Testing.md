@@ -1,13 +1,128 @@
 <h1 align="center">Fastify</h1>
 
 ## Testing
+
 Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
 
-<a name="inject"></a>
-### Testing with http injection
+Let's `cd` into a fresh directory called 'testing-example' and type `npm init -y` in our terminal.
+
+run `npm install fastify && npm install tap pino-pretty --save-dev`
+
+### Separating concerns makes testing easy
+
+ First we're going to separate our application code from our server code:
+
+**app.js**:
+
+```js
+'use strict'
+
+const fastify = require('fastify')
+
+function build(opts={}) {
+  const app = fastify(opts)
+  app.get('/', async function (request, reply) {
+    return { hello: 'world' }
+  })
+
+  return app
+}
+
+module.exports = build
+```
+
+**server.js**:
+
+```js
+'use strict'
+
+const server = require('./app')({
+  logger: {
+    level: 'info',
+    prettyPrint: true
+  }
+})
+
+server.listen(3000, (err, address) => {
+  if (err) {
+    console.log(err)
+    process.exit(1)
+  }
+})
+```
+
+### Benefits of using fastify.inject()
+
 Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
-To inject a fake http request, use the `inject` method:
+Before introducing any tests, we'll use the `.inject` method to make a fake request to our route:
+
+**app.test.js**:
+
+```js
+'use strict'
+
+const build = require('./app')
+
+const test = async () => {
+  const app = build()
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/'
+  })
+
+  console.log('status code: ', response.statusCode)
+  console.log('body: ', response.body)
+}
+test()
+```
+
+First, our code will run inside an asynchronous function, giving us access to async/await. 
+
+`.inject` insures all registered plugins have booted up and our application is ready to test. Lastly we pass the request method we want to use and a route. Using await we can store the response without a callback.
+
+
+
+Run the test file in your terminal `node app.test.js`
+
+```sh
+status code:  200
+body:  {"hello":"world"}
+```
+
+
+
+### Testing with http injection
+
+Now we can replace our `console.log` calls with actual tests!
+
+In your `package.json` change the "test" script to:
+
+`"test": "tap --reporter=list --watch"`
+
+**app.test.js**:
+
+```js
+'use strict'
+
+const { test } = require('tap')
+const build = require('./app')
+
+test('requests the "/" route', async t => {
+  const app = build()
+
+  const response = await app.inject({
+    method: 'GET',
+    url: '/'
+  })
+  t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
+})
+```
+
+Finally run `npm test` in the terminal and see your test results!
+
+The `inject` method can do much more than a simple GET request to a URL:
 ```js
 fastify.inject({
   method: String,
@@ -64,7 +179,7 @@ try {
 }
 ```
 
-#### Example:
+#### Another Example:
 
 **app.js**
 ```js

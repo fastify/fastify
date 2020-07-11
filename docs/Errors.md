@@ -91,7 +91,7 @@ The hook callback must be a function.
 The logger accepts either a `'stream'` or a `'file'` as the destination.
 
 <a id="FST_ERR_REP_ALREADY_SENT"></a>
-### FST_ERR_REP_ALREADY_SENT
+#### FST_ERR_REP_ALREADY_SENT
 
 A response was already sent.
 

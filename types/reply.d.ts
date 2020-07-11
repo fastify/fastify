@@ -17,7 +17,7 @@ export interface FastifyReply<
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
   log: FastifyLoggerInstance;
-  request: FastifyRequest<RawServer, RawRequest, RequestGeneric>;
+  request: FastifyRequest<RequestGeneric, RawServer, RawRequest>;
   code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>;
   status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>;
   statusCode: number;

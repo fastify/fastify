@@ -3,6 +3,7 @@ import * as http from 'http'
 import * as https from 'https'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin'
+import { FastifyError } from 'fastify-error'
 
 // FastifyPlugin & FastifyRegister
 interface TestOptions extends FastifyPluginOptions {
@@ -10,8 +11,10 @@ interface TestOptions extends FastifyPluginOptions {
   option2: boolean;
 }
 const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, next) { }
-
 const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }
+
+const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, next: (error?: FastifyError) => void) => { };
+const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { };
 
 expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
 expectError(fastify().register(testPluginOptsAsync, {})) // error because missing required options from generic declaration
@@ -50,6 +53,10 @@ expectAssignable<PromiseLike<undefined>>(httpsServer.after());
 expectAssignable<PromiseLike<undefined>>(httpsServer.close());
 expectAssignable<PromiseLike<undefined>>(httpsServer.ready());
 expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts));
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType));
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync));
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: "/test" }));
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: "/test" }));
 
 async function testAsync() {
   await httpsServer

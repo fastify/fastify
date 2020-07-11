@@ -43,13 +43,25 @@ declare function fastify<
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
+>(opts?: FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
 export default fastify
+
+/**
+ * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
+ */
+export type FastifyServerOptions<
+  Server extends RawServerBase,
+  Logger extends FastifyLoggerInstance
+> = Server extends http.Server ? FastifyHttpOptions<Server, Logger>
+  : Server extends https.Server ? FastifyHttpsOptions<Server, Logger>
+  : Server extends http2.Http2Server ? FastifyHttp2Options<Server, Logger>
+  : Server extends http2.Http2SecureServer ? FastifyHttp2SecureOptions<Server, Logger>
+  : never;
 
 type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+> = FastifyServerOptionsBase<Server, Logger> & {
   http2: true,
   https: http2.SecureServerOptions
 }
@@ -57,7 +69,7 @@ type FastifyHttp2SecureOptions<
 type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+> = FastifyServerOptionsBase<Server, Logger> & {
   http2: true,
   http2SessionTimeout?: number,
 }
@@ -65,13 +77,16 @@ type FastifyHttp2Options<
 type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+> = FastifyServerOptionsBase<Server, Logger> & {
   https: https.ServerOptions
 }
-/**
- * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
- */
-export type FastifyServerOptions<
+
+type FastifyHttpOptions<
+  Server extends http.Server,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+> = FastifyServerOptionsBase<Server, Logger>;
+
+type FastifyServerOptionsBase<
   RawServer extends RawServerBase = RawServerDefault,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = {

@@ -1,5 +1,5 @@
 import { expectType } from 'tsd'
-import fastify, { RouteHandlerMethod, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface } from '../../fastify'
+import fastify, { RouteHandler, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface } from '../../fastify'
 import { RawServerDefault, RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault, RawReplyDefaultExpression } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyRequest } from '../../types/request'
@@ -28,7 +28,7 @@ interface RequestData extends RequestGenericInterface {
   Headers: RequestHeaders;
 }
 
-type Handler = RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RequestData>
+type Handler = RouteHandler<RequestData>
 
 type CustomRequest = FastifyRequest<{
   Body: RequestBody;
@@ -37,7 +37,7 @@ type CustomRequest = FastifyRequest<{
   Headers: RequestHeaders;
 }>
 
-const getHandler: RouteHandlerMethod = function (request, _reply) {
+const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.url)
   expectType<string>(request.method)
   expectType<string>(request.hostname)

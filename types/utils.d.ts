@@ -41,3 +41,4 @@ export type RequestParamsDefault = unknown
 export type RequestHeadersDefault = unknown
 
 export type ContextConfigDefault = unknown
+export type ReplyDefault = unknown

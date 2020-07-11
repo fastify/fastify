@@ -2,9 +2,9 @@
 
 import { Readable } from 'stream'
 import { FastifyInstance } from './instance'
-import { RouteOptions } from './route'
+import { RouteOptions, RouteGenericInterface } from './route'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyRequest, RequestGenericInterface } from './request'
+import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { FastifyLoggerInstance } from './logger'
@@ -25,12 +25,12 @@ export interface onRequestHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
 }
@@ -43,12 +43,12 @@ export interface preParsingHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: RequestPayload,
     done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
   ): Promise<RequestPayload | unknown> | void;
@@ -61,12 +61,12 @@ export interface preValidationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
 }
@@ -78,12 +78,12 @@ export interface preHandlerHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
 }
@@ -103,12 +103,12 @@ export interface preSerializationHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: PreSerializationPayload,
     done: DoneFuncWithErrOrRes
   ): Promise<unknown> | void;
@@ -123,12 +123,12 @@ export interface onSendHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: OnSendPayload,
     done: DoneFuncWithErrOrRes
   ): Promise<unknown> | void;
@@ -142,12 +142,12 @@ export interface onResponseHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
 }
@@ -162,13 +162,13 @@ export interface onErrorHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
   TError extends Error = FastifyError
 > {
   (
-    request: FastifyRequest<RequestGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     error: TError,
     done: () => void
   ): Promise<unknown> | void;
@@ -183,11 +183,11 @@ export interface onRouteHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  RequestGeneric extends RequestGenericInterface = RequestGenericInterface,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
 > {
   (
-    opts: RouteOptions<RawServer, RawRequest, RawReply, RequestGeneric, ContextConfig> & { path: string; prefix: string }
+    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { path: string; prefix: string }
   ): Promise<unknown> | void;
 }
 

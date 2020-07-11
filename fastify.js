@@ -26,7 +26,6 @@ const {
   kPluginNameChain
 } = require('./lib/symbols.js')
 
-require('./lib/warnings')
 const { createServer } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')

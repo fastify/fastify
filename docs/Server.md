@@ -45,7 +45,7 @@ specified, this option is ignored.
 ### `keepAliveTimeout`
 
 Defines the server keep-alive timeout in milliseconds. See documentation for
-[`server.timeout` property](https://nodejs.org/api/http.html#http_server_keepalivetimeout)
+[`server.keepAliveTimeout` property](https://nodejs.org/api/http.html#http_server_keepalivetimeout)
 to understand the effect of this option. This option only applies when HTTP/1
 is in use. Also, when `serverFactory` option is specified, this option is ignored.
 

@@ -650,6 +650,48 @@ test('nested plugins', t => {
   })
 })
 
+test('nested plugins awaited', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.register(async function wrap (fastify, opts) {
+    await fastify.register(async function child1 (fastify, opts) {
+      fastify.get('/', function (req, reply) {
+        reply.send('I am child 1')
+      })
+    }, { prefix: '/child1' })
+
+    await fastify.register(async function child2 (fastify, opts) {
+      fastify.get('/', function (req, reply) {
+        reply.send('I am child 2')
+      })
+    }, { prefix: '/child2' })
+  }, { prefix: '/parent' })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(body.toString(), 'I am child 1')
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(body.toString(), 'I am child 2')
+    })
+  })
+})
+
 test('plugin metadata - decorators', t => {
   t.plan(1)
   const fastify = Fastify()

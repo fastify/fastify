@@ -241,8 +241,8 @@ export interface FastifyInstance<
   setSerializerCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
- * Set the reply serializer for all routes.
- */
+  * Set the reply serializer for all routes.
+  */
   setReplySerializer(replySerializer: (payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

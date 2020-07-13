@@ -33,7 +33,7 @@ server.setErrorHandler(nodeJSErrorHandler)
 function invalidErrorHandler(error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))
 
-server.setReplySerializer((function (payload: unknown, statusCode: number) {
+server.setReplySerializer((function (payload, statusCode) {
   expectType<unknown>(payload)
   expectType<number>(statusCode)
   return 'serialized'
@@ -41,3 +41,6 @@ server.setReplySerializer((function (payload: unknown, statusCode: number) {
 
 function invalidReplySerialzer(payload: number, statusCode: string) {}
 expectError(server.setReplySerializer(invalidReplySerialzer))
+
+function serializerWithInvalidReturn(payload: unknown, statusCode: number) {}
+expectError(server.setReplySerializer(serializerWithInvalidReturn))

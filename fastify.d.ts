@@ -21,47 +21,29 @@ import { FastifyReply } from './types/reply'
  * @returns Fastify server instance
  */
 declare function fastify<
-  Server extends http2.Http2SecureServer,
+  Server extends RawServerBase,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
-declare function fastify<
-  Server extends http2.Http2Server,
-  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
-  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
-declare function fastify<
-  Server extends https.Server,
-  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
-  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
-declare function fastify<
-  Server extends http.Server,
-  Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
-  Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts?: FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>
-export default fastify
+>(opts?: FastifyOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger>;
+export default fastify;
 
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
-export type FastifyServerOptions<
+export type FastifyOptions<
   Server extends RawServerBase,
-  Logger extends FastifyLoggerInstance
-> = Server extends http.Server ? FastifyHttpOptions<Server, Logger>
-  : Server extends https.Server ? FastifyHttpsOptions<Server, Logger>
-  : Server extends http2.Http2Server ? FastifyHttp2Options<Server, Logger>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+> = Server extends https.Server ? FastifyHttpsOptions<Server, Logger>
   : Server extends http2.Http2SecureServer ? FastifyHttp2SecureOptions<Server, Logger>
+  : Server extends http.Server ? FastifyHttpOptions<Server, Logger>
+  : Server extends http2.Http2Server ? FastifyHttp2Options<Server, Logger>
   : never;
 
 type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptionsBase<Server, Logger> & {
+> = FastifyServerOptions<Server, Logger> & {
   http2: true,
   https: http2.SecureServerOptions
 }
@@ -69,7 +51,7 @@ type FastifyHttp2SecureOptions<
 type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptionsBase<Server, Logger> & {
+> = FastifyServerOptions<Server, Logger> & {
   http2: true,
   http2SessionTimeout?: number,
 }
@@ -77,16 +59,21 @@ type FastifyHttp2Options<
 type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptionsBase<Server, Logger> & {
+> = FastifyServerOptions<Server, Logger> & {
   https: https.ServerOptions
 }
 
 type FastifyHttpOptions<
   Server extends http.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptionsBase<Server, Logger>;
+> = FastifyServerOptions<Server, Logger>;
 
-type FastifyServerOptionsBase<
+/**
+ * Options for a fastify server instance that are irrelevant of which HTTP protocol is used.
+ *
+ * The actual options object used in `fastify()` is `FastifyOptions`.
+ */
+export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = {

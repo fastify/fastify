@@ -229,6 +229,7 @@ Team members are listed in alphabetical order.
 ### Collaborators
 Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.
 
+* [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>, <https://www.npmjs.com/~dalisoft>
 * [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
 * [__Evan Shortiss__](https://github.com/evanshortiss), <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
 

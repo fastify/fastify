@@ -123,7 +123,7 @@ export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, Fastif
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext } from './types/context'
-export { RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
+export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
 export { FastifyError, ValidationResult } from 'fastify-error'

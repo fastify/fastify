@@ -323,3 +323,46 @@ t.test('onReady execution order', t => {
   fastify.ready(() => { i++; t.equals(i, 2) })
   fastify.ready(() => { i++; t.equals(i, 3) })
 })
+
+t.test('ready return the server with callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.ready((err, instance) => {
+    t.error(err)
+    t.deepEquals(instance, fastify)
+  })
+})
+
+t.test('ready return the server with Promise', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.ready()
+    .then(instance => { t.deepEquals(instance, fastify) })
+    .catch(err => { t.fail(err) })
+})
+
+t.test('ready return registered', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register((one, opts, next) => {
+    one.ready().then(itself => { t.deepEquals(itself, one) })
+    next()
+  })
+
+  fastify.register((two, opts, next) => {
+    two.ready().then(itself => { t.deepEquals(itself, two) })
+
+    two.register((twoDotOne, opts, next) => {
+      twoDotOne.ready().then(itself => { t.deepEquals(itself, twoDotOne) })
+      next()
+    })
+    next()
+  })
+
+  fastify.ready()
+    .then(instance => { t.deepEquals(instance, fastify) })
+    .catch(err => { t.fail(err) })
+})

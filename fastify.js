@@ -352,8 +352,15 @@ function build (options) {
         else lightMyRequest(httpHandler, opts, cb)
       })
     } else {
-      return this.ready()
-        .then(() => lightMyRequest(httpHandler, opts))
+      return lightMyRequest((req, res) => {
+        this.ready(function (err) {
+          if (err) {
+            res.emit('error', err)
+            return
+          }
+          httpHandler(req, res)
+        })
+      }, opts)
     }
   }
 

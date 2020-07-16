@@ -233,3 +233,37 @@ t.test('Current opened connection should not accept new incoming connections', t
     })
   })
 })
+
+test('Cannot be reopened the closed server without listen callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.listen(0)
+    .then(() => {
+      fastify.close()
+        .then(() => {
+          fastify.listen(0).catch(err => {
+            t.ok(err)
+            t.is(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+          })
+        })
+    })
+})
+
+test('Cannot be reopened the closed server has listen callback', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    fastify.close((err) => {
+      t.error(err)
+
+      fastify.listen(0, err => {
+        t.is(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+        t.ok(err)
+      })
+    })
+  })
+})

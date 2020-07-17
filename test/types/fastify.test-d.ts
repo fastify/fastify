@@ -21,6 +21,17 @@ expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must b
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
 // server options
+expectAssignable<FastifyInstance>(fastify({ http2: true }))
+expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
+expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ pluginTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ bodyLimit: 100 }))
+expectAssignable<FastifyInstance>(fastify({ maxParamLength: 100 }))
+expectAssignable<FastifyInstance>(fastify({ disableRequestLogging: true }))
+expectAssignable<FastifyInstance>(fastify({ requestIdLogLabel: 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({ onProtoPoisoning: 'error' }))
+expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({

@@ -150,7 +150,7 @@ function fastify (options) {
       (options.onConstructorPoisoning || defaultInitOptions.onConstructorPoisoning)
     ),
     [kReply]: Reply.buildReply(Reply),
-    [kRequest]: Request.buildRequest(Request),
+    [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],

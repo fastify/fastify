@@ -23,30 +23,6 @@ function schemaValidator ({ schema, method, url, httpPart }) {
   return fn
 }
 
-test('Request object', t => {
-  t.plan(14)
-  const req = {
-    method: 'GET',
-    url: '/',
-    connection: { foo: 'bar' }
-  }
-  const request = new Request('id', 'params', req, 'query', 'headers', 'log', 'ip', 'ips', 'hostname')
-  t.type(request, Request)
-  t.strictEqual(request.id, 'id')
-  t.strictEqual(request.params, 'params')
-  t.deepEqual(request.raw, req)
-  t.strictEqual(request.query, 'query')
-  t.strictEqual(request.headers, 'headers')
-  t.strictEqual(request.log, 'log')
-  t.strictEqual(request.ip, 'ip')
-  t.strictEqual(request.ips, 'ips')
-  t.strictEqual(request.hostname, 'hostname')
-  t.strictEqual(request.body, null)
-  t.strictEqual(request.method, 'GET')
-  t.strictEqual(request.url, '/')
-  t.deepEqual(request.connection, req.connection)
-})
-
 test('handleRequest function - sent reply', t => {
   t.plan(1)
   const request = {}

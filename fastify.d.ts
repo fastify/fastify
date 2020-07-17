@@ -58,6 +58,9 @@ export type FastifyOptions<
   : Server extends http2.Http2Server ? FastifyHttp2Options<Server, Logger>
   : never;
 
+/**
+ * Options for a fastify HTTP2 secure server.
+ */
 type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
@@ -66,6 +69,9 @@ type FastifyHttp2SecureOptions<
   https: http2.SecureServerOptions
 }
 
+/**
+ * Options for a fastify HTTP2 insecure server.
+ */
 type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
@@ -74,6 +80,9 @@ type FastifyHttp2Options<
   http2SessionTimeout?: number,
 }
 
+/**
+ * Options for a fastify HTTPS server.
+ */
 type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
@@ -81,6 +90,9 @@ type FastifyHttpsOptions<
   https: https.ServerOptions
 }
 
+/**
+ * Options for a fastify HTTP insecure server.
+ */
 type FastifyHttpOptions<
   Server extends http.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance

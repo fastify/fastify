@@ -30,6 +30,8 @@ export interface FastifyRequest<
   hostname: string;
   url: string;
   method: string;
+  /** in order for this to be used the user should ensure they have set the attachValidation option. */
+  validationError?: Error & { validation: any; validationContext: string };
 
   // `connection` is a deprecated alias for `socket` and doesn't exist in `Http2ServerRequest`
   connection: RawRequest['socket'];

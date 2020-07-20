@@ -51,7 +51,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<any>(request.id)
   expectType<FastifyLoggerInstance>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.connection)
-  expectType<Error & { validation: any; validationContext: string }>(request.validationError)
+  expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
 }
 
 const postHandler: Handler = function (request) {

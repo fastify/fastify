@@ -138,7 +138,7 @@ const opts = {
       }
     }
   },
-  handler (request, reply) {
+  handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
 }

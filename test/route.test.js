@@ -418,6 +418,44 @@ test('route error handler does not affect other routes', t => {
   })
 })
 
+test('async error handler for a route', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  const customRouteErrorHandler = async (error, request, reply) => {
+    t.equal(error.message, 'Delayed Pot Error')
+    reply.code(418)
+    return {
+      message: 'Make a brew sometime later',
+      statusCode: 418,
+      error: 'Delayed Pot Error'
+    }
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/late-coffee',
+    handler: (req, res) => {
+      res.send(new Error('Delayed Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/late-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'Make a brew sometime later',
+      statusCode: 418,
+      error: 'Delayed Pot Error'
+    })
+  })
+})
+
 test('route error handler overrides global custom error handler', t => {
   t.plan(4)
 

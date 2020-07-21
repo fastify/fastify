@@ -482,7 +482,7 @@ function fastify (options) {
 
       childLogger.info({ req }, 'incoming request')
 
-      const request = new Request(id, req, null, req.headers, childLogger)
+      const request = new Request(id, req, null, childLogger)
       const reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }

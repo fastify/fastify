@@ -372,6 +372,52 @@ test('route error handler overrides default error handler', t => {
   })
 })
 
+test('route error handler does not affect other routes', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const customRouteErrorHandler = (error, request, reply) => {
+    t.equal(error.message, 'Wrong Pot Error')
+
+    reply.code(418).send({
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: (req, res) => {
+      res.send(new Error('Wrong Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/tea',
+    handler: (req, res) => {
+      res.send(new Error('No tea today'))
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/tea'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'No tea today',
+      statusCode: 500,
+      error: 'Internal Server Error'
+    })
+  })
+})
+
 test('route error handler overrides global custom error handler', t => {
   t.plan(4)
 

@@ -36,6 +36,8 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
+  
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler, errorHandler: (error, request, reply) => reply.send('error') }))
 
   interface BodyInterface { prop: string }
   interface QuerystringInterface { prop: number }

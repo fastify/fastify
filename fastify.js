@@ -32,15 +32,17 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
-const { Hooks, buildHooks, hookRunnerApplication } = require('./lib/hooks')
-const { Schemas, buildSchemas } = require('./lib/schemas')
+const { Hooks, hookRunnerApplication } = require('./lib/hooks')
+const { Schemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
 const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
+const override = require('./lib/pluginOverride')
 const { defaultInitOptions } = getSecuredInitialConfig
+
 const {
   FST_ERR_BAD_URL,
   FST_ERR_MISSING_MIDDLEWARE
@@ -526,64 +528,6 @@ function fastify (options) {
     this._errorHandler = func
     return this
   }
-}
-
-// Function that runs the encapsulation magic.
-// Everything that need to be encapsulated must be handled in this function.
-function override (old, fn, opts) {
-  const shouldSkipOverride = pluginUtils.registerPlugin.call(old, fn)
-
-  if (shouldSkipOverride) {
-    // after every plugin registration we will enter a new name
-    old[kPluginNameChain].push(pluginUtils.getDisplayName(fn))
-    return old
-  }
-
-  const instance = Object.create(old)
-  old[kChildren].push(instance)
-  instance.ready = old[kAvvioBoot].bind(instance)
-  instance[kChildren] = []
-  instance[kReply] = Reply.buildReply(instance[kReply])
-  instance[kRequest] = Request.buildRequest(instance[kRequest])
-  instance[kContentTypeParser] = ContentTypeParser.helpers.buildContentTypeParser(instance[kContentTypeParser])
-  instance[kHooks] = buildHooks(instance[kHooks])
-  instance[kRoutePrefix] = buildRoutePrefix(instance[kRoutePrefix], opts.prefix)
-  instance[kLogLevel] = opts.logLevel || instance[kLogLevel]
-  instance[kSchemas] = buildSchemas(old[kSchemas])
-  instance.getSchema = instance[kSchemas].getSchema.bind(instance[kSchemas])
-  instance.getSchemas = instance[kSchemas].getSchemas.bind(instance[kSchemas])
-  instance[pluginUtils.registeredPlugins] = Object.create(instance[pluginUtils.registeredPlugins])
-  instance[kPluginNameChain] = [pluginUtils.getPluginName(fn) || pluginUtils.getFuncPreview(fn)]
-
-  if (instance[kLogSerializers] || opts.logSerializers) {
-    instance[kLogSerializers] = Object.assign(Object.create(instance[kLogSerializers]), opts.logSerializers)
-  }
-
-  if (opts.prefix) {
-    instance[kFourOhFour].arrange404(instance)
-  }
-
-  for (const hook of instance[kHooks].onRegister) hook.call(this, instance, opts)
-
-  return instance
-}
-
-function buildRoutePrefix (instancePrefix, pluginPrefix) {
-  if (!pluginPrefix) {
-    return instancePrefix
-  }
-
-  // Ensure that there is a '/' between the prefixes
-  if (instancePrefix.endsWith('/')) {
-    if (pluginPrefix[0] === '/') {
-      // Remove the extra '/' to avoid: '/first//second'
-      pluginPrefix = pluginPrefix.slice(1)
-    }
-  } else if (pluginPrefix[0] !== '/') {
-    pluginPrefix = '/' + pluginPrefix
-  }
-
-  return instancePrefix + pluginPrefix
 }
 
 function wrapRouting (httpHandler, { rewriteUrl, logger }) {

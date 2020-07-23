@@ -8,13 +8,13 @@ import { FastifyLoggerInstance, FastifyLoggerOptions } from '../../types/logger'
 
 // FastifyInstance
 // http server
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>(fastify())
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>(fastify({}))
+expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
+expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
 // https server
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ https: {} }))
+expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
 // http2 server
-expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true, https: {} }))
+expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
+expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {} }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
@@ -104,3 +104,7 @@ expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
+
+// Thenable
+expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))
+fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInstance))

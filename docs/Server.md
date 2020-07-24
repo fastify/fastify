@@ -241,7 +241,7 @@ Please note this setting this option to `false` goes against
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`
 
-The header name used to know the request id. See [the request id](./Logging.md#logging-request-id) section.
+The header name used to know the request id. See [the request id](Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`
 
@@ -293,7 +293,7 @@ const fastify = Fastify({ trustProxy: true })
 
 For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
 
-You may access the `ip`, `ips`, and `hostname` values on the [`request`](./Request.md) object.
+You may access the `ip`, `ips`, and `hostname` values on the [`request`](Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
@@ -307,7 +307,7 @@ fastify.get('/', (request, reply) => {
 ### `pluginTimeout`
 
 The maximum amount of time in *milliseconds* in which a plugin can load.
-If not, [`ready`](./Server.md#ready)
+If not, [`ready`](Server.md#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 + Default: `10000`
@@ -328,7 +328,7 @@ const fastify = require('fastify')({
 <a name="versioning"></a>
 ### `versioning`
 
-By default you can version your routes with [semver versioning](./Routes.md#version), which is provided by `find-my-way`. There is still an option to provide custom versioning strategy. You can find more information in the [find-my-way](https://github.com/delvedor/find-my-way#versioned-routes) documentation.
+By default you can version your routes with [semver versioning](Routes.md#version), which is provided by `find-my-way`. There is still an option to provide custom versioning strategy. You can find more information in the [find-my-way](https://github.com/delvedor/find-my-way#versioned-routes) documentation.
 
 ```js
 const versioning = {
@@ -496,7 +496,7 @@ Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it
 
 <a name="server"></a>
 #### server
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](./Server.md).
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](Server.md).
 
 <a name="after"></a>
 #### after
@@ -667,13 +667,13 @@ fastify.listen({
 
 <a name="route"></a>
 #### route
-Method to add routes to the server, it also has shorthand functions, check [here](./Routes.md).
+Method to add routes to the server, it also has shorthand functions, check [here](Routes.md).
 
 <a name="close"></a>
 #### close
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](./Hooks.md#on-close) hook.<br>
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
-See [`return503OnClosing` flags](./Server.md#factory-return-503-on-closing) for changing this behaviour.
+See [`return503OnClosing` flags](Server.md#factory-return-503-on-closing) for changing this behaviour.
 
 If it is called without any arguments, it will return a Promise:
 
@@ -687,16 +687,16 @@ fastify.close().then(() => {
 
 <a name="decorate"></a>
 #### decorate*
-Function useful if you need to decorate the fastify instance, Reply or Request, check [here](./Decorators.md).
+Function useful if you need to decorate the fastify instance, Reply or Request, check [here](Decorators.md).
 
 <a name="register"></a>
 #### register
 Fastify allows the user to extend its functionality with plugins.
-A plugin can be a set of routes, a server decorator or whatever, check [here](./Plugins.md).
+A plugin can be a set of routes, a server decorator or whatever, check [here](Plugins.md).
 
 <a name="addHook"></a>
 #### addHook
-Function to add a specific hook in the lifecycle of Fastify, check [here](./Hooks.md).
+Function to add a specific hook in the lifecycle of Fastify, check [here](Hooks.md).
 
 <a name="prefix"></a>
 #### prefix
@@ -740,16 +740,16 @@ Important: If you have to deal with nested plugins the name differs with the usa
 
 <a name="log"></a>
 #### log
-The logger instance, check [here](./Logging.md).
+The logger instance, check [here](Logging.md).
 
 <a name="inject"></a>
 #### inject
-Fake http injection (for testing purposes) [here](./Testing.md#inject).
+Fake http injection (for testing purposes) [here](Testing.md#inject).
 
 <a name="add-schema"></a>
 #### addSchema
 `fastify.addSchema(schemaObj)`, adds a JSON schema to the Fastify instance. This allows you to reuse it everywhere in your application just by using the standard `$ref` keyword.<br/>
-To learn more, read the [Validation and Serialization](./Validation-and-Serialization.md) documentation.
+To learn more, read the [Validation and Serialization](Validation-and-Serialization.md) documentation.
 
 <a name="get-schemas"></a>
 #### getSchemas
@@ -761,8 +761,8 @@ To learn more, read the [Validation and Serialization](./Validation-and-Serializ
 
 <a name="set-reply-serializer"></a>
 #### setReplySerializer
-Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](./Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
-Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](./Server.md#seterrorhandler) for errors.
+Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
+Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
 
 ```js
 fastify.setReplySerializer(function (payload, statusCode){
@@ -773,11 +773,11 @@ fastify.setReplySerializer(function (payload, statusCode){
 
 <a name="set-validator-compiler"></a>
 #### setValidatorCompiler
-Set the schema validator compiler for all routes. See [#schema-validator](./Validation-and-Serialization.md#schema-validator).
+Set the schema validator compiler for all routes. See [#schema-validator](Validation-and-Serialization.md#schema-validator).
 
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
-Set the schema serializer compiler for all routes. See [#schema-serializer](./Validation-and-Serialization.md#schema-serializer).
+Set the schema serializer compiler for all routes. See [#schema-serializer](Validation-and-Serialization.md#schema-serializer).
 **Note:** [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 <a name="validator-compiler"></a>
@@ -793,11 +793,11 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
-`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](./Lifecycle.md#lifecycle).
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](Lifecycle.md#lifecycle).
 
 You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
-_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](./Reply.md#call-not-found)_. In which case only preHandler will be run.
+_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](Reply.md#call-not-found)_. In which case only preHandler will be run.
 
 ```js
 fastify.setNotFoundHandler({

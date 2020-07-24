@@ -23,9 +23,9 @@ await fastify.register(require('middie'))
 fastify.use(require('cors')())
 ```
 
-Remember that middleware can be encapsulated, this means that you can decide where your middleware should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md).
+Remember that middleware can be encapsulated, this means that you can decide where your middleware should run by using `register` as explained in the [plugins guide](Plugins-Guide.md).
 
-Fastify middleware also do not expose the `send` method or other methods specific to the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects internally, but this is done after the middleware phase. If you need to create middleware, you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook which already has the [Request](./Request.md#request) and [Reply](./Reply.md#reply) Fastify instances. For more information, see [Hooks](./Hooks.md#hooks).
+Fastify middleware also do not expose the `send` method or other methods specific to the Fastify [Reply](Reply.md#reply) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](Request.md#request) and [Reply](Reply.md#reply) objects internally, but this is done after the middleware phase. If you need to create middleware, you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook which already has the [Request](Request.md#request) and [Reply](Reply.md#reply) Fastify instances. For more information, see [Hooks](Hooks.md#hooks).
 
 <a name="restrict-usage"></a>
 #### Restrict middleware execution to a certain path(s)
@@ -41,7 +41,7 @@ const serveStatic = require('serve-static')
 fastify.use('/css', serveStatic(path.join(__dirname, '/assets')))
 
 // Wildcard path
-fastify.use('/css/*', serveStatic(path.join(__dirname, '/assets')))
+fastify.use('/css/(.*)', serveStatic(path.join(__dirname, '/assets')))
 
 // Multiple paths
 fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))

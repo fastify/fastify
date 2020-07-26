@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "types": "fastify.d.ts",
@@ -81,6 +81,11 @@
     {
       "name": "Denis Fäcke",
       "url": "https://github.com/SerayaEryn"
+    },
+    {
+      "name": "Igor Savin",
+      "email": "kibertoad@gmail.com",
+      "url": "https://github.com/kibertoad"
     }
   ],
   "license": "MIT",
@@ -150,7 +155,7 @@
   "dependencies": {
     "abstract-logging": "^2.0.0",
     "ajv": "^6.12.2",
-    "avvio": "^7.1.0",
+    "avvio": "^7.1.2",
     "fast-json-stringify": "^2.2.1",
     "fastify-error": "^0.1.0",
     "fastify-warning": "github:fastify/fastify-warning#init",

@@ -1,13 +1,13 @@
 import { FastifyInstance } from './instance'
-import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
+import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 
 /**
  * FastifyPluginCallback
  *
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
-export type FastifyPluginCallback<Options extends FastifyPluginOptions = {}> = (
-  instance: FastifyInstance<RawServerBase, RawRequestDefaultExpression<RawServerBase>, RawReplyDefaultExpression<RawServerBase>>,
+export type FastifyPluginCallback<Options extends FastifyPluginOptions = {}, Server extends RawServerBase = RawServerDefault> = (
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>>,
   opts: Options,
   next: (err?: Error) => void
 ) => void
@@ -17,8 +17,8 @@ export type FastifyPluginCallback<Options extends FastifyPluginOptions = {}> = (
  *
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
-export type FastifyPluginAsync<Options extends FastifyPluginOptions = {}> = (
-  instance: FastifyInstance<RawServerBase, RawRequestDefaultExpression<RawServerBase>, RawReplyDefaultExpression<RawServerBase>>,
+export type FastifyPluginAsync<Options extends FastifyPluginOptions = {}, Server extends RawServerBase = RawServerDefault> = (
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>>,
   opts: Options
 ) => Promise<void>;
 

@@ -333,3 +333,188 @@ test('multiple routes with one schema', t => {
     t.deepEquals(schema, schema)
   })
 })
+
+test('route error handler overrides default error handler', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  const customRouteErrorHandler = (error, request, reply) => {
+    t.equal(error.message, 'Wrong Pot Error')
+
+    reply.code(418).send({
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: (req, res) => {
+      res.send(new Error('Wrong Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  })
+})
+
+test('route error handler does not affect other routes', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const customRouteErrorHandler = (error, request, reply) => {
+    t.equal(error.message, 'Wrong Pot Error')
+
+    reply.code(418).send({
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: (req, res) => {
+      res.send(new Error('Wrong Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/tea',
+    handler: (req, res) => {
+      res.send(new Error('No tea today'))
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/tea'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'No tea today',
+      statusCode: 500,
+      error: 'Internal Server Error'
+    })
+  })
+})
+
+test('async error handler for a route', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  const customRouteErrorHandler = async (error, request, reply) => {
+    t.equal(error.message, 'Delayed Pot Error')
+    reply.code(418)
+    return {
+      message: 'Make a brew sometime later',
+      statusCode: 418,
+      error: 'Delayed Pot Error'
+    }
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/late-coffee',
+    handler: (req, res) => {
+      res.send(new Error('Delayed Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/late-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'Make a brew sometime later',
+      statusCode: 418,
+      error: 'Delayed Pot Error'
+    })
+  })
+})
+
+test('route error handler overrides global custom error handler', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  const customGlobalErrorHandler = (error, request, reply) => {
+    t.error(error)
+    reply.code(429).send({ message: 'Too much coffee' })
+  }
+
+  const customRouteErrorHandler = (error, request, reply) => {
+    t.equal(error.message, 'Wrong Pot Error')
+    reply.code(418).send({
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  }
+
+  fastify.setErrorHandler(customGlobalErrorHandler)
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, res) => {
+      res.send(new Error('Wrong Pot Error'))
+    },
+    errorHandler: customRouteErrorHandler
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 418)
+    t.deepEqual(JSON.parse(res.payload), {
+      message: 'Make a brew',
+      statusCode: 418,
+      error: 'Wrong Pot Error'
+    })
+  })
+})
+
+test('throws when route-level error handler is not a function', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  try {
+    fastify.route({
+      method: 'GET',
+      url: '/tea',
+      handler: (req, res) => {
+        res.send('hi!')
+      },
+      errorHandler: 'teapot'
+    })
+  } catch (err) {
+    t.is(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
+  }
+})

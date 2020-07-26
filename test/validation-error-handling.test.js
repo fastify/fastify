@@ -336,3 +336,40 @@ test('should return a defined output message parsing JOI error details', t => {
     t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
   })
 })
+
+test('should fail call custom error formatter', t => {
+  t.plan(6)
+
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        errorFormatter: (errors, dataVar) => {
+          t.equal(errors.length, 1)
+          t.equal(errors[0].message, "should have required property 'name'")
+          t.equal(dataVar, 'body')
+          return 'my error'
+        }
+      }
+    }
+  })
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'my error'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})

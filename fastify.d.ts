@@ -103,7 +103,7 @@ export type FastifyServerOptions<
   },
   return503OnClosing?: boolean,
   ajv?: {
-    customOptions?: ajv.Options & { errorFormatter?: (errors: string[], dataVar: string) => string },
+    customOptions?: ajv.Options & { errorFormatter?: (errors: ajv.ErrorObject[], dataVar: string) => string },
     plugins?: Function[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(

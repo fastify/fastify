@@ -502,6 +502,20 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
 })
 ```
 
+If you want to format ajv errors yourself, you can provide the `errorFormatter` option to ajv when instantiating fastify.
+```js
+const fastify = Fastify({
+  ajv: {
+      customOptions: {
+        errorFormatter: (errors, dataVar) => {
+          // ... my formatting logic 
+          return myErrorMessage
+        }
+      }
+    }
+})
+```
+
 You can also use [setErrorHandler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) to define a custom response for validation errors such as
 
 ```js

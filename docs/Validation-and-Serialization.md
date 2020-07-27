@@ -502,7 +502,7 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
 })
 ```
 
-If you want to format AJV errors yourself, you can provide the `errorFormatter` option to AJV when instantiating Fastify.
+If you want to format AJV errors yourself, you can provide a sync function that must return a string as the `errorFormatter` option to AJV when instantiating Fastify.
 ```js
 const fastify = Fastify({
   ajv: {

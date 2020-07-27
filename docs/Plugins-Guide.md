@@ -13,6 +13,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
 - [ESM support](#esm-support)
 - [Handle errors](#handle-errors)
 - [Custom errors](#custom-errors)
+- [Emit warnings](#emit-warnings)
 - [Let's start!](#start)
 
 <a name="register"></a>
@@ -328,6 +329,16 @@ If your plugin needs to expose custom errors, you can easily generate consistent
 const createError = require('fastify-error')
 const CustomError = createError('ERROR_CODE', 'message')
 console.log(new CustomError())
+```
+
+<a name="emit-warnings"></a>
+## Emit Warnings
+If you want to deprecate an API, or you want to warn the user about a specific use case, you can use the [`fastify-warning`](https://github.com/fastify/fastify-warning) module.
+
+```js
+const warning = require('fastify-warning')()
+warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
+warning.emit('FST_ERROR_CODE')
 ```
 
 <a name="start"></a>

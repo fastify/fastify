@@ -337,7 +337,7 @@ test('should return a defined output message parsing JOI error details', t => {
   })
 })
 
-test('should fail call custom error formatter', t => {
+test('should call custom error formatter', t => {
   t.plan(6)
 
   const fastify = Fastify({
@@ -372,4 +372,69 @@ test('should fail call custom error formatter', t => {
     })
     t.strictEqual(res.statusCode, 400)
   })
+})
+
+test('should catch error inside formatter and return message', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        errorFormatter: (errors, dataVar) => {
+          throw new Error('abc')
+        }
+      }
+    }
+  })
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})
+
+test('cannot create a fastify instance with wrong type of errorFormatter', t => {
+  t.plan(2)
+
+  try {
+    Fastify({
+      ajv: {
+        customOptions: {
+          errorFormatter: async (errors, dataVar) => {
+            return 'should not execute'
+          }
+        }
+      }
+    })
+  } catch (err) {
+    t.equals(err.message, 'ajv.customOptions.errorFormatter option should not be an async function')
+  }
+
+  try {
+    Fastify({
+      ajv: {
+        customOptions: {
+          errorFormatter: 500
+        }
+      }
+    })
+  } catch (err) {
+    t.equals(err.message, 'ajv.customOptions.errorFormatter option should be a function, instead got number')
+  }
 })

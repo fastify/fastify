@@ -81,6 +81,15 @@ function fastify (options) {
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
     throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
   }
+
+  if (ajvOptions.customOptions.errorFormatter) {
+    if (typeof ajvOptions.customOptions.errorFormatter !== 'function') {
+      throw new Error(`ajv.customOptions.errorFormatter option should be a function, instead got ${typeof ajvOptions.customOptions.errorFormatter}`)
+    } else if (ajvOptions.customOptions.errorFormatter.constructor.name === 'AsyncFunction') {
+      throw new Error('ajv.customOptions.errorFormatter option should not be an async function')
+    }
+  }
+
   ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
     return Array.isArray(plugin) ? plugin : [plugin]
   })

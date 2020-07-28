@@ -226,7 +226,7 @@ In the last example we used interfaces to define the types for the request query
     ```
     Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
 
-Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](./Validation-and-Serialization.md) documenation for more info.
+Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documenation for more info.
 
 Some additional notes:
   - Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!
@@ -537,7 +537,7 @@ const secureServer = fastify({
 })
 ```
 
-For more details on using HTTP2 check out the Fastify [HTTP2](./HTTP2.md) documentation page.
+For more details on using HTTP2 check out the Fastify [HTTP2](HTTP2.md) documentation page.
 
 ###### Example 4: Extended HTTP server
 
@@ -560,7 +560,7 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](http://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](./Logging.md) documentation for more info.
+Fastify uses [Pino](http://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](Logging.md) documentation for more info.
 
 To use an external instance of Pino, add `@types/pino` to devDependencies and pass the instance to `logger` field:
 
@@ -785,7 +785,7 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
 [src](../types/register.d.ts#L5)
 
-This type interface specifies the type for the [`fastify.register()`](./Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel].
+This type interface specifies the type for the [`fastify.register()`](Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel].
 
 Below is an example of the options inference in action:
 
@@ -818,7 +818,7 @@ Check out the [Specifying Logger Types](#example-5-specifying-logger-types) exam
 
 [src](../types/logger.d.ts#L17)
 
-An interface definition for the internal Fastify logger. It is emulative of the [Pino.js](http://getpino.io/#/) logger. When enabled through server options, use it following the general [logger](./Logging.md) documentation.
+An interface definition for the internal Fastify logger. It is emulative of the [Pino.js](http://getpino.io/#/) logger. When enabled through server options, use it following the general [logger](Logging.md) documentation.
 
 ##### fastify.FastifyLogFn
 

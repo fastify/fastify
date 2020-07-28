@@ -5,6 +5,7 @@ import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
+import { FastifyError } from 'fastify-error'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -70,6 +71,7 @@ export interface RouteShorthandOptions<
   config?: ContextConfig;
   version?: string;
   prefixTrailingSlash?: boolean;
+  errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
 
   // hooks
   onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];

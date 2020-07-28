@@ -9,7 +9,7 @@ const fp = require('fastify-plugin')
 const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
-const internals = require('../lib/warnings')[symbols.kTestInternals]
+const warning = require('../lib/warnings')
 const payload = { hello: 'world' }
 
 process.removeAllListeners('warning')
@@ -2384,7 +2384,7 @@ test('preParsing hooks can completely ignore the payload - deprecated syntax', t
   const fastify = Fastify()
 
   process.on('warning', onWarning)
-  internals.emittedWarnings.delete('FSTDEP004')
+  warning.emitted.delete('FSTDEP004')
 
   function onWarning (warning) {
     t.strictEqual(warning.name, 'FastifyDeprecation')

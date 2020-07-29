@@ -24,6 +24,8 @@ export interface FastifyInstance<
   log: Logger;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  getSchema(schemaId: string): unknown;
+  getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;

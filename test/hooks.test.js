@@ -549,7 +549,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
   fastify.addHook('onRoute', function (route) {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/v1/foo')
-    t.strictEqual(route.path, '/v1/foo')
+    t.strictEqual(route.path, '/foo')
     t.strictEqual(route.prefix, '/v1')
   })
 
@@ -557,7 +557,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/v1/foo')
-      t.strictEqual(route.path, '/v1/foo')
+      t.strictEqual(route.path, '/foo')
       t.strictEqual(route.prefix, '/v1')
     })
     instance.get('/foo', opts, function (req, reply) {
@@ -572,12 +572,13 @@ test('onRoute hook should pass correct route with custom prefix', t => {
 })
 
 test('onRoute hook should pass correct route with custom options', t => {
-  t.plan(6)
+  t.plan(7)
   const fastify = Fastify()
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/foo')
+      t.strictEqual(route.path, '/foo')
       t.strictEqual(route.logLevel, 'info')
       t.strictEqual(route.bodyLimit, 100)
       t.type(route.logSerializers.test, 'function')
@@ -600,12 +601,13 @@ test('onRoute hook should pass correct route with custom options', t => {
 })
 
 test('onRoute hook should receive any route option', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
       t.strictEqual(route.url, '/foo')
+      t.strictEqual(route.path, '/foo')
       t.strictEqual(route.auth, 'basic')
     })
     instance.get('/foo', { auth: 'basic' }, function (req, reply) {

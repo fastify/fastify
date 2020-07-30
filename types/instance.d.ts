@@ -50,6 +50,8 @@ export interface FastifyInstance<
   listen(port: number, address: string, callback: (err: Error, address: string) => void): void;
   listen(port: number, callback: (err: Error, address: string) => void): void;
   listen(port: number, address?: string, backlog?: number): Promise<string>;
+  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error, address: string) => void): void;
+  listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;

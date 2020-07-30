@@ -46,7 +46,7 @@ declare function fastify<
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 export default fastify
 
-type FastifyHttp2SecureOptions<
+export type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
@@ -54,7 +54,7 @@ type FastifyHttp2SecureOptions<
   https: http2.SecureServerOptions
 }
 
-type FastifyHttp2Options<
+export type FastifyHttp2Options<
   Server extends http2.Http2Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
@@ -62,7 +62,7 @@ type FastifyHttp2Options<
   http2SessionTimeout?: number,
 }
 
-type FastifyHttpsOptions<
+export type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {

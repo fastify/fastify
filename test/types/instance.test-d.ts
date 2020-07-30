@@ -47,3 +47,10 @@ expectError(server.setReplySerializer(invalidReplySerialzer))
 
 function serializerWithInvalidReturn(payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
+
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))

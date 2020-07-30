@@ -341,15 +341,11 @@ test('should call custom error formatter', t => {
   t.plan(6)
 
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        errorFormatter: (errors, dataVar) => {
-          t.equal(errors.length, 1)
-          t.equal(errors[0].message, "should have required property 'name'")
-          t.equal(dataVar, 'body')
-          return 'my error'
-        }
-      }
+    schemaErrorFormatter: (errors, dataVar) => {
+      t.equal(errors.length, 1)
+      t.equal(errors[0].message, "should have required property 'name'")
+      t.equal(dataVar, 'body')
+      return 'my error'
     }
   })
 
@@ -378,12 +374,8 @@ test('should catch error inside formatter and return message', t => {
   t.plan(3)
 
   const fastify = Fastify({
-    ajv: {
-      customOptions: {
-        errorFormatter: (errors, dataVar) => {
-          throw new Error('abc')
-        }
-      }
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
     }
   })
 
@@ -414,27 +406,19 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
 
   try {
     Fastify({
-      ajv: {
-        customOptions: {
-          errorFormatter: async (errors, dataVar) => {
-            return 'should not execute'
-          }
-        }
+      schemaErrorFormatter: async (errors, dataVar) => {
+        return 'should not execute'
       }
     })
   } catch (err) {
-    t.equals(err.message, 'ajv.customOptions.errorFormatter option should not be an async function')
+    t.equals(err.message, 'schemaErrorFormatter option should not be an async function')
   }
 
   try {
     Fastify({
-      ajv: {
-        customOptions: {
-          errorFormatter: 500
-        }
-      }
+      schemaErrorFormatter: 500
     })
   } catch (err) {
-    t.equals(err.message, 'ajv.customOptions.errorFormatter option should be a function, instead got number')
+    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
   }
 })

@@ -103,7 +103,7 @@ export type FastifyServerOptions<
   },
   return503OnClosing?: boolean,
   ajv?: {
-    customOptions?: ajv.Options & { errorFormatter?: (errors: ajv.ErrorObject[], dataVar: string) => string },
+    customOptions?: ajv.Options,
     plugins?: Function[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
@@ -111,7 +111,8 @@ export type FastifyServerOptions<
     req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
-  rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
+  rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
+  schemaErrorFormatter?: (errors: ajv.ErrorObject[], dataVar: string) => string
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

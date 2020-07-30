@@ -68,6 +68,15 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+
+  if (options.schemaErrorFormatter) {
+    if (typeof options.schemaErrorFormatter !== 'function') {
+      throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof options.schemaErrorFormatter}`)
+    } else if (options.schemaErrorFormatter.constructor.name === 'AsyncFunction') {
+      throw new Error('schemaErrorFormatter option should not be an async function')
+    }
+  }
+
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
@@ -80,14 +89,6 @@ function fastify (options) {
   }
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
     throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
-  }
-
-  if (ajvOptions.customOptions.errorFormatter) {
-    if (typeof ajvOptions.customOptions.errorFormatter !== 'function') {
-      throw new Error(`ajv.customOptions.errorFormatter option should be a function, instead got ${typeof ajvOptions.customOptions.errorFormatter}`)
-    } else if (ajvOptions.customOptions.errorFormatter.constructor.name === 'AsyncFunction') {
-      throw new Error('ajv.customOptions.errorFormatter option should not be an async function')
-    }
   }
 
   ajvOptions.plugins = ajvOptions.plugins.map(plugin => {

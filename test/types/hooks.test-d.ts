@@ -83,7 +83,7 @@ server.addHook('onError', (request, reply, error, done) => {
 })
 
 server.addHook('onRoute', (opts) => {
-  expectType<RouteOptions & { path: string, prefix: string}>(opts)
+  expectType<RouteOptions & { routePath: string, path: string, prefix: string}>(opts)
 })
 
 server.addHook('onRegister', (instance, done) => {

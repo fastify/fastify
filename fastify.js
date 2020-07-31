@@ -179,6 +179,12 @@ function fastify (options) {
     options: function _options (url, opts, handler) {
       return router.prepareRoute.call(this, 'OPTIONS', url, opts, handler)
     },
+    trace: function _trace (url, opts, handler) {
+      return router.prepareRoute.call(this, 'TRACE', url, opts, handler)
+    },
+    connect: function _connect (url, opts, handler) {
+      return router.prepareRoute.call(this, 'CONNECT', url, opts, handler)
+    },
     all: function _all (url, opts, handler) {
       return router.prepareRoute.call(this, supportedMethods, url, opts, handler)
     },

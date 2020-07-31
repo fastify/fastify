@@ -20,9 +20,9 @@ const routeHandler: RouteHandlerMethod = function (request, reply) {
   expectType<FastifyReply>(reply)
 }
 
-type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options'
+type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options' | 'trace' | 'connect'
 
-;['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
+;['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'].forEach(method => {
   // route method
   expectType<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,
@@ -36,7 +36,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
-  
+
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler, errorHandler: (error, request, reply) => reply.send('error') }))
 
   interface BodyInterface { prop: string }

@@ -28,7 +28,7 @@ fastify.route(options)
 <a name="options"></a>
 ### Routes option
 
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'`, `'OPTIONS'`, `'TRACE'` AND `'CONNECT'`. It could also be an array of methods.
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
@@ -103,7 +103,9 @@ The above route declaration is more *Hapi*-like, but if you prefer an *Express/R
 `fastify.put(path, [options], handler)`<br>
 `fastify.delete(path, [options], handler)`<br>
 `fastify.options(path, [options], handler)`<br>
-`fastify.patch(path, [options], handler)`
+`fastify.patch(path, [options], handler)`<br>
+`fastify.trace(path, [options], handler)`<br>
+`fastify.connect(path, [options], handler)`
 
 Example:
 ```js

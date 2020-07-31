@@ -587,7 +587,7 @@ server.get('/', async (request, reply) => {
 ##### fastify.HTTPMethods 
 [src](./../types/utils.d.ts#L8)
 
-Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS'`
+Union type of: `'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'OPTIONS' | 'TRACE' | 'CONNECT'`
 
 ##### fastify.RawServerBase 
 [src](./../types/utils.d.ts#L13)

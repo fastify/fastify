@@ -730,10 +730,10 @@ test('onRoute hook with many prefix', t => {
     instance.addHook('onRoute', (route) => {
       t.like(route, onRouteChecks.pop())
     })
-    instance.get('/aPath', handler)
+    instance.route({ method: 'GET', url: '/aPath', handler })
 
     instance.register((instance, opts, next) => {
-      instance.get('/anotherPath', handler)
+      instance.route({ method: 'GET', path: '/anotherPath', handler })
       next()
     }, { prefix: '/two' })
     next()

@@ -187,7 +187,7 @@ export interface onRouteHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { path: string; prefix: string }
+    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { routePath: string, path: string; prefix: string }
   ): Promise<unknown> | void;
 }
 

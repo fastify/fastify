@@ -9,6 +9,7 @@ const ajv = new Ajv({ coerceTypes: true })
 const validation = require('../../lib/validation')
 const { normalizeSchema } = require('../../lib/schemas')
 const symbols = require('../../lib/validation').symbols
+const { kSchemaVisited } = require('../../lib/symbols')
 
 test('Symbols', t => {
   t.plan(5)
@@ -76,6 +77,24 @@ test('build schema - payload schema', t => {
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.is(typeof opts[symbols.bodySchema], 'function')
+})
+
+test('build schema - avoid repeated normalize schema', t => {
+  t.plan(3)
+  const opts = {
+    schema: {
+      query: {
+        type: 'object',
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    }
+  }
+  opts.schema = normalizeSchema(opts.schema)
+  t.notEqual(kSchemaVisited, undefined)
+  t.is(opts.schema[kSchemaVisited], true)
+  t.strictEqual(opts.schema, normalizeSchema(opts.schema))
 })
 
 test('build schema - query schema', t => {

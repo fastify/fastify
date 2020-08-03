@@ -149,7 +149,7 @@
     "then-sleep": "^1.0.1",
     "tsd": "^0.13.1",
     "typescript": "^3.7.4",
-    "x-xss-protection": "^1.2.0",
+    "x-xss-protection": "^2.0.0",
     "yup": "^0.29.0"
   },
   "dependencies": {

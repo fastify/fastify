@@ -465,14 +465,14 @@ test('approximate a plugin name also when fastify-plugin has no meta data', t =>
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, next) => {
-    t.is(fastify.pluginName, 'plugin.test')
+    t.match(fastify.pluginName, /plugin\.test/)
     fastify.register(fp(function B (fastify, opts, next) {
       // function has name
-      t.is(fastify.pluginName, 'plugin.test -> B')
+      t.match(fastify.pluginName, /plugin\.test-auto-\d+ -> B/)
       next()
     }))
     setImmediate(() => {
-      t.is(fastify.pluginName, 'plugin.test -> B')
+      t.match(fastify.pluginName, /plugin\.test-auto-\d+ -> B/)
     })
     next()
   }))

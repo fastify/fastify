@@ -152,6 +152,20 @@ export interface onResponseHookHandler<
   ): Promise<unknown> | void;
 }
 
+export interface onTimeoutHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault
+> {
+  (
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
+    done: HookHandlerDoneFunction
+  ): Promise<unknown> | void;
+}
+
 /**
  * This hook is useful if you need to do some custom error logging or add some specific header in case of error.
  * It is not intended for changing the error, and calling reply.send will throw an exception.

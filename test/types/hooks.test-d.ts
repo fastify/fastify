@@ -183,4 +183,3 @@ server.addHook('onClose', async (instance) => {
   expectType<FastifyInstance>(instance)
   return;
 })
-

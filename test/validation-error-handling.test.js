@@ -546,3 +546,34 @@ test('test registering two instances with different errorFormatters', t => {
     t.strictEqual(res.statusCode, 400)
   })
 })
+
+test('adding schemaErrorFormatter', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setSchemaErrorFormatter((errors, dataVar) => {
+    throw new Error('abc')
+  })
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})

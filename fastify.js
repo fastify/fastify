@@ -209,6 +209,7 @@ function fastify (options) {
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
     setReplySerializer: setReplySerializer,
+    setSchemaErrorFormatter: setSchemaErrorFormatter,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -515,6 +516,12 @@ function fastify (options) {
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
     this[kValidatorCompiler] = validatorCompiler
+    return this
+  }
+
+  function setSchemaErrorFormatter (errorFormatter) {
+    throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
+    this[kOptions].schemaErrorFormatter = errorFormatter
     return this
   }
 

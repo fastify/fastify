@@ -81,6 +81,7 @@ export interface RouteShorthandOptions<
   preSerialization?: preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onResponse?: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+  onTimeout?: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onError?: onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
 }
 

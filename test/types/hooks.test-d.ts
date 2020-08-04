@@ -74,6 +74,14 @@ server.addHook('onResponse', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
+server.addHook('onTimeout', (request, reply, done) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
 server.addHook('onError', (request, reply, error, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

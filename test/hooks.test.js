@@ -3026,3 +3026,40 @@ test('reply.send should throw if undefined error is thrown', t => {
     })
   })
 })
+
+test('onTimeout should be triggered', t => {
+  t.plan(6)
+  const fastify = Fastify({ connectionTimeout: 500 })
+
+  fastify.addHook('onTimeout', function (req, res, next) {
+    t.ok('called', 'onTimeout')
+    next()
+  })
+
+  fastify.get('/', async (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/timeout', async (req, reply) => {
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.tearDown(() => fastify.close())
+
+    sget({
+      method: 'GET',
+      url: address
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+    })
+    sget({
+      method: 'GET',
+      url: `${address}/timeout`
+    }, (err, response, body) => {
+      t.type(err, Error)
+      t.strictEqual(err.message, 'socket hang up')
+    })
+  })
+})

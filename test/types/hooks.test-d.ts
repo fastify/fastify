@@ -161,6 +161,12 @@ server.addHook('onResponse', async (request, reply) => {
   return;
 })
 
+server.addHook('onTimeout', async (request, reply) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  return;
+})
+
 server.addHook('onError', async (request, reply, error) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
@@ -177,3 +183,4 @@ server.addHook('onClose', async (instance) => {
   expectType<FastifyInstance>(instance)
   return;
 })
+

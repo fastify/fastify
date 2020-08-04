@@ -9,6 +9,7 @@ import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
+import ajv = require('ajv')
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -245,6 +246,10 @@ export interface FastifyInstance<
   */
   setReplySerializer(replySerializer: (payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
+  /*
+  * Set the schema error formatter for all routes.
+  */
+  setSchemaErrorFormatter(errorFormatter: (errors: ajv.ErrorObject[], dataVar: string) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   /**
    * Add a content type parser
    */

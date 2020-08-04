@@ -6,6 +6,7 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpressi
 import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
 import { FastifyError } from 'fastify-error'
+import * as ajv from 'ajv'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -72,6 +73,8 @@ export interface RouteShorthandOptions<
   version?: string;
   prefixTrailingSlash?: boolean;
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+  // TODO: Change to actual type.
+  schemaErrorFormatter?: (errors: ajv.ErrorObject[], dataVar: string) => string;
 
   // hooks
   onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];

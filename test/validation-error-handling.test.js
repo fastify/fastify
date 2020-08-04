@@ -422,3 +422,127 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
     t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
   }
 })
+
+test('should register a route based schema error formatter', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
+    }
+  }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})
+
+test('prefer route based error formatter over global one', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
+    }
+  })
+
+  fastify.post('/', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('123')
+    }
+  }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: 123'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})
+
+test('test registering two instances with different errorFormatters', t => {
+  t.plan(6)
+
+  const fastify1 = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
+    }
+  })
+
+  const fastify2 = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('123')
+    }
+  })
+
+  fastify1.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify2.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify1.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify2.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'schema custom formatter error: 123'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})

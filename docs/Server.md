@@ -775,6 +775,10 @@ fastify.setReplySerializer(function (payload, statusCode){
 #### setValidatorCompiler
 Set the schema validator compiler for all routes. See [#schema-validator](Validation-and-Serialization.md#schema-validator).
 
+<a name="set-schema-error-formatter"></a>
+#### setSchemaErrorFormatter
+Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#error-handling).
+
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
 Set the schema serializer compiler for all routes. See [#schema-serializer](Validation-and-Serialization.md#schema-serializer).
@@ -789,6 +793,10 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 #### serializerCompiler
 This property can be used to get the schema serializer. If not set, it will be `null` until the server starts, then it will be a function with the signature `function ({ schema, method, url, httpPart })` that returns the input `schema` compiled to a function for validating data.
 The input `schema` can access all the shared schemas added with [`.addSchema`](#add-schema) function.
+
+<a name="schema-error-formatter"></a>
+#### schemaErrorFormatter
+This property can be used to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#error-handling).
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler

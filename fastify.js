@@ -23,7 +23,8 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kPluginNameChain
+  kPluginNameChain,
+  kSchemaErrorFormatter
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -154,6 +155,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kValidatorCompiler]: null,
+    [kSchemaErrorFormatter]: options.schemaErrorFormatter,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -521,7 +523,7 @@ function fastify (options) {
 
   function setSchemaErrorFormatter (errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
-    this[kOptions].schemaErrorFormatter = errorFormatter
+    this[kSchemaErrorFormatter] = errorFormatter
     return this
   }
 

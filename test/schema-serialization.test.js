@@ -5,6 +5,8 @@ const t = require('tap')
 const Fastify = require('..')
 const test = t.test
 
+const echoBody = (req, reply) => { reply.send(req.body) }
+
 test('basic test', t => {
   t.plan(3)
 
@@ -420,4 +422,37 @@ test('Reply serializer win over serializer ', t => {
     t.deepEqual(res.payload, 'instance serializator')
     t.strictEqual(res.statusCode, 200)
   })
+})
+
+test('The schema compiler recreate itself if needed', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.options('/', {
+    schema: {
+      response: { '2xx': { hello: { type: 'string' } } }
+    }
+  }, echoBody)
+
+  fastify.register(function (fastify, options, done) {
+    fastify.addSchema({
+      $id: 'identifier',
+      type: 'string',
+      format: 'uuid'
+    })
+
+    fastify.get('/', {
+      schema: {
+        response: {
+          '2xx': {
+            foobarId: { $ref: 'identifier#' }
+          }
+        }
+      }
+    }, echoBody)
+
+    done()
+  })
+
+  fastify.ready(err => { t.error(err) })
 })

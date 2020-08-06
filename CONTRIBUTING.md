@@ -4,6 +4,12 @@
 
 Individuals making significant and valuable contributions are given commit-access to the project to contribute as they see fit. This project is more like an open wiki than a standard guarded open source project.
 
+### I want to be a collaborator!
+
+If you think you meet the above criteria and we have not invited you yet, we are sorry!
+Feel free reach out to a [Lead Maintainer](https://github.com/fastify/fastify#team) privately with
+a few links to your valuable contributions.
+
 ## Rules
 
 There are a few basic ground-rules for contributors:

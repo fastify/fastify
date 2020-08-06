@@ -15,6 +15,7 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
   - [onError](#onerror)
   - [onSend](#onsend)
   - [onResponse](#onresponse)
+  - [onTimeout](#ontimeout)
   - [Manage Errors from a hook](#manage-errors-from-a-hook)
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
@@ -202,6 +203,26 @@ fastify.addHook('onResponse', async (request, reply) => {
 ```
 
 The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
+
+### onTimeout
+
+```js
+
+fastify.addHook('onTimeout', (request, reply, done) => {
+  // Some code
+  done()
+})
+```
+Or `async/await`:
+```js
+fastify.addHook('onTimeout', async (request, reply) => {
+  // Some code
+  await asyncMethod()
+  return
+})
+```
+`onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance). The `onTimeout` hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.
+
 
 ### Manage Errors from a hook
 If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.

@@ -4,7 +4,7 @@ import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifySchema, FastifySchemaCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevel } from './logger'
-import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
+import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
 import { FastifyError } from 'fastify-error'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
@@ -81,6 +81,7 @@ export interface RouteShorthandOptions<
   preSerialization?: preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onResponse?: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+  onTimeout?: onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   onError?: onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
 }
 

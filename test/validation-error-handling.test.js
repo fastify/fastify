@@ -456,11 +456,11 @@ test('should register a route based schema error formatter', t => {
 })
 
 test('prefer route based error formatter over global one', t => {
-  t.plan(3)
+  t.plan(9)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
-      throw new Error('abc')
+      throw new Error('abc123')
     }
   })
 
@@ -470,6 +470,19 @@ test('prefer route based error formatter over global one', t => {
       throw new Error('123')
     }
   }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.post('/abc', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
+    }
+  }, function (req, reply) {
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.post('/test', { schema }, function (req, reply) {
     reply.code(200).send(req.body.name)
   })
 
@@ -487,39 +500,14 @@ test('prefer route based error formatter over global one', t => {
       message: 'schema custom formatter error: 123'
     })
     t.strictEqual(res.statusCode, 400)
-    t.end()
-  })
-})
-
-test('test registering two instances with different errorFormatters', t => {
-  t.plan(6)
-
-  const fastify1 = Fastify({
-    schemaErrorFormatter: (errors, dataVar) => {
-      throw new Error('abc')
-    }
   })
 
-  const fastify2 = Fastify({
-    schemaErrorFormatter: (errors, dataVar) => {
-      throw new Error('123')
-    }
-  })
-
-  fastify1.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
-
-  fastify2.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
-
-  fastify1.inject({
+  fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
-    url: '/'
+    url: '/abc'
   }, (err, res) => {
     t.error(err)
     t.deepEqual(res.json(), {
@@ -530,18 +518,18 @@ test('test registering two instances with different errorFormatters', t => {
     t.strictEqual(res.statusCode, 400)
   })
 
-  fastify2.inject({
+  fastify.inject({
     method: 'POST',
     payload: {
       hello: 'michelangelo'
     },
-    url: '/'
+    url: '/test'
   }, (err, res) => {
     t.error(err)
     t.deepEqual(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
-      message: 'schema custom formatter error: 123'
+      message: 'schema custom formatter error: abc123'
     })
     t.strictEqual(res.statusCode, 400)
   })

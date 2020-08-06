@@ -19,6 +19,10 @@ expectType<unknown>(server.getSchema('SchemaId'))
 expectType<unknown>(server.use(() => {}))
 expectType<unknown>(server.use('/foo', () => {}))
 
+// Assert that a Promise is explicity declared as a return type of the handler functions
+expectAssignable<ReturnType<Parameters<FastifyInstance['setNotFoundHandler']>[0]>>(Promise.resolve())
+expectAssignable<ReturnType<Parameters<FastifyInstance['setErrorHandler']>[0]>>(Promise.resolve())
+
 server.setErrorHandler((function (error, request, reply) {
   expectAssignable<FastifyInstance>(this)
 }))

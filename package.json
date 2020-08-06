@@ -54,6 +54,11 @@
       "email": "deusdustin@gmail.com"
     },
     {
+      "name": "Rafael Gonzaga",
+      "email": "rafael.nunu@hotmail.com",
+      "url": "https://github.com/rafaelgss"
+    },
+    {
       "name": "Trivikram Kamat",
       "url": "http://trivikr.github.io",
       "email": "trivikr.dev@gmail.com"
@@ -86,11 +91,6 @@
       "name": "Igor Savin",
       "email": "kibertoad@gmail.com",
       "url": "https://github.com/kibertoad"
-    },
-    {
-      "name": "Rafael Gonzaga",
-      "email": "rafael.nunu@hotmail.com",
-      "url": "https://github.com/rafaelgss"
     }
   ],
   "license": "MIT",

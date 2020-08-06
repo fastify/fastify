@@ -192,9 +192,11 @@ matters to you.
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
 
 ## Ecosystem
+
 - [Core](./docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
 - [Community](./docs/Ecosystem.md#community) - Community supported plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
+- [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with the maintainers.
 
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior

@@ -14,10 +14,10 @@ Fastify is a web framework highly focused on providing the best developer experi
 
 ### 1.1: In-scope
 
-+ Code updates and improvementes focused on performance
++ Develop a web framework for Node.js with a focus on developer experience, performance and extensibility.
 + Plugin Architecture
 + Support web protocols
-+ Tested codebase
++ Official plugins for common user requirements
 + Documentation:
   + Project (policies, processes, and releases)
   + Guides and Tutorials

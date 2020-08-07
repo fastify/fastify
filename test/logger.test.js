@@ -1483,12 +1483,8 @@ test('should not log incoming request and outgoing response when disabled', t =>
 
 test('should pass when using unWritable props in the logger option', t => {
   t.plan(1)
-  try {
-    Fastify({
-      logger: Object.defineProperty({}, 'level', { value: 'info' })
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+  Fastify({
+    logger: Object.defineProperty({}, 'level', { value: 'info' })
+  })
+  t.pass()
 })

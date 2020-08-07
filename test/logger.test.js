@@ -1480,3 +1480,15 @@ test('should not log incoming request and outgoing response when disabled', t =>
     t.is(lines[0].msg, '500 error')
   })
 })
+
+test('should pass when using unWritable props in the logger option', t => {
+  t.plan(1)
+  try {
+    Fastify({
+      logger: Object.defineProperty({}, 'level', { value: 'info' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})

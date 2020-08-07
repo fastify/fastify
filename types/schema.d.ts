@@ -20,7 +20,16 @@ export interface FastifyRouteSchemaDef {
   httpStatus?: string;
 }
 
+export interface FastifyValidationResult {
+  errors?: FastifySchemaValidationError[];
+}
+
+export interface FastifySchemaValidationError {
+  message: string;
+  dataPath: string;
+}
+
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler = (routeSchema: FastifyRouteSchemaDef) => unknown
+export type FastifySchemaCompiler = (routeSchema: FastifyRouteSchemaDef) => FastifyValidationResult

@@ -1,6 +1,6 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod, RouteGenericInterface } from './route'
-import { FastifySchemaCompiler } from './schema'
+import { FastifySchemaCompiler, FastifySchemaValidationError } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRegister } from './register'
@@ -249,7 +249,7 @@ export interface FastifyInstance<
   /*
   * Set the schema error formatter for all routes.
   */
-  setSchemaErrorFormatter(errorFormatter: (errors: ajv.ErrorObject[], dataVar: string) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setSchemaErrorFormatter(errorFormatter: (errors: FastifySchemaValidationError[], dataVar: string) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   /**
    * Add a content type parser
    */

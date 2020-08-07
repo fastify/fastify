@@ -1,7 +1,7 @@
 import { FastifyInstance } from './instance'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply, ReplyGenericInterface } from './reply'
-import { FastifySchema, FastifySchemaCompiler } from './schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler } from './hooks'
@@ -74,7 +74,7 @@ export interface RouteShorthandOptions<
   prefixTrailingSlash?: boolean;
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
   // TODO: Change to actual type.
-  schemaErrorFormatter?: (errors: ajv.ErrorObject[], dataVar: string) => string;
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => string;
 
   // hooks
   onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];

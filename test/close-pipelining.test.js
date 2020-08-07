@@ -2,7 +2,7 @@
 
 const t = require('tap')
 const test = t.test
-const Fastify = require('../../fastify')
+const Fastify = require('..')
 const autocannon = require('autocannon')
 
 // this tests on windows takes an unusually large amount of time.

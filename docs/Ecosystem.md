@@ -55,6 +55,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify): Auth0 verification plugin for Fastify, internally uses [fastify-jwt](https://npm.im/fastify-jwt) and [jsonwebtoken](https://npm.im/jsonwebtoken).
 - [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud) Plugin for autogenerate CRUD routes as fast as possible.
+- [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes) Plugin to scan and load routes based on filesystem path from custom directory.
 - [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to send HTTP requests via [axios](https://github.com/axios/axios).
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for development servers which require babel transformations of JavaScript sources.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
@@ -148,4 +149,3 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage) An [i18next](https://www.i18next.com) based i18n (internationalization) middleware to be used with Node.js web frameworks like express or `Fastify` and also for Deno.
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.
-- [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes) Map directory structure to routes url

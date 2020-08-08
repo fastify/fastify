@@ -5,6 +5,10 @@ const test = t.test
 const Fastify = require('..')
 const autocannon = require('autocannon')
 
+// this tests on windows takes an unusually large amount of time.
+// https://github.com/fastify/fastify/issues/2470
+t.setTimeout(45000)
+
 test('Should return 503 while closing - pipelining', t => {
   const fastify = Fastify()
 

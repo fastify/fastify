@@ -1,6 +1,7 @@
 import t from 'tap'
 import Fastify from '../../fastify.js'
-import DefaultFastify, { fastify } from '../../fastify.mjs'
+// since we have exports field in the package.json we can selfreference the package
+import DefaultFastify, { fastify } from 'fastify'
 
 t.test('esm support from CJS module.exports', async t => {
   const app = Fastify()

@@ -5,7 +5,7 @@ The Fastify project aims to build a fast and low overhead web framework for Node
 
 ## Section 0: Guiding Principles
 
-The Fastify project is part of the [OpenJS Foundation], which operates transparently, openly, collaboratively, and ethically. Project proposals, timelines, and status must not merely be open, but also easily visible to outsiders.
+The Fastify project is part of the [OpenJS Foundation][openjs foundation], which operates transparently, openly, collaboratively, and ethically. Project proposals, timelines, and status must not merely be open, but also easily visible to outsiders.
 
 
 ## Section 1: Scope
@@ -37,12 +37,12 @@ Fastify is a web framework highly focused on providing the best developer experi
 
 + Support versions of Node.js at EOL (end of life) stage
 + Support serverless architecture
-+ Contributions that violates the [Code of Conduct](./CODE_OF_CONDUCT.md)
++ Contributions that violates the [Code of Conduct](CODE_OF_CONDUCT.md)
 
 
 ## Section 2: Relationship with OpenJS Foundation CPC.
 
-Technical leadership for the projects within the [OpenJS Foundation] is delegated to the projects through their project charters by the [OpenJS Foundation Cross-Project Council](https://openjsf.org/about/governance/) (CPC). In the case of the Fastify project, it is delegated to the [Fastify's Team](./README.md#team) (FTM). The OpenJS Foundation's business leadership is the Board of Directors (the "Board").
+Technical leadership for the projects within the [OpenJS Foundation][openjs foundation] is delegated to the projects through their project charters by the [OpenJS Foundation Cross-Project Council](https://openjsf.org/about/governance/) (CPC). In the case of the Fastify project, it is delegated to the [Fastify's Team](README.md#team) (FTM). The OpenJS Foundation's business leadership is the Board of Directors (the "Board").
 
 This Fastify Charter reflects a carefully constructed balanced role for the FTM and the CPC in the governance of the OpenJS Foundation. The charter amendment process is for the FTM to propose changes using simple majority of the full FTM, the proposed changes being subject to review and approval by the CPC. The CPC may additionally make amendments to the FTM charter at any time, though the CPC will not interfere with day-to-day discussions, votes or meetings of the FTM.
 
@@ -55,12 +55,12 @@ Section Intentionally Left Blank
 
 ## Section 3: Fastify's FTM Governing Body
 
-Fastify is governed by its [maintainers](./README.md#team). See [how it is structured](./CONTRIBUTING.md#fastify-organization-structure) for more information.
+Fastify is governed by its [maintainers](README.md#team). See [how it is structured](CONTRIBUTING.md#fastify-organization-structure) for more information.
 
 
 ## Section 4: Roles & Responsibilities 
 
-The roles and responsibilities of Fastify's maintainers are described in [the project organization](./CONTRIBUTING.md#fastify-organization-structure).
+The roles and responsibilities of Fastify's maintainers are described in [the project organization](CONTRIBUTING.md#fastify-organization-structure).
 
 ### Section 4.1 Project Operations & Management
 

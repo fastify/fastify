@@ -1,6 +1,6 @@
 # Fastify Charter
 
-The Fastify project aims to build a fast and low overhead web framework, for Node.js.
+The Fastify project aims to build a fast and low overhead web framework for Node.js.
 
 
 ## Section 0: Guiding Principles
@@ -30,12 +30,12 @@ Fastify is a web framework highly focused on providing the best developer experi
   + Releases
 + Support:
   + Community
-  + User's issue and questions
-+ Contributor's pull request review
+  + Users's issues and questions
++ Contributors's pull request review
 
 ### 1.2: Out-of-Scope
 
-+ Support versions of Node.js at EOF (end of life) stage
++ Support versions of Node.js at EOL (end of life) stage
 + Support serverless architecture
 + Contributions that violates the [Code of Conduct](./CODE_OF_CONDUCT.md)
 

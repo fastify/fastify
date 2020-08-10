@@ -4,6 +4,11 @@
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "types": "fastify.d.ts",
+  "type": "commonjs",
+  "exports": {
+    "import": "./fastify.mjs",
+    "require": "./fastify.js"
+  },
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",

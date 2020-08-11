@@ -19,6 +19,16 @@ test("shouldSkipOverride should check the 'skip-override' symbol", t => {
   function no () {}
 })
 
+test('getPluginName should return plugin name if the file is cached', t => {
+  t.plan(1)
+  const expectedPluginName = 'example'
+  const fn = () => console.log('is just an example')
+  require.cache[expectedPluginName] = { exports: fn }
+  const pluginName = pluginUtilsPublic.getPluginName(fn)
+
+  t.isEqual(pluginName, expectedPluginName)
+})
+
 test("getMeta should return the object stored with the 'plugin-meta' symbol", t => {
   t.plan(1)
 

@@ -5,11 +5,8 @@ const test = t.test
 const Fastify = require('..')
 const autocannon = require('autocannon')
 
-// this tests on windows takes an unusually large amount of time.
-// https://github.com/fastify/fastify/issues/2470
-t.setTimeout(45000)
-
 test('Should return 503 while closing - pipelining', t => {
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -24,7 +21,7 @@ test('Should return 503 while closing - pipelining', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       pipelining: 1,
       connections: 1,
-      amount: 10
+      amount: 3
     })
 
     const codes = [200, 503]
@@ -44,6 +41,7 @@ test('Should return 503 while closing - pipelining', t => {
 })
 
 test('Should not return 503 while closing - pipelining - return503OnClosing', t => {
+  t.plan(5)
   const fastify = Fastify({
     return503OnClosing: false
   })
@@ -60,7 +58,7 @@ test('Should not return 503 while closing - pipelining - return503OnClosing', t 
       url: 'http://localhost:' + fastify.server.address().port,
       pipelining: 1,
       connections: 1,
-      amount: 10
+      amount: 3
     })
 
     const codes = [200, 200]

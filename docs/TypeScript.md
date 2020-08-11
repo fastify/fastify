@@ -336,7 +336,7 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
   
   module.exports = fp(myPlugin, {
     fastify: '3.x',
-    name: 'my-plugin' // this is used by fastify-plugin to derive variable name
+    name: 'my-plugin' // this is used by fastify-plugin to derive the property name
   })
   ```
 5. Open `index.d.ts` and add the following code:

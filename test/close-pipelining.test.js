@@ -23,18 +23,16 @@ test('Should return 503 while closing - pipelining', t => {
     })
 
     const codes = [200, 503]
-    // eslint-disable-next-line no-unused-vars
-    for (const _ of Array(codes.length)) {
+    for (const code of codes) {
       instance.request(
         { path: '/', method: 'GET' }
       ).then(data => {
-        t.strictEqual(data.statusCode, codes.shift())
+        t.strictEqual(data.statusCode, code)
       }).catch((e) => {
         t.fail(e)
       })
     }
     instance.close(() => {
-      t.strictEqual(codes.length, 0)
       t.end('Done')
     })
   })
@@ -58,18 +56,16 @@ test('Should not return 503 while closing - pipelining - return503OnClosing', t 
     })
 
     const codes = [200, 200]
-    // eslint-disable-next-line no-unused-vars
-    for (const _ of Array(codes.length)) {
+    for (const code of codes) {
       instance.request(
         { path: '/', method: 'GET' }
       ).then(data => {
-        t.strictEqual(data.statusCode, codes.shift())
+        t.strictEqual(data.statusCode, code)
       }).catch((e) => {
         t.fail(e)
       })
     }
     instance.close(() => {
-      t.strictEqual(codes.length, 0)
       t.end('Done')
     })
   })

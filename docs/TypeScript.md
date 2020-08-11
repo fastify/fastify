@@ -347,8 +347,8 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
     //...
   }
 
-  // Optionally, you can add any additional exports
-  // here we are exporting the decorator we added
+  // Optionally, you can add any additional exports.
+  // Here we are exporting the decorator we added.
   export interface myPluginFunc {
     (input: string): string
   }

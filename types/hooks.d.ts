@@ -11,6 +11,9 @@ import { FastifyLoggerInstance } from './logger'
 
 type HookHandlerDoneFunction = <TError extends Error = FastifyError>(err?: TError) => void
 
+// This is used within the `preSerialization` and `onSend` hook handlers
+type DoneFuncWithErrOrRes = <TError extends Error = FastifyError>(err?: TError | null, res?: unknown) => void
+
 interface RequestPayload extends Readable {
   receivedEncodedLength?: number;
 }
@@ -86,12 +89,6 @@ export interface preHandlerHookHandler<
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
-}
-
-// This is used within the `preSerialization` and `onSend` hook handlers
-interface DoneFuncWithErrOrRes {
-  <TError extends Error = FastifyError>(err: TError): void;
-  (err: null, res: unknown): void;
 }
 
 /**

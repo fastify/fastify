@@ -18,7 +18,7 @@ test('Should return 503 while closing - pipelining', t => {
   fastify.listen(0, async err => {
     t.error(err)
 
-    const instance = new Client('http://localhost:' + fastify.server.address().port,{
+    const instance = new Client('http://localhost:' + fastify.server.address().port, {
       pipelining: 1
     })
 
@@ -53,7 +53,7 @@ test('Should not return 503 while closing - pipelining - return503OnClosing', t 
   fastify.listen(0, async err => {
     t.error(err)
 
-    const instance = new Client('http://localhost:' + fastify.server.address().port,{
+    const instance = new Client('http://localhost:' + fastify.server.address().port, {
       pipelining: 1
     })
 

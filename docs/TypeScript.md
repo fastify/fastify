@@ -38,7 +38,7 @@ This example will get you up and running with Fastify and TypeScript. It results
   ```bash
   npx typescript --init
   ```
-  or use one of the [recommanded ones](https://github.com/tsconfig/bases#node-10-tsconfigjson). 
+  or use one of the [recommended ones](https://github.com/tsconfig/bases#node-10-tsconfigjson). 
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:

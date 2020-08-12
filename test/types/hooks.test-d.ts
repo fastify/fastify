@@ -54,7 +54,8 @@ server.addHook<TestPayloadType>('preSerialization', function (request, reply, pa
   expectType<TestPayloadType>(payload) // we expect this to be unknown when not specified like in the previous test
   expectType<void>(done(new Error()))
   expectType<void>(done(null, 'foobar'))
-  expectError(done())
+  expectType<void>(done())
+  expectError<void>(done(new Error(), 'foobar'))
 })
 
 server.addHook<TestPayloadType>('onSend', (request, reply, payload, done) => {
@@ -63,7 +64,8 @@ server.addHook<TestPayloadType>('onSend', (request, reply, payload, done) => {
   expectType<TestPayloadType>(payload)
   expectType<void>(done(new Error()))
   expectType<void>(done(null, 'foobar'))
-  expectError(done())
+  expectType<void>(done())
+  expectError<void>(done(new Error(), 'foobar'))
 })
 
 server.addHook('onResponse', (request, reply, done) => {

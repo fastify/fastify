@@ -90,6 +90,7 @@ export interface preHandlerHookHandler<
 
 // This is used within the `preSerialization` and `onSend` hook handlers
 interface DoneFuncWithErrOrRes {
+  (): void;
   <TError extends Error = FastifyError>(err: TError): void;
   (err: null, res: unknown): void;
 }

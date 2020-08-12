@@ -26,6 +26,9 @@ expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, n
 expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, next) { }, () => { }))
 expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, next) { }, { logLevel: 'info', prefix: 'foobar' }))
 
+expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin')))
+expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin'), { foo: 1 }))
+
 const testPluginCallback: FastifyPluginCallback = function (instance, opts, next) { }
 expectAssignable<FastifyInstance>(fastify().register(testPluginCallback, {}))
 

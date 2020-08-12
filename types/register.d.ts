@@ -16,7 +16,7 @@ export interface FastifyRegister<T = void> {
     opts?: FastifyRegisterOptions<Options>
   ): T;
   <Options extends FastifyPluginOptions>(
-    plugin: FastifyPluginCallback<Options> | FastifyPluginAsync<Options>,
+    plugin: FastifyPluginCallback<Options> | FastifyPluginAsync<Options> | Promise<{ default: FastifyPluginCallback<Options> }> | Promise<{ default: FastifyPluginAsync<Options> }>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
 }

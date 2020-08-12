@@ -3,6 +3,7 @@
   "version": "3.2.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
+  "type": "commonjs",
   "types": "fastify.d.ts",
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",

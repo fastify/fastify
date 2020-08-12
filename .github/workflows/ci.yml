@@ -1,6 +1,16 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - docs/**
+      - examples/**
+      - *.md
+  pull_request:
+    paths-ignore:
+      - docs/**
+      - examples/**
+      - *.md
 
 env:
   CI: true

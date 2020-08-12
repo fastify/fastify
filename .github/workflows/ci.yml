@@ -2,15 +2,13 @@ name: ci
 
 on:
   push:
-    paths-ignore:
-      - docs/**
-      - examples/**
-      - *.md
+    paths:
+      - !docs/**
+      - !*.md
   pull_request:
-    paths-ignore:
-      - docs/**
-      - examples/**
-      - *.md
+    paths:
+      - !docs/**
+      - !*.md
 
 env:
   CI: true

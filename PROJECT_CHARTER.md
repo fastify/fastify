@@ -46,7 +46,6 @@ Technical leadership for the projects within the [OpenJS Foundation][openjs foun
 
 This Fastify Charter reflects a carefully constructed balanced role for the FTM and the CPC in the governance of the OpenJS Foundation. The charter amendment process is for the FTM to propose changes using simple majority of the full FTM, the proposed changes being subject to review and approval by the CPC. The CPC may additionally make amendments to the FTM charter at any time, though the CPC will not interfere with day-to-day discussions, votes or meetings of the FTM.
 
-ex. [Node.js TSC Charter](https://github.com/nodejs/TSC/blob/master/TSC-Charter.md#section-2-evolution-of-openjs-foundation-governance)
 
 ### 2.1 Other Formal Project Relationships
 

@@ -345,7 +345,7 @@ test('should call custom error formatter', t => {
       t.equal(errors.length, 1)
       t.equal(errors[0].message, "should have required property 'name'")
       t.equal(dataVar, 'body')
-      return 'my error'
+      return new Error('my error')
     }
   })
 
@@ -394,7 +394,7 @@ test('should catch error inside formatter and return message', t => {
     t.deepEqual(res.json(), {
       statusCode: 500,
       error: 'Internal Server Error',
-      message: 'schema custom formatter error: abc'
+      message: 'abc'
     })
     t.strictEqual(res.statusCode, 500)
     t.end()
@@ -407,7 +407,7 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
   try {
     Fastify({
       schemaErrorFormatter: async (errors, dataVar) => {
-        return 'should not execute'
+        return new Error('should not execute')
       }
     })
   } catch (err) {
@@ -431,7 +431,7 @@ test('should register a route based schema error formatter', t => {
   fastify.post('/', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
-      return 'abc'
+      return new Error('abc')
     }
   }, function (req, reply) {
     reply.code(200).send(req.body.name)
@@ -460,14 +460,14 @@ test('prefer route based error formatter over global one', t => {
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
-      return 'abc123'
+      return new Error('abc123')
     }
   })
 
   fastify.post('/', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
-      return '123'
+      return new Error('123')
     }
   }, function (req, reply) {
     reply.code(200).send(req.body.name)
@@ -476,7 +476,7 @@ test('prefer route based error formatter over global one', t => {
   fastify.post('/abc', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
-      return 'abc'
+      return new Error('abc')
     }
   }, function (req, reply) {
     reply.code(200).send(req.body.name)
@@ -541,7 +541,7 @@ test('adding schemaErrorFormatter', t => {
   const fastify = Fastify()
 
   fastify.setSchemaErrorFormatter((errors, dataVar) => {
-    return 'abc'
+    return new Error('abc')
   })
 
   fastify.post('/', { schema }, function (req, reply) {
@@ -569,19 +569,19 @@ test('adding schemaErrorFormatter', t => {
 test('plugin override', t => {
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
-      return 'B'
+      return new Error('B')
     }
   })
 
   fastify.register((instance, opts, next) => {
     instance.setSchemaErrorFormatter((errors, dataVar) => {
-      return 'C'
+      return new Error('C')
     })
 
     instance.post('/d', {
       schema,
       schemaErrorFormatter: (errors, dataVar) => {
-        return 'D'
+        return new Error('D')
       }
     }, function (req, reply) {
       reply.code(200).send(req.body.name)
@@ -605,7 +605,7 @@ test('plugin override', t => {
   fastify.post('/', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
-      return 'A'
+      return new Error('A')
     }
   }, function (req, reply) {
     reply.code(200).send(req.body.name)

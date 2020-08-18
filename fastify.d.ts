@@ -113,7 +113,7 @@ export type FastifyServerOptions<
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
-  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => string
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

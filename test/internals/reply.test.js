@@ -452,45 +452,6 @@ test('stream with content type should not send application/octet-stream', t => {
   })
 })
 
-// test('stream should log error when headers sent but not body', t => {
-//   t.plan(6)
-
-//   const fastify = require('../..')()
-//   const fs = require('fs')
-//   const path = require('path')
-
-//   var streamPath = path.join(__dirname, '..', '..', 'package.json')
-//   var stream = fs.createReadStream(streamPath)
-//   // var buf = fs.readFileSync(streamPath)
-
-//   fastify.get('/', function (req, reply) {
-//     reply.log.warn = function mockWarn (message) {
-//       t.equal(message, 'response will send, but you shouldn\'t use res.writeHead in stream mode')
-//     }
-//     reply.raw.writeHead(200, {
-//       location: '/'
-//     })
-
-//     reply.raw.close()
-//     reply.send(stream)
-//   })
-
-//   fastify.listen(0, err => {
-//     t.error(err)
-//     fastify.server.unref()
-//     sget({
-//       method: 'GET',
-//       url: 'http://localhost:' + fastify.server.address().port
-//     // eslint-disable-next-line handle-callback-err
-//     }, (err, response, body) => {
-//       // t.error(err)
-//       // t.strictEqual(response.headers.location, '/')
-//       // t.strictEqual(response.headers['Content-Type'], undefined)
-//       // t.deepEqual(body, buf)
-//     })
-//   })
-// })
-
 test('stream using reply.raw.writeHead should return customize headers', t => {
   t.plan(6)
 

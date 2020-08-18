@@ -257,8 +257,7 @@ t.test('Current opened connection should not accept new incoming connections', t
         t.ok(err)
         t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
 
-        client.end()
-        t.end()
+        client.end(() => { t.end() })
       })
     })
   })

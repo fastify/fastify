@@ -142,9 +142,7 @@ test('Should return error while closing (promise) - injection', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.addHook('onClose', (instance, done) => {
-    setTimeout(done, 150)
-  })
+  fastify.addHook('onClose', (instance, done) => { done() })
 
   fastify.get('/', (req, reply) => {
     reply.send({ hello: 'world' })
@@ -158,7 +156,7 @@ test('Should return error while closing (promise) - injection', t => {
     t.strictEqual(res.statusCode, 200)
     fastify.close()
 
-    setTimeout(() => {
+    process.nextTick(() => {
       fastify.inject({
         method: 'GET',
         url: '/'

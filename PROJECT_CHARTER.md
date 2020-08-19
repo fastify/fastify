@@ -5,7 +5,7 @@ The Fastify project aims to build a fast and low overhead web framework for Node
 
 ## Section 0: Guiding Principles
 
-The Fastify project is part of the [OpenJS Foundation][openjs foundation], which operates transparently, openly, collaboratively, and ethically. Project proposals, timelines, and status must not merely be open, but also easily visible to outsiders.
+The Fastify project is part of the [OpenJS Foundation][openjs foundation]. It operates transparently, openly, collaboratively, and ethically. Project proposals, timelines, and status must not merely be open, but also easily visible to outsiders.
 
 
 ## Section 1: Scope

@@ -15,14 +15,16 @@ const schema = {
   }
 }
 
+function echoBody (req, reply) {
+  reply.code(200).send(req.body.name)
+}
+
 test('should work with valid payload', t => {
   t.plan(3)
 
   const fastify = Fastify()
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -43,9 +45,7 @@ test('should fail immediately with invalid payload', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -349,9 +349,7 @@ test('should call custom error formatter', t => {
     }
   })
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -379,9 +377,7 @@ test('should catch error inside formatter and return message', t => {
     }
   })
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -433,9 +429,7 @@ test('should register a route based schema error formatter', t => {
     schemaErrorFormatter: (errors, dataVar) => {
       return new Error('abc')
     }
-  }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -469,22 +463,16 @@ test('prefer route based error formatter over global one', t => {
     schemaErrorFormatter: (errors, dataVar) => {
       return new Error('123')
     }
-  }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  }, echoBody)
 
   fastify.post('/abc', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
       return new Error('abc')
     }
-  }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  }, echoBody)
 
-  fastify.post('/test', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/test', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -544,9 +532,7 @@ test('adding schemaErrorFormatter', t => {
     return new Error('abc')
   })
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -567,6 +553,8 @@ test('adding schemaErrorFormatter', t => {
 })
 
 test('plugin override', t => {
+  t.plan(15)
+
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
       return new Error('B')
@@ -593,23 +581,26 @@ test('plugin override', t => {
       reply.code(200).send(req.body.name)
     })
 
+    instance.register((subinstance, opts, next) => {
+      subinstance.post('/stillC', {
+        schema
+      }, function (req, reply) {
+        reply.code(200).send(req.body.name)
+      })
+      next()
+    })
+
     next()
   })
 
-  fastify.post('/b', {
-    schema
-  }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/b', { schema }, echoBody)
 
   fastify.post('/', {
     schema,
     schemaErrorFormatter: (errors, dataVar) => {
       return new Error('A')
     }
-  }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -673,6 +664,21 @@ test('plugin override', t => {
       message: 'D'
     })
     t.strictEqual(res.statusCode, 400)
-    t.end()
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/stillC'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'C'
+    })
+    t.strictEqual(res.statusCode, 400)
   })
 })

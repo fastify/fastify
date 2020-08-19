@@ -38,7 +38,7 @@ export interface FastifyInstance<
   decorateRequest(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   decorateReply(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  hasDecorator(decorator: string | symbol): boolean;
+  hasDecorator<K extends string | symbol, T = any>(decorator: K): this is FastifyInstance<RawServer, RawRequest, RawReply, Logger> & Record<K, T>;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
 

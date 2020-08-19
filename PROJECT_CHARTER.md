@@ -67,7 +67,28 @@ Section Intentionally Left Blank
 
 ### Section 4.2: Decision-making, Voting, and/or Elections
 
-Section Intentionally Left Blank
+**Decision-making**
+
+The Fastify's features can be discussed in the GitHub's issues and/or projects.
+The consensus on a discussion is reached when:
+
+- the majority of the collaborator agree on the decision
+- there is not any blocking concern by the lead maintainers
+
+Whenever there is not consensus, lead maintainers will have final say on the topic.
+
+**Voting, and/or Elections**
+
+Every team member may candidate one or more contributors to join the Fastify's org.
+The candidates must be listed in a private team discussion on GitHub with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`)
+
+A consensus is reached when there are:
+
+- at least one lead maintainers approval
+- at least two core/plugins maintainers approval
+- no one contrary
+
+After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-collaborators) may start.
 
 ### Section 4.3: Other Project Roles
 

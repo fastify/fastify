@@ -72,23 +72,30 @@ Section Intentionally Left Blank
 The Fastify's features can be discussed in the GitHub's issues and/or projects.
 The consensus on a discussion is reached when:
 
-- the majority of the collaborator agree on the decision
-- there is not any blocking concern by the lead maintainers
+- the majority of the Collaborator agree on the decision
+- there is not any blocking concern by the Lead Maintainers
 
-Whenever there is not consensus, lead maintainers will have final say on the topic.
+Whenever there is not consensus, Lead Maintainers will have final say on the topic.
 
 **Voting, and/or Elections**
 
-Every team member may candidate one or more contributors to join the Fastify's org.
-The candidates must be listed in a private team discussion on GitHub with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`)
+Individuals making significant and valuable contributions to the project may be candidate to join
+the Fastify's org.
 
-A consensus is reached when there are:
+A Fastify Team Member needs to open a private team discussion on GitHub and list the candidates who
+wants to sponsor with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`).
 
-- at least one lead maintainers approval
-- at least two core/plugins maintainers approval
+Otherwise, a Contributor may self-apply if he/she thinks to meet the above criteria reaching out
+to a Lead Maintainer privately with a few links to his/her valuable contributions.
+The Lead Maintainer will reply to the Contributor and will decide if candidate he/she to the FTM.
+
+The consensus to a new candidate to join the FTM is reached when:
+
+- at least one Lead Maintainers approve
+- at least two Team Members approve
 - no one contrary
 
-After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-collaborators) may start.
+After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-Collaborators) may start.
 
 ### Section 4.3: Other Project Roles
 
@@ -97,5 +104,9 @@ Section Intentionally Left Blank
 ## Section 5: Definitions
 
 + *Contributors*: contribute code or other artifacts, but do not have the right to commit to the code base. Contributors work with the project’s Collaborators to have code committed to the code base. A Contributor may be promoted to a Collaborator by the FTM. Contributors should rarely be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
+
++ *Team Members/Collaborators*: contribute code and other artifacts, have the right to commit to the code base and release satellite projects. Team Members follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Collaborator could be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
+
++ *Lead Maintainers*: founders of the project, contribute code and other artifacts, have the right to commit to the code base and release the project. Lead Maintainers follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Team Member may be promoted to a Lead Maintainers by the Lead Maintainers itseld. A Lead Maintainer will be encumbered by the FTM and by the CPC or OpenJS Foundation Board.
 
 [openjs foundation]: https://openjsf.org

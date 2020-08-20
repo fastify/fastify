@@ -69,31 +69,30 @@ Section Intentionally Left Blank
 
 **Decision-making**
 
-The Fastify's features can be discussed in the GitHub's issues and/or projects.
-The consensus on a discussion is reached when:
+Fastify's features can be discussed in GitHub issues and/or projects.
+Consensus on a discussion is reached when:
 
-- the majority of the Collaborator agree on the decision
-- there is not any blocking concern by the Lead Maintainers
+- the majority of Collaborators agree on the decision
+- there is not any blocking concern from the Lead Maintainers
 
 Whenever there is not consensus, Lead Maintainers will have final say on the topic.
 
 **Voting, and/or Elections**
 
-Individuals making significant and valuable contributions to the project may be candidate to join
-the Fastify's org.
+Individuals making significant and valuable contributions to the project may be a candidate to join the Fastify organization.
 
-A Fastify Team Member needs to open a private team discussion on GitHub and list the candidates who
-wants to sponsor with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`).
+A Fastify Team Member needs to open a private team discussion on GitHub and list the candidates
+they want to sponsor with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`).
 
-Otherwise, a Contributor may self-apply if he/she thinks to meet the above criteria reaching out
-to a Lead Maintainer privately with a few links to his/her valuable contributions.
+Otherwise, a Contributor may self-apply if they believe they meet the above criteria by reaching out
+to a Lead Maintainer privately with a few links to their valuable contributions.
 The Lead Maintainer will reply to the Contributor and will decide if candidate he/she to the FTM.
 
 The consensus to a new candidate to join the FTM is reached when:
 
-- at least one Lead Maintainers approve
-- at least two Team Members approve
-- no one contrary
+- at least one of the Lead Maintainers approve
+- at least two of the Team Members approve
+- no one objects
 
 After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-Collaborators) may start.
 

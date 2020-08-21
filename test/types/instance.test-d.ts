@@ -52,11 +52,8 @@ expectType<boolean>(server.hasDecorator('method'));
 
 if (server.hasDecorator('method')) {
   expectType<any>(server.method);
-} else if (server.hasDecorator<'methodTyped', () => number>('methodTyped')) {
-  expectType<() => number>(server.methodTyped);
 } else {
   expectError(server.method());
-  expectError(server.methodTyped());
 }
 
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))

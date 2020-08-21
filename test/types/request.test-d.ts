@@ -40,6 +40,8 @@ type CustomRequest = FastifyRequest<{
 const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.url)
   expectType<string>(request.method)
+  expectType<string>(request.routerUrl)
+  expectType<string>(request.routerMethod)
   expectType<string>(request.hostname)
   expectType<string>(request.ip)
   expectType<string[] | undefined>(request.ips)

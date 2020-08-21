@@ -60,6 +60,25 @@ test('Should honor maxParamLength option', t => {
   })
 })
 
+test('Should expose router options via getters on request', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.get('/test/:id', (req, reply) => {
+    t.strictEqual(req.routerUrl, '/test/:id')
+    t.strictEqual(req.routerMethod, 'GET')
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test/123456789'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
 test('Should honor frameworkErrors option', t => {
   t.plan(3)
   const fastify = Fastify({

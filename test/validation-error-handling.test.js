@@ -575,11 +575,7 @@ test('plugin override', t => {
       reply.code(200).send(req.body.name)
     })
 
-    instance.post('/c', {
-      schema
-    }, function (req, reply) {
-      reply.code(200).send(req.body.name)
-    })
+    instance.post('/c', { schema }, echoBody)
 
     instance.register((subinstance, opts, next) => {
       subinstance.post('/stillC', { schema }, echoBody)

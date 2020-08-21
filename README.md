@@ -230,7 +230,7 @@ Team members are listed in alphabetical order.
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 
-### Collaborators
+### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.
 
 * [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>, <https://www.npmjs.com/~dalisoft>

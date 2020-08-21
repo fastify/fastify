@@ -54,12 +54,12 @@ Section Intentionally Left Blank
 
 ## Section 3: Fastify's FTM Governing Body
 
-Fastify is governed by its [maintainers](README.md#team). See [how it is structured](CONTRIBUTING.md#fastify-organization-structure) for more information.
+Fastify is governed by its [maintainers](README.md#team). See [how it is structured](GOVERNANCE.md) for more information.
 
 
 ## Section 4: Roles & Responsibilities 
 
-The roles and responsibilities of Fastify's maintainers are described in [the project organization](CONTRIBUTING.md#fastify-organization-structure).
+The roles and responsibilities of Fastify's maintainers are described in [the project organization](GOVERNANCE.md).
 
 ### Section 4.1 Project Operations & Management
 
@@ -70,31 +70,14 @@ Section Intentionally Left Blank
 **Decision-making**
 
 Fastify's features can be discussed in GitHub issues and/or projects.
-Consensus on a discussion is reached when:
-
-- the majority of Collaborators agree on the decision
-- there is not any blocking concern from the Lead Maintainers
+Consensus on a discussion is reached when there is no objection by any
+collaborators.
 
 Whenever there is not consensus, Lead Maintainers will have final say on the topic.
 
 **Voting, and/or Elections**
 
-Individuals making significant and valuable contributions to the project may be a candidate to join the Fastify organization.
-
-A Fastify Team Member needs to open a private team discussion on GitHub and list the candidates
-they want to sponsor with a link to the user's contributions (eg: `[USERNAME](https://github.com/search?q=author:USERNAME+org:fastify)`).
-
-Otherwise, a Contributor may self-apply if they believe they meet the above criteria by reaching out
-to a Lead Maintainer privately with a few links to their valuable contributions.
-The Lead Maintainer will reply to the Contributor and will decide if candidate he/she to the FTM.
-
-The consensus to a new candidate to join the FTM is reached when:
-
-- at least one of the Lead Maintainers approve
-- at least two of the Team Members approve
-- no one objects
-
-After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-Collaborators) may start.
+These processes are described in the [GOVERNANCE](GOVERNANCE.md) document.
 
 ### Section 4.3: Other Project Roles
 
@@ -102,10 +85,11 @@ Section Intentionally Left Blank
 
 ## Section 5: Definitions
 
-+ *Contributors*: contribute code or other artifacts, but do not have the right to commit to the code base. Contributors work with the project’s Collaborators to have code committed to the code base. A Contributor may be promoted to a Collaborator by the FTM. Contributors should rarely be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
++ *Contributors*: contribute code or other artifacts, but do not have the right to commit to the code base. Contributors work with the project’s Collaborators to have code committed to the code base. Contributors should rarely be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
 
-+ *Team Members/Collaborators*: contribute code and other artifacts, have the right to commit to the code base and release satellite projects. Team Members follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Collaborator could be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
++ *Collaborators*: contribute code and other artifacts, have the right to commit to the code base and release plugins projects. Collaborators follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Collaborator could be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
 
-+ *Lead Maintainers*: founders of the project, contribute code and other artifacts, have the right to commit to the code base and release the project. Lead Maintainers follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Team Member may be promoted to a Lead Maintainers by the Lead Maintainers itseld. A Lead Maintainer will be encumbered by the FTM and by the CPC or OpenJS Foundation Board.
++ *Lead Maintainers*: founders of the project, contribute code and other artifacts, have the right to commit to the code base and release the project. Lead Maintainers follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Lead Maintainer will be encumbered by the FTM and by the CPC or OpenJS Foundation Board.
 
 [openjs foundation]: https://openjsf.org
+[Consensus Seeking]: https://en.wikipedia.org/wiki/Consensus-seeking_decision-making

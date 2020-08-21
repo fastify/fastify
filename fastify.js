@@ -48,6 +48,13 @@ const {
   FST_ERR_MISSING_MIDDLEWARE
 } = require('./lib/errors')
 
+const onBadUrlContext = {
+  config: {
+  },
+  onSend: [],
+  onError: []
+}
+
 function fastify (options) {
   // Options validations
   options = options || {}
@@ -484,8 +491,8 @@ function fastify (options) {
 
       childLogger.info({ req }, 'incoming request')
 
-      const request = new Request(id, req, null, childLogger)
-      const reply = new Reply(res, { onSend: [], onError: [] }, request, childLogger)
+      const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+      const reply = new Reply(res, request, childLogger)
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)
     }
     const body = `{"error":"Bad Request","message":"'${path}' is not a valid url component","statusCode":400}`

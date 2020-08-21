@@ -30,8 +30,9 @@ export interface FastifyRequest<
   hostname: string;
   url: string;
   method: string;
-  routerUrl: string;
+  routerPath: string;
   routerMethod: string;
+  is404: boolean;
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
 

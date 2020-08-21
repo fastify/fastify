@@ -41,8 +41,8 @@ test('rawBody function', t => {
   const rs = new Readable()
   rs._read = function () {}
   rs.headers = { 'content-length': body.length }
-  const request = new Request('id', 'params', rs, 'query', 'log')
-  const reply = new Reply(res, context, {})
+  const request = new Request('id', 'params', rs, 'query', 'log', context)
+  const reply = new Reply(res, request)
   const done = () => {}
 
   internals.rawBody(

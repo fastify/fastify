@@ -17,9 +17,9 @@ const {
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
   const response = { res: 'res' }
-  function context () {}
-  function request () {}
-  const reply = new Reply(response, context, request)
+  const context = {}
+  const request = { context }
+  const reply = new Reply(response, request)
   t.is(typeof reply, 'object')
   t.is(typeof reply[kReplyIsError], 'boolean')
   t.is(typeof reply[kReplyErrorHandlerCalled], 'boolean')
@@ -44,7 +44,7 @@ test('reply.send throw with circular JSON', t => {
     writeHead: () => {},
     end: () => {}
   }
-  const reply = new Reply(response, { onSend: [] }, null)
+  const reply = new Reply(response, { context: { onSend: [] } })
   t.throws(() => {
     var obj = {}
     obj.obj = obj
@@ -61,7 +61,7 @@ test('reply.send returns itself', t => {
     writeHead: () => {},
     end: () => {}
   }
-  const reply = new Reply(response, { onSend: [] }, null)
+  const reply = new Reply(response, { context: { onSend: [] } })
   t.equal(reply.send('hello'), reply)
 })
 
@@ -77,7 +77,7 @@ test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const context = {}
-  const reply = new Reply(response, context, null)
+  const reply = new Reply(response, { context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
 })
 
@@ -86,7 +86,7 @@ test('reply.serialize should serialize payload with a custom serializer', t => {
   let customSerializerCalled = false
   const response = { statusCode: 200 }
   const context = {}
-  const reply = new Reply(response, context, null)
+  const reply = new Reply(response, { context })
   reply.serializer((x) => (customSerializerCalled = true) && JSON.stringify(x))
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
@@ -1180,8 +1180,7 @@ test('should throw error when attempting to set reply.sent more than once', t =>
 test('reply.getResponseTime() should return 0 before the timer is initialised on the reply by setting up response listeners', t => {
   t.plan(1)
   const response = { statusCode: 200 }
-  const context = {}
-  const reply = new Reply(response, context, null)
+  const reply = new Reply(response, null)
   t.equal(reply.getResponseTime(), 0)
 })
 
@@ -1454,14 +1453,13 @@ test('reply should not call the custom serializer for errors and not found', t =
 test('reply.then', t => {
   t.plan(2)
 
-  function context () {}
   function request () {}
 
   t.test('without an error', t => {
     t.plan(1)
 
     const response = new Writable()
-    const reply = new Reply(response, context, request)
+    const reply = new Reply(response, request)
 
     reply.then(function () {
       t.pass('fullfilled called')
@@ -1474,7 +1472,7 @@ test('reply.then', t => {
     t.plan(1)
 
     const response = new Writable()
-    const reply = new Reply(response, context, request)
+    const reply = new Reply(response, request)
     const _err = new Error('kaboom')
 
     reply.then(function () {

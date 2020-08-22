@@ -61,7 +61,7 @@ test('reply.send will logStream error and destroy the stream', { only: true }, t
     pipe: () => {},
     destroy: () => {}
   })
-  const reply = new Reply(response, { onSend: null }, null, log)
+  const reply = new Reply(response, { context: { onSend: null } }, log)
   reply.send(payload)
   payload.emit('error', new Error('stream error'))
 
@@ -130,7 +130,7 @@ test('reply.serialize should serialize payload with a context default serializer
   let customSerializerCalled = false
   const response = { statusCode: 200 }
   const context = { [kReplySerializerDefault]: (x) => (customSerializerCalled = true) && JSON.stringify(x) }
-  const reply = new Reply(response, context, null)
+  const reply = new Reply(response, { context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
 })

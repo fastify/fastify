@@ -23,6 +23,8 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
   - [onClose](#onclose)
   - [onRoute](#onroute)
   - [onRegister](#onregister)
+- [Scope](#scope)
+- [Route level hooks](#route-level-hooks)
 
 **Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behaviour may occur, e.g. duplicate invocation of handlers.
 
@@ -56,7 +58,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 
 ### preParsing
 
-If you are using the `preParsing` hook, you can transform the request payload stream before it is parsed. It receives the request and reply objects as other hooks, and a stream with the current request payload. 
+If you are using the `preParsing` hook, you can transform the request payload stream before it is parsed. It receives the request and reply objects as other hooks, and a stream with the current request payload.
 
 If it returns a value (via `return` or via the callback function), it must return a stream.
 
@@ -79,7 +81,7 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 
 **Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
-**Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk. 
+**Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
 
 **Notice**: The old syntaxes `function(request, reply, done)` and `async function(request, reply)` for the parser are still supported but they are deprecated.
 
@@ -361,7 +363,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.method
   routeOptions.schema
   routeOptions.url // the complete URL of the route, it will inclued the prefix if any
-  routeOptions.path // `url` alias 
+  routeOptions.path // `url` alias
   routeOptions.routePath // the URL of the route without the prefix
   routeOptions.bodyLimit
   routeOptions.logLevel

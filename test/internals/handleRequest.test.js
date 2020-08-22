@@ -134,6 +134,10 @@ test('handler function - preValidationCallback with finished response', t => {
 })
 
 test('handler function - preValidationCallback with finished response (< v12.9.0)', t => {
+  if (semver.gte(process.versions.node, '12.9.0')) {
+    return t.end()
+  }
+
   t.plan(0)
   const res = {}
   // Be sure to check only `writableEnded` where is available

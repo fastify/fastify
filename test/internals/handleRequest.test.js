@@ -134,10 +134,6 @@ test('handler function - preValidationCallback with finished response', t => {
 })
 
 test('handler function - preValidationCallback with finished response (< v12.9.0)', t => {
-  if (semver.gte(process.versions.node, '12.9.0')) {
-    return t.end()
-  }
-
   t.plan(0)
   const res = {}
   // Be sure to check only `writableEnded` where is available
@@ -161,7 +157,7 @@ test('handler function - preValidationCallback with finished response (< v12.9.0
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({}, new Reply(res, context, {}))
+  internals.handler({}, new Reply(res, { context }))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

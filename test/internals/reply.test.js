@@ -5,13 +5,15 @@ const test = t.test
 const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
+const EventEmitter = require('events').EventEmitter
 const Reply = require('../../lib/reply')
 const { Writable } = require('readable-stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,
   kReplySerializer,
-  kReplyIsError
+  kReplyIsError,
+  kReplySerializerDefault
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
@@ -33,6 +35,37 @@ test('Once called, Reply should return an object with methods', t => {
   t.deepEqual(reply.raw, response)
   t.strictEqual(reply.context, context)
   t.strictEqual(reply.request, request)
+})
+
+test('reply.send will logStream error and destroy the stream', { only: true }, t => {
+  t.plan(1)
+  let destroyCalled
+  const payload = new EventEmitter()
+
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    getHeader: () => undefined,
+    writeHead: () => {},
+    end: () => {},
+    headersSent: true,
+    destroy: () => (destroyCalled = true),
+    on: () => {}
+  }
+
+  const log = {
+    warn: () => {}
+  }
+
+  Object.assign(payload, {
+    pipe: () => {},
+    destroy: () => {}
+  })
+  const reply = new Reply(response, { context: { onSend: null } }, log)
+  reply.send(payload)
+  payload.emit('error', new Error('stream error'))
+
+  t.equal(destroyCalled, true, 'Error not logged and not streamed')
 })
 
 test('reply.send throw with circular JSON', t => {
@@ -88,6 +121,16 @@ test('reply.serialize should serialize payload with a custom serializer', t => {
   const context = {}
   const reply = new Reply(response, { context })
   reply.serializer((x) => (customSerializerCalled = true) && JSON.stringify(x))
+  t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
+  t.equal(customSerializerCalled, true, 'custom serializer not called')
+})
+
+test('reply.serialize should serialize payload with a context default serializer', t => {
+  t.plan(2)
+  let customSerializerCalled = false
+  const response = { statusCode: 200 }
+  const context = { [kReplySerializerDefault]: (x) => (customSerializerCalled = true) && JSON.stringify(x) }
+  const reply = new Reply(response, { context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
 })
@@ -870,6 +913,19 @@ test('reply.getHeader returns correct values', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, () => {})
   })
+})
+
+test('reply.getHeader returns raw header if there is not in the reply headers', t => {
+  t.plan(1)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => true,
+    getHeader: () => 'bar',
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { onSend: [] }, null)
+  t.equal(reply.getHeader('foo'), 'bar')
 })
 
 test('reply.getHeaders returns correct values', t => {

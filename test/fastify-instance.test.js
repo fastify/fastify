@@ -29,11 +29,39 @@ test('fastify instance should contains ajv options', t => {
   })
 })
 
+test('fastify instance should contains ajv options.plugins nested arrays', t => {
+  t.plan(1)
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        nullable: false
+      },
+      plugins: [[]]
+    }
+  })
+  t.same(fastify[kOptions].ajv, {
+    customOptions: {
+      nullable: false
+    },
+    plugins: [[]]
+  })
+})
+
 test('fastify instance get invalid ajv options', t => {
   t.plan(1)
   t.throw(() => Fastify({
     ajv: {
       customOptions: 8
+    }
+  }))
+})
+
+test('fastify instance get invalid ajv options.plugins', t => {
+  t.plan(1)
+  t.throw(() => Fastify({
+    ajv: {
+      customOptions: {},
+      plugins: 8
     }
   }))
 })

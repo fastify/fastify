@@ -113,6 +113,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes) Plugin to cherry pick classes from objectionjs ORM.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
+- [`fastify-opentelemetry`](https://github.com/autotelic/fastify-opentelemetry) A Fastify plugin that uses the [OpenTelemetry API](https://github.com/open-telemetry/opentelemetry-js/tree/master/packages/opentelemetry-api) to provide request tracing.
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).

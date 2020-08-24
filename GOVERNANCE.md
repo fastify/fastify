@@ -37,7 +37,7 @@ Every memeber of the org is also part of `@fastify/fastify`.
 Collaborators have:
 
 * Commit access to the projects repository of the team they belong
-* Grant to release new projects' versions
+ * Grant to release new versions of the project
 
 Both Collaborators and non-Collaborators may propose changes to the source code
 of the projects of the organization.

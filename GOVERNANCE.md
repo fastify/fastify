@@ -22,7 +22,7 @@ The Lead Maintainers are the curator of the Fastify project and their key respon
 
 Fastify Collaborators maintain the projects of the Fastify organization.
 
-They are splitted in:
+They are split into the following teams:
 
 |  Team | Responsibility  |  Repository |
 |---|---|---|

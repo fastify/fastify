@@ -16,13 +16,13 @@
 
 Fastify Lead Maintainers are the founder of the project and the organization owners.
 They are the only members of the `@fastify/leads` team.
-
+The Lead Maintainers are the curator of the Fastify project and their key responsibility is to issue releases of Fastify and its dependencies.
 
 ## Collaborators
 
 Fastify Collaborators maintain the projects of the Fastify organization.
 
-They are splitted in:
+They are split into the following teams:
 
 |  Team | Responsibility  |  Repository |
 |---|---|---|
@@ -37,7 +37,7 @@ Every memeber of the org is also part of `@fastify/fastify`.
 Collaborators have:
 
 * Commit access to the projects repository of the team they belong
-* Grant to release new projects' versions
+ * Grant to release new versions of the project
 
 Both Collaborators and non-Collaborators may propose changes to the source code
 of the projects of the organization.
@@ -73,9 +73,9 @@ they want to sponsor with a link to the user's contributions. For example:
 
 Otherwise, a Contributor may self-apply if they believe they meet the above criteria by reaching out
 to a Lead Maintainer privately with the links to their valuable contributions.
-The Lead Maintainer will reply to the Contributor and will decide if candidate he/she.
+The Lead Maintainers will reply to the Contributor and will decide if candidate it to be made a collaborator.
 
-The consensus to a new candidate to get the Collaborator status is reached when:
+The consensus to grant a new candidate Collaborator status is reached when:
 
 - at least one of the Lead Maintainers approve
 - at least two of the Team Members approve
@@ -85,7 +85,7 @@ After these conditions are satisfied, the [onboarding process](#onboarding-colla
 
 ## Lead Maintainers nominations
 
-A Team Member may be promoted to a Lead Maintainers only by the Lead Maintainers itself.
+A Team Member may be promoted to a Lead Maintainers only through nomination by a Lead maintainer and with agreement from the rest of Lead Maintainers.
 
 
 ## Consensus seeking process

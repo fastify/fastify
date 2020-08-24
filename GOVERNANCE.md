@@ -73,7 +73,7 @@ they want to sponsor with a link to the user's contributions. For example:
 
 Otherwise, a Contributor may self-apply if they believe they meet the above criteria by reaching out
 to a Lead Maintainer privately with the links to their valuable contributions.
-The Lead Maintainer will reply to the Contributor and will decide if candidate he/she.
+The Lead Maintainers will reply to the Contributor and will decide if candidate it to be made a collaborator.
 
 The consensus to a new candidate to get the Collaborator status is reached when:
 

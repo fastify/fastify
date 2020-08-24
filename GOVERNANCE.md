@@ -85,7 +85,7 @@ After these conditions are satisfied, the [onboarding process](#onboarding-colla
 
 ## Lead Maintainers nominations
 
-A Team Member may be promoted to a Lead Maintainers only by the Lead Maintainers itself.
+A Team Member may be promoted to a Lead Maintainers only through nomination by a Lead maintainer and with agreement from the rest of Lead Maintainers.
 
 
 ## Consensus seeking process

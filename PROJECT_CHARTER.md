@@ -42,9 +42,9 @@ Fastify is a web framework highly focused on providing the best developer experi
 
 ## Section 2: Relationship with OpenJS Foundation CPC.
 
-Technical leadership for the projects within the [OpenJS Foundation][openjs foundation] is delegated to the projects through their project charters by the [OpenJS Foundation Cross-Project Council](https://openjsf.org/about/governance/) (CPC). In the case of the Fastify project, it is delegated to the [Fastify's Team](README.md#team) (FTM). The OpenJS Foundation's business leadership is the Board of Directors (the "Board").
+Technical leadership for the projects within the [OpenJS Foundation][openjs foundation] is delegated to the projects through their project charters by the [OpenJS Foundation Cross-Project Council](https://openjsf.org/about/governance/) (CPC). In the case of the Fastify project, it is delegated to the [Fastify Collaborators](README.md#team). The OpenJS Foundation's business leadership is the Board of Directors (the "Board").
 
-This Fastify Charter reflects a carefully constructed balanced role for the FTM and the CPC in the governance of the OpenJS Foundation. The charter amendment process is for the FTM to propose changes using simple majority of the full FTM, the proposed changes being subject to review and approval by the CPC. The CPC may additionally make amendments to the FTM charter at any time, though the CPC will not interfere with day-to-day discussions, votes or meetings of the FTM.
+This Fastify Charter reflects a carefully constructed balanced role for the Collaborators and the CPC in the governance of the OpenJS Foundation. The charter amendment process is for the Fastify Collaborators to propose change using simple majority of the full Fastify Organization, the proposed changes being subject to review and approval by the CPC. The CPC may additionally make amendments to the Collaborators charter at any time, though the CPC will not interfere with day-to-day discussions, votes or meetings of the Fastify Organization.
 
 
 ### 2.1 Other Formal Project Relationships
@@ -52,7 +52,7 @@ This Fastify Charter reflects a carefully constructed balanced role for the FTM 
 Section Intentionally Left Blank
 
 
-## Section 3: Fastify's FTM Governing Body
+## Section 3: Fastify Governing Body
 
 Fastify is governed by its [maintainers](README.md#team). See [how it is structured](GOVERNANCE.md) for more information.
 
@@ -85,11 +85,11 @@ Section Intentionally Left Blank
 
 ## Section 5: Definitions
 
-+ *Contributors*: contribute code or other artifacts, but do not have the right to commit to the code base. Contributors work with the project’s Collaborators to have code committed to the code base. Contributors should rarely be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
++ *Contributors*: contribute code or other artifacts, but do not have the right to commit to the code base. Contributors work with the project’s Collaborators to have code committed to the code base. Contributors should rarely be encumbered by the Fastify Collaborators and never by the CPC or OpenJS Foundation Board.
 
-+ *Collaborators*: contribute code and other artifacts, have the right to commit to the code base and release plugins projects. Collaborators follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Collaborator could be encumbered by the FTM and never by the CPC or OpenJS Foundation Board.
++ *Collaborators*: contribute code and other artifacts, have the right to commit to the code base and release plugins projects. Collaborators follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Collaborator could be encumbered by other Fastify Collaborators and never by the CPC or OpenJS Foundation Board.
 
-+ *Lead Maintainers*: founders of the project, contribute code and other artifacts, have the right to commit to the code base and release the project. Lead Maintainers follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Lead Maintainer will be encumbered by the FTM and by the CPC or OpenJS Foundation Board.
++ *Lead Maintainers*: founders of the project, contribute code and other artifacts, have the right to commit to the code base and release the project. Lead Maintainers follow the [CONTRIBUTING](CONTRIBUTING.md) guidelines to manage the project. A Lead Maintainer will be encumbered by the Fastify Collaborators and by the CPC or OpenJS Foundation Board.
 
 [openjs foundation]: https://openjsf.org
 [Consensus Seeking]: https://en.wikipedia.org/wiki/Consensus-seeking_decision-making

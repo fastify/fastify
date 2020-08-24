@@ -9,6 +9,7 @@ Individuals making significant and valuable contributions are given commit-acces
 If you think you meet the above criteria and we have not invited you yet, we are sorry!
 Feel free reach out to a [Lead Maintainer](https://github.com/fastify/fastify#team) privately with
 a few links to your valuable contributions.
+Read the [GOVERNANCE](GOVERNANCE.md) to get more information.
 
 ## Rules
 
@@ -53,17 +54,7 @@ This is an experiment and feedback is welcome! This document may also be subject
 
 # Fastify Organization Structure
 
-We have many collaborators, and every kind of contribution is welcome! Our organization is structured as follows:
-
-|  Team | Responsibility  |  Repository |
-|---|---|---|
-| `@fastify/leads` | Fastify Lead Maintainers | GitHub organization owners |
-| `@fastify/core`   |  Fastify Core development  |  `fastify`, `fast-json-stringify`, `light-my-request`, `fastify-plugin`, `middie` |
-| `@fastify/plugins`   |  Build, maintain and release Fastify plugins  |  All plugins repositories |
-| `@fastify/benchmarks`   |  Build and maintain our benchmarks suite  |  `benchmarks` |
-| `@fastify/docs-chinese`   |  Translate the Fastify documentation in Chinese  |  `docs-chinese` |
-
-Every memeber of the org is also part of `@fastify/fastify`.
+The Fastify structure is detailed in the [GOVERNANCE](GOVERNANCE.md) document.
 
 ### Onboarding Collaborators
 

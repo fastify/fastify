@@ -75,7 +75,7 @@ Otherwise, a Contributor may self-apply if they believe they meet the above crit
 to a Lead Maintainer privately with the links to their valuable contributions.
 The Lead Maintainers will reply to the Contributor and will decide if candidate it to be made a collaborator.
 
-The consensus to a new candidate to get the Collaborator status is reached when:
+The consensus to grant a new candidate Collaborator status is reached when:
 
 - at least one of the Lead Maintainers approve
 - at least two of the Team Members approve

@@ -247,7 +247,7 @@ Great contributors on a specific area in the Fastify ecosystem will be invited t
 
 [<img src="https://github.com/openjs-foundation/cross-project-council/blob/master/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#incubating)
 
-We are currently an [incubated project](https://openjsf.org/blog/2019/11/20/web-framework-fastify-joins-openjs-foundation-as-an-incubating-project/) at the OpenJS Foundation.
+We are a Growth Project at the OpenJS Foundation.
 
 ## Acknowledgements
 

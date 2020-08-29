@@ -16,6 +16,9 @@ Request is a core Fastify object containing the following fields:
 - `hostname` - the hostname of the incoming request
 - `method` - the method of the incoming request
 - `url` - the url of the incoming request
+- `routerMethod` - the method defined for the router that is handling the request
+- `routerPath` - the path pattern defined for the router that is handling the request
+- `is404` - true if request is being handled by 404 handler, false if it is not
 - `connection` - the underlying connection of the incoming request
 
 ```js

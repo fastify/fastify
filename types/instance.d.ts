@@ -4,7 +4,7 @@ import { FastifySchemaCompiler, FastifySchemaValidationError } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRegister } from './register'
-import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onReadyHookHandler } from './hooks'
+import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onReadyHookHandler, onTimeoutHookHandler } from './hooks'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
@@ -24,6 +24,8 @@ export interface FastifyInstance<
   log: Logger;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  getSchema(schemaId: string): unknown;
+  getSchemas(): Record<string, unknown>;
 
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
@@ -48,6 +50,8 @@ export interface FastifyInstance<
   listen(port: number, address: string, callback: (err: Error, address: string) => void): void;
   listen(port: number, callback: (err: Error, address: string) => void): void;
   listen(port: number, address?: string, backlog?: number): Promise<string>;
+  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error, address: string) => void): void;
+  listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
@@ -161,6 +165,18 @@ export interface FastifyInstance<
   >(
     name: 'onResponse',
     hook: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  /**
+   * `onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance)
+   * The onTimeout hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.
+   */
+  addHook<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault
+  >(
+    name: 'onTimeout',
+    hook: onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

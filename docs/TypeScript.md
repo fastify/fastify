@@ -38,6 +38,8 @@ This example will get you up and running with Fastify and TypeScript. It results
   ```bash
   npx typescript --init
   ```
+  or use one of the [recommended ones](https://github.com/tsconfig/bases#node-10-tsconfigjson). 
+
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
   ```typescript
@@ -333,12 +335,20 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
   }
   
   module.exports = fp(myPlugin, {
-    fastify: '3.x'
+    fastify: '3.x',
+    name: 'my-plugin' // this is used by fastify-plugin to derive the property name
   })
   ```
 5. Open `index.d.ts` and add the following code:
   ```typescript
-  // Not necessary, but exporting whatever extra types is supported 
+  import { FastifyPlugin } from 'fastify'
+
+  interface PluginOptions {
+    //...
+  }
+
+  // Optionally, you can add any additional exports.
+  // Here we are exporting the decorator we added.
   export interface myPluginFunc {
     (input: string): string
   }
@@ -349,7 +359,16 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
       myPluginFunc: myPluginFunc
     }
   }
+
+  // fastify-plugin automatically adds named export, so be sure to add also this type
+  // the variable name is derived from `options.name` property if `module.exports.myPlugin` is missing
+  export const myPlugin: FastifyPlugin<PluginOptions>
+
+  // fastify-plugin automatically adds `.default` property to the exported plugin. See the note below
+  export default myPlugin
   ```
+
+__Note__: [fastify-plugin](https://github.com/fastify/fastify-plugin) v2.3.0 and newer, automatically adds `.default` property and a named export to the exported plugin. Be sure to `export default` and `export const myPlugin` in your typings to provide the best developer experience. For a complete example you can check out [fastify-swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any TypeScript project! 
 

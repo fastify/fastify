@@ -1132,3 +1132,30 @@ test('Add schema order should not break the startup', t => {
 
   fastify.ready(err => { t.error(err) })
 })
+
+test('The schema compiler recreate itself if needed', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.options('/', { schema: { hide: true } }, echoBody)
+
+  fastify.register(function (fastify, options, done) {
+    fastify.addSchema({
+      $id: 'identifier',
+      type: 'string',
+      format: 'uuid'
+    })
+
+    fastify.get('/:foobarId', {
+      schema: {
+        params: {
+          foobarId: { $ref: 'identifier#' }
+        }
+      }
+    }, echoBody)
+
+    done()
+  })
+
+  fastify.ready(err => { t.error(err) })
+})

@@ -19,6 +19,7 @@
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
+[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/D3FZYPy)
 
 </div>
 
@@ -192,9 +193,11 @@ matters to you.
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
 
 ## Ecosystem
+
 - [Core](./docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
 - [Community](./docs/Ecosystem.md#community) - Community supported plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
+- [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with the maintainers.
 
 ## Support
 Please visit [Fastify help](https://github.com/fastify/help) to view prior
@@ -217,16 +220,19 @@ Team members are listed in alphabetical order.
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Dustin Deus__](https://github.com/StarpTech), <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
 * [__Denis Fäcke__](https://github.com/SerayaEryn), <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
+* [__Rafael Gonzaga__](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 
-### Collaborators
+### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.
 
 * [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>, <https://www.npmjs.com/~dalisoft>
@@ -241,9 +247,9 @@ Great contributors on a specific area in the Fastify ecosystem will be invited t
 
 ## Hosted by
 
-[<img src="https://github.com/openjs-foundation/cross-project-council/blob/master/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#incubating)
+[<img src="https://github.com/openjs-foundation/cross-project-council/blob/master/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#growth)
 
-We are currently an [incubated project](https://openjsf.org/blog/2019/11/20/web-framework-fastify-joins-openjs-foundation-as-an-incubating-project/) at the OpenJS Foundation.
+We are a [Growth Project](https://github.com/openjs-foundation/cross-project-council/blob/master/PROJECT_PROGRESSION.md#growth-stage) in the [OpenJS Foundation](https://openjsf.org/).
 
 ## Acknowledgements
 

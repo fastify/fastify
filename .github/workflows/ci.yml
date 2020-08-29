@@ -1,6 +1,14 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
 
 env:
   CI: true
@@ -11,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 13.x, 14.x]
+        node-version: [10.x, 12.x, 14.x]
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:

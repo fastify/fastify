@@ -60,6 +60,46 @@ test('Should honor maxParamLength option', t => {
   })
 })
 
+test('Should expose router options via getters on request and reply', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.get('/test/:id', (req, reply) => {
+    t.strictEqual(reply.context.config.url, '/test/:id')
+    t.strictEqual(reply.context.config.method, 'GET')
+    t.strictEqual(req.routerPath, '/test/:id')
+    t.strictEqual(req.routerMethod, 'GET')
+    t.strictEqual(req.is404, false)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/test/123456789'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
+test('Should set is404 flag for unmatched paths', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.setNotFoundHandler((req, reply) => {
+    t.strictEqual(req.is404, true)
+    reply.code(404).send({ error: 'Not Found', message: 'Four oh for', statusCode: 404 })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/nonexist/123456789'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
 test('Should honor frameworkErrors option', t => {
   t.plan(3)
   const fastify = Fastify({

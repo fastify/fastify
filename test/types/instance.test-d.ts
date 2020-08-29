@@ -13,6 +13,9 @@ expectAssignable<FastifyInstance>(server.addSchema({
     schemas: []
 }))
 
+expectType<Record<string, unknown>>(server.getSchemas())
+expectType<unknown>(server.getSchema('SchemaId'))
+
 expectType<unknown>(server.use(() => {}))
 expectType<unknown>(server.use('/foo', () => {}))
 
@@ -47,3 +50,10 @@ expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
 function invalidSchemaErrorFormatter() {}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
+
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))

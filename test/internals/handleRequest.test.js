@@ -73,9 +73,10 @@ test('handler function - invalid schema', t => {
   }
   buildSchema(context, schemaValidator)
   const request = {
-    body: { hello: 'world' }
+    body: { hello: 'world' },
+    context
   }
-  internals.handler(request, new Reply(res, context, request))
+  internals.handler(request, new Reply(res, request))
 })
 
 test('handler function - reply', t => {
@@ -100,7 +101,7 @@ test('handler function - reply', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({}, new Reply(res, context, {}))
+  internals.handler({}, new Reply(res, { context }))
 })
 
 test('handler function - preValidationCallback with finished response', t => {
@@ -130,7 +131,34 @@ test('handler function - preValidationCallback with finished response', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({}, new Reply(res, context, {}))
+  internals.handler({}, new Reply(res, { context }))
+})
+
+test('handler function - preValidationCallback with finished response (< v12.9.0)', t => {
+  t.plan(0)
+  const res = {}
+  // Be sure to check only `writableEnded` where is available
+  res.writable = false
+  res.finished = true
+
+  res.end = () => {
+    t.fail()
+  }
+  res.writeHead = () => {}
+  const context = {
+    handler: (req, reply) => {
+      t.fail()
+      reply.send(undefined)
+    },
+    Reply: Reply,
+    Request: Request,
+    preValidation: null,
+    preHandler: [],
+    onSend: [],
+    onError: []
+  }
+  buildSchema(context, schemaValidator)
+  internals.handler({}, new Reply(res, { context }))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

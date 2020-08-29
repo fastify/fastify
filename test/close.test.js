@@ -138,7 +138,37 @@ test('onClose should keep the context', t => {
   })
 })
 
-test('Should return error while closing - injection', t => {
+test('Should return error while closing (promise) - injection', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('onClose', (instance, done) => { done() })
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    fastify.close()
+
+    process.nextTick(() => {
+      fastify.inject({
+        method: 'GET',
+        url: '/'
+      }).catch(err => {
+        t.ok(err)
+        t.equal(err.message, 'Server is closed')
+      })
+    }, 100)
+  })
+})
+
+test('Should return error while closing (callback) - injection', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -227,8 +257,7 @@ t.test('Current opened connection should not accept new incoming connections', t
         t.ok(err)
         t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
 
-        client.end()
-        t.end()
+        client.end(() => { t.end() })
       })
     })
   })

@@ -90,6 +90,7 @@ export interface preHandlerHookHandler<
 
 // This is used within the `preSerialization` and `onSend` hook handlers
 interface DoneFuncWithErrOrRes {
+  (): void;
   <TError extends Error = FastifyError>(err: TError): void;
   (err: null, res: unknown): void;
 }
@@ -153,6 +154,24 @@ export interface onResponseHookHandler<
 }
 
 /**
+ * `onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance)
+ * The onTimeout hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.
+ */
+export interface onTimeoutHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault
+> {
+  (
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
+    done: HookHandlerDoneFunction
+  ): Promise<unknown> | void;
+}
+
+/**
  * This hook is useful if you need to do some custom error logging or add some specific header in case of error.
  * It is not intended for changing the error, and calling reply.send will throw an exception.
  * This hook will be executed only after the customErrorHandler has been executed, and only if the customErrorHandler sends an error back to the user (Note that the default customErrorHandler always sends the error back to the user).
@@ -187,7 +206,7 @@ export interface onRouteHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
-    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { path: string; prefix: string }
+    opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { routePath: string, path: string; prefix: string }
   ): Promise<unknown> | void;
 }
 

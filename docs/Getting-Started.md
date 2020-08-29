@@ -43,7 +43,9 @@ fastify.listen(3000, function (err, address) {
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br>
 *(We also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks.)*
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify')({
+  logger: true
+})
 
 fastify.get('/', async (request, reply) => {
   return { hello: 'world' }

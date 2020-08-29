@@ -372,7 +372,7 @@ Configure the ajv instance used by Fastify without providing a custom one.
     removeAdditional: true,
     useDefaults: true,
     coerceTypes: true,
-    allErrors: true,
+    allErrors: false,
     nullable: true
   },
   plugins: []

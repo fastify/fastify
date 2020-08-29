@@ -165,3 +165,18 @@ expectError(fastify().route({
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
   handler: routeHandler
 }))
+
+expectError(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  schemaErrorFormatter: 500 // Not a valid formatter
+}))
+
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandler,
+  schemaErrorFormatter: (errors, dataVar) => new Error('')
+}))

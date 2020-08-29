@@ -398,7 +398,7 @@ test('should catch error inside formatter and return message', t => {
 })
 
 test('cannot create a fastify instance with wrong type of errorFormatter', t => {
-  t.plan(2)
+  t.plan(3)
 
   try {
     Fastify({
@@ -414,6 +414,13 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
     Fastify({
       schemaErrorFormatter: 500
     })
+  } catch (err) {
+    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+  }
+
+  try {
+    const fastify = Fastify()
+    fastify.setSchemaErrorFormatter(500)
   } catch (err) {
     t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
   }

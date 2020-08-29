@@ -104,6 +104,7 @@ expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
+expectAssignable<FastifyInstance>(fastify({schemaErrorFormatter: (errors, dataVar) => new Error()}))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

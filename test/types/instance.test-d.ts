@@ -44,3 +44,6 @@ expectError(server.setReplySerializer(invalidReplySerialzer))
 
 function serializerWithInvalidReturn(payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
+
+function invalidSchemaErrorFormatter() {}
+expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))

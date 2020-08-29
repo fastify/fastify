@@ -71,11 +71,7 @@ function fastify (options) {
   const disableRequestLogging = options.disableRequestLogging || false
 
   if (options.schemaErrorFormatter) {
-    if (typeof options.schemaErrorFormatter !== 'function') {
-      throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof options.schemaErrorFormatter}`)
-    } else if (options.schemaErrorFormatter.constructor.name === 'AsyncFunction') {
-      throw new Error('schemaErrorFormatter option should not be an async function')
-    }
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
   }
 
   const ajvOptions = Object.assign({
@@ -523,6 +519,7 @@ function fastify (options) {
 
   function setSchemaErrorFormatter (errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
+    validateSchemaErrorFormatter(errorFormatter)
     this[kSchemaErrorFormatter] = errorFormatter
     return this
   }
@@ -546,6 +543,14 @@ function fastify (options) {
 
     this._errorHandler = func
     return this
+  }
+}
+
+function validateSchemaErrorFormatter (schemaErrorFormatter) {
+  if (typeof schemaErrorFormatter !== 'function') {
+    throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof schemaErrorFormatter}`)
+  } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {
+    throw new Error('schemaErrorFormatter option should not be an async function')
   }
 }
 

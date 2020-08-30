@@ -22,7 +22,6 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-etag`](https://github.com/fastify/fastify-etag) Automatically generate etags for HTTP responses.
 - [`fastify-flash`](https://github.com/fastify/fastify-flash) Set and get flash messages using the session.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
-- [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify.
 - [`fastify-http-proxy`](https://github.com/fastify/fastify-http-proxy)Proxy your http requests to another server, with hooks.
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).

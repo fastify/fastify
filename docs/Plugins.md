@@ -168,7 +168,7 @@ You have two ways to tell Fastify to avoid the creation of a new context:
 - Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module
 - Use the `'skip-override'` hidden property
 
-We recommend to using the `fastify-plugin` module, because it solves this problem for you, and you can pass a version range of Fastify as a parameter that your plugin will support.
+We recommend using the `fastify-plugin` module, because it solves this problem for you, and you can pass a version range of Fastify as a parameter that your plugin will support.
 ```js
 const fp = require('fastify-plugin')
 

@@ -126,7 +126,7 @@ export type RouteHandlerMethod<
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-) => void | Promise<any>
+) => void | Promise<RouteGeneric['Reply'] | void>
 
 export type RouteHandler<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
@@ -138,4 +138,4 @@ export type RouteHandler<
   this: FastifyInstance<RawServer, RawRequest, RawReply>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-) => void | Promise<any>
+) => void | Promise<RouteGeneric['Reply'] | void>

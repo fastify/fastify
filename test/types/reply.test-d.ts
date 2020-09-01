@@ -1,4 +1,4 @@
-import { expectType } from 'tsd'
+import { expectType, expectError } from 'tsd'
 import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyRequest, FastifyReply } from '../../fastify'
 import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RawServerBase } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -29,10 +29,28 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(fullfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
 }
 
-const typedHandler: RouteHandler<{ Reply: { test: boolean } }> = async (request, reply) => {
-  expectType<(<T = { test: boolean; }>(payload?: T) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, { Reply: { test: boolean } }>)>(reply.send)
+interface ReplyPayload {
+  Reply: {
+    test: boolean
+  }
+}
+
+const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
+  expectType<(<T = ReplyPayload['Reply']>(payload?: T) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
 }
 
 const server = fastify()
 server.get('/get', getHandler)
 server.get('/typed', typedHandler)
+server.get<ReplyPayload>('/get-generic-send', async function handler (request, reply) {
+  reply.send({ test: true })
+})
+server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
+  return { test: false }
+})
+expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
+  reply.send({ foo: "bar" })
+}))
+expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
+  return { foo: "bar" }
+}))

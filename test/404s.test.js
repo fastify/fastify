@@ -1740,3 +1740,35 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
 
   t.end()
 })
+
+test('setNotFoundHandler should be chaining fastify instance', t => {
+  t.test('Register route after setNotFoundHandler', t => {
+    t.plan(6)
+    const fastify = Fastify()
+    fastify.setNotFoundHandler(function (_req, reply) {
+      reply.code(404).send('this was not found')
+    }).get('/valid-route', function (_req, reply) {
+      reply.send('valid route')
+    })
+
+    fastify.inject({
+      url: '/invalid-route',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 404)
+      t.strictEqual(response.payload, 'this was not found')
+    })
+
+    fastify.inject({
+      url: '/valid-route',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictEqual(response.payload, 'valid route')
+    })
+  })
+
+  t.end()
+})

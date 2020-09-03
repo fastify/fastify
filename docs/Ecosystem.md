@@ -80,6 +80,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace) [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference) Connector for Fastify.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage) Fastify plugin that exposes a GCP Cloud Storage client instance.
+- [`fastify-grant`](https://github.com/simov/fastify-grant) Authentication/Authorization plugin for Fastify that supports 200+ OAuth Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
 - [`fastify-gql`](https://github.com/mcollina/fastify-gql) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.

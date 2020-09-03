@@ -48,6 +48,9 @@ expectError(server.setReplySerializer(invalidReplySerialzer))
 function serializerWithInvalidReturn(payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
+function invalidSchemaErrorFormatter() {}
+expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
+
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))

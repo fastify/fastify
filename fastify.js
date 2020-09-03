@@ -23,7 +23,8 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kPluginNameChain
+  kPluginNameChain,
+  kSchemaErrorFormatter
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -75,6 +76,11 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+
+  if (options.schemaErrorFormatter) {
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
+  }
+
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
@@ -88,6 +94,7 @@ function fastify (options) {
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
     throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
   }
+
   ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
     return Array.isArray(plugin) ? plugin : [plugin]
   })
@@ -151,6 +158,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kValidatorCompiler]: null,
+    [kSchemaErrorFormatter]: options.schemaErrorFormatter,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -206,6 +214,7 @@ function fastify (options) {
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
     setReplySerializer: setReplySerializer,
+    setSchemaErrorFormatter: setSchemaErrorFormatter,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -515,6 +524,13 @@ function fastify (options) {
     return this
   }
 
+  function setSchemaErrorFormatter (errorFormatter) {
+    throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
+    validateSchemaErrorFormatter(errorFormatter)
+    this[kSchemaErrorFormatter] = errorFormatter
+    return this
+  }
+
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
     this[kSerializerCompiler] = serializerCompiler
@@ -534,6 +550,14 @@ function fastify (options) {
 
     this._errorHandler = func
     return this
+  }
+}
+
+function validateSchemaErrorFormatter (schemaErrorFormatter) {
+  if (typeof schemaErrorFormatter !== 'function') {
+    throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof schemaErrorFormatter}`)
+  } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {
+    throw new Error('schemaErrorFormatter option should not be an async function')
   }
 }
 

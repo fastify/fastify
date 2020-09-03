@@ -15,14 +15,16 @@ const schema = {
   }
 }
 
+function echoBody (req, reply) {
+  reply.code(200).send(req.body.name)
+}
+
 test('should work with valid payload', t => {
   t.plan(3)
 
   const fastify = Fastify()
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -43,9 +45,7 @@ test('should fail immediately with invalid payload', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', { schema }, function (req, reply) {
-    reply.code(200).send(req.body.name)
-  })
+  fastify.post('/', { schema }, echoBody)
 
   fastify.inject({
     method: 'POST',
@@ -334,5 +334,350 @@ test('should return a defined output message parsing JOI error details', t => {
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
+  })
+})
+
+test('should call custom error formatter', t => {
+  t.plan(6)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      t.equal(errors.length, 1)
+      t.equal(errors[0].message, "should have required property 'name'")
+      t.equal(dataVar, 'body')
+      return new Error('my error')
+    }
+  })
+
+  fastify.post('/', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'my error'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})
+
+test('should catch error inside formatter and return message', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      throw new Error('abc')
+    }
+  })
+
+  fastify.post('/', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 500,
+      error: 'Internal Server Error',
+      message: 'abc'
+    })
+    t.strictEqual(res.statusCode, 500)
+    t.end()
+  })
+})
+
+test('cannot create a fastify instance with wrong type of errorFormatter', t => {
+  t.plan(3)
+
+  try {
+    Fastify({
+      schemaErrorFormatter: async (errors, dataVar) => {
+        return new Error('should not execute')
+      }
+    })
+  } catch (err) {
+    t.equals(err.message, 'schemaErrorFormatter option should not be an async function')
+  }
+
+  try {
+    Fastify({
+      schemaErrorFormatter: 500
+    })
+  } catch (err) {
+    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+  }
+
+  try {
+    const fastify = Fastify()
+    fastify.setSchemaErrorFormatter(500)
+  } catch (err) {
+    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+  }
+})
+
+test('should register a route based schema error formatter', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('abc')
+    }
+  }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})
+
+test('prefer route based error formatter over global one', t => {
+  t.plan(9)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('abc123')
+    }
+  })
+
+  fastify.post('/', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('123')
+    }
+  }, echoBody)
+
+  fastify.post('/abc', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('abc')
+    }
+  }, echoBody)
+
+  fastify.post('/test', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: '123'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/abc'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/test'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'abc123'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})
+
+test('adding schemaErrorFormatter', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setSchemaErrorFormatter((errors, dataVar) => {
+    return new Error('abc')
+  })
+
+  fastify.post('/', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'abc'
+    })
+    t.strictEqual(res.statusCode, 400)
+    t.end()
+  })
+})
+
+test('plugin override', t => {
+  t.plan(15)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('B')
+    }
+  })
+
+  fastify.register((instance, opts, next) => {
+    instance.setSchemaErrorFormatter((errors, dataVar) => {
+      return new Error('C')
+    })
+
+    instance.post('/d', {
+      schema,
+      schemaErrorFormatter: (errors, dataVar) => {
+        return new Error('D')
+      }
+    }, function (req, reply) {
+      reply.code(200).send(req.body.name)
+    })
+
+    instance.post('/c', { schema }, echoBody)
+
+    instance.register((subinstance, opts, next) => {
+      subinstance.post('/stillC', { schema }, echoBody)
+      next()
+    })
+
+    next()
+  })
+
+  fastify.post('/b', { schema }, echoBody)
+
+  fastify.post('/', {
+    schema,
+    schemaErrorFormatter: (errors, dataVar) => {
+      return new Error('A')
+    }
+  }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'A'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/b'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'B'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/c'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'C'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/d'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'D'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/stillC'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'C'
+    })
+    t.strictEqual(res.statusCode, 400)
   })
 })

@@ -11,6 +11,7 @@ import { FastifyServerFactory } from './types/serverFactory'
 import * as ajv from 'ajv'
 import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
+import { FastifySchemaValidationError } from './types/schema'
 
 /**
  * Fastify factor function for the standard fastify http, https, or http2 server instance.
@@ -111,7 +112,8 @@ export type FastifyServerOptions<
     req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
-  rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string
+  rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

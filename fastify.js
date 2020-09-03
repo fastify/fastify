@@ -516,6 +516,7 @@ function fastify (options) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
+    return this
   }
 
   function setValidatorCompiler (validatorCompiler) {

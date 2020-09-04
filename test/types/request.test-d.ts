@@ -68,7 +68,7 @@ const postHandler: Handler = function (request) {
   expectType<string>(request.headers['x-foobar'])
 }
 
-function putHandler(request: CustomRequest, reply: FastifyReply) {
+function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<RequestBody>(request.body)
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)

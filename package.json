@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
     "lint:standard": "standard --verbose | snazzy",
-    "lint:typescript": "standard --parser @typescript-eslint/parser --plugin @typescript-eslint/eslint-plugin test/types/*.ts fastify.d.ts",
+    "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
     "unit:report": "tap -J test/*.test.js test/*/*.test.js --cov --coverage-report=html --coverage-report=cobertura | tee out.tap",
     "unit:junit": "tap-mocha-reporter xunit < out.tap > test/junit-testresults.xml",

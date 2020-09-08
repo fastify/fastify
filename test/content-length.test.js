@@ -11,7 +11,7 @@ test('default 413 with bodyLimit option', t => {
     bodyLimit: 10
   })
 
-  fastify.post('/', function (req, reply) {
+  fastify.post('/', function (_req, reply) {
     reply.send({ hello: 'world' })
   })
 
@@ -39,7 +39,7 @@ test('default 400 with wrong content-length', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', function (req, reply) {
+  fastify.post('/', function (_req, reply) {
     reply.send({ hello: 'world' })
   })
 
@@ -72,11 +72,11 @@ test('custom 413 with bodyLimit option', t => {
     bodyLimit: 10
   })
 
-  fastify.post('/', function (req, reply) {
+  fastify.post('/', function (_req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  fastify.setErrorHandler(function (err, request, reply) {
+  fastify.setErrorHandler(function (err, _request, reply) {
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -107,11 +107,11 @@ test('custom 400 with wrong content-length', t => {
 
   const fastify = Fastify()
 
-  fastify.post('/', function (req, reply) {
+  fastify.post('/', function (_req, reply) {
     reply.send({ hello: 'world' })
   })
 
-  fastify.setErrorHandler(function (err, request, reply) {
+  fastify.setErrorHandler(function (err, _request, reply) {
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -157,6 +157,33 @@ test('#2214 - wrong content-length', t => {
   })
     .then(response => {
       t.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
+      t.end()
+    })
+})
+
+test('#2543 - wrong content-length with errorHandler', t => {
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((_error, _request, reply) => {
+    reply.code(500).send({ message: 'longer than 2 bytes' })
+  })
+
+  fastify.get('/', async () => {
+    const error = new Error('MY_ERROR_MESSAGE')
+    error.headers = {
+      'content-length': 2
+    }
+    throw error
+  })
+
+  fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
+    .then(res => {
+      t.strictEqual(res.statusCode, 500)
+      t.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
+      t.deepEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
       t.end()
     })
 })

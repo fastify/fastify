@@ -160,3 +160,30 @@ test('#2214 - wrong content-length', t => {
       t.end()
     })
 })
+
+test('#2543 - wrong content-length with errorHandler', t => {
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((_error, _request, reply) => {
+    reply.code(500).send({ message: 'longer than 2 bytes' })
+  })
+
+  fastify.get('/', async () => {
+    const error = new Error('MY_ERROR_MESSAGE')
+    error.headers = {
+      'content-length': 2
+    }
+    throw error
+  })
+
+  fastify.inject({
+    method: 'GET',
+    path: '/'
+  })
+    .then(res => {
+      t.strictEqual(res.statusCode, 500)
+      t.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
+      t.deepEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
+      t.end()
+    })
+})

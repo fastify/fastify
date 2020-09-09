@@ -1,10 +1,10 @@
-import fastify, { FastifyInstance, FastifyServerOptions } from '../../fastify'
+import fastify, { FastifyInstance } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import { Chain as LightMyRequestChain } from 'light-my-request';
+import { Chain as LightMyRequestChain } from 'light-my-request'
 import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyLoggerInstance, FastifyLoggerOptions } from '../../types/logger';
+import { FastifyLoggerInstance } from '../../types/logger'
 
 // FastifyInstance
 // http server
@@ -60,7 +60,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
           message: 'foo',
           stack: ''
         }
-      },
+      }
     }
   }
 }))
@@ -104,7 +104,7 @@ expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
-expectAssignable<FastifyInstance>(fastify({schemaErrorFormatter: (errors, dataVar) => new Error()}))
+expectAssignable<FastifyInstance>(fastify({ schemaErrorFormatter: (errors, dataVar) => new Error() }))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

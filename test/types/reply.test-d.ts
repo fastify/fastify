@@ -17,10 +17,10 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(key: string, value: any) => FastifyReply>(reply.header)
   expectType<(values: {[key: string]: any}) => FastifyReply>(reply.headers)
   expectType<(key: string) => string | undefined>(reply.getHeader)
-  expectType<() => { [key: string]: number | string | string[] | undefined; }>(reply.getHeaders)
+  expectType<() => { [key: string]: number | string | string[] | undefined }>(reply.getHeaders)
   expectType<(key: string) => void>(reply.removeHeader)
   expectType<(key: string) => boolean>(reply.hasHeader)
-  expectType<{ (statusCode: number, url: string): FastifyReply; (url: string): FastifyReply; }>(reply.redirect)
+  expectType<{(statusCode: number, url: string): FastifyReply; (url: string): FastifyReply }>(reply.redirect)
   expectType<() => void>(reply.callNotFound)
   expectType<() => number>(reply.getResponseTime)
   expectType<(contentType: string) => FastifyReply>(reply.type)
@@ -31,8 +31,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
 
 interface ReplyPayload {
   Reply: {
-    test: boolean
-  }
+    test: boolean;
+  };
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
@@ -49,8 +49,8 @@ server.get<ReplyPayload>('/get-generic-return', async function handler (request,
   return { test: false }
 })
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
-  reply.send({ foo: "bar" })
+  reply.send({ foo: 'bar' })
 }))
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
-  return { foo: "bar" }
+  return { foo: 'bar' }
 }))

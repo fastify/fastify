@@ -13,8 +13,8 @@ interface TestOptions extends FastifyPluginOptions {
 const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, next) { }
 const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }
 
-const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, next: (error?: FastifyError) => void) => { };
-const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { };
+const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, next: (error?: FastifyError) => void) => { }
+const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }
 
 expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
 expectError(fastify().register(testPluginOptsAsync, {})) // error because missing required options from generic declaration
@@ -41,7 +41,7 @@ expectAssignable<FastifyInstance>(fastify().register(async function (instance, o
 
 expectError(fastify().register(function (instance, opts, next) { }, { logLevel: '' })) // must use a valid logLevel
 
-const httpsServer = fastify({ https: {} });
+const httpsServer = fastify({ https: {} })
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
 
 // Chainable
@@ -52,16 +52,16 @@ httpsServer
   .ready((_error) => { })
 
 // Thenable
-expectAssignable<PromiseLike<undefined>>(httpsServer.after());
-expectAssignable<PromiseLike<undefined>>(httpsServer.close());
-expectAssignable<PromiseLike<undefined>>(httpsServer.ready());
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts));
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType));
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync));
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: "/test" }));
-expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: "/test" }));
+expectAssignable<PromiseLike<undefined>>(httpsServer.after())
+expectAssignable<PromiseLike<undefined>>(httpsServer.close())
+expectAssignable<PromiseLike<undefined>>(httpsServer.ready())
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOpts))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithType, { prefix: '/test' }))
+expectAssignable<PromiseLike<undefined>>(httpsServer.register(testPluginOptsWithTypeAsync, { prefix: '/test' }))
 
-async function testAsync() {
+async function testAsync (): Promise<void> {
   await httpsServer
     .register(testPluginOpts)
     .register(testPluginOpts)

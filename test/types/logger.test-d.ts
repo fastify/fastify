@@ -13,40 +13,41 @@ expectType<FastifyLoggerInstance>(fastify().log)
 })
 
 interface CustomLogger extends FastifyLoggerInstance {
-  customMethod(msg: string, ...args: unknown[]): void
+  customMethod(msg: string, ...args: unknown[]): void;
 }
 
 class CustomLoggerImpl implements CustomLogger {
-  customMethod(msg: string, ...args: unknown[]) { console.log(msg, args) }
+  customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
-  info(arg1: string | object, arg2?: string | unknown, ...args: unknown[]): void {
+  info (arg1: string | object, arg2?: string | unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
-  warn(...args: unknown[]) { console.log(args) }
-  error(...args: unknown[]) { console.log(args) }
-  fatal(...args: unknown[]) { console.log(args) }
-  trace(...args: unknown[]) { console.log(args) }
-  debug(...args: unknown[]) { console.log(args) }
-  child() { return new CustomLoggerImpl() }
+
+  warn (...args: unknown[]) { console.log(args) }
+  error (...args: unknown[]) { console.log(args) }
+  fatal (...args: unknown[]) { console.log(args) }
+  trace (...args: unknown[]) { console.log(args) }
+  debug (...args: unknown[]) { console.log(args) }
+  child () { return new CustomLoggerImpl() }
 }
 
 const customLogger = new CustomLoggerImpl()
 
 const serverWithCustomLogger = fastify<
-  Server,
-  IncomingMessage,
-  ServerResponse,
-  CustomLoggerImpl
+Server,
+IncomingMessage,
+ServerResponse,
+CustomLoggerImpl
 >({ logger: customLogger })
 
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
 
 const serverWithPino = fastify<
-  Server,
-  IncomingMessage,
-  ServerResponse,
-  pino.Logger
+Server,
+IncomingMessage,
+ServerResponse,
+pino.Logger
 >({
   logger: pino({
     level: 'info',
@@ -57,9 +58,9 @@ const serverWithPino = fastify<
 expectType<pino.Logger>(serverWithPino.log)
 
 const serverWithLogOptions = fastify<
-  Server,
-  IncomingMessage,
-  ServerResponse
+Server,
+IncomingMessage,
+ServerResponse
 >({
   logger: {
     level: 'info'

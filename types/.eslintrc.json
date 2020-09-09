@@ -22,12 +22,20 @@
   },
   "overrides": [
     {
+      "files": ["*.d.ts","*.test-d.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    },
+    {
       "files": ["*.test-d.ts"],
       "rules": {
-        "no-unused-vars": "warn",
+        "no-unused-vars": "off",
         "handle-callback-err": "off",
         "@typescript-eslint/no-empty-function": "off",
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
       }
     }
   ]

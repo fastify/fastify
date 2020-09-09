@@ -817,3 +817,45 @@ test('pluginTimeout default', t => {
 
   t.tearDown(clock.uninstall)
 })
+
+test('plugin metadata - version', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '2.0.0'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.pass('everything right')
+  })
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})
+
+test('plugin metadata - version not matching requirement', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '99.0.0'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready((err) => {
+    t.ok(err)
+  })
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})

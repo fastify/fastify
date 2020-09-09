@@ -182,7 +182,7 @@ test('#2543 - wrong content-length with errorHandler', t => {
   })
     .then(res => {
       t.strictEqual(res.statusCode, 500)
-      t.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
+      t.same(res.headers['content-length'], res.rawPayload.length)
       t.deepEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
       t.end()
     })

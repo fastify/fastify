@@ -742,6 +742,10 @@ Important: If you have to deal with nested plugins the name differs with the usa
 #### log
 The logger instance, check [here](Logging.md).
 
+<a name="version"></a>
+#### version
+Fastify version of the instance. Used for plugin support. Check [here](Plugins.md#handle-the-scope)
+
 <a name="inject"></a>
 #### inject
 Fake http injection (for testing purposes) [here](Testing.md#inject).

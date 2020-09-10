@@ -839,6 +839,27 @@ test('plugin metadata - version', t => {
   }
 })
 
+test('plugin metadata - version range', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '>=2.0.0'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready(() => {
+    t.pass('everything right')
+  })
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})
+
 test('plugin metadata - version not matching requirement', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -847,6 +868,50 @@ test('plugin metadata - version not matching requirement', t => {
   plugin[Symbol.for('plugin-meta')] = {
     name: 'plugin',
     fastify: '99.0.0'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
+  })
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})
+
+test('plugin metadata - version not matching requirement 2', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '<=3.0.0'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
+  })
+
+  function plugin (instance, opts, next) {
+    next()
+  }
+})
+
+test('plugin metadata - version not matching requirement 3', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '>=99.0.0'
   }
 
   fastify.register(plugin)

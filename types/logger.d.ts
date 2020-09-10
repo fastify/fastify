@@ -61,4 +61,5 @@ export interface FastifyLoggerOptions<
   };
   level?: string;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequest>) => string;
+  prettyPrint?: boolean;
 }

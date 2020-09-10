@@ -744,7 +744,7 @@ The logger instance, check [here](Logging.md).
 
 <a name="version"></a>
 #### version
-Fastify version of the instance. Used for plugin support. Check [here](Plugins.md#handle-the-scope)
+Fastify version of the instance. Used for plugin support. See [Plugins](Plugins.md#handle-the-scope) for information on how the version is used by plugins.
 
 <a name="inject"></a>
 #### inject

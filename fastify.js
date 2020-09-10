@@ -3,8 +3,6 @@
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
-const fs = require('fs')
-const path = require('path')
 let lightMyRequest
 let version
 
@@ -593,6 +591,8 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
 }
 
 function loadVersion () {
+  const fs = require('fs')
+  const path = require('path')
   const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json')))
   return pkg.version
 }

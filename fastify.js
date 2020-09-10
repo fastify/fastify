@@ -261,16 +261,16 @@ function fastify (options) {
       }
     },
     prefix: {
-      get: function () { return this[kRoutePrefix] }
+      get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
-      get: function () { return this[kValidatorCompiler] }
+      get () { return this[kValidatorCompiler] }
     },
     serializerCompiler: {
-      get: function () { return this[kSerializerCompiler] }
+      get () { return this[kSerializerCompiler] }
     },
     version: {
-      get: function () { return this[kVersion] }
+      get () { return this[kVersion] }
     }
   })
 

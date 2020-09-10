@@ -840,7 +840,7 @@ test('plugin metadata - version', t => {
 })
 
 test('plugin metadata - version not matching requirement', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   plugin[Symbol.for('skip-override')] = true
@@ -853,6 +853,7 @@ test('plugin metadata - version not matching requirement', t => {
 
   fastify.ready((err) => {
     t.ok(err)
+    t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
   })
 
   function plugin (instance, opts, next) {

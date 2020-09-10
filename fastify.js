@@ -3,6 +3,8 @@
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
+const fs = require('fs')
+const path = require('path')
 let lightMyRequest
 
 const {
@@ -23,6 +25,7 @@ const {
   kFourOhFour,
   kState,
   kOptions,
+  kVersion,
   kPluginNameChain,
   kSchemaErrorFormatter
 } = require('./lib/symbols.js')
@@ -57,6 +60,8 @@ const onBadUrlContext = {
 }
 
 function fastify (options) {
+  const version = loadVersion()
+
   // Options validations
   options = options || {}
 
@@ -149,6 +154,7 @@ function fastify (options) {
       closing: false,
       started: false
     },
+    [kVersion]: version,
     [kOptions]: options,
     [kChildren]: [],
     [kBodyLimit]: bodyLimit,
@@ -262,6 +268,9 @@ function fastify (options) {
     },
     serializerCompiler: {
       get: function () { return this[kSerializerCompiler] }
+    },
+    version: {
+      get: function () { return this[kVersion] }
     }
   })
 
@@ -579,6 +588,11 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
     }
     httpHandler(req, res)
   }
+}
+
+function loadVersion () {
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json')))
+  return pkg.version
 }
 
 /**

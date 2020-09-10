@@ -6,6 +6,7 @@ const querystring = require('querystring')
 const fs = require('fs')
 const path = require('path')
 let lightMyRequest
+let version
 
 const {
   kAvvioBoot,
@@ -25,7 +26,6 @@ const {
   kFourOhFour,
   kState,
   kOptions,
-  kVersion,
   kPluginNameChain,
   kSchemaErrorFormatter
 } = require('./lib/symbols.js')
@@ -60,8 +60,6 @@ const onBadUrlContext = {
 }
 
 function fastify (options) {
-  const version = loadVersion()
-
   // Options validations
   options = options || {}
 
@@ -154,7 +152,6 @@ function fastify (options) {
       closing: false,
       started: false
     },
-    [kVersion]: version,
     [kOptions]: options,
     [kChildren]: [],
     [kBodyLimit]: bodyLimit,
@@ -270,7 +267,12 @@ function fastify (options) {
       get () { return this[kSerializerCompiler] }
     },
     version: {
-      get () { return this[kVersion] }
+      get () {
+        if (version === undefined) {
+          version = loadVersion()
+        }
+        return version
+      }
     }
   })
 

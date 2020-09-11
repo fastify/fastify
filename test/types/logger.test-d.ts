@@ -85,3 +85,32 @@ const serverWithAutoInferredPino = fastify({
 })
 
 expectType<pino.Logger>(serverWithAutoInferredPino.log)
+
+const serverAutoInferredPinoPrettyBooleanOption = fastify({
+  logger: {
+    prettyPrint: true
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyBooleanOption.log)
+
+const serverAutoInferredPinoPrettyObjectOption = fastify({
+  logger: {
+    prettyPrint: {
+      translateTime: true,
+      levelFirst: false,
+      messageKey: 'msg',
+      timestampKey: 'time',
+      messageFormat: false,
+      colorize: true,
+      crlf: false,
+      errorLikeObjectKeys: ['err', 'error'],
+      errorProps: '',
+      search: 'foo == `bar`',
+      ignore: 'pid,hostname',
+      suppressFlushSyncWarning: true
+    }
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyObjectOption.log)

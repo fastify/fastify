@@ -1,6 +1,7 @@
 import { FastifyError } from 'fastify-error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 import { FastifyRequest, RequestGenericInterface } from './request'
+import { PrettyOptions } from 'pino'
 
 /**
  * Standard Fastify logging function
@@ -61,5 +62,5 @@ export interface FastifyLoggerOptions<
   };
   level?: string;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequest>) => string;
-  prettyPrint?: boolean;
+  prettyPrint?: boolean | PrettyOptions;
 }

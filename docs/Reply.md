@@ -391,3 +391,21 @@ For more details, see:
 - https://github.com/fastify/fastify/issues/1864 for the discussion about this feature
 - https://promisesaplus.com/ for the definition of thenables
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then for the signature
+
+<a name="in addition"></a>
+### In addition
+
+While you're using the fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you're skipping all the fastify
+logic of handling the http response. eg:
+
+```js
+app.get('/cookie-2', (req, reply) => {
+  reply.setCookie('session', 'value', { secure: false }) // this will not be used
+
+  // in this case we are using only the nodejs http server response object
+  reply.raw.writeHead(200, { 'Content-Type': 'text/plain' })
+  reply.raw.write('ok')
+  reply.raw.end()
+})
+```
+Another example of the misuse of `Reply.raw` is explained in [Reply.md#getheaders](Reply.md#getheaders).

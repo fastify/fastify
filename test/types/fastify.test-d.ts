@@ -1,4 +1,10 @@
-import fastify, { FastifyInstance } from '../../fastify'
+import fastify, {
+  FastifyInstance,
+  FastifyPlugin,
+  FastifyPluginAsync,
+  FastifyPluginCallback,
+  FastifyPluginOptions
+} from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
@@ -109,3 +115,7 @@ expectAssignable<FastifyInstance>(fastify({ schemaErrorFormatter: (errors, dataV
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))
 fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInstance))
+
+expectAssignable<FastifyPluginAsync>(async () => {})
+expectAssignable<FastifyPluginCallback>(() => {})
+expectAssignable<FastifyPlugin>(() => {})

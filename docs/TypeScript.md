@@ -269,7 +269,7 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
 4. Create an `index.ts` file - this will contain the plugin code
 5. Add the following code to `index.ts`
   ```typescript
-  import { FastifyPlugin } from 'fastify'
+  import { FastifyPluginCallback, FastifyPluginAsync } from 'fastify'
   import fp from 'fastify-plugin'
 
   // using declaration merging, add your plugin props to the appropriate fastify interfaces
@@ -287,16 +287,24 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
     myPluginOption: string
   }
 
-  // define plugin
-  const myPlugin: FastifyPlugin<MyPluginOptions> = (fastify, options, done) => {
+  // define plugin using callbacks
+  const myPluginCallback: FastifyPluginCallback<MyPluginOptions> = (fastify, options, done) => {
     fastify.decorateRequest('myPluginProp', 'super_secret_value')
     fastify.decorateReply('myPluginProp', options.myPluginOption)
 
     done()
   }
 
+  // define plugin using promises
+  const myPluginAsync: FastifyPluginAsync<MyPluginOptions> = async (fastify, options) => {
+    fastify.decorateRequest('myPluginProp', 'super_secret_value')
+    fastify.decorateReply('myPluginProp', options.myPluginOption)
+  }
+
   // export plugin using fastify-plugin
-  export default fp(myPlugin, '3.x')
+  export default fp(myPluginCallback, '3.x')
+  // or
+  // export default fp(myPluginAsync, '3.x')
   ```
 6. Run `npm run build` to compile the plugin code and produce both a JavaScript source file and a type definition file.
 7. With the plugin now complete you can [publish to npm] or use it locally.
@@ -785,15 +793,27 @@ RawReplyDefaultExpression<http2.Http2Server> // -> http2.Http2ServerResponse
 
 Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the [`fastify.register()`][FastifyRegister] method.
 
-##### fastify.FastifyPlugin<[Options][FastifyPluginOptions]>
-[src](../types/plugin.d.ts#L10)
+When creating plugins for Fastify, it is recommended to use the `fastify-plugin` module. Additionally, there is a guide to creating plugins with TypeScript and Fastify available in the Learn by Example, [Plugins](#plugins) section.
+
+##### fastify.FastifyPluginCallback<[Options][FastifyPluginOptions]>
+[src](../types/plugin.d.ts#L9)
 
 Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
 
-When creating plugins for Fastify, it is recommended to use the `fastify-plugin` module. Additionally, there is a guide to creating plugins with TypeScript and Fastify available in the Learn by Example, [Plugins](#plugins) section.
+##### fastify.FastifyPluginAsync<[Options][FastifyPluginOptions]>
+[src](../types/plugin.d.ts#L20)
+
+Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
+
+##### fastify.FastifyPlugin<[Options][FastifyPluginOptions]>
+[src](../types/plugin.d.ts#L29)
+
+Interface method definition used within the [`fastify.register()`][FastifyRegister] method.
+Document deprecated in favor of `FastifyPluginCallback` and `FastifyPluginAsync` since general
+`FastifyPlugin` doesn't properly infer types for async functions.
 
 ##### fastify.FastifyPluginOptions
-[src](../types/plugin.d.ts#L23)
+[src](../types/plugin.d.ts#L31)
 
 A loosely typed object used to constrain the `options` parameter of [`fastify.register()`][FastifyRegister] to an object. When creating a plugin, define its options as an extension of this interface (`interface MyPluginOptions extends FastifyPluginOptions`) so they can be passed to the register method.
 
@@ -801,8 +821,12 @@ A loosely typed object used to constrain the `options` parameter of [`fastify.re
 
 #### Register
 
+##### fastify.FastifyRegister(plugin: [FastifyPluginCallback][FastifyPluginCallback], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+[src](../types/register.d.ts#L9)
+##### fastify.FastifyRegister(plugin: [FastifyPluginAsync][FastifyPluginAsync], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
+[src](../types/register.d.ts#L9)
 ##### fastify.FastifyRegister(plugin: [FastifyPlugin][FastifyPlugin], opts: [FastifyRegisterOptions][FastifyRegisterOptions])
-[src](../types/register.d.ts#L5)
+[src](../types/register.d.ts#L9)
 
 This type interface specifies the type for the [`fastify.register()`](Server.md#register) method. The type interface returns a function signature with an underlying generic `Options` which is defaulted to [FastifyPluginOptions][FastifyPluginOptions]. It infers this generic from the FastifyPlugin parameter when calling this function so there is no need to specify the underlying generic. The options parameter is the intersection of the plugin's options and two additional optional properties: `prefix: string` and `logLevel`: [LogLevel][LogLevel].
 
@@ -1070,6 +1094,8 @@ Triggered when fastify.close() is invoked to stop the server. It is useful when 
 [FastifyLoggerOptions]: #fastifyfastifyloggeroptions
 [ContextConfigGeneric]: #ContextConfigGeneric
 [FastifyPlugin]: ##fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
+[FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
+[FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
 [FastifyPluginOptions]: #fastifyfastifypluginoptions
 [FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
 [FastifyRegisterOptions]: #fastifyfastifytregisteroptions

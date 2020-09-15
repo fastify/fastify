@@ -1,3 +1,23 @@
+/*
+ * Rationale for not directly importing types from @types/pino for use in fastify interfaces:
+ * - pino does not itself provide types so the types from @types must be used.
+ * - the types from @types are unofficial and the preference is to avoid using them or requiring them as a dependency of fastify.
+ * - the goal is to provide the minimum viable type definitions necessary to use fastify's official logger, pino.
+ * - the types provided should cover the basic use cases for the majority of fastify users while also being easy to maintain.
+ * - for advanced use cases needing the full set of types, users should be directed to manually install the unofficial types with
+ *   `npm i -D @types/pino` and to supply their own logger instance as described at https://www.fastify.io/docs/latest/Logging/.
+ * - some fastify contributors have volunteered to maintain official types within pino (https://github.com/pinojs/pino/issues/910)
+ *   in which case if the proposal is followed through with then in the future fastify will be able to directly import the full
+ *   set of types rather than only duplicating and maintaining the subset chosen for providing a minimum viable logger api.
+ *
+ * Relevant discussions:
+ *
+ * https://github.com/fastify/fastify/pull/2550
+ * https://github.com/pinojs/pino/issues/910
+ * https://github.com/fastify/fastify/pull/1532
+ * https://github.com/fastify/fastify/issues/649
+ */
+
 import { FastifyError } from 'fastify-error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 import { FastifyRequest, RequestGenericInterface } from './request'

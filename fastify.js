@@ -4,6 +4,7 @@ const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
+let version
 
 const {
   kAvvioBoot,
@@ -255,13 +256,21 @@ function fastify (options) {
       }
     },
     prefix: {
-      get: function () { return this[kRoutePrefix] }
+      get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
-      get: function () { return this[kValidatorCompiler] }
+      get () { return this[kValidatorCompiler] }
     },
     serializerCompiler: {
-      get: function () { return this[kSerializerCompiler] }
+      get () { return this[kSerializerCompiler] }
+    },
+    version: {
+      get () {
+        if (version === undefined) {
+          version = loadVersion()
+        }
+        return version
+      }
     }
   })
 
@@ -579,6 +588,13 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
     }
     httpHandler(req, res)
   }
+}
+
+function loadVersion () {
+  const fs = require('fs')
+  const path = require('path')
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json')))
+  return pkg.version
 }
 
 /**

@@ -30,6 +30,8 @@ export interface FastifyLoggerInstance {
   child(bindings: Bindings): FastifyLoggerInstance;
 }
 
+// This interface is accurate for pino 6.3 and was copied from the following permalink:
+// https://github.com/DefinitelyTyped/DefinitelyTyped/blob/72c9bd83316bd31e93ab86d64ddf598d922f33cd/types/pino/index.d.ts#L514-L567
 export interface PrettyOptions {
   /**
    * Translate the epoch time value into a human readable date and time string.

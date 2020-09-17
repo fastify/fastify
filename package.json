@@ -114,7 +114,6 @@
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^6.0.1",
-    "@types/node": "^14.0.1",
     "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^2.29.0",
     "@typescript-eslint/parser": "^2.29.0",
@@ -184,6 +183,9 @@
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",
     "tiny-lru": "^7.0.0"
+  },
+  "peerDependencies": {
+    "@types/node": "^14.10.3"
   },
   "standard": {
     "ignore": [

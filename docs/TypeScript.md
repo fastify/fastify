@@ -243,7 +243,7 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
   ```bash
   npm init -y
   npm i fastify fastify-plugin
-  npm i -D typescript
+  npm i -D typescript @types/node
   ```
 2. Add a `build` script to the `"scripts"` section and `'index.d.ts'` to the `"types"` section of the `package.json` file:
   ```json

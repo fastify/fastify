@@ -3,7 +3,6 @@ import { expectType } from 'tsd'
 
 type TestType = void
 
-// using declaration merging, add your plugin props to the appropriate fastify interfaces
 declare module '../../fastify' {
   interface FastifyRequest {
     testProp: TestType;

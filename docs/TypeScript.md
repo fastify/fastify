@@ -10,6 +10,7 @@ The type system was changed in Fastify version 3. The new type system introduces
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more information. We encourage users to send pull requests to improve typings support.
 
+🚨 Don't foget to install `@types/node`
 
 ## Learn By Example
 
@@ -243,7 +244,7 @@ One of Fastify's most distinguishable features is its extensive plugin ecosystem
   ```bash
   npm init -y
   npm i fastify fastify-plugin
-  npm i -D typescript
+  npm i -D typescript @types/node
   ```
 2. Add a `build` script to the `"scripts"` section and `'index.d.ts'` to the `"types"` section of the `package.json` file:
   ```json

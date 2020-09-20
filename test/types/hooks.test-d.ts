@@ -9,8 +9,8 @@ const server = fastify()
 // Test payload generic pass through for preSerialization and onSend
 
 type TestPayloadType = {
-  foo: string,
-  bar: number
+  foo: string;
+  bar: number;
 }
 
 // Synchronous Tests
@@ -93,7 +93,7 @@ server.addHook('onError', (request, reply, error, done) => {
 })
 
 server.addHook('onRoute', (opts) => {
-  expectType<RouteOptions & { routePath: string, path: string, prefix: string}>(opts)
+  expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
 })
 
 server.addHook('onRegister', (instance, done) => {
@@ -121,67 +121,56 @@ server.addHook('onClose', (instance, done) => {
 server.addHook('onRequest', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  return;
 })
 
 server.addHook('preParsing', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<RequestPayload>(payload)
-  return;
 })
 
 server.addHook('preValidation', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  return;
 })
 
 server.addHook('preHandler', (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  return;
 })
 
 server.addHook<TestPayloadType>('preSerialization', async function (request, reply, payload) {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload) // we expect this to be unknown when not specified like in the previous test
-  return;
 })
 
 server.addHook<TestPayloadType>('onSend', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload)
-  return;
 })
 
 server.addHook('onResponse', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  return;
 })
 
 server.addHook('onTimeout', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
-  return;
 })
 
 server.addHook('onError', async (request, reply, error) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<FastifyError>(error)
-  return;
 })
 
 server.addHook('onRegister', async (instance) => {
   expectType<FastifyInstance>(instance)
-  return;
 })
 
 server.addHook('onClose', async (instance) => {
   expectType<FastifyInstance>(instance)
-  return;
 })

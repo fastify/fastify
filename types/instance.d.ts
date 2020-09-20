@@ -21,6 +21,7 @@ export interface FastifyInstance<
 > {
   server: RawServer;
   prefix: string;
+  version: string;
   log: Logger;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;

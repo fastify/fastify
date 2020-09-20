@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable } from 'tsd';
+import { expectType, expectError, expectAssignable } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
 import { RequestPayload } from '../../types/hooks'
@@ -36,7 +36,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
-  
+
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler, errorHandler: (error, request, reply) => reply.send('error') }))
 
   interface BodyInterface { prop: string }
@@ -172,7 +172,6 @@ expectError(fastify().route({
   handler: routeHandler,
   schemaErrorFormatter: 500 // Not a valid formatter
 }))
-
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',

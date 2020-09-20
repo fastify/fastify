@@ -366,7 +366,7 @@ test('listen when firstArg is string(pipe) and with backlog', t => {
   t.plan(1)
   const fastify = Fastify()
   t.tearDown(fastify.close.bind(fastify))
-  fastify.listen('\\\\.\\pipe\\testPipe', '127.0.0.1')
+  fastify.listen('\\\\.\\pipe\\testPipe', 511)
     .then(address => {
       t.is(address, '\\\\.\\pipe\\testPipe')
     })

@@ -116,6 +116,25 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   t.strictEqual(request.hostname, 'hostname')
 })
 
+test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
+  t.plan(2)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    ':authority': 'authority'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    connection: { remoteAddress: 'ip' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.type(request, TpRequest)
+  t.strictEqual(request.hostname, 'authority')
+})
+
 test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
   t.plan(2)
   const headers = {

@@ -11,7 +11,8 @@
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
-    "project": "./types/tsconfig.json"
+    "project": "./types/tsconfig.json",
+    "createDefaultProgram": true
   },
   "rules": {
     "no-console": "off",
@@ -21,9 +22,20 @@
   },
   "overrides": [
     {
+      "files": ["*.d.ts","*.test-d.ts"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
+    },
+    {
       "files": ["*.test-d.ts"],
       "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "no-unused-vars": "off",
+        "handle-callback-err": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
       }
     }
   ]

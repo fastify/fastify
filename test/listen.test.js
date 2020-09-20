@@ -351,3 +351,23 @@ test('listen logs the port as info', t => {
       t.ok(/http:\/\//.test(msgs[0]))
     })
 })
+
+test('listen when firstArg is string(pipe) and without backlog', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.listen('\\\\.\\pipe\\testPipe')
+    .then(address => {
+      t.is(address, '\\\\.\\pipe\\testPipe')
+    })
+})
+
+test('listen when firstArg is string(pipe) and with backlog', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.tearDown(fastify.close.bind(fastify))
+  fastify.listen('\\\\.\\pipe\\testPipe', '127.0.0.1')
+    .then(address => {
+      t.is(address, '\\\\.\\pipe\\testPipe')
+    })
+})

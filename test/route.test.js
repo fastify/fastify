@@ -190,7 +190,7 @@ test('invalid schema - route', t => {
   })
 })
 
-test('adding same route definition multiple times', async t => {
+test('same route definition object on multiple prefixes', async t => {
   t.plan(2)
 
   const routeObject = {

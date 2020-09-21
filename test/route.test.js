@@ -203,14 +203,12 @@ test('same route definition object on multiple prefixes', async t => {
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      console.log(routeOptions.url)
       t.is(routeOptions.url, '/v1/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v1' })
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      console.log(routeOptions.url)
       t.is(routeOptions.url, '/v2/simple')
     })
     f.route(routeObject)

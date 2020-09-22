@@ -67,24 +67,33 @@ Make sure you evade copying other people's work, keep it as original as possible
 
 <br>
 
-## Words to use and avoi
+## Words to use and avoid
 
 <br>
 
 <!-- content here -->
+
+There are a few things you need to use and some to also avoid when writing your documentation. This will improve readbility to your audience and also make your documentation neat, direct and clean all through your writing process.
 
 
 <br>
 
 ### Use "you" to address readers
 
+
 <br>
 
 <!-- content here -->
 
+Using the word "you" makes the reader know you are speaking to them. This makes it easier to give them direct instruction on what to do when a particular task is explained. 
+
+ > According to [Wikipidia](#), *You* is usually a secind person pronoun. it is also used to refer to an indeterminate person, as a more common alternative to very formal idefinite pronoun.
+
 <br>
 
 ### Avoid words like "*just*", "*simple*" or "*easy*"
+
+The reader may not find it easy to use the Fastify's framework and plugins, so avoid words that makes is sound like they are simple or easy. Not everyone who reads the documentation has the exact same level of understanding.
 
 <br>
 

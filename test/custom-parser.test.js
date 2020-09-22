@@ -1214,3 +1214,43 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
     })
   })
 })
+
+test('should be able to default parser for extra content type ', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.tearDown(() => fastify.close())
+
+  fastify.post('/', { bodyLimit: 5 }, (request, reply) => {
+    reply.send(request.body)
+  })
+
+  fastify.addContentTypeParser('text/json', (req, done) => {
+    var body = ''
+    req.on('data', function onData (chunk) {
+      body += chunk
+    })
+    req.on('end', onEnd)
+    function onEnd () {
+      fastify.defaultJSONParser(req, body, done)
+      done()
+    }
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'text/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictDeepEqual(JSON.parse(body.toString()), { hello: 'world' })
+      fastify.close()
+    })
+  })
+})

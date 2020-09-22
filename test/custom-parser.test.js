@@ -1215,7 +1215,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
   })
 })
 
-test('should be able to default parser for extra content type ', t => {
+test('should be able to use default parser for extra content type', t => {
   t.plan(4)
   const fastify = Fastify()
   t.tearDown(() => fastify.close())

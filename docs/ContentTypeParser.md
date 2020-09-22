@@ -30,7 +30,17 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
 })
 
 // Can use default JSON/Text parser for different content Types
-fastify.addContentTypeParser('text/json', (req, data, done) => fastify.defaultJSONParser(req, data, done))
+fastify.addContentTypeParser('text/json', (req, done) => {
+  var body = ''
+  req.on('data', function onData (chunk) {
+    body += chunk
+  })
+  req.on('end', onEnd)
+  function onEnd () {
+    fastify.defaultJSONParser(req, body, done)
+    done()
+  }
+})
 ```
 
 You can also use the `hasContentTypeParser` API to find if a specific content type parser already exists.

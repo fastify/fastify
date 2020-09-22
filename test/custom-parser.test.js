@@ -1225,7 +1225,7 @@ test('should be able to use default parser for extra content type', t => {
   })
 
   fastify.addContentTypeParser('text/json', (req, done) => {
-    var body = ''
+    let body = ''
     req.on('data', function onData (chunk) {
       body += chunk
     })

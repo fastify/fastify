@@ -21,11 +21,11 @@ export interface FastifyRouteSchemaDef {
 }
 
 export interface FastifyValidationResult {
-  errors?: FastifySchemaValidationError[];
+  errors?: FastifySchemaValidationError[] | null;
 }
 
 export interface FastifySchemaValidationError {
-  message: string;
+  message?: string;
   dataPath: string;
 }
 

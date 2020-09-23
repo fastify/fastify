@@ -1,5 +1,6 @@
 import { expectAssignable, expectError } from 'tsd'
 import fastify, { FastifyInstance } from '../../fastify'
+import Ajv = require('ajv')
 
 const server = fastify()
 
@@ -30,6 +31,10 @@ expectAssignable<FastifyInstance>(server.get(
   {},
   () => { }
 ))
+
+expectAssignable<FastifyInstance>(server.setValidatorCompiler(({ schema }) => {
+  return new Ajv().compile(schema)
+}))
 
 expectError(server.get(
   '/unknown-schema-prop',

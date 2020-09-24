@@ -67,48 +67,91 @@ Make sure you evade copying other people's work, keep it as original as possible
 
 <br>
 
-## Words to use and avoid
+## Word Choice
 
 <br>
 
 <!-- content here -->
 
-There are a few things you need to use and some to also avoid when writing your documentation. This will improve readbility to your audience and also make your documentation neat, direct and clean all through your writing process.
+There are a few things you need to use and avoid when writing your documentation which will improve readability to your reader and also make your documentation neat, direct and clean all through your writing process.
 
 
 <br>
 
-### Use "you" to address readers
+### Use "you" instead of we or they
+
+
+<br>
+
+<!-- content here -->
+
+Using the word "you" makes the reader know you are speaking to them. It is easier to give them direct instruction on what to do when a particular topic. 
+
+ > According to [Wikipedia](#), ***You*** is usually a second person pronoun. Also, used to refer to an indeterminate person, as a more common alternative to a very formal indefinite pronoun.
+
+<br>
+
+
+### Avoid words like "*just*" or  "*simply"
 
 
 <br>
 
 <!-- content here -->
 
-Using the word "you" makes the reader know you are speaking to them. This makes it easier to give them direct instruction on what to do when a particular task is explained. 
-
- > According to [Wikipidia](#), *You* is usually a secind person pronoun. it is also used to refer to an indeterminate person, as a more common alternative to very formal idefinite pronoun.
+The reader may not find it easy to use the Fastify's framework and plugins, so avoid words that make it sound like they are simple or easy. Not everyone who reads the documentation has the same level of understanding.
 
 <br>
 
-### Avoid words like "*just*", "*simple*" or "*easy*"
+### Starting with a verb
 
-The reader may not find it easy to use the Fastify's framework and plugins, so avoid words that makes is sound like they are simple or easy. Not everyone who reads the documentation has the exact same level of understanding.
+<br>
+<!-- content here -->
+
+Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Use present tense in more often as it is easier to read and understand than the past or future tense.
+
+Example
+
+- [ ] Less like this: There is a need for Nodejs to be installed before you can be able to use fastify.
+
+- [x] More like this: Install Nodejs to make use of fastify 
+
+<br>
+
+### Grammatical moods 
 
 <br>
 
 <!-- content here -->
 
-<br>
-
-### Start with a verb
+Grammatical moods is a great way to express your writing, don't want to sound too bossy while making a direct statement. Know when to switch between indicative, imperative, and Subjunctive moods.
 
 <br>
 
-<!-- content here -->
+**Indicative** - Use when making a factual statement or question. 
+
+Example: Since there is no testing framework available, "we do recommend ways to write your test".
+
+<br>
+
+**Imperative** - Use when giving instructions, actions, commands, or when you write your headings.
+
+Example: Install dependencies before you start application development mode.
+
+<br>
+
+**Subjunctive** -  Use when making suggestions, hypothesis or non-factual statement.
+
+Example: We recommend you read the documentation on our website to get full information on the plugins.
+
 
 <br>
 
 ### Use **active** voice instead of **passive**
 
 <br>
+
+<!-- content here -->
+
+<br>
+

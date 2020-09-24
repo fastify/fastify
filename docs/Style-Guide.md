@@ -5,13 +5,13 @@
 
 Welcome to *Fastify Style Guide*. This guide is here to provide you with a conventional writing style for users writing developer documentation for our Open Source framework. Each topic is precise and well explained to help you write documentation users can easily understand and impliment.
 
+
 <br>
 <br>
 
 ## Who is this guide for?
 
 This guide is for anyone who loves to build with Fastify or want to contribute to our documentation. You don't need to be an expert in writing technical documentation. Our guideline is here to help you.
-
 <br>
 
 Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.MD](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) on Github to join our fellow Open Sourcers.
@@ -37,7 +37,7 @@ You need to have knowledge the following below:
 
 <br>
 
-Before you start writing, think about who is your audience is. In this case, know HTTP, HTML, CSS, JavaScript, NPM, and NodeJs.
+Before you start writing, think about who your audience. In this case, know HTTP, HTML, CSS, JavaScript, NPM, and NodeJs. It is important to put them in mind because they are the one consuming your content. You want to give them as much useful information as possible. Consider the necessary things they to know and how they can get them, make references and use words they can easily relate. As for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
 
 <br>
 

@@ -152,6 +152,6 @@ Example: We recommend you read the documentation on our website to get full info
 <br>
 
 <!-- content here -->
-.
+
 <br>
 

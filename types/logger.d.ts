@@ -125,6 +125,7 @@ export interface FastifyLoggerOptions<
       hostname?: string;
       remoteAddress?: string;
       remotePort?: number;
+      [key: string]: unknown;
     };
     err?: (err: FastifyError) => {
       type: string;

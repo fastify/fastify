@@ -25,6 +25,9 @@ test('https get', t => {
     fastify.get('/', function (req, reply) {
       reply.code(200).send({ hello: 'world' })
     })
+    fastify.get('/proto', function (req, reply) {
+      reply.code(200).send({ proto: req.protocol })
+    })
     t.pass()
   } catch (e) {
     t.fail()
@@ -46,6 +49,29 @@ fastify.listen(0, err => {
       t.strictEqual(response.statusCode, 200)
       t.strictEqual(response.headers['content-length'], '' + body.length)
       t.deepEqual(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('https get request without trust proxy - protocol', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'https://localhost:' + fastify.server.address().port + '/proto',
+      rejectUnauthorized: false
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(body), { proto: 'https' })
+    })
+    sget({
+      method: 'GET',
+      url: 'https://localhost:' + fastify.server.address().port + '/proto',
+      rejectUnauthorized: false,
+      headers: {
+        'x-forwarded-proto': 'lorem'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.deepEqual(JSON.parse(body), { proto: 'https' })
     })
   })
 })

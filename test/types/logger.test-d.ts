@@ -125,7 +125,8 @@ const serverAutoInferredSerializerObjectOption = fastify({
           version: 'version',
           hostname: 'hostname',
           remoteAddress: 'remoteAddress',
-          remotePort: 80
+          remotePort: 80,
+          other: ''
         }
       },
       res (ServerResponse) {

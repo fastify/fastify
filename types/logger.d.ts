@@ -130,7 +130,7 @@ export interface FastifyLoggerOptions<
       type: string;
       message: string;
       stack: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
     res?: (res: RawReply) => {
       statusCode: string | number;

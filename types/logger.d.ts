@@ -135,6 +135,7 @@ export interface FastifyLoggerOptions<
     };
     res?: (res: RawReply) => {
       statusCode: string | number;
+      [key: string]: unknown;
     };
   };
   level?: string;

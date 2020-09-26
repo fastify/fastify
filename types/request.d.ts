@@ -28,6 +28,7 @@ export interface FastifyRequest<
   ip: string;
   ips?: string[];
   hostname: string;
+  protocol: 'http' | 'https';
   url: string;
   method: string;
   routerPath: string;

@@ -14,6 +14,7 @@ Request is a core Fastify object containing the following fields:
 - `ip` - the IP address of the incoming request
 - `ips` - an array of the IP addresses in the `X-Forwarded-For` header of the incoming request (only when the [`trustProxy`](Server.md#factory-trust-proxy) option is enabled)
 - `hostname` - the hostname of the incoming request
+- `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the url of the incoming request
 - `routerMethod` - the method defined for the router that is handling the request
@@ -32,6 +33,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.ip)
   console.log(request.ips)
   console.log(request.hostname)
+  console.log(request.protocol)
   request.log.info('some info')
 })
 ```

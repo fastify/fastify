@@ -37,7 +37,8 @@ fastify.addContentTypeParser('text/json', (req, done) => {
   })
   req.on('end', onEnd)
   function onEnd () {
-    fastify.defaultJSONParser(req, body, done)
+    //passing isProtopoisoning and is constructor poisoning would give back a method which accepts req, body and done. Possible values for isProtoPoisoning/isContructorPoisoning are 'ignore','error' and 'remove'. Read more on https://github.com/fastify/secure-json-parse#api
+    fastify.getDefaultJsonParser('ignore','ignore')(req, body, done) 
     done()
   }
 })

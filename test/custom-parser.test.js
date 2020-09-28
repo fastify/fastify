@@ -1231,7 +1231,7 @@ test('should be able to use default parser for extra content type', t => {
     })
     req.on('end', onEnd)
     function onEnd () {
-      fastify.defaultJSONParser(req, body, done)
+      fastify.getDefaultJsonParser('ignore', 'remove')(req, body, done)
       done()
     }
   })

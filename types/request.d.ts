@@ -22,21 +22,27 @@ export interface FastifyRequest<
   params: RouteGeneric['Params'];
   raw: RawRequest;
   query: RouteGeneric['Querystring'];
-  headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   body: RouteGeneric['Body'];
-  ip: string;
-  ips?: string[];
-  hostname: string;
-  protocol: 'http' | 'https';
-  url: string;
-  method: string;
-  routerPath: string;
-  routerMethod: string;
-  is404: boolean;
+
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
 
+  /**
+   * @deprecated Use `raw` property
+   */
+  readonly req: RawRequest;
+  readonly headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  readonly ip: string;
+  readonly ips?: string[];
+  readonly hostname: string;
+  readonly url: string;
+  readonly protocol: 'http' | 'https';
+  readonly method: string;
+  readonly routerPath: string;
+  readonly routerMethod: string;
+  readonly is404: boolean;
+
   // `connection` is a deprecated alias for `socket` and doesn't exist in `Http2ServerRequest`
-  connection: RawRequest['socket'];
+  readonly connection: RawRequest['socket'];
 }

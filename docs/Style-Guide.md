@@ -65,11 +65,10 @@ Do not add videos or screenshots. Instead, make a referral link or a youtube vid
 
 **Example**
 
-> ```md
-> To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).
-> ```
+`To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).`
 
-Result: To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks/).
+Result:
+>To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks/).
 
 
 <br>

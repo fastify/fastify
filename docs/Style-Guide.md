@@ -3,7 +3,7 @@
 
 ## Welcome
 
-Welcome to *Fastify Style Guide*. This guide is here to provide you with a conventional writing style for users writing developer documentation for our Open Source framework. Each topic is precise and well explained to help you write documentation users can easily understand and impliment.
+Welcome to *Fastify Style Guide*. This guide is here to provide you with a conventional writing style for users writing developer documentation for our Open Source framework. Each topic is precise and well explained to help you write documentation users can easily understand and implement.
 
 
 <br>
@@ -21,7 +21,7 @@ Visit the [contribute](https://www.fastify.io/contribute) page on our website or
 
 ## Before you write
 
-You need to have knowledge the following below:
+You need to know the following:
 
 * JavaScript
 * Node.js
@@ -45,7 +45,15 @@ Before you start writing, think about who your audience. In this case, know HTTP
 
 <br>
 
-Give your readers a clear and precise action to take.
+Give your readers a clear and precise action to take. Start with what is most important for your readers. This way, you can help them find what they need faster. Mostly, readers tend to read the first content on a page, and many will not scroll further.
+
+**Example**
+
+Less like this: Colons are very important to register a parametric path. It lets the framework know a there is a new parameter created. You can place the colon before the parameter name for the parametric path can be created.
+
+More Like this: To register a parametric path, put a colon before the parameter name. Using colon lets the framework know it is a parametric path and not a wild card.
+
+
 
 <br>
 
@@ -57,7 +65,7 @@ Do not add videos or screenshots. Instead, make a referral link or a youtube vid
 
 <br>
 
-### Avoid plagarism 
+### Avoid plagiarism
 
 <br>
 
@@ -78,7 +86,7 @@ There are a few things you need to use and avoid when writing your documentation
 
 <br>
 
-### Use "you" instead of we or they
+### Use "you" instead of we or them
 
 
 <br>
@@ -92,7 +100,7 @@ Using the word "you" makes the reader know you are speaking to them. It is easie
 <br>
 
 
-### Avoid words like "*just*" or  "*simply"
+### Avoid words like "*just*" or  "*simple*"
 
 
 <br>
@@ -110,11 +118,11 @@ The reader may not find it easy to use the Fastify's framework and plugins, so a
 
 Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Use present tense in more often as it is easier to read and understand than the past or future tense.
 
-Example
+**Example**
 
 - [ ] Less like this: There is a need for Nodejs to be installed before you can be able to use fastify.
 
-- [x] More like this: Install Nodejs to make use of fastify 
+- [x] More like this: Install Nodejs to make use of fastify.
 
 <br>
 
@@ -130,7 +138,8 @@ Grammatical moods is a great way to express your writing, don't want to sound to
 
 **Indicative** - Use when making a factual statement or question. 
 
-Example: Since there is no testing framework available, "we do recommend ways to write your test".
+Example: Since there is no testing framework available, "fastify recommend ways to write your test".
+
 
 <br>
 
@@ -142,7 +151,7 @@ Example: Install dependencies before you start application development mode.
 
 **Subjunctive** -  Use when making suggestions, hypothesis or non-factual statement.
 
-Example: We recommend you read the documentation on our website to get full information on the plugins.
+Example: Reading the documentation on our website is recommended to get comprehensive knowledge on the framework plugin.
 
 
 <br>

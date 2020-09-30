@@ -61,7 +61,16 @@ More Like this: To register a parametric path, put a colon before the parameter 
 
 <br>
 
-Do not add videos or screenshots. Instead, make a referral link or a youtube video.
+Do not add videos or screenshots. Instead, make a referral link or a youtube video. You can add links by using `[Title](www.websitename.com)` in the markdown.
+
+**Example**
+
+> ```md
+> To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).
+> ```
+
+Result: To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks/).
+
 
 <br>
 

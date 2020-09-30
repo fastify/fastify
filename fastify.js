@@ -608,6 +608,6 @@ function loadVersion () {
  * - `import fastify from 'fastify'`
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
-fastify.fastify = fastify
-fastify.default = fastify
 module.exports = fastify
+module.exports.fastify = fastify
+module.exports.default = fastify

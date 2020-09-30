@@ -161,7 +161,6 @@ Example: Install dependencies before you start application development mode.
 
 Example: Reading the documentation on our website is recommended to get comprehensive knowledge on the framework plugin.
 
-
 <br>
 
 ### Use **active** voice instead of **passive**

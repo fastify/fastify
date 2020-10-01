@@ -42,7 +42,9 @@ export interface FastifyRequest<
   readonly routerPath: string;
   readonly routerMethod: string;
   readonly is404: boolean;
+  readonly socket: RawRequest['socket'];
 
-  // `connection` is a deprecated alias for `socket` and doesn't exist in `Http2ServerRequest`
+  // Prefer `socket` over deprecated `connection` property in node 13.0.0 or higher
+  // @deprecated
   readonly connection: RawRequest['socket'];
 }

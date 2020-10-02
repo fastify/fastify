@@ -10,7 +10,7 @@ Incoming Request
         │
         └─▶ Instance Logger
              │
-       404 ◀─┴─▶ onRequest Hook
+   4**/5** ◀─┴─▶ onRequest Hook
                   │
         4**/5** ◀─┴─▶ preParsing Hook
                         │
@@ -20,7 +20,7 @@ Incoming Request
                                   │
                             415 ◀─┴─▶ Validation
                                         │
-                                  400 ◀─┴─▶ preHandler Hook
+                              4**/5** ◀─┴─▶ preHandler Hook
                                               │
                                     4**/5** ◀─┴─▶ User Handler
                                                     │

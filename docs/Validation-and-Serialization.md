@@ -163,7 +163,7 @@ const bodyJsonSchema = {
 }
 
 const queryStringJsonSchema = {
-  type: "object",
+  type: 'object',
   properties: {
     name: { type: 'string' },
     excitement: { type: 'integer' }

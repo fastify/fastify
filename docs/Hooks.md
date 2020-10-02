@@ -227,11 +227,11 @@ fastify.addHook('onTimeout', async (request, reply) => {
 
 
 ### Manage Errors from a hook
-If you get an error during the execution of your hook, just pass it to `reply.send()` and Fastify will automatically close the request and send the appropriate error code to the user.
+If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 ```js
 fastify.addHook('onRequest', (request, reply, done) => {
-  reply.send(new Error('Some error'))
+  done(new Error('Some error'))
 })
 ```
 
@@ -239,7 +239,7 @@ If you want to pass a custom error code to the user, just use `reply.code()`:
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {
   reply.code(400)
-  reply.send(new Error('Some error'))
+  done(new Error('Some error'))
 })
 ```
 *The error will be handled by [`Reply`](Reply.md#errors).*

@@ -198,7 +198,7 @@ fastify.post('/the/url', { schema }, handler)
 
 You can provide a list of plugins you want to use with Ajv:
 
-> Refer to [`ajv options`](Server.md#factory-ajv) to check plugins format
+> Refer to [`ajv options`](Server.md#ajv) to check plugins format
 
 ```js
 const fastify = require('fastify')({

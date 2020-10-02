@@ -238,14 +238,14 @@ export interface FastifyInstance<
    */
   setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
-  ): void;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
    * Set a function that will be called whenever an error happens
    */
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
     handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
-  ): void;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
    * Set the schema validator for all routes.

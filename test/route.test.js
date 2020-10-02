@@ -190,6 +190,33 @@ test('invalid schema - route', t => {
   })
 })
 
+test('same route definition object on multiple prefixes', async t => {
+  t.plan(2)
+
+  const routeObject = {
+    handler: () => {},
+    method: 'GET',
+    url: '/simple'
+  }
+
+  const fastify = Fastify()
+
+  fastify.register(async function (f) {
+    f.addHook('onRoute', (routeOptions) => {
+      t.is(routeOptions.url, '/v1/simple')
+    })
+    f.route(routeObject)
+  }, { prefix: '/v1' })
+  fastify.register(async function (f) {
+    f.addHook('onRoute', (routeOptions) => {
+      t.is(routeOptions.url, '/v2/simple')
+    })
+    f.route(routeObject)
+  }, { prefix: '/v2' })
+
+  await fastify.ready()
+})
+
 test('path can be specified in place of uri', t => {
   t.plan(3)
   const fastify = Fastify()

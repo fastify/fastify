@@ -558,7 +558,7 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this._errorHandler = func
+    this._errorHandler = func.bind(this)
     return this
   }
 }
@@ -608,6 +608,6 @@ function loadVersion () {
  * - `import fastify from 'fastify'`
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
-fastify.fastify = fastify
-fastify.default = fastify
 module.exports = fastify
+module.exports.fastify = fastify
+module.exports.default = fastify

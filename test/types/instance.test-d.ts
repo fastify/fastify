@@ -19,13 +19,17 @@ expectType<unknown>(server.getSchema('SchemaId'))
 expectType<unknown>(server.use(() => {}))
 expectType<unknown>(server.use('/foo', () => {}))
 
-server.setErrorHandler(function (error, request, reply) {
-  expectAssignable<FastifyInstance>(this)
-})
+expectAssignable<FastifyInstance>(
+  server.setErrorHandler(function (error, request, reply) {
+    expectAssignable<FastifyInstance>(this)
+  })
+)
 
-server.setErrorHandler<FastifyError>(function (error, request, reply) {
-  expectType<FastifyError>(error)
-})
+expectAssignable<FastifyInstance>(
+  server.setErrorHandler<FastifyError>(function (error, request, reply) {
+    expectType<FastifyError>(error)
+  })
+)
 
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)

@@ -55,7 +55,7 @@ fastify.get('/', (req, reply) => {
 })
 ```
 
-Note that it is important to keep initial shape of decorated field as close as possible to the value you intend to set dynamically in the future, so instantiate it as a `''` if intended value is string, and as `null` if it will be an object or a function.
+Note that it is important to keep initial shape of decorated field as close as possible to the value intended to be set dynamically in the future. Initialize a decorator as a `''` if the intended value is a string, and as `null` if it will be an object or a function.
 
 See
 [JavaScript engine fundamentals: Shapes and Inline Caches](https://web.archive.org/web/20200201163000/https://mathiasbynens.be/notes/shapes-ics)

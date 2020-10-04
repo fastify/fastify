@@ -5,13 +5,17 @@ const test = t.test
 const sget = require('simple-get').concat
 const fastify = require('..')
 
-const sgetForwardedRequest = (app, forHeader, path) => {
+const sgetForwardedRequest = (app, forHeader, path, protoHeader) => {
+  const headers = {
+    'X-Forwarded-For': forHeader,
+    'X-Forwarded-Host': 'example.com'
+  }
+  if (protoHeader) {
+    headers['X-Forwarded-Proto'] = protoHeader
+  }
   sget({
     method: 'GET',
-    headers: {
-      'X-Forwarded-For': forHeader,
-      'X-Forwarded-Host': 'example.com'
-    },
+    headers: headers,
     url: 'http://localhost:' + app.server.address().port + path
   }, () => {})
 }
@@ -27,6 +31,10 @@ const testRequestValues = (t, req, options) => {
   }
   if (options.ips) {
     t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarded-for')
+  }
+  if (options.protocol) {
+    t.ok(req.protocol, 'protocol is defined')
+    t.equal(req.protocol, options.protocol, 'gets protocol from x-forwarded-proto')
   }
 }
 
@@ -129,5 +137,34 @@ test('trust proxy IP addresses', (t) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs')
+  })
+})
+
+test('trust proxy protocol', (t) => {
+  t.plan(13)
+  const app = fastify({
+    trustProxy: true
+  })
+  app.get('/trustproxyprotocol', function (req, reply) {
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'lorem' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+  app.get('/trustproxynoprotocol', function (req, reply) {
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'http' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+  app.get('/trustproxyprotocols', function (req, reply) {
+    testRequestValues(t, req, { ip: '1.1.1.1', protocol: 'dolor' })
+    reply.code(200).send({ ip: req.ip, hostname: req.hostname })
+  })
+
+  t.tearDown(app.close.bind(app))
+
+  app.listen(0, (err) => {
+    app.server.unref()
+    t.error(err)
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxyprotocol', 'lorem')
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxynoprotocol')
+    sgetForwardedRequest(app, '1.1.1.1', '/trustproxyprotocols', 'ipsum, dolor')
   })
 })

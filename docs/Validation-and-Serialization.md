@@ -163,13 +163,19 @@ const bodyJsonSchema = {
 }
 
 const queryStringJsonSchema = {
-  name: { type: 'string' },
-  excitement: { type: 'integer' }
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    excitement: { type: 'integer' }
+  }
 }
 
 const paramsJsonSchema = {
-  par1: { type: 'string' },
-  par2: { type: 'number' }
+  type: 'object',
+  properties: {
+    par1: { type: 'string' },
+    par2: { type: 'number' }
+  }
 }
 
 const headersJsonSchema = {
@@ -198,7 +204,7 @@ fastify.post('/the/url', { schema }, handler)
 
 You can provide a list of plugins you want to use with Ajv:
 
-> Refer to [`ajv options`](Server.md#factory-ajv) to check plugins format
+> Refer to [`ajv options`](Server.md#ajv) to check plugins format
 
 ```js
 const fastify = require('fastify')({

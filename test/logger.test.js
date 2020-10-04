@@ -1423,7 +1423,7 @@ test('should redact the authorization header if so specified', t => {
             headers: req.headers,
             hostname: req.hostname,
             remoteAddress: req.ip,
-            remotePort: req.connection.remotePort
+            remotePort: req.socket.remotePort
           }
         }
       }

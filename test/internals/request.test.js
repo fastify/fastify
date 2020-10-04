@@ -12,7 +12,7 @@ test('Regular request', t => {
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
   const request = new Request('id', 'params', req, 'query', 'log')
@@ -29,7 +29,7 @@ test('Regular request', t => {
   t.strictEqual(request.body, null)
   t.strictEqual(request.method, 'GET')
   t.strictEqual(request.url, '/')
-  t.deepEqual(request.connection, req.connection)
+  t.deepEqual(request.socket, req.socket)
 })
 
 test('Regular request - hostname from authority', t => {
@@ -40,7 +40,7 @@ test('Regular request - hostname from authority', t => {
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
 
@@ -58,7 +58,7 @@ test('Regular request - host header has precedence over authority', t => {
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
   const request = new Request('id', 'params', req, 'query', 'log')
@@ -75,6 +75,9 @@ test('Request with trust proxy', t => {
   const req = {
     method: 'GET',
     url: '/',
+    // Some dependencies (proxy-addr, forwarded) still depend on the deprecated
+    // .connection property, we use .socket. Include both to satisfy everyone.
+    socket: { remoteAddress: 'ip' },
     connection: { remoteAddress: 'ip' },
     headers
   }
@@ -94,7 +97,7 @@ test('Request with trust proxy', t => {
   t.strictEqual(request.body, null)
   t.strictEqual(request.method, 'GET')
   t.strictEqual(request.url, '/')
-  t.deepEqual(request.connection, req.connection)
+  t.deepEqual(request.socket, req.socket)
 })
 
 test('Request with trust proxy - no x-forwarded-host header', t => {

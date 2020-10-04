@@ -360,7 +360,7 @@ const fastify = Fastify({
           headers: req.headers,
           hostname: req.hostname,
           remoteAddress: req.ip,
-          remotePort: req.connection.remotePort
+          remotePort: req.socket.remotePort
         }
       }
     }

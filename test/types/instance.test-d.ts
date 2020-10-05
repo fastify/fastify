@@ -55,6 +55,23 @@ expectError(server.setReplySerializer(serializerWithInvalidReturn))
 function invalidSchemaErrorFormatter () {}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
+// test listen method callback
+expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {}))
+expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {}))
+expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
+expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
+expectAssignable<void>(server.listen(3000, (err, address) => {}))
+expectAssignable<void>(server.listen('3000', (err, address) => {}))
+
+// test listen method promise
+expectAssignable<PromiseLike<string>>(server.listen(3000))
+expectAssignable<PromiseLike<string>>(server.listen('3000'))
+expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
+expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
+expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
+expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
+
+// test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))

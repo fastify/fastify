@@ -59,7 +59,7 @@ expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {}))
 expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {}))
 expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {})) 
+expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
 expectAssignable<void>(server.listen(3000, (err, address) => {}))
 expectAssignable<void>(server.listen('3000', (err, address) => {}))
 

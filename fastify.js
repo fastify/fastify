@@ -114,6 +114,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  version = options.version
 
   const initialConfig = getSecuredInitialConfig(options)
 

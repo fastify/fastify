@@ -5,6 +5,7 @@ const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
 let version
+let versionLoaded = false
 
 const {
   kAvvioBoot,
@@ -266,7 +267,7 @@ function fastify (options) {
     },
     version: {
       get () {
-        if (version === undefined) {
+        if (versionLoaded === false) {
           version = loadVersion()
         }
         return version
@@ -591,10 +592,15 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
 }
 
 function loadVersion () {
+  versionLoaded = true
   const fs = require('fs')
   const path = require('path')
-  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json')))
-  return pkg.version
+  const pkgPath = path.join(__dirname, 'package.json')
+  if (fs.accessSync(pkgPath, fs.constants.R_OK)) {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath))
+    return pkg.version
+  }
+  return undefined
 }
 
 /**

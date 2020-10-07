@@ -545,3 +545,40 @@ test('throws when route-level error handler is not a function', t => {
     t.is(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
 })
+
+test('route - optional parameter', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/foo/:opt?',
+    handler: (req, res) => {
+      res.send({ opt: req.params?.opt || false })
+    }
+  })
+
+  fastify.listen(0, function (err) {
+    if (err) t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/foo'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { opt: false })
+    })
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/foo/bar'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { opt: 'bar' })
+    })
+  })
+})

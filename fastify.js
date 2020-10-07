@@ -595,12 +595,14 @@ function loadVersion () {
   versionLoaded = true
   const fs = require('fs')
   const path = require('path')
-  const pkgPath = path.join(__dirname, 'package.json')
-  if (fs.accessSync(pkgPath, fs.constants.R_OK)) {
+  try {
+    const pkgPath = path.join(__dirname, 'package.json')
+    fs.accessSync(pkgPath, fs.constants.R_OK)
     const pkg = JSON.parse(fs.readFileSync(pkgPath))
-    return pkg.version
+    return pkg.name === 'fastify' ? pkg.version : undefined
+  } catch (e) {
+    return undefined
   }
-  return undefined
 }
 
 /**

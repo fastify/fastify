@@ -158,3 +158,13 @@ Passive: The dependencies of the npm package is installed by nodeJs.
 
 Active: NodeJs installed the npm package dependencies.
 
+### Writing Style
+
+**Documentation titles**
+
+When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
+Separate each sentence with the dash (-) symbol, which makes your .md files clear and readable. It also makes increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
+
+File examples: `hook-and-plugins.md`, `adding-test-plugins.md`, `removing-requests.md`. 
+
+

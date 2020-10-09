@@ -1220,21 +1220,11 @@ test('should be able to use default parser for extra content type', t => {
   const fastify = Fastify()
   t.tearDown(() => fastify.close())
 
-  fastify.post('/', { bodyLimit: 5 }, (request, reply) => {
+  fastify.post('/', (request, reply) => {
     reply.send(request.body)
   })
 
-  fastify.addContentTypeParser('text/json', (req, done) => {
-    let body = ''
-    req.on('data', function onData (chunk) {
-      body += chunk
-    })
-    req.on('end', onEnd)
-    function onEnd () {
-      fastify.getDefaultJsonParser('ignore', 'remove')(req, body, done)
-      done()
-    }
-  })
+  fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 
   fastify.listen(0, err => {
     t.error(err)

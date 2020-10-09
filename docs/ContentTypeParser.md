@@ -30,18 +30,7 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
 })
 
 // Can use default JSON/Text parser for different content Types
-fastify.addContentTypeParser('text/json', (req, done) => {
-  var body = ''
-  req.on('data', function onData (chunk) {
-    body += chunk
-  })
-  req.on('end', onEnd)
-  function onEnd () {
-    //passing isProtopoisoning and is constructor poisoning would give back a method which accepts req, body and done. Possible values for isProtoPoisoning/isContructorPoisoning are 'ignore','error' and 'remove'. Read more on https://github.com/fastify/secure-json-parse#api
-    fastify.getDefaultJsonParser('ignore','ignore')(req, body, done) 
-    done()
-  }
-})
+fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore')
 ```
 
 You can also use the `hasContentTypeParser` API to find if a specific content type parser already exists.

@@ -28,6 +28,9 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
 
   return res
 })
+
+// Can use default JSON/Text parser for different content Types
+fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore')
 ```
 
 You can also use the `hasContentTypeParser` API to find if a specific content type parser already exists.

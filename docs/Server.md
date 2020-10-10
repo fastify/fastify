@@ -883,6 +883,33 @@ fastify.ready(() => {
 })
 ```
 
+<a name="addContentTypeParser"></a>
+#### addContentTypeParser
+
+`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string or string array.
+
+```js
+// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
+```
+
+<a name="getDefaultJsonParser"></a>
+#### getDefaultJsonParser
+
+`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes two arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configuration. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+
+
+<a name="defaultTextParser"></a>
+#### defaultTextParser 
+
+`fastify.defaultTextParser()` can be used to parse content as plain text. 
+
+```js
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
+```
+
+
 <a name="initial-config"></a>
 #### initialConfig
 

@@ -883,7 +883,7 @@ fastify.ready(() => {
 <a name="addContentTypeParser"></a>
 #### addContentTypeParser
 
-`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types. For Eg. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string or string array
+`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string or string array.
 
 ```js
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))

@@ -892,7 +892,7 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 <a name="getDefaultJsonParser"></a>
 #### getDefaultJsonParser
 
-`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes 2 arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configration. Please read more about it <a href="https://github.com/fastify/secure-json-parse#api">here</a>
+`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes two arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configuration. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
 
 
 <a name="defaultTextParser"></a>

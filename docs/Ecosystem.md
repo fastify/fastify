@@ -17,6 +17,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.
 - [`fastify-cors`](https://github.com/fastify/fastify-cors) Enables the use of CORS in a Fastify application.
+- [`fastify-csrf`](https://github.com/fastify/fastify-csrf) A plugin for adding [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to Fastify.
 - [`fastify-elasticsearch`](https://github.com/fastify/fastify-elasticsearch) Plugin to share the same ES client.
 - [`fastify-env`](https://github.com/fastify/fastify-env) Load and check configuration.
 - [`fastify-etag`](https://github.com/fastify/fastify-etag) Automatically generate etags for HTTP responses.
@@ -65,7 +66,6 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
-- [`fastify-csrf`](https://github.com/Tarang11/fastify-csrf) A csrf plugin for Fastify.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.

@@ -16,9 +16,6 @@ expectAssignable<FastifyInstance>(server.addSchema({
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<unknown>(server.getSchema('SchemaId'))
 
-expectType<unknown>(server.use(() => {}))
-expectType<unknown>(server.use('/foo', () => {}))
-
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
     expectAssignable<FastifyInstance>(this)

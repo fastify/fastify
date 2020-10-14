@@ -30,7 +30,7 @@ You need to know the following:
 ### Consider your Audience
 
 
-Before you start writing, think about who your audience. In this case, your audience should know the following HTTP, HTML, CSS, JavaScript, NPM, NodeJs. It's necessary to put them in mind because they are the one consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can get them, make references and use words readers can relate with easily. As for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
+Before you start writing, think about who your audience. In this case, your audience should already know HTTP, HTML, CSS, JavaScript, NPM and NodeJs. It's necessary to put your reader's mind because they are the one consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can get them, make references and use words readers can relate with easily. As for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
 
 
 ### Get straight to the point
@@ -67,7 +67,7 @@ Result:
 
 ### Avoid plagiarism
 
-Make sure you evade copying other people's work, keep it as original as possible. You can learn from what they've done and also reference where it is if you used a particular quote from their work.
+Make sure you evade copying other people's work, keep it as original as possible. You can learn from what they've done and also reference where it's from if you used a particular quote from their work.
 
 
 ## Word Choice
@@ -165,6 +165,40 @@ Active: NodeJs installed the npm package dependencies.
 When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
 Separate each sentence with the dash (-) symbol, which makes your .md files clear and readable. It also makes increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
 
-File examples: `hook-and-plugins.md`, `adding-test-plugins.md`, `removing-requests.md`. 
+Examples: <br>
+>`hook-and-plugins.md`, <br> 
+ `adding-test-plugins.md`, <br>
+ `removing-requests.md`.
+
+**Hyperlinks** 
+
+Hyperlinks should have a clear title of what it references.
+Here is how your hyperlink should look: 
+
+```MD
+<!-- More like this -->
+
+// Add clear and breif description
+[Fastify Plugins] (https://www.fastify.io/docs/latest/Plugins/)
+
+<!--Less like this -->
+
+// incomplete description 
+[Fastify] (https://www.fastify.io/docs/latest/Plugins/)
+
+// Adding title in link brackets
+[](https://www.fastify.io/docs/latest/Plugins/ "fastify plugin")
+
+// Empty title
+[](https://www.fastify.io/docs/latest/Plugins/)
+
+// Adding links localhost URL's instead of using code strings (``)
+[http://localhost:3000/](http://localhost:3000/)
+
+```
+You can include in your documentation as many essential references as possible, but avoid having numerous links when writing for beginners to avoid distractions.
+
+
+
 
 

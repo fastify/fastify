@@ -59,13 +59,6 @@ export interface FastifyInstance<
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
 
-  /**
-   * This method will throw a `FST_ERR_MISSING_MIDDLEWARE` error unless support
-   * for Express-style middlewares is first enabled. Visit
-   * https://fastify.io/docs/latest/Middleware/ for more info.
-   */
-  use(...args: unknown[]): unknown;
-
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault

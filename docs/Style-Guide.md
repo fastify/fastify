@@ -11,7 +11,7 @@ Welcome to *Fastify Style Guide*. This guide is here to provide you with a conve
 This guide is for anyone who loves to build with Fastify or want to contribute to our documentation. You don't need to be an expert in writing technical documentation. Our guideline is here to help you.
 <br>
 
-Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.MD](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) on Github to join our Open Source folks.
+Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.md](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file on Github to join our Open Source folks.
 
 
 ## Before you write
@@ -83,8 +83,8 @@ When writing articles or step-by-step guides, your content should communicate di
 
 > According to [Wikipedia](#), ***You*** is usually a second person pronoun. Also, used to refer to an indeterminate person, as a more common alternative to a very formal indefinite pronoun.
 
-
 **Avoiding second person pronoun**
+
 One of the main rules of formal writing such as references, synthesis and also in API documentation is to avoid second person ("you"). It should not directly address the user even when the word "you" is almost unavoidable when writing, but there are ways to avoid second person. Below are some alternative examples you can use to evade them. 
 
 **Example**
@@ -101,7 +101,7 @@ Using the word "you" makes the reader know you are speaking to them. It is easie
 
 
 
-## Avoid writing condescending languages.
+### Avoid writing condescending languages.
 
 Condescending languages are words that include:
 
@@ -158,19 +158,19 @@ Passive: The dependencies of the npm package is installed by nodeJs.
 
 Active: NodeJs installed the npm package dependencies.
 
-### Writing Style
+## Writing Style
 
-**Documentation titles**
+### Documentation titles
 
 When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
 Separate each sentence with the dash (-) symbol, which makes your .md files clear and readable. It also makes increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
 
-Examples: <br>
+**Examples**: <br>
 >`hook-and-plugins.md`, <br> 
  `adding-test-plugins.md`, <br>
  `removing-requests.md`.
 
-**Hyperlinks** 
+### Hyperlinks
 
 Hyperlinks should have a clear title of what it references.
 Here is how your hyperlink should look: 

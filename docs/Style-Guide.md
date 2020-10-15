@@ -9,6 +9,7 @@ Welcome to *Fastify Style Guide*. This guide is here to provide you with a conve
 ## Who is this guide for?
 
 This guide is for anyone who loves to build with Fastify or want to contribute to our documentation. You don't need to be an expert in writing technical documentation. Our guideline is here to help you.
+
 <br>
 
 Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.md](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file on Github to join our Open Source folks.
@@ -52,7 +53,7 @@ More Like this: To register a parametric path, put a colon before the parameter 
 
 <!-- <br> -->
 
-Do not add videos or screenshots. Instead, make a referral link or a youtube video. You can add links by using `[Title](www.websitename.com)` in the markdown.
+Do not add videos or screenshots in the documentation. It is easier to keep under version control. Videos and images will eventually end up becoming outdated as new updates keep developing. Instead, make a referral link or a youtube video. You can add links by using `[Title](www.websitename.com)` in the markdown.
 
 **Example**
 
@@ -77,13 +78,13 @@ Make sure you evade copying other people's work, keep it as original as possible
 There are a few things you need to use and avoid when writing your documentation which will improve readability for readers and also make documentations neat, direct and clean all through your writing process.
 
 
-### Use the second person ("you")  as the pronoun
+### When to use the second person "you" as the pronoun
 
 When writing articles or step-by-step guides, your content should communicate directly to readers who is the second person ("you") addressed. It is easier to give them direct instruction on what to do when a particular topic. To see an example, visit the [Plugins-guide.md](https://github.com/fastify/fastify/blob/df9fbc183fa05fa1a23781b3f11fbf81f6854033/docs/Plugins-Guide.md) page on Github. 
 
 > According to [Wikipedia](#), ***You*** is usually a second person pronoun. Also, used to refer to an indeterminate person, as a more common alternative to a very formal indefinite pronoun.
 
-**Avoiding second person pronoun**
+**When to avoid second-person pronoun**
 
 One of the main rules of formal writing such as references, synthesis and also in API documentation is to avoid second person ("you"). It should not directly address the user even when the word "you" is almost unavoidable when writing, but there are ways to avoid second person. Below are some alternative examples you can use to evade them. 
 
@@ -123,9 +124,9 @@ Mostly start your description with a verb, which makes it simple and precise for
 
 **Example**
 
-- [ ] Less like this: There is a need for Nodejs to be installed before you can be able to use fastify.
+ Less like this: There is a need for Nodejs to be installed before you can be able to use fastify.
 
-- [x] More like this: Install Nodejs to make use of fastify.
+ More like this: Install Nodejs to make use of fastify.
 
 ### Grammatical moods 
 
@@ -163,7 +164,7 @@ Active: NodeJs installed the npm package dependencies.
 ### Documentation titles
 
 When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
-Separate each sentence with the dash (-) symbol, which makes your .md files clear and readable. It also makes increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
+Separate each sentence with the dash (-) symbol, which makes your `.md` files clear and readable. It also makes increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
 
 **Examples**: <br>
 >`hook-and-plugins.md`, <br> 

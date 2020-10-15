@@ -262,7 +262,6 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
-    errorHandler: defaultErrorHandler,
     // Set fastify initial configuration options read-only object
     initialConfig
   }
@@ -291,6 +290,11 @@ function fastify (options) {
           version = loadVersion()
         }
         return version
+      }
+    },
+    errorHandler: {
+      get () {
+        return this[kErrorHandler]
       }
     }
   })
@@ -579,7 +583,7 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this._errorHandler = func.bind(this)
+    this[kErrorHandler] = func.bind(this)
     return this
   }
 }

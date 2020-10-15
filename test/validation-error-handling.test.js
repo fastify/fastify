@@ -129,7 +129,7 @@ test('error inside custom error handler should have validationContext', t => {
   }, () => {})
 })
 
-test('error inside custom error handler should have validationContext if specified by customer error handler', t => {
+test('error inside custom error handler should have validationContext if specified by custom error handler', t => {
   t.plan(1)
 
   const fastify = Fastify()

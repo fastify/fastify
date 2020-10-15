@@ -26,7 +26,8 @@ const {
   kState,
   kOptions,
   kPluginNameChain,
-  kSchemaErrorFormatter
+  kSchemaErrorFormatter,
+  kErrorHandler
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -56,6 +57,21 @@ const onBadUrlContext = {
   },
   onSend: [],
   onError: []
+}
+
+function defaultErrorHandler (error, request, reply) {
+  if (reply.statusCode >= 500) {
+    reply.log.error(
+      { req: request, res: reply, err: error },
+      error && error.message
+    )
+  } else if (reply.statusCode >= 400) {
+    reply.log.info(
+      { res: reply, err: error },
+      error && error.message
+    )
+  }
+  reply.send(error)
 }
 
 function fastify (options) {
@@ -161,6 +177,7 @@ function fastify (options) {
     [kSchemas]: schemas,
     [kValidatorCompiler]: null,
     [kSchemaErrorFormatter]: options.schemaErrorFormatter,
+    [kErrorHandler]: defaultErrorHandler,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -245,6 +262,7 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
+    errorHandler: defaultErrorHandler,
     // Set fastify initial configuration options read-only object
     initialConfig
   }

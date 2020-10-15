@@ -4,7 +4,8 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const {
-  kOptions
+  kOptions,
+  kErrorHandler
 } = require('../lib/symbols')
 
 test('root fastify instance is an object', t => {
@@ -64,4 +65,12 @@ test('fastify instance get invalid ajv options.plugins', t => {
       plugins: 8
     }
   }))
+})
+
+test('fastify instance should contain default errorHandler', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.ok(fastify[kErrorHandler] instanceof Function)
+  t.same(fastify.errorHandler, fastify[kErrorHandler])
+  t.same(Object.getOwnPropertyDescriptor(fastify, 'errorHandler').set, undefined)
 })

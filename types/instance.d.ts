@@ -90,10 +90,11 @@ export interface FastifyInstance<
    */
   addHook<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault
+    ContextConfig = ContextConfigDefault,
+    T extends (...args: any[]) => void = (...args: any[]) => void
   >(
     name: 'onRequest',
-    hook: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+    hook: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, T>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

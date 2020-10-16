@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/class-name-casing */
 
 import { Readable } from 'stream'
+import { CallbackOrPromise } from './callback-or-promise'
 import { FastifyInstance } from './instance'
 import { RouteOptions, RouteGenericInterface } from './route'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
@@ -21,23 +22,20 @@ interface RequestPayload extends Readable {
  * `onRequest` is the first hook to be executed in the request lifecycle. There was no previous hook, the next hook will be `preParsing`.
  *  Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
-export interface onRequestHookHandler<
+export type onRequestHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  ContextConfig = ContextConfigDefault
-> {
-  (
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
-    done: HookHandlerDoneFunction
-  ): void;
-  (
-    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
-    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
-  ): Promise<unknown>;
-}
+  ContextConfig = ContextConfigDefault,
+  T extends (...args: any[]) => void = (...args: any[]) => void
+> = CallbackOrPromise<
+  T,
+  [
+    FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+  ],
+  HookHandlerDoneFunction>
 
 /**
  * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.

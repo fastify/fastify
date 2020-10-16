@@ -138,7 +138,7 @@
     "eslint-plugin-standard": "^4.0.1",
     "events.once": "^2.0.2",
     "fast-json-body": "^1.1.0",
-    "fastify-plugin": "^2.1.0",
+    "fastify-plugin": "^3.0.0",
     "fluent-schema": "^1.0.0",
     "form-data": "^3.0.0",
     "frameguard": "^3.1.0",

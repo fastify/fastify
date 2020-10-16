@@ -20,13 +20,13 @@ export interface FastifyRouteSchemaDef {
   httpStatus?: string;
 }
 
-export interface FastifyValidationResult {
-  errors?: FastifySchemaValidationError[] | null;
-}
-
 export interface FastifySchemaValidationError {
   message?: string;
   dataPath: string;
+}
+
+export interface FastifyValidationResult {
+  errors?: FastifySchemaValidationError[] | null;
 }
 
 /**

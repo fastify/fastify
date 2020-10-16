@@ -1,5 +1,11 @@
+/* eslint-disable @typescript-eslint/ban-types */
+
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
+
+export interface FastifyPluginOptions {
+  [key:string]: any
+}
 
 /**
  * FastifyPluginCallback
@@ -27,7 +33,3 @@ export type FastifyPluginAsync<Options extends FastifyPluginOptions = {}, Server
  * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. See FastifyRegister.
  */
 export type FastifyPlugin<Options extends FastifyPluginOptions = {}> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>
-
-export interface FastifyPluginOptions {
-  [key: string]: any;
-}

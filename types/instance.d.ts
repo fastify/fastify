@@ -215,7 +215,7 @@ export interface FastifyInstance<
   */
   addHook(
     name: 'onReady',
-    hook: onReadyHookHandler<RawServer, Logger>
+    hook: onReadyHookHandler
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

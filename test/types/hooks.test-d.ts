@@ -39,6 +39,14 @@ server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<void>(done(new Error()))
 })
 
+expectError(server.addHook('preParsing', async (request, reply, payload, done) => {}))
+
+server.addHook('preParsing', async (request, reply, payload) => {
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectType<RequestPayload>(payload)
+})
+
 server.addHook('preValidation', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

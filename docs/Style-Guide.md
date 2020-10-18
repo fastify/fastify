@@ -1,19 +1,14 @@
 # Fastify Style Guide
 
-
 ## Welcome
 
 Welcome to *Fastify Style Guide*. This guide is here to provide you with a conventional writing style for users writing developer documentation on our Open Source framework. Each topic is precise and well explained to help you write documentation users can easily understand and implement.
-
 
 ## Who is this guide for?
 
 This guide is for anyone who loves to build with Fastify or want to contribute to our documentation. You don't need to be an expert in writing technical documentation. Our guideline is here to help you.
 
-<br>
-
 Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.md](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file on Github to join our Open Source folks.
-
 
 ## Before you write
 
@@ -27,15 +22,11 @@ You need to know the following:
 * HTTP
 * NPM 
 
-
 ### Consider your Audience
-
 
 Before you start writing, think about who your audience. In this case, your audience should already know HTTP, HTML, CSS, JavaScript, NPM and NodeJs. It's necessary to put your readers in mind because they are the one consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can get them, make references and use words readers can relate with easily. Ask for feedback from the community, it can help you write better documentation that focus on the user and what you want to achieve.
 
-
 ### Get straight to the point
-
 
 Give your readers a clear and precise action to take. Start with what is most important. This way, you can help them find what they need faster. Mostly, readers tend to read the first content on a page, and many will not scroll further.
 
@@ -44,9 +35,6 @@ Give your readers a clear and precise action to take. Start with what is most im
 Less like this: Colons are very important to register a parametric path. It lets the framework know a there is a new parameter created. You can place the colon before the parameter name for the parametric path can be created.
 
 More Like this: To register a parametric path, put a colon before the parameter name. Using colon lets the framework know it is a parametric path and not a wild card.
-
-
-
 
 ### Avoid adding video or image content 
 
@@ -126,7 +114,6 @@ Grammatical moods is a great way to express your writing, don't want to sound to
 
 Example: Since there is no testing framework available, "fastify recommend ways to write tests".
 
-
 **Imperative** - Use when giving instructions, actions, commands, or when you write your headings.
 
 Example: Install dependencies before starting application development mode.
@@ -185,8 +172,3 @@ Here is how your hyperlink should look:
 
 ```
 You can include in your documentation as many essential references as possible, but avoid having numerous links when writing for beginners to avoid distractions.
-
-
-
-
-

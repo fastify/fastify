@@ -74,3 +74,26 @@ test('fastify instance should contain default errorHandler', t => {
   t.same(fastify.errorHandler, fastify[kErrorHandler])
   t.same(Object.getOwnPropertyDescriptor(fastify, 'errorHandler').set, undefined)
 })
+
+test('errorHandler in plugin should be separate from the external one', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.register((instance, opts, next) => {
+    const inPluginErrHandler = (_, __, reply) => {
+      reply.send({ plugin: 'error-object' })
+    }
+
+    instance.setErrorHandler(inPluginErrHandler)
+
+    t.notSame(instance.errorHandler, fastify.errorHandler)
+    t.equal(instance.errorHandler.name, 'bound inPluginErrHandler')
+
+    next()
+  })
+
+  await fastify.ready()
+
+  t.ok(fastify[kErrorHandler] instanceof Function)
+  t.same(fastify.errorHandler, fastify[kErrorHandler])
+})

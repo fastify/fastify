@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression } from './utils'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'

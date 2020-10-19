@@ -909,6 +909,23 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
 ```
 
+<a name="errorHandler"></a>
+#### errorHandler
+
+`fastify.errorHandler` can be used to handle errors using fastify's default error handler.
+
+```js
+fastify.get('/', {
+  errorHandler: (error, request, reply) => {
+    if (error.code === 'SOMETHING_SPECIFIC') {
+      reply.send({ custom: 'response' })
+      return
+    }
+
+    fastify.errorHandler(error, request, response)
+  }
+}, handler)
+```
 
 <a name="initial-config"></a>
 #### initialConfig

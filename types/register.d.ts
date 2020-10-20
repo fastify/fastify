@@ -4,6 +4,7 @@ import { LogLevel } from './logger'
 interface RegisterOptions {
   prefix?: string;
   logLevel?: LogLevel;
+  logSerializers?: Record<string, (value: any) => string>;
 }
 
 export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() => RegisterOptions & Options)

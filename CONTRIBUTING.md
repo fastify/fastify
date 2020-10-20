@@ -39,7 +39,7 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustements:
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustments:
 
 1. A release can be published by any member.
 1. The plugin version must follow the [semver](http://semver.org/) specification.
@@ -73,8 +73,8 @@ We are thankful to you and we are really glad to have worked with you.
 We'll be really happy to see you here again if you want to come back, but for now the person that did the onboarding must:
 1. Ask the collaborator if they want to stay or not.
 1. If the collaborator can't work with us anymore, they should:
-  1. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) and move themselves in the *Past Collaborators* section.
-  2. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) and move themselves in the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file.
+  1. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) and move themselves to the *Past Collaborators* section.
+  2. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) and move themselves to the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file.
 
 The person that did the onboarding must:
 1. If the collaborator doesn't reply to the ping in reasonable time, open the pull requests described above.

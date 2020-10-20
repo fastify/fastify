@@ -67,6 +67,12 @@ There are a few things you need to use and avoid when writing your documentation
 
 When writing articles or step-by-step guides, your content should communicate directly to readers who is the second person ("you") addressed. It is easier to give them direct instruction on what to do on a particular topic. To see an example, visit the [Plugins-guide.md](https://github.com/fastify/fastify/blob/df9fbc183fa05fa1a23781b3f11fbf81f6854033/docs/Plugins-Guide.md) page on Github. 
 
+**Example**
+
+Less Like this: we can use the following plugins.
+
+More like this: You can use the following plugins.
+
 > According to [Wikipedia](#), ***You*** is usually a second person pronoun. Also, used to refer to an indeterminate person, as a more common alternative to a very formal indefinite pronoun.
 
 ## When to avoid second person "you" as the pronoun

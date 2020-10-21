@@ -134,3 +134,7 @@ export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaul
 export * from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { fastify }
+
+declare module 'fastify' {
+  export = fastify;
+}

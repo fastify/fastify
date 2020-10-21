@@ -1,7 +1,7 @@
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 
-export type FastifyPluginOptions = Record<string, unknown>
+export type FastifyPluginOptions = Record<string, any>
 
 /**
  * FastifyPluginCallback

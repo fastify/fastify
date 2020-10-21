@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/class-name-casing */
-
 import { Readable } from 'stream'
 import { CallbackOrPromise } from './callback-or-promise'
 import { FastifyInstance } from './instance'
@@ -341,10 +339,7 @@ export interface onRegisterHookHandler<
 /**
  * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
  */
-export interface onReadyHookHandler<
-  RawServer extends RawServerBase = RawServerDefault,
-  Logger = FastifyLoggerInstance
-> {
+export interface onReadyHookHandler {
   (
     done: HookHandlerDoneFunction
   ): void;

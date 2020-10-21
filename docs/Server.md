@@ -850,7 +850,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-Fastify is provided with a default function that is called if no error handler is set and that logs the error with respect to its `statusCode`:
+Fastify is provided with a default function that is called if no error handler is set. It can be accessed using `fastify.errorHandler` and it logs the error with respect to its `statusCode`.
 
 ```js
 var statusCode = error.statusCode
@@ -901,14 +901,31 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 
 
 <a name="defaultTextParser"></a>
-#### defaultTextParser 
+#### defaultTextParser
 
-`fastify.defaultTextParser()` can be used to parse content as plain text. 
+`fastify.defaultTextParser()` can be used to parse content as plain text.
 
 ```js
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
 ```
 
+<a name="errorHandler"></a>
+#### errorHandler
+
+`fastify.errorHandler` can be used to handle errors using fastify's default error handler.
+
+```js
+fastify.get('/', {
+  errorHandler: (error, request, reply) => {
+    if (error.code === 'SOMETHING_SPECIFIC') {
+      reply.send({ custom: 'response' })
+      return
+    }
+
+    fastify.errorHandler(error, request, response)
+  }
+}, handler)
+```
 
 <a name="initial-config"></a>
 #### initialConfig

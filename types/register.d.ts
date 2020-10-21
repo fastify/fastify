@@ -1,6 +1,14 @@
 import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
 import { LogLevel } from './logger'
 
+interface RegisterOptions {
+  prefix?: string;
+  logLevel?: LogLevel;
+  logSerializers?: Record<string, (value: any) => string>;
+}
+
+export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() => RegisterOptions & Options)
+
 /**
  * FastifyRegister
  *
@@ -19,11 +27,4 @@ export interface FastifyRegister<T = void> {
     plugin: FastifyPluginCallback<Options> | FastifyPluginAsync<Options> | Promise<{ default: FastifyPluginCallback<Options> }> | Promise<{ default: FastifyPluginAsync<Options> }>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
-}
-
-export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | (() => RegisterOptions & Options)
-
-interface RegisterOptions {
-  prefix?: string;
-  logLevel?: LogLevel;
 }

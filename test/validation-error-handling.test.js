@@ -97,6 +97,72 @@ test('should be able to use setErrorHandler specify custom validation error', t 
   })
 })
 
+test('error inside custom error handler should have validationContext', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema,
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return function (data) {
+        return { error: new Error('this failed') }
+      }
+    }
+  }, function (req, reply) {
+    t.fail('should not be here')
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    t.strictEqual(error.validationContext, 'body')
+    reply.status(500).send(error)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      name: 'michelangelo',
+      work: 'artist'
+    },
+    url: '/'
+  }, () => {})
+})
+
+test('error inside custom error handler should have validationContext if specified by custom error handler', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.post('/', {
+    schema,
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return function (data) {
+        const error = new Error('this failed')
+        error.validationContext = 'customContext'
+        return { error: error }
+      }
+    }
+  }, function (req, reply) {
+    t.fail('should not be here')
+    reply.code(200).send(req.body.name)
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    t.strictEqual(error.validationContext, 'customContext')
+    reply.status(500).send(error)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      name: 'michelangelo',
+      work: 'artist'
+    },
+    url: '/'
+  }, () => {})
+})
+
 test('should be able to attach validation to request', t => {
   t.plan(3)
 

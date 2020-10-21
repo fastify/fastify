@@ -10,49 +10,6 @@ import { FastifyError } from 'fastify-error'
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
 /**
- * Fastify Router Shorthand method type that is similar to the Express/Restify approach
- */
-export interface RouteShorthandMethod<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-> {
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
-    path: string,
-    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
-}
-
-/**
- * Fastify Router Shorthand method type that is similar to the Express/Restify approach
- */
-export interface RouteShorthandMethod<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-> {
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
-    path: string,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
-}
-
-/**
- * Fastify Router Shorthand method type that is similar to the Express/Restify approach
- */
-export interface RouteShorthandMethod<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-> {
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
-    path: string,
-    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
-}
-
-/**
  * Route shorthand options for the various shorthand methods
  */
 export interface RouteShorthandOptions<
@@ -88,19 +45,19 @@ export interface RouteShorthandOptions<
 }
 
 /**
- * Fastify route method options.
+ * Route handler method declaration.
  */
-export interface RouteOptions<
+export type RouteHandlerMethod<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
-> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> {
-  method: HTTPMethods | HTTPMethods[];
-  url: string;
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-}
+> = (
+  this: FastifyInstance<RawServer, RawRequest, RawReply>,
+  request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+  reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+) => void | Promise<RouteGeneric['Reply'] | void>
 
 /**
  * Shorthand options including the handler function property
@@ -116,19 +73,42 @@ export interface RouteShorthandOptionsWithHandler<
 }
 
 /**
- * Route handler method declaration.
+ * Fastify Router Shorthand method type that is similar to the Express/Restify approach
  */
-export type RouteHandlerMethod<
+export interface RouteShorthandMethod<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+> {
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
+    path: string,
+    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
+    path: string,
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
+    path: string,
+    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+}
+
+/**
+ * Fastify route method options.
+ */
+export interface RouteOptions<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault
-> = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
-  reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-) => void | Promise<RouteGeneric['Reply'] | void>
+> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> {
+  method: HTTPMethods | HTTPMethods[];
+  url: string;
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+}
 
 export type RouteHandler<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

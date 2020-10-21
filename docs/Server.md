@@ -62,7 +62,7 @@ instance.
 + Default: `false`
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   ignoreTrailingSlash: true
 })
 
@@ -168,7 +168,7 @@ interface by having the following methods: `info`, `error`, `debug`, `fatal`, `w
     },
   };
 
-  const fastify = require('fastify')({logger: customLogger});
+  const fastify = require('fastify').fastify({logger: customLogger});
   ```
 
 <a name="factory-disable-request-logging"></a>
@@ -263,7 +263,7 @@ Especially in distributed systems, you may want to override the default id gener
 
 ```js
 let i = 0
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   genReqId: function (req) { return i++ }
 })
 ```
@@ -321,7 +321,7 @@ You can change this default setting by passing the option `querystringParser` an
 
 ```js
 const qs = require('qs')
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   querystringParser: str => qs.parse(str)
 })
 ```
@@ -347,7 +347,7 @@ const versioning = {
   }
 }
 
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   versioning
 })
 ```
@@ -381,7 +381,7 @@ Configure the ajv instance used by Fastify without providing a custom one.
 ```
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   ajv: {
     customOptions: {
       nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
@@ -416,7 +416,7 @@ Using this option it is possible to override one or more of those handlers with 
 *Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   frameworkErrors: function (error, req, res) {
     if (error instanceof FST_ERR_BAD_URL) {
       res.code(400)
@@ -458,7 +458,7 @@ function defaultClientErrorHandler (err, socket) {
 *Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket it's still writable as it may already have been destroyed.*
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   clientErrorHandler: function (err, socket) {
     const body = JSON.stringify({
       error: {
@@ -948,7 +948,7 @@ Currently the properties that can be exposed are:
 
 ```js
 const { readFileSync } = require('fs')
-const Fastify = require('fastify')
+const Fastify = require('fastify').fastify
 
 const fastify = Fastify({
   https: {

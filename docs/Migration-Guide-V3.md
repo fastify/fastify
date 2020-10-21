@@ -44,7 +44,7 @@ properties that are present on the native objects but not the Fastify objects.
 **v2:**
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     serializers: {
       res(res) {
@@ -61,7 +61,7 @@ const fastify = require('fastify')({
 **v3:**
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     serializers: {
       res(reply) {

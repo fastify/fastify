@@ -14,7 +14,7 @@ Since Fastify is focused on performance, it uses [pino](https://github.com/pinoj
 Enabling the logger is extremely easy:
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 
@@ -28,7 +28,7 @@ If you want to pass some options to the logger, just pass them to Fastify.
 You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     level: 'info',
     file: '/path/to/file' // Will use pino.destination()
@@ -47,7 +47,7 @@ If you want to pass a custom stream to the Pino instance, just add a stream fiel
 const split = require('split2')
 const stream = split(JSON.parse)
 
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     level: 'info',
     stream: stream
@@ -62,7 +62,7 @@ By default, fastify adds an id to every request for easier tracking. If the "req
 The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.  
 This behaviour can be customized by specifying custom serializers.
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     serializers: {
       req (request) {
@@ -75,7 +75,7 @@ const fastify = require('fastify')({
 For example, the response payload and headers could be logged using the approach below (even if it is *not recommended*):
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: {
     prettyPrint: true,
     serializers: {
@@ -126,7 +126,7 @@ Example:
 
 ```js
 const log = require('pino')({ level: 'info' })
-const fastify = require('fastify')({ logger: log })
+const fastify = require('fastify').fastify({ logger: log })
 
 log.info('does not have request information')
 

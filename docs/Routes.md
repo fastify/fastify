@@ -257,7 +257,7 @@ Fastify offers you a fast and smart way to create different version of the same 
 
 ```js
 // server.js
-const fastify = require('fastify')()
+const fastify = require('fastify').fastify()
 
 fastify.register(require('./routes/v1/users'), { prefix: '/v1' })
 fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
@@ -308,7 +308,7 @@ Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundH
 
 ```js
 // server.js
-const fastify = require('fastify')({ logger: true })
+const fastify = require('fastify').fastify({ logger: true })
 
 fastify.register(require('./routes/user'), { logLevel: 'warn' })
 fastify.register(require('./routes/events'), { logLevel: 'debug' })
@@ -330,7 +330,7 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
 ```js
-const fastify = require('fastify')({ logger: true })
+const fastify = require('fastify').fastify({ logger: true })
 
 fastify.register(require('./routes/user'), {
   logSerializers: {
@@ -390,7 +390,7 @@ Registering a new handler, you can pass a configuration object to it and retriev
 
 ```js
 // server.js
-const fastify = require('fastify')()
+const fastify = require('fastify').fastify()
 
 function handler (req, reply) {
   reply.send(reply.context.config.output)

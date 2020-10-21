@@ -29,7 +29,7 @@ and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
 ### app.js
 
 ```js
-const fastify = require('fastify');
+const { fastify } = require('fastify');
 
 function init() {
   const app = fastify();
@@ -319,7 +319,7 @@ And a `api/index.js` file:
 ```js
 'use strict'
 
-const fastify = require('fastify')
+const { fastify } = require('fastify')
 
 function build () {
   const app = fastify({

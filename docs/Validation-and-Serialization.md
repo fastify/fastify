@@ -207,7 +207,7 @@ You can provide a list of plugins you want to use with Ajv:
 > Refer to [`ajv options`](Server.md#ajv) to check plugins format
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   ajv: {
     plugins: [
       require('ajv-merge-patch')
@@ -285,7 +285,7 @@ This baseline configuration can be modified by providing [`ajv.customOptions`](S
 If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify').fastify()
 const Ajv = require('ajv')
 const ajv = new Ajv({
   // the fastify defaults (if needed)

@@ -189,7 +189,7 @@ throw an exception.
 As an example, the following will throw:
 
 ```js
-const server = require('fastify')()
+const server = require('fastify').fastify()
 
 server.decorateReply('view', function (template, args) {
   // Amazing view rendering engine
@@ -212,7 +212,7 @@ server.listen(3000)
 But this will not:
 
 ```js
-const server = require('fastify')()
+const server = require('fastify').fastify()
 
 server.decorateReply('view', function (template, args) {
   // Amazing view rendering engine.

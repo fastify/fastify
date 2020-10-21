@@ -82,7 +82,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage) Fastify plugin that exposes a GCP Cloud Storage client instance.
 - [`fastify-grant`](https://github.com/simov/fastify-grant) Authentication/Authorization plugin for Fastify that supports 200+ OAuth Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
-- [`fastify-gql`](https://github.com/mcollina/fastify-gql) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
+- [`mercurius`](http://mercurius.dev/) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).

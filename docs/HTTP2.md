@@ -20,7 +20,7 @@ connection__:
 
 const fs = require('fs')
 const path = require('path')
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   http2: true,
   https: {
     key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
@@ -45,7 +45,7 @@ _Fastify_ supports this out of the box:
 
 const fs = require('fs')
 const path = require('path')
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   http2: true,
   https: {
     allowHTTP1: true, // fallback support for HTTP1
@@ -76,7 +76,7 @@ text, however this is not supported by browsers.
 ```js
 'use strict'
 
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   http2: true
 })
 

@@ -405,7 +405,7 @@ All `http`, `https`, and `http2` types are inferred from `@types/node`
 
 #### How to import
 
-The Fastify API is powered by the `fastify()` method. In JavaScript you would import it using `const fastify = require('fastify')`. In TypeScript it is recommended to use the `import/from` syntax instead so types can be resolved. There are a couple supported import methods with the Fastify type system.
+The Fastify API is powered by the `fastify()` method. In JavaScript you would import it using `const { fastify } = require('fastify')`. In TypeScript it is recommended to use the `import/from` syntax instead so types can be resolved. There are a couple supported import methods with the Fastify type system.
 
 1. `import fastify from 'fastify'`
     - Types are resolved but not accessible using dot notation
@@ -440,11 +440,11 @@ The Fastify API is powered by the `fastify()` method. In JavaScript you would im
     const f: Fastify.FastifyInstance = Fastify.fastify()
     f.listen(8080, () => { console.log('running') })
     ```
-3. `const fastify = require('fastify')`
+3. `const { fastify } = require('fastify')`
     - This syntax is valid and will import fastify as expected; however, types will **not** be resolved
     - Example:
     ```typescript
-    const fastify = require('fastify')
+    const { fastify } = require('fastify')
 
     const f = fastify()
     f.listen(8080, () => { console.log('running') })

@@ -88,7 +88,7 @@ yarn add fastify
 
 ```js
 // Require the framework and instantiate it
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 
@@ -107,7 +107,7 @@ fastify.listen(3000, (err, address) => {
 with async-await:
 
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 

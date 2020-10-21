@@ -267,7 +267,7 @@ As we mentioned earlier, Fastify starts loading its plugins __after__ `.listen()
 
 In case you rely on a variable injected by a preceding plugin and want to pass that in the `options` argument of `register`, you can do so by using a function instead of an object:
 ```js
-const fastify = require('fastify')()
+const fastify = require('fastify').fastify()
 const fp = require('fastify-plugin')
 const dbClient = require('db-client')
 

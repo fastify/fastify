@@ -21,7 +21,7 @@ yarn add fastify
 Let's write our first server:
 ```js
 // Require the framework and instantiate it
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 
@@ -43,7 +43,7 @@ fastify.listen(3000, function (err, address) {
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br>
 *(We also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks.)*
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 
@@ -89,7 +89,7 @@ As with JavaScript, where everything is an object, with Fastify everything is a 
 Before digging into it, let's see how it works!<br>
 Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](Routes.md) docs).
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 
@@ -132,7 +132,7 @@ npm i --save fastify-plugin fastify-mongodb
 
 **server.js**
 ```js
-const fastify = require('fastify')({
+const fastify = require('fastify').fastify({
   logger: true
 })
 

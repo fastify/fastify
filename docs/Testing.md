@@ -17,7 +17,7 @@ run `npm install fastify && npm install tap pino-pretty --save-dev`
 ```js
 'use strict'
 
-const fastify = require('fastify')
+const { fastify } = require('fastify')
 
 function build(opts={}) {
   const app = fastify(opts)
@@ -183,7 +183,7 @@ try {
 
 **app.js**
 ```js
-const Fastify = require('fastify')
+const Fastify = require('fastify').fastify
 
 function buildFastify () {
   const fastify = Fastify()

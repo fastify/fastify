@@ -6,6 +6,7 @@ This document contains a set recommendations, or best practices, when using
 Fastify.
 
 * [Use A Reverse Proxy](#reverseproxy)
+* [Kubernetes](#kubernetes)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>

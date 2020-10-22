@@ -164,6 +164,7 @@ backend static-backend
 [haproxy]: https://www.haproxy.org/
 
 ## Kubernetes
+<a id="kubernetes"></a>
 
 The `readinessProbe` uses [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe will not be able to reach the application in this case. In order to make it work, the application must listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec, as per the following example:
 

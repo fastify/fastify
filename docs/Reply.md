@@ -11,7 +11,7 @@
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
-  - [.redirect(dest)](#redirectdest)
+  - [.redirect([code,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -44,7 +44,7 @@ and properties:
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
+- `.redirect([code,] dest)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer or using the custom serializer (if one is set) and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.

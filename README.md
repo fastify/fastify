@@ -188,6 +188,7 @@ matters to you.
 * <a href="./docs/LTS.md"><code><b>Long Term Support</b></code></a>
 * <a href="./docs/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
 * <a href="./docs/Serverless.md"><code><b>Serverless</b></code></a>
+* <a href="./docs/Kubernetes.md"><code><b>Kubernetes</b></code></a>
 * <a href="./docs/Recommendations.md"><code><b>Recommendations</b></code></a>
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)

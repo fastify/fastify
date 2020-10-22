@@ -164,9 +164,7 @@ backend static-backend
 
 ## Kubernetes
 
-Please consider following points if you want to run fastify on kubernetes.
-
-### Readiness Probe
+The `readinessProbe` uses [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe will not be able to reach the application in this case. In order to make it work, the application must listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec, as per the following example:
 
 ```yaml
 readinessProbe:
@@ -178,6 +176,3 @@ readinessProbe:
     timeoutSeconds: 3
     successThreshold: 1
     failureThreshold: 5
-```
-
-The `readinessProbe` use [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as hostname. Fastify listen on `127.0.0.1` by default. Your probe won't be able to reach your application. In order to make it work you have to listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec.

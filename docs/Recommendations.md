@@ -161,3 +161,23 @@ backend static-backend
 [scale-horiz]: https://en.wikipedia.org/wiki/Scalability#Horizontal
 [why-use]: https://web.archive.org/web/20190821102906/https://medium.com/intrinsic/why-should-i-use-a-reverse-proxy-if-node-js-is-production-ready-5a079408b2ca
 [haproxy]: https://www.haproxy.org/
+
+## Kubernetes
+
+Please consider following points if you want to run fastify on kubernetes.
+
+### Readiness Probe
+
+```yaml
+readinessProbe:
+    httpGet:
+        path: /health
+        port: 4000
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 3
+    successThreshold: 1
+    failureThreshold: 5
+```
+
+The `readinessProbe` use [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as hostname. Fastify listen on `127.0.0.1` by default. Your probe won't be able to reach your application. In order to make it work you have to listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec.

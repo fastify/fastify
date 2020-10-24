@@ -32,9 +32,8 @@ export interface RouteShorthandOptions<
   // TODO: Change to actual type.
   schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error;
   // hooks
-  // TODO: investigate how we can pass used fn type here
+  // TODO: investigate how we can pass used function type to generic
   onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  // TODO: investigate how we can pass used fn type here
   preParsing?: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
   preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];

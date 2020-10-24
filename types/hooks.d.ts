@@ -26,8 +26,8 @@ export type onRequestHookHandler<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
-  T extends (...args: any[]) => void = (...args: any[]) => void
-> = CallbackOrPromise<T, [ FastifyRequest<RouteGeneric, RawServer, RawRequest>, FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> ], HookHandlerDoneFunction>
+  HookFn extends (...args: any) => void = (...args: any) => void
+> = CallbackOrPromise<HookFn, [ request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> ], [ done: HookHandlerDoneFunction ]>
 
 /**
  * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
@@ -39,12 +39,8 @@ export type preParsingHookHandler<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
-  HookFn extends (...args: any[]) => void = (...args: any[]) => void
-> = HookFn extends (...args: any[]) => void
-  ? ReturnType<HookFn> extends Promise<infer P>
-    ? (req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload) => Promise<P>
-    : (req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload, done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void) => void
-  : HookFn;
+  HookFn extends (...args: any) => void = (...args: any) => void
+> = CallbackOrPromise<HookFn, [ req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload ], [ done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void ]>
 
 export interface preParsingAsyncHookHandler<
   RawServer extends RawServerBase = RawServerDefault,

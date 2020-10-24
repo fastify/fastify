@@ -60,7 +60,7 @@ Make sure you avoid copying other people's work. Keep it as original as possible
 ## Word Choice
 
 
-There are a few things you need to use and avoid when writing your documentation which will improve readability for readers and also make documentations neat, direct and clean all through your writing process.
+There are a few things you need to use and avoid when writing your documentation to improve readability for readers and also make documentation neat, direct, and clean.
 
 
 ### When to use the second person "you" as the pronoun

@@ -54,7 +54,7 @@ Result:
 
 ### Avoid plagiarism
 
-Make sure you evade copying other people's work, keep it as original as possible. You can learn from what they've done and also reference where it's from if you used a particular quote from their work.
+Make sure you avoid copying other people's work. Keep it as original as possible. You can learn from what they've done and also reference where it's from if you used a particular quote from their work.
 
 
 ## Word Choice

@@ -109,7 +109,7 @@ Mostly start your description with a verb, which makes it simple and precise for
 
  Less like this: There is a need for Nodejs to be installed before you can be able to use Fastify.
 
- More like this: Install Nodejs to make use of fastify.
+ More like this: Install Nodejs to make use of Fastify.
 
 ### Grammatical moods 
 

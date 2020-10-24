@@ -2,7 +2,7 @@ import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fasti
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from 'fastify-error'
-import { RequestPayload } from '../../types/hooks'
+import { HookHandlerDoneFunction, RequestPayload } from '../../types/hooks'
 
 const server = fastify()
 
@@ -15,7 +15,7 @@ type TestPayloadType = {
 
 // Synchronous Tests
 
-server.addHook('onRequest', (request, reply, done) => {
+server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -23,9 +23,9 @@ server.addHook('onRequest', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-expectError(server.addHook('onRequest', async (request, reply, done) => {}))
+expectError(server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {}))
 
-server.addHook('onRequest', async (request, reply) => {
+server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
@@ -39,7 +39,7 @@ server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<void>(done(new Error()))
 })
 
-expectError(server.addHook('preParsing', async (request, reply, payload, done) => {}))
+expectError(server.addHook('preParsing', async (request: FastifyRequest, reply: FastifyReply, payload: RequestPayload, done: HookHandlerDoneFunction) => {}))
 
 server.addHook('preParsing', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
@@ -133,7 +133,7 @@ server.addHook('onClose', (instance, done) => {
 
 // Asynchronous
 
-server.addHook('onRequest', async (request, reply) => {
+server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })

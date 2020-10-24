@@ -125,7 +125,7 @@ Example: Since there is no testing framework available, "Fastify recommends ways
 Example: Install dependencies before starting application development mode.
 
 
-**Subjunctive** -  Use when making suggestions, hypothesis or non-factual statement.
+**Subjunctive** -  Use when making suggestions, hypothesis or non-factual statements.
 
 Example: Reading the documentation on our website is recommended to get comprehensive knowledge of the framework.
 

@@ -85,7 +85,7 @@ Less Like this: You can use the following recommendation as an example.
 
 More like this: As an example, the following recommendations should be referenced.
 
-To view a documented example, visit the [Decorators.md](https://github.com/fastify/fastify/blob/df9fbc183fa05fa1a23781b3f11fbf81f6854033/docs/Decorators.md) page on Github. 
+To view a live example, refer to the [Decorators.md](/docs/Decorators.md) reference document. 
 
 
 ### Avoid writing condescending languages.

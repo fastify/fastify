@@ -118,7 +118,7 @@ Grammatical moods is a great way to express your writing. Avoid sounding too bos
 
 **Indicative** - Use when making a factual statement or question. 
 
-Example: Since there is no testing framework available, "fastify recommend ways to write tests".
+Example: Since there is no testing framework available, "Fastify recommends ways to write tests".
 
 **Imperative** - Use when giving instructions, actions, commands, or when you write your headings.
 

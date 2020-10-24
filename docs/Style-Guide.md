@@ -83,7 +83,7 @@ One of the main rules of formal writing such as reference documentation, or API 
 
 Less Like this: You can use the following recommendation as an example.
 
-More like this: As an example, The following are recommendations to use.
+More like this: As an example, the following recommendations should be referenced.
 
 To view a documented example, visit the [Decorators.md](https://github.com/fastify/fastify/blob/df9fbc183fa05fa1a23781b3f11fbf81f6854033/docs/Decorators.md) page on Github. 
 

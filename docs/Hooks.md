@@ -50,7 +50,6 @@ Or `async/await`:
 fastify.addHook('onRequest', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 
@@ -97,7 +96,6 @@ Or `async/await`:
 fastify.addHook('preValidation', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 ### preHandler
@@ -112,7 +110,6 @@ Or `async/await`:
 fastify.addHook('preHandler', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 ### preSerialization
@@ -200,7 +197,6 @@ Or `async/await`:
 fastify.addHook('onResponse', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 
@@ -220,7 +216,6 @@ Or `async/await`:
 fastify.addHook('onTimeout', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 `onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance). The `onTimeout` hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.

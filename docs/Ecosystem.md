@@ -82,7 +82,6 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage) Fastify plugin that exposes a GCP Cloud Storage client instance.
 - [`fastify-grant`](https://github.com/simov/fastify-grant) Authentication/Authorization plugin for Fastify that supports 200+ OAuth Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
-- [`fastify-gql`](https://github.com/mcollina/fastify-gql) A GraphQL server implementation for Fastify with caching and [`graphql-jit`](https://github.com/ruiaraujo/graphql-jit).
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
@@ -155,4 +154,5 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin for AWS XRay recording.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage) An [i18next](https://www.i18next.com) based i18n (internationalization) middleware to be used with Node.js web frameworks like express or `Fastify` and also for Deno.
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
+- [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL server implementation for Fastify.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.

@@ -113,7 +113,7 @@ Mostly start your description with a verb, which makes it simple and precise for
 
 ### Grammatical moods 
 
-Grammatical moods is a great way to express your writing, don't want to sound too bossy while making a direct statement. Know when to switch between indicative, imperative, and Subjunctive moods.
+Grammatical moods is a great way to express your writing. Avoid sounding too bossy while making a direct statement. Know when to switch between indicative, imperative, and subjunctive moods.
 
 
 **Indicative** - Use when making a factual statement or question. 

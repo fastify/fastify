@@ -6,7 +6,7 @@ Welcome to *Fastify Style Guide*. This guide is here to provide you with a conve
 
 ## Who is this guide for?
 
-This guide is for anyone who loves to build with Fastify or want to contribute to our documentation. You don't need to be an expert in writing technical documentation. Our guideline is here to help you.
+This guide is for anyone who loves to build with Fastify or wants to contribute to our documentation. You don't need to be an expert in writing technical documentation. This guide is here to help you.
 
 Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.md](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file on Github to join our Open Source folks.
 

@@ -103,7 +103,7 @@ The reader may not find it easy to use the Fastify's framework and plugins, so a
 
 ### Starting with a verb
 
-Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Use present tense more often, it's easier to read and understand than the past or future tense.
+Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Prefer usage present tense because it's easier to read and understand than the past or future tense.
 
 **Example**
 

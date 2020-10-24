@@ -90,7 +90,7 @@ To view a live example, refer to the [Decorators.md](/docs/Decorators.md) refere
 
 ### Avoid writing condescending languages.
 
-Condescending languages are words that include:
+Condescending terms are words that include:
 
 * Just 
 * Easy

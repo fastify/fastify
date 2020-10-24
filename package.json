@@ -157,7 +157,7 @@
     "simple-get": "^4.0.0",
     "snazzy": "^8.0.0",
     "split2": "^3.1.1",
-    "standard": "^14.0.0",
+    "standard": "^15.0.0",
     "tap": "^14.4.1",
     "tap-mocha-reporter": "^5.0.0",
     "then-sleep": "^1.0.1",

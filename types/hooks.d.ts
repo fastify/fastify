@@ -27,13 +27,7 @@ export type onRequestHookHandler<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
   T extends (...args: any[]) => void = (...args: any[]) => void
-> = CallbackOrPromise<
-  T,
-  [
-    FastifyRequest<RouteGeneric, RawServer, RawRequest>,
-    FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ],
-  HookHandlerDoneFunction>
+> = CallbackOrPromise<T, [ FastifyRequest<RouteGeneric, RawServer, RawRequest>, FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> ], HookHandlerDoneFunction>
 
 /**
  * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
@@ -345,10 +339,7 @@ export interface onReadyHookHandler {
   ): void;
 }
 
-export interface onReadyAsyncHookHandler<
-  RawServer extends RawServerBase = RawServerDefault,
-  Logger = FastifyLoggerInstance
-> {
+export interface onReadyAsyncHookHandler {
   (): Promise<unknown>;
 }
 /**

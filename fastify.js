@@ -486,8 +486,13 @@ function fastify (options) {
   }
 
   // wrapper that we expose to the user for schemas handling
-  function addSchema (schema) {
+  function addSchema (schema, isObjectNullable = false) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
+
+    if (isObjectNullable && schema.type === 'object') {
+      schema.type = ['object', 'null']
+    }
+
     this[kSchemas].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this

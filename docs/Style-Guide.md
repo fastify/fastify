@@ -144,7 +144,7 @@ Active: NodeJs installs the npm package dependencies.
 ### Documentation titles
 
 When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
-Separate each sentence with the dash *(-)* symbol, which makes your `.md` files clear and readable. It also increases the chance of showing up on search engines (Google, DuckDuckg or Bing) in spheres of Search Engine Optimisation.
+Separate each sentence with the dash *(-)* symbol, which makes your `.md` files clear and readable.
 
 **Examples**: <br>
 >`hook-and-plugins.md`, <br> 

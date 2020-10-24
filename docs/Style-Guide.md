@@ -32,7 +32,7 @@ Give your readers a clear and precise action to take. Start with what is most im
 
 **Example**
 
-Less like this: Colons are very important to register a parametric path. It lets the framework know a there is a new parameter created. You can place the colon before the parameter name for the parametric path can be created.
+Less like this: Colons are very important to register a parametric path. It lets the framework know there is a new parameter created. You can place the colon before the parameter name so the parametric path can be created.
 
 More Like this: To register a parametric path, put a colon before the parameter name. Using colon lets the framework know it is a parametric path and not a wild card.
 

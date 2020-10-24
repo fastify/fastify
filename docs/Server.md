@@ -316,7 +316,7 @@ will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 <a name="factory-querystring-parser"></a>
 ### `querystringParser`
 
-The default query string parser that Fastify uses is the Node.js's core `querystring` module.<br/>
+The default query string parser that Fastify uses is the Node.js's core `querystring` module with case-sensitive option attached to `options.caseSensitive`.<br/>
 You can change this default setting by passing the option `querystringParser` and use a custom one, such as [`qs`](https://www.npmjs.com/package/qs).
 
 ```js

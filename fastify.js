@@ -88,8 +88,13 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
+  const caseSensitiveParse = (string) => {
+    const shouldLower = options.caseSensitive === false
+    return querystring.parse(shouldLower ? string.toLowerCase() : string)
+  }
+
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
-  const querystringParser = options.querystringParser || querystring.parse
+  const querystringParser = options.querystringParser || caseSensitiveParse
   const genReqId = options.genReqId || reqIdGenFactory()
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit

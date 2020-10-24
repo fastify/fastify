@@ -88,7 +88,7 @@ More like this: As an example, the following recommendations should be reference
 To view a live example, refer to the [Decorators.md](/docs/Decorators.md) reference document. 
 
 
-### Avoid writing condescending languages.
+### Avoid using condescending terms
 
 Condescending terms are words that include:
 

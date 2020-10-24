@@ -122,7 +122,7 @@ Example: Since there is no testing framework available, "Fastify recommends ways
 
 **Imperative** - Use when giving instructions, actions, commands, or when you write your headings.
 
-Example: Install dependencies before starting application development mode.
+Example: Install dependencies before starting development.
 
 
 **Subjunctive** -  Use when making suggestions, hypothesis or non-factual statements.

@@ -50,3 +50,98 @@ test('nullable string', t => {
     t.same(res.payload.hello, null)
   })
 })
+
+test('object or null body', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    handler: (req, reply) => {
+      t.strictEqual(req.body, null)
+      reply.code(200).send(req.body)
+    },
+    schema: {
+      body: {
+        type: ['object', 'null'],
+        properties: {
+          hello: {
+            type: 'string',
+            format: 'email'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          nullable: true,
+          properties: {
+            hello: {
+              type: 'string',
+              format: 'email'
+            }
+          }
+        }
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.json(), null)
+  })
+})
+
+test('nullable body', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    handler: (req, reply) => {
+      t.strictEqual(req.body, null)
+      reply.code(200).send(req.body)
+    },
+    schema: {
+      body: {
+        type: 'object',
+        nullable: true,
+        properties: {
+          hello: {
+            type: 'string',
+            format: 'email'
+          }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          nullable: true,
+          properties: {
+            hello: {
+              type: 'string',
+              format: 'email'
+            }
+          }
+        }
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.json(), null)
+  })
+})

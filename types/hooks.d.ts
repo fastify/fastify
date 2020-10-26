@@ -24,7 +24,6 @@ export interface onRequestHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-<<<<<<< HEAD
   ContextConfig = ContextConfigDefault
 > {
   (
@@ -37,11 +36,6 @@ export interface onRequestHookHandler<
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
 }
-=======
-  ContextConfig = ContextConfigDefault,
-  HookFn extends (...args: any) => void = (...args: any) => void
-> = CallbackOrPromise<HookFn, [ request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> ], [ done: HookHandlerDoneFunction ]>
->>>>>>> a8cda51c9393f09b1544cc8ca803e780dd6cfb24
 
 /**
  * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
@@ -52,7 +46,6 @@ export interface preParsingHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-<<<<<<< HEAD
   ContextConfig = ContextConfigDefault
 > {
   (
@@ -62,11 +55,6 @@ export interface preParsingHookHandler<
     done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
   ): void;
 }
-=======
-  ContextConfig = ContextConfigDefault,
-  HookFn extends (...args: any) => void = (...args: any) => void
-> = CallbackOrPromise<HookFn, [ req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload ], [ done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void ]>
->>>>>>> a8cda51c9393f09b1544cc8ca803e780dd6cfb24
 
 export interface preParsingAsyncHookHandler<
   RawServer extends RawServerBase = RawServerDefault,

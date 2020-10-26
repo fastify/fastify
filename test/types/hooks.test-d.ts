@@ -23,13 +23,6 @@ server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done:
   expectType<void>(done(new Error()))
 })
 
-expectError(server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {}))
-
-server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
-})
-
 server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

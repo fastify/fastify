@@ -96,11 +96,10 @@ export interface FastifyInstance<
    */
   addHook<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault,
-    Hook extends (...args: any[]) => void = (...args: any[]) => void
+    ContextConfig = ContextConfigDefault
   >(
     name: 'preParsing',
-    hook: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Hook>
+    hook: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   addHook<

@@ -33,18 +33,20 @@ export type onRequestHookHandler<
  * `preParsing` is the second hook to be executed in the request lifecycle. The previous hook was `onRequest`, the next hook will be `preValidation`.
  * Notice: in the `preParsing` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
  */
-export type preParsingHookHandler<
+export interface preParsingHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  ContextConfig = ContextConfigDefault,
-  HookFn extends (...args: any[]) => void = (...args: any[]) => void
-> = HookFn extends (...args: any[]) => void
-  ? ReturnType<HookFn> extends Promise<infer P>
-    ? (req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload) => Promise<P>
-    : (req: FastifyRequest<RouteGeneric, RawServer, RawRequest>, res: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>, payload: RequestPayload, done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void) => void
-  : HookFn;
+  ContextConfig = ContextConfigDefault
+> {
+  (
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
+    payload: RequestPayload,
+    done: <TError extends Error = FastifyError>(err?: TError | null, res?: RequestPayload) => void
+  ): void;
+}
 
 export interface preParsingAsyncHookHandler<
   RawServer extends RawServerBase = RawServerDefault,

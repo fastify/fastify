@@ -15,6 +15,7 @@ type TestPayloadType = {
 
 // Synchronous Tests
 
+expectError(server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply) => {}))
 server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
@@ -23,6 +24,7 @@ server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done:
   expectType<void>(done(new Error()))
 })
 
+expectError(server.addHook('preParsing', (request, reply, payload) => {}))
 server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
@@ -118,11 +120,13 @@ server.addHook('onClose', (instance, done) => {
 
 // Asynchronous
 
+expectError(server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {}))
 server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
+expectError(server.addHook('preParsing', async (request: FastifyRequest, reply: FastifyReply, payload: RequestPayload, done: HookHandlerDoneFunction) => {}))
 server.addHook('preParsing', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

@@ -2,7 +2,7 @@ import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fasti
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from 'fastify-error'
-import { HookHandlerDoneFunction, RequestPayload } from '../../types/hooks'
+import { RequestPayload } from '../../types/hooks'
 
 const server = fastify()
 
@@ -15,8 +15,7 @@ type TestPayloadType = {
 
 // Synchronous Tests
 
-expectError(server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply) => {}))
-server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
+server.addHook('onRequest', (request, reply, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -24,7 +23,6 @@ server.addHook('onRequest', (request: FastifyRequest, reply: FastifyReply, done:
   expectType<void>(done(new Error()))
 })
 
-expectError(server.addHook('preParsing', (request, reply, payload) => {}))
 server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
@@ -120,13 +118,11 @@ server.addHook('onClose', (instance, done) => {
 
 // Asynchronous
 
-expectError(server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {}))
-server.addHook('onRequest', async (request: FastifyRequest, reply: FastifyReply) => {
+server.addHook('onRequest', async (request, reply) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
-expectError(server.addHook('preParsing', async (request: FastifyRequest, reply: FastifyReply, payload: RequestPayload, done: HookHandlerDoneFunction) => {}))
 server.addHook('preParsing', async (request, reply, payload) => {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

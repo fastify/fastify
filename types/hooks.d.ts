@@ -31,6 +31,15 @@ export interface onRequestHookHandler<
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
   ): void;
+}
+
+export interface onRequestAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault
+> {
   (
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,

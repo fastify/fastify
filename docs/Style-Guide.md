@@ -76,7 +76,7 @@ More like this: You can use the following plugins.
 
 ## When to avoid second person "you" as the pronoun
 
-One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid second person ("you"), avoid directly addressing the reader.
+One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid second person ("you") or directly addressing the reader.
 
 **Example**
 

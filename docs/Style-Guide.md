@@ -59,7 +59,6 @@ Make sure you avoid copying other people's work. Keep it as original as possible
 
 ## Word Choice
 
-
 There are a few things you need to use and avoid when writing your documentation to improve readability for readers and also make documentation neat, direct, and clean.
 
 
@@ -77,7 +76,7 @@ More like this: You can use the following plugins.
 
 ## When to avoid second person "you" as the pronoun
 
-One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid second person ("you"), avoiding directly addressing the reader.
+One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid second person ("you"), avoid directly addressing the reader.
 
 **Example**
 
@@ -95,10 +94,10 @@ Condescending terms are words that include:
 * Just 
 * Easy
 * Simply
-* Basically
-* Obviously
+* boogeyman 
+* His/He
 
-The reader may not find it easy to use the Fastify's framework and plugins, so avoid words that make it sound simple or easy. Not everyone who reads the documentation has the same level of understanding.
+The reader may not find it easy to use the Fastify's framework and plugins, evade words that make it sound simple, easy, offensive, or insensitive. Not everyone who reads the documentation has the same level of understanding.
 
 
 ### Starting with a verb
@@ -135,16 +134,16 @@ Using active voice is a more compact and direct way of conveying your documentat
 
 **Example**
 
-Passive: The dependencies of the npm package is installed by nodeJs.
 
-Active: NodeJs installs the npm package dependencies.
+Passive: The node dependencies and packages are installed by npm.
+
+Active:  npm install packages and node dependencies.
 
 ## Writing Style
 
 ### Documentation titles
 
-When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. 
-Separate each sentence with the dash *(-)* symbol, which makes your `.md` files clear and readable.
+When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. Name your files in kebab-cases and avoid Raw or camelCase. To learn more about kebab-case you can visit this medium article on [Case Styles](https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841)
 
 **Examples**: <br>
 >`hook-and-plugins.md`, <br> 
@@ -177,4 +176,5 @@ Here is how your hyperlink should look:
 [http://localhost:3000/](http://localhost:3000/)
 
 ```
+
 You can include in your documentation as many essential references as possible, but avoid having numerous links when writing for beginners to avoid distractions.

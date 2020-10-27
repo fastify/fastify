@@ -94,8 +94,8 @@ Condescending terms are words that include:
 * Just 
 * Easy
 * Simply
-* boogeyman 
-* His/He
+* Basically
+* Obviously
 
 The reader may not find it easy to use the Fastify's framework and plugins, avoid words that make it sound simple, easy, offensive, or insensitive. Not everyone who reads the documentation has the same level of understanding.
 

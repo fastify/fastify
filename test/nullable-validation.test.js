@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const sget = require('simple-get').concat
 const Fastify = require('..')
 
 test('nullable string', t => {
@@ -52,7 +53,7 @@ test('nullable string', t => {
 })
 
 test('object or null body', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -61,7 +62,7 @@ test('object or null body', t => {
     url: '/',
     handler: (req, reply) => {
       t.strictEqual(req.body, null)
-      reply.code(200).send(req.body)
+      reply.code(200).send({ requestBody: req.body })
     },
     schema: {
       body: {
@@ -78,9 +79,10 @@ test('object or null body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            hello: {
+            requestBody: {
               type: 'string',
-              format: 'email'
+              format: 'email',
+              nullable: true
             }
           }
         }
@@ -88,18 +90,23 @@ test('object or null body', t => {
     }
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/'
-  }, (err, res) => {
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.json(), null)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { requestBody: null })
+    })
   })
 })
 
 test('nullable body', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -108,7 +115,7 @@ test('nullable body', t => {
     url: '/',
     handler: (req, reply) => {
       t.strictEqual(req.body, null)
-      reply.code(200).send(req.body)
+      reply.code(200).send({ requestBody: req.body })
     },
     schema: {
       body: {
@@ -126,9 +133,10 @@ test('nullable body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            hello: {
+            requestBody: {
               type: 'string',
-              format: 'email'
+              format: 'email',
+              nullable: true
             }
           }
         }
@@ -136,12 +144,17 @@ test('nullable body', t => {
     }
   })
 
-  fastify.inject({
-    method: 'POST',
-    url: '/'
-  }, (err, res) => {
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.json(), null)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), { requestBody: null })
+    })
   })
 })

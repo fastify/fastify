@@ -137,7 +137,7 @@ Using active voice is a more compact and direct way of conveying your documentat
 
 Passive: The node dependencies and packages are installed by npm.
 
-Active:  npm install packages and node dependencies.
+Active:  npm installs packages and node dependencies.
 
 ## Writing Style
 

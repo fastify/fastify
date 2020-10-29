@@ -69,6 +69,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     url: '/',
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },
+    prefixTrailingSlash: 'slash',
     onRequest: (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
       expectType<BodyInterface>(req.body)
       expectType<QuerystringInterface>(req.query)
@@ -178,4 +179,8 @@ expectType<FastifyInstance>(fastify().route({
   method: 'GET',
   handler: routeHandler,
   schemaErrorFormatter: (errors, dataVar) => new Error('')
+}))
+
+expectError(fastify().route({
+  prefixTrailingSlash: true // Not a valid value
 }))

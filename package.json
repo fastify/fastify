@@ -130,7 +130,7 @@
     "coveralls": "^3.0.14",
     "dns-prefetch-control": "^0.3.0",
     "eslint": "^7.11.0",
-    "eslint-config-standard": "^14.1.1",
+    "eslint-config-standard": "^16.0.1",
     "eslint-import-resolver-node": "^0.3.2",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",

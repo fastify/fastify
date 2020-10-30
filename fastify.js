@@ -60,14 +60,14 @@ const onBadUrlContext = {
 }
 
 function defaultErrorHandler (error, request, reply) {
-  if (reply.statusCode >= 500) {
-    reply.log.error(
-      { req: request, res: reply, err: error },
-      error && error.message
-    )
-  } else if (reply.statusCode >= 400) {
+  if (reply.statusCode < 500) {
     reply.log.info(
       { res: reply, err: error },
+      error && error.message
+    )
+  } else {
+    reply.log.error(
+      { req: request, res: reply, err: error },
       error && error.message
     )
   }

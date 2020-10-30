@@ -781,6 +781,61 @@ test('undefined payload should be sent as-is', t => {
   })
 })
 
+test('for HEAD method, no body should be sent but content-length should be', t => {
+  t.plan(11)
+
+  const fastify = require('../..')()
+  const contentType = 'application/json; charset=utf-8'
+  const bodySize = JSON.stringify({ foo: 'bar' }).length
+
+  fastify.head('/', {
+    onSend: function (request, reply, payload, next) {
+      t.strictEqual(payload, undefined)
+      next()
+    }
+  }, function (req, reply) {
+    reply.header('content-length', bodySize)
+    reply.header('content-type', contentType)
+    reply.code(200).send()
+  })
+
+  fastify.head('/with/null', {
+    onSend: function (request, reply, payload, next) {
+      t.strictEqual(payload, 'null')
+      next()
+    }
+  }, function (req, reply) {
+    reply.header('content-length', bodySize)
+    reply.header('content-type', contentType)
+    reply.code(200).send(null)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'HEAD',
+      url: `http://localhost:${fastify.server.address().port}`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], contentType)
+      t.strictEqual(response.headers['content-length'], bodySize.toString())
+      t.strictEqual(body.length, 0)
+    })
+
+    sget({
+      method: 'HEAD',
+      url: `http://localhost:${fastify.server.address().port}/with/null`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], contentType)
+      t.strictEqual(response.headers['content-length'], bodySize.toString())
+      t.strictEqual(body.length, 0)
+    })
+  })
+})
+
 test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
   t.plan(9)
 

@@ -197,7 +197,7 @@ test('onRequest hook should support encapsulation / 1', t => {
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
@@ -813,7 +813,7 @@ test('onResponse hook should support encapsulation / 1', t => {
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
@@ -890,7 +890,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onSend', () => {})
 
@@ -1015,7 +1015,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   })
 
   fastify.register((instance, opts, done) => {
-    var chunk = 'stream payload'
+    let chunk = 'stream payload'
     const thePayload = new stream.Readable({
       read () {
         this.push(chunk)
@@ -2163,7 +2163,7 @@ test('preValidation hook should support encapsulation / 1', t => {
 test('preValidation hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preValidation', () => {})
 
@@ -2582,7 +2582,7 @@ test('preParsing hook should support encapsulation / 1', t => {
 test('preParsing hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preParsing', function a () {})
 

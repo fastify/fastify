@@ -9,7 +9,7 @@ const h2url = require('h2url')
 const sget = require('simple-get').concat
 const msg = { hello: 'world' }
 
-var fastify
+let fastify
 try {
   fastify = Fastify({
     http2: true,

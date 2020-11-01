@@ -329,7 +329,7 @@ test('inject a multipart request using form-body', t => {
   const fastify = Fastify()
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var body = ''
+    let body = ''
     payload.on('data', d => {
       body += d
     })
@@ -362,7 +362,7 @@ function getStream () {
   }
   util.inherits(Read, Stream.Readable)
   const word = '{"hello":"world"}'
-  var i = 0
+  let i = 0
 
   Read.prototype._read = function (size) {
     this.push(word[i] ? word[i++] : null)

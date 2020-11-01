@@ -79,7 +79,7 @@ test('reply.send throw with circular JSON', t => {
   }
   const reply = new Reply(response, { context: { onSend: [] } })
   t.throws(() => {
-    var obj = {}
+    const obj = {}
     obj.obj = obj
     reply.send(JSON.stringify(obj))
   }, 'Converting circular structure to JSON')
@@ -430,9 +430,9 @@ test('stream with content type should not send application/octet-stream', t => {
   const fs = require('fs')
   const path = require('path')
 
-  var streamPath = path.join(__dirname, '..', '..', 'package.json')
-  var stream = fs.createReadStream(streamPath)
-  var buf = fs.readFileSync(streamPath)
+  const streamPath = path.join(__dirname, '..', '..', 'package.json')
+  const stream = fs.createReadStream(streamPath)
+  const buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.header('Content-Type', 'text/plain').send(stream)
@@ -459,9 +459,9 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
   const fs = require('fs')
   const path = require('path')
 
-  var streamPath = path.join(__dirname, '..', '..', 'package.json')
-  var stream = fs.createReadStream(streamPath)
-  var buf = fs.readFileSync(streamPath)
+  const streamPath = path.join(__dirname, '..', '..', 'package.json')
+  const stream = fs.createReadStream(streamPath)
+  const buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.log.warn = function mockWarn (message) {

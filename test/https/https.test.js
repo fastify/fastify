@@ -7,8 +7,9 @@ const fs = require('fs')
 const path = require('path')
 const Fastify = require('../..')
 
+let fastify
 try {
-  var fastify = Fastify({
+  fastify = Fastify({
     https: {
       key: fs.readFileSync(path.join(__dirname, 'fastify.key')),
       cert: fs.readFileSync(path.join(__dirname, 'fastify.cert'))

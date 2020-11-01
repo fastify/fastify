@@ -9,7 +9,7 @@ const Fastify = require('..')
 const jsonParser = require('fast-json-body')
 
 function plainTextParser (request, callback) {
-  var body = ''
+  let body = ''
   request.setEncoding('utf8')
   request.on('error', onError)
   request.on('data', onData)
@@ -436,7 +436,7 @@ test('catch all content type parser', t => {
   })
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -484,7 +484,7 @@ test('catch all content type parser should not interfere with other conte type p
   })
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -538,7 +538,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
   t.tearDown(fastify.close.bind(fastify))
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -754,7 +754,7 @@ test('Should get the body as string', t => {
     t.ok('called')
     t.ok(typeof body === 'string')
     try {
-      var json = JSON.parse(body)
+      const json = JSON.parse(body)
       done(null, json)
     } catch (err) {
       err.statusCode = 400
@@ -900,7 +900,7 @@ test('Should get the body as string', t => {
     t.ok('called')
     t.ok(typeof body === 'string')
     try {
-      var plainText = body
+      const plainText = body
       done(null, plainText)
     } catch (err) {
       err.statusCode = 400
@@ -939,7 +939,7 @@ test('Should get the body as buffer', t => {
     t.ok('called')
     t.ok(body instanceof Buffer)
     try {
-      var json = JSON.parse(body)
+      const json = JSON.parse(body)
       done(null, json)
     } catch (err) {
       err.statusCode = 400
@@ -978,7 +978,7 @@ test('Should get the body as buffer', t => {
     t.ok('called')
     t.ok(body instanceof Buffer)
     try {
-      var plainText = body
+      const plainText = body
       done(null, plainText)
     } catch (err) {
       err.statusCode = 400

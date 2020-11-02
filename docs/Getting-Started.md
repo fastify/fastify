@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Getting Started
-Hello! Thank you for checking out Fastify!<br>
+<!-- Hello! Thank you for checking out Fastify!<br>
 This document aims to be a gentle introduction to the framework and its features. It is an elementary preface with examples and links to other parts of the documentation.<br>
 Let's start!
 
@@ -344,4 +344,4 @@ npm start
 
 - Videos
   - [Take your HTTP server to ludicrous speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by [@mcollina](https://github.com/mcollina)
-  - [What if I told you that HTTP can be fast](https://www.webexpo.net/prague2017/talk/what-if-i-told-you-that-http-can-be-fast/) by [@delvedor](https://github.com/delvedor)
+  - [What if I told you that HTTP can be fast](https://www.webexpo.net/prague2017/talk/what-if-i-told-you-that-http-can-be-fast/) by [@delvedor](https://github.com/delvedor) -->

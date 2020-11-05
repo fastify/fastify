@@ -13,6 +13,8 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic auth plugin for Fastify.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.
 - [`fastify-caching`](https://github.com/fastify/fastify-caching) General server-side cache and etag support.
+- [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support for Fastify.
+- [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest) Casbin support for Fastify based on a RESTful model.
 - [`fastify-circuit-breaker`](https://github.com/fastify/fastify-circuit-breaker) A low overhead circuit breaker for your routes.
 - [`fastify-compress`](https://github.com/fastify/fastify-compress) Fastify compression utils.
 - [`fastify-cookie`](https://github.com/fastify/fastify-cookie) Parse and set cookie headers.

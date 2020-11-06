@@ -1073,7 +1073,7 @@ test('404 inside onSend', t => {
 
   const fastify = Fastify()
 
-  var called = false
+  let called = false
 
   fastify.get('/', function (req, reply) {
     reply.send({ hello: 'world' })
@@ -1215,7 +1215,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { preHandler: true, hello: 'world' })
     })
   })
@@ -1244,7 +1244,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { preHandler: true, hello: 'world' })
     })
   })
@@ -1278,7 +1278,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { preHandler1: true, preHandler2: true, hello: 'world' })
     })
   })
@@ -1307,7 +1307,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { check: 'ab', hello: 'world' })
     })
   })
@@ -1339,7 +1339,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'earth' })
     })
 
@@ -1349,7 +1349,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'world' })
     })
   })
@@ -1372,7 +1372,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 500)
       t.deepEqual(payload, {
         message: 'kaboom',
@@ -1401,7 +1401,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 401)
       t.deepEqual(payload, {
         message: 'go away',
@@ -1436,7 +1436,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { preHandler: 'ab', hello: 'world' })
     })
   })
@@ -1473,7 +1473,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { check: 'ab', hello: 'world' })
     })
 
@@ -1483,7 +1483,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { check: 'a', hello: 'world' })
     })
   })
@@ -1511,7 +1511,7 @@ test('preHandler option for setNotFoundHandler', t => {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { foo: 43, hello: 'world' })
     })
   })
@@ -1627,7 +1627,7 @@ test('preValidation option', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    var payload = JSON.parse(res.payload)
+    const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })
@@ -1657,7 +1657,7 @@ t.test('preValidation option could accept an array of functions', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    var payload = JSON.parse(res.payload)
+    const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })

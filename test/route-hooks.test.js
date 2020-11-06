@@ -34,7 +34,7 @@ function testExecutionHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'world' })
     })
   })
@@ -169,7 +169,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'earth' })
     })
 
@@ -179,7 +179,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { hello: 'world' })
     })
   })
@@ -202,7 +202,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 500)
       t.deepEqual(payload, {
         message: 'kaboom',
@@ -284,7 +284,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 401)
       t.deepEqual(payload, {
         message: 'go away',
@@ -316,7 +316,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { foo: 43 })
     })
   })
@@ -343,7 +343,7 @@ function testBeforeHandlerHook (hook) {
       payload: { hello: 'world' }
     }, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { foo: 43 })
     })
   })
@@ -385,7 +385,7 @@ test('preValidation option should be called before preHandler hook', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    var payload = JSON.parse(res.payload)
+    const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })
@@ -436,7 +436,7 @@ test('preParsing option should be called before preValidation hook', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    var payload = JSON.parse(res.payload)
+    const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })
@@ -492,7 +492,7 @@ test('onRequest option should be called before preParsing', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    var payload = JSON.parse(res.payload)
+    const payload = JSON.parse(res.payload)
     t.deepEqual(payload, { hello: 'world' })
   })
 })

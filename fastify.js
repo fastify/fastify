@@ -534,8 +534,8 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      var id = genReqId(req)
-      var childLogger = logger.child({ reqId: id })
+      const id = genReqId(req)
+      const childLogger = logger.child({ reqId: id })
 
       childLogger.info({ req }, 'incoming request')
 

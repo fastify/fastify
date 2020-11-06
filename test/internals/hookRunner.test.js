@@ -139,7 +139,7 @@ test('hookRunner - In case of error should skip to done (with promises)', t => {
 test('hookRunner - Be able to exit before its natural end', t => {
   t.plan(4)
 
-  var shouldStop = false
+  let shouldStop = false
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
   function iterator (fn, a, b, next) {

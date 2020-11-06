@@ -240,7 +240,7 @@ fastify.get('/user/:username', (request, reply) => {
 Please note this setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
 
-Also note that when this option is `false` and there is any schema regarding thequery strings, the schema should use lowercase for the query properties, otherwise it will fail or cause mismatch
+Also note that when this option is `false` and there is any schema regarding the query strings, the schema should use lowercase for the query properties, otherwise it will fail or cause mismatch.
 
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`

@@ -228,6 +228,8 @@ By default, value equal to `true`, routes are registered as case sensitive. That
 
 By setting `caseSensitive` to `false`, all paths will be matched as lowercase, but the route parameters or wildcards will maintain their original letter casing.
 
+This option also applies to query strings. When `caseSensitive` is set to `false`, `/foo?query=bar` is equivalent to `/foo?QUERY=bar` and the other variants (`qUerY`, `Query`, etc.). Properties with case variations are converted into a single argument. e.g. (`foo=bar1&Foo=bar2&foO=bar3` gets converted to `{foo: ['bar1', 'bar2', 'bar3']}`
+
 ```js
 fastify.get('/user/:username', (request, reply) => {
   // Given the URL: /USER/NodeJS
@@ -237,6 +239,8 @@ fastify.get('/user/:username', (request, reply) => {
 
 Please note this setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
+
+Also note that when this option is `false` and there is any schema regarding thequery strings, the schema should use lowercase for the query properties, otherwise it will fail or cause mismatch
 
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`

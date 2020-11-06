@@ -118,3 +118,61 @@ test('case insensitive (wildcard)', t => {
     })
   })
 })
+
+test('case insensitive query string', t => {
+  t.plan(5)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.get('/foo', (req, reply) => {
+    t.deepEqual(req.query, { test: 'bar' })
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/foo?tEsT=bar'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), {
+        hello: 'world'
+      })
+    })
+  })
+})
+
+test('case insensitive query string (order of query)', t => {
+  t.plan(5)
+
+  const fastify = Fastify({
+    caseSensitive: false
+  })
+  t.tearDown(fastify.close.bind(fastify))
+
+  fastify.get('/foo', (req, reply) => {
+    t.deepEqual(req.query, { test: ['bar1', 'bar2', 'bar3', 'bar4'] })
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/foo?tEsT=bar1&test=bar2&TEST=bar3&teST=bar4'
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(JSON.parse(body), {
+        hello: 'world'
+      })
+    })
+  })
+})

@@ -6,6 +6,7 @@ const Fastify = require('..')
 const sget = require('simple-get').concat
 const http = require('http')
 const split = require('split2')
+const append = require('vary').append
 
 test('Should register a versioned route', t => {
   t.plan(11)
@@ -474,5 +475,59 @@ test('Should register a versioned route with custome versioning strategy', t => 
   }, (err, res) => {
     t.error(err)
     t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('Vary header check (for documentation example)', t => {
+  t.plan(8)
+  const fastify = Fastify()
+  fastify.addHook('onSend', async (req, reply) => {
+    if (req.headers['accept-version']) { // or the custom header you are using
+      let value = reply.getHeader('Vary') || ''
+      const header = Array.isArray(value) ? value.join(', ') : String(value)
+      if ((value = append(header, 'Accept-Version'))) { // or the custom header you are using
+        reply.header('Vary', value)
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    version: '1.2.0',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept-Version': '1.x'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers.vary, 'Accept-Version')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers.vary, undefined)
   })
 })

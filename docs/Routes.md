@@ -431,6 +431,24 @@ fastify.inject({
 })
 ```
 
+> ## ⚠  Security Notice
+> Remember to set a [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary) header in your
+> responses with the value you are using for defining the versioning (e.g.: `'Accept-Version'`),
+> to prevent cache poisoning attacks. You can also configure this as part your Proxy/CDN.
+> 
+> ```js
+> const append = require('vary').append
+> fastify.addHook('onSend', async (req, reply) => {
+>   if (req.headers['accept-version']) { // or the custom header you are using
+>     let value = reply.getHeader('Vary') || ''
+>     const header = Array.isArray(value) ? value.join(', ') : String(value)
+>     if ((value = append(header, 'Accept-Version'))) { // or the custom header you are using
+>       reply.header('Vary', value)
+>     }
+>   }
+> })
+> ```
+
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
 

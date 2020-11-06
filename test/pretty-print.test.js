@@ -39,10 +39,8 @@ test('pretty print - parametric routes', t => {
 
     const expected = `└── /
     ├── test (GET)
-    │   └── /
-    │       └── :hello (GET)
-    └── hello/
-        └── :world (GET)
+    │   └── /:hello (GET)
+    └── hello/:world (GET)
 `
 
     t.is(typeof tree, 'string')
@@ -62,12 +60,11 @@ test('pretty print - mixed parametric routes', t => {
   fastify.ready(() => {
     const tree = fastify.printRoutes()
 
-    const expected = `└── /
-    └── test (GET)
-        └── /
-            └── :hello (GET)
-                :hello (POST)
-                └── /world (GET)
+    const expected = `└── /test (GET)
+    └── /
+        └── :hello (GET)
+            :hello (POST)
+            └── /world (GET)
 `
 
     t.is(typeof tree, 'string')
@@ -88,10 +85,8 @@ test('pretty print - wildcard routes', t => {
 
     const expected = `└── /
     ├── test (GET)
-    │   └── /
-    │       └── * (GET)
-    └── hello/
-        └── * (GET)
+    │   └── /* (GET)
+    └── hello/* (GET)
 `
 
     t.is(typeof tree, 'string')

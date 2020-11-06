@@ -304,6 +304,8 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
+**Note: if a request contains multiple <code>x-forwarded-host</code> or <code>x-forwarded-proto</code> headers, it is only the last one that is used to derive <code>request.hostname</code> and <code>request.protocol</code>**
+
 <a name="plugin-timeout"></a>
 ### `pluginTimeout`
 

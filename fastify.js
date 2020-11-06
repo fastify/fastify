@@ -59,6 +59,28 @@ const onBadUrlContext = {
   onError: []
 }
 
+const caseInsensitiveParse = (string) => {
+  const original = querystring.parse(string)
+  const parsed = Object.keys(original).reduce((acc, key) => {
+    const lowerKey = key.toLowerCase()
+    const existingItem = acc[lowerKey]
+    const originalValue = original[key]
+
+    // If a variation of the key exists, merge both
+    if (existingItem) {
+      // Flat array
+      acc[lowerKey] = [existingItem, originalValue].reduce((acc, val) => acc.concat(val), [])
+    } else {
+      acc[lowerKey] = originalValue
+    }
+
+    return acc
+  },
+  {})
+
+  return parsed
+}
+
 function defaultErrorHandler (error, request, reply) {
   if (reply.statusCode >= 500) {
     reply.log.error(
@@ -88,13 +110,8 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
-  const caseSensitiveParse = (string) => {
-    const shouldLower = options.caseSensitive === false
-    return querystring.parse(shouldLower ? string.toLowerCase() : string)
-  }
-
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
-  const querystringParser = options.querystringParser || caseSensitiveParse
+  const querystringParser = options.querystringParser || options.caseSensitive === false ? caseInsensitiveParse : querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory()
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -646,5 +663,4 @@ function loadVersion () {
  * - `import fastify, { TSC_definition } from 'fastify'`
  */
 module.exports = fastify
-module.exports.fastify = fastify
 module.exports.default = fastify

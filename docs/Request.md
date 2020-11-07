@@ -13,7 +13,7 @@ Request is a core Fastify object containing the following fields:
 - `log` - the logger instance of the incoming request
 - `ip` - the IP address of the incoming request
 - `ips` - an array of the IP addresses in the `X-Forwarded-For` header of the incoming request (only when the [`trustProxy`](Server.md#factory-trust-proxy) option is enabled)
-- `hostname` - the hostname of the incoming request
+- `hostname` - the hostname of the incoming request (derived from `X-Forwarded-Host` header when the [`trustProxy`](Server.md#factory-trust-proxy) option is enabled)
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the url of the incoming request

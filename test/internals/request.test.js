@@ -157,3 +157,26 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   t.type(request, TpRequest)
   t.strictEqual(request.hostname, 'example.com')
 })
+
+test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
+  t.plan(3)
+  const headers = {
+    'x-forwarded-host': 'example2.com, example.com',
+    'x-forwarded-proto': 'http, https'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    // Some dependencies (proxy-addr, forwarded) still depend on the deprecated
+    // .connection property, we use .socket. Include both to satisfy everyone.
+    socket: { remoteAddress: 'ip' },
+    connection: { remoteAddress: 'ip' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.type(request, TpRequest)
+  t.strictEqual(request.hostname, 'example.com')
+  t.strictEqual(request.protocol, 'https')
+})

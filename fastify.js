@@ -140,6 +140,7 @@ function fastify (options) {
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
+      constraints: options.constraints,
       versioning: options.versioning
     }
   })

@@ -69,6 +69,44 @@ test('Should register a versioned route', t => {
   })
 })
 
+test('Should register a versioned route via route constraints', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { version: '1.2.0' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept-Version': '1.x'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept-Version': '1.2.x'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.statusCode, 200)
+  })
+})
+
 test('Should register the same route with different versions', t => {
   t.plan(8)
   const fastify = Fastify()

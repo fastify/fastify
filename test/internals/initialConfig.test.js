@@ -49,6 +49,7 @@ test('Fastify.initialConfig should expose all options', t => {
   }
 
   const versioning = {
+    name: 'version',
     storage: function () {
       let versions = {}
       return {
@@ -58,7 +59,7 @@ test('Fastify.initialConfig should expose all options', t => {
         empty: () => { versions = {} }
       }
     },
-    deriveVersion: (req, ctx) => {
+    deriveConstraint: (req, ctx) => {
       return req.headers.accept
     }
   }

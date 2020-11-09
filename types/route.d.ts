@@ -28,6 +28,7 @@ export interface RouteShorthandOptions<
   logLevel?: LogLevel;
   config?: ContextConfig;
   version?: string;
+  constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
   // TODO: Change to actual type.

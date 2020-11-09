@@ -2,6 +2,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 import * as LightMyRequest from 'light-my-request'
+import * as FindMyWay from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
@@ -94,6 +95,9 @@ export type FastifyServerOptions<
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: unknown },
+  /**
+   * @deprecated Prefer using the `constraints.version` property
+   */
   versioning?: {
     storage(): {
       get(version: string): string | null,
@@ -102,6 +106,9 @@ export type FastifyServerOptions<
       empty(): void
     },
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
+  },
+  constraints?: {
+    [name: string]: FindMyWay.ConstraintStrategy<RawRequestDefaultExpression<RawServer>>,
   },
   return503OnClosing?: boolean,
   ajv?: {

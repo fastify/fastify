@@ -46,6 +46,7 @@ const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const { defaultInitOptions } = getSecuredInitialConfig
+const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -60,6 +61,7 @@ const onBadUrlContext = {
 }
 
 function defaultErrorHandler (error, request, reply) {
+  setErrorHeaders(error, reply)
   if (reply.statusCode < 500) {
     reply.log.info(
       { res: reply, err: error },

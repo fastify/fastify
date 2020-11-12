@@ -62,20 +62,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - name: Dependabot Auto Merge
-        uses: actions/github-script@v3
-        if: ${{ github.actor == 'dependabot[bot]' }}
+      - uses: fastify/github-action-merge-dependabot@v1
+        if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
         with:
           github-token: ${{secrets.github_token}}
-          script: |
-            github.pulls.createReview({
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number,
-              event: 'APPROVE'
-            })
-            github.pulls.merge({
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number
-            })

@@ -288,7 +288,7 @@ test('Support rejection with values that are not Error instances', t => {
         } else {
           t.strictEqual(err, nonErr)
         }
-        reply.send('error')
+        reply.code(500).send('error')
       })
 
       fastify.inject({
@@ -335,7 +335,7 @@ test('invalid schema - ajv', t => {
   })
 })
 
-test('should set the status code and the headers from the error object (from route handler)', t => {
+test('should set the status code and the headers from the error object (from route handler) (no custom error handler)', t => {
   t.plan(4)
   const fastify = Fastify()
 
@@ -373,7 +373,7 @@ test('should set the status code and the headers from the error object (from cus
 
   fastify.setErrorHandler((err, request, reply) => {
     t.is(err.message, 'ouch')
-    t.is(reply.raw.statusCode, 401)
+    t.is(reply.raw.statusCode, 200)
     const error = new Error('kaboom')
     error.headers = { hello: 'world' }
     error.statusCode = 400
@@ -441,6 +441,74 @@ test('should throw an error if the custom serializer does not serialize the payl
     method: 'GET'
   }, (e, res) => {
     t.fail('should not be called')
+  })
+})
+
+test('should not set headers or status code for custom error handler', t => {
+  t.plan(7)
+
+  const fastify = Fastify()
+  fastify.get('/', function (req, reply) {
+    const err = new Error('kaboom')
+    err.headers = {
+      'fake-random-header': 'abc'
+    }
+    reply.send(err)
+  })
+
+  fastify.setErrorHandler(async (err, req, res) => {
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual('fake-random-header' in res.headers, false)
+    res.code(500).send(err.message)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.strictEqual('fake-random-header' in res.headers, false)
+    t.strictEqual(res.headers['content-length'], ('kaboom'.length).toString())
+    t.deepEqual(res.payload, 'kaboom')
+  })
+})
+
+test('error thrown by custom error handler routes to default error handler', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  const error = new Error('kaboom')
+  error.headers = {
+    'fake-random-header': 'abc'
+  }
+
+  fastify.get('/', function (req, reply) {
+    reply.send(error)
+  })
+
+  const newError = new Error('kabong')
+
+  fastify.setErrorHandler(async (err, req, res) => {
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual('fake-random-header' in res.headers, false)
+    t.deepEqual(err.headers, error.headers)
+
+    res.send(newError)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 500)
+    t.deepEqual(JSON.parse(res.payload), {
+      error: statusCodes['500'],
+      message: newError.message,
+      statusCode: 500
+    })
   })
 })
 

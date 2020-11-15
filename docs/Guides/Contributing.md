@@ -13,11 +13,11 @@ help us.
 ## Table Of Contents
 <a id="contributing-toc"></a>
 
-0. [Types Of Contributions We're Looking For][#contribution-types]
-0. [Ground Rules & Expectations][#contributing-rules]
-0. [How To Contribute][#contributing-how-to]
-0. [Setting Up Your Environment][#contributing-environment]
-  * [Using Visual Studio Code][#contributing-vscode]
+0. [Types Of Contributions We're Looking For](#contribution-types)
+0. [Ground Rules & Expectations](#contributing-rules)
+0. [How To Contribute](#contributing-how-to)
+0. [Setting Up Your Environment](#contributing-environment)
+  * [Using Visual Studio Code](#contributing-vscode)
 
 ## Types Of Contributions We're Looking For
 <a id="contribution-types"></a>

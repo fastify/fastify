@@ -744,3 +744,27 @@ test('decorate* should throw if called after ready', async t => {
   }
   await fastify.close()
 })
+
+test('decorate* should emit warning if reference type is passed', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+  fastify.get('/', (request, reply) => {
+    reply.send({
+      hello: 'world'
+    })
+  })
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.strictEqual(warning.name, 'FastifyDeprecation')
+    t.strictEqual(warning.code, 'FSTDEP006')
+  }
+  fastify.decorateRequest('test', { foo: 'bar' })
+  fastify.decorateRequest('test2', {
+    getter () {
+      return 'a getter'
+    }
+  })
+  await fastify.listen(0)
+  await fastify.close()
+  process.removeListener('warning', onWarning)
+})

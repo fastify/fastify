@@ -745,26 +745,61 @@ test('decorate* should throw if called after ready', async t => {
   await fastify.close()
 })
 
-test('decorate* should emit warning if reference type is passed', async t => {
+test('decorate* should emit warning if an array is passed', t => {
   t.plan(2)
-  const fastify = Fastify()
-  fastify.get('/', (request, reply) => {
-    reply.send({
-      hello: 'world'
-    })
-  })
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.strictEqual(warning.name, 'FastifyDeprecation')
     t.strictEqual(warning.code, 'FSTDEP006')
+    process.removeListener('warning', onWarning)
   }
-  fastify.decorateRequest('test', { foo: 'bar' })
-  fastify.decorateRequest('test2', {
+  const fastify = Fastify()
+  fastify.decorateRequest('test_array', [])
+})
+
+test('decorate* should emit warning if object type is passed', t => {
+  t.plan(2)
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.strictEqual(warning.name, 'FastifyDeprecation')
+    t.strictEqual(warning.code, 'FSTDEP006')
+    process.removeListener('warning', onWarning)
+  }
+  const fastify = Fastify()
+  fastify.decorateRequest('test_object', { foo: 'bar' })
+})
+
+test('decorate* should not emit warning if object with getter/setter is passed', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  function onWarning (warning) {
+    t.fail('Should not call a warn')
+  }
+  process.on('warning', onWarning)
+  fastify.decorateRequest('test_getter_setter', {
+    setter (val) {
+      this._ = val
+    },
     getter () {
       return 'a getter'
     }
   })
-  await fastify.listen(0)
-  await fastify.close()
-  process.removeListener('warning', onWarning)
+  t.tearDown(() => {
+    process.removeListener('warning', onWarning)
+  })
+})
+
+test('decorate* should not emit warning if string,bool,numbers are passed', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  function onWarning (warning) {
+    t.fail('Should not call a warn')
+  }
+  process.on('warning', onWarning)
+  fastify.decorateRequest('test_str', 'foo')
+  fastify.decorateRequest('test_bool', true)
+  fastify.decorateRequest('test_number', 42)
+  t.tearDown(() => {
+    process.removeListener('warning', onWarning)
+  })
 })

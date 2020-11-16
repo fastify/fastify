@@ -68,6 +68,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
+- [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck) Fastify plugin to add health route in your server that asserts custom functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.

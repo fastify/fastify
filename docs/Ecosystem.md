@@ -130,6 +130,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.
+- [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels) A plugin for fast, reliable, and scalable channels implementation based on Redis streams.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching) A Fastify plugin for caching the response.
@@ -163,4 +164,3 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
 - [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL server implementation for Fastify.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.
-- [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels) A plugin for fast, reliable, and scalable channels implementation based on Redis streams.

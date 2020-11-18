@@ -144,7 +144,7 @@ fastify.decorateReply('foo', { bar: 'fizz'})
 ```
 In this example the reference of the object is shared with all the requests: **any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
-To achieve proper encapsulation across requests to configure a new value for each incoming request
+To achieve proper encapsulation across requests configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
 ```js
@@ -185,7 +185,7 @@ fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
 In this example the reference of the object is shared with all the requests: **any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
-To achieve proper encapsulation across requests to configure a new value for each incoming request
+To achieve proper encapsulation across requests configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
 ```js

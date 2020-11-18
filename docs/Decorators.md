@@ -136,15 +136,15 @@ fastify.decorateReply('utility', function () {
 Note: using an arrow function will break the binding of `this` to the Fastify
 `Reply` instance.
 
-Note2: using `decorateReply` will emit a warning if used with a reference type:
+Note: using `decorateReply` will emit a warning if used with a reference type:
 
 ```js
 // Don't do this
 fastify.decorateReply('foo', { bar: 'fizz'})
 ```
-In this example the reference of the object is shared with all the requests: any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks. 
-To achieve an encapsulation like we suggest to configure a new value for each incoming request
+In this example the reference of the object is shared with all the requests: **any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+To achieve proper encapsulation across requests to configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
 ```js
@@ -177,15 +177,15 @@ fastify.decorateRequest('utility', function () {
 Note: using an arrow function will break the binding of `this` to the Fastify
 `Request` instance.
 
-Note2: using `decorateRequest` will emit a warning if used with a reference type:
+Note: using `decorateRequest` will emit a warning if used with a reference type:
 
 ```js
 // Don't do this
 fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
-In this example the reference of the object is shared with all the requests: any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks. 
-To achieve an encapsulation like we suggest to configure a new value for each incoming request
+In this example the reference of the object is shared with all the requests: **any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+To achieve proper encapsulation across requests to configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
 ```js

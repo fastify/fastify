@@ -135,6 +135,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching) A Fastify plugin for caching the response.
+- [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based web framework with REST API routes auto-generation for TypeORM entities using DI and decorators.
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes) Fastify reverse routes plugin, allows to defined named routes and build path using name and parameters.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint) Choose the JSON schema to use based on request parameters.

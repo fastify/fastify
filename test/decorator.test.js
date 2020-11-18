@@ -8,6 +8,7 @@ const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const symbols = require('../lib/symbols.js')
+const proxyquire = require('proxyquire')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -747,35 +748,47 @@ test('decorate* should throw if called after ready', async t => {
 
 test('decorate* should emit warning if an array is passed', t => {
   t.plan(2)
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FSTDEP006')
-    process.removeListener('warning', onWarning)
+  function onWarning (code, name) {
+    t.strictEqual(name, 'test_array')
+    t.strictEqual(code, 'FSTDEP006')
   }
-  const fastify = Fastify()
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
   fastify.decorateRequest('test_array', [])
 })
 
 test('decorate* should emit warning if object type is passed', t => {
   t.plan(2)
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FSTDEP006')
-    process.removeListener('warning', onWarning)
+  function onWarning (code, name) {
+    t.strictEqual(name, 'test_object')
+    t.strictEqual(code, 'FSTDEP006')
   }
-  const fastify = Fastify()
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
   fastify.decorateRequest('test_object', { foo: 'bar' })
 })
 
 test('decorate* should not emit warning if object with getter/setter is passed', t => {
-  t.plan(2)
-  const fastify = Fastify()
+  t.plan(1)
+  let calls = 0
   function onWarning (warning) {
+    calls++
     t.fail('Should not call a warn')
   }
-  process.on('warning', onWarning)
+  const warning = {
+    emit: onWarning
+  }
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+
   fastify.decorateRequest('test_getter_setter', {
     setter (val) {
       this._ = val
@@ -784,22 +797,26 @@ test('decorate* should not emit warning if object with getter/setter is passed',
       return 'a getter'
     }
   })
-  t.tearDown(() => {
-    process.removeListener('warning', onWarning)
-  })
+
+  t.is(calls, 0)
 })
 
 test('decorate* should not emit warning if string,bool,numbers are passed', t => {
-  t.plan(2)
-  const fastify = Fastify()
+  t.plan(1)
+  let calls = 0
   function onWarning (warning) {
+    calls++
     t.fail('Should not call a warn')
   }
-  process.on('warning', onWarning)
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+
   fastify.decorateRequest('test_str', 'foo')
   fastify.decorateRequest('test_bool', true)
   fastify.decorateRequest('test_number', 42)
-  t.tearDown(() => {
-    process.removeListener('warning', onWarning)
-  })
+  t.is(calls, 0)
 })

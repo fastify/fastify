@@ -145,7 +145,20 @@ fastify.decorateReply('foo', { bar: 'fizz'})
 In this example the reference of the object is shared with all the requests: any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks. 
 To achieve an encapsulation like we suggest to configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest).
+in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+
+```js
+const fp = require('fastify-plugin')
+
+async function myPlugin (app) {
+  app.decorareRequest('foo', null)
+  app.addHook('onRequest', async (req, reply) => {
+    req.foo = { bar: 42 }
+  }) 
+}
+
+module.exports = fp(myPlugin)
+```
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
@@ -173,7 +186,20 @@ fastify.decorateRequest('foo', { bar: 'fizz'})
 In this example the reference of the object is shared with all the requests: any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks. 
 To achieve an encapsulation like we suggest to configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest).
+in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+
+```js
+const fp = require('fastify-plugin')
+
+async function myPlugin (app) {
+  app.decorareRequest('foo', null)
+  app.addHook('onRequest', async (req, reply) => {
+    req.foo = { bar: 42 }
+  }) 
+}
+
+module.exports = fp(myPlugin)
+```
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 

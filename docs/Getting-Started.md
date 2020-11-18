@@ -1,6 +1,23 @@
 <h1 align="center">Fastify</h1>
 
-## Getting Started
+# Getting Started
+
+Fastify is a Web Framework for Node.js that focuses on performance and developer experience. Make sure you have [Node.js](https://nodejs.org/) installed to be able to use fastify.
+
+
+## Installation 
+There are two ways for install fastify.
+
+Install with npm:
+
+```
+npm i fastify --save
+```
+
+
+   
+
+
 <!-- Hello! Thank you for checking out Fastify!<br>
 This document aims to be a gentle introduction to the framework and its features. It is an elementary preface with examples and links to other parts of the documentation.<br>
 Let's start!

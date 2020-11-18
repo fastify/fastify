@@ -777,10 +777,7 @@ test('decorate* should emit warning if object type is passed', t => {
 })
 
 test('decorate* should not emit warning if object with getter/setter is passed', t => {
-  t.plan(1)
-  let calls = 0
   function onWarning (warning) {
-    calls++
     t.fail('Should not call a warn')
   }
   const warning = {
@@ -797,15 +794,11 @@ test('decorate* should not emit warning if object with getter/setter is passed',
       return 'a getter'
     }
   })
-
-  t.is(calls, 0)
+  t.end('Done')
 })
 
 test('decorate* should not emit warning if string,bool,numbers are passed', t => {
-  t.plan(1)
-  let calls = 0
   function onWarning (warning) {
-    calls++
     t.fail('Should not call a warn')
   }
   const warning = {
@@ -818,5 +811,5 @@ test('decorate* should not emit warning if string,bool,numbers are passed', t =>
   fastify.decorateRequest('test_str', 'foo')
   fastify.decorateRequest('test_bool', true)
   fastify.decorateRequest('test_number', 42)
-  t.is(calls, 0)
+  t.end('Done')
 })

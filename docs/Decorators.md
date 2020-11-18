@@ -121,7 +121,7 @@ If a dependency is not satisfied, the `decorate` method will throw an exception.
 The dependency check is performed before the server instance is booted. Thus,
 it cannot occur during runtime.
 
-#### `decorateReply(name, value, [dependencies])` *(deprecated)*
+#### `decorateReply(name, value, [dependencies])`
 <a name="decorate-reply"></a>
 
 As the name suggests, this API is used to add new methods/properties to the core
@@ -148,7 +148,7 @@ the [getter/setter](#getters-setters) feature.
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
-#### `decorateRequest(name, value, [dependencies])` *(deprecated)*
+#### `decorateRequest(name, value, [dependencies])`
 <a name="decorate-request"></a>
 
 As above with [`decorateReply`](#decorate-reply), this API is used add new
@@ -169,9 +169,10 @@ Note2: using `decorateRequest` will emit a warning if used with a reference type
 // Don't do this
 fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
-In this example the reference of the object is shared with all the requests, any
-mutation will impact all requests. To achieve an encapsulation like we suggest to use
-the [getter/setter](#getters-setters) feature.
+In this example the reference of the object is shared with all the requests: any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks. 
+To achieve an encapsulation like we suggest to configure a new value for each incoming request
+in the [`'onRequest'` hook](Hooks.md#onrequest).
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 

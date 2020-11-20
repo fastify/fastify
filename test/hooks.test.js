@@ -2717,7 +2717,7 @@ test('preSerialization hook should run before serialization and be able to modif
 })
 
 test('preSerialization hook should be able to throw errors which are validated against schema response', t => {
-  const fastify = Fastify({ logger: true })
+  const fastify = Fastify()
 
   fastify.addHook('preSerialization', function (req, reply, payload, done) {
     done(new Error('preSerialization aborted'))

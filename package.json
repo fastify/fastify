@@ -7,6 +7,7 @@
   "types": "fastify.d.ts",
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
+    "lint:fix": "standard --fix",
     "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",

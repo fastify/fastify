@@ -1,5 +1,6 @@
 'use strict'
 
+const stream = require('stream')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
@@ -544,4 +545,243 @@ test('throws when route-level error handler is not a function', t => {
   } catch (err) {
     t.is(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
+})
+
+test('Creates a HEAD route for each GET one', t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('Will not create a HEAD route that is not GET', t => {
+  t.plan(10)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    path: '/something',
+    handler: (req, reply) => {
+      reply.send({ look: 'It is something!' })
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/something'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('HEAD route should handle properly each response type', t => {
+  t.plan(25)
+
+  const fastify = Fastify()
+  const resString = 'Found me!'
+  const resJSON = { here: 'is Johnny' }
+  const resBuffer = Buffer.from('I am a buffer!')
+  const resStream = stream.Readable.from('I am a stream!')
+
+  fastify.route({
+    method: 'GET',
+    path: '/json',
+    handler: (req, reply) => {
+      reply.send(resJSON)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/string',
+    handler: (req, reply) => {
+      reply.send(resString)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/buffer',
+    handler: (req, reply) => {
+      reply.send(resBuffer)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/buffer-with-content-type',
+    handler: (req, reply) => {
+      reply.headers({ 'content-type': 'image/jpeg' })
+      reply.send(resBuffer)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/stream',
+    handler: (req, reply) => {
+      return resStream
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/json'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/string'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/buffer'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/buffer-with-content-type'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'image/jpeg')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/stream'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], undefined)
+    t.strictEqual(res.headers['content-length'], undefined)
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('HEAD route should respect custom onSend handlers', t => {
+  t.plan(6)
+
+  let counter = 0
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify()
+  const customOnSend = (res, reply, payload, done) => {
+    counter = counter + 1
+    done(null, payload)
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send(resBuffer)
+    },
+    onSend: [customOnSend, customOnSend]
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+    t.strictEqual(counter, 2)
+  })
 })

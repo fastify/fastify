@@ -1542,6 +1542,31 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
   })
 })
 
+test('preParsing hooks should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
+    const e = new Error('kaboom')
+    e.statusCode = 501
+    throw e
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
+  })
+})
+
 test('onRequest respond with a stream', t => {
   t.plan(4)
   const fastify = Fastify()

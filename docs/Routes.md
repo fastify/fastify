@@ -238,19 +238,19 @@ fastify.get('/', options, async function (request, reply) {
 
 **Warning:**
 * When using both `return value` and `reply.send(value)` at the same time, the first one that happens takes precedence, the second value will be discarded, and a *warn* log will also be emitted because you tried to send a response twice.
-* You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
+* Calling `reply.send()` outside of the promise is possible, but requires special attention. For more details read [promise-resolution](#promise-resolution).
 
 <a name="promise-resolution"></a>
 ### Promise resolution
 
-If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
+If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. When the handler's promise is resolved, the reply will be automatically sent with its value unless you explicitly await or return `reply` in your handler.
 
 1. If you want to use `async/await` or promises but respond a value with `reply.send`:
-    - **Don't** `return` any value.
+    - **Do** `return reply` / `await reply`.
     - **Don't** forget to call `reply.send`.
 2. If you want to use `async/await` or promises:
     - **Don't** use `reply.send`.
-    - **Don't** return `undefined`.
+    - **Do** return the value that you want to send.
 
 In this way, we can support both `callback-style` and `async-await`, with the minimum trade-off. In spite of so much freedom we highly recommend to go with only one style because error handling should be handled in a consistent way within your application.
 

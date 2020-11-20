@@ -8,9 +8,9 @@ const server = fastify()
 
 // Test payload generic pass through for preSerialization and onSend
 
-type TestPayloadType = {
-  foo: string;
-  bar: number;
+interface TestPayloadType {
+  foo: string
+  bar: number
 }
 
 // Synchronous Tests
@@ -93,7 +93,7 @@ server.addHook('onError', (request, reply, error, done) => {
 })
 
 server.addHook('onRoute', (opts) => {
-  expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
+  expectType<RouteOptions & { routePath: string, path: string, prefix: string}>(opts)
 })
 
 server.addHook('onRegister', (instance, done) => {

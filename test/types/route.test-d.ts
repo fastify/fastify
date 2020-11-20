@@ -45,15 +45,15 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   interface HeadersInterface { prop: string }
 
   interface ContextConfigType {
-    foo: string;
-    bar: number;
+    foo: string
+    bar: number
   }
 
   interface RouteGeneric {
-    Body: BodyInterface;
-    Querystring: QuerystringInterface;
-    Params: ParamsInterface;
-    Headers: HeadersInterface;
+    Body: BodyInterface
+    Querystring: QuerystringInterface
+    Params: ParamsInterface
+    Headers: HeadersInterface
   }
 
   fastify()[lowerCaseMethod]<RouteGeneric, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {

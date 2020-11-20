@@ -13,7 +13,7 @@ expectType<FastifyLoggerInstance>(fastify().log)
 })
 
 interface CustomLogger extends FastifyLoggerInstance {
-  customMethod(msg: string, ...args: unknown[]): void;
+  customMethod: (msg: string, ...args: unknown[]) => void
 }
 
 class CustomLoggerImpl implements CustomLogger {

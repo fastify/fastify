@@ -7,8 +7,8 @@ import { FastifyError } from 'fastify-error'
 
 // FastifyPlugin & FastifyRegister
 interface TestOptions extends FastifyPluginOptions {
-  option1: string;
-  option2: boolean;
+  option1: string
+  option2: boolean
 }
 const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, next) { }
 const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }

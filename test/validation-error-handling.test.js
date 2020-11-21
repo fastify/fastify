@@ -403,7 +403,7 @@ test('should return a defined output message parsing JOI error details', t => {
   })
 })
 
-test('the context custom error formatter context must be the server instance', t => {
+test('the custom error formatter context must be the server instance', t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -411,6 +411,35 @@ test('the context custom error formatter context must be the server instance', t
   fastify.setSchemaErrorFormatter(function (errors, dataVar) {
     t.deepEquals(this, fastify)
     return new Error('my error')
+  })
+
+  fastify.post('/', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(res.json(), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'my error'
+    })
+    t.strictEqual(res.statusCode, 400)
+  })
+})
+
+test('the custom error formatter context must be the server instance in options', t => {
+  t.plan(4)
+
+  const fastify = Fastify({
+    schemaErrorFormatter: function (errors, dataVar) {
+      t.deepEquals(this, fastify)
+      return new Error('my error')
+    }
   })
 
   fastify.post('/', { schema }, echoBody)

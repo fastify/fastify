@@ -562,7 +562,7 @@ function fastify (options) {
   function setSchemaErrorFormatter (errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
     validateSchemaErrorFormatter(errorFormatter)
-    this[kSchemaErrorFormatter] = errorFormatter
+    this[kSchemaErrorFormatter] = errorFormatter.bind(this)
     return this
   }
 

@@ -68,6 +68,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
+- [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck) Fastify plugin to add health route in your server that asserts custom functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.
@@ -130,9 +131,11 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.
+- [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels) A plugin for fast, reliable, and scalable channels implementation based on Redis streams.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching) A Fastify plugin for caching the response.
+- [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based web framework with REST API routes auto-generation for TypeORM entities using DI and decorators.
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes) Fastify reverse routes plugin, allows to defined named routes and build path using name and parameters.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint) Choose the JSON schema to use based on request parameters.

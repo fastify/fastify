@@ -8,6 +8,7 @@ const Fastify = require('..')
 const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const symbols = require('../lib/symbols.js')
+const proxyquire = require('proxyquire')
 
 test('server methods should exist', t => {
   t.plan(2)
@@ -743,4 +744,72 @@ test('decorate* should throw if called after ready', async t => {
     t.is(e.message, "The decorator 'test' has been added after start!")
   }
   await fastify.close()
+})
+
+test('decorate* should emit warning if an array is passed', t => {
+  t.plan(2)
+  function onWarning (code, name) {
+    t.strictEqual(name, 'test_array')
+    t.strictEqual(code, 'FSTDEP006')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+  fastify.decorateRequest('test_array', [])
+})
+
+test('decorate* should emit warning if object type is passed', t => {
+  t.plan(2)
+  function onWarning (code, name) {
+    t.strictEqual(name, 'test_object')
+    t.strictEqual(code, 'FSTDEP006')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+  fastify.decorateRequest('test_object', { foo: 'bar' })
+})
+
+test('decorate* should not emit warning if object with getter/setter is passed', t => {
+  function onWarning (warning) {
+    t.fail('Should not call a warn')
+  }
+  const warning = {
+    emit: onWarning
+  }
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+
+  fastify.decorateRequest('test_getter_setter', {
+    setter (val) {
+      this._ = val
+    },
+    getter () {
+      return 'a getter'
+    }
+  })
+  t.end('Done')
+})
+
+test('decorate* should not emit warning if string,bool,numbers are passed', t => {
+  function onWarning (warning) {
+    t.fail('Should not call a warn')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const decorate = proxyquire('../lib/decorate', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/decorate.js': decorate })()
+
+  fastify.decorateRequest('test_str', 'foo')
+  fastify.decorateRequest('test_bool', true)
+  fastify.decorateRequest('test_number', 42)
+  t.end('Done')
 })

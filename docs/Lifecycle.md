@@ -38,17 +38,24 @@ Incoming Request
 
 ## Reply Lifecycle
 
-Whenever a reply is being submitted, the flow the data sent performs is the following:
+Whenever the user handles the request the result may be:
+
+- in async handler: it returns a payload
+- in async handler: it throws an `Error`
+- in sync handler: it sends a payload
+- in sync handler: it sends an `Error` instance
+
+So, when the reply is being submitted, the data flow performed is the following:
 
 ```
-                       🌟 schema validation Error
+                        ★ schema validation Error
                                     │
                                     └─▶ schemaErrorFormatter
                                                │
                           reply sent ◀── JSON ─┴─ Error instance
                                                       │
-                                                      │        🌟 any uncaught Errors
-                   🌟 reply.send()                    │                 │
+                                                      │         ★ throw an Error
+                     ★ send or return                 │                 │
                             │                         ▼                 │
        reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler ◀─────┘
                                                       │

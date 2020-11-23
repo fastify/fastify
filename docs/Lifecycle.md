@@ -63,3 +63,9 @@ So, when the reply is being submitted, the data flow performed is the following:
                                                                                 │
                                                                                 └─▶ reply sent
 ```
+
+Note: `reply sent` means that the JSON payload will be serialized by:
+
+- the [reply serialized](Server.md#setreplyserializer) if set
+- or by the [serializer compiler](Server.md#setserializercompiler) when a JSON schema has been set for the returning HTTP status code
+- or by the default `JSON.stringify` function

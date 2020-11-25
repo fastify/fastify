@@ -151,7 +151,7 @@ in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 const fp = require('fastify-plugin')
 
 async function myPlugin (app) {
-  app.decorareRequest('foo', null)
+  app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
   }) 
@@ -192,7 +192,7 @@ in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 const fp = require('fastify-plugin')
 
 async function myPlugin (app) {
-  app.decorareRequest('foo', null)
+  app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
   }) 

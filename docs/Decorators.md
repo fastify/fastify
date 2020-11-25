@@ -61,7 +61,7 @@ Remember this example works only with value types as reference types will be sha
 See [decorateRequest](#decorate-request).
 
 See
-[JavaScript engine fundamentals: Shapes and Inline Caches](https://web.archive.org/web/20200201163000/https://mathiasbynens.be/notes/shapes-ics)
+[JavaScript engine fundamentals: Shapes and Inline Caches](https://mathiasbynens.be/notes/shapes-ics)
 for more information on this topic.
 
 ### Usage

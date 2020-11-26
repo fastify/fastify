@@ -660,8 +660,8 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
     })
 
     fastify.post('/', {
-      handler (req, reply) { reply.send({ status: 'not ok' }) },
-      schema: { response: { 200: { status: { type: 'array' } } } }
+      handler (req, reply) { reply.send({ notOk: true }) },
+      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
     })
 
     fastify.inject({
@@ -682,8 +682,8 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
     })
 
     fastify.post('/', {
-      handler (req, reply) { reply.send({ status: 'not ok' }) },
-      schema: { response: { 200: { status: { type: 'array' } } } }
+      handler (req, reply) { reply.send({ notOk: true }) },
+      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
     })
 
     fastify.inject({

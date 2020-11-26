@@ -59,23 +59,23 @@ if (err) {
 	process.exit(1) 
 }
 fastify.log.info(`server listening on ${address}`)
- })
+})
 ``` 
 
 
->Note that the above examples, and subsequent examples in this document, default to listening only on the localhost 127.0.0.1 interface.
-To listen on all available IPv4 interfaces examples should be modified to listen on 0.0.0.0 like this:
+> Note that the above examples, and subsequent examples in this document, 
+> default to listening only on the localhost `127.0.0.1` interface.
+> To listen on all available IPv4 interfaces examples should be modified to listen on 0.0.0.0 like this:
+> ```Javascript
+>	fastify.listen(3000, '0.0.0.0', function (err, address) {
+>	    if (err) {
+>	        fastify.log.error(err) 
+>	        process.exit(1) 
+>	    }
+>	    fastify.log.info(`server listening on ${address}`)
+>	})
+>```
 
-
-```
-fastify.listen(3000, '0.0.0.0', function (err, address) {
- if (err) {
- fastify.log.error(err) 
- process.exit(1) 
-}
- fastify.log.info(`server listening on ${address}`)
- })
-```
 
 Similarly, specify `::` 1 to accept only local connections via IPv6. You can also specify `::` to accept connections on all IPv6 addresses if the operating system also supports it on all IPv4 addresses.
 When deploying to a Docker, or other types of containers which will be the easiest method for exposing the application.
@@ -87,7 +87,7 @@ Use the code below to create a new route.
 ```javascript
 // Declare a route
 fastify.get('/', function (request, reply){
- reply.send({ hello: 'world' })
- })
+	reply.send({ hello: 'world' })
+})
 ```
 The first route you create is usually the root URL (/) as shown in this example. Once you run...

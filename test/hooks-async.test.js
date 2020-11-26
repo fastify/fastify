@@ -649,3 +649,51 @@ test('The this should be the same of the encapsulation level', async t => {
   await fastify.inject({ method: 'GET', path: '/' })
   await fastify.inject({ method: 'GET', path: '/nested' })
 })
+
+test('preSerializationEnd should handle errors if the serialize method throws', t => {
+  t.test('works with sync preSerialization', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', (request, reply, payload, next) => {
+      next(null, payload)
+    })
+
+    fastify.post('/', {
+      handler (req, reply) { reply.send({ status: 'not ok' }) },
+      schema: { response: { 200: { status: { type: 'array' } } } }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.notEqual(res.statusCode, 200)
+    })
+  })
+
+  t.test('works with async preSerialization', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', async (request, reply, payload) => {
+      return payload
+    })
+
+    fastify.post('/', {
+      handler (req, reply) { reply.send({ status: 'not ok' }) },
+      schema: { response: { 200: { status: { type: 'array' } } } }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.notEqual(res.statusCode, 200)
+    })
+  })
+
+  t.end()
+})

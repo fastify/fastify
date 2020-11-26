@@ -44,7 +44,7 @@ Require fastify framework in your main file, in this case, will be our app.js.
 ```javascript
 // Require the framework and instantiate it 
 const fastify = require('fastify')({
- logger: true 
+	logger: true 
 }) 
 
 ```

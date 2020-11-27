@@ -328,6 +328,13 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="exposeHeadRoutes"></a>
+### `exposeHeadRoutes`
+
+Creates a sibling `HEAD` route each `GET` routes.
+
++ Default: `false`
+
 <a name="versioning"></a>
 ### `versioning`
 

@@ -299,6 +299,7 @@ fastify.get('/streams', function (request, reply) {
 <a name="errors"></a>
 #### Errors
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:
+
 ```js
 {
   error: String        // the http error message
@@ -307,6 +308,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
+
 You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
@@ -315,6 +317,36 @@ Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-er
 ```js
 fastify.get('/', function (request, reply) {
   reply.send(httpErrors.Gone())
+})
+```
+
+To customize the JSON error output you can do it by:
+
+- setting a response JSON schema for the status code you need
+- add the additional properties to the `Error` instance
+
+Notice that if the returned status code is not in the response schema list, the default behaviour will be applied.
+
+```js
+fastify.get('/', {
+  schema: {
+    response: {
+      501: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          code: { type: 'string' },
+          error: { type: 'string' },
+          message: { type: 'string' },
+          time: { type: 'string' }
+        }
+      }
+    }
+  }
+}, function (request, reply) {
+  const error = new Error('This endpoint has not been implemented')
+  error.time = 'it will be implemented in two weeks'
+  reply.code(501).send(error)
 })
 ```
 

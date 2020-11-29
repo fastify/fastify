@@ -456,3 +456,45 @@ test('The schema compiler recreate itself if needed', t => {
 
   fastify.ready(err => { t.error(err) })
 })
+
+test('The schema changes the default error handler output', async t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.get('/:code', {
+    schema: {
+      response: {
+        '2xx': { hello: { type: 'string' } },
+        501: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        },
+        '5xx': {
+          type: 'object',
+          properties: {
+            customId: { type: 'number' },
+            error: { type: 'string' },
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, (request, reply) => {
+    if (request.params.code === '501') {
+      return reply.code(501).send(new Error('501 message'))
+    }
+    const error = new Error('500 message')
+    error.customId = 42
+    reply.send(error)
+  })
+
+  let res = await fastify.inject('/501')
+  t.equals(res.statusCode, 501)
+  t.deepEquals(res.json(), { message: '501 message' })
+
+  res = await fastify.inject('/500')
+  t.equals(res.statusCode, 500)
+  t.deepEquals(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
+})

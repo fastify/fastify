@@ -2716,18 +2716,24 @@ test('preSerialization hook should run before serialization and be able to modif
   })
 })
 
-test('preSerialization hook should be able to throw errors which are not validated against schema response', t => {
+test('preSerialization hook should be able to throw errors which are validated against schema response', t => {
   const fastify = Fastify()
 
   fastify.addHook('preSerialization', function (req, reply, payload, done) {
     done(new Error('preSerialization aborted'))
   })
 
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equals(err.message, 'preSerialization aborted')
+    err.world = 'error'
+    reply.send(err)
+  })
+
   fastify.route({
     method: 'GET',
     url: '/first',
     handler: function (req, reply) {
-      reply.send({ hello: 'world' })
+      reply.send({ world: 'hello' })
     },
     schema: {
       response: {
@@ -2756,7 +2762,7 @@ test('preSerialization hook should be able to throw errors which are not validat
       t.error(err)
       t.strictEqual(response.statusCode, 500)
       t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { error: 'Internal Server Error', message: 'preSerialization aborted', statusCode: 500 })
+      t.deepEqual(JSON.parse(body), { world: 'error' })
       t.end()
     })
   })

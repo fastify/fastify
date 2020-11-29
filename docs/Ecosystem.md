@@ -74,7 +74,6 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify project.
 - [`fastify-error-page`](https://github.com/hemerajs/fastify-error-page) Fastify plugin to print errors in structured HTML to the browser.
-- [`fastify-errors-properties`](https://github.com/ShogunPanda/fastify-errors-properties) A error handling plugin for Fastify that enables additional properties in errors.
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of your decorators across all the encapsulated contexts
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest authentication plugin for Fastify, with built-in support for Single sign-on (and great documentation)
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon) Fastify plugin to serve default favicon.
@@ -94,6 +93,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context) Fastify plugin for "simulating" a thread of execution to allow for true http context to take place per api call within the fastify lifecycle of calls.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect) Fastify plugin for auto redirect from http to https
 - [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
+- [`fastify-http-errors-enhanced`](https://github.com/ShogunPanda/fastify-http-errors-enhanced) A error handling plugin for Fastify that uses enhanced HTTP errors.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify InfluxDB plugin connecting to an InfluxDB instance via the Influx default package.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT authentication for fastify-based web apps.

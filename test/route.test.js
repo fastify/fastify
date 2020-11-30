@@ -747,7 +747,7 @@ test('HEAD route should handle properly each response type', t => {
   }, (error, res) => {
     t.error(error)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], undefined)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
     t.strictEqual(res.headers['content-length'], undefined)
     t.strictEqual(res.body, '')
   })
@@ -787,16 +787,17 @@ test('HEAD route should respect custom onSend handlers', t => {
 })
 
 test("HEAD route should handle stream.on('error')", t => {
-  t.plan(5)
+  t.plan(4)
 
-  const resStream = stream.Readable.from('Hello with error!')
+  const resStream = stream.Readable.from('Hello with error!').pause()
   const fastify = Fastify()
 
   fastify.route({
     method: 'GET',
     path: '/more-coffee',
+    exposeHeadRoute: true,
     handler: (req, reply) => {
-      process.nextTick(() => resStream.emit('error', new Error('Hello!')))
+      resStream.emit('error', new Error('Hello!'))
       return resStream
     }
   })
@@ -806,10 +807,9 @@ test("HEAD route should handle stream.on('error')", t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], undefined)
-    t.strictEqual(res.headers['content-length'], undefined)
-    t.strictEqual(res.body, '')
+    t.strictEqual(res.statusCode, 500)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], '69')
   })
 })
 

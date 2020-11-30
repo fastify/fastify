@@ -550,7 +550,7 @@ test('throws when route-level error handler is not a function', t => {
 test('Creates a HEAD route for each GET one', t => {
   t.plan(8)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: true })
 
   fastify.route({
     method: 'GET',
@@ -592,7 +592,7 @@ test('Creates a HEAD route for each GET one', t => {
 test('Will not create a HEAD route that is not GET', t => {
   t.plan(10)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: true })
 
   fastify.route({
     method: 'GET',
@@ -650,7 +650,7 @@ test('Will not create a HEAD route that is not GET', t => {
 test('HEAD route should handle properly each response type', t => {
   t.plan(25)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: true })
   const resString = 'Found me!'
   const resJSON = { here: 'is Johnny' }
   const resBuffer = Buffer.from('I am a buffer!')
@@ -758,7 +758,7 @@ test('HEAD route should respect custom onSend handlers', t => {
 
   let counter = 0
   const resBuffer = Buffer.from('I am a coffee!')
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: true })
   const customOnSend = (res, reply, payload, done) => {
     counter = counter + 1
     done(null, payload)
@@ -813,7 +813,7 @@ test("HEAD route should handle stream.on('error')", t => {
   })
 })
 
-test('HEAD route should not be exposed if exposeHeadRoute equals false', t => {
+test('HEAD route should not be exposed by default', t => {
   t.plan(7)
 
   const resStream = stream.Readable.from('Hello with error!')
@@ -829,7 +829,7 @@ test('HEAD route should not be exposed if exposeHeadRoute equals false', t => {
   })
 
   fastify.route({
-    exposeHeadRoute: false,
+    exposeHeadRoute: true,
     method: 'GET',
     path: '/with-flag',
     handler: (req, reply) => {
@@ -842,10 +842,7 @@ test('HEAD route should not be exposed if exposeHeadRoute equals false', t => {
     url: '/without-flag'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], undefined)
-    t.strictEqual(res.headers['content-length'], undefined)
-    t.strictEqual(res.body, '')
+    t.strictEqual(res.statusCode, 404)
   })
 
   fastify.inject({
@@ -853,51 +850,14 @@ test('HEAD route should not be exposed if exposeHeadRoute equals false', t => {
     url: '/with-flag'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
+    t.strictEqual(res.body, '')
   })
 })
 
-test('HEAD route should not be exposed if globalExposeHeadRoute equals false', { only: true }, t => {
-  t.plan(4)
-
-  const resStream = stream.Readable.from('Hello with error!')
-  const resJson = { hello: 'world' }
-  const fastify = Fastify({ exposeHeadRoutes: false })
-
-  fastify.route({
-    method: 'GET',
-    path: '/one',
-    handler: (req, reply) => {
-      return resStream
-    }
-  })
-
-  fastify.route({
-    method: 'GET',
-    path: '/two',
-    handler: (req, reply) => {
-      return resJson
-    }
-  })
-
-  fastify.inject({
-    method: 'HEAD',
-    url: '/one'
-  }, (error, res) => {
-    t.error(error)
-    t.strictEqual(res.statusCode, 404)
-  })
-
-  fastify.inject({
-    method: 'HEAD',
-    url: '/two'
-  }, (error, res) => {
-    t.error(error)
-    t.strictEqual(res.statusCode, 404)
-  })
-})
-
-test('HEAD route should be exposed if route exposeHeadRoute is set', { only: true }, t => {
+test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
   t.plan(7)
 
   const resBuffer = Buffer.from('I am a coffee!')

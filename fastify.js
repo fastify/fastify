@@ -94,7 +94,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : true
+  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   if (options.schemaErrorFormatter) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)

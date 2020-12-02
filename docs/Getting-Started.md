@@ -44,7 +44,7 @@ Require fastify framework in your main file, in this case, will be our app.js.
 ```javascript
 // Require the framework and instantiate it 
 const fastify = require('fastify')({
-	logger: true 
+  logger: true 
 }) 
 
 ```
@@ -54,40 +54,62 @@ Next thing is to run a new server that listens for HTTP request on port 3000.
 ```javascript
 // Run the server
 fastify.listen(3000, function (err, address) { 
-if (err) { 
-	fastify.log.error(err)
-	process.exit(1) 
-}
-fastify.log.info(`server listening on ${address}`)
+  if (err) { 
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  fastify.log.info(`server listening on ${address}`)
 })
 ``` 
-
 
 > Note that the above examples, and subsequent examples in this document, 
 > default to listening only on the localhost `127.0.0.1` interface.
 > To listen on all available IPv4 interfaces examples should be modified to listen on 0.0.0.0 like this:
 > ```Javascript
->	fastify.listen(3000, '0.0.0.0', function (err, address) {
->	    if (err) {
->	        fastify.log.error(err) 
->	        process.exit(1) 
->	    }
->	    fastify.log.info(`server listening on ${address}`)
->	})
+>fastify.listen(3000, '0.0.0.0', function (err, address) {
+>  if (err) {
+>    fastify.log.error(err) 
+>	 process.exit(1) 
+>  }
+>  fastify.log.info(`server listening on ${address}`)
+>  })
 >```
 
 
-Similarly, specify `::` 1 to accept only local connections via IPv6. You can also specify `::` to accept connections on all IPv6 addresses if the operating system also supports it on all IPv4 addresses.
+Similarly, specify `::` 1 to accept only local connections via IPv6. You can also indicate `::` to accept connections on all IPv6 addresses if the operating system also supports it on all IPv4 addresses.
 When deploying to a Docker, or other types of containers which will be the easiest method for exposing the application.
 
 
 ## Adding your first route
 
 Use the code below to create a new route.
+
+```Javascript
+fastify.get('/', async (request, reply) => {
+  reply.type('application/json').code(200)
+  return { hello: 'world' }
+})
+```
+
+We recommend using going with with *async-await* but you can also use callback as well:
+
 ```javascript
 // Declare a route
 fastify.get('/', function (request, reply){
-	reply.send({ hello: 'world' })
+  reply.send({ hello: 'world' })
 })
 ```
-The first route you create is usually the root URL (/) as shown in this example. Once you run...
+The first route you create is usually the root URL (/) as shown in this example. 
+> Note that the `request` and `reply` object used in this example are the same as `req` (request) and `res` (response) object in Node. 
+
+Finally, run application from your terminal using this command:
+
+```shell
+
+node app.js
+
+```
+
+Once you run the following command, your application load on `http://localhost:3000` which you can open in a browser to see output.
+
+> The application responds with `{hello:world}`, due to the request on the root URL (/). any other path that does not have a delacred route with result to an error: **404 Not Found**. 

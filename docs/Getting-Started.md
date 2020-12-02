@@ -91,7 +91,7 @@ fastify.get('/', async (request, reply) => {
 })
 ```
 
-We recommend using going with with *async-await* but you can also use callback as well:
+We recommend going with *async-await* but you can also use callback as well:
 
 ```javascript
 // Declare a route

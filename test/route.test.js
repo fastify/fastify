@@ -915,3 +915,82 @@ test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
     t.strictEqual(res.statusCode, 404)
   })
 })
+
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (global)', t => {
+  t.plan(6)
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({
+    exposeHeadRoutes: true
+  })
+
+  fastify.route({
+    method: 'HEAD',
+    path: '/one',
+    handler: (req, reply) => {
+      reply.header('content-type', 'application/pdf')
+      reply.header('content-length', `${resBuffer.byteLength}`)
+      reply.header('x-custom-header', 'some-custom-header')
+      reply.send()
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/one',
+    handler: (req, reply) => {
+      return resBuffer
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/one'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
+  t.plan(6)
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'HEAD',
+    path: '/one',
+    handler: (req, reply) => {
+      reply.header('content-type', 'application/pdf')
+      reply.header('content-length', `${resBuffer.byteLength}`)
+      reply.header('x-custom-header', 'some-custom-header')
+      reply.send()
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    exposeHeadRoute: true,
+    path: '/one',
+    handler: (req, reply) => {
+      return resBuffer
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/one'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.strictEqual(res.body, '')
+  })
+})

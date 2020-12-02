@@ -113,4 +113,4 @@ node app.js
 
 Once you run the following command, your application load on `http://localhost:3000` which you can open in a browser to see output.
 
-> The application responds with `{hello:world}`, due to the request on the root URL (/). any other path that does not have a delacred route with result to an error: **404 Not Found**. 
+> The application responds with `{hello:world}`, due to the request on the root URL (/). Any other path that does not have a delacred route will result to an error: **404 Not Found**. 

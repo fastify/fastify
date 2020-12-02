@@ -85,6 +85,8 @@ expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))
+expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: { bar: 'fuzz' } }) }))
+expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: ['bar', 'fuzz'] }) }))
 expectAssignable<FastifyInstance>(fastify({
   versioning: {
     storage: () => ({

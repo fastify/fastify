@@ -85,6 +85,7 @@ When deploying to a Docker, or other types of containers which will be the easie
 Use the code below to create a new route.
 
 ```Javascript
+// Declare a route
 fastify.get('/', async (request, reply) => {
   reply.type('application/json').code(200)
   return { hello: 'world' }

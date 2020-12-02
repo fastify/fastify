@@ -591,7 +591,7 @@ test('Creates a HEAD route for each GET one', t => {
 })
 
 test('Will not create a HEAD route that is not GET', t => {
-  t.plan(10)
+  t.plan(11)
 
   const fastify = Fastify({ exposeHeadRoutes: true })
 
@@ -607,7 +607,7 @@ test('Will not create a HEAD route that is not GET', t => {
     method: 'GET',
     path: '/some-light',
     handler: (req, reply) => {
-      reply.send('Get some light!')
+      reply.send()
     }
   })
 
@@ -635,7 +635,8 @@ test('Will not create a HEAD route that is not GET', t => {
   }, (error, res) => {
     t.error(error)
     t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.headers['content-type'], undefined)
+    t.strictEqual(res.headers['content-length'], '0')
     t.strictEqual(res.body, '')
   })
 

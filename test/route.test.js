@@ -1,6 +1,7 @@
 'use strict'
 
 const stream = require('stream')
+const split = require('split2')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
@@ -787,19 +788,34 @@ test('HEAD route should respect custom onSend handlers', t => {
 })
 
 test("HEAD route should handle stream.on('error')", t => {
-  t.plan(4)
+  t.plan(7)
 
-  const resStream = stream.Readable.from('Hello with error!').pause()
-  const fastify = Fastify()
+  const resStream = stream.Readable.from('Hello with error!')
+  const logStream = split(JSON.parse)
+  const expectedError = new Error('Hello!')
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
 
   fastify.route({
     method: 'GET',
     path: '/more-coffee',
     exposeHeadRoute: true,
     handler: (req, reply) => {
-      resStream.emit('error', new Error('Hello!'))
+      process.nextTick(() => resStream.emit('error', expectedError))
       return resStream
     }
+  })
+
+  logStream.once('data', line => {
+    const { message, stack } = expectedError
+    t.deepEquals(line.err, { type: 'Error', message, stack })
+    t.equal(line.path, '/more-coffee')
+    t.equal(line.msg, 'Error on Stream found for HEAD route')
+    t.equal(line.level, 50)
   })
 
   fastify.inject({
@@ -807,9 +823,8 @@ test("HEAD route should handle stream.on('error')", t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.strictEqual(res.headers['content-length'], '69')
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
   })
 })
 

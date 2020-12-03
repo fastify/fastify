@@ -789,7 +789,7 @@ test('HEAD route should respect custom onSend handlers', t => {
 })
 
 test("HEAD route should handle stream.on('error')", t => {
-  t.plan(7)
+  t.plan(6)
 
   const resStream = stream.Readable.from('Hello with error!')
   const logStream = split(JSON.parse)
@@ -814,7 +814,6 @@ test("HEAD route should handle stream.on('error')", t => {
   logStream.once('data', line => {
     const { message, stack } = expectedError
     t.deepEquals(line.err, { type: 'Error', message, stack })
-    t.equal(line.path, '/more-coffee')
     t.equal(line.msg, 'Error on Stream found for HEAD route')
     t.equal(line.level, 50)
   })

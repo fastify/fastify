@@ -26,10 +26,10 @@ _child plugins_ registered within the containing _child context_, but the
 containing _child context_ **does not** have access to the _child plugins_
 registered within its _grandchild context_.
 
-Given that everything in Fastify is a [plugin](./Plugins.md), exept for the
+Given that everything in Fastify is a [plugin](./Plugins.md), except for the
 _root context_, every "context" and "plugin" in this example is a plugin
 that can consist of decorators, hooks, plugins, and routes. Thus, to put
-this example into concrete terms, let's consider a basic scenario of a REST API
+this example into concrete terms, consider a basic scenario of a REST API
 server that has three routes: the first route (`/one`) requires authentication,
 the second route (`/two`) does not, and the third route (`/three`) has
 access to the same context as the second route. Using
@@ -97,9 +97,9 @@ fastify.listen(8000)
 The above server example shows all of the encapsulation concepts outlined in the
 original diagram:
 
-1. Each _child context_, `authenticatedContext`, `publicContext`, and
-`grandchildContext` have access to the `answer` request decorator defined in
-the _root context.
+1. Each _child context_ (`authenticatedContext`, `publicContext`, and
+`grandchildContext`) has access to the `answer` request decorator defined in
+the _root context_.
 2. Only the `authenticatedContext` has access to the `fastify-bearer-auth`
 plugin.
 3. Both the `publicContext` and `grandchildContext` have access to the `foo`

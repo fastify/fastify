@@ -197,7 +197,7 @@ test('onRequest hook should support encapsulation / 1', t => {
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
@@ -813,7 +813,7 @@ test('onResponse hook should support encapsulation / 1', t => {
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
@@ -890,7 +890,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onSend', () => {})
 
@@ -1015,7 +1015,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   })
 
   fastify.register((instance, opts, done) => {
-    var chunk = 'stream payload'
+    let chunk = 'stream payload'
     const thePayload = new stream.Readable({
       read () {
         this.push(chunk)
@@ -2163,7 +2163,7 @@ test('preValidation hook should support encapsulation / 1', t => {
 test('preValidation hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preValidation', () => {})
 
@@ -2582,7 +2582,7 @@ test('preParsing hook should support encapsulation / 1', t => {
 test('preParsing hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preParsing', function a () {})
 
@@ -2716,18 +2716,24 @@ test('preSerialization hook should run before serialization and be able to modif
   })
 })
 
-test('preSerialization hook should be able to throw errors which are not validated against schema response', t => {
+test('preSerialization hook should be able to throw errors which are validated against schema response', t => {
   const fastify = Fastify()
 
   fastify.addHook('preSerialization', function (req, reply, payload, done) {
     done(new Error('preSerialization aborted'))
   })
 
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equals(err.message, 'preSerialization aborted')
+    err.world = 'error'
+    reply.send(err)
+  })
+
   fastify.route({
     method: 'GET',
     url: '/first',
     handler: function (req, reply) {
-      reply.send({ hello: 'world' })
+      reply.send({ world: 'hello' })
     },
     schema: {
       response: {
@@ -2756,7 +2762,7 @@ test('preSerialization hook should be able to throw errors which are not validat
       t.error(err)
       t.strictEqual(response.statusCode, 500)
       t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { error: 'Internal Server Error', message: 'preSerialization aborted', statusCode: 500 })
+      t.deepEqual(JSON.parse(body), { world: 'error' })
       t.end()
     })
   })

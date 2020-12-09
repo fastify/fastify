@@ -111,7 +111,7 @@ test('Should reply 400 on client error', t => {
     const client = net.connect(fastify.server.address().port)
     client.end('oooops!')
 
-    var chunks = ''
+    let chunks = ''
     client.on('data', chunk => {
       chunks += chunk
     })
@@ -160,7 +160,7 @@ test('Should set the response from client error handler', t => {
     const client = net.connect(fastify.server.address().port)
     client.end('oooops!')
 
-    var chunks = ''
+    let chunks = ''
     client.on('data', chunk => {
       chunks += chunk
     })

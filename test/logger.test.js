@@ -32,8 +32,8 @@ tearDown(() => {
 
 test('defaults to info level', t => {
   t.plan(13)
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -80,8 +80,8 @@ test('defaults to info level', t => {
 
 test('test log stream', t => {
   t.plan(12)
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -127,8 +127,8 @@ test('test log stream', t => {
 
 test('test error log stream', t => {
   t.plan(11)
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -248,8 +248,8 @@ test('can use external logger instance with custom serializer', t => {
 
 test('expose the logger', t => {
   t.plan(2)
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -1190,8 +1190,8 @@ test('Do not wrap IPv4 address', t => {
 
 test('file option', t => {
   t.plan(13)
-  var fastify = null
-  var dest = file()
+  let fastify = null
+  const dest = file()
 
   fastify = Fastify({
     logger: {
@@ -1423,7 +1423,7 @@ test('should redact the authorization header if so specified', t => {
             headers: req.headers,
             hostname: req.hostname,
             remoteAddress: req.ip,
-            remotePort: req.connection.remotePort
+            remotePort: req.socket.remotePort
           }
         }
       }

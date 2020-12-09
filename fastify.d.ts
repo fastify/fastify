@@ -92,7 +92,7 @@ export type FastifyServerOptions<
   requestIdLogLabel?: string;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
-  querystringParser?: (str: string) => { [key: string]: string | string[] },
+  querystringParser?: (str: string) => { [key: string]: unknown },
   versioning?: {
     storage(): {
       get(version: string): string | null,
@@ -119,8 +119,8 @@ export type FastifyServerOptions<
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
 /* Export all additional types */
-export * from './types/request'
-export * from './types/reply'
+export { FastifyRequest, RequestGenericInterface } from './types/request'
+export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'

@@ -16,7 +16,7 @@ fastify.addContentTypeParser('application/jsoff', function (request, payload, do
 
 // curl -X POST -d 'hello=world' -H'Content-type: application/x-www-form-urlencoded' http://localhost:3000/
 fastify.addContentTypeParser('application/x-www-form-urlencoded', function (request, payload, done) {
-  var body = ''
+  let body = ''
   payload.on('data', function (data) {
     body += data
   })

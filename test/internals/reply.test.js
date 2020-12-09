@@ -79,7 +79,7 @@ test('reply.send throw with circular JSON', t => {
   }
   const reply = new Reply(response, { context: { onSend: [] } })
   t.throws(() => {
-    var obj = {}
+    const obj = {}
     obj.obj = obj
     reply.send(JSON.stringify(obj))
   }, 'Converting circular structure to JSON')
@@ -430,9 +430,9 @@ test('stream with content type should not send application/octet-stream', t => {
   const fs = require('fs')
   const path = require('path')
 
-  var streamPath = path.join(__dirname, '..', '..', 'package.json')
-  var stream = fs.createReadStream(streamPath)
-  var buf = fs.readFileSync(streamPath)
+  const streamPath = path.join(__dirname, '..', '..', 'package.json')
+  const stream = fs.createReadStream(streamPath)
+  const buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.header('Content-Type', 'text/plain').send(stream)
@@ -459,9 +459,9 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
   const fs = require('fs')
   const path = require('path')
 
-  var streamPath = path.join(__dirname, '..', '..', 'package.json')
-  var stream = fs.createReadStream(streamPath)
-  var buf = fs.readFileSync(streamPath)
+  const streamPath = path.join(__dirname, '..', '..', 'package.json')
+  const stream = fs.createReadStream(streamPath)
+  const buf = fs.readFileSync(streamPath)
 
   fastify.get('/', function (req, reply) {
     reply.log.warn = function mockWarn (message) {
@@ -776,6 +776,61 @@ test('undefined payload should be sent as-is', t => {
       t.error(err)
       t.strictEqual(response.headers['content-type'], undefined)
       t.strictEqual(response.headers['content-length'], undefined)
+      t.strictEqual(body.length, 0)
+    })
+  })
+})
+
+test('for HEAD method, no body should be sent but content-length should be', t => {
+  t.plan(11)
+
+  const fastify = require('../..')()
+  const contentType = 'application/json; charset=utf-8'
+  const bodySize = JSON.stringify({ foo: 'bar' }).length
+
+  fastify.head('/', {
+    onSend: function (request, reply, payload, next) {
+      t.strictEqual(payload, undefined)
+      next()
+    }
+  }, function (req, reply) {
+    reply.header('content-length', bodySize)
+    reply.header('content-type', contentType)
+    reply.code(200).send()
+  })
+
+  fastify.head('/with/null', {
+    onSend: function (request, reply, payload, next) {
+      t.strictEqual(payload, 'null')
+      next()
+    }
+  }, function (req, reply) {
+    reply.header('content-length', bodySize)
+    reply.header('content-type', contentType)
+    reply.code(200).send(null)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'HEAD',
+      url: `http://localhost:${fastify.server.address().port}`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], contentType)
+      t.strictEqual(response.headers['content-length'], bodySize.toString())
+      t.strictEqual(body.length, 0)
+    })
+
+    sget({
+      method: 'HEAD',
+      url: `http://localhost:${fastify.server.address().port}/with/null`
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.headers['content-type'], contentType)
+      t.strictEqual(response.headers['content-length'], bodySize.toString())
       t.strictEqual(body.length, 0)
     })
   })

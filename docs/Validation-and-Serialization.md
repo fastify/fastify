@@ -163,13 +163,19 @@ const bodyJsonSchema = {
 }
 
 const queryStringJsonSchema = {
-  name: { type: 'string' },
-  excitement: { type: 'integer' }
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    excitement: { type: 'integer' }
+  }
 }
 
 const paramsJsonSchema = {
-  par1: { type: 'string' },
-  par2: { type: 'number' }
+  type: 'object',
+  properties: {
+    par1: { type: 'string' },
+    par2: { type: 'number' }
+  }
 }
 
 const headersJsonSchema = {
@@ -502,16 +508,27 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
 })
 ```
 
+#### `schemaErrorFormatter`
+
 If you want to format errors yourself, you can provide a sync function that must return an error as the `schemaErrorFormatter` option to Fastify when instantiating.
+The context function will be the Fastify server instance.
 
 `errors` is an array of Fastify schema errors `FastifySchemaValidationError`.
 `dataVar` is the currently validated part of the schema. (params | body | querystring | headers).
+
 ```js
 const fastify = Fastify({
   schemaErrorFormatter: (errors, dataVar) => {
     // ... my formatting logic 
     return new Error(myErrorMessage)
   }
+})
+
+// or
+fastify.setSchemaErrorFormatter(function (errors, dataVar) {
+  this.log.error({ err: errors }, 'Validation failed')
+  // ... my formatting logic 
+  return new Error(myErrorMessage)
 })
 ```
 

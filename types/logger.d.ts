@@ -27,7 +27,7 @@ import { FastifyRequest, RequestGenericInterface } from './request'
  */
 export interface FastifyLogFn {
   (msg: string, ...args: unknown[]): void;
-  (obj: object, msg?: string, ...args: unknown[]): void;
+  (obj: Record<string, unknown>, msg?: string, ...args: unknown[]): void;
 }
 
 export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
@@ -118,22 +118,24 @@ export interface FastifyLoggerOptions<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
 > {
   serializers?: {
-    req: (req: RawRequest) => {
-      method: string;
-      url: string;
-      version: string;
-      hostname: string;
-      remoteAddress: string;
-      remotePort: number;
+    req?: (req: RawRequest) => {
+      method?: string;
+      url?: string;
+      version?: string;
+      hostname?: string;
+      remoteAddress?: string;
+      remotePort?: number;
+      [key: string]: unknown;
     };
-    err: (err: FastifyError) => {
+    err?: (err: FastifyError) => {
       type: string;
       message: string;
       stack: string;
-      [key: string]: any;
+      [key: string]: unknown;
     };
-    res: (res: RawReply) => {
+    res?: (res: RawReply) => {
       statusCode: string | number;
+      [key: string]: unknown;
     };
   };
   level?: string;

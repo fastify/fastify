@@ -168,6 +168,7 @@ matters to you.
 * <a href="./docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="./docs/Server.md"><code><b>Server</b></code></a>
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
+* <a href="./docs/Encapsulation.md"><code><b>Encapsulation</b></code></a>
 * <a href="./docs/Logging.md"><code><b>Logging</b></code></a>
 * <a href="./docs/Middleware.md"><code><b>Middleware</b></code></a>
 * <a href="./docs/Hooks.md"><code><b>Hooks</b></code></a>

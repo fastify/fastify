@@ -402,8 +402,8 @@ test('does not call reply.send() twice if 204 reponse is already sent', t => {
 test('error is logged because promise was fulfilled with undefined', t => {
   t.plan(3)
 
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -442,8 +442,8 @@ test('error is logged because promise was fulfilled with undefined', t => {
 test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
   t.plan(3)
 
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -482,9 +482,9 @@ test('error is not logged because promise was fulfilled with undefined but statu
 test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
   t.plan(4)
 
-  var fastify = null
-  var stream = split(JSON.parse)
-  var payload = { hello: 'world' }
+  let fastify = null
+  const stream = split(JSON.parse)
+  const payload = { hello: 'world' }
   try {
     fastify = Fastify({
       logger: {

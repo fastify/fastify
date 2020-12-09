@@ -304,6 +304,8 @@ fastify.get('/', (request, reply) => {
 })
 ```
 
+**Note: if a request contains multiple <code>x-forwarded-host</code> or <code>x-forwarded-proto</code> headers, it is only the last one that is used to derive <code>request.hostname</code> and <code>request.protocol</code>**
+
 <a name="plugin-timeout"></a>
 ### `pluginTimeout`
 
@@ -782,7 +784,7 @@ Set the schema validator compiler for all routes. See [#schema-validator](Valida
 
 <a name="set-schema-error-formatter"></a>
 #### setSchemaErrorFormatter
-Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#error-handling).
+Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
@@ -801,7 +803,7 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 
 <a name="schema-error-formatter"></a>
 #### schemaErrorFormatter
-This property can be used to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#error-handling).
+This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
@@ -850,7 +852,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-Fastify is provided with a default function that is called if no error handler is set and that logs the error with respect to its `statusCode`:
+Fastify is provided with a default function that is called if no error handler is set. It can be accessed using `fastify.errorHandler` and it logs the error with respect to its `statusCode`.
 
 ```js
 var statusCode = error.statusCode
@@ -881,6 +883,50 @@ fastify.ready(() => {
   //   │   └── /hello (GET)
   //   └── hello/world (GET)
 })
+```
+
+<a name="addContentTypeParser"></a>
+#### addContentTypeParser
+
+`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string or string array.
+
+```js
+// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
+```
+
+<a name="getDefaultJsonParser"></a>
+#### getDefaultJsonParser
+
+`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes two arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configuration. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+
+
+<a name="defaultTextParser"></a>
+#### defaultTextParser
+
+`fastify.defaultTextParser()` can be used to parse content as plain text.
+
+```js
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
+```
+
+<a name="errorHandler"></a>
+#### errorHandler
+
+`fastify.errorHandler` can be used to handle errors using fastify's default error handler.
+
+```js
+fastify.get('/', {
+  errorHandler: (error, request, reply) => {
+    if (error.code === 'SOMETHING_SPECIFIC') {
+      reply.send({ custom: 'response' })
+      return
+    }
+
+    fastify.errorHandler(error, request, response)
+  }
+}, handler)
 ```
 
 <a name="initial-config"></a>

@@ -51,7 +51,7 @@ They need to be in
 * `onSend(request, reply, payload, done)`: a [function](Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
 * `onResponse(request, reply, done)`: a [function](Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `handler(request, reply)`: the function that will handle this request. The [Fastify server](Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
-* `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](Server.md#setErrorHandler), for requests to the route.
+* `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](Server.md#setErrorHandler), for requests to the route. To access the default handler, you can access `instance.errorHandler`. Note that this will point to fastify's default `errorHandler` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](Validation-and-Serialization.md#schema-validator) documentation.
 * `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](Validation-and-Serialization.md#schema-serializer) documentation.
 * `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from the validation compiler. See the [Validation and Serialization](Validation-and-Serialization.md#error-handling) documentation. Overrides the global schema error formatter handler, and anything set by `setSchemaErrorFormatter`, for requests to the route.
@@ -302,7 +302,7 @@ See the `prefixTrailingSlash` route option above to change this behaviour.
 <a name="custom-log-level"></a>
 ### Custom Log Level
 It could happen that you need different log levels in your routes, Fastify achieves this in a very straightforward way.<br/>
-You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/API.md#discussion-3) that you need.
+You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string) that you need.
 
 Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](Server.md#setnotfoundhandler) and [`setErrorHandler`](Server.md#seterrorhandler) will be affected.
 
@@ -360,7 +360,7 @@ const fastify = Fastify({
           headers: req.headers,
           hostname: req.hostname,
           remoteAddress: req.ip,
-          remotePort: req.connection.remotePort
+          remotePort: req.socket.remotePort
         }
       }
     }
@@ -430,6 +430,24 @@ fastify.inject({
   // { hello: 'world' }
 })
 ```
+
+> ## ⚠  Security Notice
+> Remember to set a [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary) header in your
+> responses with the value you are using for defining the versioning (e.g.: `'Accept-Version'`),
+> to prevent cache poisoning attacks. You can also configure this as part your Proxy/CDN.
+> 
+> ```js
+> const append = require('vary').append
+> fastify.addHook('onSend', async (req, reply) => {
+>   if (req.headers['accept-version']) { // or the custom header you are using
+>     let value = reply.getHeader('Vary') || ''
+>     const header = Array.isArray(value) ? value.join(', ') : String(value)
+>     if ((value = append(header, 'Accept-Version'))) { // or the custom header you are using
+>       reply.header('Vary', value)
+>     }
+>   }
+> })
+> ```
 
 If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
 If the request will not have the `Accept-Version` header, a 404 error will be returned.

@@ -28,10 +28,10 @@ export interface FastifyInstance<
   getSchema(schemaId: string): unknown;
   getSchemas(): Record<string, unknown>;
 
-  after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
+  after(): Promise<void>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
+  close(): Promise<void>;
   close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
@@ -54,10 +54,10 @@ export interface FastifyInstance<
   listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error, address: string) => void): void;
   listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
-  ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
+  ready(): Promise<FastifyInstance<RawServer, RawRequest, RawReply, Logger>>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
+  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger>>;
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

@@ -23,8 +23,9 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-etag`](https://github.com/fastify/fastify-etag) Automatically generate etags for HTTP responses.
 - [`fastify-flash`](https://github.com/fastify/fastify-flash) Set and get flash messages using the session.
 - [`fastify-formbody`](https://github.com/fastify/fastify-formbody) Plugin to parse x-www-form-urlencoded bodies.
+- [`fastify-funky`](https://github.com/fastify/fastify-funky) Makes functional programming in Fastify more convenient. Adds support for Fastify routes returning functional structures, such as Either, Task or plain parameterless function.
 - [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important security headers for Fastify.
-- [`fastify-http-proxy`](https://github.com/fastify/fastify-http-proxy)Proxy your http requests to another server, with hooks.
+- [`fastify-http-proxy`](https://github.com/fastify/fastify-http-proxy) Proxy your http requests to another server, with hooks.
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify, internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
 - [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to share a common LevelDB connection across Fastify.
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify MongoDB connection plugin, with which you can share the same MongoDB connection pool across every part of your server.

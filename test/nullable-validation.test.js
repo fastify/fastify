@@ -61,8 +61,8 @@ test('object or null body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, null)
-      reply.code(200).send({ requestBody: req.body })
+      t.strictEqual(req.body, undefined)
+      reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
       body: {
@@ -79,10 +79,8 @@ test('object or null body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            requestBody: {
-              type: 'string',
-              format: 'email',
-              nullable: true
+            isUndefinedBody: {
+              type: 'boolean'
             }
           }
         }
@@ -100,7 +98,7 @@ test('object or null body', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { requestBody: null })
+      t.deepEqual(JSON.parse(body), { isUndefinedBody: true })
     })
   })
 })
@@ -114,8 +112,8 @@ test('nullable body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, null)
-      reply.code(200).send({ requestBody: req.body })
+      t.strictEqual(req.body, undefined)
+      reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
       body: {
@@ -133,10 +131,8 @@ test('nullable body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            requestBody: {
-              type: 'string',
-              format: 'email',
-              nullable: true
+            isUndefinedBody: {
+              type: 'boolean'
             }
           }
         }
@@ -154,7 +150,7 @@ test('nullable body', t => {
     }, (err, response, body) => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { requestBody: null })
+      t.deepEqual(JSON.parse(body), { isUndefinedBody: true })
     })
   })
 })

@@ -2058,7 +2058,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (request, reply, done) {
-    t.deepEqual(request.body, null)
+    t.deepEqual(request.body, undefined)
     t.deepEqual(request.query, { key: 'value' })
     t.deepEqual(request.params, { greeting: 'hello' })
     t.deepEqual(request.headers, {
@@ -2072,7 +2072,7 @@ test('request in onRequest, preParsing, preValidation and onResponse', t => {
   })
 
   fastify.addHook('preParsing', function (request, reply, payload, done) {
-    t.deepEqual(request.body, null)
+    t.deepEqual(request.body, undefined)
     t.deepEqual(request.query, { key: 'value' })
     t.deepEqual(request.params, { greeting: 'hello' })
     t.deepEqual(request.headers, {

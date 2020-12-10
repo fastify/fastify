@@ -189,6 +189,7 @@ function fastify (options) {
     [kAvvioBoot]: null,
     // routing method
     routing: httpHandler,
+    defaultRoute: defaultRoute,
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)

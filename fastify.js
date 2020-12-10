@@ -133,7 +133,9 @@ function fastify (options) {
   // Default router
   const router = buildRouting({
     config: {
-      defaultRoute: defaultRoute,
+      defaultRoute: function (req, res) {
+        fastify.defaultRoute(req, res)
+      },
       onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,

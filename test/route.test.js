@@ -7,6 +7,7 @@ const test = t.test
 const sget = require('simple-get').concat
 const joi = require('@hapi/joi')
 const Fastify = require('..')
+const proxyquire = require('proxyquire')
 
 test('route', t => {
   t.plan(9)
@@ -957,10 +958,19 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
 })
 
 test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
-  t.plan(6)
+  t.plan(7)
+
+  function onWarning (code) {
+    t.strictEqual(code, 'FSTDEP007')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const route = proxyquire('../lib/route', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/route.js': route })()
 
   const resBuffer = Buffer.from('I am a coffee!')
-  const fastify = Fastify()
 
   fastify.route({
     method: 'HEAD',

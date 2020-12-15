@@ -313,6 +313,11 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
+   * Fastify default error handler
+   */
+  errorHandler: (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+
+  /**
    * Set a function that will be called whenever an error happens
    */
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(

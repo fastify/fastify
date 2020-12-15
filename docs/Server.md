@@ -791,7 +791,7 @@ Set the schema validator compiler for all routes. See [#schema-validator](Valida
 
 <a name="set-schema-error-formatter"></a>
 #### setSchemaErrorFormatter
-Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#error-handling).
+Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
 <a name="set-serializer-resolver"></a>
 #### setSerializerCompiler
@@ -810,7 +810,7 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 
 <a name="schema-error-formatter"></a>
 #### schemaErrorFormatter
-This property can be used to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#error-handling).
+This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler

@@ -154,3 +154,44 @@ test('nullable body', t => {
     })
   })
 })
+
+test('Nullable body with 204', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    handler: (req, reply) => {
+      t.strictEqual(req.body, undefined)
+      reply.code(204).send()
+    },
+    schema: {
+      body: {
+        type: 'object',
+        nullable: true,
+        properties: {
+          hello: {
+            type: 'string',
+            format: 'email'
+          }
+        }
+      }
+    }
+  })
+
+  fastify.listen(0, (err) => {
+    fastify.server.unref()
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 204)
+      t.strictEqual(body.length, 0)
+    })
+  })
+})

@@ -53,7 +53,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 })
 ```
 
-**Notice:** in the [onRequest](#onrequest) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
+**Notice:** in the [onRequest](#onrequest) hook, `request.body` will always be `undefined`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
 ### preParsing
 
@@ -78,7 +78,7 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 })
 ```
 
-**Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
+**Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be `undefined`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
 **Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
 

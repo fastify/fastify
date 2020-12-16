@@ -189,7 +189,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.error(err)
         t.strictEqual(response.statusCode, 200)
-        t.strictEqual(JSON.parse(body.toString()), null)
+        t.strictEqual(body.toString(), '')
       })
 
       // Must use inject to make a request without a Content-Length header
@@ -199,7 +199,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, res) => {
         t.error(err)
         t.strictEqual(res.statusCode, 200)
-        t.strictEqual(JSON.parse(res.payload), null)
+        t.strictEqual(res.payload, '')
       })
     })
 

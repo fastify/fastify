@@ -302,7 +302,7 @@ test('shorthand - delete with application/json Content-Type header and without b
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {
-    t.equal(req.body, null)
+    t.equal(req.body, undefined)
     reply.send(req.body)
   })
   fastify.inject({
@@ -313,6 +313,6 @@ test('shorthand - delete with application/json Content-Type header and without b
   }, (err, response) => {
     t.error(err)
     t.strictEqual(response.statusCode, 200)
-    t.deepEqual(JSON.parse(response.payload), null)
+    t.deepEqual(response.payload, '')
   })
 })

@@ -70,6 +70,38 @@ test('hookRunner - In case of error should skip to done', t => {
   }
 })
 
+test('hookRunner - Should handle throw', t => {
+  t.plan(7)
+
+  hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
+
+  function iterator (fn, a, b, next) {
+    return fn(a, b, next)
+  }
+
+  function fn1 (a, b, next) {
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
+    next()
+  }
+
+  function fn2 (a, b, next) {
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
+    throw new Error('kaboom')
+  }
+
+  function fn3 () {
+    t.fail('We should not be here')
+  }
+
+  function done (err, a, b) {
+    t.strictEqual(err.message, 'kaboom')
+    t.strictEqual(a, 'a')
+    t.strictEqual(b, 'b')
+  }
+})
+
 test('hookRunner - Should handle promises', t => {
   t.plan(9)
 

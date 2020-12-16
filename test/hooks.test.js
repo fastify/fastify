@@ -1174,13 +1174,18 @@ test('clear payload', t => {
 })
 
 test('onSend hook throws', t => {
-  t.plan(7)
+  t.plan(9)
   const fastify = Fastify()
   fastify.addHook('onSend', function (request, reply, payload, done) {
     if (request.raw.method === 'DELETE') {
       done(new Error('some error'))
       return
     }
+
+    if (request.raw.method === 'PUT') {
+      throw new Error('some error')
+    }
+
     done()
   })
 
@@ -1189,6 +1194,10 @@ test('onSend hook throws', t => {
   })
 
   fastify.delete('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.put('/', (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
@@ -1206,6 +1215,13 @@ test('onSend hook throws', t => {
     })
     sget({
       method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+    sget({
+      method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
@@ -1523,6 +1539,31 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
     t.error(err)
     t.is(res.statusCode, 200)
     t.is(res.payload, 'hello')
+  })
+})
+
+test('preParsing hooks should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
+    const e = new Error('kaboom')
+    e.statusCode = 501
+    throw e
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
   })
 })
 

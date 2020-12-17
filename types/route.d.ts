@@ -1,7 +1,7 @@
 import { FastifyInstance } from './instance'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply, ReplyGenericInterface } from './reply'
-import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError } from './schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
@@ -22,7 +22,7 @@ export interface RouteShorthandOptions<
   schema?: FastifySchema;
   attachValidation?: boolean;
   validatorCompiler?: FastifySchemaCompiler;
-  serializerCompiler?: FastifySchemaCompiler;
+  serializerCompiler?: FastifySerializerCompiler;
   bodyLimit?: number;
   logLevel?: LogLevel;
   config?: ContextConfig;

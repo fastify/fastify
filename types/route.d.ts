@@ -121,3 +121,8 @@ export type RouteHandler<
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
 ) => void | Promise<RouteGeneric['Reply'] | void>
+
+export type DefaultRoute<Request, Reply> = (
+  req: Request,
+  res: Reply,
+) => void;

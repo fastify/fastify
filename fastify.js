@@ -133,9 +133,7 @@ function fastify (options) {
   // Default router
   const router = buildRouting({
     config: {
-      defaultRoute: function (req, res) {
-        fastify.defaultRoute(req, res)
-      },
+      defaultRoute: defaultRoute,
       onBadUrl: onBadUrl,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
@@ -191,7 +189,8 @@ function fastify (options) {
     [kAvvioBoot]: null,
     // routing method
     routing: httpHandler,
-    defaultRoute: defaultRoute,
+    getDefaultRoute: router.getDefaultRoute.bind(router),
+    setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)

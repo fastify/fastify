@@ -36,6 +36,10 @@ expectAssignable<FastifyInstance>(server.setValidatorCompiler(({ schema }) => {
   return new Ajv().compile(schema)
 }))
 
+expectAssignable<FastifyInstance>(server.setSerializerCompiler(() => {
+  return data => JSON.stringify(data)
+}))
+
 expectError(server.get(
   '/unknown-schema-prop',
   {

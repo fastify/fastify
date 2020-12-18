@@ -118,6 +118,20 @@ export type FastifyServerOptions<
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
+declare module 'fastify-error' {
+  interface FastifyError {
+    validation?: ValidationResult[];
+  }
+}
+
+export interface ValidationResult {
+  keyword: string;
+  dataPath: string;
+  schemaPath: string;
+  params: Record<string, string | string[]>;
+  message: string;
+}
+
 /* Export all additional types */
 export { FastifyRequest, RequestGenericInterface } from './types/request'
 export { FastifyReply } from './types/reply'
@@ -128,7 +142,7 @@ export { FastifyContext } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser } from './types/content-type-parser'
-export { FastifyError, ValidationResult } from 'fastify-error'
+export { FastifyError } from 'fastify-error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 export * from './types/hooks'

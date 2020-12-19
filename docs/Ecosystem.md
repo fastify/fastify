@@ -107,6 +107,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-markdown`](https://github.com/freezestudio/fastify-markdown) Plugin to markdown support.
 - [`fastify-method-override`](https://github.com/corsicanec82/fastify-method-override) Plugin for Fastify, which allows use HTTP verbs, such as DELETE, PATCH, HEAD, PUT, OPTIONS in case the client doesn't support them.
 - [`fastify-metrics`](https://gitlab.com/m03geek/fastify-metrics) Plugin for exporting [Prometheus](https://prometheus.io) metrics.
+- [`fastify-minify`](https://github.com/Jelenkee/fastify-minify) Plugin for minification and transformation of responses.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api) Fastify plugin to create REST API methods based on Mongoose MongoDB models.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose) Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin with support for Models.

@@ -100,6 +100,7 @@ fastify.get('/', function (request, reply){
   reply.send({ hello: 'world' })
 })
 ```
+
 The first route you create is usually the root URL (/) as shown in this example. 
 > Note that the `request` and `reply` object used in this example are the same as `req` (request) and `res` (response) object in Node. 
 

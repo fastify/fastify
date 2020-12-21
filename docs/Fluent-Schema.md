@@ -12,7 +12,7 @@ The [Validation and Serialization](Validation-and-Serialization.md) documentatio
 const S = require('fluent-schema')
 
 // You can have an object like this, or query a DB to get the values
-const MY_KEY = {
+const MY_KEYS = {
   KEY1: 'ONE',
   KEY2: 'TWO'
 }

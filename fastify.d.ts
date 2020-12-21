@@ -14,7 +14,7 @@ import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 
 /**
- * Fastify factor function for the standard fastify http, https, or http2 server instance.
+ * Fastify factory function for the standard fastify http, https, or http2 server instance.
  *
  * The default function utilizes http
  *
@@ -92,7 +92,7 @@ export type FastifyServerOptions<
   requestIdLogLabel?: string;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
-  querystringParser?: (str: string) => { [key: string]: string | string[] },
+  querystringParser?: (str: string) => { [key: string]: unknown },
   versioning?: {
     storage(): {
       get(version: string): string | null,

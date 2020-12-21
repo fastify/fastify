@@ -168,6 +168,7 @@ matters to you.
 * <a href="./docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="./docs/Server.md"><code><b>Server</b></code></a>
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
+* <a href="./docs/Encapsulation.md"><code><b>Encapsulation</b></code></a>
 * <a href="./docs/Logging.md"><code><b>Logging</b></code></a>
 * <a href="./docs/Middleware.md"><code><b>Middleware</b></code></a>
 * <a href="./docs/Hooks.md"><code><b>Hooks</b></code></a>
@@ -231,6 +232,7 @@ Team members are listed in alphabetical order.
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Vincent Le Goff__](https://github.com/zekth)
+* [__Salman Mitha__](https://github.com/salmanm), <https://www.npmjs.com/~salmanm>
 * [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 

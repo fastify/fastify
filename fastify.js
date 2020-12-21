@@ -97,10 +97,6 @@ function fastify (options) {
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
 
-  if (options.schemaErrorFormatter) {
-    validateSchemaErrorFormatter(options.schemaErrorFormatter)
-  }
-
   const ajvOptions = Object.assign({
     customOptions: {},
     plugins: []
@@ -178,7 +174,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kValidatorCompiler]: null,
-    [kSchemaErrorFormatter]: options.schemaErrorFormatter,
+    [kSchemaErrorFormatter]: null,
     [kErrorHandler]: defaultErrorHandler,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
@@ -305,6 +301,11 @@ function fastify (options) {
   // can still access it (and get the expected error), but `decorate`
   // will not detect it, and allow the user to override it.
   Object.setPrototypeOf(fastify, { use })
+
+  if (options.schemaErrorFormatter) {
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
+    fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
+  }
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -564,7 +565,7 @@ function fastify (options) {
   function setSchemaErrorFormatter (errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
     validateSchemaErrorFormatter(errorFormatter)
-    this[kSchemaErrorFormatter] = errorFormatter
+    this[kSchemaErrorFormatter] = errorFormatter.bind(this)
     return this
   }
 

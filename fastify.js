@@ -16,8 +16,6 @@ const {
   kLogSerializers,
   kHooks,
   kSchemas,
-  kValidatorCompiler,
-  kSerializerCompiler,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -171,10 +169,8 @@ function fastify (options) {
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
     [kSchemas]: schemaController,
-    [kValidatorCompiler]: null,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: defaultErrorHandler,
-    [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -275,10 +271,10 @@ function fastify (options) {
       get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
-      get () { return this[kValidatorCompiler] }
+      get () { return this[kSchemas].getValidatorCompiler() }
     },
     serializerCompiler: {
-      get () { return this[kSerializerCompiler] }
+      get () { return this[kSchemas].getSerializerCompiler() }
     },
     version: {
       get () {
@@ -342,6 +338,7 @@ function fastify (options) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
+  schemaController.setup()
   router.setup(options, {
     avvio,
     fourOhFour,
@@ -556,7 +553,7 @@ function fastify (options) {
 
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
-    this[kValidatorCompiler] = validatorCompiler
+    this[kSchemas].setValidatorCompiler(validatorCompiler)
     return this
   }
 
@@ -569,7 +566,7 @@ function fastify (options) {
 
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
-    this[kSerializerCompiler] = serializerCompiler
+    this[kSchemas].setSerializerCompiler(serializerCompiler)
     return this
   }
 

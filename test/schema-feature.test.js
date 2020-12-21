@@ -121,8 +121,8 @@ test('Get compilers is empty when settle on routes', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(fastify.validatorCompiler, null)
-    t.equal(fastify.serializerCompiler, null)
+    t.equal(fastify.validatorCompiler, undefined)
+    t.equal(fastify.serializerCompiler, undefined)
   })
 })
 

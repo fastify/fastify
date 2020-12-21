@@ -140,7 +140,7 @@
     "events.once": "^2.0.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^3.0.0",
-    "fluent-schema": "^1.0.0",
+    "fluent-json-schema": "^2.0.1",
     "form-data": "^3.0.0",
     "frameguard": "^3.1.0",
     "h2url": "^0.2.0",

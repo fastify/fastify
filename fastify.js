@@ -15,7 +15,7 @@ const {
   kLogLevel,
   kLogSerializers,
   kHooks,
-  kSchemas,
+  kSchemaController,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -168,7 +168,7 @@ function fastify (options) {
     [kLogLevel]: '',
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
-    [kSchemas]: schemaController,
+    [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: defaultErrorHandler,
     [kReplySerializerDefault]: null,
@@ -271,10 +271,10 @@ function fastify (options) {
       get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
-      get () { return this[kSchemas].getValidatorCompiler() }
+      get () { return this[kSchemaController].getValidatorCompiler() }
     },
     serializerCompiler: {
-      get () { return this[kSchemas].getSerializerCompiler() }
+      get () { return this[kSchemaController].getSerializerCompiler() }
     },
     version: {
       get () {
@@ -486,7 +486,7 @@ function fastify (options) {
   // wrapper that we expose to the user for schemas handling
   function addSchema (schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this[kSchemas].add(schema)
+    this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
   }
@@ -553,7 +553,7 @@ function fastify (options) {
 
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
-    this[kSchemas].setValidatorCompiler(validatorCompiler)
+    this[kSchemaController].setValidatorCompiler(validatorCompiler)
     return this
   }
 
@@ -566,7 +566,7 @@ function fastify (options) {
 
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
-    this[kSchemas].setSerializerCompiler(serializerCompiler)
+    this[kSchemaController].setSerializerCompiler(serializerCompiler)
     return this
   }
 

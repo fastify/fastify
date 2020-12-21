@@ -75,3 +75,10 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+
+expectType<FastifyInstance>(fastify().get('/', {
+  handler: () => {},
+  errorHandler: (error, request, reply) => {
+    expectAssignable<void>(server.errorHandler(error, request, reply))
+  }
+}))

@@ -1,12 +1,13 @@
 {
   "name": "fastify",
-  "version": "3.8.0",
+  "version": "3.9.2",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
   "types": "fastify.d.ts",
   "scripts": {
     "lint": "npm run lint:standard && npm run lint:typescript",
+    "lint:fix": "standard --fix",
     "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
     "unit": "tap -J test/*.test.js test/*/*.test.js",
@@ -123,7 +124,7 @@
     "ajv-i18n": "^3.5.0",
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",
-    "autocannon": "^6.0.0",
+    "autocannon": "^7.0.0",
     "branch-comparer": "^1.0.2",
     "concurrently": "^5.0.2",
     "cors": "^2.8.5",
@@ -135,7 +136,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-standard": "^5.0.0",
     "events.once": "^2.0.2",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^3.0.0",
@@ -161,11 +162,11 @@
     "tap": "^14.4.1",
     "tap-mocha-reporter": "^5.0.0",
     "then-sleep": "^1.0.1",
-    "tsd": "^0.13.1",
+    "tsd": "^0.14.0",
     "typescript": "^4.0.2",
     "undici": "^2.0.0",
     "x-xss-protection": "^2.0.0",
-    "yup": "^0.29.0"
+    "yup": "^0.32.0"
   },
   "dependencies": {
     "abstract-logging": "^2.0.0",

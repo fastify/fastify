@@ -57,8 +57,11 @@ fastify.get('/', (req, reply) => {
 
 Note that it is important to keep initial shape of decorated field as close as possible to the value intended to be set dynamically in the future. Initialize a decorator as a `''` if the intended value is a string, and as `null` if it will be an object or a function.
 
+Remember this example works only with value types as reference types will be shared amongst all requests.
+See [decorateRequest](#decorate-request).
+
 See
-[JavaScript engine fundamentals: Shapes and Inline Caches](https://web.archive.org/web/20200201163000/https://mathiasbynens.be/notes/shapes-ics)
+[JavaScript engine fundamentals: Shapes and Inline Caches](https://mathiasbynens.be/notes/shapes-ics)
 for more information on this topic.
 
 ### Usage
@@ -133,6 +136,30 @@ fastify.decorateReply('utility', function () {
 Note: using an arrow function will break the binding of `this` to the Fastify
 `Reply` instance.
 
+Note: using `decorateReply` will emit a warning if used with a reference type:
+
+```js
+// Don't do this
+fastify.decorateReply('foo', { bar: 'fizz'})
+```
+In this example the reference of the object is shared with all the requests: **any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+To achieve proper encapsulation across requests configure a new value for each incoming request
+in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+
+```js
+const fp = require('fastify-plugin')
+
+async function myPlugin (app) {
+  app.decorateRequest('foo', null)
+  app.addHook('onRequest', async (req, reply) => {
+    req.foo = { bar: 42 }
+  }) 
+}
+
+module.exports = fp(myPlugin)
+```
+
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
 #### `decorateRequest(name, value, [dependencies])`
@@ -149,6 +176,30 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify
 `Request` instance.
+
+Note: using `decorateRequest` will emit a warning if used with a reference type:
+
+```js
+// Don't do this
+fastify.decorateRequest('foo', { bar: 'fizz'})
+```
+In this example the reference of the object is shared with all the requests: **any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+To achieve proper encapsulation across requests configure a new value for each incoming request
+in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+
+```js
+const fp = require('fastify-plugin')
+
+async function myPlugin (app) {
+  app.decorateRequest('foo', null)
+  app.addHook('onRequest', async (req, reply) => {
+    req.foo = { bar: 42 }
+  }) 
+}
+
+module.exports = fp(myPlugin)
+```
 
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 

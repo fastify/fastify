@@ -562,7 +562,11 @@ test('add hooks after route declaration', t => {
   const fastify = Fastify()
 
   function plugin (instance, opts, next) {
-    instance.decorateRequest('check', {})
+    instance.decorateRequest('check', null)
+    instance.addHook('onRequest', (req, reply, next) => {
+      req.check = {}
+      next()
+    })
     setImmediate(next)
   }
   fastify.register(fp(plugin))

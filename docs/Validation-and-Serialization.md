@@ -508,16 +508,27 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
 })
 ```
 
+#### `schemaErrorFormatter`
+
 If you want to format errors yourself, you can provide a sync function that must return an error as the `schemaErrorFormatter` option to Fastify when instantiating.
+The context function will be the Fastify server instance.
 
 `errors` is an array of Fastify schema errors `FastifySchemaValidationError`.
 `dataVar` is the currently validated part of the schema. (params | body | querystring | headers).
+
 ```js
 const fastify = Fastify({
   schemaErrorFormatter: (errors, dataVar) => {
     // ... my formatting logic 
     return new Error(myErrorMessage)
   }
+})
+
+// or
+fastify.setSchemaErrorFormatter(function (errors, dataVar) {
+  this.log.error({ err: errors }, 'Validation failed')
+  // ... my formatting logic 
+  return new Error(myErrorMessage)
 })
 ```
 

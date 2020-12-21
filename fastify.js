@@ -36,8 +36,8 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
+const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication } = require('./lib/hooks')
-const { Schemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -153,7 +153,7 @@ function fastify (options) {
   const { server, listen } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const schemas = new Schemas()
+  const schemaController = new SchemaController()
 
   // Public API
   const fastify = {
@@ -170,7 +170,7 @@ function fastify (options) {
     [kLogLevel]: '',
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
-    [kSchemas]: schemas,
+    [kSchemas]: schemaController,
     [kValidatorCompiler]: null,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: defaultErrorHandler,
@@ -224,8 +224,8 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
-    getSchema: schemas.getSchema.bind(schemas),
-    getSchemas: schemas.getSchemas.bind(schemas),
+    getSchema: schemaController.getSchema.bind(schemaController),
+    getSchemas: schemaController.getSchemas.bind(schemaController),
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
     setReplySerializer: setReplySerializer,

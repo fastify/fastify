@@ -38,7 +38,7 @@ test('The schemas should be added to an internal storage', t => {
   const fastify = Fastify()
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.deepEqual(fastify[kSchemas].store, { id: schema })
+  t.deepEqual(fastify[kSchemas].schemaBucket.store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {

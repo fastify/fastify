@@ -404,7 +404,7 @@ test('test log stream', t => {
   })
 })
 
-test('Should register a versioned route with custome versioning strategy', t => {
+test('Should register a versioned route with custom versioning strategy', t => {
   t.plan(8)
 
   const versioning = {

@@ -10,7 +10,7 @@ The type system was changed in Fastify version 3. The new type system introduces
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more information. We encourage users to send pull requests to improve typings support.
 
-🚨 Don't foget to install `@types/node`
+🚨 Don't forget to install `@types/node`
 
 ## Learn By Example
 
@@ -985,7 +985,7 @@ This interface is passed to instance of FastifyError.
 
 #### Hooks
 
-##### fastify.onRequestHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.onRequestHookHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L17)
 
@@ -993,7 +993,7 @@ This interface is passed to instance of FastifyError.
 
 Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
 
-##### fastify.preParsingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.preParsingHookHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L35)
 

@@ -737,7 +737,7 @@ Name of the current plugin. There are three ways to define a name (in order).
 2. If you `module.exports` a plugin the filename is used.
 3. If you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
 
-*Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to indentify the root cause when you deal with many plugins.
+*Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to identify the root cause when you deal with many plugins.
 
 Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
 

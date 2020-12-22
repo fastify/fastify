@@ -32,7 +32,7 @@ They are split into the following teams:
 | `@fastify/benchmarks`   |  Build and maintain our benchmarks suite  |  `benchmarks` |
 | `@fastify/docs-chinese`   |  Translate the Fastify documentation in Chinese  |  `docs-chinese` |
 
-Every memeber of the org is also part of `@fastify/fastify`.
+Every member of the org is also part of `@fastify/fastify`.
 
 Collaborators have:
 

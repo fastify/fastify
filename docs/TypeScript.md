@@ -229,7 +229,7 @@ In the last example we used interfaces to define the types for the request query
    ```
    Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
 
-Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documenation for more info.
+Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
 
 Some additional notes:
 - Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!

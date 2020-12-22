@@ -530,7 +530,7 @@ test('preHandler respond with a stream', t => {
   })
 
   // we are calling `reply.send` inside the `preHandler` hook with a stream,
-  // this triggers the `onSend` hook event if `preHanlder` has not yet finished
+  // this triggers the `onSend` hook event if `preHandler` has not yet finished
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {

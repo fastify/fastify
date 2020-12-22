@@ -378,7 +378,7 @@ test('async await plugin', async t => {
   }
 })
 
-test('does not call reply.send() twice if 204 reponse is already sent', t => {
+test('does not call reply.send() twice if 204 response is already sent', t => {
   t.plan(2)
 
   const fastify = Fastify()

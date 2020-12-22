@@ -5,7 +5,7 @@ import { RouteGenericInterface } from './route'
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void
 
 /**
- * Body parser method that operatoes on request body
+ * Body parser method that operators on request body
  */
 export type FastifyBodyParser<
   RawBody extends string | Buffer,

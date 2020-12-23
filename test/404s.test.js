@@ -1702,7 +1702,7 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
 })
 
 test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
-  t.test('Dyamic route', t => {
+  t.test('Dynamic route', t => {
     t.plan(3)
     const fastify = Fastify()
     fastify.get('/hello/:id', () => t.fail('we should not be here'))

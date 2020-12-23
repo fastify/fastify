@@ -14,7 +14,7 @@ import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 
 /**
- * Fastify factor function for the standard fastify http, https, or http2 server instance.
+ * Fastify factory function for the standard fastify http, https, or http2 server instance.
  *
  * The default function utilizes http
  *

@@ -6,7 +6,7 @@ const http2 = require('http2')
 const semver = require('semver')
 const { promisify } = require('util')
 const connect = promisify(http2.connect)
-const once = require('events.once')
+const { once } = require('events')
 
 t.test('http/2 request while fastify closing', t => {
   let fastify

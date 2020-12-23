@@ -38,7 +38,7 @@ Node.js v10 LTS (10.16.0) or later.
 
 Create a folder and make it your current working directory:
 
-```
+```sh
 mkdir my-app
 cd my-app
 ```
@@ -51,7 +51,7 @@ npm init fastify
 
 Install dependencies:
 
-```js
+```sh
 npm install
 ```
 
@@ -76,11 +76,11 @@ which in turn uses the generate functionality of [Fastify CLI](https://github.co
 If installing in an existing project, then Fastify can be installed into the project as a dependency:
 
 Install with npm:
-```
+```sh
 npm i fastify --save
 ```
 Install with yarn:
-```
+```sh
 yarn add fastify
 ```
 
@@ -232,6 +232,7 @@ Team members are listed in alphabetical order.
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Vincent Le Goff__](https://github.com/zekth)
+* [__Salman Mitha__](https://github.com/salmanm), <https://www.npmjs.com/~salmanm>
 * [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 

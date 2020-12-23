@@ -43,8 +43,8 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
-function invalidReplySerialzer (payload: number, statusCode: string) {}
-expectError(server.setReplySerializer(invalidReplySerialzer))
+function invalidReplySerializer (payload: number, statusCode: string) {}
+expectError(server.setReplySerializer(invalidReplySerializer))
 
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))

@@ -9,6 +9,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer) to serialize to output according to `Accept` header.
 - [`fastify-auth`](https://github.com/fastify/fastify-auth) Run multiple auth functions in Fastify.
+- [`fastify-awilix`](https://github.com/fastify/fastify-awilix) Dependency injection support for fastify, based on [awilix](https://github.com/jeffijoe/awilix).
 - [`fastify-bankai`](https://github.com/fastify/fastify-bankai) [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify.
 - [`fastify-basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic auth plugin for Fastify.
 - [`fastify-bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer auth plugin for Fastify.

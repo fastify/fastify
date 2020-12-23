@@ -241,7 +241,7 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 <a name="validate-data"></a>
 ### Validate your data
 Data validation is extremely important and a core concept of the framework.<br>
-To validate incoming requests, Fastify uses [JSON Schema](http://json-schema.org/).
+To validate incoming requests, Fastify uses [JSON Schema](https://json-schema.org/).
 Let's look at an example demonstrating validation for routes:
 ```js
 const opts = {

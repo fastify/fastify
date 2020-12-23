@@ -62,7 +62,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to send HTTP requests via [axios](https://github.com/axios/axios).
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for development servers which require babel transformations of JavaScript sources.
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
-- [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](http://bookshelfjs.org/) orm support.
+- [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](https://bookshelfjs.org/) orm support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest) Casbin support for Fastify based on a RESTful model.
@@ -79,7 +79,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-explorer`](https://github.com/Eomm/fastify-explorer) Get control of your decorators across all the encapsulated contexts
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest authentication plugin for Fastify, with built-in support for Single sign-on (and great documentation)
 - [`fastify-favicon`](https://github.com/smartiniOnGitHub/fastify-favicon) Fastify plugin to serve default favicon.
-- [`fastify-feature-flags`](https://gitlab.com/m03geek/fastify-feature-flags) Fastify feature flags plugin with multiple providers support (e.g. env, [config](http://lorenwest.github.io/node-config/), [unleash](https://unleash.github.io/)).
+- [`fastify-feature-flags`](https://gitlab.com/m03geek/fastify-feature-flags) Fastify feature flags plugin with multiple providers support (e.g. env, [config](https://lorenwest.github.io/node-config/), [unleash](https://unleash.github.io/)).
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload) Fastify plugin for uploading files.
 - [`fastify-firebase`](https://github.com/now-ims/fastify-firebase) Fastify plugin for [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) to Fastify so you can easy use Firebase Auth, Firestore, Cloud Storage, Cloud Messaging, and more.
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
@@ -113,10 +113,10 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api) Fastify plugin to create REST API methods based on Mongoose MongoDB models.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose) Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin with support for Models.
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
-- [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](http://nats.io) client across Fastify.
+- [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](https://nats.io) client across Fastify.
 - [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties) Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to eliminate thrown errors for `/favicon.ico` requests.
-- [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](http://nodemailer.com) transporter across Fastify.
+- [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](https://nodemailer.com) transporter across Fastify.
 - [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply) Plugin to normalize the request and reply to the Express version 4.x request and response, which allows use of middleware, like swagger-stats, that was originally written for Express.
 - [`fastify-now`](https://github.com/yonathan06/fastify-now) Structure your endpoints in a folder and load them dynamically with fastify
 - [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+ documentation from routes schemas for Fastify.

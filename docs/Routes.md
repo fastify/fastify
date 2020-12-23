@@ -32,7 +32,7 @@ fastify.route(options)
 * `url`: the path of the url to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
-  [JSON Schema](http://json-schema.org/) format, check [here](Validation-and-Serialization.md) for more info.
+  [JSON Schema](https://json-schema.org/) format, check [here](Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST or a
     PUT.
@@ -59,7 +59,7 @@ They need to be in
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
-* `version`: a [semver](http://semver.org/) compatible string that defined the version of the endpoint. [Example](Routes.md#version).
+* `version`: a [semver](https://semver.org/) compatible string that defined the version of the endpoint. [Example](Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
   * `slash`: Will register only `/prefix/`.
@@ -406,7 +406,7 @@ fastify.listen(3000)
 ### Version
 
 #### Default
-If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
+If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](https://semver.org/) specification.<br/>
 Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
 

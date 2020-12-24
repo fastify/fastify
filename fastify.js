@@ -323,7 +323,7 @@ function fastify (options) {
       use: 'register'
     }
   })
-  // Override to allow the plugin incapsulation
+  // Override to allow the plugin encapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function

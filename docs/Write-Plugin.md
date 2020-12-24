@@ -33,7 +33,7 @@ Always put an example file in your repository. Examples are very helpful for use
 It is extremely important that a plugin is thoroughly tested to verify that is working properly.<br>
 A plugin without tests will not be accepted to the ecosystem list. A lack of tests does not inspire trust nor guarantee that the code will continue to work among different versions of its dependencies.
 
-We do not enforce any testing library. We use [`tap`](http://www.node-tap.org/) since it offers out of the box parallel testing and code coverage, but it is up to you to choose your library of preference.
+We do not enforce any testing library. We use [`tap`](https://www.node-tap.org/) since it offers out of the box parallel testing and code coverage, but it is up to you to choose your library of preference.
 
 ## Code Linter
 It is not mandatory, but we highly recommend you use a code linter in your plugin. It will ensure a consistent code style and help you to avoid many errors.

@@ -219,7 +219,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
   })
 })
 
-test('Attached validation error should take precendence over setErrorHandler', t => {
+test('Attached validation error should take precedence over setErrorHandler', t => {
   t.plan(3)
 
   const fastify = Fastify()

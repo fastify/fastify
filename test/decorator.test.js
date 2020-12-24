@@ -17,7 +17,7 @@ test('server methods should exist', t => {
   t.ok(fastify.hasDecorator)
 })
 
-test('server methods should be incapsulated via .register', t => {
+test('server methods should be encapsulated via .register', t => {
   t.plan(2)
   const fastify = Fastify()
 

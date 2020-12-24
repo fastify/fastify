@@ -42,7 +42,7 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustments:
 
 1. A release can be published by any member.
-1. The plugin version must follow the [semver](http://semver.org/) specification.
+1. The plugin version must follow the [semver](https://semver.org/) specification.
 1. The Node.js compatibility must match with the Fastify's master branch.
 1. The new release must have the changelog information stored in the GitHub release.
      For this scope we suggest to adopt a tool like [`releasify`](https://github.com/fastify/releasify) to archive this.

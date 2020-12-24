@@ -1,4 +1,4 @@
-import fastify, { FastifyError, FastifyInstance } from '../../fastify'
+import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 const server = fastify()
@@ -28,6 +28,8 @@ expectAssignable<FastifyInstance>(
   })
 )
 
+expectType<ValidationResult[] | undefined>(FastifyError().validation)
+
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 
@@ -43,8 +45,8 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
-function invalidReplySerialzer (payload: number, statusCode: string) {}
-expectError(server.setReplySerializer(invalidReplySerialzer))
+function invalidReplySerializer (payload: number, statusCode: string) {}
+expectError(server.setReplySerializer(invalidReplySerializer))
 
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))

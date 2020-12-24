@@ -1,4 +1,4 @@
-import fastify, { FastifyError, FastifyInstance } from '../../fastify'
+import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 const server = fastify()
@@ -27,6 +27,8 @@ expectAssignable<FastifyInstance>(
     expectType<FastifyError>(error)
   })
 )
+
+expectType<ValidationResult[] | undefined>(FastifyError().validation)
 
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)

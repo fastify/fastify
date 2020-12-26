@@ -18,6 +18,7 @@
   - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
+  - [.hijack](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -250,6 +251,13 @@ app.get('/', (req, reply) => {
 ```
 
 If the handler rejects, the error will be logged.
+
+<a name="hijack"></a>
+### .hijack()
+Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
+
+To achieve this, fastify provides the method `reply.hijack()` that can be called at any point during the request lifecycle, and allows you to prevent fastify from sending the response, and from running the `preSerialization`, `onSend`, `onError`, and `onResponse` hooks.
+
 
 <a name="send"></a>
 ### .send(data)

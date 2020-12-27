@@ -15,7 +15,7 @@ test('should fail if defaultRoute is not a function', t => {
   try {
     fastify.setDefaultRoute(defaultRoute)
   } catch (error) {
-    t.equal(error.code, 'ERR_ASSERTION')
+    t.equal(error.code, 'FST_ERR_DEFAULT_ROUTE_INVALID_TYPE')
   }
 })
 

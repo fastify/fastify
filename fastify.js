@@ -153,7 +153,7 @@ function fastify (options) {
   const { server, listen } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const schemaController = new SchemaController()
+  const schemaController = SchemaController.buildSchemaController()
 
   // Public API
   const fastify = {
@@ -340,7 +340,6 @@ function fastify (options) {
   fastify.setNotFoundHandler()
   fourOhFour.arrange404(fastify)
 
-  schemaController.setup()
   router.setup(options, {
     avvio,
     fourOhFour,

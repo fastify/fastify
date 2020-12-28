@@ -4,9 +4,11 @@ const t = require('tap')
 const Fastify = require('../..')
 const http2 = require('http2')
 const semver = require('semver')
+const fs = require('fs')
+const path = require('path')
 const { promisify } = require('util')
 const connect = promisify(http2.connect)
-const once = require('events.once')
+const { once } = require('events')
 
 t.test('http/2 request while fastify closing', t => {
   let fastify
@@ -108,6 +110,26 @@ t.test('http/2 closes successfully with async await', { skip: semver.lt(process.
   const fastify = Fastify({
     http2SessionTimeout: 100,
     http2: true
+  })
+
+  await fastify.listen(0)
+
+  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const session = await connect(url)
+  // An error might or might not happen, as it's OS dependent.
+  session.on('error', () => {})
+  await fastify.close()
+})
+
+// Skipped because there is likely a bug on Node 8.
+t.test('https/2 closes successfully with async await', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+  const fastify = Fastify({
+    http2SessionTimeout: 100,
+    http2: true,
+    https: {
+      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+    }
   })
 
   await fastify.listen(0)

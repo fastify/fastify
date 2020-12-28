@@ -450,12 +450,12 @@ test('The logger should accept custom serializer', t => {
       stream.once('data', line => {
         t.ok(line.req, 'req is defined')
         t.equal(line.msg, 'incoming request', 'message is set')
-        t.deepEqual(line.req, { url: '/custom' }, 'custom req serialiser is use')
+        t.deepEqual(line.req, { url: '/custom' }, 'custom req serializer is use')
 
         stream.once('data', line => {
           t.ok(line.res, 'res is defined')
           t.equal(line.msg, 'kaboom', 'message is set')
-          t.deepEqual(line.res, { statusCode: 500 }, 'default res serialiser is use')
+          t.deepEqual(line.res, { statusCode: 500 }, 'default res serializer is use')
         })
       })
     })

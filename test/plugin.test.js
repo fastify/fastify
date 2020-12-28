@@ -41,7 +41,7 @@ test('plugin metadata - ignore prefix', t => {
   }
 })
 
-test('fastify.register with fastify-plugin should not incapsulate his code', t => {
+test('fastify.register with fastify-plugin should not encapsulate his code', t => {
   t.plan(10)
   const fastify = Fastify()
 
@@ -483,7 +483,7 @@ test('approximate a plugin name also when fastify-plugin has no meta data', t =>
   })
 })
 
-test('plugin incapsulation', t => {
+test('plugin encapsulation', t => {
   t.plan(10)
   const fastify = Fastify()
 

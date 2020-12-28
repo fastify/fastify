@@ -10,7 +10,7 @@ The type system was changed in Fastify version 3. The new type system introduces
 
 > Plugins may or may not include typings. See [Plugins](#plugins) for more information. We encourage users to send pull requests to improve typings support.
 
-🚨 Don't foget to install `@types/node`
+🚨 Don't forget to install `@types/node`
 
 ## Learn By Example
 
@@ -229,7 +229,7 @@ In the last example we used interfaces to define the types for the request query
    ```
    Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
 
-Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documenation for more info.
+Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
 
 Some additional notes:
 - Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!
@@ -588,7 +588,7 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](http://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](Logging.md) documentation for more info.
+Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](Logging.md) documentation for more info.
 
 To use an external instance of Pino, add `@types/pino` to devDependencies and pass the instance to `logger` field:
 
@@ -862,7 +862,7 @@ Check out the [Specifying Logger Types](#example-5-specifying-logger-types) exam
 
 [src](../types/logger.d.ts#L17)
 
-An interface definition for the internal Fastify logger. It is emulative of the [Pino.js](http://getpino.io/#/) logger. When enabled through server options, use it following the general [logger](Logging.md) documentation.
+An interface definition for the internal Fastify logger. It is emulative of the [Pino.js](https://getpino.io/#/) logger. When enabled through server options, use it following the general [logger](Logging.md) documentation.
 
 ##### fastify.FastifyLogFn
 
@@ -985,7 +985,7 @@ This interface is passed to instance of FastifyError.
 
 #### Hooks
 
-##### fastify.onRequestHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.onRequestHookHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L17)
 
@@ -993,7 +993,7 @@ This interface is passed to instance of FastifyError.
 
 Notice: in the `onRequest` hook, request.body will always be null, because the body parsing happens before the `preHandler` hook.
 
-##### fastify.preParsingHookhandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
+##### fastify.preParsingHookHandler<[RawServer][RawServerGeneric], [RawRequest][RawRequestGeneric], [RawReply][RawReplyGeneric], [RequestGeneric][FastifyRequestGenericInterface], [ContextConfig][ContextConfigGeneric]>(request: [FastifyRequest][FastifyRequest], reply: [FastifyReply][FastifyReply], done: (err?: [FastifyError][FastifyError]) => void): Promise\<unknown\> | void
 
 [src](../types/hooks.d.ts#L35)
 

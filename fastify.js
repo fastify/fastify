@@ -92,6 +92,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -125,6 +126,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.exposeHeadRoutes = exposeHeadRoutes
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -315,7 +317,7 @@ function fastify (options) {
       use: 'register'
     }
   })
-  // Override to allow the plugin incapsulation
+  // Override to allow the plugin encapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function

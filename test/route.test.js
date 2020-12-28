@@ -1,10 +1,13 @@
 'use strict'
 
+const stream = require('stream')
+const split = require('split2')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
 const joi = require('@hapi/joi')
 const Fastify = require('..')
+const proxyquire = require('proxyquire')
 
 test('route', t => {
   t.plan(9)
@@ -544,4 +547,460 @@ test('throws when route-level error handler is not a function', t => {
   } catch (err) {
     t.is(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
+})
+
+test('Creates a HEAD route for each GET one', t => {
+  t.plan(8)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('Will not create a HEAD route that is not GET', t => {
+  t.plan(11)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send()
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    path: '/something',
+    handler: (req, reply) => {
+      reply.send({ look: 'It is something!' })
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], undefined)
+    t.strictEqual(res.headers['content-length'], '0')
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/something'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('HEAD route should handle properly each response type', t => {
+  t.plan(25)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  const resString = 'Found me!'
+  const resJSON = { here: 'is Johnny' }
+  const resBuffer = Buffer.from('I am a buffer!')
+  const resStream = stream.Readable.from('I am a stream!')
+
+  fastify.route({
+    method: 'GET',
+    path: '/json',
+    handler: (req, reply) => {
+      reply.send(resJSON)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/string',
+    handler: (req, reply) => {
+      reply.send(resString)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/buffer',
+    handler: (req, reply) => {
+      reply.send(resBuffer)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/buffer-with-content-type',
+    handler: (req, reply) => {
+      reply.headers({ 'content-type': 'image/jpeg' })
+      reply.send(resBuffer)
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/stream',
+    handler: (req, reply) => {
+      return resStream
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/json'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/string'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/buffer'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/buffer-with-content-type'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'image/jpeg')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/stream'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], undefined)
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('HEAD route should respect custom onSend handlers', t => {
+  t.plan(6)
+
+  let counter = 0
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  const customOnSend = (res, reply, payload, done) => {
+    counter = counter + 1
+    done(null, payload)
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send(resBuffer)
+    },
+    onSend: [customOnSend, customOnSend]
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+    t.strictEqual(counter, 2)
+  })
+})
+
+test("HEAD route should handle stream.on('error')", t => {
+  t.plan(6)
+
+  const resStream = stream.Readable.from('Hello with error!')
+  const logStream = split(JSON.parse)
+  const expectedError = new Error('Hello!')
+  const fastify = Fastify({
+    logger: {
+      stream: logStream,
+      level: 'error'
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    exposeHeadRoute: true,
+    handler: (req, reply) => {
+      process.nextTick(() => resStream.emit('error', expectedError))
+      return resStream
+    }
+  })
+
+  logStream.once('data', line => {
+    const { message, stack } = expectedError
+    t.deepEquals(line.err, { type: 'Error', message, stack })
+    t.equal(line.msg, 'Error on Stream found for HEAD route')
+    t.equal(line.level, 50)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+  })
+})
+
+test('HEAD route should not be exposed by default', t => {
+  t.plan(7)
+
+  const resStream = stream.Readable.from('Hello with error!')
+  const resJson = { hello: 'world' }
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/without-flag',
+    handler: (req, reply) => {
+      return resStream
+    }
+  })
+
+  fastify.route({
+    exposeHeadRoute: true,
+    method: 'GET',
+    path: '/with-flag',
+    handler: (req, reply) => {
+      return resJson
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/without-flag'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/with-flag'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
+  t.plan(7)
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const resJson = { hello: 'world' }
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.route({
+    exposeHeadRoute: true,
+    method: 'GET',
+    path: '/one',
+    handler: (req, reply) => {
+      return resBuffer
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/two',
+    handler: (req, reply) => {
+      return resJson
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/one'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/two'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (global)', t => {
+  t.plan(6)
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({
+    exposeHeadRoutes: true
+  })
+
+  fastify.route({
+    method: 'HEAD',
+    path: '/one',
+    handler: (req, reply) => {
+      reply.header('content-type', 'application/pdf')
+      reply.header('content-length', `${resBuffer.byteLength}`)
+      reply.header('x-custom-header', 'some-custom-header')
+      reply.send()
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/one',
+    handler: (req, reply) => {
+      return resBuffer
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/one'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes (route)', t => {
+  t.plan(7)
+
+  function onWarning (code) {
+    t.strictEqual(code, 'FSTDEP007')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const route = proxyquire('../lib/route', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/route.js': route })()
+
+  const resBuffer = Buffer.from('I am a coffee!')
+
+  fastify.route({
+    method: 'HEAD',
+    path: '/one',
+    handler: (req, reply) => {
+      reply.header('content-type', 'application/pdf')
+      reply.header('content-length', `${resBuffer.byteLength}`)
+      reply.header('x-custom-header', 'some-custom-header')
+      reply.send()
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    exposeHeadRoute: true,
+    path: '/one',
+    handler: (req, reply) => {
+      return resBuffer
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/one'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/pdf')
+    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
+    t.strictEqual(res.body, '')
+  })
 })

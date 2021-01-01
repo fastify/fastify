@@ -1,6 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
+const AJV = require('ajv')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 
@@ -219,5 +220,68 @@ test('Should handle $patch keywords in body', t => {
       t.error(err)
       t.equals(res.statusCode, 200)
     })
+  })
+})
+
+test("serializer read validator's schemas", t => {
+  t.plan(4)
+  const ajvInstance = new AJV()
+
+  const baseSchema = {
+    $id: 'http://example.com/schemas/base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'http://example.com/schemas/ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'http://example.com/schemas/base#/definitions/hello' }
+    }
+  }
+
+  ajvInstance.addSchema(baseSchema)
+  ajvInstance.addSchema(refSchema)
+
+  const fastify = Fastify({
+    schemaController: {
+      bucket: function factory (storeInit) {
+        t.notOk(storeInit, 'is is always empty because fastify.addSchema is not called')
+        return {
+          hasNewSchemas () { return false },
+          getSchemas () {
+            return {
+              [baseSchema.$id]: ajvInstance.getSchema(baseSchema.$id).schema,
+              [refSchema.$id]: ajvInstance.getSchema(refSchema.$id).schema
+            }
+          }
+        }
+      }
+    }
+  })
+
+  fastify.setValidatorCompiler(function ({ schema }) {
+    return ajvInstance.compile(schema)
+  })
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': ajvInstance.getSchema('http://example.com/schemas/ref').schema
+      }
+    },
+    handler (req, res) { res.send({ hello: 'world', evict: 'this' }) }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(res.json(), { hello: 'world' })
   })
 })

@@ -122,6 +122,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+ documentation from routes schemas for Fastify.
 - [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes) Plugin to cherry pick classes from objectionjs ORM.
+- [`fastify-openapi-docs`](https://github.com/ShogunPanda/fastify-openapi-docs) A fastify plugin that generates OpenAPI spec automatically.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue) Glue for Open Api specifications in Fastify, autogenerates routes based on an Open Api Specification
 - [`fastify-opentelemetry`](https://github.com/autotelic/fastify-opentelemetry) A Fastify plugin that uses the [OpenTelemetry API](https://github.com/open-telemetry/opentelemetry-js/tree/master/packages/opentelemetry-api) to provide request tracing.
 - [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a Fastify server instance.
@@ -130,6 +131,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo) Fastify plugin for memoize responses by expressive settings.
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile) Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in a Fastify project.
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A fastify plugin that uses [prettier](https://github.com/prettier/prettier) under the hood to beautify outgoing responses and/or other things in the fastify server.
+- [`fastify-print-routes`](https://github.com/ShogunPanda/fastify-print-routes) A fastify plugin that prints all available routes.
 - [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the `request.rawBody` field.

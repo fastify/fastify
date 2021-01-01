@@ -256,7 +256,7 @@ If the handler rejects, the error will be logged.
 ### .hijack()
 Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
 
-To achieve this, fastify provides the method `reply.hijack()` that can be called at any point during the request lifecycle, and allows you to prevent fastify from sending the response, and from running the `preSerialization`, `onSend`, `onError`, and `onResponse` hooks.
+To achieve this, fastify provides the method `reply.hijack()` that can be called during the request lifecycle (starting from the route handler), and allows you to prevent fastify from sending the response, and from running the `preSerialization`, `onSend`, `onError`, `onTimeout`, and `onResponse` hooks.
 
 
 <a name="send"></a>

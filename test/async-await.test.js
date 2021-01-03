@@ -618,6 +618,34 @@ test('customErrorHandler support without throwing', t => {
   })
 })
 
+// See https://github.com/fastify/fastify/issues/2653
+test('customErrorHandler only called if reply not already sent', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async (req, reply) => {
+    await reply.send('success')
+    const error = new Error('ouch')
+    error.statusCode = 400
+    throw error
+  })
+
+  fastify.setErrorHandler(t.fail.bind(t, 'should not be called'))
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(
+      'success',
+      res.payload
+    )
+  })
+})
+
 test('await self', async t => {
   const app = Fastify()
   t.is(await app, app)

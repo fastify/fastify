@@ -21,7 +21,7 @@ In the above figure, there are several entities:
         - Three _child plugins_
 
 Every _child context_ and _grandchild context_ has access to the _root plugins_.
-Within each _child context_ the _granchild contexts_ have access to the
+Within each _child context_ the _grandchild contexts_ have access to the
 _child plugins_ registered within the containing _child context_, but the
 containing _child context_ **does not** have access to the _child plugins_
 registered within its _grandchild context_.

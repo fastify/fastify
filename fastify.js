@@ -45,6 +45,7 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
+const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
@@ -132,16 +133,34 @@ function fastify (options) {
 
   const initialConfig = getSecuredInitialConfig(options)
 
+  let constraints = options.constraints
+  if (options.versioning) {
+    warning.emit('FSTDEP009')
+    constraints = {
+      ...constraints,
+      version: {
+        name: 'version',
+        mustMatchWhenDerived: true,
+        storage: options.versioning.storage,
+        deriveConstraint: options.versioning.deriveVersion,
+        validate (value) {
+          if (typeof value !== 'string') {
+            throw new Error('Version constraint should be a string.')
+          }
+        }
+      }
+    }
+  }
+
   // Default router
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
       onBadUrl: onBadUrl,
+      constraints: constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive,
-      constraints: options.constraints,
-      versioning: options.versioning
+      caseSensitive: options.caseSensitive
     }
   })
 

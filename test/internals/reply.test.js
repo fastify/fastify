@@ -106,6 +106,31 @@ test('reply.serializer should set a custom serializer', t => {
   t.equal(reply[kReplySerializer], 'serializer')
 })
 
+test('reply.serializer should support running preSerialization hooks', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.addHook('preSerialization', async (request, reply, payload) => { t.ok('called', 'preSerialization') })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply
+        .type('application/json')
+        .serializer(JSON.stringify)
+        .send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+})
+
 test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }

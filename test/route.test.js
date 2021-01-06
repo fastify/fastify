@@ -217,6 +217,37 @@ test('same route definition object on multiple prefixes', async t => {
   await fastify.ready()
 })
 
+test('mutating the route definition in onRoute hooks shouldnt interfere with afterRouteAdded() being called twice', async t => {
+  // Since afterRouteAdded is called twice in this test, we have to plan 2 asserts for each assert statement inside a hook
+  t.plan(5)
+
+  const routeObject = {
+    handler: () => {},
+    method: 'GET',
+    url: '/'
+  }
+
+  const fastify = Fastify()
+
+  fastify.register(async function (f) {
+    f.addHook('onRoute', (routeOptions) => {
+      // We make sure that the second time afterRouteAdded() is called, we receive a new copy of the original routeObject
+      t.is(routeOptions.method, 'GET')
+      routeOptions.method = 'POST'
+    })
+    f.addHook('onRoute', (routeOptions) => {
+      // We make sure that hooks receive the object mutated by previous onRoute executions
+      t.is(routeOptions.method, 'POST')
+    })
+
+    f.route(routeObject)
+  }, { prefix: '/v1' })
+
+  await fastify.ready()
+  // The original object shouldn't be mutated
+  t.is(routeObject.method, 'GET')
+})
+
 test('path can be specified in place of uri', t => {
   t.plan(3)
   const fastify = Fastify()

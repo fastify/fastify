@@ -562,16 +562,16 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", igno
   })
 })
 
-test('calls onRoute with prefixing: true when relevant', async t => {
+test('calls onRoute only once when prefixing', async t => {
   t.plan(1)
   const fastify = Fastify({
     ignoreTrailingSlash: false
   })
 
-  const arr = []
+  let onRouteCalled = 0
   fastify.register(function (fastify, opts, next) {
-    fastify.addHook('onRoute', (routeOptions) => {
-      arr.push(routeOptions.prefixing)
+    fastify.addHook('onRoute', () => {
+      onRouteCalled++
     })
 
     fastify.route({
@@ -588,5 +588,5 @@ test('calls onRoute with prefixing: true when relevant', async t => {
 
   await fastify.ready()
 
-  t.deepEqual(arr, [false, true])
+  t.deepEqual(onRouteCalled, 1)
 })

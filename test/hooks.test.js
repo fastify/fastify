@@ -673,7 +673,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
 
   const fastify = Fastify({ ignoreTrailingSlash: false })
 
-  // a plugin that patches route options like fastify-compress
+  // a plugin that patches route options, similar to fastify-compress
   fastify.register(fp(function myPlugin (instance, opts, next) {
     function patchTheRoute () {
       routePatched++
@@ -681,7 +681,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
 
     instance.addHook('onRoute', function (routeOptions) {
       onRouteCalled++
-      if (!routeOptions.prefixing) patchTheRoute(routeOptions)
+      patchTheRoute(routeOptions)
     })
 
     next()
@@ -702,8 +702,8 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.is(onRouteCalled, 2) // onRoute hook was correctly called twice
-    t.is(routePatched, 1) // but our plugin only acted once and avoided redundaunt route patching
+    t.is(onRouteCalled, 1) // onRoute hook was called once
+    t.is(routePatched, 1) // and plugin acted once and avoided redundaunt route patching
   })
 })
 

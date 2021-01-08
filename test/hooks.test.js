@@ -664,6 +664,49 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
+// issue ref https://github.com/fastify/fastify-compress/issues/140
+test('onRoute hook should be called once when prefixTrailingSlash', t => {
+  t.plan(3)
+
+  let onRouteCalled = 0
+  let routePatched = 0
+
+  const fastify = Fastify({ ignoreTrailingSlash: false })
+
+  // a plugin that patches route options like fastify-compress
+  fastify.register(fp(function myPlugin (instance, opts, next) {
+    function patchTheRoute () {
+      routePatched++
+    }
+
+    instance.addHook('onRoute', function (routeOptions) {
+      onRouteCalled++
+      if (!routeOptions.prefixing) patchTheRoute(routeOptions)
+    })
+
+    next()
+  }))
+
+  fastify.register(function routes (instance, opts, next) {
+    instance.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(onRouteCalled, 2) // onRoute hook was correctly called twice
+    t.is(routePatched, 1) // but our plugin only acted once and avoided redundaunt route patching
+  })
+})
+
 test('onRoute hook should able to change the route url', t => {
   t.plan(5)
 

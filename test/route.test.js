@@ -58,7 +58,7 @@ test('route', t => {
   test('invalid handler attribute - route', t => {
     t.plan(1)
     try {
-      fastify.get('/', { handler: 'not a function' }, () => {})
+      fastify.get('/', { handler: 'not a function' }, () => { })
       t.fail()
     } catch (e) {
       t.pass()
@@ -172,7 +172,7 @@ test('invalid schema - route', t => {
 
   const fastify = Fastify()
   fastify.route({
-    handler: () => {},
+    handler: () => { },
     method: 'GET',
     url: '/invalid',
     schema: {
@@ -194,7 +194,7 @@ test('same route definition object on multiple prefixes', async t => {
   t.plan(2)
 
   const routeObject = {
-    handler: () => {},
+    handler: () => { },
     method: 'GET',
     url: '/simple'
   }
@@ -217,35 +217,57 @@ test('same route definition object on multiple prefixes', async t => {
   await fastify.ready()
 })
 
-test('mutating the route definition in onRoute hooks shouldnt interfere with afterRouteAdded() being called twice', async t => {
+test('mutating the route definition in onRoute hooks shouldnt interfere with afterRouteAdded() being called twice', t => {
   // Since afterRouteAdded is called twice in this test, we have to plan 2 asserts for each assert statement inside a hook
-  t.plan(5)
+  t.plan(12)
 
   const routeObject = {
-    handler: () => {},
-    method: 'GET',
+    handler: (req, reply) => { reply.send('hi from handler') },
+    method: 'POST',
     url: '/'
   }
 
   const fastify = Fastify()
+  t.tearDown(() => fastify.close())
+
+  let onRequestCallCounter = 0
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
       // We make sure that the second time afterRouteAdded() is called, we receive a new copy of the original routeObject
-      t.is(routeOptions.method, 'GET')
-      routeOptions.method = 'POST'
+      t.is(routeOptions.method, 'POST')
+      t.is(routeOptions.onRequest, undefined)
+
+      routeOptions.method = 'GET'
+      routeOptions.onRequest = [onRequest]
+
+      function onRequest (req, reply, next) {
+        onRequestCallCounter++
+        next()
+      }
     })
     f.addHook('onRoute', (routeOptions) => {
-      // We make sure that hooks receive the object mutated by previous onRoute executions
-      t.is(routeOptions.method, 'POST')
+      // We make sure that this hook receives the object mutated by the previous onRoute hook executed
+      t.is(routeOptions.method, 'GET')
+      t.is(routeOptions.onRequest.length, 1)
     })
 
     f.route(routeObject)
   }, { prefix: '/v1' })
 
-  await fastify.ready()
-  // The original object shouldn't be mutated
-  t.is(routeObject.method, 'GET')
+  fastify.listen(0, err => {
+    t.error(err)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/v1/'
+    }, (err, response, body) => {
+      t.error(err)
+      // The original object shouldn't be mutated
+      t.is(routeObject.method, 'POST')
+      // The onRequest hook was added & called once
+      t.equal(onRequestCallCounter, 1)
+    })
+  })
 })
 
 test('path can be specified in place of uri', t => {

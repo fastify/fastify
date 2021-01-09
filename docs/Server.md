@@ -328,6 +328,13 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="exposeHeadRoutes"></a>
+### `exposeHeadRoutes`
+
+Automatically creates a sibling `HEAD` route for each `GET` route defined. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
+
++ Default: `false`
+
 <a name="versioning"></a>
 ### `versioning`
 

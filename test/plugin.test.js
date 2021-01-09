@@ -725,6 +725,61 @@ test('plugin metadata - decorators', t => {
   }
 })
 
+test('plugin metadata - decorators - should throw', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.decorate('plugin1', true)
+  fastify.decorateReply('plugin1', true)
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    decorators: {
+      fastify: ['plugin1'],
+      reply: ['plugin1'],
+      request: ['plugin1']
+    }
+  }
+
+  fastify.register(plugin)
+  fastify.ready((err) => {
+    t.equals(err.message, "The decorator 'plugin1' is not present in Request")
+  })
+
+  function plugin (instance, opts, next) {
+    instance.decorate('plugin', true)
+    next()
+  }
+})
+
+test('plugin metadata - decorators - should throw with plugin name', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.decorate('plugin1', true)
+  fastify.decorateReply('plugin1', true)
+
+  plugin[Symbol.for('skip-override')] = true
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'the-plugin',
+    decorators: {
+      fastify: ['plugin1'],
+      reply: ['plugin1'],
+      request: ['plugin1']
+    }
+  }
+
+  fastify.register(plugin)
+  fastify.ready((err) => {
+    t.equals(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
+  })
+
+  function plugin (instance, opts, next) {
+    instance.decorate('plugin', true)
+    next()
+  }
+})
+
 test('plugin metadata - dependencies', t => {
   t.plan(1)
   const fastify = Fastify()

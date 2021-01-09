@@ -9,7 +9,7 @@
 ![](https://github.com/fastify/fastify/workflows/website/badge.svg)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
 </div>
 
@@ -138,7 +138,7 @@ In a similar way, all Fastify **v2.x** related changes should be based on [**`br
 
 - **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 76+ thousand requests per second.
 - **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
-- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
+- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](https://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
 - **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
 - **Developer friendly:** the framework is built to be very expressive and help the developer in their daily use, without sacrificing performance and security.
 
@@ -258,7 +258,7 @@ We are a [Growth Project](https://github.com/openjs-foundation/cross-project-cou
 ## Acknowledgements
 
 This project is kindly sponsored by:
-- [nearForm](http://nearform.com)
+- [nearForm](https://nearform.com)
 
 Past Sponsors:
 - [LetzDoIt](http://www.letzdoitapp.com/)

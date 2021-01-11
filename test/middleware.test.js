@@ -41,20 +41,20 @@ test('Encapsulation works', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorate('use', () => true)
     t.strictEqual(instance.use(), true)
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     try {
       instance.use()
       t.fail('Should throw')
     } catch (err) {
       t.ok(err instanceof FST_ERR_MISSING_MIDDLEWARE)
     }
-    next()
+    done()
   })
 
   fastify.ready()

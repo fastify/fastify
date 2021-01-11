@@ -298,18 +298,18 @@ test('contentTypeParser should support encapsulation', t => {
   t.plan(6)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/jsoff', () => {})
     t.ok(instance.hasContentTypeParser('application/jsoff'))
 
-    instance.register((instance, opts, next) => {
+    instance.register((instance, opts, done) => {
       instance.addContentTypeParser('application/ffosj', () => {})
       t.ok(instance.hasContentTypeParser('application/jsoff'))
       t.ok(instance.hasContentTypeParser('application/ffosj'))
-      next()
+      done()
     })
 
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -323,7 +323,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.post('/', (req, reply) => {
       reply.send(req.body)
     })
@@ -334,7 +334,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
       })
     })
 
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -662,7 +662,7 @@ test('Can override the default json parser in a plugin', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/json', function (req, payload, done) {
       t.ok('called')
       jsonParser(payload, function (err, body) {
@@ -674,7 +674,7 @@ test('Can override the default json parser in a plugin', t => {
       reply.send(req.body)
     })
 
-    next()
+    done()
   })
 
   fastify.listen(0, err => {

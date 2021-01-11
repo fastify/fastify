@@ -655,8 +655,8 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
     t.plan(2)
     const fastify = Fastify()
 
-    fastify.addHook('preSerialization', (request, reply, payload, next) => {
-      next(null, payload)
+    fastify.addHook('preSerialization', (request, reply, payload, done) => {
+      done(null, payload)
     })
 
     fastify.post('/', {

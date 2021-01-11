@@ -1,3 +1,6 @@
+# Please see https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+# for more information on markdownlint rules.
+
 # MD001/heading-increment/header-increment
 # Heading levels should only increment by one level at a time
 MD001: false

@@ -73,6 +73,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
 - [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck) Fastify plugin to add health route in your server that asserts custom functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
+- [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache) Fastify plugin to disable client-side caching, inspired by [nocache](https://github.com/helmetjs/nocache).
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify project.

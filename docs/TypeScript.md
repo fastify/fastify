@@ -333,14 +333,14 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
    // fastify-plugin is highly recommended for any plugin you write
    const fp = require('fastify-plugin')
 
-   function myPlugin (instance, options, next) {
+   function myPlugin (instance, options, done) {
 
      // decorate the fastify instance with a custom function called myPluginFunc
      instance.decorate('myPluginFunc', (input) => {
        return input.toUpperCase()
      })
 
-     next()
+     done()
    }
 
    module.exports = fp(myPlugin, {
@@ -839,7 +839,7 @@ const server = fastify()
 const plugin: FastifyPlugin<{
   option1: string;
   option2: boolean;
-}> = function (instance, opts, next) { }
+}> = function (instance, opts, done) { }
 
 fastify().register(plugin, {}) // Error - options object is missing required properties
 fastify().register(plugin, { option1: '', option2: true }) // OK - options object contains required properties

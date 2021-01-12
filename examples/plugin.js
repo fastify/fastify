@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = function (fastify, opts, next) {
+module.exports = function (fastify, opts, done) {
   fastify
     .get('/', opts, function (req, reply) {
       reply.send({ hello: 'world' })
@@ -8,5 +8,5 @@ module.exports = function (fastify, opts, next) {
     .post('/', opts, function (req, reply) {
       reply.send({ hello: 'world' })
     })
-  next()
+  done()
 }

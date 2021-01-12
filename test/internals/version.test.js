@@ -37,7 +37,7 @@ test('should skip the version check if the version is undefined', t => {
     t.pass('everything right')
   })
 
-  function plugin (instance, opts, next) {
-    next()
+  function plugin (instance, opts, done) {
+    done()
   }
 })

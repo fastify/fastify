@@ -540,12 +540,12 @@ test('Should set a custom logLevel for a plugin', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/plugin', (req, reply) => {
       req.log.info('Hello') // we should see this log
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logLevel: 'info' })
 
   fastify.inject({
@@ -583,12 +583,12 @@ test('Should set a custom logSerializers for a plugin', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/plugin', (req, reply) => {
       req.log.info({ test: 'Hello' }) // we should see this log
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logLevel: 'info', logSerializers: { test: value => 'X' + value } })
 
   fastify.inject({
@@ -622,22 +622,22 @@ test('Should set a custom logLevel for every plugin', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/info', (req, reply) => {
       req.log.info('info') // we should see this log
       req.log.debug('hidden log')
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logLevel: 'info' })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/debug', (req, reply) => {
       req.log.debug('debug') // we should see this log
       req.log.trace('hidden log')
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logLevel: 'debug' })
 
   fastify.inject({
@@ -689,20 +689,20 @@ test('Should set a custom logSerializers for every plugin', async t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/test1', (req, reply) => {
       req.log.info({ test: 'Hello' })
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logSerializers: { test: value => 'X' + value } })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/test2', (req, reply) => {
       req.log.info({ test: 'Hello' })
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logSerializers: { test: value => 'Z' + value } })
 
   let res = await fastify.inject({
@@ -739,7 +739,7 @@ test('Should override serializers from route', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/', {
       logSerializers: {
         test: value => 'Z' + value // should override
@@ -748,7 +748,7 @@ test('Should override serializers from route', t => {
       req.log.info({ test: 'Hello' })
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logSerializers: { test: value => 'X' + value } })
 
   fastify.inject({
@@ -776,21 +776,21 @@ test('Should override serializers from plugin', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.register(context1, {
       logSerializers: {
         test: value => 'Z' + value // should override
       }
     })
-    next()
+    done()
   }, { logSerializers: { test: value => 'X' + value } })
 
-  function context1 (instance, opts, next) {
+  function context1 (instance, opts, done) {
     instance.get('/', (req, reply) => {
       req.log.info({ test: 'Hello' })
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }
 
   fastify.inject({
@@ -825,7 +825,7 @@ test('Should use serializers from plugin and route', t => {
     logSerializers: { test: value => 'X' + value }
   })
 
-  function context1 (instance, opts, next) {
+  function context1 (instance, opts, done) {
     instance.get('/', {
       logSerializers: {
         test2: value => 'Z' + value
@@ -834,7 +834,7 @@ test('Should use serializers from plugin and route', t => {
       req.log.info({ test: 'Hello', test2: 'Hello' }) // { test: 'XHello', test2: 'ZHello' }
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }
 
   fastify.inject({
@@ -912,7 +912,7 @@ test('Should use serializers inherit from contexts', t => {
   const fastify = Fastify({ logger })
   fastify.register(context1, { logSerializers: { test2: value => 'Y' + value } })
 
-  function context1 (instance, opts, next) {
+  function context1 (instance, opts, done) {
     instance.get('/', {
       logSerializers: {
         test3: value => 'Z' + value
@@ -921,7 +921,7 @@ test('Should use serializers inherit from contexts', t => {
       req.log.info({ test: 'Hello', test2: 'Hello', test3: 'Hello' }) // { test: 'XHello', test2: 'YHello', test3: 'ZHello' }
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }
 
   fastify.inject({
@@ -949,12 +949,12 @@ test('Should increase the log level for a specific plugin', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/', (req, reply) => {
       req.log.error('Hello') // we should see this log
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   }, { logLevel: 'error' })
 
   fastify.inject({
@@ -982,12 +982,12 @@ test('Should set the log level for the customized 404 handler', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.setNotFoundHandler(function (req, reply) {
       req.log.error('Hello')
       reply.code(404).send()
     })
-    next()
+    done()
   }, { logLevel: 'error' })
 
   fastify.inject({
@@ -1014,7 +1014,7 @@ test('Should set the log level for the customized 500 handler', t => {
     logger
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.get('/', (req, reply) => {
       req.log.error('kaboom')
       reply.send(new Error('kaboom'))
@@ -1024,7 +1024,7 @@ test('Should set the log level for the customized 500 handler', t => {
       reply.log.fatal('Hello')
       reply.code(500).send()
     })
-    next()
+    done()
   }, { logLevel: 'fatal' })
 
   fastify.inject({

@@ -90,22 +90,22 @@ t.test('listen and onReady order', async t => {
   const fastify = Fastify()
   let order = 0
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.ready(checkOrder.bind(null, 0))
     instance.addHook('onReady', checkOrder.bind(null, 4))
 
-    instance.register((subinstance, opts, next) => {
+    instance.register((subinstance, opts, done) => {
       subinstance.ready(checkOrder.bind(null, 1))
       subinstance.addHook('onReady', checkOrder.bind(null, 5))
 
-      subinstance.register((realSubInstance, opts, next) => {
+      subinstance.register((realSubInstance, opts, done) => {
         realSubInstance.ready(checkOrder.bind(null, 2))
         realSubInstance.addHook('onReady', checkOrder.bind(null, 6))
-        next()
+        done()
       })
-      next()
+      done()
     })
-    next()
+    done()
   })
 
   fastify.addHook('onReady', checkOrder.bind(null, 3))
@@ -347,19 +347,19 @@ t.test('ready return registered', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.register((one, opts, next) => {
+  fastify.register((one, opts, done) => {
     one.ready().then(itself => { t.deepEquals(itself, one) })
-    next()
+    done()
   })
 
-  fastify.register((two, opts, next) => {
+  fastify.register((two, opts, done) => {
     two.ready().then(itself => { t.deepEquals(itself, two) })
 
-    two.register((twoDotOne, opts, next) => {
+    two.register((twoDotOne, opts, done) => {
       twoDotOne.ready().then(itself => { t.deepEquals(itself, twoDotOne) })
-      next()
+      done()
     })
-    next()
+    done()
   })
 
   fastify.ready()

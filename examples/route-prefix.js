@@ -15,20 +15,20 @@ const opts = {
   }
 }
 
-fastify.register(function (instance, options, next) {
+fastify.register(function (instance, options, done) {
   // the route will be '/english/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'hello' })
   })
-  next()
+  done()
 }, { prefix: '/english' })
 
-fastify.register(function (instance, options, next) {
+fastify.register(function (instance, options, done) {
   // the route will be '/italian/hello'
   instance.get('/hello', opts, (req, reply) => {
     reply.send({ greet: 'ciao' })
   })
-  next()
+  done()
 }, { prefix: '/italian' })
 
 fastify.listen(8000, function (err) {

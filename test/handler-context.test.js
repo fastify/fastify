@@ -8,9 +8,9 @@ test('handlers receive correct `this` context', (t) => {
   t.plan(4)
 
   // simulate plugin that uses fastify-plugin
-  const plugin = function (instance, opts, next) {
+  const plugin = function (instance, opts, done) {
     instance.decorate('foo', 'foo')
-    next()
+    done()
   }
   plugin[Symbol.for('skip-override')] = true
 

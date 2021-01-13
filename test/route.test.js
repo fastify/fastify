@@ -4,7 +4,6 @@ const stream = require('stream')
 const split = require('split2')
 const t = require('tap')
 const test = t.test
-const only = t.only
 const sget = require('simple-get').concat
 const joi = require('@hapi/joi')
 const Fastify = require('..')
@@ -592,7 +591,7 @@ test('Creates a HEAD route for each GET one', t => {
   })
 })
 
-only('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
+test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
   t.plan(1)
 
   const fastify = Fastify()

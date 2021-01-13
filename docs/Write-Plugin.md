@@ -42,7 +42,7 @@ We use [`standard`](https://standardjs.com/) since it works without the need to 
 
 ## Continuous Integration
 It is not mandatory, but if you release your code as open source it helps to use Continuous Integration to ensure contributions do not break your plugin and to show that the plugin works as intended. Both [CircleCI](https://circleci.com/) and [GitHub Actions](https://github.com/features/actions) are free for open source projects and easy to setup.<br>
-In addition you can enable services like [Greenkeeper](https://greenkeeper.io/), that will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
+In addition you can enable services like [Dependabot](https://dependabot.com/) or [Snyk](https://snyk.io/), that will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
 
 ## Let's start!
 Awesome, now you know everything you need to know about how to write a good plugin for Fastify!

@@ -9,7 +9,7 @@ The core principles of Fastify are performance, low overhead and providing a goo
 ## Code
 Fastify uses different techniques to optimize its code, many of them are documented in our Guides. We highly recommend you read [the hitchhiker's guide to plugins](Plugins-Guide.md) to discover all the APIs you can use to build your plugin and learn how use them.
 
-Have you got some question or are you seeking for a suggestion? We are more than happy to help you! Just open an issue in our [help repository](https://github.com/fastify/help).
+Do you have a question or need some advice? We are more than happy to help you! Just open an issue in our [help repository](https://github.com/fastify/help).
 
 Once you submit a plugin to our [ecosystem list](Ecosystem.md), we will review your code and help you improve it if necessary.
 

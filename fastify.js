@@ -153,7 +153,7 @@ function fastify (options) {
   const { server, listen } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const schemaController = SchemaController.buildSchemaController()
+  const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
   // Public API
   const fastify = {

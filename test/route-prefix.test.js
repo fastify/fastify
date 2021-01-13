@@ -561,3 +561,32 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", igno
     t.equal(JSON.parse(res.payload).statusCode, 404)
   })
 })
+
+test('calls onRoute only once when prefixing', async t => {
+  t.plan(1)
+  const fastify = Fastify({
+    ignoreTrailingSlash: false
+  })
+
+  let onRouteCalled = 0
+  fastify.register(function (fastify, opts, next) {
+    fastify.addHook('onRoute', () => {
+      onRouteCalled++
+    })
+
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  t.deepEqual(onRouteCalled, 1)
+})

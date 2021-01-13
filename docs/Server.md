@@ -1017,10 +1017,14 @@ Currently the properties that can be exposed are:
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if explicitly passed)
 - ignoreTrailingSlash
+- disableRequestLogging
 - maxParamLength
 - onProtoPoisoning
+- onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
+- requestIdLogLabel
+- http2SessionTimeout
 
 ```js
 const { readFileSync } = require('fs')

@@ -9,7 +9,7 @@ The core principles of Fastify are performance, low overhead and providing a goo
 ## Code
 Fastify uses different techniques to optimize its code, many of them are documented in our Guides. We highly recommend you read [the hitchhiker's guide to plugins](Plugins-Guide.md) to discover all the APIs you can use to build your plugin and learn how use them.
 
-Have you got some question or are you seeking for a suggestion? We are more than happy to help you! Just open an issue in our [help repository](https://github.com/fastify/help).
+Do you have a question or need some advice? We are more than happy to help you! Just open an issue in our [help repository](https://github.com/fastify/help).
 
 Once you submit a plugin to our [ecosystem list](Ecosystem.md), we will review your code and help you improve it if necessary.
 
@@ -41,8 +41,8 @@ It is not mandatory, but we highly recommend you use a code linter in your plugi
 We use [`standard`](https://standardjs.com/) since it works without the need to configure it and is very easy integrate in a test suite.
 
 ## Continuous Integration
-It is not mandatory, but if you release your code as open source it helps to use Continuous Integration to ensure contributions do not break your plugin and to show that the plugin works as intended. [Travis](https://travis-ci.org/) is free for open source projects and easy to setup.<br>
-In addition you can enable services like [Greenkeeper](https://greenkeeper.io/), that will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
+It is not mandatory, but if you release your code as open source it helps to use Continuous Integration to ensure contributions do not break your plugin and to show that the plugin works as intended. Both [CircleCI](https://circleci.com/) and [GitHub Actions](https://github.com/features/actions) are free for open source projects and easy to setup.<br>
+In addition you can enable services like [Dependabot](https://dependabot.com/) or [Snyk](https://snyk.io/), that will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
 
 ## Let's start!
 Awesome, now you know everything you need to know about how to write a good plugin for Fastify!

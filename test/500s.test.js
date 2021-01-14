@@ -67,7 +67,7 @@ test('encapsulated 500', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.register(function (f, opts, next) {
+  fastify.register(function (f, opts, done) {
     f.get('/', function (req, reply) {
       reply.send(new Error('kaboom'))
     })
@@ -81,7 +81,7 @@ test('encapsulated 500', t => {
         .send('an error happened: ' + err.message)
     })
 
-    next()
+    done()
   }, { prefix: 'test' })
 
   fastify.inject({
@@ -125,17 +125,17 @@ test('custom 500 with hooks', t => {
       .send('an error happened: ' + err.message)
   })
 
-  fastify.addHook('onSend', (req, res, payload, next) => {
+  fastify.addHook('onSend', (req, res, payload, done) => {
     t.ok('called', 'onSend')
-    next()
+    done()
   })
-  fastify.addHook('onRequest', (req, res, next) => {
+  fastify.addHook('onRequest', (req, res, done) => {
     t.ok('called', 'onRequest')
-    next()
+    done()
   })
-  fastify.addHook('onResponse', (request, reply, next) => {
+  fastify.addHook('onResponse', (request, reply, done) => {
     t.ok('called', 'onResponse')
-    next()
+    done()
   })
 
   fastify.inject({

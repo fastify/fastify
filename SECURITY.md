@@ -1,6 +1,6 @@
 # Security Policy
 
-This document describes the management of vulnerabilities for the Fastify project and it's officials' plugins.
+This document describes the management of vulnerabilities for the Fastify project and its official plugins.
 
 
 ## Reporting vulnerabilities

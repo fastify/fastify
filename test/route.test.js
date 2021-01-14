@@ -591,6 +591,36 @@ test('Creates a HEAD route for each GET one', t => {
   })
 })
 
+test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const arr = []
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (routeOptions) => {
+      arr.push(`${routeOptions.method} ${routeOptions.url}`)
+    })
+
+    instance.route({
+      method: 'GET',
+      path: '/',
+      exposeHeadRoute: true,
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ here: 'is coffee' })
+      }
+    })
+
+    next()
+  }, { prefix: '/v1' })
+
+  await fastify.ready()
+
+  console.log(arr)
+  t.ok(true)
+})
+
 test('Will not create a HEAD route that is not GET', t => {
   t.plan(11)
 

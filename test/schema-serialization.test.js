@@ -272,7 +272,7 @@ test('Custom setSerializerCompiler', t => {
     return data => JSON.stringify(data)
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.get('/:id', {
       handler (req, reply) {
         reply.send({ id: 1 })
@@ -284,7 +284,7 @@ test('Custom setSerializerCompiler', t => {
       }
     })
     t.ok(instance.serializerCompiler, 'the serializer is set by the parent')
-    next()
+    done()
   }, { prefix: '/foo' })
 
   fastify.inject({
@@ -313,7 +313,7 @@ test('Custom serializer per route', async t => {
   })
 
   let hit = 0
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
       hit++
       return data => JSON.stringify({ mean: 'custom' })
@@ -331,7 +331,7 @@ test('Custom serializer per route', async t => {
       schema: { response: { 200: outSchema } }
     })
 
-    next()
+    done()
   })
 
   let res = await fastify.inject('/default')

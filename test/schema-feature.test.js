@@ -69,11 +69,11 @@ test('The schema should be accessible by id via getSchema', t => {
   t.deepEqual(fastify.getSchema('id'), schemas[0])
   t.deepEqual(fastify.getSchema('foo'), undefined)
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     const pluginSchema = { $id: 'cde', my: 'schema' }
     instance.addSchema(pluginSchema)
     t.deepEqual(instance.getSchema('cde'), pluginSchema)
-    next()
+    done()
   })
 
   fastify.ready(err => t.error(err))
@@ -427,7 +427,7 @@ test('Encapsulation should intervene', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema({
       $id: 'encapsulation',
       type: 'object',
@@ -435,17 +435,17 @@ test('Encapsulation should intervene', t => {
         id: { type: 'number' }
       }
     })
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.get('/:id', {
       handler: echoParams,
       schema: {
         params: { id: { $ref: 'encapsulation#/properties/id' } }
       }
     })
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -458,14 +458,14 @@ test('Encapsulation isolation', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema({ $id: 'id' })
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema({ $id: 'id' })
-    next()
+    done()
   })
 
   fastify.ready(err => t.error(err))
@@ -475,7 +475,7 @@ test('Add schema after register', t => {
   t.plan(5)
 
   const fastify = Fastify()
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.get('/:id', {
       handler: echoParams,
       schema: {
@@ -498,7 +498,7 @@ test('Add schema after register', t => {
       t.is(err.code, 'FST_ERR_SCH_ALREADY_PRESENT')
       t.is(err.message, 'Schema with id \'test\' already declared!')
     }
-    next()
+    done()
   })
 
   fastify.inject({
@@ -528,21 +528,21 @@ test('Encapsulation isolation for getSchemas', t => {
 
   fastify.addSchema(schemas.z)
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema(schemas.a)
     pluginDeepOneSide = instance
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema(schemas.b)
-    instance.register((subinstance, opts, next) => {
+    instance.register((subinstance, opts, done) => {
       subinstance.addSchema(schemas.c)
       pluginDeepTwo = subinstance
-      next()
+      done()
     })
     pluginDeepOne = instance
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -927,7 +927,7 @@ test('Cross schema reference with encapsulation references', t => {
     items: refItem
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addSchema({
       $id: 'encapsulation',
       type: 'object',
@@ -952,7 +952,7 @@ test('Cross schema reference with encapsulation references', t => {
     instance.get('/double-get', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/post', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/double', { schema: { response: { 200: { $ref: 'encapsulation' } } } }, () => { })
-    next()
+    done()
   }, { prefix: '/foo' })
 
   fastify.post('/post', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
@@ -970,21 +970,21 @@ test('Check how many AJV instances are built #1', t => {
   t.notOk(fastify.validatorCompiler, 'validator not initialized')
 
   const instances = []
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     t.notOk(fastify.validatorCompiler, 'validator not initialized')
     instances.push(instance)
-    next()
+    done()
   })
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     t.notOk(fastify.validatorCompiler, 'validator not initialized')
     addRandomRoute(instance)
     instances.push(instance)
-    next()
-    instance.register((instance, opts, next) => {
+    done()
+    instance.register((instance, opts, done) => {
       t.notOk(fastify.validatorCompiler, 'validator not initialized')
       addRandomRoute(instance)
       instances.push(instance)
-      next()
+      done()
     })
   })
 
@@ -1046,7 +1046,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
   const fastify = Fastify()
   t.notOk(fastify.validatorCompiler, 'validator not initialized')
 
-  fastify.register(function sibling1 (instance, opts, next) {
+  fastify.register(function sibling1 (instance, opts, done) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
     instance.ready(() => {
@@ -1056,10 +1056,10 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
     instance.after(() => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
     })
-    next()
+    done()
   })
 
-  fastify.register(function sibling2 (instance, opts, next) {
+  fastify.register(function sibling2 (instance, opts, done) {
     addRandomRoute(instance)
     t.notOk(instance.validatorCompiler, 'validator not initialized')
     instance.ready(() => {
@@ -1070,17 +1070,17 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
     })
 
-    instance.register((instance, opts, next) => {
+    instance.register((instance, opts, done) => {
       t.notOk(instance.validatorCompiler, 'validator not initialized')
       instance.ready(() => {
         t.equals(instance.validatorCompiler.sharedPool, 2, 'this context must share the validator of the parent')
       })
-      next()
+      done()
     })
-    next()
+    done()
   })
 
-  fastify.register(function sibling3 (instance, opts, next) {
+  fastify.register(function sibling3 (instance, opts, done) {
     addRandomRoute(instance)
 
     // this trigger to dont't reuse the same compiler pool
@@ -1091,7 +1091,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
       t.ok(instance.validatorCompiler, 'validator is initialized')
       t.notOk(instance.validatorCompiler.sharedPool, 'this context has its own compiler')
     })
-    next()
+    done()
   })
 
   fastify.ready(err => { t.error(err) })

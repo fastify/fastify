@@ -9,26 +9,26 @@ test('hookRunner - Basic', t => {
 
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
-    return fn(a, b, next)
+  function iterator (fn, a, b, done) {
+    return fn(a, b, done)
   }
 
-  function fn1 (a, b, next) {
+  function fn1 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
-  function fn2 (a, b, next) {
+  function fn2 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
-  function fn3 (a, b, next) {
+  function fn3 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
   function done (err, a, b) {
@@ -43,20 +43,20 @@ test('hookRunner - In case of error should skip to done', t => {
 
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
-    return fn(a, b, next)
+  function iterator (fn, a, b, done) {
+    return fn(a, b, done)
   }
 
-  function fn1 (a, b, next) {
+  function fn1 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
-  function fn2 (a, b, next) {
+  function fn2 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next(new Error('kaboom'))
+    done(new Error('kaboom'))
   }
 
   function fn3 () {
@@ -75,17 +75,17 @@ test('hookRunner - Should handle throw', t => {
 
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
-    return fn(a, b, next)
+  function iterator (fn, a, b, done) {
+    return fn(a, b, done)
   }
 
-  function fn1 (a, b, next) {
+  function fn1 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
-  function fn2 (a, b, next) {
+  function fn2 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
     throw new Error('kaboom')
@@ -107,8 +107,8 @@ test('hookRunner - Should handle promises', t => {
 
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
-    return fn(a, b, next)
+  function iterator (fn, a, b, done) {
+    return fn(a, b, done)
   }
 
   function fn1 (a, b) {
@@ -141,8 +141,8 @@ test('hookRunner - In case of error should skip to done (with promises)', t => {
 
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
-    return fn(a, b, next)
+  function iterator (fn, a, b, done) {
+    return fn(a, b, done)
   }
 
   function fn1 (a, b) {
@@ -174,17 +174,17 @@ test('hookRunner - Be able to exit before its natural end', t => {
   let shouldStop = false
   hookRunner([fn1, fn2, fn3], iterator, 'a', 'b', done)
 
-  function iterator (fn, a, b, next) {
+  function iterator (fn, a, b, done) {
     if (shouldStop) {
       return undefined
     }
-    return fn(a, b, next)
+    return fn(a, b, done)
   }
 
-  function fn1 (a, b, next) {
+  function fn1 (a, b, done) {
     t.strictEqual(a, 'a')
     t.strictEqual(b, 'b')
-    next()
+    done()
   }
 
   function fn2 (a, b) {
@@ -210,21 +210,21 @@ test('hookRunner - Promises that resolve to a value do not change the state', t 
 
   hookRunner([fn1, fn2, fn3], iterator, originalState, 'b', done)
 
-  function iterator (fn, state, b, next) {
-    return fn(state, b, next)
+  function iterator (fn, state, b, done) {
+    return fn(state, b, done)
   }
 
-  function fn1 (state, b, next) {
+  function fn1 (state, b, done) {
     t.strictEqual(state, originalState)
     return Promise.resolve(null)
   }
 
-  function fn2 (state, b, next) {
+  function fn2 (state, b, done) {
     t.strictEqual(state, originalState)
     return Promise.resolve('string')
   }
 
-  function fn3 (state, b, next) {
+  function fn3 (state, b, done) {
     t.strictEqual(state, originalState)
     return Promise.resolve({ object: true })
   }
@@ -244,25 +244,25 @@ test('onSendHookRunner - Basic', t => {
 
   onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, originalPayload, done)
 
-  function fn1 (request, reply, payload, next) {
+  function fn1 (request, reply, payload, done) {
     t.deepEqual(request, originalRequest)
     t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
-    next()
+    done()
   }
 
-  function fn2 (request, reply, payload, next) {
+  function fn2 (request, reply, payload, done) {
     t.deepEqual(request, originalRequest)
     t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
-    next()
+    done()
   }
 
-  function fn3 (request, reply, payload, next) {
+  function fn3 (request, reply, payload, done) {
     t.deepEqual(request, originalRequest)
     t.deepEqual(reply, originalReply)
     t.strictEqual(payload, originalPayload)
-    next()
+    done()
   }
 
   function done (err, request, reply, payload) {
@@ -285,19 +285,19 @@ test('onSendHookRunner - Can change the payload', t => {
 
   onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
-  function fn1 (request, reply, payload, next) {
+  function fn1 (request, reply, payload, done) {
     t.deepEqual(payload, v1)
-    next(null, v2)
+    done(null, v2)
   }
 
-  function fn2 (request, reply, payload, next) {
+  function fn2 (request, reply, payload, done) {
     t.deepEqual(payload, v2)
-    next(null, v3)
+    done(null, v3)
   }
 
-  function fn3 (request, reply, payload, next) {
+  function fn3 (request, reply, payload, done) {
     t.deepEqual(payload, v3)
-    next(null, v4)
+    done(null, v4)
   }
 
   function done (err, request, reply, payload) {
@@ -318,14 +318,14 @@ test('onSendHookRunner - In case of error should skip to done', t => {
 
   onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
-  function fn1 (request, reply, payload, next) {
+  function fn1 (request, reply, payload, done) {
     t.deepEqual(payload, v1)
-    next(null, v2)
+    done(null, v2)
   }
 
-  function fn2 (request, reply, payload, next) {
+  function fn2 (request, reply, payload, done) {
     t.deepEqual(payload, v2)
-    next(new Error('kaboom'))
+    done(new Error('kaboom'))
   }
 
   function fn3 () {
@@ -417,9 +417,9 @@ test('onSendHookRunner - Be able to exit before its natural end', t => {
 
   onSendHookRunner([fn1, fn2, fn3], originalRequest, originalReply, v1, done)
 
-  function fn1 (request, reply, payload, next) {
+  function fn1 (request, reply, payload, done) {
     t.deepEqual(payload, v1)
-    next(null, v2)
+    done(null, v2)
   }
 
   function fn2 (request, reply, payload) {

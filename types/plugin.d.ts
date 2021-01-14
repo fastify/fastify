@@ -11,7 +11,7 @@ export type FastifyPluginOptions = Record<string, any>
 export type FastifyPluginCallback<Options extends FastifyPluginOptions = Record<never, never>, Server extends RawServerBase = RawServerDefault> = (
   instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>>,
   opts: Options,
-  next: (err?: Error) => void
+  done: (err?: Error) => void
 ) => void
 
 /**

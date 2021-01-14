@@ -812,6 +812,43 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 #### schemaErrorFormatter
 This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
+<a name="schema-controller"></a>
+#### schemaController
+This property can be used to fully manage where the schemas of your application will be stored.
+It can be useful when your schemas are stored in another data structure that is unknown to fastify.
+Checkout [this issue](https://github.com/fastify/fastify/issues/2446) for an example.
+
+```js
+const fastify = Fastify({
+  schemaController: {
+    bucket: function factory (parentSchemas) {
+      // this factory is called whenever `fastify.register()` is called.
+      // It may receive as input the schemas of the parent context if some schemas has been added.
+      // For reference, the parentSchemas will be the returned object of the `getSchemas()` function below.
+
+      return {
+        addSchema (inputSchema) {
+          // this function must store the schema added by the user, when fastify.addSchema() is called
+        },
+        getSchema (schema$id) {
+          // this function must return the schema searched by the user, when fastify.getSchema(id) is called
+          return aSchema
+        },
+        getSchemas () {
+          // this function must return all the schemas stored by `addSchema`.
+          // It must return a JSON where the property is the schema $id and the value the JSON Schema
+          const allTheSchemaStored = {
+            'schema$id1': schema1,
+            'schema$id2': schema2
+          }
+          return allTheSchemaStored
+        }
+      }
+    }
+  }
+});
+```
+
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 

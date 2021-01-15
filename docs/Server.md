@@ -815,8 +815,9 @@ This property can be used set a function to format errors that happen while the 
 <a name="schema-controller"></a>
 #### schemaController
 This property can be used to fully manage where the schemas of your application will be stored.
-It can be useful when your schemas are stored in another data structure that is unknown to fastify.
-Checkout [this issue](https://github.com/fastify/fastify/issues/2446) for an example.
+It can be useful when your schemas are stored in another data structure that is unknown to Fastify.
+See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
+this property helps to resolve.
 
 ```js
 const fastify = Fastify({
@@ -828,10 +829,12 @@ const fastify = Fastify({
 
       return {
         addSchema (inputSchema) {
-          // this function must store the schema added by the user, when fastify.addSchema() is called
+          // This function must store the schema added by the user.
+          // This function is invoked when `fastify.addSchema()` is called.
         },
         getSchema (schema$id) {
-          // this function must return the schema searched by the user, when fastify.getSchema(id) is called
+          // This function must return the raw schema requested by the `schema$id`.
+          // This function is invoked when `fastify.getSchema(id)` is called.
           return aSchema
         },
         getSchemas () {

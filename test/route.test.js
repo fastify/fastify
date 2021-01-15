@@ -819,6 +819,32 @@ test('HEAD route should respect custom onSend handlers', t => {
   })
 })
 
+test('no warning for exposeHeadRoute', async t => {
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    exposeHeadRoute: true,
+    async handler () {
+      return 'hello world'
+    }
+  })
+
+  const listener = (w) => {
+    console.error(w)
+    t.fail('no warning')
+  }
+
+  process.on('warning', listener)
+
+  await fastify.listen(0)
+
+  process.removeListener('warning', listener)
+
+  await fastify.close()
+})
+
 test("HEAD route should handle stream.on('error')", t => {
   t.plan(6)
 

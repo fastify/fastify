@@ -822,11 +822,12 @@ this property helps to resolve.
 ```js
 const fastify = Fastify({
   schemaController: {
+    /**
+     * This factory is called whenever `fastify.register()` is called.
+     * It may receive as input the schemas of the parent context if some schemas has been added.
+     * @param {object} parentSchemas: it will be the returned object of the `getSchemas()` function below.
+     */
     bucket: function factory (parentSchemas) {
-      // this factory is called whenever `fastify.register()` is called.
-      // It may receive as input the schemas of the parent context if some schemas has been added.
-      // For reference, the parentSchemas will be the returned object of the `getSchemas()` function below.
-
       return {
         addSchema (inputSchema) {
           // This function must store the schema added by the user.
@@ -838,8 +839,8 @@ const fastify = Fastify({
           return aSchema
         },
         getSchemas () {
-          // this function must return all the schemas stored by `addSchema`.
-          // It must return a JSON where the property is the schema $id and the value the JSON Schema
+          // This function must return all the schemas referenced by the routes schemas' $ref
+          // It must return a JSON where the property is the schema `$id` and the value is the raw JSON Schema.
           const allTheSchemaStored = {
             'schema$id1': schema1,
             'schema$id2': schema2

@@ -1083,7 +1083,7 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
   const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
 
-  t.ok(doublePrefixReply.statusCode === 404)
-  t.ok(trailingSlashReply.statusCode === 200)
-  t.ok(noneTrailingReply.statusCode === 200)
+  t.equals(doublePrefixReply.statusCode, 404)
+  t.equals(trailingSlashReply.statusCode, 200)
+  t.equals(noneTrailingReply.statusCode, 200)
 })

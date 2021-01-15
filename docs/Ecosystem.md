@@ -51,6 +51,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 
 #### [Community](#community)
 
+- [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.

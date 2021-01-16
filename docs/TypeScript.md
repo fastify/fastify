@@ -37,7 +37,7 @@ This example will get you up and running with Fastify and TypeScript. It results
   ```
 3. Initialize a TypeScript configuration file:
   ```bash
-  npx typescript --init
+  npx tsc --init
   ```
   or use one of the [recommended ones](https://github.com/tsconfig/bases#node-10-tsconfigjson).
 

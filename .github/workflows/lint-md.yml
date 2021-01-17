@@ -16,6 +16,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Lint markdown files
-        uses: avto-dev/markdown-lint@v1
+        uses: DavidAnson/markdownlint-cli2-action@v1
         with:
-          args: "**/*.md"
+          globs: "README.md"

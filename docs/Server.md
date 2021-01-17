@@ -825,7 +825,7 @@ const fastify = Fastify({
     /**
      * This factory is called whenever `fastify.register()` is called.
      * It may receive as input the schemas of the parent context if some schemas has been added.
-     * @param {object} parentSchemas: it will be the returned object of the `getSchemas()` function below.
+     * @param {object} parentSchemas these schemas will be returned by the `getSchemas()` method function of the returned `bucket`.
      */
     bucket: function factory (parentSchemas) {
       return {

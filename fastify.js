@@ -5,6 +5,7 @@ const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
 let version
+let versionLoaded = false
 
 const {
   kAvvioBoot,
@@ -25,7 +26,8 @@ const {
   kState,
   kOptions,
   kPluginNameChain,
-  kSchemaErrorFormatter
+  kSchemaErrorFormatter,
+  kErrorHandler
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -57,6 +59,21 @@ const onBadUrlContext = {
   onError: []
 }
 
+function defaultErrorHandler (error, request, reply) {
+  if (reply.statusCode < 500) {
+    reply.log.info(
+      { res: reply, err: error },
+      error && error.message
+    )
+  } else {
+    reply.log.error(
+      { req: request, res: reply, err: error },
+      error && error.message
+    )
+  }
+  reply.send(error)
+}
+
 function fastify (options) {
   // Options validations
   options = options || {}
@@ -77,10 +94,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-
-  if (options.schemaErrorFormatter) {
-    validateSchemaErrorFormatter(options.schemaErrorFormatter)
-  }
+  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -114,6 +128,7 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.exposeHeadRoutes = exposeHeadRoutes
 
   const initialConfig = getSecuredInitialConfig(options)
 
@@ -159,7 +174,8 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemas]: schemas,
     [kValidatorCompiler]: null,
-    [kSchemaErrorFormatter]: options.schemaErrorFormatter,
+    [kSchemaErrorFormatter]: null,
+    [kErrorHandler]: defaultErrorHandler,
     [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
@@ -219,6 +235,8 @@ function fastify (options) {
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
+    getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
+    defaultTextParser: ContentTypeParser.defaultParsers.defaultTextParser,
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
@@ -266,10 +284,15 @@ function fastify (options) {
     },
     version: {
       get () {
-        if (version === undefined) {
+        if (versionLoaded === false) {
           version = loadVersion()
         }
         return version
+      }
+    },
+    errorHandler: {
+      get () {
+        return this[kErrorHandler]
       }
     }
   })
@@ -278,6 +301,11 @@ function fastify (options) {
   // can still access it (and get the expected error), but `decorate`
   // will not detect it, and allow the user to override it.
   Object.setPrototypeOf(fastify, { use })
+
+  if (options.schemaErrorFormatter) {
+    validateSchemaErrorFormatter(options.schemaErrorFormatter)
+    fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
+  }
 
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
@@ -293,7 +321,7 @@ function fastify (options) {
       use: 'register'
     }
   })
-  // Override to allow the plugin incapsulation
+  // Override to allow the plugin encapsulation
   avvio.override = override
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
@@ -504,8 +532,8 @@ function fastify (options) {
 
   function onBadUrl (path, req, res) {
     if (frameworkErrors) {
-      var id = genReqId(req)
-      var childLogger = logger.child({ reqId: id })
+      const id = genReqId(req)
+      const childLogger = logger.child({ reqId: id })
 
       childLogger.info({ req }, 'incoming request')
 
@@ -537,7 +565,7 @@ function fastify (options) {
   function setSchemaErrorFormatter (errorFormatter) {
     throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
     validateSchemaErrorFormatter(errorFormatter)
-    this[kSchemaErrorFormatter] = errorFormatter
+    this[kSchemaErrorFormatter] = errorFormatter.bind(this)
     return this
   }
 
@@ -558,7 +586,7 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this._errorHandler = func.bind(this)
+    this[kErrorHandler] = func.bind(this)
     return this
   }
 }
@@ -591,10 +619,17 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
 }
 
 function loadVersion () {
+  versionLoaded = true
   const fs = require('fs')
   const path = require('path')
-  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json')))
-  return pkg.version
+  try {
+    const pkgPath = path.join(__dirname, 'package.json')
+    fs.accessSync(pkgPath, fs.constants.R_OK)
+    const pkg = JSON.parse(fs.readFileSync(pkgPath))
+    return pkg.name === 'fastify' ? pkg.version : undefined
+  } catch (e) {
+    return undefined
+  }
 }
 
 /**

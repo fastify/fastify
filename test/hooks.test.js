@@ -197,7 +197,7 @@ test('onRequest hook should support encapsulation / 1', t => {
 test('onRequest hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onRequest', () => {})
 
@@ -429,14 +429,14 @@ test('onRoute hook should be called (encapsulation support) / 4', t => {
     t.pass()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', () => {
       t.pass()
     })
     instance.get('/nested', opts, function (req, reply) {
       reply.send()
     })
-    next()
+    done()
   })
 
   fastify.get('/', function (req, reply) {
@@ -456,14 +456,14 @@ test('onRoute hook should be called (encapsulation support) / 5', t => {
     reply.send()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', () => {
       t.pass()
     })
     instance.get('/nested', opts, function (req, reply) {
       reply.send()
     })
-    next()
+    done()
   })
 
   fastify.get('/second', function (req, reply) {
@@ -664,12 +664,55 @@ test('onRoute hook should preserve handler function in options of shorthand rout
   })
 })
 
+// issue ref https://github.com/fastify/fastify-compress/issues/140
+test('onRoute hook should be called once when prefixTrailingSlash', t => {
+  t.plan(3)
+
+  let onRouteCalled = 0
+  let routePatched = 0
+
+  const fastify = Fastify({ ignoreTrailingSlash: false })
+
+  // a plugin that patches route options, similar to fastify-compress
+  fastify.register(fp(function myPlugin (instance, opts, next) {
+    function patchTheRoute () {
+      routePatched++
+    }
+
+    instance.addHook('onRoute', function (routeOptions) {
+      onRouteCalled++
+      patchTheRoute(routeOptions)
+    })
+
+    next()
+  }))
+
+  fastify.register(function routes (instance, opts, next) {
+    instance.route({
+      method: 'GET',
+      url: '/',
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.is(onRouteCalled, 1) // onRoute hook was called once
+    t.is(routePatched, 1) // and plugin acted once and avoided redundaunt route patching
+  })
+})
+
 test('onRoute hook should able to change the route url', t => {
   t.plan(5)
 
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (route) => {
       t.strictEqual(route.url, '/föö')
       route.url = encodeURI(route.url)
@@ -679,7 +722,7 @@ test('onRoute hook should able to change the route url', t => {
       reply.send('here /föö')
     })
 
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -701,14 +744,14 @@ test('onRoute hook that throws should be caught ', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', () => {
       throw new Error('snap')
     })
     instance.get('/', opts, function (req, reply) {
       reply.send()
     })
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -726,17 +769,17 @@ test('onRoute hook with many prefix', t => {
     { routePath: '/aPath', prefix: '/one', url: '/one/aPath' }
   ]
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (route) => {
       t.like(route, onRouteChecks.pop())
     })
     instance.route({ method: 'GET', url: '/aPath', handler })
 
-    instance.register((instance, opts, next) => {
+    instance.register((instance, opts, done) => {
       instance.route({ method: 'GET', path: '/anotherPath', handler })
-      next()
+      done()
     }, { prefix: '/two' })
-    next()
+    done()
   }, { prefix: '/one' })
 
   fastify.ready(err => { t.error(err) })
@@ -813,7 +856,7 @@ test('onResponse hook should support encapsulation / 1', t => {
 test('onResponse hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onResponse', () => {})
 
@@ -890,7 +933,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 test('onSend hook should support encapsulation / 1', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('onSend', () => {})
 
@@ -1015,7 +1058,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
   })
 
   fastify.register((instance, opts, done) => {
-    var chunk = 'stream payload'
+    let chunk = 'stream payload'
     const thePayload = new stream.Readable({
       read () {
         this.push(chunk)
@@ -1174,13 +1217,18 @@ test('clear payload', t => {
 })
 
 test('onSend hook throws', t => {
-  t.plan(7)
+  t.plan(9)
   const fastify = Fastify()
   fastify.addHook('onSend', function (request, reply, payload, done) {
     if (request.raw.method === 'DELETE') {
       done(new Error('some error'))
       return
     }
+
+    if (request.raw.method === 'PUT') {
+      throw new Error('some error')
+    }
+
     done()
   })
 
@@ -1189,6 +1237,10 @@ test('onSend hook throws', t => {
   })
 
   fastify.delete('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.put('/', (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
@@ -1206,6 +1258,13 @@ test('onSend hook throws', t => {
     })
     sget({
       method: 'DELETE',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 500)
+    })
+    sget({
+      method: 'PUT',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
@@ -1526,6 +1585,31 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
   })
 })
 
+test('preParsing hooks should handle errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
+    const e = new Error('kaboom')
+    e.statusCode = 501
+    throw e
+  })
+
+  fastify.post('/', function (request, reply) {
+    reply.send(request.body)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { hello: 'world' }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 501)
+    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
+  })
+})
+
 test('onRequest respond with a stream', t => {
   t.plan(4)
   const fastify = Fastify()
@@ -1578,7 +1662,7 @@ test('preHandler respond with a stream', t => {
   })
 
   // we are calling `reply.send` inside the `preHandler` hook with a stream,
-  // this triggers the `onSend` hook event if `preHanlder` has not yet finished
+  // this triggers the `onSend` hook event if `preHandler` has not yet finished
   const order = [1, 2]
 
   fastify.addHook('preHandler', (req, reply, done) => {
@@ -2163,7 +2247,7 @@ test('preValidation hook should support encapsulation / 1', t => {
 test('preValidation hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preValidation', () => {})
 
@@ -2582,7 +2666,7 @@ test('preParsing hook should support encapsulation / 1', t => {
 test('preParsing hook should support encapsulation / 2', t => {
   t.plan(3)
   const fastify = Fastify()
-  var pluginInstance
+  let pluginInstance
 
   fastify.addHook('preParsing', function a () {})
 
@@ -2716,18 +2800,24 @@ test('preSerialization hook should run before serialization and be able to modif
   })
 })
 
-test('preSerialization hook should be able to throw errors which are not validated against schema response', t => {
+test('preSerialization hook should be able to throw errors which are validated against schema response', t => {
   const fastify = Fastify()
 
   fastify.addHook('preSerialization', function (req, reply, payload, done) {
     done(new Error('preSerialization aborted'))
   })
 
+  fastify.setErrorHandler((err, request, reply) => {
+    t.equals(err.message, 'preSerialization aborted')
+    err.world = 'error'
+    reply.send(err)
+  })
+
   fastify.route({
     method: 'GET',
     url: '/first',
     handler: function (req, reply) {
-      reply.send({ hello: 'world' })
+      reply.send({ world: 'hello' })
     },
     schema: {
       response: {
@@ -2756,7 +2846,7 @@ test('preSerialization hook should be able to throw errors which are not validat
       t.error(err)
       t.strictEqual(response.statusCode, 500)
       t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { error: 'Internal Server Error', message: 'preSerialization aborted', statusCode: 500 })
+      t.deepEqual(JSON.parse(body), { world: 'error' })
       t.end()
     })
   })
@@ -2894,8 +2984,8 @@ test('onRegister hook should be called / 1', t => {
   })
 
   const pluginOpts = { prefix: 'hello', custom: 'world' }
-  fastify.register((instance, opts, next) => {
-    next()
+  fastify.register((instance, opts, done) => {
+    done()
   }, pluginOpts)
 
   fastify.ready(err => { t.error(err) })
@@ -2910,15 +3000,15 @@ test('onRegister hook should be called / 2', t => {
     t.ok(instance.addHook)
   })
 
-  fastify.register((instance, opts, next) => {
-    instance.register((instance, opts, next) => {
-      next()
+  fastify.register((instance, opts, done) => {
+    instance.register((instance, opts, done) => {
+      done()
     })
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
-    next()
+  fastify.register((instance, opts, done) => {
+    done()
   })
 
   fastify.ready(err => {
@@ -2936,20 +3026,20 @@ test('onRegister hook should be called / 3', t => {
     instance.data = instance.data.slice()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.data.push(1)
-    instance.register((instance, opts, next) => {
+    instance.register((instance, opts, done) => {
       instance.data.push(2)
       t.deepEqual(instance.data, [1, 2])
-      next()
+      done()
     })
     t.deepEqual(instance.data, [1])
-    next()
+    done()
   })
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     t.deepEqual(instance.data, [])
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -2961,8 +3051,8 @@ test('onRegister hook should be called (encapsulation)', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  function plugin (instance, opts, next) {
-    next()
+  function plugin (instance, opts, done) {
+    done()
   }
   plugin[Symbol.for('skip-override')] = true
 
@@ -3004,7 +3094,7 @@ test('reply.send should throw if undefined error is thrown', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('onRequest', function (req, reply, next) {
+  fastify.addHook('onRequest', function (req, reply, done) {
     return Promise.reject()
   })
 
@@ -3031,9 +3121,9 @@ test('onTimeout should be triggered', t => {
   t.plan(6)
   const fastify = Fastify({ connectionTimeout: 500 })
 
-  fastify.addHook('onTimeout', function (req, res, next) {
+  fastify.addHook('onTimeout', function (req, res, done) {
     t.ok('called', 'onTimeout')
-    next()
+    done()
   })
 
   fastify.get('/', async (req, reply) => {

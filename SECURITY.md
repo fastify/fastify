@@ -1,15 +1,15 @@
 # Security Policy
 
-This document describes the management of vulnerabilities for the Fastify project and it's officials' plugins.
+This document describes the management of vulnerabilities for the Fastify project and its official plugins.
 
 
 ## Reporting vulnerabilities
 
 Individuals who find potential vulnerabilities in Fastify are invited to complete a vulnerability report via the dedicated HackerOne tool for Node.js modules: [https://hackerone.com/nodejs-ecosystem](https://hackerone.com/nodejs-ecosystem).
 
-### How to report a vulnerabiliy
+### How to report a vulnerability
 
-It is of the utmost importance that you read carefully [**HOW TO REPORT A VULNERABILIY**](https://github.com/nodejs/security-wg/blob/master/processes/third_party_vuln_process.md) written by the Security Working Group of Node.js.
+It is of the utmost importance that you read carefully [**HOW TO REPORT A VULNERABILITY**](https://github.com/nodejs/security-wg/blob/master/processes/third_party_vuln_process.md) written by the Security Working Group of Node.js.
 
 
 ## Handling vulnerability reports

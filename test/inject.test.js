@@ -19,12 +19,12 @@ test('should wait for the ready event', t => {
   const fastify = Fastify()
   const payload = { hello: 'world' }
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.get('/', (req, reply) => {
       reply.send(payload)
     })
 
-    setTimeout(next, 500)
+    setTimeout(done, 500)
   })
 
   fastify.inject({
@@ -311,8 +311,8 @@ test('should reject in error case', t => {
   const fastify = Fastify()
 
   const error = new Error('DOOM!')
-  fastify.register((instance, opts, next) => {
-    setTimeout(next, 500, error)
+  fastify.register((instance, opts, done) => {
+    setTimeout(done, 500, error)
   })
 
   fastify.inject({
@@ -329,7 +329,7 @@ test('inject a multipart request using form-body', t => {
   const fastify = Fastify()
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var body = ''
+    let body = ''
     payload.on('data', d => {
       body += d
     })
@@ -362,7 +362,7 @@ function getStream () {
   }
   util.inherits(Read, Stream.Readable)
   const word = '{"hello":"world"}'
-  var i = 0
+  let i = 0
 
   Read.prototype._read = function (size) {
     this.push(word[i] ? word[i++] : null)
@@ -444,8 +444,8 @@ test('should support builder-style injection with non-ready app', async (t) => {
 test('should handle errors in builder-style injection correctly', async (t) => {
   t.plan(2)
   const fastify = Fastify()
-  fastify.register((instance, opts, next) => {
-    next(new Error('Kaboom'))
+  fastify.register((instance, opts, done) => {
+    done(new Error('Kaboom'))
   })
 
   try {

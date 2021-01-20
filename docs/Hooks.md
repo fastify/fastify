@@ -50,7 +50,6 @@ Or `async/await`:
 fastify.addHook('onRequest', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 
@@ -97,7 +96,6 @@ Or `async/await`:
 fastify.addHook('preValidation', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 ### preHandler
@@ -112,7 +110,6 @@ Or `async/await`:
 fastify.addHook('preHandler', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 ### preSerialization
@@ -200,7 +197,6 @@ Or `async/await`:
 fastify.addHook('onResponse', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 
@@ -220,7 +216,6 @@ Or `async/await`:
 fastify.addHook('onTimeout', async (request, reply) => {
   // Some code
   await asyncMethod()
-  return
 })
 ```
 `onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance). The `onTimeout` hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.
@@ -461,7 +456,7 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 <a name="route-hooks"></a>
 
 ## Route level hooks
-You can declare one or more custom [onRequest](#onrequest), [onReponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler) and [preSerialization](#preserialization) hook(s) that will be **unique** for the route.
+You can declare one or more custom [onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler) and [preSerialization](#preserialization) hook(s) that will be **unique** for the route.
 If you do so, those hooks are always executed as the last hook in their category. <br/>
 This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.

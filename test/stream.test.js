@@ -58,10 +58,10 @@ test('should trigger the onSend hook', t => {
     reply.send(fs.createReadStream(__filename, 'utf8'))
   })
 
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     t.ok(payload._readableState)
     reply.header('Content-Type', 'application/javascript')
-    next()
+    done()
   })
 
   fastify.inject({
@@ -83,7 +83,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
   })
 
   let counter = 0
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     if (counter === 0) {
       t.ok(payload._readableState)
     } else if (counter === 1) {
@@ -91,7 +91,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
       t.strictEqual(error.statusCode, 500)
     }
     counter++
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -114,7 +114,7 @@ test('onSend hook stream', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     const gzStream = zlib.createGzip()
 
     reply.header('Content-Encoding', 'gzip')
@@ -123,7 +123,7 @@ test('onSend hook stream', t => {
       gzStream,
       t.error
     )
-    next(null, gzStream)
+    done(null, gzStream)
   })
 
   fastify.inject({
@@ -168,8 +168,8 @@ test('Destroying streams prematurely', t => {
   fastify.get('/', function (request, reply) {
     t.pass('Received request')
 
-    var sent = false
-    var reallyLongStream = new stream.Readable({
+    let sent = false
+    const reallyLongStream = new stream.Readable({
       read: function () {
         if (!sent) {
           this.push(Buffer.from('hello\n'))
@@ -185,7 +185,7 @@ test('Destroying streams prematurely', t => {
     t.error(err)
     fastify.server.unref()
 
-    var port = fastify.server.address().port
+    const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
       t.strictEqual(response.statusCode, 200)
@@ -230,8 +230,8 @@ test('Destroying streams prematurely should call close method', t => {
   fastify.get('/', function (request, reply) {
     t.pass('Received request')
 
-    var sent = false
-    var reallyLongStream = new stream.Readable({
+    let sent = false
+    const reallyLongStream = new stream.Readable({
       read: function () {
         if (!sent) {
           this.push(Buffer.from('hello\n'))
@@ -248,7 +248,7 @@ test('Destroying streams prematurely should call close method', t => {
     t.error(err)
     fastify.server.unref()
 
-    var port = fastify.server.address().port
+    const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
       t.strictEqual(response.statusCode, 200)
@@ -292,8 +292,8 @@ test('Destroying streams prematurely should call abort method', t => {
   fastify.get('/', function (request, reply) {
     t.pass('Received request')
 
-    var sent = false
-    var reallyLongStream = new stream.Readable({
+    let sent = false
+    const reallyLongStream = new stream.Readable({
       read: function () {
         if (!sent) {
           this.push(Buffer.from('hello\n'))
@@ -311,7 +311,7 @@ test('Destroying streams prematurely should call abort method', t => {
     t.error(err)
     fastify.server.unref()
 
-    var port = fastify.server.address().port
+    const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
       t.strictEqual(response.statusCode, 200)
@@ -358,7 +358,7 @@ test('return a 404 if the stream emits a 404 error', t => {
   fastify.get('/', function (request, reply) {
     t.pass('Received request')
 
-    var reallyLongStream = new Readable({
+    const reallyLongStream = new Readable({
       read: function () {
         setImmediate(() => {
           this.emit('error', new errors.NotFound())
@@ -373,7 +373,7 @@ test('return a 404 if the stream emits a 404 error', t => {
     t.error(err)
     fastify.server.unref()
 
-    var port = fastify.server.address().port
+    const port = fastify.server.address().port
 
     sget(`http://localhost:${port}`, function (err, response) {
       t.error(err)

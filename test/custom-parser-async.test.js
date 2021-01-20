@@ -20,7 +20,7 @@ test('contentTypeParser should add a custom async parser', t => {
   })
 
   fastify.addContentTypeParser('application/jsoff', async function (req, payload) {
-    var res = await new Promise((resolve, reject) => resolve(payload))
+    const res = await new Promise((resolve, reject) => resolve(payload))
     return res
   })
 
@@ -84,7 +84,7 @@ test('contentTypeParser should add a custom async parser - deprecated syntax', t
   })
 
   fastify.addContentTypeParser('application/jsoff', async function (req) {
-    var res = await new Promise((resolve, reject) => resolve(req))
+    const res = await new Promise((resolve, reject) => resolve(req))
     return res
   })
 

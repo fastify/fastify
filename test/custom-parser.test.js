@@ -9,7 +9,7 @@ const Fastify = require('..')
 const jsonParser = require('fast-json-body')
 
 function plainTextParser (request, callback) {
-  var body = ''
+  let body = ''
   request.setEncoding('utf8')
   request.on('error', onError)
   request.on('data', onData)
@@ -298,18 +298,18 @@ test('contentTypeParser should support encapsulation', t => {
   t.plan(6)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/jsoff', () => {})
     t.ok(instance.hasContentTypeParser('application/jsoff'))
 
-    instance.register((instance, opts, next) => {
+    instance.register((instance, opts, done) => {
       instance.addContentTypeParser('application/ffosj', () => {})
       t.ok(instance.hasContentTypeParser('application/jsoff'))
       t.ok(instance.hasContentTypeParser('application/ffosj'))
-      next()
+      done()
     })
 
-    next()
+    done()
   })
 
   fastify.ready(err => {
@@ -323,7 +323,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.post('/', (req, reply) => {
       reply.send(req.body)
     })
@@ -334,7 +334,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
       })
     })
 
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -436,7 +436,7 @@ test('catch all content type parser', t => {
   })
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -484,7 +484,7 @@ test('catch all content type parser should not interfere with other conte type p
   })
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -538,7 +538,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
   t.tearDown(fastify.close.bind(fastify))
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
-    var data = ''
+    let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {
       done(null, data)
@@ -662,7 +662,7 @@ test('Can override the default json parser in a plugin', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.addContentTypeParser('application/json', function (req, payload, done) {
       t.ok('called')
       jsonParser(payload, function (err, body) {
@@ -674,7 +674,7 @@ test('Can override the default json parser in a plugin', t => {
       reply.send(req.body)
     })
 
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -754,7 +754,7 @@ test('Should get the body as string', t => {
     t.ok('called')
     t.ok(typeof body === 'string')
     try {
-      var json = JSON.parse(body)
+      const json = JSON.parse(body)
       done(null, json)
     } catch (err) {
       err.statusCode = 400
@@ -900,7 +900,7 @@ test('Should get the body as string', t => {
     t.ok('called')
     t.ok(typeof body === 'string')
     try {
-      var plainText = body
+      const plainText = body
       done(null, plainText)
     } catch (err) {
       err.statusCode = 400
@@ -939,7 +939,7 @@ test('Should get the body as buffer', t => {
     t.ok('called')
     t.ok(body instanceof Buffer)
     try {
-      var json = JSON.parse(body)
+      const json = JSON.parse(body)
       done(null, json)
     } catch (err) {
       err.statusCode = 400
@@ -978,7 +978,7 @@ test('Should get the body as buffer', t => {
     t.ok('called')
     t.ok(body instanceof Buffer)
     try {
-      var plainText = body
+      const plainText = body
       done(null, plainText)
     } catch (err) {
       err.statusCode = 400
@@ -1210,6 +1210,36 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
         error: 'Payload Too Large',
         message: 'Request body is too large'
       })
+      fastify.close()
+    })
+  })
+})
+
+test('should be able to use default parser for extra content type', t => {
+  t.plan(4)
+  const fastify = Fastify()
+  t.tearDown(() => fastify.close())
+
+  fastify.post('/', (request, reply) => {
+    reply.send(request.body)
+  })
+
+  fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'text/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.strictDeepEqual(JSON.parse(body.toString()), { hello: 'world' })
       fastify.close()
     })
   })

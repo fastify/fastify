@@ -4,15 +4,15 @@
 
 The [Validation and Serialization](Validation-and-Serialization.md) documentation outlines all parameters accepted by Fastify to set up JSON Schema Validation in order to validate the input, and JSON Schema Serialization in order to optimize the output.
 
-[`fluent-schema`](https://github.com/fastify/fluent-schema) can be used to simplify this task while allowing the reuse of constants.
+[`fluent-json-schema`](https://github.com/fastify/fluent-json-schema) can be used to simplify this task while allowing the reuse of constants.
 
 ### Basic settings
 
 ```js
-const S = require('fluent-schema')
+const S = require('fluent-json-schema')
 
 // You can have an object like this, or query a DB to get the values
-const MY_KEY = {
+const MY_KEYS = {
   KEY1: 'ONE',
   KEY2: 'TWO'
 }
@@ -51,7 +51,7 @@ fastify.post('/the/url', { schema }, handler)
 
 ### Reuse
 
-With `fluent-schema` you can manipulate your schemas in an easier and programmatic way and then reuse them
+With `fluent-json-schema` you can manipulate your schemas in an easier and programmatic way and then reuse them
 thanks to the `addSchema()` method. You can refer to the schema in two different manners that are detailed
 in the [Validation-and-Serialization.md](Validation-and-Serialization.md#adding-a-shared-schema) documentation.
 

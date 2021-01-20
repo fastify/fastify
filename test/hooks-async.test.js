@@ -530,7 +530,7 @@ test('preHandler respond with a stream', t => {
   })
 
   // we are calling `reply.send` inside the `preHandler` hook with a stream,
-  // this triggers the `onSend` hook event if `preHanlder` has not yet finished
+  // this triggers the `onSend` hook event if `preHandler` has not yet finished
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {
@@ -648,4 +648,52 @@ test('The this should be the same of the encapsulation level', async t => {
   await fastify.inject({ method: 'GET', path: '/nested' })
   await fastify.inject({ method: 'GET', path: '/' })
   await fastify.inject({ method: 'GET', path: '/nested' })
+})
+
+test('preSerializationEnd should handle errors if the serialize method throws', t => {
+  t.test('works with sync preSerialization', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', (request, reply, payload, done) => {
+      done(null, payload)
+    })
+
+    fastify.post('/', {
+      handler (req, reply) { reply.send({ notOk: true }) },
+      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.notEqual(res.statusCode, 200)
+    })
+  })
+
+  t.test('works with async preSerialization', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    fastify.addHook('preSerialization', async (request, reply, payload) => {
+      return payload
+    })
+
+    fastify.post('/', {
+      handler (req, reply) { reply.send({ notOk: true }) },
+      schema: { response: { 200: { required: ['ok'], properties: { ok: { type: 'boolean' } } } } }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/'
+    }, (err, res) => {
+      t.error(err)
+      t.notEqual(res.statusCode, 200)
+    })
+  })
+
+  t.end()
 })

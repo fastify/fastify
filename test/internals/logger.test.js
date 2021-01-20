@@ -23,7 +23,7 @@ test('The logger should add a unique id for every request', t => {
   fastify.listen(0, err => {
     t.error(err)
     const queue = new Queue()
-    for (var i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       queue.add(checkId)
     }
     queue.add(() => {

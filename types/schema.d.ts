@@ -30,7 +30,13 @@ export interface FastifySchemaValidationError {
   dataPath: string;
 }
 
+export interface FastifyValidationResult {
+  errors?: FastifySchemaValidationError[] | null;
+}
+
 /**
  * Compiler for FastifySchema Type
  */
 export type FastifySchemaCompiler = (routeSchema: FastifyRouteSchemaDef) => FastifyValidationResult
+
+export type FastifySerializerCompiler = (routeSchema: FastifyRouteSchemaDef) => (data: any) => string

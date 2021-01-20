@@ -1,14 +1,14 @@
 <h1 align="center">Fastify</h1>
 
 ## Validation and Serialization
-Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
+Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](https://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 > ## ⚠  Security Notice
 > Treat the schema definition as application code.
 > As both validation and serialization features dynamically evaluate
 > code with `new Function()`, it is not safe to use
-> user-provided schemas. See [Ajv](http://npm.im/ajv) and
-> [fast-json-stringify](http://npm.im/fast-json-stringify) for more
+> user-provided schemas. See [Ajv](https://npm.im/ajv) and
+> [fast-json-stringify](https://npm.im/fast-json-stringify) for more
 > details.
 
 
@@ -508,16 +508,27 @@ fastify.post('/', { schema, attachValidation: true }, function (req, reply) {
 })
 ```
 
+#### `schemaErrorFormatter`
+
 If you want to format errors yourself, you can provide a sync function that must return an error as the `schemaErrorFormatter` option to Fastify when instantiating.
+The context function will be the Fastify server instance.
 
 `errors` is an array of Fastify schema errors `FastifySchemaValidationError`.
 `dataVar` is the currently validated part of the schema. (params | body | querystring | headers).
+
 ```js
 const fastify = Fastify({
   schemaErrorFormatter: (errors, dataVar) => {
     // ... my formatting logic 
     return new Error(myErrorMessage)
   }
+})
+
+// or
+fastify.setSchemaErrorFormatter(function (errors, dataVar) {
+  this.log.error({ err: errors }, 'Validation failed')
+  // ... my formatting logic 
+  return new Error(myErrorMessage)
 })
 ```
 
@@ -720,7 +731,7 @@ const refToSharedSchemaDefinitions = {
 
 <a name="resources"></a>
 ### Resources
-- [JSON Schema](http://json-schema.org/)
+- [JSON Schema](https://json-schema.org/)
 - [Understanding JSON Schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
 - [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)

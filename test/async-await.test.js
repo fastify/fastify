@@ -378,7 +378,7 @@ test('async await plugin', async t => {
   }
 })
 
-test('does not call reply.send() twice if 204 reponse is already sent', t => {
+test('does not call reply.send() twice if 204 response is already sent', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -402,8 +402,8 @@ test('does not call reply.send() twice if 204 reponse is already sent', t => {
 test('error is logged because promise was fulfilled with undefined', t => {
   t.plan(3)
 
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -442,8 +442,8 @@ test('error is logged because promise was fulfilled with undefined', t => {
 test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
   t.plan(3)
 
-  var fastify = null
-  var stream = split(JSON.parse)
+  let fastify = null
+  const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
@@ -482,9 +482,9 @@ test('error is not logged because promise was fulfilled with undefined but statu
 test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
   t.plan(4)
 
-  var fastify = null
-  var stream = split(JSON.parse)
-  var payload = { hello: 'world' }
+  let fastify = null
+  const stream = split(JSON.parse)
+  const payload = { hello: 'world' }
   try {
     fastify = Fastify({
       logger: {
@@ -613,6 +613,34 @@ test('customErrorHandler support without throwing', t => {
     t.strictEqual(res.statusCode, 401)
     t.deepEqual(
       'kaboom',
+      res.payload
+    )
+  })
+})
+
+// See https://github.com/fastify/fastify/issues/2653
+test('customErrorHandler only called if reply not already sent', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async (req, reply) => {
+    await reply.send('success')
+    const error = new Error('ouch')
+    error.statusCode = 400
+    throw error
+  })
+
+  fastify.setErrorHandler(t.fail.bind(t, 'should not be called'))
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(
+      'success',
       res.payload
     )
   })

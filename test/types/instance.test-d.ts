@@ -1,4 +1,4 @@
-import fastify, { FastifyError, FastifyInstance } from '../../fastify'
+import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 const server = fastify()
@@ -16,9 +16,6 @@ expectAssignable<FastifyInstance>(server.addSchema({
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<unknown>(server.getSchema('SchemaId'))
 
-expectType<unknown>(server.use(() => {}))
-expectType<unknown>(server.use('/foo', () => {}))
-
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
     expectAssignable<FastifyInstance>(this)
@@ -30,6 +27,8 @@ expectAssignable<FastifyInstance>(
     expectType<FastifyError>(error)
   })
 )
+
+expectType<ValidationResult[] | undefined>(FastifyError().validation)
 
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
@@ -46,8 +45,8 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
-function invalidReplySerialzer (payload: number, statusCode: string) {}
-expectError(server.setReplySerializer(invalidReplySerialzer))
+function invalidReplySerializer (payload: number, statusCode: string) {}
+expectError(server.setReplySerializer(invalidReplySerializer))
 
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
@@ -55,9 +54,33 @@ expectError(server.setReplySerializer(serializerWithInvalidReturn))
 function invalidSchemaErrorFormatter () {}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
+// test listen method callback
+expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {}))
+expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {}))
+expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
+expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
+expectAssignable<void>(server.listen(3000, (err, address) => {}))
+expectAssignable<void>(server.listen('3000', (err, address) => {}))
+
+// test listen method promise
+expectAssignable<PromiseLike<string>>(server.listen(3000))
+expectAssignable<PromiseLike<string>>(server.listen('3000'))
+expectAssignable<PromiseLike<string>>(server.listen(3000, '', 0))
+expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
+expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
+expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
+
+// test listen opts objects
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+
+expectType<FastifyInstance>(fastify().get('/', {
+  handler: () => {},
+  errorHandler: (error, request, reply) => {
+    expectAssignable<void>(server.errorHandler(error, request, reply))
+  }
+}))

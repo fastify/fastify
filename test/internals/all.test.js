@@ -28,7 +28,7 @@ test('fastify.all should add all the methods to the same url', t => {
 
     fastify.inject(options, (err, res) => {
       t.error(err)
-      var payload = JSON.parse(res.payload)
+      const payload = JSON.parse(res.payload)
       t.deepEqual(payload, { method: method })
     })
   }

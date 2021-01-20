@@ -3,9 +3,9 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
-const S = require('fluent-schema')
+const S = require('fluent-json-schema')
 
-test('use fluent-schema object', t => {
+test('use fluent-json-schema object', t => {
   t.plan(15)
   const fastify = Fastify()
 
@@ -90,7 +90,7 @@ test('use fluent-schema object', t => {
   })
 })
 
-test('use complex fluent-schema object', t => {
+test('use complex fluent-json-schema object', t => {
   t.plan(1)
   const fastify = Fastify()
 

@@ -1,5 +1,5 @@
 import { expectType, expectError } from 'tsd'
-import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance } from '../../fastify'
+import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as pino from 'pino'
 
@@ -20,7 +20,7 @@ class CustomLoggerImpl implements CustomLogger {
   customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
-  info (arg1: string | object, arg2?: string | unknown, ...args: unknown[]): void {
+  info (arg1: string | Record<string, unknown>, arg2?: string | unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
 
@@ -114,3 +114,36 @@ const serverAutoInferredPinoPrettyObjectOption = fastify({
 })
 
 expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyObjectOption.log)
+
+const serverAutoInferredSerializerObjectOption = fastify({
+  logger: {
+    serializers: {
+      req (IncomingMessage) {
+        return {
+          method: 'method',
+          url: 'url',
+          version: 'version',
+          hostname: 'hostname',
+          remoteAddress: 'remoteAddress',
+          remotePort: 80,
+          other: ''
+        }
+      },
+      res (ServerResponse) {
+        return {
+          statusCode: 'statusCode'
+        }
+      },
+      err (FastifyError) {
+        return {
+          other: '',
+          type: 'type',
+          message: 'msg',
+          stack: 'stack'
+        }
+      }
+    }
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverAutoInferredSerializerObjectOption.log)

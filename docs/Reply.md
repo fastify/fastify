@@ -11,7 +11,7 @@
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
-  - [.redirect(dest)](#redirectdest)
+  - [.redirect([code,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -44,7 +44,7 @@ and properties:
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
 - `.type(value)` - Sets the header `Content-Type`.
-- `.redirect([code,] url)` - Redirect to the specified url, the status code is optional (default to `302`).
+- `.redirect([code,] dest)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
 - `.serialize(payload)` - Serializes the specified payload using the default json serializer or using the custom serializer (if one is set) and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
@@ -299,6 +299,7 @@ fastify.get('/streams', function (request, reply) {
 <a name="errors"></a>
 #### Errors
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:
+
 ```js
 {
   error: String        // the http error message
@@ -307,6 +308,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
+
 You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
@@ -318,8 +320,38 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
+To customize the JSON error output you can do it by:
+
+- setting a response JSON schema for the status code you need
+- add the additional properties to the `Error` instance
+
+Notice that if the returned status code is not in the response schema list, the default behaviour will be applied.
+
+```js
+fastify.get('/', {
+  schema: {
+    response: {
+      501: {
+        type: 'object',
+        properties: {
+          statusCode: { type: 'number' },
+          code: { type: 'string' },
+          error: { type: 'string' },
+          message: { type: 'string' },
+          time: { type: 'string' }
+        }
+      }
+    }
+  }
+}, function (request, reply) {
+  const error = new Error('This endpoint has not been implemented')
+  error.time = 'it will be implemented in two weeks'
+  reply.code(501).send(error)
+})
+```
+
 If you want to completely customize the error handling, checkout [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
-*Note: you are responsibile for logging when customizing the error handler*
+*Note: you are responsible for logging when customizing the error handler*
 
 API:
 
@@ -377,14 +409,14 @@ fastify.get('/async-await', options, async function (request, reply) {
 Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an object that has `statusCode` (or `status`) and `message` properties to modify the reply.
 
 ```js
-fastify.get('/teapot', async function (request, reply) => {
+fastify.get('/teapot', async function (request, reply) {
   const err = new Error()
   err.statusCode = 418
   err.message = 'short and stout'
   throw err
 })
 
-fastify.get('/botnet', async function (request, reply) => {
+fastify.get('/botnet', async function (request, reply) {
   throw { statusCode: 418, message: 'short and stout' }
   // will return to the client the same json
 })

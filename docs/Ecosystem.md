@@ -41,6 +41,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-redis`](https://github.com/fastify/fastify-redis) Fastify Redis connection plugin, with which you can share the same Redis connection across every part of your server.
 - [`fastify-reply-from`](https://github.com/fastify/fastify-reply-from) Plugin to forward the current http request to another server.
 - [`fastify-routes`](https://github.com/fastify/fastify-routes) Plugin that provides a `Map` of routes.
+- [`fastify-schedule`](https://github.com/fastify/fastify-schedule) Plugin for scheduling periodic jobs, based on [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
 - [`fastify-sensible`](https://github.com/fastify/fastify-sensible) Defaults for Fastify that everyone can agree on. It adds some useful decorators such as http errors and assertions, but also more request and reply methods.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Swagger documentation generator for Fastify.

@@ -33,37 +33,37 @@ const optsPost = {
 }
 
 fastify
-  .addHook('onRequest', function (request, reply, next) {
+  .addHook('onRequest', function (request, reply, done) {
     console.log('onRequest')
-    next()
+    done()
   })
-  .addHook('preParsing', function (request, reply, next) {
+  .addHook('preParsing', function (request, reply, done) {
     console.log('preParsing')
-    next()
+    done()
   })
-  .addHook('preValidation', function (request, reply, next) {
+  .addHook('preValidation', function (request, reply, done) {
     console.log('preValidation')
-    next()
+    done()
   })
-  .addHook('preHandler', function (request, reply, next) {
+  .addHook('preHandler', function (request, reply, done) {
     console.log('preHandler')
-    next()
+    done()
   })
-  .addHook('preSerialization', function (request, reply, payload, next) {
+  .addHook('preSerialization', function (request, reply, payload, done) {
     console.log('preSerialization', payload)
-    next()
+    done()
   })
-  .addHook('onError', function (request, reply, error, next) {
+  .addHook('onError', function (request, reply, error, done) {
     console.log('onError', error.message)
-    next()
+    done()
   })
-  .addHook('onSend', function (request, reply, payload, next) {
+  .addHook('onSend', function (request, reply, payload, done) {
     console.log('onSend', payload)
-    next()
+    done()
   })
-  .addHook('onResponse', function (request, reply, next) {
+  .addHook('onResponse', function (request, reply, done) {
     console.log('onResponse')
-    next()
+    done()
   })
   .addHook('onRoute', function (routeOptions) {
     console.log('onRoute')

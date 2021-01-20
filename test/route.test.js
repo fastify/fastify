@@ -591,6 +591,36 @@ test('Creates a HEAD route for each GET one', t => {
   })
 })
 
+test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const arr = []
+  fastify.register((instance, opts, next) => {
+    instance.addHook('onRoute', (routeOptions) => {
+      arr.push(`${routeOptions.method} ${routeOptions.url}`)
+    })
+
+    instance.route({
+      method: 'GET',
+      path: '/',
+      exposeHeadRoute: true,
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ here: 'is coffee' })
+      }
+    })
+
+    next()
+  }, { prefix: '/v1' })
+
+  await fastify.ready()
+
+  console.log(arr)
+  t.ok(true)
+})
+
 test('Will not create a HEAD route that is not GET', t => {
   t.plan(11)
 
@@ -787,6 +817,32 @@ test('HEAD route should respect custom onSend handlers', t => {
     t.strictEqual(res.body, '')
     t.strictEqual(counter, 2)
   })
+})
+
+test('no warning for exposeHeadRoute', async t => {
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    exposeHeadRoute: true,
+    async handler () {
+      return 'hello world'
+    }
+  })
+
+  const listener = (w) => {
+    console.error(w)
+    t.fail('no warning')
+  }
+
+  process.on('warning', listener)
+
+  await fastify.listen(0)
+
+  process.removeListener('warning', listener)
+
+  await fastify.close()
 })
 
 test("HEAD route should handle stream.on('error')", t => {

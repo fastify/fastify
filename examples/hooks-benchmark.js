@@ -18,27 +18,27 @@ const opts = {
 }
 
 fastify
-  .addHook('onRequest', function (request, reply, next) {
-    next()
+  .addHook('onRequest', function (request, reply, done) {
+    done()
   })
-  .addHook('onRequest', function (request, reply, next) {
-    next()
-  })
-
-fastify
-  .addHook('preHandler', function (request, reply, next) {
-    next()
-  })
-  .addHook('preHandler', function (request, reply, next) {
-    setImmediate(next)
-  })
-  .addHook('preHandler', function (request, reply, next) {
-    next()
+  .addHook('onRequest', function (request, reply, done) {
+    done()
   })
 
 fastify
-  .addHook('onSend', function (request, reply, payload, next) {
-    next()
+  .addHook('preHandler', function (request, reply, done) {
+    done()
+  })
+  .addHook('preHandler', function (request, reply, done) {
+    setImmediate(done)
+  })
+  .addHook('preHandler', function (request, reply, done) {
+    done()
+  })
+
+fastify
+  .addHook('onSend', function (request, reply, payload, done) {
+    done()
   })
 
 fastify.get('/', opts, function (request, reply) {

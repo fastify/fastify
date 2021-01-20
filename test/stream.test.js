@@ -58,10 +58,10 @@ test('should trigger the onSend hook', t => {
     reply.send(fs.createReadStream(__filename, 'utf8'))
   })
 
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     t.ok(payload._readableState)
     reply.header('Content-Type', 'application/javascript')
-    next()
+    done()
   })
 
   fastify.inject({
@@ -83,7 +83,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
   })
 
   let counter = 0
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     if (counter === 0) {
       t.ok(payload._readableState)
     } else if (counter === 1) {
@@ -91,7 +91,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
       t.strictEqual(error.statusCode, 500)
     }
     counter++
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -114,7 +114,7 @@ test('onSend hook stream', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.addHook('onSend', (req, reply, payload, next) => {
+  fastify.addHook('onSend', (req, reply, payload, done) => {
     const gzStream = zlib.createGzip()
 
     reply.header('Content-Encoding', 'gzip')
@@ -123,7 +123,7 @@ test('onSend hook stream', t => {
       gzStream,
       t.error
     )
-    next(null, gzStream)
+    done(null, gzStream)
   })
 
   fastify.inject({

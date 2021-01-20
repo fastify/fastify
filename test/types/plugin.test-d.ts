@@ -10,10 +10,10 @@ interface TestOptions extends FastifyPluginOptions {
   option1: string;
   option2: boolean;
 }
-const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, next) { }
+const testPluginOpts: FastifyPluginCallback<TestOptions> = function (instance, opts, done) { }
 const testPluginOptsAsync: FastifyPluginAsync<TestOptions> = async function (instance, opts) { }
 
-const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, next: (error?: FastifyError) => void) => { }
+const testPluginOptsWithType = (instance: FastifyInstance, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginOptsWithTypeAsync = async (instance: FastifyInstance, opts: FastifyPluginOptions) => { }
 
 expectError(fastify().register(testPluginOpts, {})) // error because missing required options from generic declaration
@@ -22,14 +22,14 @@ expectError(fastify().register(testPluginOptsAsync, {})) // error because missin
 expectAssignable<FastifyInstance>(fastify().register(testPluginOpts, { option1: '', option2: true }))
 expectAssignable<FastifyInstance>(fastify().register(testPluginOptsAsync, { option1: '', option2: true }))
 
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, next) { }))
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, next) { }, () => { }))
-expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, next) { }, { logLevel: 'info', prefix: 'foobar' }))
+expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }))
+expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }, () => { }))
+expectAssignable<FastifyInstance>(fastify().register(function (instance, opts, done) { }, { logLevel: 'info', prefix: 'foobar' }))
 
 expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin')))
 expectAssignable<FastifyInstance>(fastify().register(import('./dummy-plugin'), { foo: 1 }))
 
-const testPluginCallback: FastifyPluginCallback = function (instance, opts, next) { }
+const testPluginCallback: FastifyPluginCallback = function (instance, opts, done) { }
 expectAssignable<FastifyInstance>(fastify().register(testPluginCallback, {}))
 
 const testPluginAsync: FastifyPluginAsync = async function (instance, opts) { }
@@ -39,7 +39,7 @@ expectAssignable<FastifyInstance>(fastify().register(function (instance, opts): 
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, () => { }))
 expectAssignable<FastifyInstance>(fastify().register(async function (instance, opts) { }, { logLevel: 'info', prefix: 'foobar' }))
 
-expectError(fastify().register(function (instance, opts, next) { }, { logLevel: '' })) // must use a valid logLevel
+expectError(fastify().register(function (instance, opts, done) { }, { logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)

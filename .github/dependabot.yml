@@ -1,5 +1,10 @@
 version: 2
 updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
 - package-ecosystem: npm
   directory: "/"
   schedule:

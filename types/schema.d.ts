@@ -26,7 +26,7 @@ export interface FastifySchemaValidationError {
 }
 
 export interface FastifyValidationResult {
-  (data:any): { error?: Error; value?: any } | Boolean;
+  (data:any): { error?: Error; value?: any } | boolean;
   errors?: FastifySchemaValidationError[] | null;
 }
 

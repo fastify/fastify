@@ -21,6 +21,7 @@ export interface FastifyRouteSchemaDef {
 }
 
 export interface FastifyValidationResult {
+  (data:any): { error?: Error; value?: any };
   errors?: FastifySchemaValidationError[] | null;
 }
 

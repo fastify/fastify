@@ -40,6 +40,17 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler(() => {
   return data => JSON.stringify(data)
 }))
 
+expectAssignable<FastifyInstance>(server.post('/test', {
+  validatorCompiler: ({ schema }) => {
+    return data => {
+      if (!data || data.constructor !== Object) {
+        return { error: new Error('value is not an object') }
+      }
+      return { value: data }
+    }
+  }
+}, async req => req.body))
+
 expectError(server.get(
   '/unknown-schema-prop',
   {

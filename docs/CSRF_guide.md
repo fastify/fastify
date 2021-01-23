@@ -13,7 +13,7 @@ This document contains a detailed guide to CSRF attacks, popular defenses and po
 
 
 
-## Be aware of the danger: Cross-Site Request Forgery (CSRF)
+### Be aware of the danger: Cross-Site Request Forgery (CSRF)
 <a id="csrf"></a>
                                                   
 A popular web vulnerability that has attracted a lot of attention in the research community is Cross-Site Scripting (XSS). This vulnerability allows the attacker to inject arbitrary JavaScript (JS) code on a website that will run in the same origin as the website. According to the Open Web Application Security Project (OWASP), XSS is the second most prevalent issue in the 2017's [OWASP Top 10][XSS], and it is found in around two-thirds of all web applications. However, while XSS gets all the attention, few developers pay attention to another attack that can be equally destructive and far easier to exploit. This attack is called Cross-Site Request Forgery (CSRF). It was ranked by OWASP as the fifth most dangerous web vulnerability twice (2007, 2010) and eighth in 2013. Fortunately, the developers' awareness has increased in recent years and most web frameworks provide at least one defensive mechanism against CSRF. As a result, CSRF was not listed in the 2017's OWASP Top 10 list. Unfortunately, this attack is far from extinct.
@@ -141,4 +141,3 @@ I hope that developers become aware of these attack vectors and read the documen
 [ws]: https://christian-schneider.net/CrossSiteWebSocketHijacking.html
 [portal]: https://research.securitum.com/security-analysis-of-portal-element/
 [fb]: https://www.facebook.com/notes/facebook-bug-bounty/client-side-csrf/2056804174333798/?fref=mentions
-

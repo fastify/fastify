@@ -36,7 +36,7 @@ CSRF can be considered a type of the confused deputy attack where the web browse
 -	The means for authentication must be automatically attached to the request by the browser (e.g. [Basic Authentication request header][basic] or cookies). Note that, different from XSS, CSRF aims to reuse the session cookie, not steal it.
  
 
- ## Impact of CSRF attacks
+ ### Impact of CSRF attacks
 <a id="impact"></a>  
                                                            
 The impact of the attack depends on the specific operation that is vulnerable to CSRF, but also on the privileges that the victim has. This can result in a money transfer, change of password, a purchase in a shopping website, account compromise, created admin user, etc. Sometimes CSRF can be even more dangerous than session hijacking. For instance, in a court case, the victim cannot argue that he did not perform a transaction because the IP of the request (although unintended) was that of the victim. To makes things even worse, the victim doesn't even know which malicious website he visited that triggered the CSRF attack. In the case of session hijacking, the malicious attacker logs in with stolen credentials (usually) from an IP address different from that of the victim’s. Therefore, in this case, the victim can argue that he was the victim of an attack. There have also been other examples of CSRF attacks that lead to [remote code execution with root privileges][remote] or [compromise of a root certificate][cert]. 

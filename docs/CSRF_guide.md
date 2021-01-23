@@ -59,7 +59,7 @@ Since its discovery in 2001, there have been many reported CSRF attacks. Major w
 [Double Submit Cookie][double] is another popular countermeasure that makes use of cookies instead of session storage to store a CSRF token. The security of this countermeasure relies on the SOP. Only JS running within the same origin is allowed to read or modify the cookie's value. The server-side generates a CSRF token same as in the STP countermeasure. The server creates a cookie with the CSRF token in it and sends both this cookie and the CSRF token (usually in an HTML form) to the client-side. When a request is sent to the server-side, this cookie that holds the CSRF token will be automatically sent by the browser in addition to the CSRF token in the request body/custom header, hence the name "Double Submit". The server-side will retrieve the CSRF token from the cookie and compare against the CSRF token in the request body/custom HTTP request header.
 
 
-  ##  Great does not mean perfect!
+###  Great does not mean perfect!
 <a id="exploits"></a> 
 
                                                        

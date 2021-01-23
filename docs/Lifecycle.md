@@ -36,7 +36,11 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
-Starting from the `User Handler`, the user can call `reply.hijack()` and prevent fastify from sending the response and running of the `preSerialization`, `onSend`, `onError`, `onTimeout`, and `onResponse` hooks.
+At any point before or during the `User Handler`, `reply.hijack()` can be called to prevent fastify from:
+- Running all the following hooks and user handler
+- Sending the response automatically
+
+NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
 
 ## Reply Lifecycle
 

@@ -52,7 +52,7 @@ Since its discovery in 2001, there have been many reported CSRF attacks. Major w
 -	[Twitter][twitter] was also vulnerable to CSRF in 2010. When authenticated users visited the malicious website, they unintentionally posted two tweets – one with a link leading to this malicious website and another with a tweet about goats. Every user who clicked on the link provided in the first tweet also posted those two tweets, hence the worm was spread.
 
                                                         
- ## Most popular anti-CSRF defenses
+ ### Most popular anti-CSRF defenses
 <a id="defenses"></a>                                                         
 
 [Synchronizer Token Pattern (STP)][stp] is one of the most popular countermeasures. A secret, unguessable, random value (known as CSRF token) is generated on the server-side using a cryptographically-secure pseudorandom generator (CSPRNG) with a random input/seed. The generated token is stored in server-side storage and must be tied to a specific user (usually linked to the Session ID). This storage can be a session datastore (e.g. Redis), a database, a filesystem (e.g. in PHP), server's memory, etc. The CSRF token is sent as part of the server's response and is usually placed in a hidden HTML form field. Once a request arrives in server-side, the server will use the Session ID from the session cookie (found in the incoming request) to extract the CSRF token from the storage. It will then compare it against the CSRF token that came as part of the request's body (or in a custom header).

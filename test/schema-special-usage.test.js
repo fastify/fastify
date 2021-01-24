@@ -1,6 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
+const Joi = require('@hapi/joi')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 
@@ -218,6 +219,37 @@ test('Should handle $patch keywords in body', t => {
     }, (err, res) => {
       t.error(err)
       t.equals(res.statusCode, 200)
+    })
+  })
+})
+
+test('JOI validation overwrite request headers', t => {
+  t.plan(3)
+  const schemaValidator = ({ schema }) => data => {
+    const validationResult = schema.validate(data)
+    return validationResult
+  }
+
+  const fastify = Fastify()
+  fastify.setValidatorCompiler(schemaValidator)
+
+  fastify.get('/', {
+    schema: {
+      headers: Joi.object({
+        'user-agent': Joi.string().required(),
+        host: Joi.string().required()
+      })
+    }
+  }, (request, reply) => {
+    reply.send(request.headers)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(res.json(), {
+      'user-agent': 'lightMyRequest',
+      host: 'localhost:80'
     })
   })
 })

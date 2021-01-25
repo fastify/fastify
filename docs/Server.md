@@ -675,6 +675,34 @@ fastify.listen({
 }, (err) => {})
 ```
 
+<a name="getDefaultRoute"></a>
+#### getDefaultRoute
+Method to get the `defaultRoute` for the server:
+
+```js
+const defaultRoute = fastify.getDefaultRoute()
+```
+
+<a name="setDefaultRoute"></a>
+#### setDefaultRoute
+Method to set the `defaultRoute` for the server:
+
+```js
+const defaultRoute = function (req, res) {
+  res.end('hello world')
+}
+
+fastify.setDefaultRoute(defaultRoute)
+```
+
+<a name="routing"></a>
+#### routing
+Method to access the `lookup` method of the internal router and match the request to the appropriate handler:
+
+```js
+fastify.routing(req, res)
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also has shorthand functions, check [here](Routes.md).

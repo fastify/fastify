@@ -1,5 +1,5 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
-import { RouteOptions, RouteShorthandMethod, RouteGenericInterface } from './route'
+import { RouteOptions, RouteShorthandMethod, RouteGenericInterface, DefaultRoute } from './route'
 import { FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
@@ -58,6 +58,9 @@ export interface FastifyInstance<
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
+
+  getDefaultRoute: DefaultRoute<RawRequest, RawReply>;
+  setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

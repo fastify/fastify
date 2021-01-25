@@ -189,6 +189,10 @@ function fastify (options) {
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
     [kAvvioBoot]: null,
+    // routing method
+    routing: httpHandler,
+    getDefaultRoute: router.getDefaultRoute.bind(router),
+    setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
     delete: function _delete (url, opts, handler) {
       return router.prepareRoute.call(this, 'DELETE', url, opts, handler)

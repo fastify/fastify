@@ -21,10 +21,10 @@ test('server methods should be encapsulated via .register', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorate('test', () => {})
     t.ok(instance.test)
-    next()
+    done()
   })
 
   fastify.ready(() => {
@@ -36,10 +36,10 @@ test('hasServerMethod should check if the given method already exist', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorate('test', () => {})
     t.ok(instance.hasDecorator('test'))
-    next()
+    done()
   })
 
   fastify.ready(() => {
@@ -51,7 +51,7 @@ test('decorate should throw if a declared dependency is not present', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     try {
       instance.decorate('test', () => {}, ['dependency'])
       t.fail()
@@ -59,7 +59,7 @@ test('decorate should throw if a declared dependency is not present', t => {
       t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
       t.is(e.message, 'The decorator is missing dependency \'dependency\'.')
     }
-    next()
+    done()
   })
 
   fastify.ready(() => t.pass())
@@ -70,8 +70,8 @@ test('should pass error for missing request decorator', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  const plugin = fp(function (instance, opts, next) {
-    next()
+  const plugin = fp(function (instance, opts, done) {
+    done()
   }, {
     decorators: {
       request: ['foo']
@@ -89,7 +89,7 @@ test('decorateReply inside register', t => {
   t.plan(12)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorateReply('test', 'test')
     t.ok(instance[symbols.kReply].prototype.test)
 
@@ -98,7 +98,7 @@ test('decorateReply inside register', t => {
       reply.send({ hello: 'world' })
     })
 
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -136,7 +136,7 @@ test('decorateReply as plugin (inside .after)', t => {
   t.plan(11)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.register(fp((i, o, n) => {
       instance.decorateReply('test', 'test')
       n()
@@ -146,7 +146,7 @@ test('decorateReply as plugin (inside .after)', t => {
         reply.send({ hello: 'world' })
       })
     })
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -184,7 +184,7 @@ test('decorateReply as plugin (outside .after)', t => {
   t.plan(11)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.register(fp((i, o, n) => {
       instance.decorateReply('test', 'test')
       n()
@@ -194,7 +194,7 @@ test('decorateReply as plugin (outside .after)', t => {
       t.ok(reply.test)
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -232,7 +232,7 @@ test('decorateRequest inside register', t => {
   t.plan(12)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorateRequest('test', 'test')
     t.ok(instance[symbols.kRequest].prototype.test)
 
@@ -241,7 +241,7 @@ test('decorateRequest inside register', t => {
       reply.send({ hello: 'world' })
     })
 
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -279,7 +279,7 @@ test('decorateRequest as plugin (inside .after)', t => {
   t.plan(11)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.register(fp((i, o, n) => {
       instance.decorateRequest('test', 'test')
       n()
@@ -289,7 +289,7 @@ test('decorateRequest as plugin (inside .after)', t => {
         reply.send({ hello: 'world' })
       })
     })
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -327,7 +327,7 @@ test('decorateRequest as plugin (outside .after)', t => {
   t.plan(11)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.register(fp((i, o, n) => {
       instance.decorateRequest('test', 'test')
       n()
@@ -337,7 +337,7 @@ test('decorateRequest as plugin (outside .after)', t => {
       t.ok(req.test)
       reply.send({ hello: 'world' })
     })
-    next()
+    done()
   })
 
   fastify.get('/no', (req, reply) => {
@@ -413,10 +413,10 @@ test('hasRequestDecorator', t => {
 
     t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
 
-    fastify.register(function (fastify2, opts, next) {
+    fastify.register(function (fastify2, opts, done) {
       fastify2.decorateRequest(requestDecoratorName, 42)
       t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
-      next()
+      done()
     })
 
     t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
@@ -432,9 +432,9 @@ test('hasRequestDecorator', t => {
 
     fastify.decorateRequest(requestDecoratorName, 42)
 
-    fastify.register(function (fastify2, opts, next) {
+    fastify.register(function (fastify2, opts, done) {
       t.ok(fastify2.hasRequestDecorator(requestDecoratorName))
-      next()
+      done()
     })
 
     fastify.ready(function () {
@@ -469,10 +469,10 @@ test('hasReplyDecorator', t => {
 
     t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
 
-    fastify.register(function (fastify2, opts, next) {
+    fastify.register(function (fastify2, opts, done) {
       fastify2.decorateReply(replyDecoratorName, 42)
       t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
-      next()
+      done()
     })
 
     t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
@@ -488,9 +488,9 @@ test('hasReplyDecorator', t => {
 
     fastify.decorateReply(replyDecoratorName, 42)
 
-    fastify.register(function (fastify2, opts, next) {
+    fastify.register(function (fastify2, opts, done) {
       t.ok(fastify2.hasReplyDecorator(replyDecoratorName))
-      next()
+      done()
     })
 
     fastify.ready(function () {
@@ -505,7 +505,7 @@ test('should register properties via getter/setter objects', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorate('test', {
       getter () {
         return 'a getter'
@@ -513,7 +513,7 @@ test('should register properties via getter/setter objects', t => {
     })
     t.ok(instance.test)
     t.is(instance.test, 'a getter')
-    next()
+    done()
   })
 
   fastify.ready(() => {
@@ -525,7 +525,7 @@ test('decorateRequest should work with getter/setter', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorateRequest('test', {
       getter () {
         return 'a getter'
@@ -536,7 +536,7 @@ test('decorateRequest should work with getter/setter', t => {
       res.send({ test: req.test })
     })
 
-    next()
+    done()
   })
 
   fastify.get('/not-decorated', (req, res) => {
@@ -561,7 +561,7 @@ test('decorateReply should work with getter/setter', t => {
   t.plan(5)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorateReply('test', {
       getter () {
         return 'a getter'
@@ -572,7 +572,7 @@ test('decorateReply should work with getter/setter', t => {
       res.send({ test: res.test })
     })
 
-    next()
+    done()
   })
 
   fastify.get('/not-decorated', (req, res) => {
@@ -597,10 +597,10 @@ test('should register empty values', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     instance.decorate('test', null)
     t.true(instance.hasOwnProperty('test'))
-    next()
+    done()
   })
 
   fastify.ready(() => {
@@ -617,7 +617,7 @@ test('nested plugins can override things', t => {
   fastify.decorateRequest('test', rootFunc)
   fastify.decorateReply('test', rootFunc)
 
-  fastify.register((instance, opts, next) => {
+  fastify.register((instance, opts, done) => {
     const func = () => {}
     instance.decorate('test', func)
     instance.decorateRequest('test', func)
@@ -626,7 +626,7 @@ test('nested plugins can override things', t => {
     t.equal(instance.test, func)
     t.equal(instance[symbols.kRequest].prototype.test, func)
     t.equal(instance[symbols.kReply].prototype.test, func)
-    next()
+    done()
   })
 
   fastify.ready(() => {
@@ -640,24 +640,24 @@ test('a decorator should addSchema to all the encapsulated tree', t => {
   t.plan(1)
   const fastify = Fastify()
 
-  const decorator = function (instance, opts, next) {
+  const decorator = function (instance, opts, done) {
     instance.decorate('decoratorAddSchema', function (whereAddTheSchema) {
       instance.addSchema({
         $id: 'schema',
         type: 'string'
       })
     })
-    next()
+    done()
   }
 
   fastify.register(fp(decorator))
 
-  fastify.register(function (instance, opts, next) {
-    instance.register((subInstance, opts, next) => {
+  fastify.register(function (instance, opts, done) {
+    instance.register((subInstance, opts, done) => {
       subInstance.decoratorAddSchema()
-      next()
+      done()
     })
-    next()
+    done()
   })
 
   fastify.ready(t.error)
@@ -671,10 +671,10 @@ test('after can access to a decorated instance and previous plugin decoration', 
 
   const fastify = Fastify()
 
-  fastify.register(fp(function (instance, options, next) {
+  fastify.register(fp(function (instance, options, done) {
     instance.decorate('test', TEST_VALUE)
 
-    next()
+    done()
   })).after(function (err, instance, done) {
     t.error(err)
     t.equal(instance.test, TEST_VALUE)
@@ -683,13 +683,13 @@ test('after can access to a decorated instance and previous plugin decoration', 
     done()
   })
 
-  fastify.register(fp(function (instance, options, next) {
+  fastify.register(fp(function (instance, options, done) {
     t.equal(instance.test, TEST_VALUE)
     t.equal(instance.test2, OTHER_TEST_VALUE)
 
     instance.decorate('test3', NEW_TEST_VALUE)
 
-    next()
+    done()
   })).after(function (err, instance, done) {
     t.error(err)
     t.equal(instance.test, TEST_VALUE)

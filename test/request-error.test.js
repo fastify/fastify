@@ -170,7 +170,7 @@ test('encapsulated error handler binding', t => {
 
   const fastify = Fastify()
 
-  fastify.register(function (app, opts, next) {
+  fastify.register(function (app, opts, done) {
     app.decorate('hello', 'world')
     t.strictEqual(app.hello, 'world')
     app.post('/', function (req, reply) {
@@ -183,7 +183,7 @@ test('encapsulated error handler binding', t => {
         .type('application/json; charset=utf-8')
         .send(err)
     })
-    next()
+    done()
   })
 
   fastify.inject({

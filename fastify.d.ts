@@ -83,6 +83,7 @@ export type FastifyServerOptions<
   bodyLimit?: number,
   maxParamLength?: number,
   disableRequestLogging?: boolean,
+  exposeHeadRoutes?: boolean,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,

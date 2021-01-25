@@ -328,6 +328,13 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="exposeHeadRoutes"></a>
+### `exposeHeadRoutes`
+
+Automatically creates a sibling `HEAD` route for each `GET` route defined. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
+
++ Default: `false`
+
 <a name="versioning"></a>
 ### `versioning`
 
@@ -457,7 +464,7 @@ function defaultClientErrorHandler (err, socket) {
 }
 ```
 
-*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket it's still writable as it may already have been destroyed.*
+*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket is still writable as it may have already been destroyed.*
 
 ```js
 const fastify = require('fastify')({

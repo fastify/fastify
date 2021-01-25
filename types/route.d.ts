@@ -21,6 +21,7 @@ export interface RouteShorthandOptions<
 > {
   schema?: FastifySchema;
   attachValidation?: boolean;
+  exposeHeadRoute?: boolean;
   validatorCompiler?: FastifySchemaCompiler;
   serializerCompiler?: FastifySerializerCompiler;
   bodyLimit?: number;

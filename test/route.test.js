@@ -1060,3 +1060,56 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
     t.strictEqual(res.body, '')
   })
 })
+
+test('HEAD routes properly auto created for GET routes when prefixTrailingSlash: \'no-slash\'', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.register(function routes (f, opts, next) {
+    f.route({
+      method: 'GET',
+      url: '/',
+      exposeHeadRoute: true,
+      prefixTrailingSlash: 'no-slash',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  fastify.inject({ url: '/prefix/prefix', method: 'HEAD' }, (err, res) => {
+    t.error(err)
+    t.strictEquals(res.statusCode, 404)
+  })
+})
+
+test('HEAD routes properly auto created for GET routes when prefixTrailingSlash: \'both\'', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.register(function routes (f, opts, next) {
+    f.route({
+      method: 'GET',
+      url: '/',
+      exposeHeadRoute: true,
+      prefixTrailingSlash: 'both',
+      handler: (req, reply) => {
+        reply.send({ hello: 'world' })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  const doublePrefixReply = await fastify.inject({ url: '/prefix/prefix', method: 'HEAD' })
+  const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
+  const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
+
+  t.equals(doublePrefixReply.statusCode, 404)
+  t.equals(trailingSlashReply.statusCode, 200)
+  t.equals(noneTrailingReply.statusCode, 200)
+})

@@ -2,7 +2,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 import * as LightMyRequest from 'light-my-request'
-import * as FindMyWay from 'find-my-way'
+import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
@@ -70,6 +70,9 @@ export type FastifyHttpsOptions<
 > = FastifyServerOptions<Server, Logger> & {
   https: https.ServerOptions
 }
+
+type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
+
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
@@ -108,7 +111,7 @@ export type FastifyServerOptions<
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
   },
   constraints?: {
-    [name: string]: FindMyWay.ConstraintStrategy<RawRequestDefaultExpression<RawServer>>,
+    [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>>,
   },
   return503OnClosing?: boolean,
   ajv?: {

@@ -333,13 +333,13 @@ Automatically creates a sibling `HEAD` route for each `GET` route defined. If yo
 
 + Default: `false`
 
-<a name="versioning"></a>
-### `versioning`
+<a name="constraints"></a>
+### `constraints`
 
-By default you can version your routes with [semver versioning](Routes.md#version), which is provided by `find-my-way`. There is still an option to provide custom versioning strategy. You can find more information in the [find-my-way](https://github.com/delvedor/find-my-way#versioned-routes) documentation.
+Fastify's built in route constraints are provided by `find-my-way`, which allow constraining routes by `version` or `host`. You are able to add new constraint strategies, or override the built in strategies by providing a `constraints` object with strategies for `find-my-way`. You can find more information on constraint strategies in the [find-my-way](https://github.com/delvedor/find-my-way) documentation.
 
 ```js
-const versioning = {
+const customVersionStrategy = {
   storage: function () {
     let versions = {}
     return {
@@ -355,7 +355,9 @@ const versioning = {
 }
 
 const fastify = require('fastify')({
-  versioning
+  constraints: {
+    version: customVersionStrategy
+  }
 })
 ```
 

@@ -86,7 +86,9 @@ test('Fastify.initialConfig should expose all options', t => {
       return reqId++
     },
     logger: pino({ level: 'info' }),
-    versioning,
+    constraints: {
+      version: versioning
+    },
     trustProxy: function myTrustFn (address, hop) {
       return address === '1.2.3.4' || hop === 1
     }
@@ -111,7 +113,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.strictEqual(fastify.initialConfig.genReqId, undefined)
   t.strictEqual(fastify.initialConfig.querystringParser, undefined)
   t.strictEqual(fastify.initialConfig.logger, undefined)
-  t.strictEqual(fastify.initialConfig.versioning, undefined)
+  t.strictEqual(fastify.initialConfig.constraints, undefined)
   t.strictEqual(fastify.initialConfig.trustProxy, undefined)
 })
 

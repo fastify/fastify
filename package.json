@@ -179,7 +179,7 @@
     "fast-json-stringify": "^2.2.1",
     "fastify-error": "^0.3.0",
     "fastify-warning": "^0.2.0",
-    "find-my-way": "^3.0.5",
+    "find-my-way": "^4.0.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^4.2.0",
     "pino": "^6.2.1",

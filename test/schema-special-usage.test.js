@@ -254,7 +254,6 @@ test("serializer read validator's schemas", t => {
       bucket: function factory (storeInit) {
         t.notOk(storeInit, 'is is always empty because fastify.addSchema is not called')
         return {
-          hasNewSchemas () { return false },
           getSchemas () {
             return {
               [baseSchema.$id]: ajvInstance.getSchema(baseSchema.$id).schema,

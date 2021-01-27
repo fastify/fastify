@@ -1159,3 +1159,81 @@ test('The schema compiler recreate itself if needed', t => {
 
   fastify.ready(err => { t.error(err) })
 })
+
+test('Schema controller setter', t => {
+  t.plan(2)
+  Fastify({ schemaController: {} })
+  t.pass('allow empty object')
+
+  try {
+    Fastify({ schemaController: { bucket: {} } })
+    t.fail('the bucket option must be a function')
+  } catch (err) {
+    t.is(err.message, "schemaController.bucket option should be a function, instead got 'object'")
+  }
+})
+
+test('Schema controller bucket', t => {
+  t.plan(10)
+
+  let added = 0
+  let builtBucket = 0
+
+  const initStoreQueue = []
+
+  function factoryBucket (storeInit) {
+    builtBucket++
+    t.deepEqual(initStoreQueue.pop(), storeInit)
+    const store = new Map(storeInit)
+    return {
+      add (schema) {
+        added++
+        store.set(schema.$id, schema)
+      },
+      getSchema (id) {
+        return store.get(id)
+      },
+      getSchemas () {
+        // what is returned by this function, will be the `storeInit` parameter
+        initStoreQueue.push(store)
+        return store
+      }
+    }
+  }
+
+  const fastify = Fastify({
+    schemaController: {
+      bucket: factoryBucket
+    }
+  })
+
+  fastify.register(async (instance) => {
+    instance.addSchema({ $id: 'b', type: 'string' })
+    instance.addHook('onReady', function (done) {
+      t.equals(instance.getSchemas().size, 2)
+      done()
+    })
+    instance.register(async (subinstance) => {
+      subinstance.addSchema({ $id: 'c', type: 'string' })
+      subinstance.addHook('onReady', function (done) {
+        t.equals(subinstance.getSchemas().size, 3)
+        done()
+      })
+    })
+  })
+
+  fastify.register(async (instance) => {
+    instance.addHook('onReady', function (done) {
+      t.equals(instance.getSchemas().size, 1)
+      done()
+    })
+  })
+
+  fastify.addSchema({ $id: 'a', type: 'string' })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.equals(added, 3, 'three schema added')
+    t.equals(builtBucket, 4, 'one bucket built for every register call + 1 for the root instance')
+  })
+})

@@ -84,6 +84,10 @@ function fastify (options) {
     throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
   }
 
+  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
+    throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
+  }
+
   validateBodyLimitOption(options.bodyLimit)
 
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader

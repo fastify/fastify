@@ -1237,3 +1237,53 @@ test('Schema controller bucket', t => {
     t.equals(builtBucket, 4, 'one bucket built for every register call + 1 for the root instance')
   })
 })
+
+test('setSchemaController per instace', t => {
+  t.plan(2) // TODO should be 5
+  const fastify = Fastify({})
+
+  fastify.register(async (instance) => {
+    instance.setSchemaController({
+      bucket: function factoryBucket (storeInit) {
+        return {
+          add (schema) { t.fail('add is not called') },
+          getSchema (id) { t.fail('getSchema is not called') },
+          getSchemas () { t.fail('getSchemas is not called') }
+        }
+      }
+    })
+  })
+
+  fastify.register(async (instance) => {
+    const bSchema = { $id: 'b', type: 'string' }
+
+    instance.setSchemaController({
+      bucket: function factoryBucket (storeInit) {
+        const map = {}
+        return {
+          add (schema) {
+            t.pass('add is called')
+            map[schema.$id] = schema
+          },
+          getSchema (id) {
+            t.pass('getSchema is called')
+            return map[id]
+          },
+          getSchemas () {
+            t.pass('getSchemas is called')
+          }
+        }
+      }
+    })
+
+    instance.addSchema(bSchema)
+
+    instance.addHook('onReady', function (done) {
+      instance.getSchemas()
+      t.deepEquals(instance.getSchema('b'), bSchema)
+      done()
+    })
+  })
+
+  fastify.ready(err => { t.error(err) })
+})

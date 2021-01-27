@@ -230,6 +230,7 @@ function fastify (options) {
     getSchemas: schemaController.getSchemas.bind(schemaController),
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
+    setSchemaController: setSchemaController,
     setReplySerializer: setReplySerializer,
     setSchemaErrorFormatter: setSchemaErrorFormatter,
     // custom parsers
@@ -572,6 +573,16 @@ function fastify (options) {
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
     this[kSchemaController].setSerializerCompiler(serializerCompiler)
+    return this
+  }
+
+  function setSchemaController (schemaControllerOpts) {
+    throwIfAlreadyStarted('Cannot call "setSchemaController" when fastify instance is already started!')
+    const old = this[kSchemaController]
+    const schemaController = SchemaController.buildSchemaController(old.parent, Object.assign({}, old.opts, schemaControllerOpts))
+    this[kSchemaController] = schemaController
+    this.getSchema = schemaController.getSchema.bind(schemaController)
+    this.getSchemas = schemaController.getSchemas.bind(schemaController)
     return this
   }
 

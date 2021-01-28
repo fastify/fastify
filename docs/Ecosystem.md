@@ -124,6 +124,7 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`fastify-nodemailer`](https://github.com/lependu/fastify-nodemailer) Plugin to share [nodemailer](https://nodemailer.com) transporter across Fastify.
 - [`fastify-normalize-request-reply`](https://github.com/ericrglass/fastify-normalize-request-reply) Plugin to normalize the request and reply to the Express version 4.x request and response, which allows use of middleware, like swagger-stats, that was originally written for Express.
 - [`fastify-now`](https://github.com/yonathan06/fastify-now) Structure your endpoints in a folder and load them dynamically with fastify
+- [`fastify-nuxtjs`](https://github.com/gomah/fastify-nuxtjs) Vue server side rendering support for Fastify with Nuxt.js Framework.
 - [`fastify-oas`](https://gitlab.com/m03geek/fastify-oas) Generates OpenAPI 3.0+ documentation from routes schemas for Fastify.
 - [`fastify-objectionjs`](https://github.com/jarcodallo/fastify-objectionjs) Plugin for the `fastify` framework that provides integration with objectionjs ORM.
 - [`fastify-objectionjs-classes`](https://github.com/kamikazechaser/fastify-objectionjs-classes) Plugin to cherry pick classes from objectionjs ORM.

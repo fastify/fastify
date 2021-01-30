@@ -36,6 +36,12 @@ Incoming Request
                                                                             └─▶ onResponse Hook
 ```
 
+At any point before or during the `User Handler`, `reply.hijack()` can be called to prevent fastify from:
+- Running all the following hooks and user handler
+- Sending the response automatically
+
+NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
+
 ## Reply Lifecycle
 
 Whenever the user handles the request the result may be:
@@ -45,7 +51,7 @@ Whenever the user handles the request the result may be:
 - in sync handler: it sends a payload
 - in sync handler: it sends an `Error` instance
 
-So, when the reply is being submitted, the data flow performed is the following:
+If the reply was hijacked, we skip all the below steps. Otherwise, when it is being submitted, the data flow performed is the following:
 
 ```
                         ★ schema validation Error
@@ -56,6 +62,7 @@ So, when the reply is being submitted, the data flow performed is the following:
                                                       │
                                                       │         ★ throw an Error
                      ★ send or return                 │                 │
+                            │                         │                 │
                             │                         ▼                 │
        reply sent ◀── JSON ─┴─ Error instance ──▶ setErrorHandler ◀─────┘
                                                       │

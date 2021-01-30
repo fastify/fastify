@@ -21,6 +21,7 @@ export interface RouteShorthandOptions<
 > {
   schema?: FastifySchema;
   attachValidation?: boolean;
+  exposeHeadRoute?: boolean;
   validatorCompiler?: FastifySchemaCompiler;
   serializerCompiler?: FastifySerializerCompiler;
   bodyLimit?: number;
@@ -121,3 +122,8 @@ export type RouteHandler<
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
 ) => void | Promise<RouteGeneric['Reply'] | void>
+
+export type DefaultRoute<Request, Reply> = (
+  req: Request,
+  res: Reply,
+) => void;

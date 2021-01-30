@@ -6,11 +6,11 @@ const Fastify = require('../')
 
 process.removeAllListeners('warning')
 
-function endMiddleware (nextOrPayload, next) {
-  if (typeof nextOrPayload === 'function') {
-    nextOrPayload()
+function endRouteHook (doneOrPayload, done) {
+  if (typeof doneOrPayload === 'function') {
+    doneOrPayload()
   } else {
-    next()
+    done()
   }
 }
 
@@ -20,9 +20,9 @@ function testExecutionHook (hook) {
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, nextOrPayload, next) => {
+      [hook]: (req, reply, doneOrPayload, done) => {
         t.pass('hook called')
-        endMiddleware(nextOrPayload, next)
+        endRouteHook(doneOrPayload, done)
       }
     }, (req, reply) => {
       reply.send(req.body)
@@ -46,15 +46,15 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, nextOrPayload, next) => {
+    fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
       t.equal(checker.check, 1)
-      endMiddleware(nextOrPayload, next)
+      endRouteHook(doneOrPayload, done)
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, nextOrPayload, next) => {
+      [hook]: (req, reply, doneOrPayload, done) => {
         t.equal(checker.check, 2)
-        endMiddleware(nextOrPayload, next)
+        endRouteHook(doneOrPayload, done)
       }
     }, (req, reply) => {
       reply.send({})
@@ -78,13 +78,13 @@ function testExecutionHook (hook) {
 
     fastify.post('/', {
       [hook]: [
-        (req, reply, nextOrPayload, next) => {
+        (req, reply, doneOrPayload, done) => {
           t.equal(checker.check, 1)
-          endMiddleware(nextOrPayload, next)
+          endRouteHook(doneOrPayload, done)
         },
-        (req, reply, nextOrPayload, next) => {
+        (req, reply, doneOrPayload, done) => {
           t.equal(checker.check, 2)
-          endMiddleware(nextOrPayload, next)
+          endRouteHook(doneOrPayload, done)
         }
       ]
     }, (req, reply) => {
@@ -107,15 +107,15 @@ function testExecutionHook (hook) {
       get: function () { return ++this.calledTimes }
     })
 
-    fastify.addHook(hook, (req, reply, nextOrPayload, next) => {
+    fastify.addHook(hook, (req, reply, doneOrPayload, done) => {
       t.equal(checker.check, 1)
-      endMiddleware(nextOrPayload, next)
+      endRouteHook(doneOrPayload, done)
     })
 
     fastify.post('/', {
-      [hook]: (req, reply, nextOrPayload, next) => {
+      [hook]: (req, reply, doneOrPayload, done) => {
         t.equal(checker.check, 2)
-        endMiddleware(nextOrPayload, next)
+        endRouteHook(doneOrPayload, done)
       }
     }, handler)
 
@@ -365,9 +365,9 @@ test('preValidation option should be called before preHandler hook', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('preHandler', (req, reply, next) => {
+  fastify.addHook('preHandler', (req, reply, done) => {
     t.true(req.called)
-    next()
+    done()
   })
 
   fastify.post('/', {
@@ -416,9 +416,9 @@ test('preParsing option should be called before preValidation hook', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('preValidation', (req, reply, next) => {
+  fastify.addHook('preValidation', (req, reply, done) => {
     t.true(req.called)
-    next()
+    done()
   })
 
   fastify.post('/', {
@@ -472,9 +472,9 @@ test('onRequest option should be called before preParsing', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('preParsing', (req, reply, next) => {
+  fastify.addHook('preParsing', (req, reply, done) => {
     t.true(req.called)
-    next()
+    done()
   })
 
   fastify.post('/', {

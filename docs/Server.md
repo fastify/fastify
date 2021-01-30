@@ -328,6 +328,13 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="exposeHeadRoutes"></a>
+### `exposeHeadRoutes`
+
+Automatically creates a sibling `HEAD` route for each `GET` route defined. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
+
++ Default: `false`
+
 <a name="versioning"></a>
 ### `versioning`
 
@@ -457,7 +464,7 @@ function defaultClientErrorHandler (err, socket) {
 }
 ```
 
-*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket it's still writable as it may already have been destroyed.*
+*Note: `clientErrorHandler` operates with raw socket. The handler is expected to return a properly formed HTTP response that includes a status line, HTTP headers and a message body. Before attempting to write the socket, the handler should check if the socket is still writable as it may have already been destroyed.*
 
 ```js
 const fastify = require('fastify')({
@@ -668,6 +675,34 @@ fastify.listen({
 }, (err) => {})
 ```
 
+<a name="getDefaultRoute"></a>
+#### getDefaultRoute
+Method to get the `defaultRoute` for the server:
+
+```js
+const defaultRoute = fastify.getDefaultRoute()
+```
+
+<a name="setDefaultRoute"></a>
+#### setDefaultRoute
+Method to set the `defaultRoute` for the server:
+
+```js
+const defaultRoute = function (req, res) {
+  res.end('hello world')
+}
+
+fastify.setDefaultRoute(defaultRoute)
+```
+
+<a name="routing"></a>
+#### routing
+Method to access the `lookup` method of the internal router and match the request to the appropriate handler:
+
+```js
+fastify.routing(req, res)
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also has shorthand functions, check [here](Routes.md).
@@ -737,7 +772,7 @@ Name of the current plugin. There are three ways to define a name (in order).
 2. If you `module.exports` a plugin the filename is used.
 3. If you use a regular [function declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions) the function name is used.
 
-*Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to indentify the root cause when you deal with many plugins.
+*Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to identify the root cause when you deal with many plugins.
 
 Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
 

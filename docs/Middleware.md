@@ -2,9 +2,10 @@
 
 ## Middleware
 
-From Fastify v3, middleware support does not come out of the box with the framework itself, but it's offered as an external plugin via [`fastify-express`](https://github.com/fastify/fastify-express) and [`middie`](https://github.com/fastify/middie).
+Starting with Fastify v3.0.0, middleware is not supported out of the box and requires an external plugin such as [`fastify-express`](https://github.com/fastify/fastify-express) or [`middie`](https://github.com/fastify/middie).
 
-If you need to use an express style middleware you can use one of the two plugins above:
+
+An example of registering the [`fastify-express`](https://github.com/fastify/fastify-express) plugin to then `use` Express middleware:
 
 ```js
 await fastify.register(require('fastify-express'))
@@ -16,7 +17,7 @@ fastify.use(require('ienoopen')())
 fastify.use(require('x-xss-protection')())
 ```
 
-You can also use [`middie`](https://github.com/fastify/middie), which provides support for simple Express-style middlewares but with improved performances:
+You can also use [`middie`](https://github.com/fastify/middie), which provides support for simple Express-style middleware but with improved performance:
 
 ```js
 await fastify.register(require('middie'))
@@ -49,4 +50,4 @@ fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 
 ### Alternatives
 
-Fastify offers some alternatives to the most commonly used middlewares, such as [`fastify-helmet`](https://github.com/fastify/fastify-helmet) in case of [`helmet`](https://github.com/helmetjs/helmet), [`fastify-cors`](https://github.com/fastify/fastify-cors) for [`cors`](https://github.com/expressjs/cors) and [`fastify-static`](https://github.com/fastify/fastify-static) for [`serve-static`](https://github.com/expressjs/serve-static).
+Fastify offers some alternatives to the most commonly used middleware, such as [`fastify-helmet`](https://github.com/fastify/fastify-helmet) in case of [`helmet`](https://github.com/helmetjs/helmet), [`fastify-cors`](https://github.com/fastify/fastify-cors) for [`cors`](https://github.com/expressjs/cors) and [`fastify-static`](https://github.com/fastify/fastify-static) for [`serve-static`](https://github.com/expressjs/serve-static).

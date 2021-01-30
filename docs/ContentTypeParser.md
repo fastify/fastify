@@ -97,7 +97,7 @@ app.post('/hello', (request, reply) => {
 })
 ```
 
-Here is a complete example that logs incoming [json line](http://jsonlines.org/) objects:
+Here is a complete example that logs incoming [json line](https://jsonlines.org/) objects:
 
 ```js
 const split2 = require('split2')

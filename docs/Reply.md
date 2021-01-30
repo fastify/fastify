@@ -18,6 +18,7 @@
   - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
+  - [.hijack](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -251,6 +252,14 @@ app.get('/', (req, reply) => {
 
 If the handler rejects, the error will be logged.
 
+<a name="hijack"></a>
+### .hijack()
+Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
+
+To achieve this, fastify provides the method `reply.hijack()` that can be called during the request lifecycle (At any point before `reply.send()` is called), and allows you to prevent fastify from sending the response, and from running the remaining hooks (and user handler if the reply was hijacked before).
+
+NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
+
 <a name="send"></a>
 ### .send(data)
 As the name suggests, `.send()` is the function that sends the payload to the end user.
@@ -351,7 +360,7 @@ fastify.get('/', {
 ```
 
 If you want to completely customize the error handling, checkout [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
-*Note: you are responsibile for logging when customizing the error handler*
+*Note: you are responsible for logging when customizing the error handler*
 
 API:
 
@@ -409,14 +418,14 @@ fastify.get('/async-await', options, async function (request, reply) {
 Rejected promises default to a `500` HTTP status code. Reject the promise, or `throw` in an `async function`, with an object that has `statusCode` (or `status`) and `message` properties to modify the reply.
 
 ```js
-fastify.get('/teapot', async function (request, reply) => {
+fastify.get('/teapot', async function (request, reply) {
   const err = new Error()
   err.statusCode = 418
   err.message = 'short and stout'
   throw err
 })
 
-fastify.get('/botnet', async function (request, reply) => {
+fastify.get('/botnet', async function (request, reply) {
   throw { statusCode: 418, message: 'short and stout' }
   // will return to the client the same json
 })

@@ -21,7 +21,7 @@ In the above figure, there are several entities:
         - Three _child plugins_
 
 Every _child context_ and _grandchild context_ has access to the _root plugins_.
-Within each _child context_ the _granchild contexts_ have access to the
+Within each _child context_ the _grandchild contexts_ have access to the
 _child plugins_ registered within the containing _child context_, but the
 containing _child context_ **does not** have access to the _child plugins_
 registered within its _grandchild context_.
@@ -124,7 +124,7 @@ To see this, start the server and issue requests:
 
 Notice that each context in the prior example inherits _only_ from the parent
 contexts. Parent contexts cannot access any entities within its descendent
-contexts. This default is occassionally not desired. In such cases, the
+contexts. This default is occasionally not desired. In such cases, the
 encapsulation context can be broken through the usage of
 [fastify-plugin][fastify-plugin] such that anything registered in a descendent
 context is available to the containing parent context.

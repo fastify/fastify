@@ -106,6 +106,31 @@ test('reply.serializer should set a custom serializer', t => {
   t.equal(reply[kReplySerializer], 'serializer')
 })
 
+test('reply.serializer should support running preSerialization hooks', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.addHook('preSerialization', async (request, reply, payload) => { t.ok('called', 'preSerialization') })
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply
+        .type('application/json')
+        .serializer(JSON.stringify)
+        .send({ foo: 'bar' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.payload, '{"foo":"bar"}')
+  })
+})
+
 test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
@@ -212,15 +237,15 @@ test('within an instance', t => {
     reply.send({ hello: 'world!' })
   })
 
-  fastify.register(function (instance, options, next) {
-    fastify.addHook('onSend', function (req, reply, payload, next) {
+  fastify.register(function (instance, options, done) {
+    fastify.addHook('onSend', function (req, reply, payload, done) {
       reply.header('x-onsend', 'yes')
-      next()
+      done()
     })
     fastify.get('/redirect-onsend', function (req, reply) {
       reply.redirect('/')
     })
-    next()
+    done()
   })
 
   fastify.listen(0, err => {
@@ -756,9 +781,9 @@ test('undefined payload should be sent as-is', t => {
 
   const fastify = require('../..')()
 
-  fastify.addHook('onSend', function (request, reply, payload, next) {
+  fastify.addHook('onSend', function (request, reply, payload, done) {
     t.strictEqual(payload, undefined)
-    next()
+    done()
   })
 
   fastify.get('/', function (req, reply) {
@@ -789,9 +814,9 @@ test('for HEAD method, no body should be sent but content-length should be', t =
   const bodySize = JSON.stringify({ foo: 'bar' }).length
 
   fastify.head('/', {
-    onSend: function (request, reply, payload, next) {
+    onSend: function (request, reply, payload, done) {
       t.strictEqual(payload, undefined)
-      next()
+      done()
     }
   }, function (req, reply) {
     reply.header('content-length', bodySize)
@@ -800,9 +825,9 @@ test('for HEAD method, no body should be sent but content-length should be', t =
   })
 
   fastify.head('/with/null', {
-    onSend: function (request, reply, payload, next) {
+    onSend: function (request, reply, payload, done) {
       t.strictEqual(payload, 'null')
-      next()
+      done()
     }
   }, function (req, reply) {
     reply.header('content-length', bodySize)
@@ -849,12 +874,12 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
     reply.send(new NotFound())
   })
 
-  fastify.register(function (instance, options, next) {
+  fastify.register(function (instance, options, done) {
     instance.get('/not-found', function (req, reply) {
       reply.send(new NotFound())
     })
 
-    next()
+    done()
   }, { prefix: '/prefixed' })
 
   fastify.listen(0, err => {
@@ -1166,9 +1191,9 @@ test('Content type and charset set previously', t => {
 
   const fastify = require('../../')()
 
-  fastify.addHook('onRequest', function (req, reply, next) {
+  fastify.addHook('onRequest', function (req, reply, done) {
     reply.header('content-type', 'application/json; charset=utf-16')
-    next()
+    done()
   })
 
   fastify.get('/', function (req, reply) {
@@ -1357,7 +1382,7 @@ test('reply should use the right serializer in encapsulated context', t => {
     handler: (req, reply) => { reply.send({ foo: 'bar' }) }
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1368,10 +1393,10 @@ test('reply should use the right serializer in encapsulated context', t => {
       payload.john = 'too too'
       return JSON.stringify(payload)
     })
-    next()
+    done()
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1382,7 +1407,7 @@ test('reply should use the right serializer in encapsulated context', t => {
       payload.sweet = 'potato potato'
       return JSON.stringify(payload)
     })
-    next()
+    done()
   }, { prefix: 'sub' })
 
   fastify.inject({
@@ -1421,7 +1446,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
     handler: (req, reply) => { reply.send({ foo: 'bar' }) }
   })
 
-  fastify.register(function (instance, opts, next) {
+  fastify.register(function (instance, opts, done) {
     instance.route({
       method: 'GET',
       url: '/sub',
@@ -1433,7 +1458,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
       return JSON.stringify(payload)
     })
 
-    instance.register(function (subInstance, opts, next) {
+    instance.register(function (subInstance, opts, done) {
       subInstance.route({
         method: 'GET',
         url: '/deep',
@@ -1444,9 +1469,9 @@ test('reply should use the right serializer in deep encapsulated context', t => 
         payload.john = 'deep deep'
         return JSON.stringify(payload)
       })
-      next()
+      done()
     })
-    next()
+    done()
   })
 
   fastify.inject({

@@ -378,7 +378,7 @@ test('async await plugin', async t => {
   }
 })
 
-test('does not call reply.send() twice if 204 reponse is already sent', t => {
+test('does not call reply.send() twice if 204 response is already sent', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -613,6 +613,34 @@ test('customErrorHandler support without throwing', t => {
     t.strictEqual(res.statusCode, 401)
     t.deepEqual(
       'kaboom',
+      res.payload
+    )
+  })
+})
+
+// See https://github.com/fastify/fastify/issues/2653
+test('customErrorHandler only called if reply not already sent', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async (req, reply) => {
+    await reply.send('success')
+    const error = new Error('ouch')
+    error.statusCode = 400
+    throw error
+  })
+
+  fastify.setErrorHandler(t.fail.bind(t, 'should not be called'))
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.strictEqual(res.statusCode, 200)
+    t.deepEqual(
+      'success',
       res.payload
     )
   })

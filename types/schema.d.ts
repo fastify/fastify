@@ -26,7 +26,7 @@ export interface FastifySchemaValidationError {
 }
 
 export interface FastifyValidationResult {
-  (this: any, data: any): unknown;
+  (data: any): boolean | PromiseLike<any> | { error?: Error, value?: any }
   errors?: FastifySchemaValidationError[] | null;
 }
 

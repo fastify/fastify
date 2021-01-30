@@ -456,7 +456,7 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 <a name="route-hooks"></a>
 
 ## Route level hooks
-You can declare one or more custom [onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler) and [preSerialization](#preserialization) hook(s) that will be **unique** for the route.
+You can declare one or more custom lifecycle hooks ([onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler), [preSerialization](#preserialization), [onSend](#onsend), [onTimeout](#ontimeout), and [onError](#onerror)) hook(s) that will be **unique** for the route.
 If you do so, those hooks are always executed as the last hook in their category. <br/>
 This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
@@ -492,6 +492,21 @@ fastify.addHook('preSerialization', (request, reply, payload, done) => {
   done(null, payload)
 })
 
+fastify.addHook('onSend', (request, reply, payload, done) => {
+  // Your code
+  done(null, payload)
+})
+
+fastify.addHook('onTimeout', (request, reply, done) => {
+  // Your code
+  done()
+})
+
+fastify.addHook('onError', (request, reply, error, done) => {
+  // Your code
+  done()
+})
+
 fastify.route({
   method: 'GET',
   url: '/',
@@ -525,6 +540,18 @@ fastify.route({
   preSerialization: (request, reply, payload, done) => {
     // This hook will always be executed after the shared `preSerialization` hooks
     done(null, payload)
+  },
+  onSend: (request, reply, payload, done) => {
+    // This hook will always be executed after the shared `onSend` hooks
+    done(null, payload)
+  },
+  onTimeout: (request, reply, done) => {
+    // This hook will always be executed after the shared `onTimeout` hooks
+    done()
+  },
+  onError: (request, reply, error, done) => {
+    // This hook will always be executed after the shared `onError` hooks
+    done()
   },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })

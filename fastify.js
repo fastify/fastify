@@ -132,8 +132,6 @@ function fastify (options) {
 
   const initialConfig = getSecuredInitialConfig(options)
 
-  // console.log(initialConfig.exposeHeadRoutes, options.exposeHeadRoutes)
-
   // TODO remove this, it should not be needed
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 

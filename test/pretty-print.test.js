@@ -7,7 +7,7 @@ const Fastify = require('..')
 test('pretty print - static routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/hello', () => {})
   fastify.get('/hello/world', () => {})
@@ -29,7 +29,7 @@ test('pretty print - static routes', t => {
 test('pretty print - parametric routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/:hello', () => {})
   fastify.get('/hello/:world', () => {})
@@ -51,7 +51,7 @@ test('pretty print - parametric routes', t => {
 test('pretty print - mixed parametric routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/:hello', () => {})
   fastify.post('/test/:hello', () => {})
@@ -75,7 +75,7 @@ test('pretty print - mixed parametric routes', t => {
 test('pretty print - wildcard routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/*', () => {})
   fastify.get('/hello/*', () => {})

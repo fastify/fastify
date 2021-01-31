@@ -25,7 +25,8 @@ const defaultInitOptions = {
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
   requestIdLogLabel: 'reqId',
-  http2SessionTimeout: 5000
+  http2SessionTimeout: 5000,
+  exposeHeadRoutes: true
 }
 
 function customRule0 (schemaParamValue, validatedParamValue, validationSchemaObject, currentDataPath, validatedParamObject, validatedParam) {
@@ -79,7 +80,8 @@ const schema = {
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { type: 'string', default: defaultInitOptions.requestIdHeader },
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
-    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout }
+    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
+    exposeHeadRoutes: { type: 'boolean', default: defaultInitOptions.exposeHeadRoutes }
   }
 }
 

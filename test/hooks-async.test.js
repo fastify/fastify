@@ -13,7 +13,7 @@ process.removeAllListeners('warning')
 test('async hooks', t => {
   t.plan(21)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRequest', async function (request, reply) {
     await sleep(1)
     request.test = 'the request is coming'

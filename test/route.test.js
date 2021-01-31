@@ -202,7 +202,7 @@ test('same route definition object on multiple prefixes', async t => {
     url: '/simple'
   }
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
@@ -549,6 +549,86 @@ test('throws when route-level error handler is not a function', t => {
   }
 })
 
+test('Creates a HEAD route for each GET one (default)', t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.deepEqual(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 200)
+    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.strictEqual(res.body, '')
+  })
+})
+
+test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.strictEqual(res.statusCode, 404)
+  })
+})
+
 test('Creates a HEAD route for each GET one', t => {
   t.plan(8)
 
@@ -617,7 +697,6 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
 
   await fastify.ready()
 
-  console.log(arr)
   t.ok(true)
 })
 
@@ -882,50 +961,6 @@ test("HEAD route should handle stream.on('error')", t => {
     t.error(error)
     t.strictEqual(res.statusCode, 200)
     t.strictEqual(res.headers['content-type'], 'application/octet-stream')
-  })
-})
-
-test('HEAD route should not be exposed by default', t => {
-  t.plan(7)
-
-  const resStream = stream.Readable.from('Hello with error!')
-  const resJson = { hello: 'world' }
-  const fastify = Fastify()
-
-  fastify.route({
-    method: 'GET',
-    path: '/without-flag',
-    handler: (req, reply) => {
-      return resStream
-    }
-  })
-
-  fastify.route({
-    exposeHeadRoute: true,
-    method: 'GET',
-    path: '/with-flag',
-    handler: (req, reply) => {
-      return resJson
-    }
-  })
-
-  fastify.inject({
-    method: 'HEAD',
-    url: '/without-flag'
-  }, (error, res) => {
-    t.error(error)
-    t.strictEqual(res.statusCode, 404)
-  })
-
-  fastify.inject({
-    method: 'HEAD',
-    url: '/with-flag'
-  }, (error, res) => {
-    t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
-    t.strictEqual(res.body, '')
   })
 })
 

@@ -132,7 +132,7 @@ function fastify (options) {
 
   const initialConfig = getSecuredInitialConfig(options)
 
-  // TODO remove this, it should not be needed
+  // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
   // Default router

@@ -617,7 +617,6 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
 
   await fastify.ready()
 
-  console.log(arr)
   t.ok(true)
 })
 

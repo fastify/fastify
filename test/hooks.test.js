@@ -16,7 +16,7 @@ process.removeAllListeners('warning')
 
 test('hooks', t => {
   t.plan(43)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   try {
     fastify.addHook('preHandler', function (request, reply, done) {
@@ -342,7 +342,7 @@ test('preHandler hook should support encapsulation / 5', t => {
 
 test('onRoute hook should be called / 1', t => {
   t.plan(2)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', () => {
@@ -363,7 +363,7 @@ test('onRoute hook should be called / 2', t => {
   t.plan(5)
   let firstHandler = 0
   let secondHandler = 0
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRoute', (route) => {
     t.pass()
     firstHandler++
@@ -391,7 +391,7 @@ test('onRoute hook should be called / 2', t => {
 
 test('onRoute hook should be called / 3', t => {
   t.plan(5)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   function handler (req, reply) {
     reply.send()
@@ -423,7 +423,7 @@ test('onRoute hook should be called / 3', t => {
 
 test('onRoute hook should be called (encapsulation support) / 4', t => {
   t.plan(4)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.addHook('onRoute', () => {
     t.pass()
@@ -450,7 +450,7 @@ test('onRoute hook should be called (encapsulation support) / 4', t => {
 
 test('onRoute hook should be called (encapsulation support) / 5', t => {
   t.plan(2)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.get('/first', function (req, reply) {
     reply.send()
@@ -477,7 +477,7 @@ test('onRoute hook should be called (encapsulation support) / 5', t => {
 
 test('onRoute hook should be called (encapsulation support) / 6', t => {
   t.plan(1)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.get('/first', function (req, reply) {
     reply.send()
@@ -494,7 +494,7 @@ test('onRoute hook should be called (encapsulation support) / 6', t => {
 
 test('onRoute should keep the context', t => {
   t.plan(4)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.decorate('test', true)
     instance.addHook('onRoute', onRoute)
@@ -519,7 +519,7 @@ test('onRoute should keep the context', t => {
 
 test('onRoute hook should pass correct route', t => {
   t.plan(9)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRoute', (route) => {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/')
@@ -547,7 +547,7 @@ test('onRoute hook should pass correct route', t => {
 
 test('onRoute hook should pass correct route with custom prefix', t => {
   t.plan(11)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRoute', function (route) {
     t.strictEqual(route.method, 'GET')
     t.strictEqual(route.url, '/v1/foo')
@@ -577,7 +577,7 @@ test('onRoute hook should pass correct route with custom prefix', t => {
 
 test('onRoute hook should pass correct route with custom options', t => {
   t.plan(6)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
@@ -605,7 +605,7 @@ test('onRoute hook should pass correct route with custom options', t => {
 
 test('onRoute hook should receive any route option', t => {
   t.plan(5)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
@@ -626,7 +626,7 @@ test('onRoute hook should receive any route option', t => {
 
 test('onRoute hook should preserve system route configuration', t => {
   t.plan(5)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.method, 'GET')
@@ -650,7 +650,7 @@ test('onRoute hook should preserve handler function in options of shorthand rout
 
   const handler = (req, reply) => {}
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', function (route) {
       t.strictEqual(route.handler, handler)
@@ -671,7 +671,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
   let onRouteCalled = 0
   let routePatched = 0
 
-  const fastify = Fastify({ ignoreTrailingSlash: false })
+  const fastify = Fastify({ ignoreTrailingSlash: false, exposeHeadRoutes: false })
 
   // a plugin that patches route options, similar to fastify-compress
   fastify.register(fp(function myPlugin (instance, opts, next) {
@@ -710,7 +710,7 @@ test('onRoute hook should be called once when prefixTrailingSlash', t => {
 test('onRoute hook should able to change the route url', t => {
   t.plan(5)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (route) => {
@@ -740,9 +740,9 @@ test('onRoute hook should able to change the route url', t => {
   })
 })
 
-test('onRoute hook that throws should be caught ', t => {
+test('onRoute hook that throws should be caught', t => {
   t.plan(1)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', () => {
@@ -761,7 +761,7 @@ test('onRoute hook that throws should be caught ', t => {
 
 test('onRoute hook with many prefix', t => {
   t.plan(3)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   const handler = (req, reply) => { reply.send({}) }
 
   const onRouteChecks = [

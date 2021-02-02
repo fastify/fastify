@@ -256,7 +256,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
 
 test('Custom setSerializerCompiler', t => {
   t.plan(7)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   const outSchema = {
     $id: 'test',
@@ -343,11 +343,11 @@ test('Custom serializer per route', async t => {
   res = await fastify.inject('/route')
   t.equals(res.json().mean, 'route')
 
-  t.equals(hit, 2, 'the custom and route serializer has been called')
+  t.equals(hit, 4, 'the custom and route serializer has been called')
 })
 
 test('Reply serializer win over serializer ', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
@@ -386,7 +386,7 @@ test('Reply serializer win over serializer ', t => {
 })
 
 test('Reply serializer win over serializer ', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {

@@ -333,7 +333,7 @@ const fastify = require('fastify')({
 
 Automatically creates a sibling `HEAD` route for each `GET` route defined. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
 
-+ Default: `false`
++ Default: `true`
 
 <a name="versioning"></a>
 ### `versioning`

@@ -286,7 +286,7 @@ test('First level $ref', t => {
 
 test('Customize validator compiler in instance and route', t => {
   t.plan(28)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     t.equals(method, 'POST') // run 4 times

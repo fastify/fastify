@@ -216,6 +216,7 @@ Team members are listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/), <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements), <https://twitter.com/davidmarkclem>, <https://www.npmjs.com/~davidmarkclements>
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
@@ -231,6 +232,7 @@ Team members are listed in alphabetical order.
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Ayoub El Khattabi__](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Vincent Le Goff__](https://github.com/zekth)

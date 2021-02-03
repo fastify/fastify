@@ -123,7 +123,8 @@ test('Should allow registering custom constrained routes', t => {
     },
     deriveConstraint: (req, ctx) => {
       return req.headers['x-secret']
-    }
+    },
+    validate () { return true }
   }
 
   const fastify = Fastify({ constraints: { secret: constraint } })

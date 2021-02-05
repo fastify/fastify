@@ -133,8 +133,6 @@ logger will point to this instance.
 + `object`: a standard Pino [options object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
 This will be passed directly to the Pino constructor. If the following properties
 are not present on the object, they will be added accordingly:
-    * `genReqId`: a synchronous function that will be used to generate identifiers
-    for incoming requests. The default function generates sequential identifiers.
     * `level`: the minimum logging level. If not set, it will be set to `'info'`.
     * `serializers`: a hash of serialization functions. By default, serializers
       are added for `req` (incoming request objects), `res` (outgoing response

@@ -224,7 +224,7 @@ app.get('/cookie-2', (req, reply) => {
   reply.raw.end()
 })
 ```
-Another example of the misuse of `Reply.raw` is explained in [Reply.md#getheaders](Reply.md#getheaders).
+Another example of the misuse of `Reply.raw` is explained in [Reply](Reply.md#getheaders).
 
 <a name="sent"></a>
 ### .sent

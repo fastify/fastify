@@ -51,9 +51,7 @@ fastify.register(async function authenticatedContext (childServer) {
     method: 'GET',
     handler (request, response) {
       response.send({
-        answer: request.answer,
-        foo: request.foo,
-        bar: request.bar
+        answer: request.answer
       })
     }
   })
@@ -68,8 +66,7 @@ fastify.register(async function publicContext (childServer) {
     handler (request, response) {
       response.send({
         answer: request.answer,
-        foo: request.foo,
-        bar: request.bar
+        foo: request.foo
       })
     }
   })

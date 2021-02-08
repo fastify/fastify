@@ -51,7 +51,11 @@ fastify.register(async function authenticatedContext (childServer) {
     method: 'GET',
     handler (request, response) {
       response.send({
-        answer: request.answer
+        answer: request.answer,
+        // request.foo will be undefined as it's only defined in publicContext
+        foo: request.foo,
+        // request.bar will be undefined as it's only defined in grandchildContext
+        bar: request.bar
       })
     }
   })
@@ -66,7 +70,9 @@ fastify.register(async function publicContext (childServer) {
     handler (request, response) {
       response.send({
         answer: request.answer,
-        foo: request.foo
+        foo: request.foo,
+        // request.bar will be undefined as it's only defined in grandchildContext
+        bar: request.bar
       })
     }
   })

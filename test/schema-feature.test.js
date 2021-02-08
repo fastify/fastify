@@ -1238,13 +1238,14 @@ test('Schema controller bucket', t => {
   })
 })
 
-test('setSchemaController per instace', t => {
-  t.plan(2) // TODO should be 5
+test('setSchemaController per instance', t => {
+  t.plan(7)
   const fastify = Fastify({})
 
-  fastify.register(async (instance) => {
-    instance.setSchemaController({
+  fastify.register(async (instance1) => {
+    instance1.setSchemaController({
       bucket: function factoryBucket (storeInit) {
+        t.pass('instance1 has created the bucket')
         return {
           add (schema) { t.fail('add is not called') },
           getSchema (id) { t.fail('getSchema is not called') },
@@ -1254,15 +1255,16 @@ test('setSchemaController per instace', t => {
     })
   })
 
-  fastify.register(async (instance) => {
+  fastify.register(async (instance2) => {
     const bSchema = { $id: 'b', type: 'string' }
 
-    instance.setSchemaController({
+    instance2.setSchemaController({
       bucket: function factoryBucket (storeInit) {
+        t.pass('instance2 has created the bucket')
         const map = {}
         return {
           add (schema) {
-            t.pass('add is called')
+            t.equals(schema.$id, bSchema.$id, 'add is called')
             map[schema.$id] = schema
           },
           getSchema (id) {
@@ -1276,11 +1278,11 @@ test('setSchemaController per instace', t => {
       }
     })
 
-    instance.addSchema(bSchema)
+    instance2.addSchema(bSchema)
 
-    instance.addHook('onReady', function (done) {
-      instance.getSchemas()
-      t.deepEquals(instance.getSchema('b'), bSchema)
+    instance2.addHook('onReady', function (done) {
+      instance2.getSchemas()
+      t.deepEquals(instance2.getSchema('b'), bSchema, 'the schema are loaded')
       done()
     })
   })

@@ -40,6 +40,7 @@ export interface FastifyReply<
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
   redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   callNotFound(): void;
   getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;

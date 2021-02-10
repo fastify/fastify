@@ -393,6 +393,23 @@ However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin dependencies are being used somewhere in your project.
 
+## Code Completion In Vanilla JavaScript
+
+Vanilla JavaScript can use the published types to provide code completion (e.g. [Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by following the [TypeScript JSDoc Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+
+For example:
+
+```js
+/**
+ * setup some routes
+ * @param {import("fastify").FastifyInstance} fastify 
+ * @param {*} opts 
+ */
+module.exports = async function (fastify, opts) {
+    fastify.get('/look', () => 'at me');
+}
+```
+
 ## API Type System Documentation
 
 This section is a detailed account of all the types available to you in Fastify version 3.x

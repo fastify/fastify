@@ -178,7 +178,7 @@ test('Encapsulation', t => {
 
   fastify.register((instance, opts, done) => {
     instance.post('/clean', function (req, reply) {
-      t.equals(instance.validatorCompiler, null)
+      t.equals(instance.validatorCompiler, undefined)
       reply.send({ foo: 'bar' })
     })
     done()

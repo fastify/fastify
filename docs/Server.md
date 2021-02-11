@@ -838,6 +838,47 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 #### schemaErrorFormatter
 This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
+<a name="schema-controller"></a>
+#### schemaController
+This property can be used to fully manage where the schemas of your application will be stored.
+It can be useful when your schemas are stored in another data structure that is unknown to Fastify.
+See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
+this property helps to resolve.
+
+```js
+const fastify = Fastify({
+  schemaController: {
+    /**
+     * This factory is called whenever `fastify.register()` is called.
+     * It may receive as input the schemas of the parent context if some schemas has been added.
+     * @param {object} parentSchemas these schemas will be returned by the `getSchemas()` method function of the returned `bucket`.
+     */
+    bucket: function factory (parentSchemas) {
+      return {
+        addSchema (inputSchema) {
+          // This function must store the schema added by the user.
+          // This function is invoked when `fastify.addSchema()` is called.
+        },
+        getSchema (schema$id) {
+          // This function must return the raw schema requested by the `schema$id`.
+          // This function is invoked when `fastify.getSchema(id)` is called.
+          return aSchema
+        },
+        getSchemas () {
+          // This function must return all the schemas referenced by the routes schemas' $ref
+          // It must return a JSON where the property is the schema `$id` and the value is the raw JSON Schema.
+          const allTheSchemaStored = {
+            'schema$id1': schema1,
+            'schema$id2': schema2
+          }
+          return allTheSchemaStored
+        }
+      }
+    }
+  }
+});
+```
+
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 

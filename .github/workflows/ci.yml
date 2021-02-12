@@ -47,6 +47,7 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
           parallel: true
+          flag-name: run-${{ matrix.node-version }}-${{ matrix.os }}
 
   coverage:
     needs: test

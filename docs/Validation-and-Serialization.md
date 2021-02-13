@@ -224,7 +224,7 @@ fastify.listen(3000, (err) => {
 })
 ```
 
-Using fastify defaults the following request will result in `400` status code:
+Using Fastify defaults the following request will result in `400` status code:
 
 ```sh
 curl -X GET "http://localhost:3000/?ids=1

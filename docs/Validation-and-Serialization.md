@@ -208,9 +208,9 @@ const opts = {
       properties: {
         ids: {
           type: 'array',
+          default: []
         },
       },
-      required: ['ids']
     }
   }
 }

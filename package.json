@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "3.11.0",
+  "version": "3.12.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -120,11 +120,10 @@
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^7.0.0",
-    "@types/pino": "^6.0.1",
     "@types/node": "^14.10.3",
+    "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
-    "JSONStream": "^1.3.5",
     "ajv-errors": "^1.0.1",
     "ajv-i18n": "^3.5.0",
     "ajv-merge-patch": "^4.1.0",
@@ -153,6 +152,7 @@
     "hsts": "^2.2.0",
     "http-errors": "^1.7.1",
     "ienoopen": "^1.1.0",
+    "JSONStream": "^1.3.5",
     "license-checker": "^25.0.1",
     "pre-commit": "^1.2.2",
     "proxyquire": "^2.1.3",
@@ -173,6 +173,7 @@
     "yup": "^0.32.0"
   },
   "dependencies": {
+    "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
     "ajv": "^6.12.2",
     "avvio": "^7.1.2",
@@ -183,7 +184,6 @@
     "flatstr": "^1.0.12",
     "light-my-request": "^4.2.0",
     "pino": "^6.2.1",
-    "@fastify/proxy-addr": "^3.0.0",
     "readable-stream": "^3.4.0",
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",

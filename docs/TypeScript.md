@@ -400,13 +400,9 @@ Vanilla JavaScript can use the published types to provide code completion (e.g. 
 For example:
 
 ```js
-/**
- * setup some routes
- * @param {import("fastify").FastifyInstance} fastify 
- * @param {*} opts 
- */
-module.exports = async function (fastify, opts) {
-    fastify.get('/look', () => 'at me');
+/**  @type {import('fastify').FastifyPluginAsync<{ optionA: boolean, optionB: string }>} */
+module.exports = async function (fastify, { optionA, optionB }) {
+  fastify.get('/look', () => 'at me');
 }
 ```
 

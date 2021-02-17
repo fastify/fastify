@@ -116,4 +116,13 @@ Once you run the following command, your application load on `http://localhost:3
 
 > The application responds with `{hello:world}`, due to the request on the root URL (/). Any other path that does not have a delacred route will result to an error: **404 Not Found**. 
 
+
+
+## Hooks
+
+Hooks allow you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, if not, these events are lost.
+
+Use these two hooks to interact with the lifecycle of fastify:
+
+
 <!-- Note: More work to be done after Season of Docs is Over -->

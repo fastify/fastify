@@ -126,10 +126,10 @@ Use these two hooks to interact with the lifecycle of fastify:
  1. Request/Reply Hooks 
  2. Application Hooks
 
-```
-Notice: The done callback is not available when using async/await or returning a Promise. If you invoke a done callback in this instance, unexpected behaviour may occur, e.g. duplicate invocation of handlers.
+
+> **Notice**: The done callback is not available when using async/await or returning a Promise. If you invoke a done callback in this instance, unexpected behaviour may occur, e.g. duplicate invocation of handlers.
 Request/Reply Hooks
-```
+
 
 ### Request/Reply Hooks
 

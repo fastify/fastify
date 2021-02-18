@@ -120,7 +120,7 @@ Once you run the following command, your application load on `http://localhost:3
 
 ## Hooks
 
-low you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, or else you will lose those events. See more about hooks here. 
+Hooks allow you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, or else you will lose those events. See more about hooks here. 
 
 Use these two hooks to interact with the lifecycle of fastify:
 Request/Reply Hooks 

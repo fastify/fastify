@@ -177,3 +177,4 @@ Plugins maintained by the fastify team are listed under [Core](#core) while plug
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
 - [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL server implementation for Fastify.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.
+- [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly typed routes with a runtime validation using JSON schema generated from types

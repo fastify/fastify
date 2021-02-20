@@ -84,3 +84,23 @@ expectType<FastifyInstance>(fastify().get('/', {
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
 }))
+
+type InitialConfig = Readonly<{
+  connectionTimeout?: number,
+  keepAliveTimeout?: number,
+  bodyLimit?: number,
+  caseSensitive?: boolean,
+  http2?: boolean,
+  https?: boolean | Readonly<{ allowHTTP1: boolean }>,
+  ignoreTrailingSlash?: boolean,
+  disableRequestLogging?: boolean,
+  maxParamLength?: number,
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
+  pluginTimeout?: number,
+  requestIdHeader?: string,
+  requestIdLogLabel?: string,
+  http2SessionTimeout?: number
+}>
+
+expectType<InitialConfig>(fastify().initialConfig)

@@ -617,7 +617,6 @@ test('Creates a HEAD route for a GET one with prefixTrailingSlash', async (t) =>
 
   await fastify.ready()
 
-  console.log(arr)
   t.ok(true)
 })
 
@@ -832,7 +831,6 @@ test('no warning for exposeHeadRoute', async t => {
   })
 
   const listener = (w) => {
-    console.error(w)
     t.fail('no warning')
   }
 

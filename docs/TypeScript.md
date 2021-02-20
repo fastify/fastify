@@ -126,6 +126,14 @@ The type system heavily relies on generic properties to provide the most accurat
 
 ### JSON Schema
 
+To validate your requests and responses you can use JSON Schema files. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
+
+Also it has the advantage to use the defined type within your handlers (including pre-validation, etc.).
+
+Here are two options how to achieve this.
+
+#### Schemas in JSON Files
+
 In the last example we used interfaces to define the types for the request querystring and headers. Many users will already be using JSON Schemas to define these properties, and luckily there is a way to transform existing JSON Schemas into TypeScript interfaces!
 
 1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
@@ -229,10 +237,67 @@ In the last example we used interfaces to define the types for the request query
    ```
    Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
 
-Great work! Now you can make use of both JSON Schemas and TypeScript definitions. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
+Great work! Now you can make use of both JSON Schemas and TypeScript definitions.
 
-Some additional notes:
-- Currently, there is no type definition support for inline JSON schemas. If you can come up with a solution please open a PR!
+#### On-the-fly types
+
+If you do not want to generate types from your schemas, but want to use them diretly from your code, you can use the package
+[json-schema-to-ts](https://www.npmjs.com/package/json-schema-to-ts).
+
+You can install it as dev-dependency.
+
+```bash
+npm install -D json-schema-to-ts
+```
+
+In your code you can define your schema like a normal object. But be aware of making it *const* like explained in the docs of the module.
+
+```typescript
+const todo = {
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    description: { type: 'string' },
+    done: { type: 'boolean' },
+  },
+  required: ['name'],
+} as const;
+```
+
+With the provided type `FromSchema` you can build a type from your schema and use it in your handler.
+
+```typescript
+fastify.post<{ Body: FromSchema<typeof todo> }>(
+  '/todo',
+  {
+    schema: {
+      body: todo,
+      response: {
+        201: {
+          type: 'string',
+        },
+      },
+    }
+  },
+  async (request, reply): Promise<void> => {
+
+    /*
+    request.body has type 
+    {
+      [x: string]: unknown;
+      description?: string;
+      done?: boolean;
+      name: string;
+    }
+    */
+
+    request.body.name // will not throw type error
+    request.body.notthere // will throw type error
+    
+    reply.status(201).send();
+  },
+);
+```
 
 ### Plugins
 

@@ -46,5 +46,5 @@ export interface FastifyReply<
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   serialize(payload: any): string;
-  then(fullfilled: () => void, rejected: (err: Error) => void): void;
+  then(fulfilled: () => void, rejected: (err: Error) => void): void;
 }

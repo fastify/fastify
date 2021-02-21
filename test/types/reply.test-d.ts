@@ -27,7 +27,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(contentType: string) => FastifyReply>(reply.type)
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
   expectType<(payload: any) => string>(reply.serialize)
-  expectType<(fullfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
+  expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
 }
 
 interface ReplyPayload {

@@ -1598,7 +1598,7 @@ test('reply.then', t => {
     const reply = new Reply(response, request)
 
     reply.then(function () {
-      t.pass('fullfilled called')
+      t.pass('fulfilled called')
     })
 
     response.destroy()
@@ -1612,7 +1612,7 @@ test('reply.then', t => {
     const _err = new Error('kaboom')
 
     reply.then(function () {
-      t.fail('fullfilled called')
+      t.fail('fulfilled called')
     }, function (err) {
       t.equal(err, _err)
     })

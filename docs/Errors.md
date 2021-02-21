@@ -158,8 +158,8 @@ The JSON schema provided for validation to a route is not valid.
 
 The JSON schema provided for serialization of a route response is not valid.
 
-<a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
-#### FST_ERR_PROMISE_NOT_FULLFILLED
+<a name="FST_ERR_PROMISE_NOT_FULFILLED"></a>
+#### FST_ERR_PROMISE_NOT_FULFILLED
 
 A promise may not be fulfilled with 'undefined' when statusCode is not 204.
 

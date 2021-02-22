@@ -130,7 +130,7 @@
     "ajv-pack": "^0.3.1",
     "autocannon": "^7.0.0",
     "branch-comparer": "^1.0.2",
-    "concurrently": "^5.0.2",
+    "concurrently": "^6.0.0",
     "cors": "^2.8.5",
     "coveralls": "^3.0.14",
     "dns-prefetch-control": "^0.3.0",

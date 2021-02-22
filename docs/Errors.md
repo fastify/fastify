@@ -7,7 +7,7 @@
 ### Error Handling In Node.js
 
 #### Uncaught Errors
-In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try fix this issue, but did not. 
+In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try to fix this issue, but did not. 
 
 Given that it is not possible to process all uncaught errors sensibly, the best way to deal with them is to [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly). 
 
@@ -136,7 +136,7 @@ You cannot use `send` inside the `onError` hook.
 <a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 
-Reply payload can either be a `string` or a `Buffer`.
+Reply payload can be either a `string` or a `Buffer`.
 
 <a name="FST_ERR_SCH_MISSING_ID"></a>
 #### FST_ERR_SCH_MISSING_ID

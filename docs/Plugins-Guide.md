@@ -213,7 +213,7 @@ fastify.get('/plugin2', (request, reply) => {
   reply.send(request)
 })
 ```
-Now for every request, you will run your utility. Obviously, you can register as many hooks as you need.<br>
+Now for every request, you will run your utility. You can register as many hooks as you need.<br>
 Sometimes you want a hook that should be executed for just a subset of routes, how can you do that? Yep, encapsulation!
 
 ```js

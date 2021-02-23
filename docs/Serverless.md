@@ -49,7 +49,7 @@ if (require.main === module) {
 }
 ```
 
-When executed in your lambda function we don't need to listen to a specific port,
+When executed in your lambda function we do not need to listen to a specific port,
 so we just export the wrapper function `init` in this case.
 The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
 
@@ -90,8 +90,8 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 ### Considerations
 
-- API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
-- API Gateway has a timeout of 29 seconds, so it's important to provide a reply during this time.
+- API Gateway does not support streams yet, so you are not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
+- API Gateway has a timeout of 29 seconds, so it is important to provide a reply during this time.
 
 ## Google Cloud Run
 

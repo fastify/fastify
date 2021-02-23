@@ -43,7 +43,7 @@ fastify.register(require('fastify-foo'), {
 })
 ```
 
-The `options` parameter can also be a `Function` which will be evaluated at the time the plugin is registered while giving access to the fastify instance via the first positional argument:
+The `options` parameter can also be a `Function` that will be evaluated at the time the plugin is registered while giving access to the Fastify instance via the first positional argument:
 
 ```js
 const fp = require('fastify-plugin')
@@ -58,14 +58,14 @@ fastify.register(fp((fastify, opts, done) => {
 fastify.register(require('fastify-foo'), parent => parent.foo_bar)
 ```
 
-The fastify instance passed on to the function is the latest state of the **external fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin i.e. utilizing an existing database connection to wrap around it.
+The Fastify instance passed on to the function is the latest state of the **external Fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin i.e. utilizing an existing database connection to wrap around it.
 
-Keep in mind that the fastify instance passed on to the function is the same as the one that will be passed in to the plugin, a copy of the external fastify instance rather than a reference. Any usage of the instance will behave the same as it would if called within the plugin's function i.e. if `decorate` is called, the decorated variables will be available within the plugin's function unless it was wrapped with [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
+Keep in mind that the Fastify instance passed on to the function is the same as the one that will be passed in to the plugin, a copy of the external Fastify instance rather than a reference. Any usage of the instance will behave the same as it would if called within the plugins function i.e. if `decorate` is called, the decorated variables will be available within the plugins function unless it was wrapped with [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 
 <a name="route-prefixing-option"></a>
 #### Route Prefixing option
 If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](Routes.md#route-prefixing).<br>
-Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
+Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will not work.
 
 <a name="error-handling"></a>
 #### Error handling
@@ -158,11 +158,11 @@ module.exports = function (fastify, opts, done) {
 ```
 Sometimes, you will need to know when the server is about to close, for example because you must close a connection to a database. To know when this is going to happen, you can use the [`'onClose'`](Hooks.md#on-close) hook.
 
-Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
+Do not forget that `register` will always create a new Fastify scope, if you do not need that, read the following section.
 
 <a name="handle-scope"></a>
 ### Handle the scope
-If you are using `register` only for extending the functionality of the server with  [`decorate`](Decorators.md), it is your responsibility to tell Fastify to not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
+If you are using `register` only for extending the functionality of the server with  [`decorate`](Decorators.md), it is your responsibility to tell Fastify not to create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
 
 You have two ways to tell Fastify to avoid the creation of a new context:
 - Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module
@@ -179,7 +179,7 @@ module.exports = fp(function (fastify, opts, done) {
 ```
 Check the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) documentation to know more about how use this module.
 
-If you don't use the `fastify-plugin` module, you can use the `'skip-override'` hidden property, but we do not recommend it. If in the future the Fastify API changes it will be a your responsibility update the module, while if you use `fastify-plugin`, you can be sure about backwards compatibility.
+If you do not use the `fastify-plugin` module, you can use the `'skip-override'` hidden property, but we do not recommend it. If in the future the Fastify API changes it will be your responsibility update the module, while if you use `fastify-plugin`, you can be sure about backwards compatibility.
 ```js
 function yourPlugin (fastify, opts, done) {
   fastify.decorate('utility', () => {})

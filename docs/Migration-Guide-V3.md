@@ -79,7 +79,7 @@ const fastify = require('fastify')({
 
 The non-standard `replace-way` shared schema support has been removed. This
 feature has been replace with JSON Schema specification compliant `$ref` based
-substitution. To better understand this change read
+substitution. To help understand this change read
 [Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
@@ -106,7 +106,7 @@ fastify.route({ method, url, schema, handler });
 
 The `setSchemaCompiler` and `setSchemaResolver` options have been replaced
 with the `setValidatorCompiler` to enable future tooling improvements.
-To better understand this change read
+To help understand this change read
 [Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**

@@ -8,7 +8,7 @@ Fastify.
 * [Use A Reverse Proxy](#reverseproxy)
 * [Kubernetes](#kubernetes)
 
-## Use A Reverse Proxy
+## Use a Reverse Proxy
 <a id="reverseproxy"></a>
 
 Node.js is an early adopter of frameworks shipping with an easy to use web

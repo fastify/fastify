@@ -41,12 +41,12 @@ It is not mandatory, but we highly recommend you use a code linter in your plugi
 We use [`standard`](https://standardjs.com/) since it works without the need to configure it and is very easy integrate in a test suite.
 
 ## Continuous Integration
-It is not mandatory, but if you release your code as open source it helps to use Continuous Integration to ensure contributions do not break your plugin and to show that the plugin works as intended. Both [CircleCI](https://circleci.com/) and [GitHub Actions](https://github.com/features/actions) are free for open source projects and easy to setup.<br>
-In addition you can enable services like [Dependabot](https://dependabot.com/) or [Snyk](https://snyk.io/), that will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
+It is not mandatory, but if you release your code as open source, it helps to use Continuous Integration to ensure contributions do not break your plugin and to show that the plugin works as intended. Both [CircleCI](https://circleci.com/) and [GitHub Actions](https://github.com/features/actions) are free for open source projects and easy to setup.<br>
+In addition, you can enable services like [Dependabot](https://dependabot.com/) or [Snyk](https://snyk.io/), which will help you keep your dependencies up to date and discover if a new release of Fastify has some issues with your plugin.
 
 ## Let's start!
 Awesome, now you know everything you need to know about how to write a good plugin for Fastify!
-After you've built one (or more!) let us know! We will add it to the [ecosystem](https://github.com/fastify/fastify#ecosystem) section of our documentation!
+After you have built one (or more!) let us know! We will add it to the [ecosystem](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
 If you want to see some real world examples, checkout:
 - [`point-of-view`](https://github.com/fastify/point-of-view)

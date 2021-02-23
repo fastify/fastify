@@ -18,11 +18,10 @@ language or the ability to setup some sort of [CGI gateway][cgi] that works
 with the language. With Node.js, one can simply write an application that
 _directly_ handles HTTP requests. As a result, the temptation is to write
 applications that handle requests for multiple domains, listen on multiple
-ports (i.e. HTTP _and_ HTTPS), and various other scenarios and combinations
-thereof. Further, the temptation is to then expose these applications directly
+ports (i.e. HTTP _and_ HTTPS), and then expose these applications directly
 to the Internet to handle requests.
 
-The Fastify team **strongly** considers this to be an anti-pattern and extremely
+The Fastify team **strongly** considers this an anti-pattern and extremely
 bad practice:
 
 1. It adds unnecessary complexity to the application by diluting its focus.
@@ -40,7 +39,7 @@ For a concrete example, consider the situation where:
 1. The app needs to serve static resources, e.g. jpeg files.
 
 There are many reverse proxy solutions available, and your environment may
-dictate the solution to use, e.g. AWS or GCP. But given the above, we could use
+dictate the solution to use, e.g. AWS or GCP. Given the above, we could use
 [HAProxy][haproxy] to solve these requirements:
 
 ```conf

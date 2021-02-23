@@ -2,7 +2,7 @@
 
 ## Lifecycle
 Following the schema of the internal lifecycle of Fastify.<br>
-On the right branch of every section there is the next phase of the lifecycle, on the left branch there is the corresponding error code that will be generated if the parent throws an error *(note that all the errors are automatically handled by Fastify)*.
+On the right branch of every section, there is the next phase of the lifecycle, on the left branch there is the corresponding error code that will be generated if the parent throws an error *(note that all the errors are automatically handled by Fastify)*.
 
 ```
 Incoming Request
@@ -44,7 +44,7 @@ NB (*): If `reply.raw` is used to send a response back to the user, `onResponse`
 
 ## Reply Lifecycle
 
-Whenever the user handles the request the result may be:
+Whenever the user handles the request, the result may be:
 
 - in async handler: it returns a payload
 - in async handler: it throws an `Error`

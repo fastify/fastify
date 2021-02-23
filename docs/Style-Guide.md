@@ -6,9 +6,9 @@ Welcome to *Fastify Style Guide*. This guide is here to provide you with a conve
 
 ## Who is this guide for?
 
-This guide is for anyone who loves to build with Fastify or wants to contribute to our documentation. You don't need to be an expert in writing technical documentation. This guide is here to help you.
+This guide is for anyone who loves to build with Fastify or wants to contribute to our documentation. You do not need to be an expert in writing technical documentation. This guide is here to help you.
 
-Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTE.md](/CONTRIBUTING.md) file on Github to join our Open Source folks.
+Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTING.md](/CONTRIBUTING.md) file on GitHub to join our Open Source folks.
 
 ## Before you write
 
@@ -17,14 +17,14 @@ You need to know the following:
 * JavaScript
 * Node.js
 * Git
-* Github
+* GitHub
 * Markdown
 * HTTP
 * NPM 
 
 ### Consider your Audience
 
-Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM and NodeJs. It's necessary to keep your readers in mind because they are the one consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Make references and use words readers can relate with easily. Ask for feedback from the community: it can help you write better documentation that focuses on the user and what you want to achieve.
+Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM and Node.js. It is necessary to keep your readers in mind because they are the ones consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Use words and references that readers can relate with easily. Ask for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
 
 ### Get straight to the point
 
@@ -39,27 +39,27 @@ More Like this: To register a parametric path, put a colon before the parameter 
 ### Avoid adding video or image content 
 
 
-Do not add videos or screenshots in the documentation. It is easier to keep under version control. Videos and images will eventually end up becoming outdated as new updates keep developing. Instead, make a referral link or a youtube video. You can add links by using `[Title](www.websitename.com)` in the markdown.
+Do not add videos or screenshots in the documentation. It is easier to keep under version control. Videos and images will eventually end up becoming outdated as new updates keep developing. Instead, make a referral link or a YouTube video. You can add links by using `[Title](www.websitename.com)` in the markdown.
 
 **Example**
 
 ```
-To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).
+To learn more about hooks, see [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).
 ```
 
 Result:
->To learn more about hooks, See [Fastify hooks](https://www.fastify.io/docs/latest/Hooks/).
+>To learn more about hooks, see [Fastify hooks](https://www.fastify.io/docs/latest/Hooks/).
 
 
 
 ### Avoid plagiarism
 
-Make sure you avoid copying other people's work. Keep it as original as possible. You can learn from what they've done and also reference where it's from if you used a particular quote from their work.
+Make sure you avoid copying other people's work. Keep it as original as possible. You can learn from what they have done and reference where it is from if you used a particular quote from their work.
 
 
 ## Word Choice
 
-There are a few things you need to use and avoid when writing your documentation to improve readability for readers and also make documentation neat, direct, and clean.
+There are a few things you need to use and avoid when writing your documentation to improve readability for readers and make documentation neat, direct, and clean.
 
 
 ### When to use the second person "you" as the pronoun
@@ -68,7 +68,7 @@ When writing articles or guides, your content should communicate directly to rea
 
 **Example**
 
-Less Like this: we can use the following plugins.
+Less like this: we can use the following plugins.
 
 More like this: You can use the following plugins.
 
@@ -80,12 +80,17 @@ One of the main rules of formal writing such as reference documentation, or API 
 
 **Example**
 
-Less Like this: You can use the following recommendation as an example.
+Less like this: You can use the following recommendation as an example.
 
 More like this: As an example, the following recommendations should be referenced.
 
 To view a live example, refer to the [Decorators.md](/docs/Decorators.md) reference document. 
 
+
+### Avoid using contractions
+
+Contraction are the shortened version of written and spoken forms of a word, i.e. using "don't" instead of "do not".
+Avoid contractions to provide a more formal tone.
 
 ### Avoid using condescending terms
 
@@ -97,22 +102,22 @@ Condescending terms are words that include:
 * Basically
 * Obviously
 
-The reader may not find it easy to use the Fastify's framework and plugins, avoid words that make it sound simple, easy, offensive, or insensitive. Not everyone who reads the documentation has the same level of understanding.
+The reader may not find it easy to use Fastify's framework and plugins; avoid words that make it sound simple, easy, offensive, or insensitive. Not everyone who reads the documentation has the same level of understanding.
 
 
 ### Starting with a verb
 
-Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Prefer usage present tense because it's easier to read and understand than the past or future tense.
+Mostly start your description with a verb, which makes it simple and precise for the reader to follow. Prefer using present tense because it is easier to read and understand than the past or future tense.
 
 **Example**
 
- Less like this: There is a need for Nodejs to be installed before you can be able to use Fastify.
+ Less like this: There is a need for Node.js to be installed before you can be able to use Fastify.
 
- More like this: Install Nodejs to make use of Fastify.
+ More like this: Install Node.js to make use of Fastify.
 
 ### Grammatical moods 
 
-Grammatical moods is a great way to express your writing. Avoid sounding too bossy while making a direct statement. Know when to switch between indicative, imperative, and subjunctive moods.
+Grammatical moods are a great way to express your writing. Avoid sounding too bossy while making a direct statement. Know when to switch between indicative, imperative, and subjunctive moods.
 
 
 **Indicative** - Use when making a factual statement or question. 
@@ -172,9 +177,9 @@ Here is how your hyperlink should look:
 // Empty title
 [](https://www.fastify.io/docs/latest/Plugins/)
 
-// Adding links localhost URL's instead of using code strings (``)
+// Adding links localhost URLs instead of using code strings (``)
 [http://localhost:3000/](http://localhost:3000/)
 
 ```
 
-You can include in your documentation as many essential references as possible, but avoid having numerous links when writing for beginners to avoid distractions.
+Include in your documentation as many essential references as possible, but avoid having numerous links when writing for beginners to avoid distractions.

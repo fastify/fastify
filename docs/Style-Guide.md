@@ -87,6 +87,11 @@ More like this: As an example, the following recommendations should be reference
 To view a live example, refer to the [Decorators.md](/docs/Decorators.md) reference document. 
 
 
+### Avoid using contractions
+
+Contraction are the shortened version of written and spoken forms of a word, i.e. using "don't" instead of "do not".
+Avoid contractions to provide a more formal tone.
+
 ### Avoid using condescending terms
 
 Condescending terms are words that include:

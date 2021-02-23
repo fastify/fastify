@@ -8,7 +8,7 @@ Fastify.
 * [Use A Reverse Proxy](#reverseproxy)
 * [Kubernetes](#kubernetes)
 
-## Use a Reverse Proxy
+## Use A Reverse Proxy
 <a id="reverseproxy"></a>
 
 Node.js is an early adopter of frameworks shipping with an easy to use web
@@ -21,7 +21,7 @@ applications that handle requests for multiple domains, listen on multiple
 ports (i.e. HTTP _and_ HTTPS), and then expose these applications directly
 to the Internet to handle requests.
 
-The Fastify team **strongly** considers this an anti-pattern and extremely
+The Fastify team **strongly** considers this to be an anti-pattern and extremely
 bad practice:
 
 1. It adds unnecessary complexity to the application by diluting its focus.

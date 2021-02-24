@@ -34,14 +34,14 @@ For customizing this behaviour, you should use [`setErrorHandler`](Server.md#set
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 
-From the [Hooks documentation](Hooks/#manage-errors-from-a-hook): 
+From the [Hooks documentation](Hooks.md#manage-errors-from-a-hook): 
 > If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 If you have defined a custom error handler for using `setErrorHandler` the error will be routed there, otherwise it will be routed to Fastify’s generic error handler. 
 
 Some things to consider in your custom error handler: 
 
-- you can `reply.send(data)` which will be behave as it would be in [regular route handlers](Reply/#senddata)
+- you can `reply.send(data)` which will be behave as it would be in [regular route handlers](Reply.md#senddata)
 	- objects are serialised, triggering the `preSerialization` lifecycle hook if you have one defined
 	- strings, buffers, and streams are sent to the client, with appropriate headers (no serialization)
 

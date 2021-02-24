@@ -172,7 +172,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web Application Messaging Protocol router for Fastify.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for waterline. Decorates Fastify with waterline models.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr) Webpack hot module reloading plugin for Fastify.
-- [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/bindings/tree/master/nodejs).
+- [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for Fastify — with support for WebSocket lifecycle hooks instead of a single handler function. Built upon [ws](https://github.com/websockets/ws) and [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser) Parse XML payload / request body into JS / JSON object.
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin for AWS XRay recording.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage) An [i18next](https://www.i18next.com) based i18n (internationalization) middleware to be used with Node.js web frameworks like express or `Fastify` and also for Deno.

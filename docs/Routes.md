@@ -5,21 +5,18 @@
 The routes methods will configure the endpoints of your application.
 You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
 
-- [Routes](#routes)
-  - [Full declaration](#full-declaration)
-  - [Routes option](#routes-option)
-  - [Shorthand declaration](#shorthand-declaration)
-  - [Url building](#url-building)
-  - [Async Await](#async-await)
-  - [Promise resolution](#promise-resolution)
-  - [Route Prefixing](#route-prefixing)
-    - [Handling of / route inside prefixed plugins](#handling-of--route-inside-prefixed-plugins)
+- [Full Declaration](#full-declaration)
+- [Route Options](#options)
+- [Shorthand Declaration](#shorthand-declaration)
+- [URL Parameters](#url-building)
+- [Use `async`/`await`](#async-await)
+- [Promise resolution](#promise-resolution)
+- [Route Prefixing](#route-prefixing)
+- Logs
   - [Custom Log Level](#custom-log-level)
   - [Custom Log Serializer](#custom-log-serializer)
-  - [Config](#config)
-  - [Constraints](#constraints)
-    - [Version Constraints](#version-constraints)
-    - [Host Constraints](#host-constraints)
+- [Route handler configuration](#routes-config)
+- [Route constraints](#constraints)
 
 <a name="full-declaration"></a>
 ### Full declaration

@@ -186,6 +186,11 @@ In this case as parameter separator it's possible to use whatever character is n
 Having a route with multiple parameters may affect negatively the performance, so prefer single parameter approach whenever possible, especially on routes which are on the hot path of your application.
 If you are interested in how we handle the routing, checkout [find-my-way](https://github.com/delvedor/find-my-way).
 
+If you want a path containing a colon without declaring a parameter, use a double colon. For example:
+```js
+fastify.post('/name::verb') // will be interpreted as /name:verb
+```
+
 <a name="async-await"></a>
 ### Async Await
 Are you an `async/await` user? We have you covered!

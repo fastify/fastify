@@ -5,18 +5,21 @@
 The routes methods will configure the endpoints of your application.
 You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
 
-- [Full Declaration](#full-declaration)
-- [Route Options](#options)
-- [Shorthand Declaration](#shorthand-declaration)
-- [URL Parameters](#url-building)
-- [Use `async`/`await`](#async-await)
-- [Promise resolution](#promise-resolution)
-- [Route Prefixing](#route-prefixing)
-- Logs
+- [Routes](#routes)
+  - [Full declaration](#full-declaration)
+  - [Routes option](#routes-option)
+  - [Shorthand declaration](#shorthand-declaration)
+  - [Url building](#url-building)
+  - [Async Await](#async-await)
+  - [Promise resolution](#promise-resolution)
+  - [Route Prefixing](#route-prefixing)
+    - [Handling of / route inside prefixed plugins](#handling-of--route-inside-prefixed-plugins)
   - [Custom Log Level](#custom-log-level)
   - [Custom Log Serializer](#custom-log-serializer)
-- [Route handler configuration](#routes-config)
-- [Route constraints](#constraints)
+  - [Config](#config)
+  - [Constraints](#constraints)
+    - [Version Constraints](#version-constraints)
+    - [Host Constraints](#host-constraints)
 
 <a name="full-declaration"></a>
 ### Full declaration
@@ -185,6 +188,11 @@ In this case as parameter separator it's possible to use whatever character is n
 
 Having a route with multiple parameters may affect negatively the performance, so prefer single parameter approach whenever possible, especially on routes which are on the hot path of your application.
 If you are interested in how we handle the routing, checkout [find-my-way](https://github.com/delvedor/find-my-way).
+
+If you want a path containing a colon without declaring a parameter, use a double colon. For example:
+```js
+fastify.post('/name::verb') // will be interpreted as /name:verb
+```
 
 <a name="async-await"></a>
 ### Async Await

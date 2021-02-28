@@ -335,14 +335,40 @@ test('invalid schema - ajv', t => {
   })
 })
 
+// Pull request 2884 https://github.com/fastify/fastify/pull/2884
 test('should set the status code and the headers from the error object (from route handler)', t => {
   t.plan(4)
   const fastify = Fastify()
 
-  fastify.get('/', (req, reply) => {
+  fastify.get('/', {
+    schema: {
+      response: {
+        400: {
+          type: 'object',
+          properties: {
+            code: {
+              type: 'string'
+            },
+            error: {
+              type: 'string'
+            },
+            message: {
+              type: 'string'
+            },
+            statusCode: {
+              type: 'integer'
+            }
+          },
+          required: ['code', 'error', 'message', 'statusCode'],
+          additionalProperties: false
+        }
+      }
+    }
+  }, (req, reply) => {
     const error = new Error('kaboom')
     error.headers = { hello: 'world' }
     error.statusCode = 400
+    error.code = 'FST_ERR_HELLO_WORLD'
     reply.send(error)
   })
 
@@ -356,7 +382,8 @@ test('should set the status code and the headers from the error object (from rou
     t.deepEqual(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'kaboom',
-      statusCode: 400
+      statusCode: 400,
+      code: 'FST_ERR_HELLO_WORLD'
     })
   })
 })

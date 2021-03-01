@@ -335,7 +335,6 @@ test('invalid schema - ajv', t => {
   })
 })
 
-// Pull request 2884 https://github.com/fastify/fastify/pull/2884
 test('should set the status code and the headers from the error object (from route handler)', t => {
   t.plan(4)
   const fastify = Fastify()

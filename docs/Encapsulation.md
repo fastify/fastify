@@ -47,9 +47,9 @@ fastify.register(async function authenticatedContext (childServer) {
   childServer.register(require('fastify-bearer-auth'), { keys: ['abc123'] })
 
   childServer.route({
-    path: '/one',
+    url: '/one',
     method: 'GET',
-    handler (request, response) {
+    handler: (request, response) => {
       response.send({
         answer: request.answer,
         // request.foo will be undefined as it's only defined in publicContext
@@ -65,9 +65,9 @@ fastify.register(async function publicContext (childServer) {
   childServer.decorateRequest('foo', 'foo')
 
   childServer.route({
-    path: '/two',
+    url: '/two',
     method: 'GET',
-    handler (request, response) {
+    handler: (request, response) => {
       response.send({
         answer: request.answer,
         foo: request.foo,
@@ -81,9 +81,9 @@ fastify.register(async function publicContext (childServer) {
     grandchildServer.decorateRequest('bar', 'bar')
 
     grandchildServer.route({
-      path: '/three',
+      url: '/three',
       method: 'GET',
-      handler (request, response) {
+      handler: (request, response) => {
         response.send({
           answer: request.answer,
           foo: request.foo,
@@ -150,9 +150,9 @@ fastify.register(async function publicContext (childServer) {
   childServer.decorateRequest('foo', 'foo')
 
   childServer.route({
-    path: '/two',
+    url: '/two',
     method: 'GET',
-    handler (request, response) {
+    handler: (request, response) => {
       response.send({
         answer: request.answer,
         foo: request.foo,
@@ -167,9 +167,9 @@ fastify.register(async function publicContext (childServer) {
     grandchildServer.decorateRequest('bar', 'bar')
 
     grandchildServer.route({
-      path: '/three',
+      url: '/three',
       method: 'GET',
-      handler (request, response) {
+      handler: (request, response) => {
         response.send({
           answer: request.answer,
           foo: request.foo,

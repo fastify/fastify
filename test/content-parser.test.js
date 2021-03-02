@@ -99,7 +99,7 @@ test('getParser', t => {
 })
 
 test('existingParser', t => {
-  test('returns always false for "*" and ".*"', t => {
+  test('returns always false for "*"', t => {
     t.plan(4)
 
     const fastify = Fastify()
@@ -109,12 +109,10 @@ test('existingParser', t => {
     fastify.addContentTypeParser('text/html', first)
 
     t.notOk(fastify[keys.kContentTypeParser].existingParser('*'))
-    t.notOk(fastify[keys.kContentTypeParser].existingParser(/.*/))
 
     fastify.addContentTypeParser('*', first)
 
     t.notOk(fastify[keys.kContentTypeParser].existingParser('*'))
-    t.notOk(fastify[keys.kContentTypeParser].existingParser(/.*/))
   })
 
   test('let you override the default parser once', t => {

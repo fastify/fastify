@@ -100,7 +100,7 @@ test('getParser', t => {
 
 test('existingParser', t => {
   test('returns always false for "*"', t => {
-    t.plan(4)
+    t.plan(2)
 
     const fastify = Fastify()
 

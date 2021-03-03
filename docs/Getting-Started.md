@@ -118,12 +118,8 @@ Once you run the following command, your application load on `http://localhost:3
 
 
 
-## Hooks
-
+## Interact with request lifcyles (Hooks)
 Hooks allow you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, or else you will lose those events. See more about hooks [here](https://www.fastify.io/docs/latest/Hooks/). 
-
-
-### Request/Reply Hooks
 
 Request and reply are the core objects of Fastify. You can get more insight into where each hook is executed by checking the [lifecycle page](https://www.fastify.io/docs/latest/Lifecycle/). Here are some hooks you can use.
 
@@ -151,7 +147,4 @@ Notice: in the [onRequest hook](https://www.fastify.io/docs/latest/Hooks/), `req
 Request/Reply Hooks.
 
 
-
-
-
-<!-- Note: More work to be done after Season of Docs is Over -->
+## Decorators

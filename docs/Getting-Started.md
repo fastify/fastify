@@ -120,18 +120,38 @@ Once you run the following command, your application load on `http://localhost:3
 
 ## Hooks
 
-Hooks allow you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, or else you will lose those events. See more about hooks here. 
-
-Use these two hooks to interact with the lifecycle of fastify:
- 1. Request/Reply Hooks 
- 2. Application Hooks
-
-
-> **Notice**: The done callback is not available when using async/await or returning a Promise. If you invoke a done callback in this instance, unexpected behaviour may occur, e.g. duplicate invocation of handlers.
-Request/Reply Hooks
+Hooks allow you to listen to specific events in application and request/response lifecycles. A Hook needs to be registered using `fastify.addhook` to be able to listen to events before they are triggered, or else you will lose those events. See more about hooks [here](https://www.fastify.io/docs/latest/Hooks/). 
 
 
 ### Request/Reply Hooks
 
-Request and reply are the core objects of Fastify. You can get more insight into where each hook is executed by checking the lifecycle page.
+Request and reply are the core objects of Fastify. You can get more insight into where each hook is executed by checking the [lifecycle page](https://www.fastify.io/docs/latest/Lifecycle/). Here are some hooks you can use.
+
+**OnRequest**
+
+```
+fastify.addHook('onRequest', async (request, reply) => {
+  // Some code
+  await asyncMethod()
+}) 
+```
+
+Or `callback`:
+
+```
+fastify.addHook('onRequest', (request, reply, done) => {
+  // Some code
+  done()
+})
+```
+
+Notice: in the [onRequest hook](https://www.fastify.io/docs/latest/Hooks/), `request.body` will always be `null`, because the body parsing happens before the preValidation hook.  See [Fastify's lifecycle](https://www.fastify.io/docs/latest/Lifecycle/).
+
+>  The done callback is not available when using async/await or returning a Promise. If you invoke a done callback in this instance, unexpected behaviour may occur, e.g. duplicate invocation of handlers.
+Request/Reply Hooks.
+
+
+
+
+
 <!-- Note: More work to be done after Season of Docs is Over -->

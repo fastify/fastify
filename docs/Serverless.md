@@ -12,7 +12,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 ### Attention Readers:
 
 > The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
-Serverless environments requests differently than a standard HTTP/S server and they have
+Serverless environments requests differ from a standard HTTP/S server and they have
 different requirements. Nevertheless, Fastify supports serverless environments directly
 or through adapter. Be sure to test your application thoroughly as those difference might
 emerge.

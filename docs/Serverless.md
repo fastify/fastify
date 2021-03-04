@@ -14,7 +14,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 > The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
 Serverless environments requests differ from a standard HTTP/S server and they have
 different requirements. Nevertheless, Fastify supports serverless environments directly
-or through adapter. Be sure to test your application thoroughly as those difference might
+or through an adapter. Be sure to test your application thoroughly as those difference might
 emerge.
 
 ## AWS Lambda

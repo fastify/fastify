@@ -73,7 +73,7 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler(() => {
 expectAssignable<FastifyInstance>(server.post('/test', {
   validatorCompiler: ({ schema }) => {
     return data => {
-      if (!data || data.constructor !== Object) {
+      if (data === undefined || data.constructor !== Object) {
         return { error: new Error('value is not an object') }
       }
       return { value: data }

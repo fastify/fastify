@@ -1,3 +1,5 @@
+/* eslint-disable handle-callback-err */
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
@@ -22,23 +24,25 @@ expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())
 
 expectAssignable<FastifyInstance>(
-  server.setErrorHandler(function (error, request, reply) {
+  // eslint-disable-next-line handle-callback-err
+  server.setErrorHandler(function (error, request, reply): void {
     expectAssignable<FastifyInstance>(this)
   })
 )
 
 expectAssignable<FastifyInstance>(
-  server.setErrorHandler<FastifyError>(function (error, request, reply) {
+  // eslint-disable-next-line handle-callback-err
+  server.setErrorHandler<FastifyError>(function (error, request, reply): void {
     expectType<FastifyError>(error)
   })
 )
 
 expectType<ValidationResult[] | undefined>(FastifyError().validation)
 
-function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+function fastifyErrorHandler (this: FastifyInstance, error: FastifyError): void {}
 server.setErrorHandler(fastifyErrorHandler)
 
-function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+function nodeJSErrorHandler (error: NodeJS.ErrnoException): void {}
 server.setErrorHandler(nodeJSErrorHandler)
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
@@ -63,13 +67,13 @@ server.setReplySerializer(function (payload, statusCode) {
   return 'serialized'
 })
 
-function invalidReplySerializer (payload: number, statusCode: string) {}
+function invalidReplySerializer (payload: number, statusCode: string): void {}
 expectError(server.setReplySerializer(invalidReplySerializer))
 
-function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
+function serializerWithInvalidReturn (payload: unknown, statusCode: number): void {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
-function invalidSchemaErrorFormatter () {}
+function invalidSchemaErrorFormatter (): void {}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
 // test listen method callback
@@ -104,20 +108,20 @@ expectType<FastifyInstance>(fastify().get('/', {
 }))
 
 type InitialConfig = Readonly<{
-  connectionTimeout?: number,
-  keepAliveTimeout?: number,
-  bodyLimit?: number,
-  caseSensitive?: boolean,
-  http2?: boolean,
-  https?: boolean | Readonly<{ allowHTTP1: boolean }>,
-  ignoreTrailingSlash?: boolean,
-  disableRequestLogging?: boolean,
-  maxParamLength?: number,
-  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
-  pluginTimeout?: number,
-  requestIdHeader?: string,
-  requestIdLogLabel?: string,
+  connectionTimeout?: number
+  keepAliveTimeout?: number
+  bodyLimit?: number
+  caseSensitive?: boolean
+  http2?: boolean
+  https?: boolean | Readonly<{ allowHTTP1: boolean }>
+  ignoreTrailingSlash?: boolean
+  disableRequestLogging?: boolean
+  maxParamLength?: number
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore'
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore'
+  pluginTimeout?: number
+  requestIdHeader?: string
+  requestIdLogLabel?: string
   http2SessionTimeout?: number
 }>
 

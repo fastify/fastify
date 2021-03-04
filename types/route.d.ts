@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { FastifyInstance } from './instance'
 import { FastifyRequest, RequestGenericInterface } from './request'
 import { FastifyReply, ReplyGenericInterface } from './reply'
@@ -20,6 +21,7 @@ export interface RouteShorthandOptions<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
 > {
+<<<<<<< HEAD
   schema?: FastifySchema;
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
@@ -32,19 +34,33 @@ export interface RouteShorthandOptions<
   constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
+=======
+  schema?: FastifySchema
+  attachValidation?: boolean
+  exposeHeadRoute?: boolean
+  validatorCompiler?: FastifySchemaCompiler
+  serializerCompiler?: FastifySerializerCompiler
+  bodyLimit?: number
+  logLevel?: LogLevel
+  config?: ContextConfig
+  version?: string
+  constraints?: { [name: string]: any }
+  prefixTrailingSlash?: 'slash'|'no-slash'|'both'
+  errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void
+>>>>>>> ae37931 (feat: add ts-standard)
   // TODO: Change to actual type.
-  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error;
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
 
   // hooks
-  onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  preParsing?: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  preSerialization?: preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  onResponse?: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  onTimeout?: onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-  onError?: onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+  onRequest?: onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<onRequestHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  preParsing?: preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preParsingHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  preSerialization?: preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preSerializationHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  onSend?: onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<onSendHookHandler<unknown, RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  onResponse?: onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<onResponseHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  onTimeout?: onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<onTimeoutHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+  onError?: onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<onErrorHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
 }
 
 /**
@@ -70,10 +86,16 @@ export interface RouteShorthandOptionsWithHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+<<<<<<< HEAD
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler> {
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+=======
+  ContextConfig = ContextConfigDefault
+> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> {
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+>>>>>>> ae37931 (feat: add ts-standard)
 }
 
 /**
@@ -88,7 +110,7 @@ export interface RouteShorthandMethod<
     path: string,
     opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply>
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
@@ -130,4 +152,4 @@ export type RouteHandler<
 export type DefaultRoute<Request, Reply> = (
   req: Request,
   res: Reply,
-) => void;
+) => void

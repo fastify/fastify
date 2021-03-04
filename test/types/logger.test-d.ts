@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-invalid-void-type */
 import { expectType, expectError } from 'tsd'
-import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError } from '../../fastify'
+import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as pino from 'pino'
 
@@ -18,23 +19,23 @@ class Foo {}
 })
 
 interface CustomLogger extends FastifyLoggerInstance {
-  customMethod(msg: string, ...args: unknown[]): void;
+  customMethod: (msg: string, ...args: unknown[]) => void
 }
 
 class CustomLoggerImpl implements CustomLogger {
-  customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
+  customMethod (msg: string, ...args: unknown[]): void { console.log(msg, args) }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
   info (arg1: unknown, arg2?: unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
 
-  warn (...args: unknown[]) { console.log(args) }
-  error (...args: unknown[]) { console.log(args) }
-  fatal (...args: unknown[]) { console.log(args) }
-  trace (...args: unknown[]) { console.log(args) }
-  debug (...args: unknown[]) { console.log(args) }
-  child () { return new CustomLoggerImpl() }
+  warn (...args: unknown[]): void { console.log(args) }
+  error (...args: unknown[]): void { console.log(args) }
+  fatal (...args: unknown[]): void { console.log(args) }
+  trace (...args: unknown[]): void { console.log(args) }
+  debug (...args: unknown[]): void { console.log(args) }
+  child (): CustomLoggerImpl { return new CustomLoggerImpl() }
 }
 
 const customLogger = new CustomLoggerImpl()

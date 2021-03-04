@@ -41,7 +41,7 @@ fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefa
 ```
 
 Fastify first tries to match a content-type parser with a `string` value before trying to find a matching `RegExp`.
-If you provide overlapping content types, fastify tries to find a matching content type by starting with the last one passed and ending with the first one.
+If you provide overlapping content types, Fastify tries to find a matching content type by starting with the last one passed and ending with the first one.
 So if you want to specify a general content type more precisely, first specify the general content type and then the more specific one, like in the example below.
 
 ```js

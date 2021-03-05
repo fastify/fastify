@@ -98,6 +98,7 @@ The type system heavily relies on generic properties to provide the most accurat
      return `logged in!`
    })
    ```
+
 4. Build and run the server code with `npm run build` and `npm run start`
 5. Query the api
    ```bash
@@ -130,7 +131,62 @@ To validate your requests and responses you can use JSON Schema files. If you di
 
 Also it has the advantage to use the defined type within your handlers (including pre-validation, etc.).
 
-Here are two options how to achieve this.
+Here are some options how to achieve this.
+
+
+#### Typebuilder
+
+A useful library for building types and a schema at once is [typebox](https://www.npmjs.com/package/@sinclair/typebox).
+With typebox you define your schema within your code and use them directly as types or schemas as you need them.
+
+When you want to use it for validation of some payload in a fastify route you can do it as follows:
+
+1. Install `typebox` in your project.
+
+    ```bash
+    npm i @sinclair/typebox
+    ```
+
+2. Define the schema you need with `Type` and create the respective type  with `Static`.
+  
+    ```typescript
+    import { Static, Type } from '@sinclair/typebox'
+
+    const User = Type.Object({
+      name: Type.String(),
+      mail: Type.Optional(Type.String({ format: "email" })),
+    });
+    type UserType = Static<typeof User>;
+    ```
+
+3. Use the defined type and schema during the definition of your route
+
+    ```typescript
+    const app = fastify();
+
+    app.post<{ Body: UserType; Response: UserType }>(
+      "/",
+      {
+        schema: {
+          body: User,
+          response: {
+            200: User,
+          },
+        },
+      },
+      (req, rep) => {
+        const { body: user } = req;
+        /* user has type
+        * const user: StaticProperties<{
+        *  name: TString;
+        *  mail: TOptional<TString>;
+        * }>
+        */
+        //...
+        rep.status(200).send(user);
+      }
+    );
+    ```
 
 #### Schemas in JSON Files
 
@@ -138,10 +194,13 @@ In the last example we used interfaces to define the types for the request query
 
 1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
 2. Install the `json-schema-to-typescript` module:
-   ```
+
+   ```bash
    npm i -D json-schema-to-typescript
    ```
+
 3. Create a new folder called `schemas` and add two files `headers.json` and `querystring.json`. Copy and paste the following schema definitions into the respective files:
+
    ```json
    {
      "title": "Headers Schema",
@@ -153,6 +212,7 @@ In the last example we used interfaces to define the types for the request query
      "required": ["h-Custom"]
    }
    ```
+
    ```json
    {
      "title": "Querystring Schema",
@@ -165,18 +225,22 @@ In the last example we used interfaces to define the types for the request query
      "required": ["username", "password"]
    }
    ```
+
 4. Add a `compile-schemas` script to the package.json:
-   ```json
+
+```json
    {
      "scripts": {
        "compile-schemas": "json2ts -i schemas -o types"
      }
    }
-   ```
+```
+
    `json2ts` is a CLI utility included in `json-schema-to-typescript`. `schemas` is the input path, and `types` is the output path.
 5. Run `npm run compile-schemas`. Two new files should have been created in the `types` directory.
 6. Update `index.ts` to have the following code:
-   ```typescript
+
+```typescript
    import fastify from 'fastify'
 
    // import json schemas as normal

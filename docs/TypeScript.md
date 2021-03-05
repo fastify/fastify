@@ -134,7 +134,7 @@ Also it has the advantage to use the defined type within your handlers (includin
 Here are some options how to achieve this.
 
 
-#### Typebuilder
+#### typebox
 
 A useful library for building types and a schema at once is [typebox](https://www.npmjs.com/package/@sinclair/typebox).
 With typebox you define your schema within your code and use them directly as types or schemas as you need them.

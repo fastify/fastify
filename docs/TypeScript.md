@@ -303,7 +303,7 @@ In the last example we used interfaces to define the types for the request query
 
 Great work! Now you can make use of both JSON Schemas and TypeScript definitions.
 
-#### On-the-fly types
+#### json-schema-to-ts
 
 If you do not want to generate types from your schemas, but want to use them diretly from your code, you can use the package
 [json-schema-to-ts](https://www.npmjs.com/package/json-schema-to-ts).

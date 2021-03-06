@@ -81,22 +81,15 @@ expectAssignable<FastifyInstance>(server.post('/test', {
   }
 }, async req => req.body))
 
-expectAssignable<FastifyInstance>(
-  server.setValidatorCompiler<FastifySchema & { validate:() => string }>(
-    ({ schema }) => {
-      schema.validate()
-      return new Ajv().compile(schema)
-    }
-  )
-)
+expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
+  function ({ schema }) {
+    return new Ajv().compile(schema.validate)
+  }
+))
 
-expectAssignable<FastifyInstance>(
-  server.setSerializerCompiler<FastifySchema & { validate:() => string }>(
-    () => {
-      return data => JSON.stringify(data) 
-    }
-  )
-)
+expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & { validate: string }>(
+  () => data => JSON.stringify(data)
+))
 
 expectError(server.get(
   '/unknown-schema-prop',

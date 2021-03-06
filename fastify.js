@@ -113,10 +113,6 @@ function fastify (options) {
     throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
   }
 
-  ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
-    return Array.isArray(plugin) ? plugin : [plugin]
-  })
-
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
 

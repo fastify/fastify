@@ -4,6 +4,55 @@ const { test } = require('tap')
 const AJV = require('ajv')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
+const ajvErrors = require('ajv-errors')
+
+test('Ajv plugins array parameter', t => {
+  t.plan(3)
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        jsonPointers: true,
+        allErrors: true
+      },
+      plugins: [
+        [ajvErrors, { singleError: '@@@@' }]
+      ]
+    }
+  })
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+            minimum: 2,
+            maximum: 10,
+            multipleOf: 2,
+            errorMessage: {
+              type: 'should be number',
+              minimum: 'should be >= 2',
+              maximum: 'should be <= 10',
+              multipleOf: 'should be multipleOf 2'
+            }
+          }
+        }
+      }
+    },
+    handler (req, reply) { reply.send({ ok: 1 }) }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 99 }
+  }, (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 400)
+    t.equals(res.json().message, 'body/foo should be <= 10@@@@should be multipleOf 2')
+  })
+})
 
 test('Should handle root $merge keywords in header', t => {
   t.plan(5)

@@ -968,12 +968,14 @@ fastify.ready(() => {
 *Remember to call it inside or after a `ready` call.*
 
 ```js
-fastify.get('/test', () => {})
-fastify.get('/test/hello', () => {})
-fastify.get('/hello/world', () => {})
+fastify.register(async function foo (instance) {
+  instance.register(async function bar () {})
+})
+fastify.register(async function baz () {})
 
 fastify.ready(() => {
-  console.log(fastify.printPlugins())
+  console.error(fastify.printPlugins())
+  // will output the following to stderr:
   // └── root
   //   ├── foo
   //   │   └── bar

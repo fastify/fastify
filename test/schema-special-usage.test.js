@@ -6,6 +6,75 @@ const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 
+const buildValidatorAJV7 = require('@fastify/ajv-compiler-7')
+
+test('Ajv 7 usage instead of the bundle one', t => {
+  t.plan(2)
+
+  t.test('use new ajv7 option', t => {
+    t.plan(3)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: true },
+        plugins: [require('ajv-formats')]
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV7()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 400)
+      t.equals(res.json().message, 'body/foo should match format "date"')
+    })
+  })
+
+  t.test('use new ajv7 option - avoid check', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: false }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV7()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equals(res.statusCode, 200)
+    })
+  })
+
+  function callIt (fastify, cb) {
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              format: 'date'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { foo: '99' }
+    }, cb)
+  }
+})
+
 test('Ajv plugins array parameter', t => {
   t.plan(3)
   const fastify = Fastify({

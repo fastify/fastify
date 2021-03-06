@@ -717,7 +717,7 @@ import fastify, { RequestGenericInterface } from 'fastify'
 
 const server = fastify()
 
-const requestGeneric: RequestGenericInterface = {
+interface requestGeneric extends RequestGenericInterface {
   Querystring: {
     name: string
   }

@@ -418,3 +418,31 @@ test('should support send module 200 and 404', t => {
     })
   })
 })
+
+test('should destroy stream when response is ended', t => {
+  t.plan(4)
+  const stream = require('stream')
+  const fastify = Fastify()
+
+  fastify.get('/error', function (req, reply) {
+    const reallyLongStream = new stream.Readable({
+      read: function () {},
+      destroy: function (err, callback) {
+        t.ok('called')
+        callback(err)
+      }
+    })
+    reply.code(200).send(reallyLongStream)
+    reply.raw.end(Buffer.from('hello\n'))
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+    })
+  })
+})

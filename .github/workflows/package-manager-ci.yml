@@ -3,7 +3,7 @@ name: package-manager-ci
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   pnpm:

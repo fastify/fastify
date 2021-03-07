@@ -842,7 +842,10 @@ This property can be used set a function to format errors that happen while the 
 
 <a name="schema-controller"></a>
 #### schemaController
-This property can be used to fully manage where the schemas of your application will be stored.
+This property can be used to fully manage: 
+- `bucket`: where the schemas of your application will be stored
+- `compilersFactory`: what module must compile the JSON schemas
+
 It can be useful when your schemas are stored in another data structure that is unknown to Fastify.
 See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
 this property helps to resolve.
@@ -874,6 +877,45 @@ const fastify = Fastify({
             'schema$id2': schema2
           }
           return allTheSchemaStored
+        }
+      }
+    },
+
+    /**
+     * The compilers factory let you to fully control the validator and serializer
+     * in the Fastify's lifecycle, providing the encapsulation to your compilers.
+     */
+    compilersFactory: {
+      /**
+       * This factory is called whenever a new validator instance is needed.
+       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * encapsulation context.
+       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly 
+       */
+      buildValidator: function factory (externalSchemas, ajvServerOption) {
+        // This factory function must return a schema validator compiler.
+        // See [#schema-validator](Validation-and-Serialization.md#schema-validator) for details.
+        const yourAjvInstance = new Ajv(ajvServerOption.customOptions)
+        return function validatorCompiler ({ schema, method, url, httpPart }) {
+          return yourAjvInstance.compile(schema)
+        }
+      },
+
+      /**
+       * This factory is called whenever a new serializer instance is needed.
+       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * encapsulation context.
+       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly 
+       */
+      buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
+        // This factory function must return a schema serializer compiler.
+        // See [#schema-serializer](Validation-and-Serialization.md#schema-serializer) for details.
+        return function serializerCompiler ({ schema, method, url, httpStatus }) {
+          return data => JSON.stringify(data)
         }
       }
     }

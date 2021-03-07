@@ -790,7 +790,7 @@ const refToSharedSchemaDefinitions = {
 - [JSON Schema](https://json-schema.org/)
 - [Understanding JSON Schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)
-- [Ajv documentation](https://github.com/epoberezkin/ajv/blob/main/README.md)
+- [Ajv documentation](https://github.com/epoberezkin/ajv/blob/master/README.md)
 - [Ajv i18n](https://github.com/epoberezkin/ajv-i18n)
 - [Ajv custom errors](https://github.com/epoberezkin/ajv-errors)
 - Custom error handling with core methods with error file dumping [example](https://github.com/fastify/example/tree/master/validation-messages)

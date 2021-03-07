@@ -83,7 +83,7 @@ This way all the incoming events (API Gateway requests) are passed to the `proxy
 
 ### Example
 
-An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/main/fastify-app-lambda).
+An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
 
 
 ### Considerations

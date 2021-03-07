@@ -118,7 +118,7 @@ module.exports = routes
 In this example, we used the `register` API, which is the core of the Fastify framework. It is the only way to add routes, plugins, et cetera.
 
 At the beginning of this guide, we noted that Fastify provides a foundation that assists with asynchronous bootstrapping of your application. Why is this important?
-Consider the scenario where a database connection is needed to handle data storage. Obviously, the database connection needs to be available before the server is accepting connections. How do we address this problem?<br>
+Consider the scenario where a database connection is needed to handle data storage. The database connection needs to be available before the server is accepting connections. How do we address this problem?<br>
 A typical solution is to use a complex callback, or promises - a system that will mix the framework API with other libraries and the application code.<br>
 Fastify handles this internally, with minimum effort!
 
@@ -285,7 +285,7 @@ fastify.get('/', opts, async (request, reply) => {
   return { hello: 'world' }
 })
 ```
-Simply by specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
+By specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
 Read [Validation and Serialization](Validation-and-Serialization.md) to learn more.
 
 <a name="extend-server"></a>

@@ -10,14 +10,12 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 - [Vercel](#vercel)
 
 ### Attention Readers:
-> Fastify is not designed to run on serverless environments.
-The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
-Serverless environments requests differently than a standard HTTP/S server;
-thus, we cannot guarantee it will work as expected with Fastify.
-Regardless, based on the examples given in this document,
-it is possible to use Fastify in a serverless environment.
-Again, keep in mind that this is not Fastify's intended use case and
-we do not test for such integration scenarios.
+
+> The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
+Serverless environments requests differ from a standard HTTP/S server and they have
+different requirements. Nevertheless, Fastify supports serverless environments directly
+or through an adapter. Be sure to test your application thoroughly as those difference might
+emerge.
 
 ## AWS Lambda
 
@@ -49,7 +47,7 @@ if (require.main === module) {
 }
 ```
 
-When executed in your lambda function we don't need to listen to a specific port,
+When executed in your lambda function we do not need to listen to a specific port,
 so we just export the wrapper function `init` in this case.
 The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
 
@@ -90,8 +88,8 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 ### Considerations
 
-- API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
-- API Gateway has a timeout of 29 seconds, so it's important to provide a reply during this time.
+- API Gateway does not support streams yet, so you are not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
+- API Gateway has a timeout of 29 seconds, so it is important to provide a reply during this time.
 
 ## Google Cloud Run
 

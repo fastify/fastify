@@ -44,7 +44,7 @@ NB (*): If `reply.raw` is used to send a response back to the user, `onResponse`
 
 ## Reply Lifecycle
 
-Whenever the user handles the request the result may be:
+Whenever the user handles the request, the result may be:
 
 - in async handler: it returns a payload
 - in async handler: it throws an `Error`

@@ -79,7 +79,31 @@ const schema = {
     pluginTimeout: { type: 'integer', default: defaultInitOptions.pluginTimeout },
     requestIdHeader: { type: 'string', default: defaultInitOptions.requestIdHeader },
     requestIdLogLabel: { type: 'string', default: defaultInitOptions.requestIdLogLabel },
-    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout }
+    http2SessionTimeout: { type: 'integer', default: defaultInitOptions.http2SessionTimeout },
+    // deprecated style of passing the versioning constraint
+    versioning: {
+      type: 'object',
+      additionalProperties: true,
+      required: ['storage', 'deriveVersion'],
+      properties: {
+        storage: { },
+        deriveVersion: { }
+      }
+    },
+    constraints: {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        required: ['name', 'storage', 'validate', 'deriveConstraint'],
+        additionalProperties: true,
+        properties: {
+          name: { type: 'string' },
+          storage: { },
+          validate: { },
+          deriveConstraint: { }
+        }
+      }
+    }
   }
 }
 

@@ -388,7 +388,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
   })
 })
 
-test('the content type should be a string', t => {
+test('the content type should be a string or RegExp', t => {
   t.plan(2)
   const fastify = Fastify()
 
@@ -397,7 +397,7 @@ test('the content type should be a string', t => {
     t.fail()
   } catch (err) {
     t.is(err.code, 'FST_ERR_CTP_INVALID_TYPE')
-    t.is(err.message, 'The content type should be a string')
+    t.is(err.message, 'The content type should be a string or a RegExp')
   }
 })
 
@@ -1240,6 +1240,266 @@ test('should be able to use default parser for extra content type', t => {
       t.error(err)
       t.strictEqual(response.statusCode, 200)
       t.strictDeepEqual(JSON.parse(body.toString()), { hello: 'world' })
+      fastify.close()
+    })
+  })
+})
+
+test('contentTypeParser should add a custom parser with RegExp value', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.options('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser(/.*\+json$/, function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    t.tearDown(() => fastify.close())
+
+    t.test('in POST', t => {
+      t.plan(3)
+
+      sget({
+        method: 'POST',
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'application/vnd.test+json'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      })
+    })
+
+    t.test('in OPTIONS', t => {
+      t.plan(3)
+
+      sget({
+        method: 'OPTIONS',
+        url: 'http://localhost:' + fastify.server.address().port,
+        body: '{"hello":"world"}',
+        headers: {
+          'Content-Type': 'weird-content-type+json'
+        }
+      }, (err, response, body) => {
+        t.error(err)
+        t.strictEqual(response.statusCode, 200)
+        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      })
+    })
+  })
+})
+
+test('contentTypeParser should add multiple custom parsers with RegExp values', t => {
+  t.plan(10)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser(/.*\+json$/, function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.addContentTypeParser(/.*\+xml$/, function (req, payload, done) {
+    done(null, 'xml')
+  })
+
+  fastify.addContentTypeParser(/.*\+myExtension$/, function (req, payload, done) {
+    let data = ''
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
+      done(null, data + 'myExtension')
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/vnd.hello+json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/test+xml'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'xml')
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'abcdefg',
+      headers: {
+        'Content-Type': 'application/+myExtension'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'abcdefgmyExtension')
+      fastify.close()
+    })
+  })
+})
+
+test('catch all content type parser should not interfere with content type parser', t => {
+  t.plan(10)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser('*', function (req, payload, done) {
+    let data = ''
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
+      done(null, data)
+    })
+  })
+
+  fastify.addContentTypeParser(/^application\/.*/, function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.addContentTypeParser('text/html', function (req, payload, done) {
+    let data = ''
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
+      done(null, data + 'html')
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"myKey":"myValue"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ myKey: 'myValue' }))
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'body',
+      headers: {
+        'Content-Type': 'very-weird-content-type'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'body')
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'my text',
+      headers: {
+        'Content-Type': 'text/html'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'my texthtml')
+      fastify.close()
+    })
+  })
+})
+
+test('should prefer string content types over RegExp ones', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.addContentTypeParser(/^application\/.*/, function (req, payload, done) {
+    let data = ''
+    payload.on('data', chunk => { data += chunk })
+    payload.on('end', () => {
+      done(null, data)
+    })
+  })
+
+  fastify.addContentTypeParser('application/json', function (req, payload, done) {
+    jsonParser(payload, function (err, body) {
+      done(err, body)
+    })
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"k1":"myValue", "k2": "myValue"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: 'javascript',
+      headers: {
+        'Content-Type': 'application/javascript'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.strictEqual(response.statusCode, 200)
+      t.deepEqual(body.toString(), 'javascript')
       fastify.close()
     })
   })

@@ -25,7 +25,7 @@ fastify.get('/', options, function (request, reply) {
 ```
 
 If you want to pass some options to the logger, just pass them to Fastify.
-You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/main/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
+You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
 
 ```js
 const fastify = require('fastify')({

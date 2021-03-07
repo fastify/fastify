@@ -56,7 +56,6 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly typed routes with a runtime validation using JSON schema generated from types.
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.
-- [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/main/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server) Tiny (~5k), Fast, KISS and dependency-free Node.JS library to make your Fastify API graceful.
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.

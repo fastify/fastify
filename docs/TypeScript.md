@@ -377,7 +377,7 @@ This plugin guide is for Fastify plugins written in JavaScript. The steps outlin
    export default myPlugin
    ```
 
-__Note__: [fastify-plugin](https://github.com/fastify/fastify-plugin) v2.3.0 and newer, automatically adds `.default` property and a named export to the exported plugin. Be sure to `export default` and `export const myPlugin` in your typings to provide the best developer experience. For a complete example you can check out [fastify-swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
+__Note__: [fastify-plugin](https://github.com/fastify/fastify-plugin) v2.3.0 and newer, automatically adds `.default` property and a named export to the exported plugin. Be sure to `export default` and `export const myPlugin` in your typings to provide the best developer experience. For a complete example you can check out [fastify-swagger](https://github.com/fastify/fastify-swagger/blob/main/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any TypeScript project!
 

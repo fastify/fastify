@@ -355,7 +355,7 @@ test('inject a multipart request using form-body', t => {
     })
 })
 
-// https://github.com/hapijs/shot/blob/master/test/index.js#L836
+// https://github.com/hapijs/shot/blob/main/test/index.js#L836
 function getStream () {
   const Read = function () {
     Stream.Readable.call(this)

@@ -303,7 +303,7 @@ See the `prefixTrailingSlash` route option above to change this behaviour.
 <a name="custom-log-level"></a>
 ### Custom Log Level
 It could happen that you need different log levels in your routes, Fastify achieves this in a very straightforward way.<br/>
-You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string) that you need.
+You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/main/docs/api.md#level-string) that you need.
 
 Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](Server.md#setnotfoundhandler) and [`setErrorHandler`](Server.md#seterrorhandler) will be affected.
 
@@ -328,7 +328,7 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 <a name="custom-log-serializer"></a>
 ### Custom Log Serializer
 
-In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
+In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/main/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
 ```js
 const fastify = require('fastify')({ logger: true })
@@ -436,7 +436,7 @@ fastify.inject({
 > Remember to set a [`Vary`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary) header in your
 > responses with the value you are using for defining the versioning (e.g.: `'Accept-Version'`),
 > to prevent cache poisoning attacks. You can also configure this as part your Proxy/CDN.
-> 
+>
 > ```js
 > const append = require('vary').append
 > fastify.addHook('onSend', async (req, reply) => {

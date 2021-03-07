@@ -85,7 +85,7 @@ This way all the incoming events (API Gateway requests) are passed to the `proxy
 
 ### Example
 
-An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
+An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/main/fastify-app-lambda).
 
 
 ### Considerations
@@ -262,7 +262,7 @@ module.exports = {
 
 ### Scripts
 
-Add this command to your `package.json` *scripts* 
+Add this command to your `package.json` *scripts*
 
 ```json
 "scripts": {
@@ -284,9 +284,9 @@ configuring your `vercel.json` file like the following:
 ```json
 {
     "rewrites": [
-        { 
-            "source": "/(.*)", 
-            "destination": "/api/serverless.js" 
+        {
+            "source": "/(.*)",
+            "destination": "/api/serverless.js"
         }
     ]
 }

@@ -358,6 +358,11 @@ export interface FastifyInstance<
   printRoutes(): string;
 
   /**
+   * Prints the representation of the plugin tree used by avvio, the plugin registration system
+   */
+  printPlugins(): string;
+
+  /**
    *  Frozen read-only object registering the initial options passed down by the user to the fastify instance
    */
   initialConfig: Readonly<{

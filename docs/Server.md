@@ -961,6 +961,28 @@ fastify.ready(() => {
 })
 ```
 
+<a name="print-plugins"></a>
+#### printPlugins
+
+`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.<br/>
+*Remember to call it inside or after a `ready` call.*
+
+```js
+fastify.register(async function foo (instance) {
+  instance.register(async function bar () {})
+})
+fastify.register(async function baz () {})
+
+fastify.ready(() => {
+  console.error(fastify.printPlugins())
+  // will output the following to stderr:
+  // └── root
+  //   ├── foo
+  //   │   └── bar
+  //   └── baz
+})
+```
+
 <a name="addContentTypeParser"></a>
 #### addContentTypeParser
 

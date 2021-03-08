@@ -89,7 +89,7 @@ To view a live example, refer to the [Decorators.md](/docs/Decorators.md) refere
 
 ### Avoid using contractions
 
-Contraction are the shortened version of written and spoken forms of a word, i.e. using "don't" instead of "do not".
+Contractions are the shortened version of written and spoken forms of a word, i.e. using "don't" instead of "do not".
 Avoid contractions to provide a more formal tone.
 
 ### Avoid using condescending terms

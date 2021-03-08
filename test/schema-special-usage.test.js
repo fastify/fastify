@@ -357,3 +357,49 @@ test('setSchemaController in a plugin', t => {
   }
   schemaPlugin[Symbol.for('skip-override')] = true
 })
+
+test('side effect on schema let the server crash', async t => {
+  const firstSchema = {
+    $id: 'example1',
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string'
+      }
+    }
+  }
+
+  const reusedSchema = {
+    $id: 'example2',
+    type: 'object',
+    properties: {
+      name: {
+        oneOf: [
+          {
+            $ref: 'example1'
+          }
+        ]
+      }
+    }
+  }
+
+  const fastify = Fastify()
+  fastify.addSchema(firstSchema)
+
+  fastify.post('/a', {
+    handler: async () => 'OK',
+    schema: {
+      body: reusedSchema,
+      response: { 200: reusedSchema }
+    }
+  })
+  fastify.post('/b', {
+    handler: async () => 'OK',
+    schema: {
+      body: reusedSchema,
+      response: { 200: reusedSchema }
+    }
+  })
+
+  await fastify.ready()
+})

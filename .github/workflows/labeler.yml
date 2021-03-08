@@ -3,10 +3,8 @@ on: pull_request_target
 
 jobs:
   label:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/labeler@master
+    - uses: actions/labeler@main
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"

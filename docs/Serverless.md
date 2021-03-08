@@ -1,6 +1,23 @@
 <h1 align="center">Serverless</h1>
 
 Run serverless applications and REST APIs using your existing Fastify application.
+By default, Fastify won't work on your serverless platform of choice, you'll need
+to make some small changes to fix this. This document contains a small guide for
+the most famous serverless providers and how to use Fastify with them.
+
+#### Should you use Fastify in a serverless platform?
+
+That's up to you! Keep in mind that functions as a service should always use
+small and focused functions, but you can also run an entire web application with them.
+It's important to remember that the bigger the application, the slower the initial boot will be.
+The best way to use for running Fastify applications in serverless environments
+is to use platforms like Google Cloud Run, AWS Fargate, and Azure Container Instances,
+where the server can handle multiple requests at the same time and make full use of Fastify features.
+
+One of the best features of using Fastify in serverless applications is the ease of development.
+In your local environment, you will always run directly the Fastify application without the need
+for any additional tool, while the same code will be executed in your serverless platform of
+choice with an additional snippet of code.
 
 ### Contents
 
@@ -8,14 +25,6 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
-
-### Attention Readers:
-
-> The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
-Serverless environments requests differ from a standard HTTP/S server and they have
-different requirements. Nevertheless, Fastify supports serverless environments directly
-or through an adapter. Be sure to test your application thoroughly as those difference might
-emerge.
 
 ## AWS Lambda
 

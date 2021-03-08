@@ -268,6 +268,7 @@ function fastify (options) {
     ready: null,
     onClose: null,
     close: null,
+    printPlugins: null,
     // http server
     listen: listen,
     server: server,
@@ -351,6 +352,8 @@ function fastify (options) {
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
+  fastify.printPlugins = avvio.prettyPrint.bind(avvio)
+
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {

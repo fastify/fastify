@@ -153,6 +153,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes) Fastify reverse routes plugin, allows to defined named routes and build path using name and parameters.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint) Choose the JSON schema to use based on request parameters.
+- [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript) Generate typescript types based on your json/yaml validation schemas so they are always in sync.
 - [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session) Create a secure stateless cookie session for Fastify.
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).

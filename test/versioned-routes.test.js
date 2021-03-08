@@ -7,6 +7,7 @@ const sget = require('simple-get').concat
 const http = require('http')
 const split = require('split2')
 const append = require('vary').append
+const proxyquire = require('proxyquire')
 
 test('Should register a versioned route', t => {
   t.plan(11)
@@ -574,5 +575,40 @@ test('Vary header check (for documentation example)', t => {
     t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
     t.strictEqual(res.statusCode, 200)
     t.strictEqual(res.headers.vary, undefined)
+  })
+})
+
+test('Should trigger a warning when a versioned route is registered via version option', t => {
+  t.plan(4)
+
+  function onWarning (code) {
+    t.strictEqual(code, 'FSTDEP006')
+  }
+  const warning = {
+    emit: onWarning
+  }
+
+  const route = proxyquire('../lib/route', { './warnings': warning })
+  const fastify = proxyquire('..', { './lib/route.js': route })()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    version: '1.2.0',
+    handler: (req, reply) => {
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'Accept-Version': '1.x'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.strictEqual(res.statusCode, 200)
   })
 })

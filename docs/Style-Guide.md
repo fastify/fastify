@@ -24,7 +24,7 @@ You need to know the following:
 
 ### Consider your Audience
 
-Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM and Node.js. It is necessary to keep your readers in mind because they are the ones consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Use words and references that readers can relate with easily. Ask for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
+Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM, and Node.js. It is necessary to keep your readers in mind because they are the ones consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Use words and references that readers can relate with easily. Ask for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
 
 ### Get straight to the point
 

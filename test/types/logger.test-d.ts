@@ -14,6 +14,7 @@ class Foo {}
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({ foo: 'bar' }))
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Error()))
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
+  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](0))
 })
 
 interface CustomLogger extends FastifyLoggerInstance {
@@ -24,7 +25,7 @@ class CustomLoggerImpl implements CustomLogger {
   customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
 
   // Implementation signature must be compatible with all overloads of FastifyLogFn
-  info (arg1: unknown, arg2?: string | unknown, ...args: unknown[]): void {
+  info (arg1: unknown, arg2?: unknown, ...args: unknown[]): void {
     console.log(arg1, arg2, ...args)
   }
 

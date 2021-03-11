@@ -36,6 +36,19 @@ server.setErrorHandler(fastifyErrorHandler)
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
 
+function notFoundHandler (request, reply) {}
+function notFoundpreHandlerHandler (request, reply, done) { done() }
+async function notFoundpreHandlerAsyncHandler (request, reply) {}
+function notFoundpreValidationHandler (request, reply, done) { done() }
+async function notFoundpreValidationAsyncHandler (request, reply) {}
+
+server.setNotFoundHandler(notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))
 

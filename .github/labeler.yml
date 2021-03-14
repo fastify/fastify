@@ -5,3 +5,6 @@ documentation:
 # PRs that only touch type files
 typescript:
 - all: ["**/*[.|-]d.ts"]
+
+plugin:
+- all: ["docs/Ecosystem.md"]

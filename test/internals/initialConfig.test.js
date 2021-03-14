@@ -48,7 +48,8 @@ test('Fastify.initialConfig should expose all options', t => {
     return server
   }
 
-  const versioning = {
+  const versionStrategy = {
+    name: 'version',
     storage: function () {
       let versions = {}
       return {
@@ -58,9 +59,10 @@ test('Fastify.initialConfig should expose all options', t => {
         empty: () => { versions = {} }
       }
     },
-    deriveVersion: (req, ctx) => {
+    deriveConstraint: (req, ctx) => {
       return req.headers.accept
-    }
+    },
+    validate () { return true }
   }
 
   let reqId = 0
@@ -85,7 +87,9 @@ test('Fastify.initialConfig should expose all options', t => {
       return reqId++
     },
     logger: pino({ level: 'info' }),
-    versioning,
+    constraints: {
+      version: versionStrategy
+    },
     trustProxy: function myTrustFn (address, hop) {
       return address === '1.2.3.4' || hop === 1
     }
@@ -103,6 +107,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.strictEqual(fastify.initialConfig.caseSensitive, true)
   t.strictEqual(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.strictEqual(fastify.initialConfig.pluginTimeout, 20000)
+  t.ok(fastify.initialConfig.constraints.version)
 
   // obfuscated options:
   t.strictEqual(fastify.initialConfig.serverFactory, undefined)
@@ -110,7 +115,6 @@ test('Fastify.initialConfig should expose all options', t => {
   t.strictEqual(fastify.initialConfig.genReqId, undefined)
   t.strictEqual(fastify.initialConfig.querystringParser, undefined)
   t.strictEqual(fastify.initialConfig.logger, undefined)
-  t.strictEqual(fastify.initialConfig.versioning, undefined)
   t.strictEqual(fastify.initialConfig.trustProxy, undefined)
 })
 
@@ -311,4 +315,25 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   } catch (error) {
     t.fail()
   }
+})
+
+test('Fastify.initialConfig should accept the deprecated versioning option', t => {
+  t.plan(0)
+
+  const versioning = {
+    storage: function () {
+      let versions = {}
+      return {
+        get: (version) => { return versions[version] || null },
+        set: (version, store) => { versions[version] = store },
+        del: (version) => { delete versions[version] },
+        empty: () => { versions = {} }
+      }
+    },
+    deriveVersion: (req, ctx) => {
+      return req.headers.accept
+    }
+  }
+
+  Fastify({ versioning })
 })

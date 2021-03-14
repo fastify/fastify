@@ -27,7 +27,7 @@ import { FastifyRequest, RequestGenericInterface } from './request'
  */
 export interface FastifyLogFn {
   (msg: string, ...args: unknown[]): void;
-  (obj: Record<string, unknown>, msg?: string, ...args: unknown[]): void;
+  (obj: unknown, msg?: string, ...args: unknown[]): void;
 }
 
 export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'

@@ -98,6 +98,33 @@ expectAssignable<FastifyInstance>(fastify({
     deriveVersion: () => 'foo'
   }
 }))
+expectAssignable<FastifyInstance>(fastify({ constraints: {} }))
+expectAssignable<FastifyInstance>(fastify({
+  constraints: {
+    version: {
+      name: 'version',
+      storage: () => ({
+        get: () => () => {},
+        set: () => { },
+        del: () => { },
+        empty: () => { }
+      }),
+      validate () {},
+      deriveConstraint: () => 'foo'
+    },
+    host: {
+      name: 'host',
+      storage: () => ({
+        get: () => () => {},
+        set: () => { },
+        del: () => { },
+        empty: () => { }
+      }),
+      validate () {},
+      deriveConstraint: () => 'foo'
+    }
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {

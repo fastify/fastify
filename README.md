@@ -4,9 +4,9 @@
 
 <div align="center">
 
-![](https://github.com/fastify/fastify/workflows/ci/badge.svg)
-![](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)
-![](https://github.com/fastify/fastify/workflows/website/badge.svg)
+[![CI](https://github.com/fastify/fastify/workflows/ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/ci.yml)
+[![Package Manager CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
+[![Web SIte](https://github.com/fastify/fastify/workflows/website/badge.svg)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
 [![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
@@ -19,7 +19,7 @@
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
 Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
-[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/D3FZYPy)
+[![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
 
 </div>
 
@@ -216,10 +216,12 @@ Team members are listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
 * [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/), <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements), <https://twitter.com/davidmarkclem>, <https://www.npmjs.com/~davidmarkclements>
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 * [__Dustin Deus__](https://github.com/StarpTech), <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
+* [__Ayoub El Khattabi__](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Denis Fäcke__](https://github.com/SerayaEryn), <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
@@ -230,7 +232,9 @@ Team members are listed in alphabetical order.
 
 ### Fastify Plugins team
 * [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+* [__Ayoub El Khattabi__](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Salman Mitha__](https://github.com/salmanm), <https://www.npmjs.com/~salmanm>
 * [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>

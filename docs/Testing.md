@@ -6,11 +6,11 @@ Testing is one of the most important parts of developing an application. Fastify
 
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init -y` in our terminal.
 
-run `npm install fastify && npm install tap pino-pretty --save-dev`
+Run `npm install fastify && npm install tap pino-pretty --save-dev`
 
 ### Separating concerns makes testing easy
 
- First we're going to separate our application code from our server code:
+ First we are going to separate our application code from our server code:
 
 **app.js**:
 
@@ -55,7 +55,7 @@ server.listen(3000, (err, address) => {
 
 Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
-Before introducing any tests, we'll use the `.inject` method to make a fake request to our route:
+Before introducing any tests, we will use the `.inject` method to make a fake request to our route:
 
 **app.test.js**:
 
@@ -80,7 +80,7 @@ test()
 
 First, our code will run inside an asynchronous function, giving us access to async/await. 
 
-`.inject` insures all registered plugins have booted up and our application is ready to test. Lastly we pass the request method we want to use and a route. Using await we can store the response without a callback.
+`.inject` insures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
 
 
 
@@ -120,7 +120,7 @@ test('requests the "/" route', async t => {
 })
 ```
 
-Finally run `npm test` in the terminal and see your test results!
+Finally, run `npm test` in the terminal and see your test results!
 
 The `inject` method can do much more than a simple GET request to a URL:
 ```js

@@ -3,7 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
-const { kSchemas } = require('../lib/symbols.js')
+const { kSchemaController } = require('../lib/symbols.js')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
 const echoBody = (req, reply) => { reply.send(req.body) }
@@ -38,7 +38,7 @@ test('The schemas should be added to an internal storage', t => {
   const fastify = Fastify()
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.deepEqual(fastify[kSchemas].store, { id: schema })
+  t.deepEqual(fastify[kSchemaController].schemaBucket.store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {
@@ -121,8 +121,8 @@ test('Get compilers is empty when settle on routes', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(fastify.validatorCompiler, null)
-    t.equal(fastify.serializerCompiler, null)
+    t.equal(fastify.validatorCompiler, undefined)
+    t.equal(fastify.serializerCompiler, undefined)
   })
 })
 
@@ -1155,6 +1155,136 @@ test('The schema compiler recreate itself if needed', t => {
     }, echoBody)
 
     done()
+  })
+
+  fastify.ready(err => { t.error(err) })
+})
+
+test('Schema controller setter', t => {
+  t.plan(2)
+  Fastify({ schemaController: {} })
+  t.pass('allow empty object')
+
+  try {
+    Fastify({ schemaController: { bucket: {} } })
+    t.fail('the bucket option must be a function')
+  } catch (err) {
+    t.is(err.message, "schemaController.bucket option should be a function, instead got 'object'")
+  }
+})
+
+test('Schema controller bucket', t => {
+  t.plan(10)
+
+  let added = 0
+  let builtBucket = 0
+
+  const initStoreQueue = []
+
+  function factoryBucket (storeInit) {
+    builtBucket++
+    t.deepEqual(initStoreQueue.pop(), storeInit)
+    const store = new Map(storeInit)
+    return {
+      add (schema) {
+        added++
+        store.set(schema.$id, schema)
+      },
+      getSchema (id) {
+        return store.get(id)
+      },
+      getSchemas () {
+        // what is returned by this function, will be the `storeInit` parameter
+        initStoreQueue.push(store)
+        return store
+      }
+    }
+  }
+
+  const fastify = Fastify({
+    schemaController: {
+      bucket: factoryBucket
+    }
+  })
+
+  fastify.register(async (instance) => {
+    instance.addSchema({ $id: 'b', type: 'string' })
+    instance.addHook('onReady', function (done) {
+      t.equals(instance.getSchemas().size, 2)
+      done()
+    })
+    instance.register(async (subinstance) => {
+      subinstance.addSchema({ $id: 'c', type: 'string' })
+      subinstance.addHook('onReady', function (done) {
+        t.equals(subinstance.getSchemas().size, 3)
+        done()
+      })
+    })
+  })
+
+  fastify.register(async (instance) => {
+    instance.addHook('onReady', function (done) {
+      t.equals(instance.getSchemas().size, 1)
+      done()
+    })
+  })
+
+  fastify.addSchema({ $id: 'a', type: 'string' })
+
+  fastify.ready(err => {
+    t.error(err)
+    t.equals(added, 3, 'three schema added')
+    t.equals(builtBucket, 4, 'one bucket built for every register call + 1 for the root instance')
+  })
+})
+
+test('setSchemaController per instance', t => {
+  t.plan(7)
+  const fastify = Fastify({})
+
+  fastify.register(async (instance1) => {
+    instance1.setSchemaController({
+      bucket: function factoryBucket (storeInit) {
+        t.pass('instance1 has created the bucket')
+        return {
+          add (schema) { t.fail('add is not called') },
+          getSchema (id) { t.fail('getSchema is not called') },
+          getSchemas () { t.fail('getSchemas is not called') }
+        }
+      }
+    })
+  })
+
+  fastify.register(async (instance2) => {
+    const bSchema = { $id: 'b', type: 'string' }
+
+    instance2.setSchemaController({
+      bucket: function factoryBucket (storeInit) {
+        t.pass('instance2 has created the bucket')
+        const map = {}
+        return {
+          add (schema) {
+            t.equals(schema.$id, bSchema.$id, 'add is called')
+            map[schema.$id] = schema
+          },
+          getSchema (id) {
+            t.pass('getSchema is called')
+            return map[id]
+          },
+          getSchemas () {
+            t.pass('getSchemas is called')
+          }
+        }
+      }
+    })
+
+    instance2.addSchema(bSchema)
+
+    instance2.addHook('onReady', function (done) {
+      instance2.getSchemas()
+      t.deepEquals(instance2.getSchema('b'), bSchema, 'the schema are loaded')
+      done()
+    })
   })
 
   fastify.ready(err => { t.error(err) })

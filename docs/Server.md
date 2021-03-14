@@ -133,8 +133,6 @@ logger will point to this instance.
 + `object`: a standard Pino [options object](https://github.com/pinojs/pino/blob/c77d8ec5ce/docs/API.md#constructor).
 This will be passed directly to the Pino constructor. If the following properties
 are not present on the object, they will be added accordingly:
-    * `genReqId`: a synchronous function that will be used to generate identifiers
-    for incoming requests. The default function generates sequential identifiers.
     * `level`: the minimum logging level. If not set, it will be set to `'info'`.
     * `serializers`: a hash of serialization functions. By default, serializers
       are added for `req` (incoming request objects), `res` (outgoing response
@@ -291,7 +289,7 @@ const fastify = Fastify({ trustProxy: true })
     }
     ```
 
-For more examples refer to [proxy-addr](https://www.npmjs.com/package/proxy-addr) package.
+For more examples refer to [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
 
 You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
 
@@ -335,13 +333,13 @@ Automatically creates a sibling `HEAD` route for each `GET` route defined. If yo
 
 + Default: `false`
 
-<a name="versioning"></a>
-### `versioning`
+<a name="constraints"></a>
+### `constraints`
 
-By default you can version your routes with [semver versioning](Routes.md#version), which is provided by `find-my-way`. There is still an option to provide custom versioning strategy. You can find more information in the [find-my-way](https://github.com/delvedor/find-my-way#versioned-routes) documentation.
+Fastify's built in route constraints are provided by `find-my-way`, which allow constraining routes by `version` or `host`. You are able to add new constraint strategies, or override the built in strategies by providing a `constraints` object with strategies for `find-my-way`. You can find more information on constraint strategies in the [find-my-way](https://github.com/delvedor/find-my-way) documentation.
 
 ```js
-const versioning = {
+const customVersionStrategy = {
   storage: function () {
     let versions = {}
     return {
@@ -357,7 +355,9 @@ const versioning = {
 }
 
 const fastify = require('fastify')({
-  versioning
+  constraints: {
+    version: customVersionStrategy
+  }
 })
 ```
 
@@ -675,6 +675,34 @@ fastify.listen({
 }, (err) => {})
 ```
 
+<a name="getDefaultRoute"></a>
+#### getDefaultRoute
+Method to get the `defaultRoute` for the server:
+
+```js
+const defaultRoute = fastify.getDefaultRoute()
+```
+
+<a name="setDefaultRoute"></a>
+#### setDefaultRoute
+Method to set the `defaultRoute` for the server:
+
+```js
+const defaultRoute = function (req, res) {
+  res.end('hello world')
+}
+
+fastify.setDefaultRoute(defaultRoute)
+```
+
+<a name="routing"></a>
+#### routing
+Method to access the `lookup` method of the internal router and match the request to the appropriate handler:
+
+```js
+fastify.routing(req, res)
+```
+
 <a name="route"></a>
 #### route
 Method to add routes to the server, it also has shorthand functions, check [here](Routes.md).
@@ -812,6 +840,47 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 #### schemaErrorFormatter
 This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
+<a name="schema-controller"></a>
+#### schemaController
+This property can be used to fully manage where the schemas of your application will be stored.
+It can be useful when your schemas are stored in another data structure that is unknown to Fastify.
+See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
+this property helps to resolve.
+
+```js
+const fastify = Fastify({
+  schemaController: {
+    /**
+     * This factory is called whenever `fastify.register()` is called.
+     * It may receive as input the schemas of the parent context if some schemas has been added.
+     * @param {object} parentSchemas these schemas will be returned by the `getSchemas()` method function of the returned `bucket`.
+     */
+    bucket: function factory (parentSchemas) {
+      return {
+        addSchema (inputSchema) {
+          // This function must store the schema added by the user.
+          // This function is invoked when `fastify.addSchema()` is called.
+        },
+        getSchema (schema$id) {
+          // This function must return the raw schema requested by the `schema$id`.
+          // This function is invoked when `fastify.getSchema(id)` is called.
+          return aSchema
+        },
+        getSchemas () {
+          // This function must return all the schemas referenced by the routes schemas' $ref
+          // It must return a JSON where the property is the schema `$id` and the value is the raw JSON Schema.
+          const allTheSchemaStored = {
+            'schema$id1': schema1,
+            'schema$id2': schema2
+          }
+          return allTheSchemaStored
+        }
+      }
+    }
+  }
+});
+```
+
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
@@ -892,6 +961,28 @@ fastify.ready(() => {
 })
 ```
 
+<a name="print-plugins"></a>
+#### printPlugins
+
+`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.<br/>
+*Remember to call it inside or after a `ready` call.*
+
+```js
+fastify.register(async function foo (instance) {
+  instance.register(async function bar () {})
+})
+fastify.register(async function baz () {})
+
+fastify.ready(() => {
+  console.error(fastify.printPlugins())
+  // will output the following to stderr:
+  // └── root
+  //   ├── foo
+  //   │   └── bar
+  //   └── baz
+})
+```
+
 <a name="addContentTypeParser"></a>
 #### addContentTypeParser
 
@@ -950,10 +1041,14 @@ Currently the properties that can be exposed are:
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if explicitly passed)
 - ignoreTrailingSlash
+- disableRequestLogging
 - maxParamLength
 - onProtoPoisoning
+- onConstructorPoisoning
 - pluginTimeout
 - requestIdHeader
+- requestIdLogLabel
+- http2SessionTimeout
 
 ```js
 const { readFileSync } = require('fs')

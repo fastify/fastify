@@ -37,7 +37,7 @@ This example will get you up and running with Fastify and TypeScript. It results
   ```
 3. Initialize a TypeScript configuration file:
   ```bash
-  npx typescript --init
+  npx tsc --init
   ```
   or use one of the [recommended ones](https://github.com/tsconfig/bases#node-10-tsconfigjson).
 
@@ -82,7 +82,7 @@ The type system heavily relies on generic properties to provide the most accurat
    }
 
    interface IHeaders {
-     'H-Custom': string;
+     'h-Custom': string;
    }
    ```
 3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance.
@@ -92,7 +92,7 @@ The type system heavily relies on generic properties to provide the most accurat
      Headers: IHeaders
    }>('/auth', async (request, reply) => {
      const { username, password } = request.query
-     const customerHeader = request.headers['H-Custom']
+     const customerHeader = request.headers['h-Custom']
      // do something with request data
 
      return `logged in!`
@@ -115,7 +115,7 @@ The type system heavily relies on generic properties to provide the most accurat
        done(username !== 'admin' ? new Error('Must be admin') : undefined) // only validate `admin` account
      }
    }, async (request, reply) => {
-     const customerHeader = request.headers['H-Custom']
+     const customerHeader = request.headers['h-Custom']
      // do something with request data
      return `logged in!`
    })
@@ -139,10 +139,10 @@ In the last example we used interfaces to define the types for the request query
      "title": "Headers Schema",
      "type": "object",
      "properties": {
-       "H-Custom": { "type": "string" }
+       "h-Custom": { "type": "string" }
      },
      "additionalProperties": false,
-     "required": ["H-Custom"]
+     "required": ["h-Custom"]
    }
    ```
    ```json
@@ -194,7 +194,7 @@ In the last example we used interfaces to define the types for the request query
        done(username !== 'admin' ? new Error('Must be admin') : undefined)
      }
    }, async (request, reply) => {
-     const customerHeader = request.headers['H-Custom']
+     const customerHeader = request.headers['h-Custom']
      // do something with request data
      return `logged in!`
    })
@@ -211,11 +211,11 @@ In the last example we used interfaces to define the types for the request query
      },
      preHandler: (request, reply) => {
        const { username, password } = request.query
-       const customerHeader = request.headers['H-Custom']
+       const customerHeader = request.headers['h-Custom']
      },
      handler: (request, reply) => {
        const { username, password } = request.query
-       const customerHeader = request.headers['H-Custom']
+       const customerHeader = request.headers['h-Custom']
      }
    })
 
@@ -392,6 +392,19 @@ Fastify plugins use declaration merging to modify existing Fastify type interfac
 However, there are a couple of suggestions to help improve this experience:
 - Make sure the `no-unused-vars` rule is enabled in [ESLint](https://eslint.org/docs/rules/no-unused-vars) and any imported plugin are actually being loaded.
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin dependencies are being used somewhere in your project.
+
+## Code Completion In Vanilla JavaScript
+
+Vanilla JavaScript can use the published types to provide code completion (e.g. [Intellisense](https://code.visualstudio.com/docs/editor/intellisense)) by following the [TypeScript JSDoc Reference](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+
+For example:
+
+```js
+/**  @type {import('fastify').FastifyPluginAsync<{ optionA: boolean, optionB: string }>} */
+module.exports = async function (fastify, { optionA, optionB }) {
+  fastify.get('/look', () => 'at me');
+}
+```
 
 ## API Type System Documentation
 
@@ -704,7 +717,7 @@ import fastify, { RequestGenericInterface } from 'fastify'
 
 const server = fastify()
 
-const requestGeneric: RequestGenericInterface = {
+interface requestGeneric extends RequestGenericInterface {
   Querystring: {
     name: string
   }

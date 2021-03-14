@@ -18,6 +18,7 @@
   - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
+  - [.hijack](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -223,7 +224,7 @@ app.get('/cookie-2', (req, reply) => {
   reply.raw.end()
 })
 ```
-Another example of the misuse of `Reply.raw` is explained in [Reply.md#getheaders](Reply.md#getheaders).
+Another example of the misuse of `Reply.raw` is explained in [Reply](Reply.md#getheaders).
 
 <a name="sent"></a>
 ### .sent
@@ -250,6 +251,14 @@ app.get('/', (req, reply) => {
 ```
 
 If the handler rejects, the error will be logged.
+
+<a name="hijack"></a>
+### .hijack()
+Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
+
+To achieve this, fastify provides the method `reply.hijack()` that can be called during the request lifecycle (At any point before `reply.send()` is called), and allows you to prevent fastify from sending the response, and from running the remaining hooks (and user handler if the reply was hijacked before).
+
+NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
 
 <a name="send"></a>
 ### .send(data)
@@ -425,14 +434,14 @@ fastify.get('/botnet', async function (request, reply) {
 If you want to know more please review [Routes#async-await](Routes.md#async-await).
 
 <a name="then"></a>
-### .then(fullfilled, rejected)
+### .then(fulfilled, rejected)
 
 As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
 The `await` syntax calls the `reply.then()`.
 
-`reply.then(fullfilled, rejected)` accepts two parameters:
+`reply.then(fulfilled, rejected)` accepts two parameters:
 
-- `fullfilled` will be called when a response has been fully sent,
+- `fulfilled` will be called when a response has been fully sent,
 - `rejected` will be called if the underlying stream had an error, e.g.
 the socket has been destroyed.
 

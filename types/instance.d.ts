@@ -1,6 +1,6 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
-import { RouteOptions, RouteShorthandMethod, RouteGenericInterface } from './route'
-import { FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
+import { RouteOptions, RouteShorthandMethod, RouteGenericInterface, DefaultRoute } from './route'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRegister } from './register'
@@ -59,10 +59,14 @@ export interface FastifyInstance<
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
 
+  getDefaultRoute: DefaultRoute<RawRequest, RawReply>;
+  setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
+
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler = FastifySchema,
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
@@ -327,12 +331,12 @@ export interface FastifyInstance<
   /**
    * Set the schema validator for all routes.
    */
-  setValidatorCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
    * Set the schema serializer for all routes.
    */
-  setSerializerCompiler(schemaCompiler: FastifySerializerCompiler): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setSerializerCompiler<T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
   * Set the reply serializer for all routes.
@@ -353,4 +357,30 @@ export interface FastifyInstance<
    * Prints the representation of the internal radix tree used by the router
    */
   printRoutes(): string;
+
+  /**
+   * Prints the representation of the plugin tree used by avvio, the plugin registration system
+   */
+  printPlugins(): string;
+
+  /**
+   *  Frozen read-only object registering the initial options passed down by the user to the fastify instance
+   */
+  initialConfig: Readonly<{
+    connectionTimeout?: number,
+    keepAliveTimeout?: number,
+    bodyLimit?: number,
+    caseSensitive?: boolean,
+    http2?: boolean,
+    https?: boolean | Readonly<{ allowHTTP1: boolean }>,
+    ignoreTrailingSlash?: boolean,
+    disableRequestLogging?: boolean,
+    maxParamLength?: number,
+    onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+    onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
+    pluginTimeout?: number,
+    requestIdHeader?: string,
+    requestIdLogLabel?: string,
+    http2SessionTimeout?: number
+  }>
 }

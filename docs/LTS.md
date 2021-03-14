@@ -48,4 +48,4 @@ A "month" is to be a period of 30 consecutive days.
 | Windows | Windows Server 2016 R2 | npm                       | 10,12,14  |
 | MacOS   | macOS X Mojave 10.14   | npm                       | 10,12,14  |
 
-Using yarn might require passing the `--ignore-engines` flag.
+Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines` flag.

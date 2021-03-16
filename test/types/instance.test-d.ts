@@ -1,5 +1,8 @@
 import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
+import { FastifyRequest } from '../../types/request'
+import { FastifyReply } from '../../types/reply'
+import { HookHandlerDoneFunction } from '../../types/hooks'
 
 const server = fastify()
 
@@ -37,6 +40,19 @@ server.setErrorHandler(fastifyErrorHandler)
 
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
+
+function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+
+server.setNotFoundHandler(notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
 
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))

@@ -125,7 +125,7 @@ Request and reply are the core objects of Fastify. You can get more insight into
 
 **OnRequest**
 
-```
+```Javascript
 fastify.addHook('onRequest', async (request, reply) => {
   // Some code
   await asyncMethod()
@@ -134,7 +134,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 
 Or `callback`:
 
-```
+```Javascript
 fastify.addHook('onRequest', (request, reply, done) => {
   // Some code
   done()
@@ -148,3 +148,35 @@ Request/Reply Hooks.
 
 
 ## Decorators
+ 
+Decorators API allows you to customize core Fastify objects, like the server instance and any request/reply objects that are used during the HTTP request lifecycle. The decorators API let you attach any type of property to the core objects like functions, pain objects or narrative types.
+
+### Using Decorators
+
+Fastify decorators can be created using the following method:
+
+`decorate(name,value, [dependencies].`
+
+The decorate method lets you create a name and value which does not necessarily need to be a function value. Dependencies are optional unless your decorator relies upon them.
+  
+For example, to attach a new method to the server instance:
+```Javascript
+fastify.decorate('utility', function () {
+  // Something very useful
+})
+```
+As mentioned above, non-function values can be attached:
+```Javascript
+fastify.decorate('conf', {
+  db: 'some.db',
+  port: 3000
+})
+```
+To access decorated properties, simply use the name provided to the decoration API:
+
+```Javascript
+fastify.utility()
+
+console.log(fastify.conf.db)
+```
+See [decorators](https://github.com/wonexo/fastify/blob/master/docs/Decorators.md#decorate) to get more information on this topic.

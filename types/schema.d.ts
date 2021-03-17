@@ -13,11 +13,11 @@ export interface FastifySchema {
 }
 
 export interface FastifyRouteSchemaDef<T> {
-  schema: T;
-  method: string;
-  url: string;
-  httpPart?: string;
-  httpStatus?: string;
+  schema: T
+  method: string
+  url: string
+  httpPart?: string
+  httpStatus?: string
 }
 
 export interface FastifySchemaValidationError {

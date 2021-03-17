@@ -21,25 +21,11 @@ export interface RouteShorthandOptions<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
 > {
-<<<<<<< HEAD
-  schema?: FastifySchema;
-  attachValidation?: boolean;
-  exposeHeadRoute?: boolean;
-  validatorCompiler?: FastifySchemaCompiler<SchemaCompiler>;
-  serializerCompiler?: FastifySerializerCompiler<SchemaCompiler>;
-  bodyLimit?: number;
-  logLevel?: LogLevel;
-  config?: ContextConfig;
-  version?: string;
-  constraints?: { [name: string]: any },
-  prefixTrailingSlash?: 'slash'|'no-slash'|'both';
-  errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
-=======
   schema?: FastifySchema
   attachValidation?: boolean
   exposeHeadRoute?: boolean
-  validatorCompiler?: FastifySchemaCompiler
-  serializerCompiler?: FastifySerializerCompiler
+  validatorCompiler?: FastifySchemaCompiler<SchemaCompiler>
+  serializerCompiler?: FastifySerializerCompiler<SchemaCompiler>
   bodyLimit?: number
   logLevel?: LogLevel
   config?: ContextConfig
@@ -47,7 +33,6 @@ export interface RouteShorthandOptions<
   constraints?: { [name: string]: any }
   prefixTrailingSlash?: 'slash'|'no-slash'|'both'
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void
->>>>>>> ae37931 (feat: add ts-standard)
   // TODO: Change to actual type.
   schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
 
@@ -86,16 +71,10 @@ export interface RouteShorthandOptionsWithHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-<<<<<<< HEAD
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler> {
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-=======
-  ContextConfig = ContextConfigDefault
-> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> {
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
->>>>>>> ae37931 (feat: add ts-standard)
 }
 
 /**
@@ -114,11 +93,11 @@ export interface RouteShorthandMethod<
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply>
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema>(
     path: string,
     opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply>
 }
 
 /**
@@ -132,9 +111,9 @@ export interface RouteOptions<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler> {
-  method: HTTPMethods | HTTPMethods[];
-  url: string;
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  method: HTTPMethods | HTTPMethods[]
+  url: string
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
 }
 
 export type RouteHandler<

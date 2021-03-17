@@ -45,11 +45,11 @@ server.setErrorHandler(fastifyErrorHandler)
 function nodeJSErrorHandler (error: NodeJS.ErrnoException): void {}
 server.setErrorHandler(nodeJSErrorHandler)
 
-function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
-function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
-async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundHandler (request: FastifyRequest, reply: FastifyReply): void {}
+function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void { done() }
+async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply): Promise<void> {}
+function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void { done() }
+async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply): Promise<void> {}
 
 server.setNotFoundHandler(notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
@@ -58,7 +58,7 @@ server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFo
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
 
-function invalidErrorHandler (error: number) {}
+function invalidErrorHandler (error: number): void {}
 expectError(server.setErrorHandler(invalidErrorHandler))
 
 server.setReplySerializer(function (payload, statusCode) {

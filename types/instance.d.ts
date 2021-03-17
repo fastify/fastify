@@ -56,7 +56,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler = FastifySchema,
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply>
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply>
@@ -210,21 +210,15 @@ export interface FastifyInstance<
   /**
    * Set the 404 handler
    */
-<<<<<<< HEAD
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> (
-=======
-  setNotFoundHandler: <RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
->>>>>>> ae37931 (feat: add ts-standard)
+  setNotFoundHandler: (<RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
-  ) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
-
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault> (
+  ) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>) & (<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault>(
     opts: {
-      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
-      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
+      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | Array<preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>>
     },
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>
+  ) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>)
 
   /**
    * Fastify default error handler
@@ -241,20 +235,12 @@ export interface FastifyInstance<
   /**
    * Set the schema validator for all routes.
    */
-<<<<<<< HEAD
-  setValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-=======
-  setValidatorCompiler: (schemaCompiler: FastifySchemaCompiler) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
->>>>>>> ae37931 (feat: add ts-standard)
+  setValidatorCompiler: <T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   /**
    * Set the schema serializer for all routes.
    */
-<<<<<<< HEAD
-  setSerializerCompiler<T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-=======
-  setSerializerCompiler: (schemaCompiler: FastifySerializerCompiler) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
->>>>>>> ae37931 (feat: add ts-standard)
+  setSerializerCompiler: <T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>) => FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   /**
   * Set the reply serializer for all routes.
@@ -279,7 +265,7 @@ export interface FastifyInstance<
   /**
    * Prints the representation of the plugin tree used by avvio, the plugin registration system
    */
-  printPlugins(): string;
+  printPlugins: () => string
 
   /**
    *  Frozen read-only object registering the initial options passed down by the user to the fastify instance

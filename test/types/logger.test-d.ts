@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-invalid-void-type */
-import { expectType, expectError } from 'tsd'
+import { expectType } from 'tsd'
 import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as pino from 'pino'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 class Foo {}
 
 ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {

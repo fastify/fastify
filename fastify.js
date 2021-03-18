@@ -540,7 +540,7 @@ function fastify (options) {
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
-    // config issue on the the load balancer side.
+    // config issue on the load balancer side.
     this.log.trace({ err }, 'client error')
 
     // If the socket is not writable, there is no reason to try to send data.

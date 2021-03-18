@@ -267,7 +267,7 @@ fastify.get('/', (request, reply) => {
 
 ## Further additions and improvements
 
-- Hooks now have consistent context irregardless of how they are registered
+- Hooks now have consistent context regardless of how they are registered
 ([#2005](https://github.com/fastify/fastify/pull/2005))
 - Deprecated `request.req` and `reply.res` for [`request.raw`](Request.md) and
 [`reply.raw`](Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))

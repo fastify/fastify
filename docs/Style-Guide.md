@@ -163,7 +163,7 @@ Here is how your hyperlink should look:
 ```MD
 <!-- More like this -->
 
-// Add clear & breif description
+// Add clear & brief description
 [Fastify Plugins] (https://www.fastify.io/docs/latest/Plugins/)
 
 <!--Less like this -->

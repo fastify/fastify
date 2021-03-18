@@ -191,7 +191,7 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
-Please note that this setting will also disable an error log written by the the default `onResponse` hook on reply callback errors.
+Please note that this setting will also disable an error log written by the default `onResponse` hook on reply callback errors.
 
 <a name="custom-http-server"></a>
 ### `serverFactory`

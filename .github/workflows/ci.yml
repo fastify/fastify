@@ -63,7 +63,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: fastify/github-action-merge-dependabot@v1.2.1
+      - uses: fastify/github-action-merge-dependabot@v2.0.0
         if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
         with:
           github-token: ${{secrets.github_token}}

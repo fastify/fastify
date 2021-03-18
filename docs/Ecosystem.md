@@ -169,6 +169,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools) Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin) Fastify plugin to work with TypeORM.
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy subdomain http requests to another server (useful if you want to point multiple subdomains to the same IP address, while running different servers on the same machine).
+- [`fastify-vite`](https://github.com/galvez/fastify-vite) [Vite](https://vitejs.dev/) plugin for Fastify with SSR data support.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue) [Nuxt.js](https://nuxtjs.org) plugin for Fastify. Control the routes nuxt should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web Application Messaging Protocol router for Fastify.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for waterline. Decorates Fastify with waterline models.

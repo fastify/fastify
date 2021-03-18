@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const AJV = require('ajv')
+const S = require('fluent-json-schema')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 
@@ -356,4 +357,101 @@ test('setSchemaController in a plugin', t => {
     })
   }
   schemaPlugin[Symbol.for('skip-override')] = true
+})
+
+test('side effect on schema let the server crash', async t => {
+  const firstSchema = {
+    $id: 'example1',
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string'
+      }
+    }
+  }
+
+  const reusedSchema = {
+    $id: 'example2',
+    type: 'object',
+    properties: {
+      name: {
+        oneOf: [
+          {
+            $ref: 'example1'
+          }
+        ]
+      }
+    }
+  }
+
+  const fastify = Fastify()
+  fastify.addSchema(firstSchema)
+
+  fastify.post('/a', {
+    handler: async () => 'OK',
+    schema: {
+      body: reusedSchema,
+      response: { 200: reusedSchema }
+    }
+  })
+  fastify.post('/b', {
+    handler: async () => 'OK',
+    schema: {
+      body: reusedSchema,
+      response: { 200: reusedSchema }
+    }
+  })
+
+  await fastify.ready()
+})
+
+test('only response schema trigger AJV pollution', async t => {
+  const ShowSchema = S.object().id('ShowSchema').prop('name', S.string())
+  const ListSchema = S.array().id('ListSchema').items(S.ref('ShowSchema#'))
+
+  const fastify = Fastify()
+  fastify.addSchema(ListSchema)
+  fastify.addSchema(ShowSchema)
+
+  const routeResponseSchemas = {
+    schema: { response: { 200: S.ref('ListSchema#') } }
+  }
+
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix1' }
+  )
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix2' }
+  )
+
+  await fastify.ready()
+})
+
+test('only response schema trigger AJV pollution #2', async t => {
+  const ShowSchema = S.object().id('ShowSchema').prop('name', S.string())
+  const ListSchema = S.array().id('ListSchema').items(S.ref('ShowSchema#'))
+
+  const fastify = Fastify()
+  fastify.addSchema(ListSchema)
+  fastify.addSchema(ShowSchema)
+
+  const routeResponseSchemas = {
+    schema: {
+      params: S.ref('ListSchema#'),
+      response: { 200: S.ref('ListSchema#') }
+    }
+  }
+
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix1' }
+  )
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix2' }
+  )
+
+  await fastify.ready()
 })

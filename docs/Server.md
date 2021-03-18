@@ -4,10 +4,9 @@
 ## Factory
 
 The Fastify module exports a factory function that is used to create new
-<a href="./Server.md"><code><b>Fastify server</b></code></a>
-instances. This factory function accepts an options object which is used to
-customize the resulting instance. This document describes the properties
-available in that options object.
+<code><b>Fastify server</b></code> instances. This factory function accepts
+an options object which is used to customize the resulting instance. This
+document describes the properties available in that options object.
 
 <a name="factory-http2"></a>
 ### `http2`
@@ -192,7 +191,7 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
-Please note that this setting will also disable an error log written by the the default `onResponse` hook on reply callback errors.
+Please note that this setting will also disable an error log written by the default `onResponse` hook on reply callback errors.
 
 <a name="custom-http-server"></a>
 ### `serverFactory`
@@ -958,6 +957,28 @@ fastify.ready(() => {
   //   ├── test (GET)
   //   │   └── /hello (GET)
   //   └── hello/world (GET)
+})
+```
+
+<a name="print-plugins"></a>
+#### printPlugins
+
+`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.<br/>
+*Remember to call it inside or after a `ready` call.*
+
+```js
+fastify.register(async function foo (instance) {
+  instance.register(async function bar () {})
+})
+fastify.register(async function baz () {})
+
+fastify.ready(() => {
+  console.error(fastify.printPlugins())
+  // will output the following to stderr:
+  // └── root
+  //   ├── foo
+  //   │   └── bar
+  //   └── baz
 })
 ```
 

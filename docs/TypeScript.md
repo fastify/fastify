@@ -984,7 +984,7 @@ A method for checking the existence of a type parser of a certain content type
 
 FastifyError is a custom error object that includes status code and validation results.
 
-It extends the Node.js `Error` type, and adds two additional, optional properties: `statusCode: number` and `validation: ValiationResult[]`.
+It extends the Node.js `Error` type, and adds two additional, optional properties: `statusCode: number` and `validation: ValidationResult[]`.
 
 ##### fastify.ValidationResult
 

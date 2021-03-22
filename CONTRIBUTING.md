@@ -39,7 +39,7 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustments:
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with a few adjustments:
 
 1. Any member can publish a release.
 1. The plugin version must follow the [semver](https://semver.org/) specification.

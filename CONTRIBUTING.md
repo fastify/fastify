@@ -22,8 +22,8 @@ There are a few basic ground-rules for contributors:
 1. Contributors should attempt to adhere to the prevailing code-style.
 1. At least two contributors, or one core member, must approve pull-requests prior to merging.
 1. All integrated CI services must be green before a pull-request can be merged.
-1. SemVer-major changes in this repository must be merged by a lead maintainer.
-1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead maintainers team.
+1. A lead maintainer must merge SemVer-major changes in this repository.
+1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead maintainer's team.
 
 ### Fastify v1.x
 
@@ -39,14 +39,14 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustments:
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with a few adjustments:
 
-1. A release can be published by any member.
+1. Any member can publish a release.
 1. The plugin version must follow the [semver](https://semver.org/) specification.
 1. The Node.js compatibility must match with the Fastify's master branch.
 1. The new release must have the changelog information stored in the GitHub release.
      For this scope we suggest to adopt a tool like [`releasify`](https://github.com/fastify/releasify) to archive this.
-1. PR opened by bots (like Greenkeeper) can be merged if the CI is green and the Node.js versions supported are the same of the plugin.
+1. PR opened by bots (like Dependabot) can be merged if the CI is green and the Node.js versions supported are the same of the plugin.
 
 ## Changes to this arrangement
 

@@ -1,4 +1,4 @@
-import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
+import fastify, { FastifyContentTypeParser, FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 
 const server = fastify()
@@ -106,3 +106,7 @@ type InitialConfig = Readonly<{
 }>
 
 expectType<InitialConfig>(fastify().initialConfig)
+
+expectType<FastifyContentTypeParser>(server.defaultTextParser)
+
+expectType<FastifyContentTypeParser>(server.getDefaultJsonParser('ignore', 'error'))

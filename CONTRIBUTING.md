@@ -63,8 +63,8 @@ Welcome to the team! We are happy to have you. Before you start, please complete
   - [GitHub 2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
   - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
 2. Choose which team to join *(more than one is ok!)* based on how you want to help.
-3. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the team you have chosen in the [README.md](./README.md) and [package.json](./package.json) *(if you are part of the core team)* files. The members lists are sorted alphabetically; make sure to add your name in the proper order.
-4. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
+3. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the team you have chosen in the [README.md](./README.md) and [package.json](./package.json) *(if you are part of the core team)* files. The members lists are sorted alphabetically in descending order by surname; make sure to add your name in the proper order.
+4. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically in descending order by surname, so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. The person that does the onboarding must add you to the [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
 
 ### Offboarding Collaborators

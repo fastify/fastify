@@ -54,3 +54,9 @@ export interface AddContentTypeParser<
  * Checks for a type parser of a content type
  */
 export type hasContentTypeParser = (contentType: string | RegExp) => boolean
+
+export type ProtoAction = 'error' | 'remove' | 'ignore'
+
+export type ConstructorAction = 'error' | 'remove' | 'ignore'
+
+export type getDefaultJsonParser = (onProtoPoisoning: ProtoAction, onConstructorPoisoning: ConstructorAction) => FastifyContentTypeParser

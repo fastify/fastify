@@ -43,6 +43,7 @@ export interface FastifyRequest<
   readonly routerMethod: string;
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
+  readonly referrer: string;
 
   // Prefer `socket` over deprecated `connection` property in node 13.0.0 or higher
   // @deprecated

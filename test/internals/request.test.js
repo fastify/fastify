@@ -174,3 +174,31 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   t.strictEqual(request.hostname, 'example.com')
   t.strictEqual(request.protocol, 'https')
 })
+
+test('referrer - handles Referrer', t => {
+  t.plan(1)
+  const headers = {
+    referrer: 'referrer'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    headers
+  }
+  const request = new Request('id', 'params', req, 'query', 'log')
+  t.strictEqual(request.referrer, 'referrer')
+})
+
+test('referrer - handles Referer', t => {
+  t.plan(1)
+  const headers = {
+    referer: 'referrer'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    headers
+  }
+  const request = new Request('id', 'params', req, 'query', 'log')
+  t.strictEqual(request.referrer, 'referrer')
+})

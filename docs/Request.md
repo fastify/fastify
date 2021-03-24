@@ -22,7 +22,7 @@ Request is a core Fastify object containing the following fields:
 - `is404` - true if request is being handled by 404 handler, false if it is not
 - `connection` - Deprecated, use `socket` instead. The underlying connection of the incoming request.
 - `socket` - the underlying connection of the incoming request
-
+- `referrer` - the content of the `Referrer` or `Referer` header
 
 ```js
 fastify.post('/:params', options, function (request, reply) {

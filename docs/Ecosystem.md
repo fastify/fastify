@@ -57,6 +57,12 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server) Tiny (~5k), Fast, KISS and dependency-free Node.JS library to make your Fastify API graceful.
+- [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit) A plugin to close the server gracefully
+- [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger) A plugin to enable compact request logging for fastify
+- [`@mgcrea/fastify-session-redis-store`](https://github.com/mgcrea/fastify-session-redis-store) Redis store for @mgcrea/fastify-session using ioredis
+- [`@mgcrea/fastify-session-sodium-crypto`](https://github.com/mgcrea/fastify-session-sodium-crypto) Fast sodium-based crypto for @mgcrea/fastify-session
+- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session plugin for fastify that supports both stateless and sateful sessions
+- [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact) A custom compact pino-base prettifier
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware for CLS-based request id generation. An out-of-the-box solution for adding request ids into your logs.

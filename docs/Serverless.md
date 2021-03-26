@@ -269,7 +269,7 @@ module.exports = {
 
 ### Scripts
 
-Add this command to your `package.json` *scripts* 
+Add this command to your `package.json` *scripts*
 
 ```json
 "scripts": {
@@ -291,9 +291,9 @@ configuring your `vercel.json` file like the following:
 ```json
 {
     "rewrites": [
-        { 
-            "source": "/(.*)", 
-            "destination": "/api/serverless.js" 
+        {
+            "source": "/(.*)",
+            "destination": "/api/serverless.js"
         }
     ]
 }

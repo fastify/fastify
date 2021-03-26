@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/fastify/graphics/raw/master/full-logo.png" width="650" height="auto"/>
+<img src="https://github.com/fastify/graphics/raw/HEAD/full-logo.png" width="650" height="auto"/>
 </div>
 
 <div align="center">
@@ -8,7 +8,7 @@
 [![Package Manager CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web SIte](https://github.com/fastify/fastify/workflows/website/badge.svg)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
-[![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=master)](https://coveralls.io/github/fastify/fastify?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=main)](https://coveralls.io/github/fastify/fastify?branch=main)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
 </div>
@@ -18,7 +18,7 @@
 [![NPM version](https://img.shields.io/npm/v/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![NPM downloads](https://img.shields.io/npm/dm/fastify.svg?style=flat)](https://www.npmjs.com/package/fastify)
 [![Security Responsible
-Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/master/processes/responsible_disclosure_template.md)
+Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yellow.svg)](https://github.com/nodejs/security-wg/blob/HEAD/processes/responsible_disclosure_template.md)
 [![Discord](https://img.shields.io/discord/725613461949906985)](https://discord.gg/fastify)
 
 </div>
@@ -191,7 +191,7 @@ matters to you.
 * <a href="./docs/Serverless.md"><code><b>Serverless</b></code></a>
 * <a href="./docs/Recommendations.md"><code><b>Recommendations</b></code></a>
 
-中文文档[地址](https://github.com/fastify/docs-chinese/blob/master/README.md)
+中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
 
 ## Ecosystem
 
@@ -256,9 +256,9 @@ Great contributors on a specific area in the Fastify ecosystem will be invited t
 
 ## Hosted by
 
-[<img src="https://github.com/openjs-foundation/cross-project-council/blob/master/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#growth)
+[<img src="https://github.com/openjs-foundation/cross-project-council/blob/HEAD/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#growth)
 
-We are a [Growth Project](https://github.com/openjs-foundation/cross-project-council/blob/master/PROJECT_PROGRESSION.md#growth-stage) in the [OpenJS Foundation](https://openjsf.org/).
+We are a [Growth Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#growth-stage) in the [OpenJS Foundation](https://openjsf.org/).
 
 ## Acknowledgements
 

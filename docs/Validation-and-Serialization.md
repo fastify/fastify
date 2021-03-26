@@ -101,7 +101,7 @@ As usual, the function `getSchemas` is encapsulated and returns the shared schem
 ```js
 fastify.addSchema({ $id: 'one', my: 'hello' })
 // will return only `one` schema
-fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) }) 
+fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
 
 fastify.register((instance, opts, done) => {
   instance.addSchema({ $id: 'two', my: 'ciao' })
@@ -544,10 +544,10 @@ const schema = {
 and fail to satisfy it, the route will immediately return a response with the following payload
 
 ```js
-{ 
+{
   "statusCode": 400,
   "error": "Bad Request",
-  "message": "body should have required property 'name'" 
+  "message": "body should have required property 'name'"
 }
 ```
 
@@ -575,7 +575,7 @@ The context function will be the Fastify server instance.
 ```js
 const fastify = Fastify({
   schemaErrorFormatter: (errors, dataVar) => {
-    // ... my formatting logic 
+    // ... my formatting logic
     return new Error(myErrorMessage)
   }
 })
@@ -583,7 +583,7 @@ const fastify = Fastify({
 // or
 fastify.setSchemaErrorFormatter(function (errors, dataVar) {
   this.log.error({ err: errors }, 'Validation failed')
-  // ... my formatting logic 
+  // ... my formatting logic
   return new Error(myErrorMessage)
 })
 ```
@@ -598,7 +598,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/master/validation-messages/custom-errors-messages.js) usage.
+If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js) usage.
 
 Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
 Inline comments in the schema below describe how to configure it to show a different error message for each case:

@@ -33,7 +33,7 @@ branchcmp --rounds 2 --script "npm run benchmark"
 branchcmp --rounds 2 --script "npm run benchmark"
 ```
 
-### Compare current branch with master (Gitflow)
+### Compare current branch with main (Gitflow)
 ```sh
 branchcmp --rounds 2 --gitflow --script "npm run benchmark"
 ```

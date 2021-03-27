@@ -8,13 +8,7 @@ import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preVali
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
-import {
-  AddContentTypeParser,
-  hasContentTypeParser,
-  getDefaultJsonParser,
-  ProtoAction,
-  ConstructorAction, FastifyBodyParser
-} from './content-type-parser'
+import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser } from './content-type-parser'
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.

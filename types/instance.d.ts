@@ -12,9 +12,8 @@ import {
   AddContentTypeParser,
   hasContentTypeParser,
   getDefaultJsonParser,
-  FastifyContentTypeParser,
   ProtoAction,
-  ConstructorAction
+  ConstructorAction, FastifyBodyParser
 } from './content-type-parser'
 
 /**
@@ -374,7 +373,7 @@ export interface FastifyInstance<
   /**
    * Fastify default plain text parser
    */
-  defaultTextParser: FastifyContentTypeParser;
+  defaultTextParser: FastifyBodyParser<string>;
 
   /**
    * Prints the representation of the internal radix tree used by the router

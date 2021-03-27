@@ -1,4 +1,10 @@
-import fastify, { FastifyContentTypeParser, FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
+import fastify, {
+  FastifyBodyParser,
+  FastifyContentTypeParser,
+  FastifyError,
+  FastifyInstance,
+  ValidationResult
+} from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
@@ -123,6 +129,6 @@ type InitialConfig = Readonly<{
 
 expectType<InitialConfig>(fastify().initialConfig)
 
-expectType<FastifyContentTypeParser>(server.defaultTextParser)
+expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 
-expectType<FastifyContentTypeParser>(server.getDefaultJsonParser('ignore', 'error'))
+expectType<FastifyBodyParser<string>>(server.getDefaultJsonParser('ignore', 'error'))

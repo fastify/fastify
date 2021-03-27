@@ -159,7 +159,7 @@ async function dbConnector (fastify, options) {
   })
 }
 
-// Wrapping a plugin function with fastify-plugin exposes the decorators	
+// Wrapping a plugin function with fastify-plugin exposes the decorators
 // and hooks, declared inside the plugin to the parent scope.
 module.exports = fastifyPlugin(dbConnector)
 
@@ -291,7 +291,7 @@ Read [Validation and Serialization](Validation-and-Serialization.md) to learn mo
 <a name="extend-server"></a>
 ### Extend your server
 Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.<br>
-In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](Ecosystem.md)!
+In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](https://www.fastify.io/ecosystem/)!
 
 <a name="test-server"></a>
 ### Test your server

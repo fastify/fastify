@@ -57,12 +57,19 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server) Tiny (~5k), Fast, KISS and dependency-free Node.JS library to make your Fastify API graceful.
+- [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit) A plugin to close the server gracefully
+- [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger) A plugin to enable compact request logging for fastify
+- [`@mgcrea/fastify-session-redis-store`](https://github.com/mgcrea/fastify-session-redis-store) Redis store for @mgcrea/fastify-session using ioredis
+- [`@mgcrea/fastify-session-sodium-crypto`](https://github.com/mgcrea/fastify-session-sodium-crypto) Fast sodium-based crypto for @mgcrea/fastify-session
+- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session plugin for fastify that supports both stateless and sateful sessions
+- [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact) A custom compact pino-base prettifier
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware for CLS-based request id generation. An out-of-the-box solution for adding request ids into your logs.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds 405 HTTP status to your routes
 - [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Fastify AMQP connection plugin, to use with RabbitMQ or another connector. Just a wrapper to [`amqplib`](https://github.com/squaremo/amqp.node).
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
+- [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify plugin to authenticate HTTP requests based on api key and signature
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify): Auth0 verification plugin for Fastify, internally uses [fastify-jwt](https://npm.im/fastify-jwt) and [jsonwebtoken](https://npm.im/jsonwebtoken).
 - [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud) Plugin to autogenerate CRUD routes as fast as possible.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes) Plugin to scan and load routes based on filesystem path from custom directory.

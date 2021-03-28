@@ -291,7 +291,7 @@ Read [Validation and Serialization](Validation-and-Serialization.md) to learn mo
 <a name="extend-server"></a>
 ### Extend your server
 Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.<br>
-In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](https://www.fastify.io/ecosystem/)!
+In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](Ecosystem.md)!
 
 <a name="test-server"></a>
 ### Test your server

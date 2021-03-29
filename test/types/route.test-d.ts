@@ -192,8 +192,8 @@ expectType<FastifyInstance>(fastify().route({
   handler: routeHandler
 }))
 
-expectType<FastifyInstance>(fastify().get('/ws',{
+expectType<FastifyInstance>(fastify().get('/ws', {
   websocket: true
-  },
-  routeHandler
+},
+routeHandler
 ))

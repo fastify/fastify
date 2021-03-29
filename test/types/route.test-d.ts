@@ -184,3 +184,16 @@ expectType<FastifyInstance>(fastify().route({
 expectError(fastify().route({
   prefixTrailingSlash: true // Not a valid value
 }))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/ws',
+  method: 'GET',
+  websocket: true,
+  handler: routeHandler
+}))
+
+expectType<FastifyInstance>(fastify().get('/ws',{
+  websocket: true
+  },
+  routeHandler
+))

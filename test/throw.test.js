@@ -22,7 +22,7 @@ test('Fastify should throw on multiple assignment to the same route', t => {
     fastify.get('/', () => {})
     fastify.get('/', () => {})
   } catch (error) {
-    t.is(error.message, "Method 'GET' already declared for route '/': constraints '{}'")
+    t.is(error.message, "Method 'GET' already declared for route '/'")
   }
 })
 

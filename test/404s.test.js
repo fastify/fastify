@@ -830,21 +830,19 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
 
   const fastify = Fastify()
 
-  fastify.get('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.get('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  fastify.setNotFoundHandler(function (req, reply) {
-    reply.code(404).send('this was not found')
-  })
-
-  fastify.listen(0, err => {
-    t.ok(err)
-  })
+  try {
+    fastify.get('/', function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+    fastify.get('/', function (req, reply) {
+      reply.send({ hello: 'world' })
+    })
+    fastify.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found')
+    })
+  } catch (error) {
+    t.ok(error)
+  }
 })
 
 test('log debug for 404', t => {

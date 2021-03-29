@@ -505,6 +505,9 @@ function fastify (options) {
     } else if (name === 'onReady') {
       this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
+    } else if (name === 'onRoute') {
+      this[kHooks].validate(name, fn)
+      this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
         _addHook.call(this, name, fn)

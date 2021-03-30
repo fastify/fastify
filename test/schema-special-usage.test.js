@@ -455,3 +455,140 @@ test('only response schema trigger AJV pollution #2', async t => {
 
   await fastify.ready()
 })
+
+test('setSchemaController in a plugin with head routes', t => {
+  t.plan(6)
+  const baseSchema = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const ajvInstance = new AJV()
+  ajvInstance.addSchema(baseSchema)
+  ajvInstance.addSchema(refSchema)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  fastify.register(schemaPlugin)
+  fastify.get('/', {
+    schema: {
+      query: ajvInstance.getSchema('urn:schema:ref').schema,
+      response: {
+        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(res.json(), { hello: 'world' })
+  })
+
+  async function schemaPlugin (server) {
+    server.setSchemaController({
+      bucket () {
+        t.pass('the bucket is created')
+        return {
+          addSchema (source) {
+            ajvInstance.addSchema(source)
+          },
+          getSchema (id) {
+            return ajvInstance.getSchema(id).schema
+          },
+          getSchemas () {
+            return {
+              'urn:schema:base': baseSchema,
+              'urn:schema:ref': refSchema
+            }
+          }
+        }
+      }
+    })
+    server.setValidatorCompiler(function ({ schema }) {
+      if (schema.$id) {
+        const stored = ajvInstance.getSchema(schema.$id)
+        if (stored) {
+          t.pass('the schema is reused')
+          return stored
+        }
+      }
+      t.pass('the schema is compiled')
+
+      return ajvInstance.compile(schema)
+    })
+  }
+  schemaPlugin[Symbol.for('skip-override')] = true
+})
+
+test('multiple refs with the same ids', t => {
+  t.plan(3)
+  const baseSchema = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.addSchema(baseSchema)
+  fastify.addSchema(refSchema)
+  fastify.get('/', {
+    schema: {
+      query: refSchema,
+      response: {
+        '2xx': refSchema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.head('/', {
+    schema: {
+      query: refSchema,
+      response: {
+        '2xx': refSchema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equals(res.statusCode, 200)
+    t.deepEquals(res.json(), { hello: 'world' })
+  })
+})

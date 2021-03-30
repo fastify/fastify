@@ -9,7 +9,7 @@ enable it at runtime. We use
 [abstract-logging](https://www.npmjs.com/package/abstract-logging) for
 this purpose.
 
-Since Fastify is focused on performance, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
+As Fastify is focused on performance, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
 
 Enabling the logger is extremely easy:
 
@@ -57,9 +57,9 @@ const fastify = require('fastify')({
 
 <a name="logging-request-id"></a>
 
-By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#gen-request-id) for customization options.
+By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#genreqid) for customization options.
 
-The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.  
+The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.
 This behaviour can be customized by specifying custom serializers.
 ```js
 const fastify = require('fastify')({
@@ -116,9 +116,9 @@ app.addHook('preHandler', function (req, reply, done) {
 ```
 
 
-*This option will be ignored by any logger other than Pino.*
+*Any logger other than Pino will ignore this option.*
 
-You can also supply your own logger instance. Instead of passing configuration options, simply pass the instance.
+You can also supply your own logger instance. Instead of passing configuration options, pass the instance.
 The logger you supply must conform to the Pino interface; that is, it must have the following methods:
 `info`, `error`, `debug`, `fatal`, `warn`, `trace`, `child`.
 

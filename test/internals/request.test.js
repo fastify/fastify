@@ -75,10 +75,7 @@ test('Request with trust proxy', t => {
   const req = {
     method: 'GET',
     url: '/',
-    // Some dependencies (proxy-addr, forwarded) still depend on the deprecated
-    // .connection property, we use .socket. Include both to satisfy everyone.
     socket: { remoteAddress: 'ip' },
-    connection: { remoteAddress: 'ip' },
     headers
   }
 
@@ -109,7 +106,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
 
@@ -128,7 +125,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
 
@@ -148,7 +145,7 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const req = {
     method: 'GET',
     url: '/',
-    connection: { remoteAddress: 'ip' },
+    socket: { remoteAddress: 'ip' },
     headers
   }
 
@@ -167,10 +164,7 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   const req = {
     method: 'GET',
     url: '/',
-    // Some dependencies (proxy-addr, forwarded) still depend on the deprecated
-    // .connection property, we use .socket. Include both to satisfy everyone.
     socket: { remoteAddress: 'ip' },
-    connection: { remoteAddress: 'ip' },
     headers
   }
 

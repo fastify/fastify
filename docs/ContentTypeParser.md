@@ -29,8 +29,29 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
   return res
 })
 
+// Handle all content types that matches RegExp 
+fastify.addContentTypeParser(/^image\/.*/, function (request, payload, done) {
+  imageParser(payload, function (err, body) {
+    done(err, body)
+  })
+})
+
 // Can use default JSON/Text parser for different content Types
 fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
+```
+
+Fastify first tries to match a content-type parser with a `string` value before trying to find a matching `RegExp`.
+If you provide overlapping content types, Fastify tries to find a matching content type by starting with the last one passed and ending with the first one.
+So if you want to specify a general content type more precisely, first specify the general content type and then the more specific one, like in the example below.
+
+```js
+// Here only the second content type parser is called because its value also matches the first one
+fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
+fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
+
+// Here the desired behavior is achieved because fastify first tries to match the `application/vnd.custom+xml` content type parser 
+fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
+fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
 
 You can also use the `hasContentTypeParser` API to find if a specific content type parser already exists.

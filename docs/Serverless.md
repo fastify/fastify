@@ -1,6 +1,23 @@
 <h1 align="center">Serverless</h1>
 
 Run serverless applications and REST APIs using your existing Fastify application.
+By default, Fastify won't work on your serverless platform of choice, you'll need
+to make some small changes to fix this. This document contains a small guide for
+the most famous serverless providers and how to use Fastify with them.
+
+#### Should you use Fastify in a serverless platform?
+
+That's up to you! Keep in mind that functions as a service should always use
+small and focused functions, but you can also run an entire web application with them.
+It's important to remember that the bigger the application, the slower the initial boot will be.
+The best way to use for running Fastify applications in serverless environments
+is to use platforms like Google Cloud Run, AWS Fargate, and Azure Container Instances,
+where the server can handle multiple requests at the same time and make full use of Fastify features.
+
+One of the best features of using Fastify in serverless applications is the ease of development.
+In your local environment, you will always run directly the Fastify application without the need
+for any additional tool, while the same code will be executed in your serverless platform of
+choice with an additional snippet of code.
 
 ### Contents
 
@@ -8,16 +25,6 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
-
-### Attention Readers:
-> Fastify is not designed to run on serverless environments.
-The Fastify framework is designed to make implementing a traditional HTTP/S server easy.
-Serverless environments requests differently than a standard HTTP/S server;
-thus, we cannot guarantee it will work as expected with Fastify.
-Regardless, based on the examples given in this document,
-it is possible to use Fastify in a serverless environment.
-Again, keep in mind that this is not Fastify's intended use case and
-we do not test for such integration scenarios.
 
 ## AWS Lambda
 
@@ -49,7 +56,7 @@ if (require.main === module) {
 }
 ```
 
-When executed in your lambda function we don't need to listen to a specific port,
+When executed in your lambda function we do not need to listen to a specific port,
 so we just export the wrapper function `init` in this case.
 The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
 
@@ -90,8 +97,8 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 ### Considerations
 
-- API Gateway doesn't support streams yet, so you're not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
-- API Gateway has a timeout of 29 seconds, so it's important to provide a reply during this time.
+- API Gateway does not support streams yet, so you are not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
+- API Gateway has a timeout of 29 seconds, so it is important to provide a reply during this time.
 
 ## Google Cloud Run
 
@@ -262,7 +269,7 @@ module.exports = {
 
 ### Scripts
 
-Add this command to your `package.json` *scripts* 
+Add this command to your `package.json` *scripts*
 
 ```json
 "scripts": {
@@ -279,69 +286,41 @@ Then it should work fine
 
 [Vercel](https://vercel.com) provides zero configuration deployment for
 Node.js applications. In order to use now, it is as simple as
-configuring your `now.json` file like the following:
+configuring your `vercel.json` file like the following:
 
 ```json
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/serverless.js",
-      "use": "@now/node",
-      "config": {
-        "helpers": false
-      }
-    }
-  ],
-  "routes": [
-    { "src": "/.*", "dest": "/api/serverless.js"}
-  ]
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/api/serverless.js"
+        }
+    ]
 }
 ```
 
 Then, write a `api/serverless.js` like so:
 
 ```js
-'use strict'
+"use strict";
 
-const build = require('./index')
+// Read the .env file.
+import * as dotenv from "dotenv";
+dotenv.config();
 
-const app = build()
+// Require the framework
+import Fastify from "fastify";
 
-module.exports = async function (req, res) {
-  await app.ready()
-  app.server.emit('request', req, res)
+// Instantiate Fastify with some config
+const app = Fastify({
+  logger: true,
+});
+
+// Register your application as a normal plugin.
+app.register(import("../src/app"));
+
+export default async (req, res) => {
+    await app.ready();
+    app.server.emit('request', req, res);
 }
-```
-
-And a `api/index.js` file:
-
-```js
-'use strict'
-
-const fastify = require('fastify')
-
-function build () {
-  const app = fastify({
-    logger: true
-  })
-
-  app.get('/', async (req, res) => {
-    const { name = 'World' } = req.query
-    req.log.info({ name }, 'hello world!')
-    return `Hello ${name}!`
-  })
-
-  return app
-}
-
-module.exports = build
-```
-
-Note that you'll need to use Node 10 by setting it in `package.json`:
-
-```js
-  "engines": {
-    "node": "10.x"
-  },
 ```

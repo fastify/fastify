@@ -15,9 +15,7 @@ const {
   kLogLevel,
   kLogSerializers,
   kHooks,
-  kSchemas,
-  kValidatorCompiler,
-  kSerializerCompiler,
+  kSchemaController,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -36,8 +34,8 @@ const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
+const SchemaController = require('./lib/schema-controller')
 const { Hooks, hookRunnerApplication } = require('./lib/hooks')
-const { Schemas } = require('./lib/schemas')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -45,6 +43,7 @@ const { buildRouting, validateBodyLimitOption } = require('./lib/route')
 const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
+const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
 const setErrorHeaders = require('./lib/setErrorHeaders')
 
@@ -86,6 +85,10 @@ function fastify (options) {
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
     throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+  }
+
+  if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
+    throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
   }
 
   validateBodyLimitOption(options.bodyLimit)
@@ -135,15 +138,34 @@ function fastify (options) {
   // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
+  let constraints = options.constraints
+  if (options.versioning) {
+    warning.emit('FSTDEP009')
+    constraints = {
+      ...constraints,
+      version: {
+        name: 'version',
+        mustMatchWhenDerived: true,
+        storage: options.versioning.storage,
+        deriveConstraint: options.versioning.deriveVersion,
+        validate (value) {
+          if (typeof value !== 'string') {
+            throw new Error('Version constraint should be a string.')
+          }
+        }
+      }
+    }
+  }
+
   // Default router
   const router = buildRouting({
     config: {
       defaultRoute: defaultRoute,
       onBadUrl: onBadUrl,
+      constraints: constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive,
-      versioning: options.versioning
+      caseSensitive: options.caseSensitive
     }
   })
 
@@ -158,7 +180,7 @@ function fastify (options) {
   const { server, listen } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
-  const schemas = new Schemas()
+  const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
 
   // Public API
   const fastify = {
@@ -175,11 +197,9 @@ function fastify (options) {
     [kLogLevel]: '',
     [kLogSerializers]: null,
     [kHooks]: new Hooks(),
-    [kSchemas]: schemas,
-    [kValidatorCompiler]: null,
+    [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
     [kErrorHandler]: defaultErrorHandler,
-    [kSerializerCompiler]: null,
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -233,10 +253,11 @@ function fastify (options) {
     addHook: addHook,
     // schemas
     addSchema: addSchema,
-    getSchema: schemas.getSchema.bind(schemas),
-    getSchemas: schemas.getSchemas.bind(schemas),
+    getSchema: schemaController.getSchema.bind(schemaController),
+    getSchemas: schemaController.getSchemas.bind(schemaController),
     setValidatorCompiler: setValidatorCompiler,
     setSerializerCompiler: setSerializerCompiler,
+    setSchemaController: setSchemaController,
     setReplySerializer: setReplySerializer,
     setSchemaErrorFormatter: setSchemaErrorFormatter,
     // custom parsers
@@ -250,6 +271,7 @@ function fastify (options) {
     ready: null,
     onClose: null,
     close: null,
+    printPlugins: null,
     // http server
     listen: listen,
     server: server,
@@ -284,10 +306,10 @@ function fastify (options) {
       get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
-      get () { return this[kValidatorCompiler] }
+      get () { return this[kSchemaController].getValidatorCompiler() }
     },
     serializerCompiler: {
-      get () { return this[kSerializerCompiler] }
+      get () { return this[kSchemaController].getSerializerCompiler() }
     },
     version: {
       get () {
@@ -333,6 +355,8 @@ function fastify (options) {
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
+  fastify.printPlugins = avvio.prettyPrint.bind(avvio)
+
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
@@ -498,7 +522,7 @@ function fastify (options) {
   // wrapper that we expose to the user for schemas handling
   function addSchema (schema) {
     throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
-    this[kSchemas].add(schema)
+    this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
   }
@@ -519,7 +543,7 @@ function fastify (options) {
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
-    // config issue on the the load balancer side.
+    // config issue on the load balancer side.
     this.log.trace({ err }, 'client error')
 
     // If the socket is not writable, there is no reason to try to send data.
@@ -565,7 +589,7 @@ function fastify (options) {
 
   function setValidatorCompiler (validatorCompiler) {
     throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
-    this[kValidatorCompiler] = validatorCompiler
+    this[kSchemaController].setValidatorCompiler(validatorCompiler)
     return this
   }
 
@@ -578,7 +602,17 @@ function fastify (options) {
 
   function setSerializerCompiler (serializerCompiler) {
     throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
-    this[kSerializerCompiler] = serializerCompiler
+    this[kSchemaController].setSerializerCompiler(serializerCompiler)
+    return this
+  }
+
+  function setSchemaController (schemaControllerOpts) {
+    throwIfAlreadyStarted('Cannot call "setSchemaController" when fastify instance is already started!')
+    const old = this[kSchemaController]
+    const schemaController = SchemaController.buildSchemaController(old.parent, Object.assign({}, old.opts, schemaControllerOpts))
+    this[kSchemaController] = schemaController
+    this.getSchema = schemaController.getSchema.bind(schemaController)
+    this.getSchemas = schemaController.getSchemas.bind(schemaController)
     return this
   }
 

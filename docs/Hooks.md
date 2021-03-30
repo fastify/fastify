@@ -85,19 +85,23 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 **Notice**: The old syntaxes `function(request, reply, done)` and `async function(request, reply)` for the parser are still supported but they are deprecated.
 
 ### preValidation
+
+If you are using the `preValidation` hook, you can change the payload before it is validated. For example:
+
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
-  // Some code
+  req.body = { ...req.body, importantKey: 'randomString' }
   done()
 })
 ```
 Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
-  // Some code
-  await asyncMethod()
+  const importantKey = await generateRandomString()
+  req.body = { ...req.body, importantKey }
 })
 ```
+
 ### preHandler
 ```js
 fastify.addHook('preHandler', (request, reply, done) => {

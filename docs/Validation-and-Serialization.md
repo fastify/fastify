@@ -101,7 +101,7 @@ As usual, the function `getSchemas` is encapsulated and returns the shared schem
 ```js
 fastify.addSchema({ $id: 'one', my: 'hello' })
 // will return only `one` schema
-fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) }) 
+fastify.get('/', (request, reply) => { reply.send(fastify.getSchemas()) })
 
 fastify.register((instance, opts, done) => {
   instance.addSchema({ $id: 'two', my: 'ciao' })
@@ -198,6 +198,62 @@ fastify.post('/the/url', { schema }, handler)
 
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
+The Ajv default configuration in Fastify doesn't support coercing array parameters in querystring. However, Fastify allows [`customOptions`](Server.md#ajv) in Ajv instance. The `coerceTypes: 'array'` will coerce one parameter to a single element in array. Example:
+
+```js
+const opts = {
+  schema: {
+    querystring: {
+      type: 'object',
+      properties: {
+        ids: {
+          type: 'array',
+          default: []
+        },
+      },
+    }
+  }
+}
+
+fastify.get('/', opts, (request, reply) => {
+  reply.send({ params: request.query })
+})
+
+fastify.listen(3000, (err) => {
+  if (err) throw err
+})
+```
+
+Using Fastify defaults the following request will result in `400` status code:
+
+```sh
+curl -X GET "http://localhost:3000/?ids=1
+
+{"statusCode":400,"error":"Bad Request","message":"querystring/hello should be array"}
+```
+
+Using `coerceTypes` as 'array' should fix it:
+
+```js
+const ajv = new Ajv({
+  removeAdditional: true,
+  useDefaults: true,
+  coerceTypes: 'array', // This line
+  allErrors: true
+})
+
+fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+  return ajv.compile(schema)
+})
+```
+
+```sh
+curl -X GET "http://localhost:3000/?ids=1
+
+{"params":{"hello":["1"]}}
+```
+
+For further information see [here](https://ajv.js.org/docs/coercion.html)
 
 <a name="ajv-plugins"></a>
 #### Ajv Plugins
@@ -488,10 +544,10 @@ const schema = {
 and fail to satisfy it, the route will immediately return a response with the following payload
 
 ```js
-{ 
+{
   "statusCode": 400,
   "error": "Bad Request",
-  "message": "body should have required property 'name'" 
+  "message": "body should have required property 'name'"
 }
 ```
 
@@ -519,7 +575,7 @@ The context function will be the Fastify server instance.
 ```js
 const fastify = Fastify({
   schemaErrorFormatter: (errors, dataVar) => {
-    // ... my formatting logic 
+    // ... my formatting logic
     return new Error(myErrorMessage)
   }
 })
@@ -527,7 +583,7 @@ const fastify = Fastify({
 // or
 fastify.setSchemaErrorFormatter(function (errors, dataVar) {
   this.log.error({ err: errors }, 'Validation failed')
-  // ... my formatting logic 
+  // ... my formatting logic
   return new Error(myErrorMessage)
 })
 ```
@@ -542,7 +598,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/master/validation-messages/custom-errors-messages.js) usage.
+If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js) usage.
 
 Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
 Inline comments in the schema below describe how to configure it to show a different error message for each case:

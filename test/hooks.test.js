@@ -1437,6 +1437,53 @@ test('preValidation hooks should be able to block a request', t => {
   })
 })
 
+test('preValidation hooks should be able to change request body before validation', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preValidation', (req, _reply, done) => {
+    const buff = Buffer.from(req.body.message, 'base64')
+    req.body = JSON.parse(buff.toString('utf-8'))
+    done()
+  })
+
+  fastify.post(
+    '/',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string'
+            },
+            bar: {
+              type: 'number'
+            }
+          },
+          required: ['foo', 'bar']
+        }
+      }
+    },
+    (req, reply) => {
+      t.pass()
+      reply.status(200).send('hello')
+    }
+  )
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    payload: {
+      message: Buffer.from(JSON.stringify({ foo: 'example', bar: 1 })).toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.is(res.statusCode, 200)
+    t.is(res.payload, 'hello')
+  })
+})
+
 test('preParsing hooks should be able to block a request', t => {
   t.plan(5)
   const fastify = Fastify()

@@ -1,6 +1,6 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod, RouteGenericInterface, DefaultRoute } from './route'
-import { FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRegister } from './register'
@@ -8,7 +8,14 @@ import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preVali
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
-import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
+import {
+  AddContentTypeParser,
+  hasContentTypeParser,
+  getDefaultJsonParser,
+  FastifyContentTypeParser,
+  ProtoAction,
+  ConstructorAction
+} from './content-type-parser'
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -64,8 +71,9 @@ export interface FastifyInstance<
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-    ContextConfig = ContextConfigDefault
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler = FastifySchema,
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
@@ -311,9 +319,17 @@ export interface FastifyInstance<
   /**
    * Set the 404 handler
    */
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> (
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault> (
+    opts: {
+      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+    },
+    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   /**
    * Fastify default error handler
@@ -330,12 +346,12 @@ export interface FastifyInstance<
   /**
    * Set the schema validator for all routes.
    */
-  setValidatorCompiler(schemaCompiler: FastifySchemaCompiler): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
    * Set the schema serializer for all routes.
    */
-  setSerializerCompiler(schemaCompiler: FastifySerializerCompiler): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setSerializerCompiler<T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
   * Set the reply serializer for all routes.
@@ -351,9 +367,43 @@ export interface FastifyInstance<
    */
   addContentTypeParser: AddContentTypeParser<RawServer, RawRequest>;
   hasContentTypeParser: hasContentTypeParser;
+  /**
+   * Fastify default JSON parser
+   */
+  getDefaultJsonParser: getDefaultJsonParser;
+  /**
+   * Fastify default plain text parser
+   */
+  defaultTextParser: FastifyContentTypeParser;
 
   /**
    * Prints the representation of the internal radix tree used by the router
    */
   printRoutes(): string;
+
+  /**
+   * Prints the representation of the plugin tree used by avvio, the plugin registration system
+   */
+  printPlugins(): string;
+
+  /**
+   *  Frozen read-only object registering the initial options passed down by the user to the fastify instance
+   */
+  initialConfig: Readonly<{
+    connectionTimeout?: number,
+    keepAliveTimeout?: number,
+    bodyLimit?: number,
+    caseSensitive?: boolean,
+    http2?: boolean,
+    https?: boolean | Readonly<{ allowHTTP1: boolean }>,
+    ignoreTrailingSlash?: boolean,
+    disableRequestLogging?: boolean,
+    maxParamLength?: number,
+    onProtoPoisoning?: ProtoAction,
+    onConstructorPoisoning?: ConstructorAction,
+    pluginTimeout?: number,
+    requestIdHeader?: string,
+    requestIdLogLabel?: string,
+    http2SessionTimeout?: number
+  }>
 }

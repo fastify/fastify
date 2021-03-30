@@ -12,8 +12,8 @@ export interface FastifySchema {
   response?: unknown;
 }
 
-export interface FastifyRouteSchemaDef {
-  schema: FastifySchema;
+export interface FastifyRouteSchemaDef<T> {
+  schema: T;
   method: string;
   url: string;
   httpPart?: string;
@@ -26,12 +26,13 @@ export interface FastifySchemaValidationError {
 }
 
 export interface FastifyValidationResult {
+  (data: any): boolean | PromiseLike<any> | { error?: Error, value?: any }
   errors?: FastifySchemaValidationError[] | null;
 }
 
 /**
  * Compiler for FastifySchema Type
  */
-export type FastifySchemaCompiler = (routeSchema: FastifyRouteSchemaDef) => FastifyValidationResult
+export type FastifySchemaCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => FastifyValidationResult
 
-export type FastifySerializerCompiler = (routeSchema: FastifyRouteSchemaDef) => (data: any) => string
+export type FastifySerializerCompiler<T> = (routeSchema: FastifyRouteSchemaDef<T>) => (data: any) => string

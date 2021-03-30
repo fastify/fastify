@@ -7,7 +7,7 @@
 ### Error Handling In Node.js
 
 #### Uncaught Errors
-In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try fix this issue, but did not. 
+In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try to fix this issue, but did not. 
 
 Given that it is not possible to process all uncaught errors sensibly, the best way to deal with them is to [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly). 
 
@@ -34,14 +34,14 @@ For customizing this behaviour, you should use [`setErrorHandler`](Server.md#set
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 
-From the [Hooks documentation](Hooks/#manage-errors-from-a-hook): 
+From the [Hooks documentation](Hooks.md#manage-errors-from-a-hook): 
 > If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
 If you have defined a custom error handler using `setErrorHandler` the error will be routed there, otherwise it will be routed to Fastify’s generic error handler. Fastify's generic error handler will use the header and status code in the Error object if it exists. The headers and status code will not be automatically set if a custom error handler is provided.
 
 Some things to consider in your custom error handler: 
 
-- you can `reply.send(data)` which will be behave as it would be in [regular route handlers](Reply/#senddata)
+- you can `reply.send(data)` which will be behave as it would be in [regular route handlers](Reply.md#senddata)
 	- objects are serialised, triggering the `preSerialization` lifecycle hook if you have one defined
 	- strings, buffers, and streams are sent to the client, with appropriate headers (no serialization)
 
@@ -64,40 +64,40 @@ The router received an invalid url.
 
 The parser for this content type was already registered.
 
-<a name="FST_ERR_CTP_INVALID_TYPE"></a>
-#### FST_ERR_CTP_INVALID_TYPE
+<a name="FST_ERR_CTP_BODY_TOO_LARGE"></a>
+#### FST_ERR_CTP_BODY_TOO_LARGE
 
-The `Content-Type` should be a string.
+The request body is larger than the provided limit.
 
 <a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE
 
 The content type cannot be an empty string.
 
+<a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
+#### FST_ERR_CTP_INVALID_CONTENT_LENGTH
+
+Request body size did not match Content-Length.
+
 <a name="FST_ERR_CTP_INVALID_HANDLER"></a>
 #### FST_ERR_CTP_INVALID_HANDLER
 
 An invalid handler was passed for the content type.
-
-<a name="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
-#### FST_ERR_CTP_INVALID_PARSE_TYPE
-
-The provided parse type is not supported. Accepted values are `string` or `buffer`.
-
-<a name="FST_ERR_CTP_BODY_TOO_LARGE"></a>
-#### FST_ERR_CTP_BODY_TOO_LARGE
-
-The request body is larger than the provided limit.
 
 <a name="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 #### FST_ERR_CTP_INVALID_MEDIA_TYPE
 
 The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it).
 
-<a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
-#### FST_ERR_CTP_INVALID_CONTENT_LENGTH
+<a name="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
+#### FST_ERR_CTP_INVALID_PARSE_TYPE
 
-Request body size did not match Content-Length.
+The provided parse type is not supported. Accepted values are `string` or `buffer`.
+
+<a name="FST_ERR_CTP_INVALID_TYPE"></a>
+#### FST_ERR_CTP_INVALID_TYPE
+
+The `Content-Type` should be a string.
 
 <a name="FST_ERR_DEC_ALREADY_PRESENT"></a>
 #### FST_ERR_DEC_ALREADY_PRESENT
@@ -109,60 +109,60 @@ A decorator with the same name is already registered.
 
 The decorator cannot be registered due to a missing dependency.
 
-<a name="FST_ERR_HOOK_INVALID_TYPE"></a>
-#### FST_ERR_HOOK_INVALID_TYPE
-
-The hook name must be a string.
-
 <a name="FST_ERR_HOOK_INVALID_HANDLER"></a>
 #### FST_ERR_HOOK_INVALID_HANDLER
 
 The hook callback must be a function.
+
+<a name="FST_ERR_HOOK_INVALID_TYPE"></a>
+#### FST_ERR_HOOK_INVALID_TYPE
+
+The hook name must be a string.
 
 <a name="FST_ERR_LOG_INVALID_DESTINATION"></a>
 #### FST_ERR_LOG_INVALID_DESTINATION
 
 The logger accepts either a `'stream'` or a `'file'` as the destination.
 
+<a name="FST_ERR_PROMISE_NOT_FULFILLED"></a>
+#### FST_ERR_PROMISE_NOT_FULFILLED
+
+A promise may not be fulfilled with 'undefined' when statusCode is not 204.
+
 <a id="FST_ERR_REP_ALREADY_SENT"></a>
 #### FST_ERR_REP_ALREADY_SENT
 
 A response was already sent.
 
-<a id="FST_ERR_SEND_INSIDE_ONERR"></a>
-#### FST_ERR_SEND_INSIDE_ONERR
-
-You cannot use `send` inside the `onError` hook.
-
 <a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
 
-Reply payload can either be a `string` or a `Buffer`.
-
-<a name="FST_ERR_SCH_MISSING_ID"></a>
-#### FST_ERR_SCH_MISSING_ID
-
-The schema provided does not have `$id` property.
+Reply payload can be either a `string` or a `Buffer`.
 
 <a name="FST_ERR_SCH_ALREADY_PRESENT"></a>
 #### FST_ERR_SCH_ALREADY_PRESENT
 
 A schema with the same `$id` already exists.
 
-<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
-#### FST_ERR_SCH_VALIDATION_BUILD
+<a name="FST_ERR_SCH_MISSING_ID"></a>
+#### FST_ERR_SCH_MISSING_ID
 
-The JSON schema provided for validation to a route is not valid.
+The schema provided does not have `$id` property.
 
 <a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
 #### FST_ERR_SCH_SERIALIZATION_BUILD
 
 The JSON schema provided for serialization of a route response is not valid.
 
-<a name="FST_ERR_PROMISE_NOT_FULLFILLED"></a>
-#### FST_ERR_PROMISE_NOT_FULLFILLED
+<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
+#### FST_ERR_SCH_VALIDATION_BUILD
 
-A promise may not be fulfilled with 'undefined' when statusCode is not 204.
+The JSON schema provided for validation to a route is not valid.
+
+<a id="FST_ERR_SEND_INSIDE_ONERR"></a>
+#### FST_ERR_SEND_INSIDE_ONERR
+
+You cannot use `send` inside the `onError` hook.
 
 <a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
 #### FST_ERR_SEND_UNDEFINED_ERR

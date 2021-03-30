@@ -89,7 +89,7 @@ fastify.decorate('conf', {
 })
 ```
 
-To access decorated properties, simply use the name provided to the
+To access decorated properties, use the name provided to the
 decoration API:
 
 ```js

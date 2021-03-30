@@ -3,7 +3,7 @@
 # The hitchhiker's guide to plugins
 First of all, `DON'T PANIC`!
 
-Fastify was built from the beginning to be an extremely modular system. We built a powerful API that allows you to add methods and utilities to Fastify by creating a namespace. We built a system that creates an encapsulation model that allows you to split your application in multiple microservices at any moment, without the need to refactor the entire application.
+Fastify was built from the beginning to be an extremely modular system. We built a powerful API that allows you to add methods and utilities to Fastify by creating a namespace. We built a system that creates an encapsulation model, that allows you to split your application in multiple microservices at any moment, without the need to refactor the entire application.
 
 **Table of contents**
 - [Register](#register)
@@ -42,7 +42,7 @@ Where `fastify` is the encapsulated Fastify instance, `options` is the options o
 
 Fastify's plugin model is fully reentrant and graph-based, it handles asynchronous code without any problems and it enforces both the load and close order of plugins. *How?* Glad you asked, check out [`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin __after__ `.listen()`, `.inject()` or `.ready()` are called.
 
-Inside a plugin you can do whatever you want, register routes, utilities (we'll see this in a moment) and do nested registers, just remember to call `done` when everything is set up!
+Inside a plugin you can do whatever you want, register routes, utilities (we will see this in a moment) and do nested registers, just remember to call `done` when everything is set up!
 ```js
 module.exports = function (fastify, options, done) {
   fastify.get('/plugin', (request, reply) => {
@@ -68,7 +68,7 @@ module.exports = function (a, b) {
 const util = require('./your-awesome-utility')
 console.log(util('that is ', 'awesome'))
 ```
-And now you will import your utility in every file you need it in. (And don't forget that you will probably also need it in your tests).
+Now you will import your utility in every file you need it in. (And do not forget that you will probably also need it in your tests).
 
 Fastify offers you a more elegant and comfortable way to do this, *decorators*.
 Creating a decorator is extremely easy, just use the [`decorate`](Decorators.md) API:
@@ -114,7 +114,7 @@ fastify.register((instance, opts, done) => {
   done()
 })
 ```
-*Take home message: if you need an utility which is available in every part of your application, take care that it's declared in the root scope of your application. If that's not an option you can use the `fastify-plugin` utility as described [here](#distribution).*
+*Take home message: if you need a utility which is available in every part of your application, take care that it's declared in the root scope of your application. If that is not an option you can use the `fastify-plugin` utility as described [here](#distribution).*
 
 `decorate` is not the only API that you can use to extend the server functionality, you can also use `decorateRequest` and `decorateReply`.
 
@@ -131,7 +131,7 @@ fastify.get('/html', (request, reply) => {
     .send(fastify.html({ hello: 'world' }))
 })
 ```
-It works, but it could be way better!
+It works, but it could be much better!
 ```js
 fastify.decorateReply('html', function (payload) {
   this.type('text/html') // This is the 'Reply' object
@@ -143,7 +143,7 @@ fastify.get('/html', (request, reply) => {
 })
 ```
 
-And in the same way you can do this for the `request` object:
+In the same way you can do this for the `request` object:
 ```js
 fastify.decorate('getHeader', (req, header) => {
   return req.headers[header]
@@ -158,7 +158,7 @@ fastify.get('/happiness', (request, reply) => {
   reply.send({ happy: request.isHappy })
 })
 ```
-Again, it works, but it can be way better!
+Again, it works, but it can be much better!
 ```js
 fastify.decorateRequest('setHeader', function (header) {
   this.isHappy = this.headers[header]
@@ -176,7 +176,7 @@ fastify.get('/happiness', (request, reply) => {
 })
 ```
 
-We've seen how to extend server functionality and how to handle the encapsulation system, but what if you need to add a function that must be executed every time when the server "[emits](Lifecycle.md)" an event?
+We have seen how to extend server functionality and how to handle the encapsulation system, but what if you need to add a function that must be executed every time when the server "[emits](Lifecycle.md)" an event?
 
 <a name="hooks"></a>
 ## Hooks
@@ -213,7 +213,7 @@ fastify.get('/plugin2', (request, reply) => {
   reply.send(request)
 })
 ```
-Now for every request, you will run your utility. Obviously you can register as many hooks as you need.<br>
+Now for every request, you will run your utility. You can register as many hooks as you need.<br>
 Sometimes you want a hook that should be executed for just a subset of routes, how can you do that? Yep, encapsulation!
 
 ```js
@@ -242,9 +242,9 @@ As you probably noticed by now, `request` and `reply` are not the standard Nodej
 
 <a name="distribution"></a>
 ## How to handle encapsulation and distribution
-Perfect, now you know (almost) all of the tools that you can use to extend Fastify. But chances are that you came across one big issue: how is distribution handled?
+Perfect, now you know (almost) all of the tools that you can use to extend Fastify. Nevertheless, chances are that you came across one big issue: how is distribution handled?
 
-The preferred way to distribute a utility is to wrap all your code inside a `register`, in this way your plugin can support asynchronous bootstrapping *(since `decorate` is a synchronous API)*, in the case of a database connection for example.
+The preferred way to distribute a utility is to wrap all your code inside a `register`. Using this, your plugin can support asynchronous bootstrapping *(since `decorate` is a synchronous API)*, in the case of a database connection for example.
 
 *Wait, what? Didn't you tell me that `register` creates an encapsulation and that the stuff I create inside will not be available outside?*<br>
 Yes, I said that. But what I didn't tell you, is that you can tell to Fastify to avoid this behaviour, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
@@ -263,7 +263,7 @@ module.exports = fp(dbPlugin)
 ```
 You can also tell `fastify-plugin` to check the installed version of Fastify, in case you need a specific API.
 
-As we mentioned earlier, Fastify starts loading its plugins __after__ `.listen()`, `.inject()` or `.ready()` are called and as such, __after__ they have been declared. This means that, even though the plugin may inject variables to the external fastify instance via [`decorate`](Decorators.md), the decorated variables will not be accessible before calling `.listen()`, `.inject()` or `.ready()`.
+As we mentioned earlier, Fastify starts loading its plugins __after__ `.listen()`, `.inject()` or `.ready()` are called and as such, __after__ they have been declared. This means that, even though the plugin may inject variables to the external Fastify instance via [`decorate`](Decorators.md), the decorated variables will not be accessible before calling `.listen()`, `.inject()` or `.ready()`.
 
 In case you rely on a variable injected by a preceding plugin and want to pass that in the `options` argument of `register`, you can do so by using a function instead of an object:
 ```js
@@ -283,7 +283,7 @@ fastify.register(require('your-plugin'), parent => {
   return { connection: parent.db, otherOption: 'foo-bar' }
 })
 ```
-In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
+In the above example, the `parent` variable of the function passed in as the second argument of `register` is a copy of the **external Fastify instance** that the plugin was registered at. This means that we are able to access any variables that were injected by preceding plugins in the order of declaration.
 
 <a name="esm-support"></a>
 ## ESM support
@@ -300,7 +300,7 @@ async function plugin (fastify, opts) {
 
 export default plugin
 ```
-__Note__: Fastify doesn't support named imports within an ESM context. Instead, the `default` export is available. 
+__Note__: Fastify does not support named imports within an ESM context. Instead, the `default` export is available. 
 
 ```js
 // server.mjs
@@ -326,7 +326,7 @@ The callback changes based on the parameters you are giving:
 
 1. If no parameter is given to the callback and there is an error, that error will be passed to the next error handler.
 1. If one parameter is given to the callback, that parameter will be the error object.
-1. If two parameters are given to the callback, the first will be the error object, the second will be the done callback.
+1. If two parameters are given to the callback, the first will be the error object; the second will be the done callback.
 1. If three parameters are given to the callback, the first will be the error object, the second will be the top-level context unless you have specified both server and override, in that case, the context will be what the override returns, and the third the done callback.
 
 Let's see how to use it:

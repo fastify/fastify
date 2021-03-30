@@ -1,5 +1,8 @@
-import fastify, { FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
+import fastify, { FastifyContentTypeParser, FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
+import { FastifyRequest } from '../../types/request'
+import { FastifyReply } from '../../types/reply'
+import { HookHandlerDoneFunction } from '../../types/hooks'
 
 const server = fastify()
 
@@ -15,6 +18,8 @@ expectAssignable<FastifyInstance>(server.addSchema({
 
 expectType<Record<string, unknown>>(server.getSchemas())
 expectType<unknown>(server.getSchema('SchemaId'))
+expectType<string>(server.printRoutes())
+expectType<string>(server.printPlugins())
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
@@ -35,6 +40,19 @@ server.setErrorHandler(fastifyErrorHandler)
 
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
+
+function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
+async function notFoundpreValidationAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
+
+server.setNotFoundHandler(notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
 
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))
@@ -84,3 +102,27 @@ expectType<FastifyInstance>(fastify().get('/', {
     expectAssignable<void>(server.errorHandler(error, request, reply))
   }
 }))
+
+type InitialConfig = Readonly<{
+  connectionTimeout?: number,
+  keepAliveTimeout?: number,
+  bodyLimit?: number,
+  caseSensitive?: boolean,
+  http2?: boolean,
+  https?: boolean | Readonly<{ allowHTTP1: boolean }>,
+  ignoreTrailingSlash?: boolean,
+  disableRequestLogging?: boolean,
+  maxParamLength?: number,
+  onProtoPoisoning?: 'error' | 'remove' | 'ignore',
+  onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
+  pluginTimeout?: number,
+  requestIdHeader?: string,
+  requestIdLogLabel?: string,
+  http2SessionTimeout?: number
+}>
+
+expectType<InitialConfig>(fastify().initialConfig)
+
+expectType<FastifyContentTypeParser>(server.defaultTextParser)
+
+expectType<FastifyContentTypeParser>(server.getDefaultJsonParser('ignore', 'error'))

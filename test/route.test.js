@@ -911,7 +911,6 @@ test('no warning for exposeHeadRoute', async t => {
   })
 
   const listener = (w) => {
-    console.error(w)
     t.fail('no warning')
   }
 

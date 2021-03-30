@@ -498,3 +498,45 @@ test('The schema changes the default error handler output', async t => {
   t.equals(res.statusCode, 500)
   t.deepEquals(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
 })
+
+test('do not crash if status code serializer errors', async t => {
+  const fastify = Fastify()
+
+  const requiresFoo = {
+    properties: { foo: { type: 'string' } },
+    required: ['foo']
+  }
+
+  const someUserErrorType2 = {
+    properties: {
+      code: { type: 'number' }
+    },
+    required: ['code']
+  }
+
+  fastify.get(
+    '/',
+    {
+      schema: {
+        query: requiresFoo,
+        response: { 400: someUserErrorType2 }
+      }
+    },
+    (request, reply) => {
+      t.fail('handler, should not be called')
+    }
+  )
+
+  const res = await fastify.inject({
+    path: '/',
+    query: {
+      notfoo: true
+    }
+  })
+  t.equals(res.statusCode, 500)
+  t.deepEquals(res.json(), {
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: '"code" is required!'
+  })
+})

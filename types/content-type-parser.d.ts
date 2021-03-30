@@ -33,15 +33,15 @@ export interface AddContentTypeParser<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>
 > {
   (
-    contentType: string | string[],
+    contentType: string | string[] | RegExp,
     opts: {
       bodyLimit?: number;
     },
     parser: FastifyContentTypeParser<RawServer, RawRequest>
   ): void;
-  (contentType: string | string[], parser: FastifyContentTypeParser<RawServer, RawRequest>): void;
+  (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<RawServer, RawRequest>): void;
   <parseAs extends string | Buffer>(
-    contentType: string | string[],
+    contentType: string | string[] | RegExp,
     opts: {
       parseAs: parseAs extends Buffer ? 'buffer' : 'string';
       bodyLimit?: number;
@@ -53,4 +53,10 @@ export interface AddContentTypeParser<
 /**
  * Checks for a type parser of a content type
  */
-export type hasContentTypeParser = (contentType: string) => boolean
+export type hasContentTypeParser = (contentType: string | RegExp) => boolean
+
+export type ProtoAction = 'error' | 'remove' | 'ignore'
+
+export type ConstructorAction = 'error' | 'remove' | 'ignore'
+
+export type getDefaultJsonParser = (onProtoPoisoning: ProtoAction, onConstructorPoisoning: ConstructorAction) => FastifyContentTypeParser

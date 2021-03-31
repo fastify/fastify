@@ -180,3 +180,14 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 See [decorators](https://github.com/wonexo/fastify/blob/master/docs/Decorators.md#decorate) to get more information on this topic.
+
+## Plugins
+Plugins enable you to execute more functionalities on fastify. These plugins can be a set of routes or even a server decorator.
+
+Use `register` to create a new scope:
+
+```
+fastify.register(plugin, [options])
+```
+
+Add a plugin

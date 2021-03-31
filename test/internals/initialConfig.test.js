@@ -10,6 +10,8 @@ const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
 
+process.removeAllListeners('warning')
+
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
   t.type(Fastify().initialConfig, 'object')
@@ -318,7 +320,13 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
 })
 
 test('Fastify.initialConfig should accept the deprecated versioning option', t => {
-  t.plan(0)
+  t.plan(1)
+
+  function onWarning (warning) {
+    t.is(warning.code, 'FSTDEP009')
+  }
+
+  process.on('warning', onWarning)
 
   const versioning = {
     storage: function () {
@@ -336,4 +344,8 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
   }
 
   Fastify({ versioning })
+  setImmediate(function () {
+    process.removeListener('warning', onWarning)
+    t.end()
+  })
 })

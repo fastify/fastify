@@ -186,8 +186,6 @@ Plugins enable you to execute more functionalities on fastify. These plugins can
 
 Use `register` to create a new scope:
 
-```
+```Javascript
 fastify.register(plugin, [options])
 ```
-
-Add a plugin

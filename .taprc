@@ -1,4 +1,3 @@
-esm: false
 ts: false
 jsx: false
 flow: false

@@ -4,7 +4,7 @@
 
 ## Long Term Support
 
-Fastify's Long Term Support (LTS) is provided according the schedule laid
+Fastify's Long Term Support (LTS) is provided according to the schedule laid
 out in this document:
 
 1. Major releases, "X" release of [semantic versioning][semver] X.Y.Z release

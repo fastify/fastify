@@ -55,9 +55,9 @@ test('async await', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -65,9 +65,9 @@ test('async await', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no-await'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -91,8 +91,8 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
       url: 'http://localhost:' + server.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.deepEqual(payload, JSON.parse(body))
-      t.strictEqual(res.statusCode, 200)
+      t.same(payload, JSON.parse(body))
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -117,8 +117,8 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
       url: 'http://localhost:' + server.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.deepEqual(payload, JSON.parse(body))
-      t.strictEqual(res.statusCode, 200)
+      t.same(payload, JSON.parse(body))
+      t.eqaul(res.statusCode, 200)
     })
   })
 })
@@ -149,7 +149,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -172,7 +172,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
       url: 'http://localhost:' + server.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.deepEqual(payload, JSON.parse(body))
+      t.same(payload, JSON.parse(body))
       t.strictEqual(res.statusCode, 200)
     })
   })
@@ -198,7 +198,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
       url: 'http://localhost:' + server.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.deepEqual(payload, JSON.parse(body))
+      t.same(payload, JSON.parse(body))
       t.strictEqual(res.statusCode, 200)
     })
   })
@@ -234,7 +234,7 @@ test('await reply if we will be calling reply.send in the future', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -292,7 +292,7 @@ test('support reply decorators with await', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -325,7 +325,7 @@ test('inject async await', async t => {
 
   try {
     const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    t.same({ hello: 'world' }, JSON.parse(res.payload))
   } catch (err) {
     t.fail(err)
   }
@@ -342,7 +342,7 @@ test('inject async await - when the server is up', async t => {
 
   try {
     const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    t.same({ hello: 'world' }, JSON.parse(res.payload))
   } catch (err) {
     t.fail(err)
   }
@@ -351,7 +351,7 @@ test('inject async await - when the server is up', async t => {
 
   try {
     const res2 = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res2.payload))
+    t.same({ hello: 'world' }, JSON.parse(res2.payload))
   } catch (err) {
     t.fail(err)
   }
@@ -372,7 +372,7 @@ test('async await plugin', async t => {
 
   try {
     const res = await fastify.inject({ method: 'GET', url: '/' })
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
+    t.same({ hello: 'world' }, JSON.parse(res.payload))
   } catch (err) {
     t.fail(err)
   }
@@ -515,8 +515,8 @@ test('error is not logged because promise was fulfilled with undefined but respo
       url: 'http://localhost:' + fastify.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.strictEqual(res.statusCode, 200)
-      t.deepEqual(
+      t.equal(res.statusCode, 200)
+      t.same(
         payload,
         JSON.parse(body)
       )
@@ -541,8 +541,8 @@ test('Thrown Error instance sets HTTP status code', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(
+    t.equal(res.statusCode, 418)
+    t.same(
       {
         error: statusCodes['418'],
         message: err.message,
@@ -576,8 +576,8 @@ test('customErrorHandler support', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(
+    t.eqaul(res.statusCode, 401)
+    t.same(
       {
         error: statusCodes['401'],
         message: 'kaboom',
@@ -610,8 +610,8 @@ test('customErrorHandler support without throwing', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 401)
-    t.deepEqual(
+    t.eqaul(res.statusCode, 401)
+    t.same(
       'kaboom',
       res.payload
     )
@@ -638,8 +638,8 @@ test('customErrorHandler only called if reply not already sent', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.deepEqual(
+    t.eqaul(res.statusCode, 200)
+    t.same(
       'success',
       res.payload
     )

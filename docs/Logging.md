@@ -24,6 +24,11 @@ fastify.get('/', options, function (request, reply) {
 })
 ```
 
+You can trigger new logs outside route handlers by using the Pino instance from the Fastify instance:
+```js
+fastify.log.info('Something important happened!');
+```
+
 If you want to pass some options to the logger, just pass them to Fastify.
 You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
 

@@ -918,7 +918,7 @@ test('Unknown method', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 400)
-      t.strictDeepEqual(JSON.parse(body), {
+      t.strictSame(JSON.parse(body), {
         error: 'Bad Request',
         message: 'Client Error',
         statusCode: 400
@@ -951,7 +951,7 @@ test('recognizes errors from the http-errors module', t => {
       sget('http://localhost:' + fastify.server.address().port, (err, response, body) => {
         t.error(err)
         const obj = JSON.parse(body.toString())
-        t.strictDeepEqual(obj, {
+        t.strictSame(obj, {
           error: 'Not Found',
           message: 'Not Found',
           statusCode: 404
@@ -977,7 +977,7 @@ test('the default 404 handler can be invoked inside a prefixed plugin', t => {
   fastify.inject('/v1/path', (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 404)
-    t.strictDeepEqual(JSON.parse(res.payload), {
+    t.strictSame(JSON.parse(res.payload), {
       error: 'Not Found',
       message: 'Not Found',
       statusCode: 404
@@ -1551,13 +1551,13 @@ test('The custom error handler should be invoked after the custom not found hand
   const order = [1, 2]
 
   fastify.setErrorHandler((err, req, reply) => {
-    t.is(order.shift(), 2)
+    t.equal(order.shift(), 2)
     t.type(err, Error)
     reply.send(err)
   })
 
   fastify.setNotFoundHandler((req, reply) => {
-    t.is(order.shift(), 1)
+    t.equal(order.shift(), 1)
     reply.code(404).send(new Error('kaboom'))
   })
 
@@ -1687,8 +1687,8 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
   })
 
   logStream.once('data', line => {
-    t.is(line.msg, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
-    t.is(line.level, 40)
+    t.equal(line.msg, 'Trying to send a NotFound error inside a 404 handler. Sending basic 404 response.')
+    t.equal(line.level, 40)
   })
 
   fastify.inject({
@@ -1696,8 +1696,8 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 404)
-    t.is(res.payload, '404 Not Found')
+    t.equal(res.statusCode, 404)
+    t.equal(res.payload, '404 Not Found')
   })
 })
 

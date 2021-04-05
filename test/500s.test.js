@@ -19,9 +19,9 @@ test('default 500', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 500)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
       statusCode: 500
@@ -52,9 +52,9 @@ test('custom 500', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+    t.equal(res.statusCode, 500)
+    t.equal(res.headers['content-type'], 'text/plain')
+    t.same(res.payload.toString(), 'an error happened: kaboom')
   })
 })
 
@@ -89,9 +89,9 @@ test('encapsulated 500', t => {
     url: '/test'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+    t.equal(res.statusCode, 500)
+    t.equal(res.headers['content-type'], 'text/plain')
+    t.same(res.payload.toString(), 'an error happened: kaboom')
   })
 
   fastify.inject({
@@ -99,9 +99,9 @@ test('encapsulated 500', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 500)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       message: 'kaboom',
       statusCode: 500
@@ -143,9 +143,9 @@ test('custom 500 with hooks', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.deepEqual(res.payload.toString(), 'an error happened: kaboom')
+    t.equal(res.statusCode, 500)
+    t.equal(res.headers['content-type'], 'text/plain')
+    t.same(res.payload.toString(), 'an error happened: kaboom')
   })
 })
 
@@ -153,7 +153,7 @@ test('cannot set errorHandler after binding', t => {
   t.plan(2)
 
   const fastify = Fastify()
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.listen(0, err => {
     t.error(err)

@@ -8,7 +8,7 @@ const server = fastify()
 
 server.decorate('nonexistent', () => {})
 
-declare module "../../fastify" {
+declare module '../../fastify' {
   interface FastifyInstance {
     functionWithTypeDefinition: (foo: string, bar: number) => Promise<boolean>
   }

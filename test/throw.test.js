@@ -38,7 +38,7 @@ test('Fastify should throw for an invalid schema, printing the error route - hea
     }
   }
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/', { schema: { headers: badSchema } }, () => {})
   fastify.get('/not-loaded', { schema: { headers: badSchema } }, () => {})
 

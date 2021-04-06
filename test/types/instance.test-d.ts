@@ -24,7 +24,11 @@ declare module '../../fastify' {
 expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => {})) // error because invalid return type
 expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => true)) // error because doesn't return a promise
 expectError(server.decorate('functionWithTypeDefinition', async (foo: any, bar: any, qwe: any) => true)) // error because too many args
-server.decorate('functionWithTypeDefinition', async (foo, bar) => true)
+server.decorate('functionWithTypeDefinition', async (foo, bar) => {
+  expectType<string>(foo)
+  expectType<number>(bar)
+  return true
+})
 
 expectError(server.decorateRequest('numberWithTypeDefinition', 'not a number')) // error because invalid type
 server.decorateRequest('numberWithTypeDefinition', 10)

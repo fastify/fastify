@@ -72,7 +72,7 @@ test('async await', t => {
   })
 })
 
-test('ignore the result of the promise if reply.send equal called beforehand (undefined)', t => {
+test('ignore the result of the promise if reply.send is called beforehand (undefined)', t => {
   t.plan(4)
 
   const server = Fastify()
@@ -97,7 +97,7 @@ test('ignore the result of the promise if reply.send equal called beforehand (un
   })
 })
 
-test('ignore the result of the promise if reply.send equal called beforehand (object)', t => {
+test('ignore the result of the promise if reply.send is called beforehand (object)', t => {
   t.plan(4)
 
   const server = Fastify()
@@ -123,7 +123,7 @@ test('ignore the result of the promise if reply.send equal called beforehand (ob
   })
 })
 
-test('server logs an error if reply.send equal called and a value equal returned via async/await', t => {
+test('server logs an error if reply.send is called and a value equal returned via async/await', t => {
   const lines = ['incoming request', 'request completed', 'Reply already sent']
   t.plan(lines.length + 2)
 
@@ -153,7 +153,7 @@ test('server logs an error if reply.send equal called and a value equal returned
   })
 })
 
-test('ignore the result of the promise if reply.send equal called beforehand (undefined)', t => {
+test('ignore the result of the promise if reply.send is called beforehand (undefined)', t => {
   t.plan(4)
 
   const server = Fastify()
@@ -178,7 +178,7 @@ test('ignore the result of the promise if reply.send equal called beforehand (un
   })
 })
 
-test('ignore the result of the promise if reply.send equal called beforehand (object)', t => {
+test('ignore the result of the promise if reply.send is called beforehand (object)', t => {
   t.plan(4)
 
   const server = Fastify()
@@ -399,7 +399,7 @@ test('does not call reply.send() twice if 204 response equal already sent', t =>
   })
 })
 
-test('error equal logged because promise was fulfilled with undefined', t => {
+test('error is logged because promise was fulfilled with undefined', t => {
   t.plan(3)
 
   let fastify = null
@@ -422,7 +422,7 @@ test('error equal logged because promise was fulfilled with undefined', t => {
   })
 
   stream.once('data', line => {
-    t.equal(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode equal not 204')
+    t.equal(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
   })
 
   fastify.listen(0, (err) => {
@@ -439,7 +439,7 @@ test('error equal logged because promise was fulfilled with undefined', t => {
   })
 })
 
-test('error equal not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
+test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
   t.plan(3)
 
   let fastify = null
@@ -479,7 +479,7 @@ test('error equal not logged because promise was fulfilled with undefined but st
   })
 })
 
-test('error equal not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
+test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
   t.plan(4)
 
   let fastify = null
@@ -529,7 +529,7 @@ test('Thrown Error instance sets HTTP status code', t => {
 
   const fastify = Fastify()
 
-  const err = new Error('winter equal coming')
+  const err = new Error('winter is coming')
   err.statusCode = 418
 
   fastify.get('/', async (req, reply) => {
@@ -576,7 +576,7 @@ test('customErrorHandler support', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.eqaul(res.statusCode, 401)
+    t.equal(res.statusCode, 401)
     t.same(
       {
         error: statusCodes['401'],
@@ -610,7 +610,7 @@ test('customErrorHandler support without throwing', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.eqaul(res.statusCode, 401)
+    t.equal(res.statusCode, 401)
     t.same(
       'kaboom',
       res.payload
@@ -638,7 +638,7 @@ test('customErrorHandler only called if reply not already sent', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.eqaul(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
     t.same(
       'success',
       res.payload

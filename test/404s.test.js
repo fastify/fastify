@@ -1614,7 +1614,7 @@ test('preValidation option', t => {
 
   fastify.setNotFoundHandler({
     preValidation: function (req, reply, done) {
-      t.true(this.foo)
+      t.ok(this.foo)
       done()
     }
   }, function (req, reply) {

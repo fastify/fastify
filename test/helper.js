@@ -325,7 +325,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, res) => {
         t.error(err)
-        t.equal(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -341,7 +341,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, res, body) => {
         t.error(err)
-        t.equal(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -358,7 +358,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: null
       }, (err, res) => {
         t.error(err)
-        t.equal(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -375,7 +375,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: null
       }, (err, res, body) => {
         t.error(err)
-        t.equal(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -392,7 +392,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: undefined
       }, (err, res) => {
         t.error(err)
-        t.equal(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -409,7 +409,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: undefined
       }, (err, res, body) => {
         t.error(err)
-        t.equal(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',

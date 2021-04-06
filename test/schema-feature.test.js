@@ -38,7 +38,7 @@ test('The schemas should be added to an internal storage', t => {
   const fastify = Fastify()
   const schema = { $id: 'id', my: 'schema' }
   fastify.addSchema(schema)
-  t.same(fastify[kSchemaController].schemaBucket.store, { id: schema })
+  t.deepEqual(fastify[kSchemaController].schemaBucket.store, { id: schema })
 })
 
 test('The schemas should be accessible via getSchemas', t => {
@@ -52,7 +52,7 @@ test('The schemas should be accessible via getSchemas', t => {
   }
 
   Object.values(schemas).forEach(schema => { fastify.addSchema(schema) })
-  t.same(fastify.getSchemas(), schemas)
+  t.deepEqual(fastify.getSchemas(), schemas)
 })
 
 test('The schema should be accessible by id via getSchema', t => {
@@ -65,14 +65,14 @@ test('The schema should be accessible by id via getSchema', t => {
     { $id: 'bcd', my: 'schema', properties: { a: 'a', b: 1 } }
   ]
   schemas.forEach(schema => { fastify.addSchema(schema) })
-  t.same(fastify.getSchema('abc'), schemas[1])
-  t.same(fastify.getSchema('id'), schemas[0])
-  t.same(fastify.getSchema('foo'), undefined)
+  t.deepEqual(fastify.getSchema('abc'), schemas[1])
+  t.deepEqual(fastify.getSchema('id'), schemas[0])
+  t.deepEqual(fastify.getSchema('foo'), undefined)
 
   fastify.register((instance, opts, done) => {
     const pluginSchema = { $id: 'cde', my: 'schema' }
     instance.addSchema(pluginSchema)
-    t.same(instance.getSchema('cde'), pluginSchema)
+    t.deepEqual(instance.getSchema('cde'), pluginSchema)
     done()
   })
 
@@ -85,7 +85,7 @@ test('Get validatorCompiler after setValidatorCompiler', t => {
   const fastify = Fastify()
   fastify.setValidatorCompiler(myCompiler)
   const sc = fastify.validatorCompiler
-  t.ok(Object.equal(myCompiler, sc))
+  t.ok(Object.is(myCompiler, sc))
   fastify.ready(err => t.error(err))
 })
 
@@ -95,7 +95,7 @@ test('Get serializerCompiler after setSerializerCompiler', t => {
   const fastify = Fastify()
   fastify.setSerializerCompiler(myCompiler)
   const sc = fastify.serializerCompiler
-  t.ok(Object.equal(myCompiler, sc))
+  t.ok(Object.is(myCompiler, sc))
   fastify.ready(err => t.error(err))
 })
 
@@ -245,9 +245,9 @@ test('Should not change the input schemas', t => {
     payload: { name: 'Foo', surname: 'Bar' }
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { name: 'Foo' })
+    t.deepEqual(res.json(), { name: 'Foo' })
     t.ok(theSchema.$id, 'the $id is not removed')
-    t.same(fastify.getSchema('helloSchema'), theSchema)
+    t.deepEqual(fastify.getSchema('helloSchema'), theSchema)
   })
 })
 
@@ -280,7 +280,7 @@ test('First level $ref', t => {
     url: '/123'
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { id: 246 })
+    t.deepEqual(res.json(), { id: 246 })
   })
 })
 
@@ -295,19 +295,19 @@ test('Customize validator compiler in instance and route', t => {
       case 'body':
         t.pass('body evaluated')
         return body => {
-          t.same(body, { foo: ['bar', 'BAR'] })
+          t.deepEqual(body, { foo: ['bar', 'BAR'] })
           return true
         }
       case 'params':
         t.pass('params evaluated')
         return params => {
-          t.same(params, { id: 1234 })
+          t.deepEqual(params, { id: 1234 })
           return true
         }
       case 'querystring':
         t.pass('querystring evaluated')
         return query => {
-          t.same(query, { lang: 'en' })
+          t.deepEqual(query, { lang: 'en' })
           return true
         }
       case 'headers':
@@ -361,7 +361,7 @@ test('Customize validator compiler in instance and route', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.same(res.json(), { foo: ['bar', 'BAR'] })
+    t.deepEqual(res.json(), { foo: ['bar', 'BAR'] })
   })
 
   fastify.inject({
@@ -372,7 +372,7 @@ test('Customize validator compiler in instance and route', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200) // the validation is always true
-    t.same(res.json(), {})
+    t.deepEqual(res.json(), {})
   })
 })
 
@@ -507,7 +507,7 @@ test('Add schema after register', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.same(res.json(), { id: 4242 })
+    t.deepEqual(res.json(), { id: 4242 })
   })
 })
 
@@ -547,10 +547,10 @@ test('Encapsulation isolation for getSchemas', t => {
 
   fastify.ready(err => {
     t.error(err)
-    t.same(fastify.getSchemas(), { z: schemas.z })
-    t.same(pluginDeepOneSide.getSchemas(), { z: schemas.z, a: schemas.a })
-    t.same(pluginDeepOne.getSchemas(), { z: schemas.z, b: schemas.b })
-    t.same(pluginDeepTwo.getSchemas(), { z: schemas.z, b: schemas.b, c: schemas.c })
+    t.deepEqual(fastify.getSchemas(), { z: schemas.z })
+    t.deepEqual(pluginDeepOneSide.getSchemas(), { z: schemas.z, a: schemas.a })
+    t.deepEqual(pluginDeepOne.getSchemas(), { z: schemas.z, b: schemas.b })
+    t.deepEqual(pluginDeepTwo.getSchemas(), { z: schemas.z, b: schemas.b, c: schemas.c })
   })
 })
 
@@ -723,7 +723,7 @@ test('Shared schema should be ignored in string enum', t => {
 
   fastify.inject('/C%23', (err, res) => {
     t.error(err)
-    t.same(res.json(), { lang: 'C#' })
+    t.deepEqual(res.json(), { lang: 'C#' })
   })
 })
 
@@ -755,7 +755,7 @@ test('Shared schema should NOT be ignored in != string enum', t => {
     payload: { lang: 'C#' }
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { lang: 'C#' })
+    t.deepEqual(res.json(), { lang: 'C#' })
   })
 })
 
@@ -812,7 +812,7 @@ test('Not evaluate json-schema $schema keyword', t => {
     body: { hello: 'world', foo: 'bar' }
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { hello: 'world' })
+    t.deepEqual(res.json(), { hello: 'world' })
   })
 })
 
@@ -1183,7 +1183,7 @@ test('Schema controller bucket', t => {
 
   function factoryBucket (storeInit) {
     builtBucket++
-    t.same(initStoreQueue.pop(), storeInit)
+    t.deepEqual(initStoreQueue.pop(), storeInit)
     const store = new Map(storeInit)
     return {
       add (schema) {

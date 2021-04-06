@@ -34,8 +34,8 @@ test('should respond with a stream', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
         t.error(err)
@@ -45,7 +45,7 @@ test('should respond with a stream', t => {
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 })
@@ -68,8 +68,8 @@ test('should trigger the onSend hook', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.headers['content-type'], 'application/javascript')
-    t.strictEqual(res.payload, fs.readFileSync(__filename, 'utf8'))
+    t.equal(res.headers['content-type'], 'application/javascript')
+    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
     fastify.close()
   })
 })
@@ -88,7 +88,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
       t.ok(payload._readableState)
     } else if (counter === 1) {
       const error = JSON.parse(payload)
-      t.strictEqual(error.statusCode, 500)
+      t.equal(error.statusCode, 500)
     }
     counter++
     done()
@@ -101,7 +101,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 })
@@ -131,10 +131,10 @@ test('onSend hook stream', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.headers['content-encoding'], 'gzip')
+    t.equal(res.headers['content-encoding'], 'gzip')
     const file = fs.readFileSync(resolve(process.cwd() + '/test/stream.test.js'), 'utf8')
     const payload = zlib.gunzipSync(res.rawPayload)
-    t.strictEqual(payload.toString('utf-8'), file)
+    t.equal(payload.toString('utf-8'), file)
     fastify.close()
   })
 })
@@ -188,7 +188,7 @@ test('Destroying streams prematurely', t => {
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -251,7 +251,7 @@ test('Destroying streams prematurely should call close method', t => {
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -313,7 +313,7 @@ test('Destroying streams prematurely should call close method when destroy is no
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -376,7 +376,7 @@ test('Destroying streams prematurely should call abort method', t => {
     const port = fastify.server.address().port
 
     http.get(`http://localhost:${port}`, function (response) {
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
       response.on('readable', function () {
         response.destroy()
       })
@@ -405,9 +405,9 @@ test('should respond with a stream1', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json')
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), [{ hello: 'world' }, { a: 42 }])
+      t.equal(response.headers['content-type'], 'application/json')
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), [{ hello: 'world' }, { a: 42 }])
     })
   })
 })
@@ -439,8 +439,8 @@ test('return a 404 if the stream emits a 404 error', t => {
 
     sget(`http://localhost:${port}`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.strictEqual(response.statusCode, 404)
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.equal(response.statusCode, 404)
     })
   })
 })
@@ -465,8 +465,8 @@ test('should support send module 200 and 404', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
         t.error(err)
@@ -476,7 +476,7 @@ test('should support send module 200 and 404', t => {
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.statusCode, 404)
+      t.equal(response.statusCode, 404)
     })
   })
 })
@@ -504,7 +504,7 @@ test('should destroy stream when response is ended', t => {
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })

@@ -13,11 +13,11 @@ const { kSchemaVisited } = require('../../lib/symbols')
 
 test('Symbols', t => {
   t.plan(5)
-  t.is(typeof symbols.responseSchema, 'symbol')
-  t.is(typeof symbols.bodySchema, 'symbol')
-  t.is(typeof symbols.querystringSchema, 'symbol')
-  t.is(typeof symbols.paramsSchema, 'symbol')
-  t.is(typeof symbols.headersSchema, 'symbol')
+  t.equal(typeof symbols.responseSchema, 'symbol')
+  t.equal(typeof symbols.bodySchema, 'symbol')
+  t.equal(typeof symbols.querystringSchema, 'symbol')
+  t.equal(typeof symbols.paramsSchema, 'symbol')
+  t.equal(typeof symbols.headersSchema, 'symbol')
 })
 
 ;['compileSchemasForValidation',
@@ -26,15 +26,15 @@ test('Symbols', t => {
     t.plan(2)
     const context = {}
     validation[func](context)
-    t.is(typeof context[symbols.bodySchema], 'undefined')
-    t.is(typeof context[symbols.responseSchema], 'undefined')
+    t.equal(typeof context[symbols.bodySchema], 'undefined')
+    t.equal(typeof context[symbols.responseSchema], 'undefined')
   })
 
   test(`${func} schema - missing output schema`, t => {
     t.plan(1)
     const context = { schema: {} }
     validation[func](context, null)
-    t.is(typeof context[symbols.responseSchema], 'undefined')
+    t.equal(typeof context[symbols.responseSchema], 'undefined')
   })
 })
 
@@ -59,8 +59,8 @@ test('build schema - output schema', t => {
     }
   }
   validation.compileSchemasForSerialization(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
-  t.is(typeof opts[symbols.responseSchema]['2xx'], 'function')
-  t.is(typeof opts[symbols.responseSchema]['201'], 'function')
+  t.equal(typeof opts[symbols.responseSchema]['2xx'], 'function')
+  t.equal(typeof opts[symbols.responseSchema]['201'], 'function')
 })
 
 test('build schema - payload schema', t => {
@@ -76,7 +76,7 @@ test('build schema - payload schema', t => {
     }
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
-  t.is(typeof opts[symbols.bodySchema], 'function')
+  t.equal(typeof opts[symbols.bodySchema], 'function')
 })
 
 test('build schema - avoid repeated normalize schema', t => {
@@ -92,9 +92,9 @@ test('build schema - avoid repeated normalize schema', t => {
     }
   }
   opts.schema = normalizeSchema(opts.schema)
-  t.notEqual(kSchemaVisited, undefined)
-  t.is(opts.schema[kSchemaVisited], true)
-  t.strictEqual(opts.schema, normalizeSchema(opts.schema))
+  t.not(kSchemaVisited, undefined)
+  t.equal(opts.schema[kSchemaVisited], true)
+  t.equal(opts.schema, normalizeSchema(opts.schema))
 })
 
 test('build schema - query schema', t => {
@@ -112,7 +112,7 @@ test('build schema - query schema', t => {
   opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
-  t.is(typeof opts[symbols.querystringSchema], 'function')
+  t.equal(typeof opts[symbols.querystringSchema], 'function')
 })
 
 test('build schema - query schema abbreviated', t => {
@@ -127,7 +127,7 @@ test('build schema - query schema abbreviated', t => {
   opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
-  t.is(typeof opts[symbols.querystringSchema], 'function')
+  t.equal(typeof opts[symbols.querystringSchema], 'function')
 })
 
 test('build schema - querystring schema', t => {
@@ -144,7 +144,7 @@ test('build schema - querystring schema', t => {
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
-  t.is(typeof opts[symbols.querystringSchema], 'function')
+  t.equal(typeof opts[symbols.querystringSchema], 'function')
 })
 
 test('build schema - querystring schema abbreviated', t => {
@@ -159,7 +159,7 @@ test('build schema - querystring schema abbreviated', t => {
   opts.schema = normalizeSchema(opts.schema)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
-  t.is(typeof opts[symbols.querystringSchema], 'function')
+  t.equal(typeof opts[symbols.querystringSchema], 'function')
 })
 
 test('build schema - must throw if querystring and query schema exist', t => {
@@ -183,8 +183,8 @@ test('build schema - must throw if querystring and query schema exist', t => {
     }
     opts.schema = normalizeSchema(opts.schema)
   } catch (err) {
-    t.is(err.code, 'FST_ERR_SCH_DUPLICATE')
-    t.is(err.message, 'Schema with \'querystring\' already present!')
+    t.equal(err.code, 'FST_ERR_SCH_DUPLICATE')
+    t.equal(err.message, 'Schema with \'querystring\' already present!')
   }
 })
 
@@ -201,7 +201,7 @@ test('build schema - params schema', t => {
     }
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
-  t.is(typeof opts[symbols.paramsSchema], 'function')
+  t.equal(typeof opts[symbols.paramsSchema], 'function')
 })
 
 test('build schema - headers schema', t => {
@@ -217,7 +217,7 @@ test('build schema - headers schema', t => {
     }
   }
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
-  t.is(typeof opts[symbols.headersSchema], 'function')
+  t.equal(typeof opts[symbols.headersSchema], 'function')
 })
 
 test('build schema - headers are lowercase', t => {

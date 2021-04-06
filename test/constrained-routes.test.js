@@ -25,8 +25,8 @@ test('Should register a host constrained route', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
-    t.strictEqual(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -37,7 +37,7 @@ test('Should register a host constrained route', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 
   fastify.inject({
@@ -45,7 +45,7 @@ test('Should register a host constrained route', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -79,8 +79,8 @@ test('Should register the same route with host constraints', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.payload, 'fastify.io')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'fastify.io')
   })
 
   fastify.inject({
@@ -91,8 +91,8 @@ test('Should register the same route with host constraints', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.payload, 'example.com')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'example.com')
   })
 
   fastify.inject({
@@ -103,7 +103,7 @@ test('Should register the same route with host constraints', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -155,8 +155,8 @@ test('Should allow registering custom constrained routes', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'from alpha' })
-    t.strictEqual(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'from alpha' })
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -167,8 +167,8 @@ test('Should allow registering custom constrained routes', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'from beta' })
-    t.strictEqual(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'from beta' })
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -179,6 +179,6 @@ test('Should allow registering custom constrained routes', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })

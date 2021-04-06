@@ -322,7 +322,7 @@ test('Can retrieve prefix within encapsulated instances', t => {
     url: '/v1/one'
   }, (err, res) => {
     t.error(err)
-    t.is(res.payload, '/v1')
+    t.equal(res.payload, '/v1')
   })
 
   fastify.inject({
@@ -330,7 +330,7 @@ test('Can retrieve prefix within encapsulated instances', t => {
     url: '/v1/v2/two'
   }, (err, res) => {
     t.error(err)
-    t.is(res.payload, '/v1/v2')
+    t.equal(res.payload, '/v1/v2')
   })
 })
 
@@ -588,5 +588,5 @@ test('calls onRoute only once when prefixing', async t => {
 
   await fastify.ready()
 
-  t.deepEqual(onRouteCalled, 1)
+  t.same(onRouteCalled, 1)
 })

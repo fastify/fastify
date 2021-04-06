@@ -63,7 +63,7 @@ test('Example - get schema', t => {
 
   const mySchemas = fastify.getSchemas()
   const mySchema = fastify.getSchema('schemaId')
-  t.deepEquals(mySchemas.schemaId, mySchema)
+  t.same(mySchemas.schemaId, mySchema)
 })
 
 test('Example - get schema encapsulated', async t => {
@@ -91,9 +91,9 @@ test('Example - get schema encapsulated', async t => {
   const r2 = await fastify.inject('/sub')
   const r3 = await fastify.inject('/deep')
 
-  t.deepEquals(Object.keys(r1.json()), ['one'])
-  t.deepEquals(Object.keys(r2.json()), ['one', 'two'])
-  t.deepEquals(Object.keys(r3.json()), ['one', 'two', 'three'])
+  t.same(Object.keys(r1.json()), ['one'])
+  t.same(Object.keys(r2.json()), ['one', 'two'])
+  t.same(Object.keys(r3.json()), ['one', 'two', 'three'])
 })
 
 test('Example - validation', t => {
@@ -494,12 +494,12 @@ test('should return custom error messages with ajv-errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.same(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'body/age bad age - should be num, body name please, body work please'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -544,13 +544,13 @@ test('should return localized error messages with ajv-i18n', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), [{
+    t.same(JSON.parse(res.payload), [{
       dataPath: '',
       keyword: 'required',
       message: 'должно иметь обязательное поле work',
       params: { missingProperty: 'work' },
       schemaPath: '#/required'
     }])
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })

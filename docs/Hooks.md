@@ -434,14 +434,14 @@ Note that the Fastify context in each hook is the same as the plugin where the r
 ```js
 fastify.addHook('onRequest', async function (req, reply) {
   if (req.raw.url === '/nested') {
-    assert.strictEqual(this.foo, 'bar')
+    assert.equal(this.foo, 'bar')
   } else {
-    assert.strictEqual(this.foo, undefined)
+    assert.equal(this.foo, undefined)
   }
 })
 
 fastify.get('/', async function (req, reply) {
-  assert.strictEqual(this.foo, undefined)
+  assert.equal(this.foo, undefined)
   return { hello: 'world' }
 })
 
@@ -449,7 +449,7 @@ fastify.register(async function plugin (fastify, opts) {
   fastify.decorate('foo', 'bar')
 
   fastify.get('/nested', async function (req, reply) {
-    assert.strictEqual(this.foo, 'bar')
+    assert.equal(this.foo, 'bar')
     return { hello: 'world' }
   })
 })

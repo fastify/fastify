@@ -11,23 +11,23 @@ t.test('onReady should be called in order', t => {
   let order = 0
 
   fastify.addHook('onReady', function (done) {
-    t.equals(order++, 0, 'called in root')
-    t.equals(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.equal(order++, 0, 'called in root')
+    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
     done()
   })
 
   fastify.register(async (childOne, o) => {
     childOne.addHook('onReady', function (done) {
-      t.equals(order++, 1, 'called in childOne')
-      t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.equal(order++, 1, 'called in childOne')
+      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
       done()
     })
 
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onReady', async function () {
         await immediate()
-        t.equals(order++, 2, 'called in childTwo')
-        t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.equal(order++, 2, 'called in childTwo')
+        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
     })
   })
@@ -43,22 +43,22 @@ t.test('async onReady should be called in order', async t => {
 
   fastify.addHook('onReady', async function () {
     await immediate()
-    t.equals(order++, 0, 'called in root')
-    t.equals(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
+    t.equal(order++, 0, 'called in root')
+    t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
   })
 
   fastify.register(async (childOne, o) => {
     childOne.addHook('onReady', async function () {
       await immediate()
-      t.equals(order++, 1, 'called in childOne')
-      t.equals(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
+      t.equal(order++, 1, 'called in childOne')
+      t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
     })
 
     childOne.register(async (childTwo, o) => {
       childTwo.addHook('onReady', async function () {
         await immediate()
-        t.equals(order++, 2, 'called in childTwo')
-        t.equals(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
+        t.equal(order++, 2, 'called in childTwo')
+        t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
       })
     })
   })
@@ -78,10 +78,10 @@ t.test('mix ready and onReady', async t => {
   })
 
   await fastify.ready()
-  t.equals(order, 1)
+  t.equal(order, 1)
 
   await fastify.ready()
-  t.equals(order, 1, 'ready hooks execute once')
+  t.equal(order, 1, 'ready hooks execute once')
 })
 
 t.test('listen and onReady order', async t => {
@@ -118,7 +118,7 @@ t.test('listen and onReady order', async t => {
   await fastify.close()
 
   function checkOrder (shouldbe) {
-    t.equals(order, shouldbe)
+    t.equal(order, shouldbe)
     order++
   }
 })
@@ -138,7 +138,7 @@ t.test('multiple ready calls', async t => {
       subinstance.addHook('onReady', checkOrder.bind(null, 7))
     })
 
-    t.equals(order, 0, 'ready and hooks not triggered yet')
+    t.equal(order, 0, 'ready and hooks not triggered yet')
     order++
   })
 
@@ -156,7 +156,7 @@ t.test('multiple ready calls', async t => {
   t.pass('do not trigger the onReady')
 
   function checkOrder (shouldbe) {
-    t.equals(order, shouldbe)
+    t.equal(order, shouldbe)
     order++
   }
 })
@@ -185,7 +185,7 @@ t.test('onReady should manage error in sync', t => {
 
   fastify.ready(err => {
     t.ok(err)
-    t.equals(err.message, 'FAIL ON READY')
+    t.equal(err.message, 'FAIL ON READY')
   })
 })
 
@@ -213,7 +213,7 @@ t.test('onReady should manage error in async', t => {
 
   fastify.ready(err => {
     t.ok(err)
-    t.equals(err.message, 'FAIL ON READY')
+    t.equal(err.message, 'FAIL ON READY')
   })
 })
 
@@ -241,7 +241,7 @@ t.test('onReady should manage sync error', t => {
 
   fastify.ready(err => {
     t.ok(err)
-    t.equals(err.message, 'FAIL UNWANTED SYNC EXCEPTION')
+    t.equal(err.message, 'FAIL UNWANTED SYNC EXCEPTION')
   })
 })
 
@@ -277,7 +277,7 @@ t.test('onReady cannot add lifecycle hooks', t => {
       fastify.addHook('onRequest', (request, reply, done) => {})
     } catch (error) {
       t.ok(error)
-      t.equals(error.message, 'root plugin has already booted')
+      t.equal(error.message, 'root plugin has already booted')
       done(error)
     }
   })
@@ -295,7 +295,7 @@ t.test('onReady throw loading error', t => {
   try {
     fastify.addHook('onReady', async function (done) {})
   } catch (e) {
-    t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
   }
 })
 
@@ -319,9 +319,9 @@ t.test('onReady execution order', t => {
   const fastify = Fastify({ })
 
   let i = 0
-  fastify.ready(() => { i++; t.equals(i, 1) })
-  fastify.ready(() => { i++; t.equals(i, 2) })
-  fastify.ready(() => { i++; t.equals(i, 3) })
+  fastify.ready(() => { i++; t.equal(i, 1) })
+  fastify.ready(() => { i++; t.equal(i, 2) })
+  fastify.ready(() => { i++; t.equal(i, 3) })
 })
 
 t.test('ready return the server with callback', t => {
@@ -330,7 +330,7 @@ t.test('ready return the server with callback', t => {
 
   fastify.ready((err, instance) => {
     t.error(err)
-    t.deepEquals(instance, fastify)
+    t.same(instance, fastify)
   })
 })
 
@@ -339,7 +339,7 @@ t.test('ready return the server with Promise', t => {
   const fastify = Fastify()
 
   fastify.ready()
-    .then(instance => { t.deepEquals(instance, fastify) })
+    .then(instance => { t.same(instance, fastify) })
     .catch(err => { t.fail(err) })
 })
 
@@ -348,21 +348,21 @@ t.test('ready return registered', t => {
   const fastify = Fastify()
 
   fastify.register((one, opts, done) => {
-    one.ready().then(itself => { t.deepEquals(itself, one) })
+    one.ready().then(itself => { t.same(itself, one) })
     done()
   })
 
   fastify.register((two, opts, done) => {
-    two.ready().then(itself => { t.deepEquals(itself, two) })
+    two.ready().then(itself => { t.same(itself, two) })
 
     two.register((twoDotOne, opts, done) => {
-      twoDotOne.ready().then(itself => { t.deepEquals(itself, twoDotOne) })
+      twoDotOne.ready().then(itself => { t.same(itself, twoDotOne) })
       done()
     })
     done()
   })
 
   fastify.ready()
-    .then(instance => { t.deepEquals(instance, fastify) })
+    .then(instance => { t.same(instance, fastify) })
     .catch(err => { t.fail(err) })
 })

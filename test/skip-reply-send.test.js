@@ -28,8 +28,8 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   })
 
   stream.on('data', (line) => {
-    t.notEqual(line.level, 40) // there are no errors
-    t.notEqual(line.level, 50) // there are no errors
+    t.not(line.level, 40) // there are no errors
+    t.not(line.level, 50) // there are no errors
   })
 
   app.get('/', (req, reply) => {
@@ -57,8 +57,8 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   })
 
   stream.on('data', (line) => {
-    t.notEqual(line.level, 40) // there are no error
-    t.notEqual(line.level, 50) // there are no error
+    t.not(line.level, 40) // there are no error
+    t.not(line.level, 50) // there are no error
   })
 
   app.get('/', (req, reply) => {
@@ -130,8 +130,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       })
 
       stream.on('data', (line) => {
-        t.notEqual(line.level, 40) // there are no errors
-        t.notEqual(line.level, 50) // there are no errors
+        t.not(line.level, 40) // there are no errors
+        t.not(line.level, 50) // there are no errors
       })
 
       previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
@@ -173,11 +173,11 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
           stream: stream
         }
       })
-      t.tearDown(() => app.close())
+      t.teardown(() => app.close())
 
       stream.on('data', (line) => {
-        t.notEqual(line.level, 40) // there are no errors
-        t.notEqual(line.level, 50) // there are no errors
+        t.not(line.level, 40) // there are no errors
+        t.not(line.level, 50) // there are no errors
       })
 
       previousHooks.forEach(h => app.addHook(h, async (req, reply) => t.pass(`${h} should be called`)))
@@ -220,7 +220,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
           stream: stream
         }
       })
-      t.tearDown(() => app.close())
+      t.teardown(() => app.close())
 
       let errorSeen = false
       stream.on('data', (line) => {
@@ -230,8 +230,8 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
             t.equal(line.err.code, 'FST_ERR_REP_ALREADY_SENT')
           }
         } else {
-          t.notEqual(line.level, 40) // there are no errors
-          t.notEqual(line.level, 50) // there are no errors
+          t.not(line.level, 40) // there are no errors
+          t.not(line.level, 50) // there are no errors
         }
       })
 

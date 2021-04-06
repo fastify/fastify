@@ -71,9 +71,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/return'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -84,7 +84,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/return-error'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 
@@ -96,8 +96,8 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/double'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { hello: '42' })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { hello: '42' })
     })
   })
 
@@ -108,9 +108,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/thenable'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -121,7 +121,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/thenable-error'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 
@@ -132,9 +132,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/return-reply'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })

@@ -43,7 +43,7 @@ test('Should handle root $merge keywords in header', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -52,7 +52,7 @@ test('Should handle root $merge keywords in header', t => {
       headers: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -103,7 +103,7 @@ test('Should handle root $patch keywords in header', t => {
       }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -112,7 +112,7 @@ test('Should handle root $patch keywords in header', t => {
       headers: { q: 10 }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -154,7 +154,7 @@ test('Should handle $merge keywords in body', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -163,7 +163,7 @@ test('Should handle $merge keywords in body', t => {
       payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -210,7 +210,7 @@ test('Should handle $patch keywords in body', t => {
       payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -219,7 +219,7 @@ test('Should handle $patch keywords in body', t => {
       payload: { q: 10 }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -281,8 +281,8 @@ test("serializer read validator's schemas", t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 })
 
@@ -327,8 +327,8 @@ test('setSchemaController in a plugin', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 
   async function schemaPlugin (server) {
@@ -497,8 +497,8 @@ test('setSchemaController in a plugin with head routes', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 
   async function schemaPlugin (server) {
@@ -588,7 +588,7 @@ test('multiple refs with the same ids', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 })

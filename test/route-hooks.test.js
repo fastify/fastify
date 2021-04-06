@@ -35,7 +35,7 @@ function testExecutionHook (hook) {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { hello: 'world' })
+      t.same(payload, { hello: 'world' })
     })
   })
 
@@ -170,7 +170,7 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { hello: 'earth' })
+      t.same(payload, { hello: 'earth' })
     })
 
     fastify.inject({
@@ -180,7 +180,7 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { hello: 'world' })
+      t.same(payload, { hello: 'world' })
     })
   })
 
@@ -204,7 +204,7 @@ function testBeforeHandlerHook (hook) {
       t.error(err)
       const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 500)
-      t.deepEqual(payload, {
+      t.same(payload, {
         message: 'kaboom',
         error: 'Internal Server Error',
         statusCode: 500
@@ -219,7 +219,7 @@ function testBeforeHandlerHook (hook) {
     const myError = { myError: 'kaboom' }
 
     fastify.setErrorHandler(async (error, request, reply) => {
-      t.deepEqual(error, myError, 'the error object throws by the user')
+      t.same(error, myError, 'the error object throws by the user')
       reply.send({ this: 'is', my: 'error' })
     })
 
@@ -237,8 +237,8 @@ function testBeforeHandlerHook (hook) {
       method: 'GET'
     }, (err, res) => {
       t.error(err)
-      t.is(res.statusCode, 500)
-      t.deepEqual(res.json(), { this: 'is', my: 'error' })
+      t.equal(res.statusCode, 500)
+      t.same(res.json(), { this: 'is', my: 'error' })
     })
   })
 
@@ -260,8 +260,8 @@ function testBeforeHandlerHook (hook) {
       method: 'GET'
     }, (err, res) => {
       t.error(err)
-      t.is(res.statusCode, 500)
-      t.deepEqual(res.json(), { myError: 'kaboom', message: 'i am an error' })
+      t.equal(res.statusCode, 500)
+      t.same(res.json(), { myError: 'kaboom', message: 'i am an error' })
     })
   })
 
@@ -286,7 +286,7 @@ function testBeforeHandlerHook (hook) {
       t.error(err)
       const payload = JSON.parse(res.payload)
       t.equal(res.statusCode, 401)
-      t.deepEqual(payload, {
+      t.same(payload, {
         message: 'go away',
         error: 'Unauthorized',
         statusCode: 401
@@ -302,7 +302,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.post('/', {
       [hook]: function (req, reply, done) {
-        t.strictEqual(this.foo, 42)
+        t.equal(this.foo, 42)
         this.foo += 1
         done()
       }
@@ -317,7 +317,7 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { foo: 43 })
+      t.same(payload, { foo: 43 })
     })
   })
 
@@ -329,7 +329,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.post('/', {
       [hook]: [function (req, reply, done) {
-        t.strictEqual(this.foo, 42)
+        t.equal(this.foo, 42)
         this.foo += 1
         done()
       }]
@@ -344,7 +344,7 @@ function testBeforeHandlerHook (hook) {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.deepEqual(payload, { foo: 43 })
+      t.same(payload, { foo: 43 })
     })
   })
 }
@@ -366,7 +366,7 @@ test('preValidation option should be called before preHandler hook', t => {
   const fastify = Fastify()
 
   fastify.addHook('preHandler', (req, reply, done) => {
-    t.true(req.called)
+    t.ok(req.called)
     done()
   })
 
@@ -386,7 +386,7 @@ test('preValidation option should be called before preHandler hook', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -408,7 +408,7 @@ test('preSerialization option should be able to modify the payload', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+    t.same(JSON.parse(res.payload), { hello: 'another world' })
   })
 })
 
@@ -417,7 +417,7 @@ test('preParsing option should be called before preValidation hook', t => {
   const fastify = Fastify()
 
   fastify.addHook('preValidation', (req, reply, done) => {
-    t.true(req.called)
+    t.ok(req.called)
     done()
   })
 
@@ -437,7 +437,7 @@ test('preParsing option should be called before preValidation hook', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -464,7 +464,7 @@ test('preParsing option should be able to modify the payload', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+    t.same(JSON.parse(res.payload), { hello: 'another world' })
   })
 })
 
@@ -473,7 +473,7 @@ test('onRequest option should be called before preParsing', t => {
   const fastify = Fastify()
 
   fastify.addHook('preParsing', (req, reply, done) => {
-    t.true(req.called)
+    t.ok(req.called)
     done()
   })
 
@@ -493,6 +493,6 @@ test('onRequest option should be called before preParsing', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })

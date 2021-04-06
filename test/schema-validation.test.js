@@ -63,8 +63,8 @@ test('Basic validation test', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'michelangelo')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'michelangelo')
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -73,8 +73,8 @@ test('Basic validation test', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), { statusCode: 400, error: 'Bad Request', message: "body should have required property 'work'" })
-    t.strictEqual(res.statusCode, 400)
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: "body should have required property 'work'" })
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -110,7 +110,7 @@ test('External AJV instance', t => {
     payload: { foo: 42 }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -119,7 +119,7 @@ test('External AJV instance', t => {
     payload: { foo: 'not a number' }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -150,7 +150,7 @@ test('Encapsulation', t => {
     instance.register((instance, opts, done) => {
       instance.post('/two', {
         handler (req, reply) {
-          t.deepEquals(instance.validatorCompiler, validator)
+          t.same(instance.validatorCompiler, validator)
           reply.send({ foo: 'two' })
         },
         schema: {
@@ -164,7 +164,7 @@ test('Encapsulation', t => {
       instance.post('/three', {
         validatorCompiler: anotherValidator,
         handler (req, reply) {
-          t.deepEquals(instance.validatorCompiler, validator, 'the route validator does not change the instance one')
+          t.same(instance.validatorCompiler, validator, 'the route validator does not change the instance one')
           reply.send({ foo: 'three' })
         },
         schema: {
@@ -178,7 +178,7 @@ test('Encapsulation', t => {
 
   fastify.register((instance, opts, done) => {
     instance.post('/clean', function (req, reply) {
-      t.equals(instance.validatorCompiler, undefined)
+      t.equal(instance.validatorCompiler, undefined)
       reply.send({ foo: 'bar' })
     })
     done()
@@ -190,8 +190,8 @@ test('Encapsulation', t => {
     payload: { foo: 1 }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { foo: 'one' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { foo: 'one' })
   })
 
   fastify.inject({
@@ -200,7 +200,7 @@ test('Encapsulation', t => {
     payload: { wrongFoo: 'bar' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -209,8 +209,8 @@ test('Encapsulation', t => {
     payload: { foo: 2 }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { foo: 'two' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { foo: 'two' })
   })
 
   fastify.inject({
@@ -219,7 +219,7 @@ test('Encapsulation', t => {
     payload: { wrongFoo: 'bar' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -228,8 +228,8 @@ test('Encapsulation', t => {
     payload: { wrongFoo: 'but works' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { foo: 'three' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { foo: 'three' })
   })
 
   fastify.inject({
@@ -238,8 +238,8 @@ test('Encapsulation', t => {
     payload: { wrongFoo: 'bar' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { foo: 'bar' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { foo: 'bar' })
   })
 })
 
@@ -277,8 +277,8 @@ test('Triple $ref with a simple $id', t => {
     payload: { foo: 43 }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { foo: 105 })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { foo: 105 })
   })
 
   fastify.inject({
@@ -287,8 +287,8 @@ test('Triple $ref with a simple $id', t => {
     payload: { fool: 'bar' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEquals(res.json().message, "body should have required property 'foo'")
+    t.equal(res.statusCode, 400)
+    t.same(res.json().message, "body should have required property 'foo'")
   })
 })
 
@@ -343,7 +343,7 @@ test('Extending schema', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -358,7 +358,7 @@ test('Extending schema', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -400,8 +400,8 @@ test('Should work with nested ids', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.equals(res.payload, 'number')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'number')
   })
 
   fastify.inject({
@@ -412,8 +412,8 @@ test('Should work with nested ids', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.strictEqual(res.json().message, 'params.id should be number')
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'params.id should be number')
   })
 })
 
@@ -452,7 +452,7 @@ test('Use the same schema across multiple routes', t => {
       method: 'GET'
     }, (err, res) => {
       t.error(err)
-      t.strictEqual(res.payload, 'number')
+      t.equal(res.payload, 'number')
     })
   })
 
@@ -465,7 +465,7 @@ test('Use the same schema across multiple routes', t => {
       method: 'GET'
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
   })
 })
@@ -497,8 +497,8 @@ test('JSON Schema validation keywords', t => {
     url: '/127.0.0.1'
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.strictEqual(res.payload, 'string')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'string')
   })
 
   fastify.inject({
@@ -506,8 +506,8 @@ test('JSON Schema validation keywords', t => {
     url: '/localhost'
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'params.ip should match format "ipv4"'
@@ -551,8 +551,8 @@ test('Nested id calls', t => {
     payload: { host: { ip: '127.0.0.1' } }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.payload, 'string')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'string')
   })
 
   fastify.inject({
@@ -561,8 +561,8 @@ test('Nested id calls', t => {
     payload: { host: { ip: 'localhost' } }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       error: 'Bad Request',
       message: 'body.host.ip should match format "ipv4"',
       statusCode: 400
@@ -598,7 +598,7 @@ test('Use the same schema id in different places', t => {
     payload: { id: 42 }
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), { id: 21 })
+    t.same(res.json(), { id: 21 })
   })
 })
 
@@ -654,7 +654,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), { id })
+    t.same(res.json(), { id })
   })
 
   fastify.inject({
@@ -663,8 +663,8 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     payload: { test: { id } }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       error: 'Bad Request',
       message: "body should have required property 'address'",
       statusCode: 400
@@ -701,7 +701,7 @@ test('Use items with $ref', t => {
     payload: [{ hello: 'world' }]
   }, (err, res) => {
     t.error(err)
-    t.equals(res.payload, 'ok')
+    t.equal(res.payload, 'ok')
   })
 
   fastify.inject({
@@ -710,7 +710,7 @@ test('Use items with $ref', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -767,8 +767,8 @@ test('Use $ref to /definitions', t => {
     payload
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEqual(res.json(), payload)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), payload)
   })
 
   fastify.inject({
@@ -780,8 +780,8 @@ test('Use $ref to /definitions', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       error: 'Bad Request',
       message: 'body.test.id should be number',
       statusCode: 400
@@ -798,7 +798,7 @@ test('Custom AJV settings - pt1', t => {
       body: { num: { type: 'integer' } }
     },
     handler: (req, reply) => {
-      t.equals(req.body.num, 12)
+      t.equal(req.body.num, 12)
       reply.send(req.body)
     }
   })
@@ -811,8 +811,8 @@ test('Custom AJV settings - pt1', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEqual(res.json(), { num: 12 })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { num: 12 })
   })
 })
 
@@ -843,6 +843,6 @@ test('Custom AJV settings - pt2', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })

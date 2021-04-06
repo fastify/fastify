@@ -29,9 +29,9 @@ function helper (code) {
       url: '/'
     }, (error, res) => {
       t.error(error)
-      t.strictEqual(res.statusCode, Number(code))
+      t.equal(res.statusCode, Number(code))
       t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(
+      t.same(
         {
           error: statusCodes[code],
           message: err.message,
@@ -60,8 +60,8 @@ test('preHandler hook error handling with external code', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(
+    t.equal(res.statusCode, 400)
+    t.same(
       {
         error: statusCodes['400'],
         message: err.message,
@@ -89,8 +89,8 @@ test('onRequest hook error handling with external done', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(
+    t.equal(res.statusCode, 400)
+    t.same(
       {
         error: statusCodes['400'],
         message: err.message,
@@ -192,8 +192,8 @@ test('Error instance sets HTTP status code', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(
+    t.equal(res.statusCode, 418)
+    t.same(
       {
         error: statusCodes['418'],
         message: err.message,
@@ -219,8 +219,8 @@ test('Error status code below 400 defaults to 500', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 500)
-    t.deepEqual(
+    t.equal(res.statusCode, 500)
+    t.same(
       {
         error: statusCodes['500'],
         message: err.message,
@@ -246,8 +246,8 @@ test('Error.status property support', t => {
     url: '/'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(
+    t.equal(res.statusCode, 418)
+    t.same(
       {
         error: statusCodes['418'],
         message: err.message,
@@ -284,9 +284,9 @@ test('Support rejection with values that are not Error instances', t => {
 
       fastify.setErrorHandler((err, request, reply) => {
         if (typeof err === 'object') {
-          t.deepEqual(err, nonErr)
+          t.same(err, nonErr)
         } else {
-          t.strictEqual(err, nonErr)
+          t.equal(err, nonErr)
         }
         reply.send('error')
       })
@@ -296,8 +296,8 @@ test('Support rejection with values that are not Error instances', t => {
         url: '/'
       }, (error, res) => {
         t.error(error)
-        t.strictEqual(res.statusCode, 500)
-        t.strictEqual(res.payload, 'error')
+        t.equal(res.statusCode, 500)
+        t.equal(res.payload, 'error')
       })
     })
   }
@@ -330,8 +330,8 @@ test('invalid schema - ajv', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.payload, 'error')
+    t.equal(res.statusCode, 400)
+    t.equal(res.payload, 'error')
   })
 })
 
@@ -351,9 +351,9 @@ test('should set the status code and the headers from the error object (from rou
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers.hello, 'world')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers.hello, 'world')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'kaboom',
       statusCode: 400
@@ -372,8 +372,8 @@ test('should set the status code and the headers from the error object (from cus
   })
 
   fastify.setErrorHandler((err, request, reply) => {
-    t.is(err.message, 'ouch')
-    t.is(reply.raw.statusCode, 401)
+    t.equal(err.message, 'ouch')
+    t.equal(reply.raw.statusCode, 401)
     const error = new Error('kaboom')
     error.headers = { hello: 'world' }
     error.statusCode = 400
@@ -385,9 +385,9 @@ test('should set the status code and the headers from the error object (from cus
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers.hello, 'world')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers.hello, 'world')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'kaboom',
       statusCode: 400
@@ -406,8 +406,8 @@ test('\'*\' should throw an error due to serializer can not handle the payload t
       reply.send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
-      t.is(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.equal(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
+      t.equal(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -431,8 +431,8 @@ test('should throw an error if the custom serializer does not serialize the payl
         .send({})
     } catch (err) {
       t.type(err, TypeError)
-      t.is(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
-      t.is(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
+      t.equal(err.code, 'FST_ERR_REP_INVALID_PAYLOAD_TYPE')
+      t.equal(err.message, "Attempted to send payload of invalid type 'object'. Expected a string or Buffer.")
     }
   })
 
@@ -460,8 +460,8 @@ invalidErrorCodes.forEach((invalidCode) => {
       try {
         return reply.code(invalidCode).send('You should not read this')
       } catch (err) {
-        t.is(err.code, 'FST_ERR_BAD_STATUS_CODE')
-        t.is(err.message, 'Called reply with an invalid status code: ' + invalidCode)
+        t.equal(err.code, 'FST_ERR_BAD_STATUS_CODE')
+        t.equal(err.message, 'Called reply with an invalid status code: ' + invalidCode)
       }
     })
     fastify.inject({

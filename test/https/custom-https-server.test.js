@@ -45,8 +45,8 @@ test('Should support a custom https server', t => {
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })

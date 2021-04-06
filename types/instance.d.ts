@@ -17,7 +17,7 @@ import {
   ConstructorAction
 } from './content-type-parser'
 
-type NotInInterface<T, IFACE> = T extends keyof IFACE ? never : T
+type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.

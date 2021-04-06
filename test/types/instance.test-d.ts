@@ -6,6 +6,18 @@ import { HookHandlerDoneFunction } from '../../types/hooks'
 
 const server = fastify()
 
+server.decorate('nonexistent', () => {})
+
+declare module "../../fastify" {
+  interface FastifyInstance {
+    functionWithTypeDefinition: (foo: string, bar: number) => Promise<boolean>
+  }
+}
+expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => {})) // error because invalid return type
+expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => true)) // error because doesn't return a promise
+expectError(server.decorate('functionWithTypeDefinition', async (foo: any, bar: any, qwe: any) => true)) // error because too many args
+server.decorate('functionWithTypeDefinition', async (foo, bar) => true)
+
 expectAssignable<FastifyInstance>(server.addSchema({
   type: 'null'
 }))

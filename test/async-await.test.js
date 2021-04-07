@@ -123,7 +123,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   })
 })
 
-test('server logs an error if reply.send is called and a value equal returned via async/await', t => {
+test('server logs an error if reply.send is called and a value is returned via async/await', t => {
   const lines = ['incoming request', 'request completed', 'Reply already sent']
   t.plan(lines.length + 2)
 

@@ -21,7 +21,7 @@ improperly reported vulnerabilities:
   individuals are tracking any new vulnerabilities reported in HackerOne
   and will flag them as such for their customers (think about snyk, npm audit, ...).
 * HackerOne reports should never be created and triaged by the same person.
-  If you are creating a HackeOne report for a vulnerability that you found,
+  If you are creating a HackerOne report for a vulnerability that you found,
   or on behalf of someone else, there should always be a 2nd Security Team
   member who triages it. If in doubt, invite more Fastify Collaborators to
   help triage the validity of the report. In any case, the report should

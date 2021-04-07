@@ -87,7 +87,7 @@ can be added with the approval of the security team and the individual who
 reported the vulnerability. 
 
 At this point, a CVE should be requested through the HackerOne platform through
-the UI which should include the Report ID and a summary.
+the UI, which should include the Report ID and a summary.
 
 Within HackerOne, this is handled through a "public disclosure request".
 

@@ -82,7 +82,7 @@ Within 90 days after the triage date, the vulnerability must be made public.
 **Severity**: Vulnerability severity is assessed using [CVSS v.3](https://www.first.org/cvss/user-guide).
 More information can be found on [HackerOne documentation](https://docs.hackerone.com/hackers/severity.html)
 
-If a patch is being actively developed by the package maintainer, an additional delay
+If the package maintainer is actively developing a patch, an additional delay
 can be added with the approval of the security team and the individual who
 reported the vulnerability. 
 

@@ -13,7 +13,7 @@ to complete a vulnerability report via the dedicated HackerOne page:
 
 It is of the outmost importance that you read carefully and follow these
 guidelines to ensure the ecosystem as a whole isn't disrupted due to
-mistakenly reported vulnerabilities:
+improperly reported vulnerabilities:
 
 * Avoid creating new "informative" reports on HackerOne. Only create new
   HackerOne reports on a vulnerability if you are absolutely sure this

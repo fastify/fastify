@@ -18,7 +18,7 @@ mistakenly reported vulnerabilities:
 * Avoid creating new "informative" reports on HackerOne. Only create new
   HackerOne reports on a vulnerability if you are absolutely sure this
   should be tagged as an actual vulnerability. Third-party vendors and
-  individual are tracking any new vulnerabilities reported in HackerOne
+  individuals are tracking any new vulnerabilities reported in HackerOne
   and will flag them as such for their customers (think about snyk, npm audit, ...).
 * HackerOne reports should never be created and triaged by the same person.
   If you are creating a HackeOne report for a vulnerability that you found,

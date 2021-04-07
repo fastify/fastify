@@ -11,7 +11,7 @@ to complete a vulnerability report via the dedicated HackerOne page:
 
 ### Strict measures when reporting vulnerabilities
 
-It is of the outmost importance that you read carefully and follow these
+It is of the utmost importance that you read carefully and follow these
 guidelines to ensure the ecosystem as a whole isn't disrupted due to
 improperly reported vulnerabilities:
 

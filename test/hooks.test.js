@@ -740,7 +740,7 @@ test('onRoute hook should able to change the route url', t => {
   })
 })
 
-test('onRoute hook that throws should be caught', { only: true }, t => {
+test('onRoute hook that throws should be caught', t => {
   t.plan(1)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
@@ -753,6 +753,8 @@ test('onRoute hook that throws should be caught', { only: true }, t => {
       instance.get('/', opts, function (req, reply) {
         reply.send()
       })
+
+      t.fail('onRoute should throw sync if error')
     } catch (error) {
       t.ok(error)
     }

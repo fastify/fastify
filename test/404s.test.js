@@ -840,6 +840,8 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
     fastify.setNotFoundHandler(function (req, reply) {
       reply.code(404).send('this was not found')
     })
+
+    t.fail('setNotFoundHandler should not interfer duplicated route error')
   } catch (error) {
     t.ok(error)
   }

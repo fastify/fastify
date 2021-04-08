@@ -22,19 +22,19 @@ test('Once called, Reply should return an object with methods', t => {
   const context = {}
   const request = { context }
   const reply = new Reply(response, request)
-  t.is(typeof reply, 'object')
-  t.is(typeof reply[kReplyIsError], 'boolean')
-  t.is(typeof reply[kReplyErrorHandlerCalled], 'boolean')
-  t.is(typeof reply.send, 'function')
-  t.is(typeof reply.code, 'function')
-  t.is(typeof reply.status, 'function')
-  t.is(typeof reply.header, 'function')
-  t.is(typeof reply.serialize, 'function')
-  t.is(typeof reply.getResponseTime, 'function')
-  t.is(typeof reply[kReplyHeaders], 'object')
-  t.deepEqual(reply.raw, response)
-  t.strictEqual(reply.context, context)
-  t.strictEqual(reply.request, request)
+  t.equal(typeof reply, 'object')
+  t.equal(typeof reply[kReplyIsError], 'boolean')
+  t.equal(typeof reply[kReplyErrorHandlerCalled], 'boolean')
+  t.equal(typeof reply.send, 'function')
+  t.equal(typeof reply.code, 'function')
+  t.equal(typeof reply.status, 'function')
+  t.equal(typeof reply.header, 'function')
+  t.equal(typeof reply.serialize, 'function')
+  t.equal(typeof reply.getResponseTime, 'function')
+  t.equal(typeof reply[kReplyHeaders], 'object')
+  t.same(reply.raw, response)
+  t.equal(reply.context, context)
+  t.equal(reply.request, request)
 })
 
 test('reply.send will logStream error and destroy the stream', { only: true }, t => {
@@ -127,7 +127,7 @@ test('reply.serializer should support running preSerialization hooks', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"foo":"bar"}')
+    t.equal(res.payload, '{"foo":"bar"}')
   })
 })
 
@@ -188,7 +188,7 @@ test('reply.serialize should serialize payload with Fastify instance', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"foo":"bar"}')
+    t.equal(res.payload, '{"foo":"bar"}')
   })
 })
 
@@ -259,8 +259,8 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/custom-serializer'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello=world!')
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello=world!')
       })
     })
 
@@ -271,9 +271,9 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -284,8 +284,8 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/auto-status-code'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -296,8 +296,8 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/auto-type'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -305,7 +305,7 @@ test('within an instance', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect', function (response) {
-        t.strictEqual(response.statusCode, 302)
+        t.equal(response.statusCode, 302)
       })
     })
 
@@ -313,7 +313,7 @@ test('within an instance', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code', function (response) {
-        t.strictEqual(response.statusCode, 301)
+        t.equal(response.statusCode, 301)
       })
     })
 
@@ -324,9 +324,9 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/redirect'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -337,9 +337,9 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/redirect-code'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -347,9 +347,9 @@ test('within an instance', t => {
       t.plan(3)
       const url = 'http://localhost:' + fastify.server.address().port + '/redirect-onsend'
       http.get(url, (response) => {
-        t.strictEqual(response.headers['x-onsend'], 'yes')
-        t.strictEqual(response.headers['content-length'], '0')
-        t.strictEqual(response.headers.location, '/')
+        t.equal(response.headers['x-onsend'], 'yes')
+        t.equal(response.headers['content-length'], '0')
+        t.equal(response.headers.location, '/')
       })
     })
 
@@ -360,9 +360,9 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -373,9 +373,9 @@ test('within an instance', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(response.headers['content-type'], 'text/plain')
-        t.deepEqual(body.toString(), 'hello world!')
+        t.equal(response.statusCode, 200)
+        t.equal(response.headers['content-type'], 'text/plain')
+        t.same(body.toString(), 'hello world!')
       })
     })
 
@@ -383,7 +383,7 @@ test('within an instance', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call', function (response) {
-        t.strictEqual(response.statusCode, 307)
+        t.equal(response.statusCode, 307)
       })
     })
 
@@ -391,7 +391,7 @@ test('within an instance', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
-        t.strictEqual(response.statusCode, 302)
+        t.equal(response.statusCode, 302)
       })
     })
 
@@ -417,8 +417,8 @@ test('buffer without content type should send a application/octet-stream and raw
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/octet-stream')
-      t.deepEqual(body, Buffer.alloc(1024))
+      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.same(body, Buffer.alloc(1024))
     })
   })
 })
@@ -442,8 +442,8 @@ test('buffer with content type should not send application/octet-stream', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
-      t.deepEqual(body, Buffer.alloc(1024))
+      t.equal(response.headers['content-type'], 'text/plain')
+      t.same(body, Buffer.alloc(1024))
     })
   })
 })
@@ -471,8 +471,8 @@ test('stream with content type should not send application/octet-stream', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain')
-      t.deepEqual(body, buf)
+      t.equal(response.headers['content-type'], 'text/plain')
+      t.same(body, buf)
     })
   })
 })
@@ -506,9 +506,9 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers.location, '/')
-      t.strictEqual(response.headers['Content-Type'], undefined)
-      t.deepEqual(body, buf)
+      t.equal(response.headers.location, '/')
+      t.equal(response.headers['Content-Type'], undefined)
+      t.same(body, buf)
     })
   })
 })
@@ -531,8 +531,8 @@ test('plain string without content type should send a text/plain', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/plain; charset=utf-8')
-      t.deepEqual(body.toString(), 'hello world!')
+      t.equal(response.headers['content-type'], 'text/plain; charset=utf-8')
+      t.same(body.toString(), 'hello world!')
     })
   })
 })
@@ -555,8 +555,8 @@ test('plain string with content type should be sent unmodified', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/css')
-      t.deepEqual(body.toString(), 'hello world!')
+      t.equal(response.headers['content-type'], 'text/css')
+      t.same(body.toString(), 'hello world!')
     })
   })
 })
@@ -582,8 +582,8 @@ test('plain string with content type and custom serializer should be serialized'
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'text/css')
-      t.deepEqual(body.toString(), 'serialized')
+      t.equal(response.headers['content-type'], 'text/css')
+      t.same(body.toString(), 'serialized')
     })
   })
 })
@@ -606,8 +606,8 @@ test('plain string with content type application/json should NOT be serialized a
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), '{"key": "hello world!"}')
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(body.toString(), '{"key": "hello world!"}')
     })
   })
 })
@@ -660,8 +660,8 @@ test('plain string with custom json content type should NOT be serialized as jso
         url: 'http://localhost:' + fastify.server.address().port + '/' + path
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
-        t.deepEqual(body.toString(), customSamples[path].sample)
+        t.equal(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
+        t.same(body.toString(), customSamples[path].sample)
       })
     })
   })
@@ -685,8 +685,8 @@ test('non-string with content type application/json SHOULD be serialized as json
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(body.toString(), JSON.stringify({ key: 'hello world!' }))
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(body.toString(), JSON.stringify({ key: 'hello world!' }))
     })
   })
 })
@@ -735,8 +735,8 @@ test('non-string with custom json content type SHOULD be serialized as json', t 
         url: 'http://localhost:' + fastify.server.address().port + '/' + path
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
-        t.deepEqual(body.toString(), JSON.stringify(customSamples[path].sample))
+        t.equal(response.headers['content-type'], customSamples[path].mimeType + '; charset=utf-8')
+        t.same(body.toString(), JSON.stringify(customSamples[path].sample))
       })
     })
   })
@@ -762,8 +762,8 @@ test('error object with a content type that is not application/json should work'
     url: '/text'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
+    t.equal(res.statusCode, 500)
+    t.equal(JSON.parse(res.payload).message, 'some application error')
   })
 
   fastify.inject({
@@ -771,8 +771,8 @@ test('error object with a content type that is not application/json should work'
     url: '/html'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
-    t.strictEqual(JSON.parse(res.payload).message, 'some application error')
+    t.equal(res.statusCode, 500)
+    t.equal(JSON.parse(res.payload).message, 'some application error')
   })
 })
 
@@ -782,7 +782,7 @@ test('undefined payload should be sent as-is', t => {
   const fastify = require('../..')()
 
   fastify.addHook('onSend', function (request, reply, payload, done) {
-    t.strictEqual(payload, undefined)
+    t.equal(payload, undefined)
     done()
   })
 
@@ -799,9 +799,9 @@ test('undefined payload should be sent as-is', t => {
       url: `http://localhost:${fastify.server.address().port}`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], undefined)
-      t.strictEqual(response.headers['content-length'], undefined)
-      t.strictEqual(body.length, 0)
+      t.equal(response.headers['content-type'], undefined)
+      t.equal(response.headers['content-length'], undefined)
+      t.equal(body.length, 0)
     })
   })
 })
@@ -815,7 +815,7 @@ test('for HEAD method, no body should be sent but content-length should be', t =
 
   fastify.head('/', {
     onSend: function (request, reply, payload, done) {
-      t.strictEqual(payload, undefined)
+      t.equal(payload, undefined)
       done()
     }
   }, function (req, reply) {
@@ -826,7 +826,7 @@ test('for HEAD method, no body should be sent but content-length should be', t =
 
   fastify.head('/with/null', {
     onSend: function (request, reply, payload, done) {
-      t.strictEqual(payload, 'null')
+      t.equal(payload, 'null')
       done()
     }
   }, function (req, reply) {
@@ -844,9 +844,9 @@ test('for HEAD method, no body should be sent but content-length should be', t =
       url: `http://localhost:${fastify.server.address().port}`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], contentType)
-      t.strictEqual(response.headers['content-length'], bodySize.toString())
-      t.strictEqual(body.length, 0)
+      t.equal(response.headers['content-type'], contentType)
+      t.equal(response.headers['content-length'], bodySize.toString())
+      t.equal(body.length, 0)
     })
 
     sget({
@@ -854,9 +854,9 @@ test('for HEAD method, no body should be sent but content-length should be', t =
       url: `http://localhost:${fastify.server.address().port}/with/null`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.headers['content-type'], contentType)
-      t.strictEqual(response.headers['content-length'], bodySize.toString())
-      t.strictEqual(body.length, 0)
+      t.equal(response.headers['content-type'], contentType)
+      t.equal(response.headers['content-length'], bodySize.toString())
+      t.equal(body.length, 0)
     })
   })
 })
@@ -892,9 +892,9 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/not-found'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body.toString()), {
+      t.equal(response.statusCode, 404)
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(body.toString()), {
         statusCode: 404,
         error: 'Not Found',
         message: 'Not Found'
@@ -906,9 +906,9 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/prefixed/not-found'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 404)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 404)
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(body), {
         error: 'Not Found',
         message: 'Not Found',
         statusCode: 404
@@ -939,7 +939,7 @@ test('reply can set multiple instances of same header', t => {
     }, (err, response, body) => {
       t.error(err)
       t.ok(response.headers['set-cookie'])
-      t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two'])
+      t.strictSame(response.headers['set-cookie'], ['one', 'two'])
     })
   })
 })
@@ -951,8 +951,8 @@ test('reply.hasHeader returns correct values', t => {
 
   fastify.get('/headers', function (req, reply) {
     reply.header('x-foo', 'foo')
-    t.is(reply.hasHeader('x-foo'), true)
-    t.is(reply.hasHeader('x-bar'), false)
+    t.equal(reply.hasHeader('x-foo'), true)
+    t.equal(reply.hasHeader('x-bar'), false)
     reply.send()
   })
 
@@ -973,14 +973,14 @@ test('reply.getHeader returns correct values', t => {
 
   fastify.get('/headers', function (req, reply) {
     reply.header('x-foo', 'foo')
-    t.is(reply.getHeader('x-foo'), 'foo')
+    t.equal(reply.getHeader('x-foo'), 'foo')
 
     reply.header('x-foo', 'bar')
-    t.strictDeepEqual(reply.getHeader('x-foo'), 'bar')
+    t.strictSame(reply.getHeader('x-foo'), 'bar')
 
     reply.header('set-cookie', 'one')
     reply.header('set-cookie', 'two')
-    t.strictDeepEqual(reply.getHeader('set-cookie'), ['one', 'two'])
+    t.strictSame(reply.getHeader('set-cookie'), ['one', 'two'])
 
     reply.send()
   })
@@ -1016,7 +1016,7 @@ test('reply.getHeaders returns correct values', t => {
   fastify.get('/headers', function (req, reply) {
     reply.header('x-foo', 'foo')
 
-    t.strictDeepEqual(reply.getHeaders(), {
+    t.strictSame(reply.getHeaders(), {
       'x-foo': 'foo'
     })
 
@@ -1024,7 +1024,7 @@ test('reply.getHeaders returns correct values', t => {
     reply.raw.setHeader('x-foo', 'foo2')
     reply.raw.setHeader('x-baz', 'baz')
 
-    t.strictDeepEqual(reply.getHeaders(), {
+    t.strictSame(reply.getHeaders(), {
       'x-foo': 'foo',
       'x-bar': 'bar',
       'x-baz': 'baz'
@@ -1047,10 +1047,10 @@ test('reply.removeHeader can remove the value', t => {
 
   fastify.get('/headers', function (req, reply) {
     reply.header('x-foo', 'foo')
-    t.is(reply.getHeader('x-foo'), 'foo')
+    t.equal(reply.getHeader('x-foo'), 'foo')
 
-    t.is(reply.removeHeader('x-foo'), reply)
-    t.strictDeepEqual(reply.getHeader('x-foo'), undefined)
+    t.equal(reply.removeHeader('x-foo'), reply)
+    t.strictSame(reply.getHeader('x-foo'), undefined)
 
     reply.send()
   })
@@ -1077,7 +1077,7 @@ test('reply.header can reset the value', t => {
   fastify.get('/headers', function (req, reply) {
     reply.header('x-foo', 'foo')
     reply.header('x-foo', undefined)
-    t.strictDeepEqual(reply.getHeader('x-foo'), '')
+    t.strictSame(reply.getHeader('x-foo'), '')
 
     reply.send()
   })
@@ -1147,42 +1147,42 @@ test('Reply should handle JSON content type with a charset', t => {
 
   fastify.inject('/default', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
   })
 
   fastify.inject('/utf8', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
   })
 
   fastify.inject('/utf16', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-16')
   })
 
   fastify.inject('/utf32', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-32')
   })
 
   fastify.inject('/type-utf8', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
   })
 
   fastify.inject('/type-utf16', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-16')
   })
 
   fastify.inject('/type-utf32', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-32')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-32')
   })
 
   fastify.inject('/no-space-type-utf32', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json;charset=utf-32')
+    t.equal(res.headers['content-type'], 'application/json;charset=utf-32')
   })
 })
 
@@ -1202,7 +1202,7 @@ test('Content type and charset set previously', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.is(res.headers['content-type'], 'application/json; charset=utf-16')
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-16')
   })
 })
 
@@ -1216,7 +1216,7 @@ test('.status() is an alias for .code()', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 418)
+    t.equal(res.statusCode, 418)
   })
 })
 
@@ -1233,7 +1233,7 @@ test('.statusCode is getter and setter', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 418)
+    t.equal(res.statusCode, 418)
   })
 })
 
@@ -1261,14 +1261,14 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
     }, (err, response, body) => {
       t.error(err)
       t.ok(response.headers['set-cookie'])
-      t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
+      t.strictSame(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
     })
   })
 
   fastify.inject('/headers', (error, response) => {
     t.error(error)
     t.ok(response.headers['set-cookie'])
-    t.strictDeepEqual(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
+    t.strictSame(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
   })
 })
 
@@ -1280,8 +1280,8 @@ test('should throw error when passing falsy value to reply.sent', t => {
     try {
       reply.sent = false
     } catch (err) {
-      t.is(err.code, 'FST_ERR_REP_SENT_VALUE')
-      t.strictEqual(err.message, 'The only possible value for reply.sent is true.')
+      t.equal(err.code, 'FST_ERR_REP_SENT_VALUE')
+      t.equal(err.message, 'The only possible value for reply.sent is true.')
       reply.send()
     }
   })
@@ -1301,8 +1301,8 @@ test('should throw error when attempting to set reply.sent more than once', t =>
     try {
       reply.sent = true
     } catch (err) {
-      t.is(err.code, 'FST_ERR_REP_ALREADY_SENT')
-      t.strictEqual(err.message, 'Reply was already sent.')
+      t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
+      t.equal(err.message, 'Reply was already sent.')
     }
     reply.raw.end()
   })
@@ -1332,7 +1332,7 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
   })
 
   fastify.addHook('onResponse', (req, reply) => {
-    t.true(reply.getResponseTime() > 0)
+    t.ok(reply.getResponseTime() > 0)
     t.end()
   })
 
@@ -1343,7 +1343,7 @@ test('reply should use the custom serializer', t => {
   t.plan(4)
   const fastify = require('../..')()
   fastify.setReplySerializer((payload, statusCode) => {
-    t.deepEqual(payload, { foo: 'bar' })
+    t.same(payload, { foo: 'bar' })
     t.equal(statusCode, 200)
     payload.foo = 'bar bar'
     return JSON.stringify(payload)
@@ -1362,7 +1362,7 @@ test('reply should use the custom serializer', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"foo":"bar bar"}')
+    t.equal(res.payload, '{"foo":"bar bar"}')
   })
 })
 
@@ -1371,7 +1371,7 @@ test('reply should use the right serializer in encapsulated context', t => {
 
   const fastify = require('../..')()
   fastify.setReplySerializer((payload) => {
-    t.deepEqual(payload, { foo: 'bar' })
+    t.same(payload, { foo: 'bar' })
     payload.foo = 'bar bar'
     return JSON.stringify(payload)
   })
@@ -1389,7 +1389,7 @@ test('reply should use the right serializer in encapsulated context', t => {
       handler: (req, reply) => { reply.send({ john: 'doo' }) }
     })
     instance.setReplySerializer((payload) => {
-      t.deepEqual(payload, { john: 'doo' })
+      t.same(payload, { john: 'doo' })
       payload.john = 'too too'
       return JSON.stringify(payload)
     })
@@ -1403,7 +1403,7 @@ test('reply should use the right serializer in encapsulated context', t => {
       handler: (req, reply) => { reply.send({ sweet: 'potato' }) }
     })
     instance.setReplySerializer((payload) => {
-      t.deepEqual(payload, { sweet: 'potato' })
+      t.same(payload, { sweet: 'potato' })
       payload.sweet = 'potato potato'
       return JSON.stringify(payload)
     })
@@ -1415,7 +1415,7 @@ test('reply should use the right serializer in encapsulated context', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"foo":"bar bar"}')
+    t.equal(res.payload, '{"foo":"bar bar"}')
   })
 
   fastify.inject({
@@ -1423,7 +1423,7 @@ test('reply should use the right serializer in encapsulated context', t => {
     url: '/sub'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"john":"too too"}')
+    t.equal(res.payload, '{"john":"too too"}')
   })
 
   fastify.inject({
@@ -1431,7 +1431,7 @@ test('reply should use the right serializer in encapsulated context', t => {
     url: '/sub/sub'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"sweet":"potato potato"}')
+    t.equal(res.payload, '{"sweet":"potato potato"}')
   })
 })
 
@@ -1453,7 +1453,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
       handler: (req, reply) => { reply.send({ john: 'doo' }) }
     })
     instance.setReplySerializer((payload) => {
-      t.deepEqual(payload, { john: 'doo' })
+      t.same(payload, { john: 'doo' })
       payload.john = 'too too'
       return JSON.stringify(payload)
     })
@@ -1465,7 +1465,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
         handler: (req, reply) => { reply.send({ john: 'deep' }) }
       })
       subInstance.setReplySerializer((payload) => {
-        t.deepEqual(payload, { john: 'deep' })
+        t.same(payload, { john: 'deep' })
         payload.john = 'deep deep'
         return JSON.stringify(payload)
       })
@@ -1479,7 +1479,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"foo":"bar"}')
+    t.equal(res.payload, '{"foo":"bar"}')
   })
 
   fastify.inject({
@@ -1487,7 +1487,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
     url: '/sub'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"john":"too too"}')
+    t.equal(res.payload, '{"john":"too too"}')
   })
 
   fastify.inject({
@@ -1495,7 +1495,7 @@ test('reply should use the right serializer in deep encapsulated context', t => 
     url: '/deep'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"john":"deep deep"}')
+    t.equal(res.payload, '{"john":"deep deep"}')
   })
 })
 
@@ -1513,7 +1513,7 @@ test('reply should use the route serializer', t => {
     handler: (req, reply) => {
       reply
         .serializer((payload) => {
-          t.deepEqual(payload, { john: 'doo' })
+          t.same(payload, { john: 'doo' })
           payload.john = 'too too'
           return JSON.stringify(payload)
         })
@@ -1526,7 +1526,7 @@ test('reply should use the route serializer', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"john":"too too"}')
+    t.equal(res.payload, '{"john":"too too"}')
   })
 })
 
@@ -1542,7 +1542,7 @@ test('cannot set the replySerializer when the server is running', t => {
       fastify.setReplySerializer(() => {})
       t.fail('this serializer should not be setup')
     } catch (e) {
-      t.is(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
+      t.equal(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
     }
   })
 })
@@ -1552,7 +1552,7 @@ test('reply should not call the custom serializer for errors and not found', t =
 
   const fastify = require('../..')()
   fastify.setReplySerializer((payload, statusCode) => {
-    t.deepEqual(payload, { foo: 'bar' })
+    t.same(payload, { foo: 'bar' })
     t.equal(statusCode, 200)
     return JSON.stringify(payload)
   })
@@ -1565,8 +1565,8 @@ test('reply should not call the custom serializer for errors and not found', t =
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.payload, '{"foo":"bar"}')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, '{"foo":"bar"}')
   })
 
   fastify.inject({
@@ -1574,7 +1574,7 @@ test('reply should not call the custom serializer for errors and not found', t =
     url: '/err'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
+    t.equal(res.statusCode, 500)
   })
 
   fastify.inject({
@@ -1582,7 +1582,7 @@ test('reply should not call the custom serializer for errors and not found', t =
     url: '/not-existing'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 

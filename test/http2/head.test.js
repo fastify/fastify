@@ -30,6 +30,6 @@ fastify.listen(0, err => {
     const url = `http://localhost:${fastify.server.address().port}`
     const res = await h2url.concat({ url, method: 'HEAD' })
 
-    t.strictEqual(res.headers[':status'], 200)
+    t.equal(res.headers[':status'], 200)
   })
 })

@@ -34,10 +34,10 @@ fastify.listen(0, err => {
     const url = `http://localhost:${fastify.server.address().port}`
     const res = await h2url.concat({ url })
 
-    t.strictEqual(res.headers[':status'], 200)
-    t.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
+    t.equal(res.headers[':status'], 200)
+    t.equal(res.headers['content-length'], '' + JSON.stringify(msg).length)
 
-    t.deepEqual(JSON.parse(res.body), msg)
+    t.same(JSON.parse(res.body), msg)
   })
 
   test('http hostname', async (t) => {
@@ -48,6 +48,6 @@ fastify.listen(0, err => {
     const url = `http://${hostname}/hostname`
     const res = await h2url.concat({ url })
 
-    t.strictEqual(res.body, hostname)
+    t.equal(res.body, hostname)
   })
 })

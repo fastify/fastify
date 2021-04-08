@@ -9,5 +9,5 @@ t.test('named exports support', async t => {
 
   await app.ready()
 
-  t.strictEqual(app.foo, 'bar')
+  t.equal(app.foo, 'bar')
 })

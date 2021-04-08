@@ -16,7 +16,7 @@ test('rawBody function', t => {
     asBuffer: false,
     fn (req, bodyInString, done) {
       t.equal(bodyInString, body.toString())
-      t.is(typeof done, 'function')
+      t.equal(typeof done, 'function')
       return {
         then (cb) {
           cb()

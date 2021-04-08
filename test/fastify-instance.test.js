@@ -50,7 +50,7 @@ test('fastify instance should contains ajv options.plugins nested arrays', t => 
 
 test('fastify instance get invalid ajv options', t => {
   t.plan(1)
-  t.throw(() => Fastify({
+  t.throws(() => Fastify({
     ajv: {
       customOptions: 8
     }
@@ -59,7 +59,7 @@ test('fastify instance get invalid ajv options', t => {
 
 test('fastify instance get invalid ajv options.plugins', t => {
   t.plan(1)
-  t.throw(() => Fastify({
+  t.throws(() => Fastify({
     ajv: {
       customOptions: {},
       plugins: 8

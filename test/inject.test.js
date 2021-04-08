@@ -11,7 +11,7 @@ test('inject should exist', t => {
   t.plan(2)
   const fastify = Fastify()
   t.ok(fastify.inject)
-  t.is(typeof fastify.inject, 'function')
+  t.equal(typeof fastify.inject, 'function')
 })
 
 test('should wait for the ready event', t => {
@@ -32,9 +32,9 @@ test('should wait for the ready event', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(payload, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same(payload, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -52,9 +52,9 @@ test('inject get request', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(payload, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same(payload, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -72,9 +72,9 @@ test('inject get request - code check', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(payload, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 201)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same(payload, JSON.parse(res.payload))
+    t.equal(res.statusCode, 201)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -91,9 +91,9 @@ test('inject get request - headers check', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual('', res.payload)
-    t.strictEqual(res.headers['content-type'], 'text/plain')
-    t.strictEqual(res.headers['content-length'], '0')
+    t.equal('', res.payload)
+    t.equal(res.headers['content-type'], 'text/plain')
+    t.equal(res.headers['content-length'], '0')
   })
 })
 
@@ -110,9 +110,9 @@ test('inject get request - querystring', t => {
     url: '/?hello=world'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same({ hello: 'world' }, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -129,9 +129,9 @@ test('inject get request - params', t => {
     url: '/world'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual({ hello: 'world' }, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same({ hello: 'world' }, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -148,9 +148,9 @@ test('inject get request - wildcard', t => {
     url: '/test/wildcard'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual({ '*': 'wildcard' }, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '16')
+    t.same({ '*': 'wildcard' }, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '16')
   })
 })
 
@@ -168,9 +168,9 @@ test('inject get request - headers', t => {
     headers: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual('world', JSON.parse(res.payload).hello)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '69')
+    t.equal('world', JSON.parse(res.payload).hello)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '69')
   })
 })
 
@@ -189,9 +189,9 @@ test('inject post request', t => {
     payload: payload
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(payload, JSON.parse(res.payload))
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same(payload, JSON.parse(res.payload))
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -210,9 +210,9 @@ test('inject post request - send stream', t => {
     payload: getStream()
   }, (err, res) => {
     t.error(err)
-    t.deepEqual('{"hello":"world"}', res.payload)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '17')
+    t.same('{"hello":"world"}', res.payload)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '17')
   })
 })
 
@@ -229,8 +229,8 @@ test('inject get request - reply stream', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual('{"hello":"world"}', res.payload)
-    t.strictEqual(res.statusCode, 200)
+    t.same('{"hello":"world"}', res.payload)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -249,7 +249,7 @@ test('inject promisify - waiting for ready event', t => {
   }
   fastify.inject(injectParams)
     .then(res => {
-      t.strictEqual(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
     .catch(t.fail)
 })
@@ -272,7 +272,7 @@ test('inject promisify - after the ready event', t => {
     }
     fastify.inject(injectParams)
       .then(res => {
-        t.strictEqual(res.statusCode, 200)
+        t.equal(res.statusCode, 200)
       })
       .catch(t.fail)
   })
@@ -299,7 +299,7 @@ test('inject promisify - when the server is up', t => {
       }
       fastify.inject(injectParams)
         .then(res => {
-          t.strictEqual(res.statusCode, 200)
+          t.equal(res.statusCode, 200)
         })
         .catch(t.fail)
     }, 10)
@@ -320,7 +320,7 @@ test('should reject in error case', t => {
     url: '/'
   })
     .catch(e => {
-      t.strictEqual(e, error)
+      t.equal(e, error)
     })
 })
 
@@ -388,7 +388,7 @@ test('should error the promise if ready errors', t => {
     t.fail('this should not be called')
   }).catch(err => {
     t.ok(err)
-    t.strictequal(err.message, 'kaboom')
+    t.equal(err.message, 'kaboom')
   })
 })
 
@@ -406,7 +406,7 @@ test('should throw error if callback specified and if ready errors', t => {
     url: '/'
   }, err => {
     t.ok(err)
-    t.strictEqual(err, error)
+    t.equal(err, error)
   })
 })
 
@@ -421,9 +421,9 @@ test('should support builder-style injection with ready app', async (t) => {
 
   await fastify.ready()
   const res = await fastify.inject().get('/').end()
-  t.deepEqual(payload, JSON.parse(res.payload))
-  t.strictEqual(res.statusCode, 200)
-  t.strictEqual(res.headers['content-length'], '17')
+  t.same(payload, JSON.parse(res.payload))
+  t.equal(res.statusCode, 200)
+  t.equal(res.headers['content-length'], '17')
 })
 
 test('should support builder-style injection with non-ready app', async (t) => {
@@ -436,9 +436,9 @@ test('should support builder-style injection with non-ready app', async (t) => {
   })
 
   const res = await fastify.inject().get('/').end()
-  t.deepEqual(payload, JSON.parse(res.payload))
-  t.strictEqual(res.statusCode, 200)
-  t.strictEqual(res.headers['content-length'], '17')
+  t.same(payload, JSON.parse(res.payload))
+  t.equal(res.statusCode, 200)
+  t.equal(res.headers['content-length'], '17')
 })
 
 test('should handle errors in builder-style injection correctly', async (t) => {
@@ -452,6 +452,6 @@ test('should handle errors in builder-style injection correctly', async (t) => {
     await fastify.inject().get('/')
   } catch (err) {
     t.ok(err)
-    t.strictEqual(err.message, 'Kaboom')
+    t.equal(err.message, 'Kaboom')
   }
 })

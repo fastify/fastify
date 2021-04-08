@@ -30,12 +30,12 @@ test('Should rewrite url', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
-      t.strictEqual(response.statusCode, 200)
+      t.same(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
     })
   })
 
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 })
 
 test('Should not rewrite if the url is the same', t => {
@@ -63,11 +63,11 @@ test('Should not rewrite if the url is the same', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 404)
+      t.equal(response.statusCode, 404)
     })
   })
 
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 })
 test('Should throw an error', t => {
   t.plan(5)
@@ -94,10 +94,10 @@ test('Should throw an error', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/this-would-404-without-url-rewrite'
     }, (err, response, body) => {
       t.equal(err.code, 'ECONNRESET')
-      t.strictEqual(response, undefined)
-      t.strictEqual(body, undefined)
+      t.equal(response, undefined)
+      t.equal(body, undefined)
     })
   })
 
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 })

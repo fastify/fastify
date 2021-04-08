@@ -110,8 +110,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 'world' })
       })
     })
 
@@ -126,8 +126,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: largeString })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: largeString })
       })
     })
 
@@ -142,8 +142,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -158,8 +158,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 'world' })
       })
     })
 
@@ -174,8 +174,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 'worldhello' })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 'worldhello' })
       })
     })
 
@@ -188,8 +188,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         headers: { 'Content-Length': '0' }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.strictEqual(JSON.parse(body.toString()), null)
+        t.equal(response.statusCode, 200)
+        t.equal(JSON.parse(body.toString()), null)
       })
 
       // Must use inject to make a request without a Content-Length header
@@ -198,8 +198,8 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         url: '/missing'
       }, (err, res) => {
         t.error(err)
-        t.strictEqual(res.statusCode, 200)
-        t.strictEqual(JSON.parse(res.payload), null)
+        t.equal(res.statusCode, 200)
+        t.equal(JSON.parse(res.payload), null)
       })
     })
 
@@ -213,9 +213,9 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.error(err)
         if (upMethod === 'OPTIONS') {
-          t.strictEqual(response.statusCode, 200)
+          t.equal(response.statusCode, 200)
         } else {
-          t.strictEqual(response.statusCode, 415)
+          t.equal(response.statusCode, 415)
         }
       })
     })
@@ -232,7 +232,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           }
         }, (err, response, body) => {
           t.error(err)
-          t.strictEqual(response.statusCode, 415)
+          t.equal(response.statusCode, 415)
         })
       })
     }
@@ -249,7 +249,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
+        t.equal(response.statusCode, 400)
       })
 
       sget({
@@ -261,7 +261,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
+        t.equal(response.statusCode, 400)
       })
     })
 
@@ -277,7 +277,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 413)
+        t.equal(response.statusCode, 413)
       })
 
       // Node errors for OPTIONS requests with a stream body and no Content-Length header
@@ -296,7 +296,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
           body: largeStream
         }, (err, response, body) => {
           t.error(err)
-          t.strictEqual(response.statusCode, 413)
+          t.equal(response.statusCode, 413)
         })
       }
 
@@ -308,7 +308,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 413)
+        t.equal(response.statusCode, 413)
       })
     })
 
@@ -325,7 +325,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, res) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -341,7 +341,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         }
       }, (err, res, body) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -358,7 +358,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: null
       }, (err, res) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -375,7 +375,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: null
       }, (err, res, body) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -392,7 +392,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: undefined
       }, (err, res) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(res.payload), {
+        t.same(JSON.parse(res.payload), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',
@@ -409,7 +409,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
         payload: undefined
       }, (err, res, body) => {
         t.error(err)
-        t.strictDeepEqual(JSON.parse(body.toString()), {
+        t.same(JSON.parse(body.toString()), {
           error: 'Bad Request',
           code: 'FST_ERR_CTP_EMPTY_JSON_BODY',
           message: 'Body cannot be empty when content-type is set to \'application/json\'',

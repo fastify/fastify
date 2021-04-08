@@ -40,7 +40,7 @@ test('bodyLimit', t => {
       json: true
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 413)
+      t.equal(response.statusCode, 413)
     })
   })
 })

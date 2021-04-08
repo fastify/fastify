@@ -54,7 +54,7 @@ test('contentTypeParser should add a custom parser', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     t.test('in POST', t => {
       t.plan(3)
@@ -68,8 +68,8 @@ test('contentTypeParser should add a custom parser', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -85,8 +85,8 @@ test('contentTypeParser should add a custom parser', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
   })
@@ -98,8 +98,8 @@ test('contentTypeParser should add a custom parser - deprecated syntax', t => {
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FSTDEP003')
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, 'FSTDEP003')
   }
 
   fastify.post('/', (req, reply) => {
@@ -119,7 +119,7 @@ test('contentTypeParser should add a custom parser - deprecated syntax', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     t.test('in POST', t => {
       t.plan(3)
@@ -133,8 +133,8 @@ test('contentTypeParser should add a custom parser - deprecated syntax', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -150,8 +150,8 @@ test('contentTypeParser should add a custom parser - deprecated syntax', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
 
       process.removeListener('warning', onWarning)
@@ -193,8 +193,8 @@ test('contentTypeParser should handle multiple custom parsers', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
 
     sget({
@@ -206,8 +206,8 @@ test('contentTypeParser should handle multiple custom parsers', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
   })
 })
@@ -245,8 +245,8 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
 
     sget({
@@ -258,8 +258,8 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
   })
 })
@@ -288,7 +288,7 @@ test('contentTypeParser should handle errors', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
       fastify.close()
     })
   })
@@ -349,8 +349,8 @@ test('contentTypeParser should support encapsulation, second try', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       fastify.close()
     })
   })
@@ -382,7 +382,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 415)
+      t.equal(response.statusCode, 415)
       fastify.close()
     })
   })
@@ -396,8 +396,8 @@ test('the content type should be a string or RegExp', t => {
     fastify.addContentTypeParser(null, () => {})
     t.fail()
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_INVALID_TYPE')
-    t.is(err.message, 'The content type should be a string or a RegExp')
+    t.equal(err.code, 'FST_ERR_CTP_INVALID_TYPE')
+    t.equal(err.message, 'The content type should be a string or a RegExp')
   }
 })
 
@@ -409,8 +409,8 @@ test('the content type cannot be an empty string', t => {
     fastify.addContentTypeParser('', () => {})
     t.fail()
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
-    t.is(err.message, 'The content type cannot be an empty string')
+    t.equal(err.code, 'FST_ERR_CTP_EMPTY_TYPE')
+    t.equal(err.message, 'The content type cannot be an empty string')
   }
 })
 
@@ -422,8 +422,8 @@ test('the content type handler should be a function', t => {
     fastify.addContentTypeParser('aaa', null)
     t.fail()
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
-    t.is(err.message, 'The content type handler should be a function')
+    t.equal(err.code, 'FST_ERR_CTP_INVALID_HANDLER')
+    t.equal(err.message, 'The content type handler should be a function')
   }
 })
 
@@ -455,8 +455,8 @@ test('catch all content type parser', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'hello')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'hello')
 
       sget({
         method: 'POST',
@@ -467,8 +467,8 @@ test('catch all content type parser', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), 'hello')
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'hello')
         fastify.close()
       })
     })
@@ -509,8 +509,8 @@ test('catch all content type parser should not interfere with other conte type p
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
 
       sget({
         method: 'POST',
@@ -521,8 +521,8 @@ test('catch all content type parser should not interfere with other conte type p
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), 'hello')
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'hello')
         fastify.close()
       })
     })
@@ -535,7 +535,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
 
   const fastify = Fastify()
 
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.addContentTypeParser('*', function (req, payload, done) {
     let data = ''
@@ -561,8 +561,8 @@ test('\'*\' catch undefined Content-Type requests', t => {
       body: fileStream
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body + '', fs.readFileSync(__filename).toString())
+      t.equal(response.statusCode, 200)
+      t.equal(body + '', fs.readFileSync(__filename).toString())
     })
   })
 })
@@ -572,7 +572,7 @@ test('cannot add custom parser after binding', t => {
 
   const fastify = Fastify()
 
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (req, res) => {
     res.type('text/plain').send(req.body)
@@ -617,8 +617,8 @@ test('Can override the default json parser', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '{"hello":"world"}')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '{"hello":"world"}')
       fastify.close()
     })
   })
@@ -651,8 +651,8 @@ test('Can override the default plain text parser', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), 'hello world')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'hello world')
       fastify.close()
     })
   })
@@ -689,8 +689,8 @@ test('Can override the default json parser in a plugin', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '{"hello":"world"}')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '{"hello":"world"}')
       fastify.close()
     })
   })
@@ -714,8 +714,8 @@ test('Can\'t override the json parser multiple times', t => {
       })
     })
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.is(err.message, 'Content type parser \'application/json\' already present.')
+    t.equal(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.equal(err.message, 'Content type parser \'application/json\' already present.')
   }
 })
 
@@ -737,8 +737,8 @@ test('Can\'t override the plain text parser multiple times', t => {
       })
     })
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
-    t.is(err.message, 'Content type parser \'text/plain\' already present.')
+    t.equal(err.code, 'FST_ERR_CTP_ALREADY_PRESENT')
+    t.equal(err.message, 'Content type parser \'text/plain\' already present.')
   }
 })
 
@@ -774,8 +774,8 @@ test('Should get the body as string', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '{"hello":"world"}')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '{"hello":"world"}')
       fastify.close()
     })
   })
@@ -801,8 +801,8 @@ test('Should return defined body with no custom parser defined and content type 
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), 'hello world')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'hello world')
       fastify.close()
     })
   })
@@ -827,8 +827,8 @@ test('Should have typeof body object with no custom parser defined, no body defi
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof body, 'object')
+      t.equal(response.statusCode, 200)
+      t.equal(typeof body, 'object')
       fastify.close()
     })
   })
@@ -854,8 +854,8 @@ test('Should have typeof body object with no custom parser defined, null body an
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof body, 'object')
+      t.equal(response.statusCode, 200)
+      t.equal(typeof body, 'object')
       fastify.close()
     })
   })
@@ -881,8 +881,8 @@ test('Should have typeof body object with no custom parser defined, undefined bo
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(typeof body, 'object')
+      t.equal(response.statusCode, 200)
+      t.equal(typeof body, 'object')
       fastify.close()
     })
   })
@@ -920,8 +920,8 @@ test('Should get the body as string', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), 'hello world')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'hello world')
       fastify.close()
     })
   })
@@ -959,8 +959,8 @@ test('Should get the body as buffer', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '{"hello":"world"}')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '{"hello":"world"}')
       fastify.close()
     })
   })
@@ -998,8 +998,8 @@ test('Should get the body as buffer', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), 'hello world')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'hello world')
       fastify.close()
     })
   })
@@ -1010,7 +1010,7 @@ test('Should parse empty bodies as a string', t => {
   const fastify = Fastify()
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'string' }, (req, body, done) => {
-    t.strictEqual(body, '')
+    t.equal(body, '')
     done(null, body)
   })
 
@@ -1035,8 +1035,8 @@ test('Should parse empty bodies as a string', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '')
     })
 
     sget({
@@ -1049,8 +1049,8 @@ test('Should parse empty bodies as a string', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '')
     })
   })
 })
@@ -1065,7 +1065,7 @@ test('Should parse empty bodies as a buffer', t => {
 
   fastify.addContentTypeParser('text/plain', { parseAs: 'buffer' }, function (req, body, done) {
     t.ok(body instanceof Buffer)
-    t.strictEqual(body.length, 0)
+    t.equal(body.length, 0)
     done(null, body)
   })
 
@@ -1081,8 +1081,8 @@ test('Should parse empty bodies as a buffer', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.length, 0)
+      t.equal(response.statusCode, 200)
+      t.equal(body.length, 0)
       fastify.close()
     })
   })
@@ -1115,8 +1115,8 @@ test('The charset should not interfere with the content type handling', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(body.toString(), '{"hello":"world"}')
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), '{"hello":"world"}')
       fastify.close()
     })
   })
@@ -1130,15 +1130,15 @@ test('Wrong parseAs parameter', t => {
     fastify.addContentTypeParser('application/json', { parseAs: 'fireworks' }, () => {})
     t.fail('should throw')
   } catch (err) {
-    t.is(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
-    t.is(err.message, "The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.")
+    t.equal(err.code, 'FST_ERR_CTP_INVALID_PARSE_TYPE')
+    t.equal(err.message, "The body parser can only parse your data as 'string' or 'buffer', you asked 'fireworks' which is not supported.")
   }
 })
 
 test('Should allow defining the bodyLimit per parser', t => {
   t.plan(3)
   const fastify = Fastify()
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -1165,7 +1165,7 @@ test('Should allow defining the bodyLimit per parser', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictDeepEqual(JSON.parse(body.toString()), {
+      t.strictSame(JSON.parse(body.toString()), {
         statusCode: 413,
         code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
@@ -1179,7 +1179,7 @@ test('Should allow defining the bodyLimit per parser', t => {
 test('route bodyLimit should take precedence over a custom parser bodyLimit', t => {
   t.plan(3)
   const fastify = Fastify()
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.post('/', { bodyLimit: 5 }, (request, reply) => {
     reply.send(request.body)
@@ -1204,7 +1204,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
       headers: { 'Content-Type': 'x/foo' }
     }, (err, response, body) => {
       t.error(err)
-      t.strictDeepEqual(JSON.parse(body.toString()), {
+      t.strictSame(JSON.parse(body.toString()), {
         statusCode: 413,
         code: 'FST_ERR_CTP_BODY_TOO_LARGE',
         error: 'Payload Too Large',
@@ -1218,7 +1218,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
 test('should be able to use default parser for extra content type', t => {
   t.plan(4)
   const fastify = Fastify()
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.post('/', (request, reply) => {
     reply.send(request.body)
@@ -1238,8 +1238,8 @@ test('should be able to use default parser for extra content type', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictDeepEqual(JSON.parse(body.toString()), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.strictSame(JSON.parse(body.toString()), { hello: 'world' })
       fastify.close()
     })
   })
@@ -1267,7 +1267,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     t.test('in POST', t => {
       t.plan(3)
@@ -1281,8 +1281,8 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -1298,8 +1298,8 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
   })
@@ -1343,8 +1343,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
 
     sget({
@@ -1356,8 +1356,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'xml')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'xml')
     })
 
     sget({
@@ -1369,8 +1369,8 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'abcdefgmyExtension')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'abcdefgmyExtension')
       fastify.close()
     })
   })
@@ -1418,8 +1418,8 @@ test('catch all content type parser should not interfere with content type parse
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ myKey: 'myValue' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ myKey: 'myValue' }))
     })
 
     sget({
@@ -1431,8 +1431,8 @@ test('catch all content type parser should not interfere with content type parse
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'body')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'body')
     })
 
     sget({
@@ -1444,8 +1444,8 @@ test('catch all content type parser should not interfere with content type parse
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'my texthtml')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'my texthtml')
       fastify.close()
     })
   })
@@ -1485,8 +1485,8 @@ test('should prefer string content types over RegExp ones', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ k1: 'myValue', k2: 'myValue' }))
     })
 
     sget({
@@ -1498,8 +1498,8 @@ test('should prefer string content types over RegExp ones', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), 'javascript')
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'javascript')
       fastify.close()
     })
   })

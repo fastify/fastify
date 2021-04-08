@@ -27,7 +27,7 @@ test('contentTypeParser should add a custom async parser', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     t.test('in POST', t => {
       t.plan(3)
@@ -41,8 +41,8 @@ test('contentTypeParser should add a custom async parser', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -58,8 +58,8 @@ test('contentTypeParser should add a custom async parser', t => {
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
   })
@@ -71,8 +71,8 @@ test('contentTypeParser should add a custom async parser - deprecated syntax', t
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FSTDEP003')
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, 'FSTDEP003')
   }
 
   fastify.post('/', (req, reply) => {
@@ -91,7 +91,7 @@ test('contentTypeParser should add a custom async parser - deprecated syntax', t
   fastify.listen(0, err => {
     t.error(err)
 
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     t.test('in POST', t => {
       t.plan(3)
@@ -105,8 +105,8 @@ test('contentTypeParser should add a custom async parser - deprecated syntax', t
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
       })
     })
 
@@ -122,8 +122,8 @@ test('contentTypeParser should add a custom async parser - deprecated syntax', t
         }
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), JSON.stringify({ hello: 'world' }))
         process.removeListener('warning', onWarning)
       })
     })

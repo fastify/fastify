@@ -7,8 +7,8 @@ const loggerUtils = require('../../lib/logger')
 
 test('time resolution', t => {
   t.plan(2)
-  t.is(typeof loggerUtils.now, 'function')
-  t.is(typeof loggerUtils.now(), 'number')
+  t.equal(typeof loggerUtils.now, 'function')
+  t.equal(typeof loggerUtils.now(), 'number')
 })
 
 test('The logger should add a unique id for every request', t => {
@@ -108,7 +108,7 @@ test('The logger should error if both stream and file destination are given', t 
       }
     })
   } catch (err) {
-    t.is(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
-    t.is(err.message, 'Cannot specify both logger.stream and logger.file options')
+    t.equal(err.code, 'FST_ERR_LOG_INVALID_DESTINATION')
+    t.equal(err.message, 'Cannot specify both logger.stream and logger.file options')
   }
 })

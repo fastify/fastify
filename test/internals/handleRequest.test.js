@@ -4,6 +4,7 @@ const { test } = require('tap')
 const semver = require('semver')
 const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
+const { kContext } = require('../../lib/symbols')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 const buildSchema = require('../../lib/validation').compileSchemasForValidation
@@ -74,7 +75,7 @@ test('handler function - invalid schema', t => {
   buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' },
-    context
+    [kContext]: context
   }
   internals.handler(request, new Reply(res, request))
 })
@@ -101,7 +102,7 @@ test('handler function - reply', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({}, new Reply(res, { context }))
+  internals.handler({}, new Reply(res, { [kContext]: context }))
 })
 
 test('handler function - preValidationCallback with finished response', t => {

@@ -13,14 +13,15 @@ const {
   kReplyHeaders,
   kReplySerializer,
   kReplyIsError,
-  kReplySerializerDefault
+  kReplySerializerDefault,
+  kContext
 } = require('../../lib/symbols')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
   const response = { res: 'res' }
   const context = {}
-  const request = { context }
+  const request = { [kContext]: context }
   const reply = new Reply(response, request)
   t.is(typeof reply, 'object')
   t.is(typeof reply[kReplyIsError], 'boolean')
@@ -61,7 +62,7 @@ test('reply.send will logStream error and destroy the stream', { only: true }, t
     pipe: () => {},
     destroy: () => {}
   })
-  const reply = new Reply(response, { context: { onSend: null } }, log)
+  const reply = new Reply(response, { [kContext]: { onSend: null } }, log)
   reply.send(payload)
   payload.emit('error', new Error('stream error'))
 
@@ -94,7 +95,7 @@ test('reply.send returns itself', t => {
     writeHead: () => {},
     end: () => {}
   }
-  const reply = new Reply(response, { context: { onSend: [] } })
+  const reply = new Reply(response, { [kContext]: { onSend: [] } })
   t.equal(reply.send('hello'), reply)
 })
 
@@ -135,7 +136,7 @@ test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const context = {}
-  const reply = new Reply(response, { context })
+  const reply = new Reply(response, { [kContext]: context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
 })
 
@@ -155,7 +156,7 @@ test('reply.serialize should serialize payload with a context default serializer
   let customSerializerCalled = false
   const response = { statusCode: 200 }
   const context = { [kReplySerializerDefault]: (x) => (customSerializerCalled = true) && JSON.stringify(x) }
-  const reply = new Reply(response, { context })
+  const reply = new Reply(response, { [kContext]: context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
 })

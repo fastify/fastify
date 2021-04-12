@@ -35,7 +35,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -45,7 +45,6 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
-const nativePrettyPrint = require('./lib/prettyPrint')
 
 const {
   FST_ERR_BAD_URL,
@@ -633,7 +632,7 @@ function fastify (options) {
   }
 
   function printRoutes (opts = {}) {
-    if (opts.useNative) return nativePrettyPrint(router.getRoutes(), opts)
+    opts.hooksArray = opts.includeHooks ? opts.hooksArray || supportedHooks : []
     return router.printRoutes(opts)
   }
 }

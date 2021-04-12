@@ -146,3 +146,7 @@ test/types/index.js
 
 # test tap report
 out.tap
+
+# test certification
+test/https/fastify.cert
+test/https/fastify.key

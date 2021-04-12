@@ -818,6 +818,54 @@ test('HEAD route should respect custom onSend handlers', t => {
   })
 })
 
+test('route onSend can be function or array of functions', t => {
+  t.plan(12)
+  const counters = { single: 0, multiple: 0 }
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: () => resBuffer,
+    onSend: (res, reply, payload, done) => {
+      counters.single += 1
+      done(null, payload)
+    }
+  })
+
+  const customOnSend = (res, reply, payload, done) => {
+    counters.multiple += 1
+    done(null, payload)
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: () => resBuffer,
+    onSend: [customOnSend, customOnSend]
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.single, 1)
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/more-coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.multiple, 2)
+  })
+})
+
 test('no warning for exposeHeadRoute', async t => {
   const fastify = Fastify()
 

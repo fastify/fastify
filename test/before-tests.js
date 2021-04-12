@@ -1,17 +1,13 @@
 'use strict'
 
-const fs = require('fs').promises
+const util = require('util')
+const fs = require('fs')
 const path = require('path')
-const pem = require('pem')
+const pem = require('pem');
 
-// Certificate properties
-const certProps = {
-  days: 1, // Validity in days
-  selfSigned: true
-}
-
-pem.createCertificate(certProps, async (error, keys) => {
-  if (error) throw error
-  await fs.writeFile(path.join(__dirname, 'https', 'fastify.cert'), keys.certificate)
-  await fs.writeFile(path.join(__dirname, 'https', 'fastify.key'), keys.serviceKey)
-})
+(async () => {
+  const createCertificate = util.promisify(pem.createCertificate)
+  const keys = await createCertificate({ days: 1, selfSigned: true })
+  if (!fs.existsSync(path.join(__dirname, 'https', 'fastify.cert'))) fs.writeFileSync(path.join(__dirname, 'https', 'fastify.cert'), keys.certificate)
+  if (!fs.existsSync(path.join(__dirname, 'https', 'fastify.key'))) fs.writeFileSync(path.join(__dirname, 'https', 'fastify.key'), keys.serviceKey)
+})()

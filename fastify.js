@@ -45,6 +45,7 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
+const nativePrettyPrint = require('./lib/prettyPrint')
 
 const {
   FST_ERR_BAD_URL,
@@ -282,7 +283,7 @@ function fastify (options) {
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
-    printRoutes: router.printRoutes,
+    printRoutes,
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
@@ -320,6 +321,9 @@ function fastify (options) {
       get () {
         return this[kErrorHandler]
       }
+    },
+    routes: {
+      get () { return router.getRoutes() }
     }
   })
 
@@ -626,6 +630,11 @@ function fastify (options) {
 
     this[kErrorHandler] = func.bind(this)
     return this
+  }
+
+  function printRoutes (opts = {}) {
+    if (opts.useNative) return nativePrettyPrint(router.getRoutes(), opts)
+    return router.printRoutes(opts)
   }
 }
 

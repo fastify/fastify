@@ -3,11 +3,21 @@
 const util = require('util')
 const fs = require('fs')
 const path = require('path')
-const pem = require('pem');
+const pem = require('pem')
+
+const createCertificate = util.promisify(pem.createCertificate);
 
 (async () => {
-  const createCertificate = util.promisify(pem.createCertificate)
-  const keys = await createCertificate({ days: 1, selfSigned: true })
-  if (!fs.existsSync(path.join(__dirname, 'https', 'fastify.cert'))) fs.writeFileSync(path.join(__dirname, 'https', 'fastify.cert'), keys.certificate)
-  if (!fs.existsSync(path.join(__dirname, 'https', 'fastify.key'))) fs.writeFileSync(path.join(__dirname, 'https', 'fastify.key'), keys.serviceKey)
+  try {
+    const keys = await createCertificate({ days: 1, selfSigned: true })
+    const certFile = path.join(__dirname, 'https', 'fastify.cert')
+    const keyFile = path.join(__dirname, 'https', 'fastify.key')
+    if (!fs.existsSync(certFile) || !fs.existsSync(keyFile)) {
+      await fs.promises.writeFile(certFile, keys.certificate)
+      await fs.promises.writeFile(keyFile, keys.serviceKey)
+    }
+  } catch (error) {
+    console.log(error)
+    process.exit(1)
+  }
 })()

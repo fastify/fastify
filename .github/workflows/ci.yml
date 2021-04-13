@@ -10,9 +10,6 @@ on:
       - 'docs/**'
       - '*.md'
 
-env:
-  CI: true
-
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -20,7 +17,7 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
       - uses: actions/checkout@v2
@@ -64,6 +61,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: fastify/github-action-merge-dependabot@v2.0.0
-        if: ${{ github.actor == 'dependabot[bot]' && github.event_name == 'pull_request' }}
         with:
-          github-token: ${{secrets.github_token}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

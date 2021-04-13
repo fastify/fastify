@@ -13,8 +13,10 @@ const createCertificate = util.promisify(pem.createCertificate);
     const certFile = path.join(__dirname, 'https', 'fastify.cert')
     const keyFile = path.join(__dirname, 'https', 'fastify.key')
     if (!fs.existsSync(certFile) || !fs.existsSync(keyFile)) {
-      await fs.promises.writeFile(certFile, keys.certificate)
-      await fs.promises.writeFile(keyFile, keys.serviceKey)
+      await Promise.all([
+        fs.promises.writeFile(certFile, keys.certificate),
+        fs.promises.writeFile(keyFile, keys.serviceKey)
+      ])
     }
   } catch (error) {
     console.log(error)

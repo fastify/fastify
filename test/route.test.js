@@ -173,7 +173,7 @@ test('route', t => {
 test('invalid schema - route', t => {
   t.plan(3)
 
-  const fastify = Fastify({ exposeHeadRoutes: false })
+  const fastify = Fastify()
   fastify.route({
     handler: () => {},
     method: 'GET',

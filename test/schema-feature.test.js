@@ -170,7 +170,7 @@ test('Cannot add schema for query and querystring', t => {
 
 test('Should throw of the schema does not exists in input', t => {
   t.plan(2)
-  const fastify = Fastify({ exposeHeadRoutes: false })
+  const fastify = Fastify({ exposeHeadRoutes: true })
 
   fastify.get('/:id', {
     handler: echoParams,
@@ -189,7 +189,7 @@ test('Should throw of the schema does not exists in input', t => {
 
 test('Should throw of the schema does not exists in output', t => {
   t.plan(2)
-  const fastify = Fastify({ exposeHeadRoutes: false })
+  const fastify = Fastify()
 
   fastify.get('/:id', {
     handler: echoParams,
@@ -425,7 +425,7 @@ test('Use the same schema across multiple routes', t => {
 
 test('Encapsulation should intervene', t => {
   t.plan(2)
-  const fastify = Fastify({ exposeHeadRoutes: false })
+  const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.addSchema({

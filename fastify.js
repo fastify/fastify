@@ -632,7 +632,8 @@ function fastify (options) {
   }
 
   function printRoutes (opts = {}) {
-    opts.hooksArray = opts.includeHooks ? opts.hooksArray || supportedHooks : []
+    // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
+    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : null
     return router.printRoutes(opts)
   }
 }

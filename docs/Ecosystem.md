@@ -105,6 +105,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-grant`](https://github.com/simov/fastify-grant) Authentication/Authorization plugin for Fastify that supports 200+ OAuth Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
+- [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify plugin to have fun with [Hasura](https://github.com/hasura/graphql-engine).
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context) Fastify plugin for "simulating" a thread of execution to allow for true http context to take place per API call within the Fastify lifecycle of calls.

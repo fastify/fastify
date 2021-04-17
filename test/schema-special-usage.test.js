@@ -253,7 +253,7 @@ test("serializer read validator's schemas", t => {
   const fastify = Fastify({
     schemaController: {
       bucket: function factory (storeInit) {
-        t.notOk(storeInit, 'is is always empty because fastify.addSchema is not called')
+        t.notOk(storeInit, 'is always empty because fastify.addSchema is not called')
         return {
           getSchemas () {
             return {

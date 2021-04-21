@@ -33,8 +33,6 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-expectType<ValidationResult[] | undefined>(FastifyError().validation)
-
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 

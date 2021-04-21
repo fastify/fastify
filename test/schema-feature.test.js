@@ -170,7 +170,7 @@ test('Cannot add schema for query and querystring', t => {
 
 test('Should throw of the schema does not exists in input', t => {
   t.plan(2)
-  const fastify = Fastify({ exposeHeadRoutes: true })
+  const fastify = Fastify()
 
   fastify.get('/:id', {
     handler: echoParams,

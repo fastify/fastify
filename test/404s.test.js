@@ -841,7 +841,7 @@ test('setNotFoundHandler should not suppress duplicated routes checking', t => {
       reply.code(404).send('this was not found')
     })
 
-    t.fail('setNotFoundHandler should not interfer duplicated route error')
+    t.fail('setNotFoundHandler should not interfere duplicated route error')
   } catch (error) {
     t.ok(error)
   }

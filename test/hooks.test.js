@@ -3158,7 +3158,7 @@ test('reply.send should throw if undefined error is thrown', t => {
     t.same(JSON.parse(res.payload), {
       error: 'Internal Server Error',
       code: 'FST_ERR_SEND_UNDEFINED_ERR',
-      message: 'Undefined error has occured',
+      message: 'Undefined error has occurred',
       statusCode: 500
     })
   })

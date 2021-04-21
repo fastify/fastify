@@ -205,9 +205,16 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
         t.error(err)
         const client = net.createConnection({ port: (app.server.address()).port }, () => {
           client.write('GET / HTTP/1.1\r\n\r\n')
-          client.once('data', data => {
-            t.match(data.toString(), new RegExp(`hello from ${hookOrHandler}`, 'i'))
-            client.end(() => t.end())
+
+          let chunks = ''
+          client.setEncoding('utf8')
+          client.on('data', data => {
+            chunks += data
+          })
+
+          client.on('end', function () {
+            t.match(chunks, new RegExp(`hello from ${hookOrHandler}`, 'i'))
+            t.end()
           })
         })
       })

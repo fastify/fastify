@@ -4,8 +4,6 @@ const t = require('tap')
 const Fastify = require('../..')
 const http2 = require('http2')
 const semver = require('semver')
-const fs = require('fs')
-const path = require('path')
 const { promisify } = require('util')
 const connect = promisify(http2.connect)
 const { once } = require('events')
@@ -130,8 +128,8 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
     http2SessionTimeout: 100,
     http2: true,
     https: {
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: globalThis.context.key,
+      cert: globalThis.context.cert
     }
   })
 

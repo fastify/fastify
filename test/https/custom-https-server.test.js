@@ -4,8 +4,6 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
 const https = require('https')
-const fs = require('fs')
-const path = require('path')
 const sget = require('simple-get').concat
 
 const { buildCertificate } = require('../build-certificate')
@@ -18,8 +16,8 @@ test('Should support a custom https server', t => {
     t.ok(opts.serverFactory)
 
     const options = {
-      key: fs.readFileSync(path.join(__dirname, 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, 'fastify.cert'))
+      key: globalThis.context.key,
+      cert: globalThis.context.cert
     }
 
     const server = https.createServer(options, (req, res) => {

@@ -3,8 +3,6 @@
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const fs = require('fs')
-const path = require('path')
 const Fastify = require('../..')
 
 const { buildCertificate } = require('../build-certificate')
@@ -17,8 +15,8 @@ test('https', (t) => {
   try {
     fastify = Fastify({
       https: {
-        key: fs.readFileSync(path.join(__dirname, 'fastify.key')),
-        cert: fs.readFileSync(path.join(__dirname, 'fastify.cert'))
+        key: globalThis.context.key,
+        cert: globalThis.context.cert
       }
     })
     t.pass('Key/cert successfully loaded')

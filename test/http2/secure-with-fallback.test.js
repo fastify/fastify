@@ -2,8 +2,6 @@
 
 const t = require('tap')
 const test = t.test
-const fs = require('fs')
-const path = require('path')
 const Fastify = require('../..')
 const h2url = require('h2url')
 const sget = require('simple-get').concat
@@ -21,8 +19,8 @@ test('secure with fallback', (t) => {
       http2: true,
       https: {
         allowHTTP1: true,
-        key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-        cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+        key: globalThis.context.key,
+        cert: globalThis.context.cert
       }
     })
     t.pass('Key/cert successfully loaded')

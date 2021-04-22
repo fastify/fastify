@@ -176,7 +176,7 @@
     "yup": "^0.32.0"
   },
   "dependencies": {
-    "@fastify/ajv-compiler": "github:fastify/ajv-compiler#first-impl",
+    "@fastify/ajv-compiler": "github:fastify/ajv-compiler#master",
     "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
     "avvio": "^7.1.2",

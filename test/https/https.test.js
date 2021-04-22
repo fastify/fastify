@@ -8,7 +8,11 @@ const path = require('path')
 const Fastify = require('../..')
 
 const { buildCertificate } = require('../build-certificate')
-buildCertificate().then(function () {
+t.before(buildCertificate)
+
+test('https', (t) => {
+  t.plan(4)
+
   let fastify
   try {
     fastify = Fastify({
@@ -22,26 +26,19 @@ buildCertificate().then(function () {
     t.fail('Key/cert loading failed', e)
   }
 
-  test('https get', t => {
-    t.plan(1)
-    try {
-      fastify.get('/', function (req, reply) {
-        reply.code(200).send({ hello: 'world' })
-      })
-      fastify.get('/proto', function (req, reply) {
-        reply.code(200).send({ proto: req.protocol })
-      })
-      t.pass()
-    } catch (e) {
-      t.fail()
-    }
+  fastify.get('/', function (req, reply) {
+    reply.code(200).send({ hello: 'world' })
+  })
+
+  fastify.get('/proto', function (req, reply) {
+    reply.code(200).send({ proto: req.protocol })
   })
 
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
 
-    test('https get request', t => {
+    t.test('https get request', t => {
       t.plan(4)
       sget({
         method: 'GET',
@@ -55,7 +52,7 @@ buildCertificate().then(function () {
       })
     })
 
-    test('https get request without trust proxy - protocol', t => {
+    t.test('https get request without trust proxy - protocol', t => {
       t.plan(4)
       sget({
         method: 'GET',

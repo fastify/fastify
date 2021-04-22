@@ -9,7 +9,11 @@ const h2url = require('h2url')
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
-buildCertificate().then(function () {
+t.before(buildCertificate)
+
+test('secure', (t) => {
+  t.plan(4)
+
   let fastify
   try {
     fastify = Fastify({
@@ -35,7 +39,7 @@ buildCertificate().then(function () {
     t.error(err)
     fastify.server.unref()
 
-    test('https get request', async (t) => {
+    t.test('https get request', async (t) => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -46,7 +50,7 @@ buildCertificate().then(function () {
       t.same(JSON.parse(res.body), msg)
     })
 
-    test('https get request without trust proxy - protocol', async (t) => {
+    t.test('https get request without trust proxy - protocol', async (t) => {
       t.plan(2)
 
       const url = `https://localhost:${fastify.server.address().port}/proto`

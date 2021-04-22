@@ -10,7 +10,11 @@ const sget = require('simple-get').concat
 const msg = { hello: 'world' }
 
 const { buildCertificate } = require('../build-certificate')
-buildCertificate().then(function () {
+t.before(buildCertificate)
+
+test('secure with fallback', (t) => {
+  t.plan(7)
+
   let fastify
   try {
     fastify = Fastify({
@@ -42,7 +46,7 @@ buildCertificate().then(function () {
     t.error(err)
     fastify.server.unref()
 
-    test('https get error', async (t) => {
+    t.test('https get error', async (t) => {
       t.plan(1)
 
       const url = `https://localhost:${fastify.server.address().port}/error`
@@ -51,7 +55,7 @@ buildCertificate().then(function () {
       t.equal(res.headers[':status'], 500)
     })
 
-    test('https post', async (t) => {
+    t.test('https post', async (t) => {
       t.plan(2)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -68,7 +72,7 @@ buildCertificate().then(function () {
       t.same(JSON.parse(res.body), { hello: 'http2' })
     })
 
-    test('https get request', async (t) => {
+    t.test('https get request', async (t) => {
       t.plan(3)
 
       const url = `https://localhost:${fastify.server.address().port}`
@@ -79,7 +83,7 @@ buildCertificate().then(function () {
       t.same(JSON.parse(res.body), msg)
     })
 
-    test('http1 get request', t => {
+    t.test('http1 get request', t => {
       t.plan(4)
       sget({
         method: 'GET',
@@ -93,7 +97,7 @@ buildCertificate().then(function () {
       })
     })
 
-    test('http1 get error', (t) => {
+    t.test('http1 get error', (t) => {
       t.plan(2)
       sget({
         method: 'GET',

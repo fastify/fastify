@@ -16,8 +16,8 @@ test('Should support a custom https server', t => {
     t.ok(opts.serverFactory)
 
     const options = {
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     }
 
     const server = https.createServer(options, (req, res) => {

@@ -128,8 +128,8 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
     http2SessionTimeout: 100,
     http2: true,
     https: {
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     }
   })
 

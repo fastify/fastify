@@ -15,8 +15,8 @@ test('https', (t) => {
   try {
     fastify = Fastify({
       https: {
-        key: globalThis.context.key,
-        cert: globalThis.context.cert
+        key: global.context.key,
+        cert: global.context.cert
       }
     })
     t.pass('Key/cert successfully loaded')

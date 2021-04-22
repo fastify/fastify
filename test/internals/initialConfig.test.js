@@ -72,8 +72,8 @@ test('Fastify.initialConfig should expose all options', t => {
   const options = {
     http2: true,
     https: {
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     },
     ignoreTrailingSlash: true,
     maxParamLength: 200,
@@ -142,8 +142,8 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
   const fastify = Fastify({
     https: {
       allowHTTP1: true,
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     }
   })
 
@@ -181,8 +181,8 @@ test('Original options must not be frozen', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
@@ -200,8 +200,8 @@ test('Original options must not be altered (test deep cloning)', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: globalThis.context.key,
-      cert: globalThis.context.cert
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
@@ -293,7 +293,7 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   t.plan(5)
 
   const object = {
-    buffer: Buffer.from(globalThis.context.key),
+    buffer: Buffer.from(global.context.key),
     dataView: new DataView(new ArrayBuffer(16)),
     float: 1.1,
     integer: 1,

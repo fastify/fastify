@@ -19,8 +19,8 @@ test('secure with fallback', (t) => {
       http2: true,
       https: {
         allowHTTP1: true,
-        key: globalThis.context.key,
-        cert: globalThis.context.cert
+        key: global.context.key,
+        cert: global.context.cert
       }
     })
     t.pass('Key/cert successfully loaded')

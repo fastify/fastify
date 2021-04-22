@@ -6,6 +6,36 @@ import { HookHandlerDoneFunction } from '../../types/hooks'
 
 const server = fastify()
 
+server.decorate('nonexistent', () => {})
+server.decorateRequest('nonexistent', () => {})
+server.decorateReply('nonexistent', () => {})
+
+declare module '../../fastify' {
+  interface FastifyInstance {
+    functionWithTypeDefinition: (foo: string, bar: number) => Promise<boolean>
+  }
+  interface FastifyRequest {
+    numberWithTypeDefinition: number
+  }
+  interface FastifyReply {
+    stringWithTypeDefinition: 'foo' | 'bar'
+  }
+}
+expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => {})) // error because invalid return type
+expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => true)) // error because doesn't return a promise
+expectError(server.decorate('functionWithTypeDefinition', async (foo: any, bar: any, qwe: any) => true)) // error because too many args
+expectAssignable<FastifyInstance>(server.decorate('functionWithTypeDefinition', async (foo, bar) => {
+  expectType<string>(foo)
+  expectType<number>(bar)
+  return true
+}))
+
+expectError(server.decorateRequest('numberWithTypeDefinition', 'not a number')) // error because invalid type
+expectAssignable<FastifyInstance>(server.decorateRequest('numberWithTypeDefinition', 10))
+
+expectError(server.decorateReply('stringWithTypeDefinition', 'not in enum')) // error because invalid type
+expectAssignable<FastifyInstance>(server.decorateReply('stringWithTypeDefinition', 'foo'))
+
 expectAssignable<FastifyInstance>(server.addSchema({
   type: 'null'
 }))

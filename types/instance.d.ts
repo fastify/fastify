@@ -10,6 +10,8 @@ import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser } from './content-type-parser'
 
+type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
+
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
  */
@@ -35,9 +37,14 @@ export interface FastifyInstance<
   close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
-  decorate(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateRequest(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateReply(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorate<K extends keyof FastifyInstance>(property: K, value: FastifyInstance[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorate<K extends string | symbol>(property: NotInInterface<K, FastifyInstance>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  decorateRequest<K extends keyof FastifyRequest>(property: K, value: FastifyRequest[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateRequest<K extends string | symbol>(property: NotInInterface<K, FastifyRequest>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  decorateReply<K extends keyof FastifyReply>(property: K, value: FastifyReply[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateReply<K extends string | symbol>(property: NotInInterface<K, FastifyReply>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;

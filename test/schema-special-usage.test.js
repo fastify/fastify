@@ -7,12 +7,12 @@ const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 
-const buildValidatorAJV7 = require('@fastify/ajv-compiler-7')
+const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
 
-test('Ajv 7 usage instead of the bundle one', t => {
+test('Ajv8 usage instead of the bundle one', t => {
   t.plan(2)
 
-  t.test('use new ajv7 option', t => {
+  t.test('use new ajv8 option', t => {
     t.plan(3)
     const fastify = Fastify({
       ajv: {
@@ -21,19 +21,19 @@ test('Ajv 7 usage instead of the bundle one', t => {
       },
       schemaController: {
         compilersFactory: {
-          buildValidator: buildValidatorAJV7()
+          buildValidator: buildValidatorAJV8()
         }
       }
     })
 
     callIt(fastify, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
-      t.equals(res.json().message, 'body/foo should match format "date"')
+      t.equal(res.statusCode, 400)
+      t.equal(res.json().message, 'body must match format "date"')
     })
   })
 
-  t.test('use new ajv7 option - avoid check', t => {
+  t.test('use new ajv8 option - avoid check', t => {
     t.plan(2)
     const fastify = Fastify({
       ajv: {
@@ -41,14 +41,14 @@ test('Ajv 7 usage instead of the bundle one', t => {
       },
       schemaController: {
         compilersFactory: {
-          buildValidator: buildValidatorAJV7()
+          buildValidator: buildValidatorAJV8()
         }
       }
     })
 
     callIt(fastify, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 
@@ -119,8 +119,8 @@ test('Ajv plugins array parameter', t => {
     payload: { foo: 99 }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.equals(res.json().message, 'body/foo should be <= 10@@@@should be multipleOf 2')
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'body/foo should be <= 10@@@@should be multipleOf 2')
   })
 })
 

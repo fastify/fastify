@@ -3,4 +3,3 @@ jsx: false
 flow: false
 check-coverage: false
 coverage: true
-before: test/before-tests.js

@@ -1,14 +1,15 @@
 'use strict'
 
-const { test } = require('tap')
+const { test, before } = require('tap')
 const Fastify = require('../..')
-const fs = require('fs')
-const path = require('path')
 const http = require('http')
 const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
+
+const { buildCertificate } = require('../build-certificate')
+before(buildCertificate)
 
 process.removeAllListeners('warning')
 
@@ -71,8 +72,8 @@ test('Fastify.initialConfig should expose all options', t => {
   const options = {
     http2: true,
     https: {
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     },
     ignoreTrailingSlash: true,
     maxParamLength: 200,
@@ -141,8 +142,8 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
   const fastify = Fastify({
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     }
   })
 
@@ -180,8 +181,8 @@ test('Original options must not be frozen', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
@@ -199,8 +200,8 @@ test('Original options must not be altered (test deep cloning)', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key'), 'utf8').toString('base64'),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'), 'utf8').toString('base64')
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
@@ -292,7 +293,7 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   t.plan(5)
 
   const object = {
-    buffer: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+    buffer: Buffer.from(global.context.key),
     dataView: new DataView(new ArrayBuffer(16)),
     float: 1.1,
     integer: 1,

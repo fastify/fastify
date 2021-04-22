@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const pem = require('pem')
 
-const createCertificate = util.promisify(pem.createCertificate)
+const createCertificate = util.promisify(pem.createCertificate);
 
 (async () => {
   try {

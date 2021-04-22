@@ -47,9 +47,9 @@ fastify.listen(0, err => {
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -61,7 +61,7 @@ fastify.listen(0, err => {
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), { proto: 'https' })
+      t.same(JSON.parse(body), { proto: 'https' })
     })
     sget({
       method: 'GET',
@@ -72,7 +72,7 @@ fastify.listen(0, err => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), { proto: 'https' })
+      t.same(JSON.parse(body), { proto: 'https' })
     })
   })
 })

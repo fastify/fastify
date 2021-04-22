@@ -103,7 +103,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 
@@ -114,7 +114,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 
@@ -125,7 +125,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
+      t.equal(response.statusCode, 400)
     })
   })
 
@@ -136,7 +136,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 
@@ -147,7 +147,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
+      t.equal(response.statusCode, 400)
     })
   })
 
@@ -158,7 +158,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })

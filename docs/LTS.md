@@ -4,7 +4,7 @@
 
 ## Long Term Support
 
-Fastify's Long Term Support (LTS) is provided according the schedule laid
+Fastify's Long Term Support (LTS) is provided according to the schedule laid
 out in this document:
 
 1. Major releases, "X" release of [semantic versioning][semver] X.Y.Z release
@@ -35,17 +35,17 @@ A "month" is to be a period of 30 consecutive days.
 | :------ | :----------- | :-------------- | :------------------- |
 | 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11      |
 | 2.0.0   | 2019-02-25   | 2021-01-31      | 6, 8, 10, 12, 14     |
-| 3.0.0   | 2020-07-07   | TBD             | 10, 12, 14           |
+| 3.0.0   | 2020-07-07   | TBD             | 10, 12, 14, 16       |
 
 <a name="supported-os"></a>
 
 ### CI tested operating systems
 
-| OS      | Version                | Package Manager           | Node.js   |
-|---------|------------------------|---------------------------|-----------|
-| Linux   | Ubuntu 16.04           | npm                       | 10,12,14  |
-| Linux   | Ubuntu 16.04           | yarn,pnpm                 | 10,12     |
-| Windows | Windows Server 2016 R2 | npm                       | 10,12,14  |
-| MacOS   | macOS X Mojave 10.14   | npm                       | 10,12,14  |
+| OS      | Version                | Package Manager           | Node.js      |
+|---------|------------------------|---------------------------|--------------|
+| Linux   | Ubuntu 16.04           | npm                       | 10,12,14,16  |
+| Linux   | Ubuntu 16.04           | yarn,pnpm                 | 10,12        |
+| Windows | Windows Server 2016 R2 | npm                       | 10,12,14,16  |
+| MacOS   | macOS X Mojave 10.14   | npm                       | 10,12,14,16  |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines` flag.

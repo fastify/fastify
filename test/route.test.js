@@ -130,8 +130,8 @@ test('route', t => {
         url: 'http://localhost:' + fastify.server.address().port
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(JSON.parse(body), { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { hello: 'world' })
       })
     })
 
@@ -142,8 +142,8 @@ test('route', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/missing'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(JSON.parse(body), { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { hello: 'world' })
       })
     })
 
@@ -154,8 +154,8 @@ test('route', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/multiple'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(JSON.parse(body), { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { hello: 'world' })
       })
 
       sget({
@@ -163,8 +163,8 @@ test('route', t => {
         url: 'http://localhost:' + fastify.server.address().port + '/multiple'
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(JSON.parse(body), { hello: 'world' })
+        t.equal(response.statusCode, 200)
+        t.same(JSON.parse(body), { hello: 'world' })
       })
     })
   })
@@ -188,8 +188,8 @@ test('invalid schema - route', t => {
     t.notOk(err, 'the error is throw on preReady')
   })
   fastify.ready(err => {
-    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.isLike(err.message, /Failed building the validation schema for GET: \/invalid/)
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.match(err.message, /Failed building the validation schema for GET: \/invalid/)
   })
 })
 
@@ -206,13 +206,13 @@ test('same route definition object on multiple prefixes', async t => {
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      t.is(routeOptions.url, '/v1/simple')
+      t.equal(routeOptions.url, '/v1/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v1' })
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
-      t.is(routeOptions.url, '/v2/simple')
+      t.equal(routeOptions.url, '/v2/simple')
     })
     f.route(routeObject)
   }, { prefix: '/v2' })
@@ -239,8 +239,8 @@ test('path can be specified in place of uri', t => {
 
   fastify.inject(reqOpts, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
 
@@ -256,14 +256,14 @@ test('invalid bodyLimit option - route', t => {
     })
     t.fail('bodyLimit must be an integer')
   } catch (err) {
-    t.strictEqual(err.message, "'bodyLimit' option must be an integer > 0. Got 'false'")
+    t.equal(err.message, "'bodyLimit' option must be an integer > 0. Got 'false'")
   }
 
   try {
     fastify.post('/url', { bodyLimit: 10000.1 }, () => null)
     t.fail('bodyLimit must be an integer')
   } catch (err) {
-    t.strictEqual(err.message, "'bodyLimit' option must be an integer > 0. Got '10000.1'")
+    t.equal(err.message, "'bodyLimit' option must be an integer > 0. Got '10000.1'")
   }
 })
 
@@ -282,8 +282,8 @@ test('handler function in options of shorthand route should works correctly', t 
     url: '/foo'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
 
@@ -314,7 +314,7 @@ test('does not mutate joi schemas', t => {
       params: { an_id: joi.number() }
     },
     handler (req, res) {
-      t.deepEqual(req.params, { an_id: 42 })
+      t.same(req.params, { an_id: 42 })
       res.send({ hello: 'world' })
     }
   })
@@ -324,8 +324,8 @@ test('does not mutate joi schemas', t => {
     url: '/foo/42'
   }, (err, result) => {
     t.error(err)
-    t.strictEqual(result.statusCode, 200)
-    t.deepEqual(JSON.parse(result.payload), { hello: 'world' })
+    t.equal(result.statusCode, 200)
+    t.same(JSON.parse(result.payload), { hello: 'world' })
   })
 })
 
@@ -360,7 +360,7 @@ test('multiple routes with one schema', t => {
 
   fastify.ready(error => {
     t.error(error)
-    t.deepEquals(schema, schema)
+    t.same(schema, schema)
   })
 })
 
@@ -393,8 +393,8 @@ test('route error handler overrides default error handler', t => {
     url: '/coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 418)
+    t.same(JSON.parse(res.payload), {
       message: 'Make a brew',
       statusCode: 418,
       error: 'Wrong Pot Error'
@@ -439,8 +439,8 @@ test('route error handler does not affect other routes', t => {
     url: '/tea'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 500)
+    t.same(JSON.parse(res.payload), {
       message: 'No tea today',
       statusCode: 500,
       error: 'Internal Server Error'
@@ -477,8 +477,8 @@ test('async error handler for a route', t => {
     url: '/late-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 418)
+    t.same(JSON.parse(res.payload), {
       message: 'Make a brew sometime later',
       statusCode: 418,
       error: 'Delayed Pot Error'
@@ -521,8 +521,8 @@ test('route error handler overrides global custom error handler', t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 418)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 418)
+    t.same(JSON.parse(res.payload), {
       message: 'Make a brew',
       statusCode: 418,
       error: 'Wrong Pot Error'
@@ -545,7 +545,7 @@ test('throws when route-level error handler is not a function', t => {
       errorHandler: 'teapot'
     })
   } catch (err) {
-    t.is(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
+    t.equal(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
 })
 
@@ -575,9 +575,9 @@ test('Creates a HEAD route for each GET one (default)', t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(res.body, '')
   })
 
   fastify.inject({
@@ -585,9 +585,9 @@ test('Creates a HEAD route for each GET one (default)', t => {
     url: '/some-light'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.equal(res.body, '')
   })
 })
 
@@ -617,7 +617,7 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 
   fastify.inject({
@@ -625,7 +625,7 @@ test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t 
     url: '/some-light'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -655,9 +655,9 @@ test('Creates a HEAD route for each GET one', t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(res.body, '')
   })
 
   fastify.inject({
@@ -665,9 +665,9 @@ test('Creates a HEAD route for each GET one', t => {
     url: '/some-light'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.equal(res.body, '')
   })
 })
 
@@ -734,9 +734,9 @@ test('Will not create a HEAD route that is not GET', t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(res.body, '')
   })
 
   fastify.inject({
@@ -744,10 +744,10 @@ test('Will not create a HEAD route that is not GET', t => {
     url: '/some-light'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], undefined)
-    t.strictEqual(res.headers['content-length'], '0')
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], undefined)
+    t.equal(res.headers['content-length'], '0')
+    t.equal(res.body, '')
   })
 
   fastify.inject({
@@ -755,7 +755,7 @@ test('Will not create a HEAD route that is not GET', t => {
     url: '/something'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -814,10 +814,10 @@ test('HEAD route should handle properly each response type', t => {
     url: '/json'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
-    t.deepEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.equal(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJSON))}`)
+    t.same(res.body, '')
   })
 
   fastify.inject({
@@ -825,10 +825,10 @@ test('HEAD route should handle properly each response type', t => {
     url: '/string'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'text/plain; charset=utf-8')
-    t.strictEqual(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.equal(res.headers['content-length'], `${Buffer.byteLength(resString)}`)
+    t.equal(res.body, '')
   })
 
   fastify.inject({
@@ -836,10 +836,10 @@ test('HEAD route should handle properly each response type', t => {
     url: '/buffer'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
   })
 
   fastify.inject({
@@ -847,10 +847,10 @@ test('HEAD route should handle properly each response type', t => {
     url: '/buffer-with-content-type'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'image/jpeg')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'image/jpeg')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
   })
 
   fastify.inject({
@@ -858,10 +858,10 @@ test('HEAD route should handle properly each response type', t => {
     url: '/stream'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.strictEqual(res.headers['content-length'], undefined)
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], undefined)
+    t.equal(res.body, '')
   })
 })
 
@@ -890,11 +890,59 @@ test('HEAD route should respect custom onSend handlers', t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.body, '')
-    t.strictEqual(counter, 2)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counter, 2)
+  })
+})
+
+test('route onSend can be function or array of functions', t => {
+  t.plan(12)
+  const counters = { single: 0, multiple: 0 }
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: () => resBuffer,
+    onSend: (res, reply, payload, done) => {
+      counters.single += 1
+      done(null, payload)
+    }
+  })
+
+  const customOnSend = (res, reply, payload, done) => {
+    counters.multiple += 1
+    done(null, payload)
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: () => resBuffer,
+    onSend: [customOnSend, customOnSend]
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.single, 1)
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/more-coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.multiple, 2)
   })
 })
 
@@ -948,7 +996,7 @@ test("HEAD route should handle stream.on('error')", t => {
 
   logStream.once('data', line => {
     const { message, stack } = expectedError
-    t.deepEquals(line.err, { type: 'Error', message, stack })
+    t.same(line.err, { type: 'Error', message, stack })
     t.equal(line.msg, 'Error on Stream found for HEAD route')
     t.equal(line.level, 50)
   })
@@ -958,8 +1006,52 @@ test("HEAD route should handle stream.on('error')", t => {
     url: '/more-coffee'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+  })
+})
+
+test('HEAD route should be exposed by default', t => {
+  t.plan(7)
+
+  const resStream = stream.Readable.from('Hello with error!')
+  const resJson = { hello: 'world' }
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/without-flag',
+    handler: (req, reply) => {
+      return resStream
+    }
+  })
+
+  fastify.route({
+    exposeHeadRoute: true,
+    method: 'GET',
+    path: '/with-flag',
+    handler: (req, reply) => {
+      return resJson
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/without-flag'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/with-flag'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.equal(res.headers['content-length'], `${Buffer.byteLength(JSON.stringify(resJson))}`)
+    t.equal(res.body, '')
   })
 })
 
@@ -992,10 +1084,10 @@ test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
     url: '/one'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/octet-stream')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
   })
 
   fastify.inject({
@@ -1003,7 +1095,7 @@ test('HEAD route should be exposed if route exposeHeadRoute is set', t => {
     url: '/two'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -1039,11 +1131,11 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
     url: '/one'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/pdf')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/pdf')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.headers['x-custom-header'], 'some-custom-header')
+    t.equal(res.body, '')
   })
 })
 
@@ -1051,7 +1143,7 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
   t.plan(7)
 
   function onWarning (code) {
-    t.strictEqual(code, 'FSTDEP007')
+    t.equal(code, 'FSTDEP007')
   }
   const warning = {
     emit: onWarning
@@ -1087,11 +1179,11 @@ test('Set a custom HEAD route before GET one without disabling exposeHeadRoutes 
     url: '/one'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-type'], 'application/pdf')
-    t.strictEqual(res.headers['content-length'], `${resBuffer.byteLength}`)
-    t.strictEqual(res.headers['x-custom-header'], 'some-custom-header')
-    t.strictEqual(res.body, '')
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/pdf')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.headers['x-custom-header'], 'some-custom-header')
+    t.equal(res.body, '')
   })
 })
 
@@ -1116,7 +1208,7 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
 
   fastify.inject({ url: '/prefix/prefix', method: 'HEAD' }, (err, res) => {
     t.error(err)
-    t.strictEquals(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -1143,7 +1235,7 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   const trailingSlashReply = await fastify.inject({ url: '/prefix/', method: 'HEAD' })
   const noneTrailingReply = await fastify.inject({ url: '/prefix', method: 'HEAD' })
 
-  t.equals(doublePrefixReply.statusCode, 404)
-  t.equals(trailingSlashReply.statusCode, 200)
-  t.equals(noneTrailingReply.statusCode, 200)
+  t.equal(doublePrefixReply.statusCode, 404)
+  t.equal(trailingSlashReply.statusCode, 200)
+  t.equal(noneTrailingReply.statusCode, 200)
 })

@@ -21,7 +21,7 @@ test('pretty print - static routes', t => {
     └── hello/world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -43,7 +43,7 @@ test('pretty print - parametric routes', t => {
     └── hello/:world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -67,7 +67,7 @@ test('pretty print - mixed parametric routes', t => {
             └── /world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -89,7 +89,7 @@ test('pretty print - wildcard routes', t => {
     └── hello/* (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -100,7 +100,7 @@ test('pretty print - empty plugins', t => {
   const fastify = Fastify()
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.match(tree, 'bound root')
   })
 })
@@ -115,7 +115,7 @@ test('pretty print - nested plugins', t => {
   })
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.match(tree, 'foo')
     t.match(tree, 'bar')
     t.match(tree, 'baz')

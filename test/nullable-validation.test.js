@@ -61,7 +61,7 @@ test('object or null body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, undefined)
+      t.equal(req.body, undefined)
       reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
@@ -97,8 +97,8 @@ test('object or null body', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { isUndefinedBody: true })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { isUndefinedBody: true })
     })
   })
 })
@@ -112,7 +112,7 @@ test('nullable body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, undefined)
+      t.equal(req.body, undefined)
       reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
@@ -149,8 +149,8 @@ test('nullable body', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { isUndefinedBody: true })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { isUndefinedBody: true })
     })
   })
 })
@@ -164,7 +164,7 @@ test('Nullable body with 204', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, undefined)
+      t.equal(req.body, undefined)
       reply.code(204).send()
     },
     schema: {
@@ -190,8 +190,8 @@ test('Nullable body with 204', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 204)
-      t.strictEqual(body.length, 0)
+      t.equal(response.statusCode, 204)
+      t.equal(body.length, 0)
     })
   })
 })

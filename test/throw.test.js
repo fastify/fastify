@@ -9,7 +9,7 @@ test('Fastify should throw on wrong options', t => {
     Fastify('lol')
     t.fail()
   } catch (e) {
-    t.is(e.message, 'Options must be an object')
+    t.equal(e.message, 'Options must be an object')
     t.pass()
   }
 })
@@ -21,7 +21,7 @@ test('Fastify should throw on multiple assignment to the same route', t => {
   fastify.get('/', () => {})
 
   fastify.ready(err => {
-    t.is(err.message, "Method 'GET' already declared for route '/' with constraints '{}'")
+    t.equal(err.message, "Method 'GET' already declared for route '/' with constraints '{}'")
   })
 })
 
@@ -42,8 +42,8 @@ test('Fastify should throw for an invalid schema, printing the error route - hea
   fastify.get('/not-loaded', { schema: { headers: badSchema } }, () => {})
 
   fastify.ready(err => {
-    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.isLike(err.message, /Failed building the validation schema for GET: \//)
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.match(err.message, /Failed building the validation schema for GET: \//)
   })
 })
 
@@ -66,8 +66,8 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   }, { prefix: 'hello' })
 
   fastify.ready(err => {
-    t.is(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.isLike(err.message, /Failed building the validation schema for POST: \/hello\/form/)
+    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
+    t.match(err.message, /Failed building the validation schema for POST: \/hello\/form/)
   })
 })
 
@@ -156,7 +156,7 @@ test('Should not throw on duplicate decorator encapsulation', t => {
   fastify.decorate('foo2', foo2Obj)
 
   fastify.register(function (fastify, opts, done) {
-    t.notThrow(() => {
+    t.doesNotThrow(() => {
       fastify.decorate('foo2', foo2Obj)
     })
     done()
@@ -175,8 +175,8 @@ test('Should throw on duplicate request decorator', t => {
     fastify.decorateRequest('foo', null)
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_ALREADY_PRESENT')
-    t.is(e.message, 'The decorator \'foo\' has already been added!')
+    t.equal(e.code, 'FST_ERR_DEC_ALREADY_PRESENT')
+    t.equal(e.message, 'The decorator \'foo\' has already been added!')
   }
 })
 
@@ -189,8 +189,8 @@ test('Should throw if request decorator dependencies are not met', t => {
     fastify.decorateRequest('bar', null, ['world'])
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.is(e.message, 'The decorator is missing dependency \'world\'.')
+    t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.equal(e.message, 'The decorator is missing dependency \'world\'.')
   }
 })
 

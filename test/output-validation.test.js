@@ -101,9 +101,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/string'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -114,9 +114,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/number'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 201)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 55 })
+      t.equal(response.statusCode, 201)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 55 })
     })
   })
 
@@ -127,9 +127,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/wrong-object-for-schema'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 201)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), {})
+      t.equal(response.statusCode, 201)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), {})
     })
   })
 
@@ -140,7 +140,7 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/empty'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 204)
+      t.equal(response.statusCode, 204)
     })
   })
 
@@ -151,9 +151,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/400'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'DOOM' })
+      t.equal(response.statusCode, 400)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'DOOM' })
     })
   })
 })

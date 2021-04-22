@@ -17,19 +17,19 @@ test('Regular request', t => {
   }
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
-  t.strictEqual(request.id, 'id')
-  t.strictEqual(request.params, 'params')
-  t.deepEqual(request.raw, req)
-  t.strictEqual(request.query, 'query')
-  t.strictEqual(request.headers, headers)
-  t.strictEqual(request.log, 'log')
-  t.strictEqual(request.ip, 'ip')
-  t.strictEqual(request.ips, undefined)
-  t.strictEqual(request.hostname, 'hostname')
-  t.strictEqual(request.body, undefined)
-  t.strictEqual(request.method, 'GET')
-  t.strictEqual(request.url, '/')
-  t.deepEqual(request.socket, req.socket)
+  t.equal(request.id, 'id')
+  t.equal(request.params, 'params')
+  t.equal(request.raw, req)
+  t.equal(request.query, 'query')
+  t.equal(request.headers, headers)
+  t.equal(request.log, 'log')
+  t.equal(request.ip, 'ip')
+  t.equal(request.ips, undefined)
+  t.equal(request.hostname, 'hostname')
+  t.equal(request.body, undefined)
+  t.equal(request.method, 'GET')
+  t.equal(request.url, '/')
+  t.equal(request.socket, req.socket)
 })
 
 test('Regular request - hostname from authority', t => {
@@ -46,7 +46,7 @@ test('Regular request - hostname from authority', t => {
 
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
-  t.strictEqual(request.hostname, 'authority')
+  t.equal(request.hostname, 'authority')
 })
 
 test('Regular request - host header has precedence over authority', t => {
@@ -63,7 +63,7 @@ test('Regular request - host header has precedence over authority', t => {
   }
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
-  t.strictEqual(request.hostname, 'hostname')
+  t.equal(request.hostname, 'hostname')
 })
 
 test('Request with trust proxy', t => {
@@ -82,19 +82,19 @@ test('Request with trust proxy', t => {
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.strictEqual(request.id, 'id')
-  t.strictEqual(request.params, 'params')
-  t.deepEqual(request.raw, req)
-  t.strictEqual(request.query, 'query')
-  t.strictEqual(request.headers, headers)
-  t.strictEqual(request.log, 'log')
-  t.strictEqual(request.ip, '2.2.2.2')
-  t.deepEqual(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
-  t.strictEqual(request.hostname, 'example.com')
-  t.strictEqual(request.body, undefined)
-  t.strictEqual(request.method, 'GET')
-  t.strictEqual(request.url, '/')
-  t.deepEqual(request.socket, req.socket)
+  t.equal(request.id, 'id')
+  t.equal(request.params, 'params')
+  t.same(request.raw, req)
+  t.equal(request.query, 'query')
+  t.equal(request.headers, headers)
+  t.equal(request.log, 'log')
+  t.equal(request.ip, '2.2.2.2')
+  t.same(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
+  t.equal(request.hostname, 'example.com')
+  t.equal(request.body, undefined)
+  t.equal(request.method, 'GET')
+  t.equal(request.url, '/')
+  t.equal(request.socket, req.socket)
 })
 
 test('Request with trust proxy - no x-forwarded-host header', t => {
@@ -113,7 +113,7 @@ test('Request with trust proxy - no x-forwarded-host header', t => {
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.strictEqual(request.hostname, 'hostname')
+  t.equal(request.hostname, 'hostname')
 })
 
 test('Request with trust proxy - no x-forwarded-host header and fallback to authority', t => {
@@ -132,7 +132,7 @@ test('Request with trust proxy - no x-forwarded-host header and fallback to auth
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.strictEqual(request.hostname, 'authority')
+  t.equal(request.hostname, 'authority')
 })
 
 test('Request with trust proxy - x-forwarded-host header has precedence over host', t => {
@@ -152,7 +152,7 @@ test('Request with trust proxy - x-forwarded-host header has precedence over hos
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.strictEqual(request.hostname, 'example.com')
+  t.equal(request.hostname, 'example.com')
 })
 
 test('Request with trust proxy - handles multiple entries in x-forwarded-host/proto', t => {
@@ -171,6 +171,6 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   const TpRequest = Request.buildRequest(Request, true)
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.type(request, TpRequest)
-  t.strictEqual(request.hostname, 'example.com')
-  t.strictEqual(request.protocol, 'https')
+  t.equal(request.hostname, 'example.com')
+  t.equal(request.protocol, 'https')
 })

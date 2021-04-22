@@ -361,7 +361,7 @@ fastify.addHook('onRoute', (routeOptions) => {
   //Some code
   routeOptions.method
   routeOptions.schema
-  routeOptions.url // the complete URL of the route, it will inclued the prefix if any
+  routeOptions.url // the complete URL of the route, it will include the prefix if any
   routeOptions.path // `url` alias
   routeOptions.routePath // the URL of the route without the prefix
   routeOptions.bodyLimit

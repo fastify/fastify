@@ -29,8 +29,8 @@ test('basic test', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), { name: 'Foo', work: 'Bar' })
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.json(), { name: 'Foo', work: 'Bar' })
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -65,7 +65,7 @@ test('Use the same schema id in different places', t => {
     url: '/123'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), [{ id: 1 }, { id: 2 }, { }])
+    t.same(res.json(), [{ id: 1 }, { id: 2 }, { }])
   })
 })
 
@@ -125,7 +125,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     payload
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), payload)
+    t.same(res.json(), payload)
   })
 
   fastify.inject({
@@ -134,8 +134,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     payload: { test: { id: Date.now() } }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       error: 'Bad Request',
       message: "body should have required property 'address'",
       statusCode: 400
@@ -233,7 +233,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     payload: locations
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), locations)
+    t.same(res.json(), locations)
 
     fastify.inject({
       method: 'POST',
@@ -244,8 +244,8 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       })
     }, (err, res) => {
       t.error(err)
-      t.strictEqual(res.statusCode, 400)
-      t.deepEqual(res.json(), {
+      t.equal(res.statusCode, 400)
+      t.same(res.json(), {
         error: 'Bad Request',
         message: 'body[0].location.email should match format "email"',
         statusCode: 400
@@ -265,10 +265,10 @@ test('Custom setSerializerCompiler', t => {
   }
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    t.equals(method, 'GET')
-    t.equals(url, '/foo/:id')
-    t.equals(httpStatus, '200')
-    t.deepEqual(schema, outSchema)
+    t.equal(method, 'GET')
+    t.equal(url, '/foo/:id')
+    t.equal(httpStatus, '200')
+    t.same(schema, outSchema)
     return data => JSON.stringify(data)
   })
 
@@ -292,7 +292,7 @@ test('Custom setSerializerCompiler', t => {
     url: '/foo/123'
   }, (err, res) => {
     t.error(err)
-    t.equals(res.payload, JSON.stringify({ id: 1 }))
+    t.equal(res.payload, JSON.stringify({ id: 1 }))
   })
 })
 
@@ -335,15 +335,15 @@ test('Custom serializer per route', async t => {
   })
 
   let res = await fastify.inject('/default')
-  t.equals(res.json().mean, 'default')
+  t.equal(res.json().mean, 'default')
 
   res = await fastify.inject('/custom')
-  t.equals(res.json().mean, 'custom')
+  t.equal(res.json().mean, 'custom')
 
   res = await fastify.inject('/route')
-  t.equals(res.json().mean, 'route')
+  t.equal(res.json().mean, 'route')
 
-  t.equals(hit, 4, 'the custom and route serializer has been called')
+  t.equal(hit, 4, 'the custom and route serializer has been called')
 })
 
 test('Reply serializer win over serializer ', t => {
@@ -351,7 +351,7 @@ test('Reply serializer win over serializer ', t => {
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
-    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    t.same(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
     return 'instance serializator'
   })
 
@@ -380,8 +380,8 @@ test('Reply serializer win over serializer ', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'instance serializator')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'instance serializator')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -390,7 +390,7 @@ test('Reply serializer win over serializer ', t => {
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
-    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    t.same(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
     return 'instance serializator'
   })
 
@@ -419,8 +419,8 @@ test('Reply serializer win over serializer ', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'instance serializator')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'instance serializator')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -491,12 +491,12 @@ test('The schema changes the default error handler output', async t => {
   })
 
   let res = await fastify.inject('/501')
-  t.equals(res.statusCode, 501)
-  t.deepEquals(res.json(), { message: '501 message' })
+  t.equal(res.statusCode, 501)
+  t.same(res.json(), { message: '501 message' })
 
   res = await fastify.inject('/500')
-  t.equals(res.statusCode, 500)
-  t.deepEquals(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
+  t.equal(res.statusCode, 500)
+  t.same(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
 })
 
 test('do not crash if status code serializer errors', async t => {
@@ -533,8 +533,8 @@ test('do not crash if status code serializer errors', async t => {
       notfoo: true
     }
   })
-  t.equals(res.statusCode, 500)
-  t.deepEquals(res.json(), {
+  t.equal(res.statusCode, 500)
+  t.same(res.json(), {
     statusCode: 500,
     error: 'Internal Server Error',
     message: '"code" is required!'

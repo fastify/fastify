@@ -92,8 +92,8 @@ test('checkDependencies should throw if a dependency is not present', t => {
     decorator.dependencies(instance, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.is(e.message, 'The decorator is missing dependency \'test\'.')
+    t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
   }
 })
 
@@ -116,8 +116,8 @@ test('decorate should internally call checkDependencies', t => {
     server.add('method', () => {}, ['test'])
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-    t.is(e.message, 'The decorator is missing dependency \'test\'.')
+    t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+    t.equal(e.message, 'The decorator is missing dependency \'test\'.')
   }
 })
 
@@ -138,10 +138,10 @@ test('decorate should recognize getter/setter objects', t => {
       this._a = val
     }
   })
-  t.is(one.hasOwnProperty('foo'), true)
-  t.is(one.foo, undefined)
+  t.equal(one.hasOwnProperty('foo'), true)
+  t.equal(one.foo, undefined)
   one.foo = 'a'
-  t.is(one.foo, 'a')
+  t.equal(one.foo, 'a')
 
   // getter only
   const two = {
@@ -154,6 +154,6 @@ test('decorate should recognize getter/setter objects', t => {
   decorator.add.call(two, 'foo', {
     getter: () => 'a getter'
   })
-  t.is(two.hasOwnProperty('foo'), true)
-  t.is(two.foo, 'a getter')
+  t.equal(two.hasOwnProperty('foo'), true)
+  t.equal(two.foo, 'a getter')
 })

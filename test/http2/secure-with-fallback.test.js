@@ -46,7 +46,7 @@ fastify.listen(0, err => {
     const url = `https://localhost:${fastify.server.address().port}/error`
     const res = await h2url.concat({ url })
 
-    t.strictEqual(res.headers[':status'], 500)
+    t.equal(res.headers[':status'], 500)
   })
 
   test('https post', async (t) => {
@@ -62,8 +62,8 @@ fastify.listen(0, err => {
       }
     })
 
-    t.strictEqual(res.headers[':status'], 200)
-    t.deepEqual(JSON.parse(res.body), { hello: 'http2' })
+    t.equal(res.headers[':status'], 200)
+    t.same(JSON.parse(res.body), { hello: 'http2' })
   })
 
   test('https get request', async (t) => {
@@ -72,9 +72,9 @@ fastify.listen(0, err => {
     const url = `https://localhost:${fastify.server.address().port}`
     const res = await h2url.concat({ url })
 
-    t.strictEqual(res.headers[':status'], 200)
-    t.strictEqual(res.headers['content-length'], '' + JSON.stringify(msg).length)
-    t.deepEqual(JSON.parse(res.body), msg)
+    t.equal(res.headers[':status'], 200)
+    t.equal(res.headers['content-length'], '' + JSON.stringify(msg).length)
+    t.same(JSON.parse(res.body), msg)
   })
 
   test('http1 get request', t => {
@@ -85,9 +85,9 @@ fastify.listen(0, err => {
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -99,7 +99,7 @@ fastify.listen(0, err => {
       rejectUnauthorized: false
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 })

@@ -23,14 +23,14 @@ test('Should honor ignoreTrailingSlash option', t => {
 
     sget.concat(baseUrl + '/test', (err, res, data) => {
       if (err) t.threw(err)
-      t.is(res.statusCode, 200)
-      t.is(data.toString(), 'test')
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
     })
 
     sget.concat(baseUrl + '/test/', (err, res, data) => {
       if (err) t.threw(err)
-      t.is(res.statusCode, 200)
-      t.is(data.toString(), 'test')
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
     })
   })
 })
@@ -48,7 +48,7 @@ test('Should honor maxParamLength option', t => {
     url: '/test/123456789'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -56,7 +56,7 @@ test('Should honor maxParamLength option', t => {
     url: '/test/123456789abcd'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -65,11 +65,11 @@ test('Should expose router options via getters on request and reply', t => {
   const fastify = Fastify()
 
   fastify.get('/test/:id', (req, reply) => {
-    t.strictEqual(reply.context.config.url, '/test/:id')
-    t.strictEqual(reply.context.config.method, 'GET')
-    t.strictEqual(req.routerPath, '/test/:id')
-    t.strictEqual(req.routerMethod, 'GET')
-    t.strictEqual(req.is404, false)
+    t.equal(reply.context.config.url, '/test/:id')
+    t.equal(reply.context.config.method, 'GET')
+    t.equal(req.routerPath, '/test/:id')
+    t.equal(req.routerMethod, 'GET')
+    t.equal(req.is404, false)
     reply.send({ hello: 'world' })
   })
 
@@ -78,7 +78,7 @@ test('Should expose router options via getters on request and reply', t => {
     url: '/test/123456789'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -87,7 +87,7 @@ test('Should set is404 flag for unmatched paths', t => {
   const fastify = Fastify()
 
   fastify.setNotFoundHandler((req, reply) => {
-    t.strictEqual(req.is404, true)
+    t.equal(req.is404, true)
     reply.code(404).send({ error: 'Not Found', message: 'Four oh for', statusCode: 404 })
   })
 
@@ -96,7 +96,7 @@ test('Should set is404 flag for unmatched paths', t => {
     url: '/nonexist/123456789'
   }, (error, res) => {
     t.error(error)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -124,7 +124,7 @@ test('Should honor frameworkErrors option', t => {
     },
     (err, res) => {
       t.error(err)
-      t.equals(res.body, '\'%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.equal(res.body, '\'%world\' is not a valid url component - FST_ERR_BAD_URL')
     }
   )
 })

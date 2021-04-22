@@ -943,20 +943,31 @@ if (statusCode >= 500) {
 <a name="print-routes"></a>
 #### printRoutes
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.<br/>
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging. Alternatively, `fastify.printRoutes({ commonPrefix: false })` can be used to print the flattened routes tree.<br/>
 *Remember to call it inside or after a `ready` call.*
 
 ```js
 fastify.get('/test', () => {})
 fastify.get('/test/hello', () => {})
 fastify.get('/hello/world', () => {})
+fastify.get('/helicopter', () => {})
 
 fastify.ready(() => {
   console.log(fastify.printRoutes())
   // └── /
-  //   ├── test (GET)
-  //   │   └── /hello (GET)
-  //   └── hello/world (GET)
+  //     ├── test (GET)
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         └── licopter (GET)
+
+  console.log(fastify.printRoutes({ commonPrefix: false }))
+  // └── / (-)
+  //     ├── test (GET)
+  //     │   └── /hello (GET)
+  //     ├── hello/world (GET)
+  //     └── helicopter (GET)
+  
 })
 ```
 

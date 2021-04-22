@@ -30,7 +30,7 @@ const testRequestValues = (t, req, options) => {
     t.equal(req.hostname, options.hostname, 'gets hostname from x-forwarded-host')
   }
   if (options.ips) {
-    t.deepEqual(req.ips, options.ips, 'gets ips from x-forwarded-for')
+    t.same(req.ips, options.ips, 'gets ips from x-forwarded-for')
   }
   if (options.protocol) {
     t.ok(req.protocol, 'protocol is defined')
@@ -53,7 +53,7 @@ test('trust proxy, not add properties to node req', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()
@@ -74,7 +74,7 @@ test('trust proxy chain', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()
@@ -93,7 +93,7 @@ test('trust proxy function', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()
@@ -112,7 +112,7 @@ test('trust proxy number', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()
@@ -131,7 +131,7 @@ test('trust proxy IP addresses', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()
@@ -158,7 +158,7 @@ test('trust proxy protocol', (t) => {
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
-  t.tearDown(app.close.bind(app))
+  t.teardown(app.close.bind(app))
 
   app.listen(0, (err) => {
     app.server.unref()

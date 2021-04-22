@@ -8,7 +8,7 @@ const noop = () => {}
 
 test('hooks should have 4 array with the registered hooks', t => {
   const hooks = new Hooks()
-  t.is(typeof hooks, 'object')
+  t.equal(typeof hooks, 'object')
   t.ok(Array.isArray(hooks.onRequest))
   t.ok(Array.isArray(hooks.onSend))
   t.ok(Array.isArray(hooks.preParsing))
@@ -22,32 +22,32 @@ test('hooks should have 4 array with the registered hooks', t => {
 test('hooks.add should add a hook to the given hook', t => {
   const hooks = new Hooks()
   hooks.add('onRequest', noop)
-  t.is(hooks.onRequest.length, 1)
-  t.is(typeof hooks.onRequest[0], 'function')
+  t.equal(hooks.onRequest.length, 1)
+  t.equal(typeof hooks.onRequest[0], 'function')
 
   hooks.add('preParsing', noop)
-  t.is(hooks.preParsing.length, 1)
-  t.is(typeof hooks.preParsing[0], 'function')
+  t.equal(hooks.preParsing.length, 1)
+  t.equal(typeof hooks.preParsing[0], 'function')
 
   hooks.add('preValidation', noop)
-  t.is(hooks.preValidation.length, 1)
-  t.is(typeof hooks.preValidation[0], 'function')
+  t.equal(hooks.preValidation.length, 1)
+  t.equal(typeof hooks.preValidation[0], 'function')
 
   hooks.add('preHandler', noop)
-  t.is(hooks.preHandler.length, 1)
-  t.is(typeof hooks.preHandler[0], 'function')
+  t.equal(hooks.preHandler.length, 1)
+  t.equal(typeof hooks.preHandler[0], 'function')
 
   hooks.add('onResponse', noop)
-  t.is(hooks.onResponse.length, 1)
-  t.is(typeof hooks.onResponse[0], 'function')
+  t.equal(hooks.onResponse.length, 1)
+  t.equal(typeof hooks.onResponse[0], 'function')
 
   hooks.add('onSend', noop)
-  t.is(hooks.onSend.length, 1)
-  t.is(typeof hooks.onSend[0], 'function')
+  t.equal(hooks.onSend.length, 1)
+  t.equal(typeof hooks.onSend[0], 'function')
 
   hooks.add('onError', noop)
-  t.is(hooks.onError.length, 1)
-  t.is(typeof hooks.onError[0], 'function')
+  t.equal(hooks.onError.length, 1)
+  t.equal(typeof hooks.onError[0], 'function')
   t.end()
 })
 
@@ -69,15 +69,15 @@ test('should throw on wrong parameters', t => {
     hooks.add(null, noop)
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
-    t.is(e.message, 'The hook name must be a string')
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_TYPE')
+    t.equal(e.message, 'The hook name must be a string')
   }
 
   try {
     hooks.add('', null)
     t.fail()
   } catch (e) {
-    t.is(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
-    t.is(e.message, 'The hook callback must be a function')
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
+    t.equal(e.message, 'The hook callback must be a function')
   }
 })

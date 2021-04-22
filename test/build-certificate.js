@@ -7,7 +7,7 @@ const pem = require('pem')
 
 const createCertificate = util.promisify(pem.createCertificate)
 
-(async () => {
+async function buildCertificate () {
   try {
     const keys = await createCertificate({ days: 1, selfSigned: true })
     const certFile = path.join(__dirname, 'https', 'fastify.cert')
@@ -22,4 +22,6 @@ const createCertificate = util.promisify(pem.createCertificate)
     console.log(error)
     process.exit(1)
   }
-})()
+}
+
+module.exports = { buildCertificate }

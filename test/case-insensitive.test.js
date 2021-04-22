@@ -11,7 +11,7 @@ test('case insensitive', t => {
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/foo', (req, reply) => {
     reply.send({ hello: 'world' })
@@ -25,8 +25,8 @@ test('case insensitive', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), {
         hello: 'world'
       })
     })
@@ -39,7 +39,7 @@ test('case insensitive inject', t => {
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/foo', (req, reply) => {
     reply.send({ hello: 'world' })
@@ -53,8 +53,8 @@ test('case insensitive inject', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/FOO'
     }, (err, response) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(response.payload), {
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(response.payload), {
         hello: 'world'
       })
     })
@@ -67,10 +67,10 @@ test('case insensitive (parametric)', t => {
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/foo/:param', (req, reply) => {
-    t.strictEqual(req.params.param, 'bAr')
+    t.equal(req.params.param, 'bAr')
     reply.send({ hello: 'world' })
   })
 
@@ -82,8 +82,8 @@ test('case insensitive (parametric)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), {
         hello: 'world'
       })
     })
@@ -96,10 +96,10 @@ test('case insensitive (wildcard)', t => {
   const fastify = Fastify({
     caseSensitive: false
   })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/foo/*', (req, reply) => {
-    t.strictEqual(req.params['*'], 'bAr/baZ')
+    t.equal(req.params['*'], 'bAr/baZ')
     reply.send({ hello: 'world' })
   })
 
@@ -111,8 +111,8 @@ test('case insensitive (wildcard)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/FoO/bAr/baZ'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), {
         hello: 'world'
       })
     })

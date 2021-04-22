@@ -27,7 +27,7 @@ test('Should return 503 while closing - pipelining', t => {
       instance.request(
         { path: '/', method: 'GET' }
       ).then(data => {
-        t.strictEqual(data.statusCode, code)
+        t.equal(data.statusCode, code)
       }).catch((e) => {
         t.fail(e)
       })
@@ -60,7 +60,7 @@ test('Should not return 503 while closing - pipelining - return503OnClosing', t 
       instance.request(
         { path: '/', method: 'GET' }
       ).then(data => {
-        t.strictEqual(data.statusCode, code)
+        t.equal(data.statusCode, code)
       }).catch((e) => {
         t.fail(e)
       })

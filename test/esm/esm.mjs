@@ -9,5 +9,5 @@ t.test('esm support', async t => {
 
   await fastify.ready()
 
-  t.strictEqual(fastify.foo, 'bar')
+  t.equal(fastify.foo, 'bar')
 })

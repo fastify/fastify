@@ -23,7 +23,7 @@ test('Should be able to override the default use API', t => {
   t.plan(1)
   const fastify = Fastify()
   fastify.decorate('use', () => true)
-  t.strictEqual(fastify.use(), true)
+  t.equal(fastify.use(), true)
 })
 
 test('Cannot decorate use twice', t => {
@@ -43,7 +43,7 @@ test('Encapsulation works', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('use', () => true)
-    t.strictEqual(instance.use(), true)
+    t.equal(instance.use(), true)
     done()
   })
 

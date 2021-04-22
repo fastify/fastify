@@ -264,6 +264,7 @@ function fastify (options) {
     ready: null,
     onClose: null,
     close: null,
+    printPlugins: null,
     // http server
     listen: listen,
     server: server,
@@ -347,6 +348,8 @@ function fastify (options) {
   avvio.on('start', () => (fastify[kState].started = true))
   fastify[kAvvioBoot] = fastify.ready // the avvio ready function
   fastify.ready = ready // overwrite the avvio ready function
+  fastify.printPlugins = avvio.prettyPrint.bind(avvio)
+
   // cache the closing value, since we are checking it in an hot path
   avvio.once('preReady', () => {
     fastify.onClose((instance, done) => {
@@ -533,7 +536,7 @@ function fastify (options) {
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
-    // config issue on the the load balancer side.
+    // config issue on the load balancer side.
     this.log.trace({ err }, 'client error')
 
     // If the socket is not writable, there is no reason to try to send data.

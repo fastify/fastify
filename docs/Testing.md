@@ -78,7 +78,7 @@ const test = async () => {
 test()
 ```
 
-First, our code will run inside an asynchronous function, giving us access to async/await. 
+First, our code will run inside an asynchronous function, giving us access to async/await.
 
 `.inject` insures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
 
@@ -116,7 +116,7 @@ test('requests the "/" route', async t => {
     method: 'GET',
     url: '/'
   })
-  t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
+  t.equal(response.statusCode, 200, 'returns a status code of 200')
 })
 ```
 
@@ -191,7 +191,7 @@ function buildFastify () {
   fastify.get('/', function (request, reply) {
     reply.send({ hello: 'world' })
   })
-  
+
   return fastify
 }
 
@@ -205,21 +205,21 @@ const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(4)
-  
+
   const fastify = buildFastify()
-  
+
   // At the end of your tests it is highly recommended to call `.close()`
   // to ensure that all connections to external services get closed.
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.inject({
     method: 'GET',
     url: '/'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(response.json(), { hello: 'world' })
+    t.equal(response.statusCode, 200)
+    t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(response.json(), { hello: 'world' })
   })
 })
 ```
@@ -239,22 +239,22 @@ const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(5)
-  
+
   const fastify = buildFastify()
-  
-  t.tearDown(() => fastify.close())
-  
+
+  t.teardown(() => fastify.close())
+
   fastify.listen(0, (err) => {
     t.error(err)
-    
+
     request({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -269,15 +269,15 @@ const buildFastify = require('./app')
 tap.test('GET `/` route', async (t) => {
   const fastify = buildFastify()
 
-  t.tearDown(() => fastify.close())
-  
+  t.teardown(() => fastify.close())
+
   await fastify.ready()
-  
+
   const response = await supertest(fastify.server)
     .get('/')
     .expect(200)
     .expect('Content-Type', 'application/json; charset=utf-8')
-  t.deepEqual(response.body, { hello: 'world' })
+  t.same(response.body, { hello: 'world' })
 })
 ```
 

@@ -31,7 +31,7 @@ test('inside register', t => {
     f.addHook('onClose', onClose)
     function onClose (instance, done) {
       t.ok(instance.prototype === fastify.prototype)
-      t.strictEqual(instance, f)
+      t.equal(instance, f)
       done()
     }
 
@@ -55,7 +55,7 @@ test('close order', t => {
 
   fastify.register(function (f, opts, done) {
     f.addHook('onClose', (instance, done) => {
-      t.is(order.shift(), 1)
+      t.equal(order.shift(), 1)
       done()
     })
 
@@ -63,7 +63,7 @@ test('close order', t => {
   })
 
   fastify.addHook('onClose', (instance, done) => {
-    t.is(order.shift(), 2)
+    t.equal(order.shift(), 2)
     done()
   })
 
@@ -72,7 +72,7 @@ test('close order', t => {
 
     fastify.close((err) => {
       t.error(err)
-      t.is(order.shift(), 3)
+      t.equal(order.shift(), 3)
     })
   })
 })
@@ -84,20 +84,20 @@ test('close order - async', async t => {
 
   fastify.register(function (f, opts, done) {
     f.addHook('onClose', async instance => {
-      t.is(order.shift(), 1)
+      t.equal(order.shift(), 1)
     })
 
     done()
   })
 
   fastify.addHook('onClose', () => {
-    t.is(order.shift(), 2)
+    t.equal(order.shift(), 2)
   })
 
   await fastify.listen(0)
   await fastify.close()
 
-  t.is(order.shift(), 3)
+  t.equal(order.shift(), 3)
 })
 
 test('should not throw an error if the server is not listening', t => {
@@ -126,7 +126,7 @@ test('onClose should keep the context', t => {
 
     function onClose (i, done) {
       t.ok(i.test)
-      t.strictEqual(i, instance)
+      t.equal(i, instance)
       done()
     }
 
@@ -153,7 +153,7 @@ test('Should return error while closing (promise) - injection', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
     fastify.close()
 
     process.nextTick(() => {
@@ -185,7 +185,7 @@ test('Should return error while closing (callback) - injection', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
     fastify.close()
 
     setTimeout(() => {
@@ -274,7 +274,7 @@ test('Cannot be reopened the closed server without listen callback', async t => 
     await fastify.listen(0)
   } catch (err) {
     t.ok(err)
-    t.is(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+    t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
   }
 })
 
@@ -290,7 +290,7 @@ test('Cannot be reopened the closed server has listen callback', async t => {
       reject(err)
     })
   }).catch(err => {
-    t.is(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
+    t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
     t.ok(err)
   })
 })

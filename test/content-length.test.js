@@ -23,9 +23,9 @@ test('default 413 with bodyLimit option', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 413)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 413)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
       message: 'Request body is too large',
@@ -54,9 +54,9 @@ test('default 400 with wrong content-length', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
       message: 'Request body size did not match Content-Length',
@@ -91,9 +91,9 @@ test('custom 413 with bodyLimit option', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 413)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 413)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Payload Too Large',
       code: 'FST_ERR_CTP_BODY_TOO_LARGE',
       message: 'Request body is too large',
@@ -129,9 +129,9 @@ test('custom 400 with wrong content-length', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       code: 'FST_ERR_CTP_INVALID_CONTENT_LENGTH',
       message: 'Request body size did not match Content-Length',
@@ -156,7 +156,7 @@ test('#2214 - wrong content-length', t => {
     path: '/'
   })
     .then(response => {
-      t.strictEqual(response.headers['content-length'], '' + response.rawPayload.length)
+      t.equal(response.headers['content-length'], '' + response.rawPayload.length)
       t.end()
     })
 })
@@ -181,9 +181,9 @@ test('#2543 - wrong content-length with errorHandler', t => {
     path: '/'
   })
     .then(res => {
-      t.strictEqual(res.statusCode, 500)
-      t.strictEqual(res.headers['content-length'], '' + res.rawPayload.length)
-      t.deepEqual(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
+      t.equal(res.statusCode, 500)
+      t.equal(res.headers['content-length'], '' + res.rawPayload.length)
+      t.same(JSON.parse(res.payload), { message: 'longer than 2 bytes' })
       t.end()
     })
 })

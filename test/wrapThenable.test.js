@@ -19,7 +19,7 @@ test('should reject immediately when reply[kReplySentOverwritten] is true', t =>
   reply[kReplySentOverwritten] = true
   reply.log = {
     error: ({ err }) => {
-      t.strictEqual(err.message, 'Reply sent already')
+      t.equal(err.message, 'Reply sent already')
     }
   }
 

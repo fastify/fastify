@@ -416,7 +416,7 @@ Fastify supports constraining routes to match only certain requests based on som
 #### Version Constraints
 
 You can provide a `version` key in the `constraints` option to a route. Versioned routes allows you to declare multiple handlers for the same HTTP route path which will then be matched according to each request's `Accept-Version` header. The `Accept-Version` header value should follow the [semver](http://semver.org/) specification, and routes should be declared with exact semver versions for matching.<br/>
-Fastify will require a request `Accept-Version` header to be set if the route has a version set, and will prefer a versioned route to a non-versioned route for the same path. Advanced version ranges ranges and pre-releases currently are not supported.<br/>
+Fastify will require a request `Accept-Version` header to be set if the route has a version set, and will prefer a versioned route to a non-versioned route for the same path. Advanced version ranges and pre-releases currently are not supported.<br/>
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
 
 ```js

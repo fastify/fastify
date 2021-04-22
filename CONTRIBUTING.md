@@ -15,15 +15,15 @@ Read the [GOVERNANCE](GOVERNANCE.md) to get more information.
 
 There are a few basic ground-rules for contributors:
 
-1. **No `--force` pushes** on `master` or modifying the Git history in any way after a PR has been merged.
-1. **Non-master branches** ought to be used for ongoing work.
+1. **No `--force` pushes** on `main` or modifying the Git history in any way after a PR has been merged.
+1. **Non-main branches** ought to be used for ongoing work.
 1. **External API changes and significant modifications** ought to be subject to an **internal pull-request** to solicit feedback from other contributors.
 1. Internal pull-requests to solicit feedback are *encouraged* for any other non-trivial contribution but left to the discretion of the contributor.
 1. Contributors should attempt to adhere to the prevailing code-style.
 1. At least two contributors, or one core member, must approve pull-requests prior to merging.
 1. All integrated CI services must be green before a pull-request can be merged.
-1. SemVer-major changes in this repository must be merged by a lead maintainer.
-1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead maintainers team.
+1. A lead maintainer must merge SemVer-major changes in this repository.
+1. In case it is not possible to reach consensus in a pull-request, the decision is left to the lead maintainer's team.
 
 ### Fastify v1.x
 
@@ -39,14 +39,14 @@ Declaring formal releases remains the prerogative of the lead maintainers. Do no
 
 ## Plugins
 
-The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with few adjustments:
+The contributors to the Fastify's plugins must attend the same rules of the Fastify repository with a few adjustments:
 
-1. A release can be published by any member.
+1. Any member can publish a release.
 1. The plugin version must follow the [semver](https://semver.org/) specification.
-1. The Node.js compatibility must match with the Fastify's master branch.
+1. The Node.js compatibility must match with the Fastify's main branch.
 1. The new release must have the changelog information stored in the GitHub release.
      For this scope we suggest to adopt a tool like [`releasify`](https://github.com/fastify/releasify) to archive this.
-1. PR opened by bots (like Greenkeeper) can be merged if the CI is green and the Node.js versions supported are the same of the plugin.
+1. PR opened by bots (like Dependabot) can be merged if the CI is green and the Node.js versions supported are the same of the plugin.
 
 ## Changes to this arrangement
 
@@ -63,8 +63,8 @@ Welcome to the team! We are happy to have you. Before you start, please complete
   - [GitHub 2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
   - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
 2. Choose which team to join *(more than one is ok!)* based on how you want to help.
-3. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the team you have choosen in the [README.md](./README.md) and [package.json](./package.json) *(if you are part of the core team)* files. The members lists are sorted alphabetically; make sure to add your name in the proper order.
-4. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
+3. Open a pull request to [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds your name, username, and email to the team you have choosen in the [README.md](./README.md) and [package.json](./package.json) *(if you are part of the core team)* files. The members lists are sorted alphabetically; make sure to add your name in the proper order.
+4. Open a pull request to [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) adding yourself to the [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml) file. This list is also sorted alphabetically so make sure to add your name in the proper order. Use your GitHub profile icon for the `picture:` field.
 5. The person that does the onboarding must add you to the [npm org](https://www.npmjs.com/org/fastify), so that you can help maintaining the official plugins.
 
 ### Offboarding Collaborators
@@ -73,8 +73,8 @@ We are thankful to you and we are really glad to have worked with you.
 We'll be really happy to see you here again if you want to come back, but for now the person that did the onboarding must:
 1. Ask the collaborator if they want to stay or not.
 1. If the collaborator can't work with us anymore, they should:
-  1. Open a pull request to [`fastify/fastify:master`](https://github.com/fastify/fastify/pulls) and move themselves to the *Past Collaborators* section.
-  2. Open a pull request to [`fastify/website:master`](https://github.com/fastify/website/pulls) and move themselves to the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/master/src/website/data/team.yml) file.
+  1. Open a pull request to [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) and move themselves to the *Past Collaborators* section.
+  2. Open a pull request to [`fastify/website:HEAD`](https://github.com/fastify/website/pulls) and move themselves to the *Past Collaborators* section in the [team.yml](https://github.com/fastify/website/blob/HEAD/src/website/data/team.yml) file.
 
 The person that did the onboarding must:
 1. If the collaborator doesn't reply to the ping in reasonable time, open the pull requests described above.

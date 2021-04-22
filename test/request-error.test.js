@@ -26,9 +26,9 @@ test('default 400 on request error', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
@@ -65,9 +65,9 @@ test('default 400 on request error with custom error handler', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
@@ -133,7 +133,7 @@ test('error handler binding', t => {
   const fastify = Fastify()
 
   fastify.setErrorHandler(function (err, request, reply) {
-    t.strictEqual(this, fastify)
+    t.equal(this, fastify)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -155,9 +155,9 @@ test('error handler binding', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(JSON.parse(res.payload), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(JSON.parse(res.payload), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
@@ -172,12 +172,12 @@ test('encapsulated error handler binding', t => {
 
   fastify.register(function (app, opts, done) {
     app.decorate('hello', 'world')
-    t.strictEqual(app.hello, 'world')
+    t.equal(app.hello, 'world')
     app.post('/', function (req, reply) {
       reply.send({ hello: 'world' })
     })
     app.setErrorHandler(function (err, request, reply) {
-      t.strictEqual(this.hello, 'world')
+      t.equal(this.hello, 'world')
       reply
         .code(err.statusCode)
         .type('application/json; charset=utf-8')
@@ -197,13 +197,13 @@ test('encapsulated error handler binding', t => {
     }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.strictEqual(res.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(res.json(), {
       error: 'Bad Request',
       message: 'Simulated',
       statusCode: 400
     })
-    t.strictEqual(fastify.hello, undefined)
+    t.equal(fastify.hello, undefined)
   })
 })

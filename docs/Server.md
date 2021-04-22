@@ -4,10 +4,9 @@
 ## Factory
 
 The Fastify module exports a factory function that is used to create new
-<a href="./Server.md"><code><b>Fastify server</b></code></a>
-instances. This factory function accepts an options object which is used to
-customize the resulting instance. This document describes the properties
-available in that options object.
+<code><b>Fastify server</b></code> instances. This factory function accepts
+an options object which is used to customize the resulting instance. This
+document describes the properties available in that options object.
 
 <a name="factory-http2"></a>
 ### `http2`
@@ -192,7 +191,7 @@ fastify.addHook('onResponse', (req, reply, done) => {
 })
 ```
 
-Please note that this setting will also disable an error log written by the the default `onResponse` hook on reply callback errors.
+Please note that this setting will also disable an error log written by the default `onResponse` hook on reply callback errors.
 
 <a name="custom-http-server"></a>
 ### `serverFactory`
@@ -986,27 +985,60 @@ if (statusCode >= 500) {
 <a name="print-routes"></a>
 #### printRoutes
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.<br/>
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging. Alternatively, `fastify.printRoutes({ commonPrefix: false })` can be used to print the flattened routes tree.<br/>
 *Remember to call it inside or after a `ready` call.*
 
 ```js
 fastify.get('/test', () => {})
 fastify.get('/test/hello', () => {})
 fastify.get('/hello/world', () => {})
+fastify.get('/helicopter', () => {})
 
 fastify.ready(() => {
   console.log(fastify.printRoutes())
   // └── /
-  //   ├── test (GET)
-  //   │   └── /hello (GET)
-  //   └── hello/world (GET)
+  //     ├── test (GET)
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         └── licopter (GET)
+
+  console.log(fastify.printRoutes({ commonPrefix: false }))
+  // └── / (-)
+  //     ├── test (GET)
+  //     │   └── /hello (GET)
+  //     ├── hello/world (GET)
+  //     └── helicopter (GET)
+  
+})
+```
+
+<a name="print-plugins"></a>
+#### printPlugins
+
+`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.<br/>
+*Remember to call it inside or after a `ready` call.*
+
+```js
+fastify.register(async function foo (instance) {
+  instance.register(async function bar () {})
+})
+fastify.register(async function baz () {})
+
+fastify.ready(() => {
+  console.error(fastify.printPlugins())
+  // will output the following to stderr:
+  // └── root
+  //   ├── foo
+  //   │   └── bar
+  //   └── baz
 })
 ```
 
 <a name="addContentTypeParser"></a>
 #### addContentTypeParser
 
-`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string or string array.
+`fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string, string array or RegExp.
 
 ```js
 // The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.

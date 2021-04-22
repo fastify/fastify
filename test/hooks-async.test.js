@@ -25,8 +25,8 @@ test('async hooks', t => {
 
   fastify.addHook('preHandler', async function (request, reply) {
     await sleep(1)
-    t.is(request.test, 'the request is coming')
-    t.is(reply.test, 'the reply has come')
+    t.equal(request.test, 'the request is coming')
+    t.equal(reply.test, 'the reply has come')
     if (request.raw.method === 'HEAD') {
       throw new Error('some error')
     }
@@ -43,8 +43,8 @@ test('async hooks', t => {
   })
 
   fastify.get('/', function (request, reply) {
-    t.is(request.test, 'the request is coming')
-    t.is(reply.test, 'the reply has come')
+    t.equal(request.test, 'the request is coming')
+    t.equal(reply.test, 'the reply has come')
     reply.code(200).send({ hello: 'world' })
   })
 
@@ -65,9 +65,9 @@ test('async hooks', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -75,7 +75,7 @@ test('async hooks', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
 
     sget({
@@ -83,7 +83,7 @@ test('async hooks', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 500)
+      t.equal(response.statusCode, 500)
     })
   })
 })
@@ -97,19 +97,19 @@ test('modify payload', t => {
 
   fastify.addHook('onSend', async function (request, reply, thePayload) {
     t.ok('onSend called')
-    t.deepEqual(JSON.parse(thePayload), payload)
+    t.same(JSON.parse(thePayload), payload)
     return thePayload.replace('world', 'modified')
   })
 
   fastify.addHook('onSend', async function (request, reply, thePayload) {
     t.ok('onSend called')
-    t.deepEqual(JSON.parse(thePayload), modifiedPayload)
+    t.same(JSON.parse(thePayload), modifiedPayload)
     return anotherPayload
   })
 
   fastify.addHook('onSend', async function (request, reply, thePayload) {
     t.ok('onSend called')
-    t.strictEqual(thePayload, anotherPayload)
+    t.equal(thePayload, anotherPayload)
   })
 
   fastify.get('/', (req, reply) => {
@@ -121,9 +121,9 @@ test('modify payload', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, anotherPayload)
-    t.strictEqual(res.statusCode, 200)
-    t.strictEqual(res.headers['content-length'], '18')
+    t.equal(res.payload, anotherPayload)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-length'], '18')
   })
 })
 
@@ -160,8 +160,8 @@ test('onRequest hooks should be able to block a request', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.is(res.payload, 'hello')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
   })
 })
 
@@ -190,7 +190,7 @@ test('preParsing hooks should be able to modify the payload', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+    t.same(JSON.parse(res.payload), { hello: 'another world' })
   })
 })
 
@@ -200,8 +200,8 @@ test('preParsing hooks can completely ignore the payload - deprecated syntax', t
 
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.strictEqual(warning.name, 'FastifyDeprecation')
-    t.strictEqual(warning.code, 'FSTDEP004')
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, 'FSTDEP004')
   }
 
   fastify.addHook('preParsing', async (req, reply) => {
@@ -219,7 +219,7 @@ test('preParsing hooks can completely ignore the payload - deprecated syntax', t
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'world' })
+    t.same(JSON.parse(res.payload), { hello: 'world' })
 
     process.removeListener('warning', onWarning)
   })
@@ -245,8 +245,8 @@ test('preParsing hooks should handle errors', t => {
     payload: { hello: 'world' }
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 501)
-    t.deepEqual(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
+    t.equal(res.statusCode, 501)
+    t.same(JSON.parse(res.payload), { error: 'Not Implemented', message: 'kaboom', statusCode: 501 })
   })
 })
 
@@ -279,8 +279,8 @@ test('preHandler hooks should be able to block a request', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.is(res.payload, 'hello')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
   })
 })
 
@@ -313,8 +313,54 @@ test('preValidation hooks should be able to block a request', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.is(res.payload, 'hello')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
+  })
+})
+
+test('preValidation hooks should be able to change request body before validation', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.addHook('preValidation', async (req, _reply) => {
+    const buff = Buffer.from(req.body.message, 'base64')
+    req.body = JSON.parse(buff.toString('utf-8'))
+  })
+
+  fastify.post(
+    '/',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string'
+            },
+            bar: {
+              type: 'number'
+            }
+          },
+          required: ['foo', 'bar']
+        }
+      }
+    },
+    (req, reply) => {
+      t.pass()
+      reply.status(200).send('hello')
+    }
+  )
+
+  fastify.inject({
+    url: '/',
+    method: 'POST',
+    payload: {
+      message: Buffer.from(JSON.stringify({ foo: 'example', bar: 1 })).toString('base64')
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
   })
 })
 
@@ -335,8 +381,8 @@ test('preSerialization hooks should be able to modify the payload', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.deepEqual(JSON.parse(res.payload), { hello: 'another world' })
+    t.equal(res.statusCode, 200)
+    t.same(JSON.parse(res.payload), { hello: 'another world' })
   })
 })
 
@@ -357,8 +403,8 @@ test('preSerialization hooks should handle errors', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 500)
-    t.deepEqual(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
+    t.equal(res.statusCode, 500)
+    t.same(JSON.parse(res.payload), { error: 'Internal Server Error', message: 'kaboom', statusCode: 500 })
   })
 })
 
@@ -383,11 +429,11 @@ test('preValidation hooks should handle throwing null', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 500)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 500)
+    t.same(res.json(), {
       error: 'Internal Server Error',
       code: 'FST_ERR_SEND_UNDEFINED_ERR',
-      message: 'Undefined error has occured',
+      message: 'Undefined error has occurred',
       statusCode: 500
     })
   })
@@ -409,7 +455,7 @@ test('preValidation hooks should handle throwing a string', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 500)
+    t.equal(res.statusCode, 500)
     t.equal(res.payload, 'this is an error')
   })
 })
@@ -443,8 +489,8 @@ test('onRequest hooks should be able to block a request (last hook)', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.is(res.payload, 'hello')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
   })
 })
 
@@ -473,8 +519,8 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
-    t.is(res.payload, 'hello')
+    t.equal(res.statusCode, 200)
+    t.equal(res.payload, 'hello')
   })
 })
 
@@ -517,7 +563,7 @@ test('onRequest respond with a stream', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -538,7 +584,7 @@ test('preHandler respond with a stream', t => {
       const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
       reply.send(stream)
       reply.raw.once('finish', () => {
-        t.is(order.shift(), 2)
+        t.equal(order.shift(), 2)
         resolve()
       })
     })
@@ -549,8 +595,8 @@ test('preHandler respond with a stream', t => {
   })
 
   fastify.addHook('onSend', async (req, reply, payload) => {
-    t.is(order.shift(), 1)
-    t.is(typeof payload.pipe, 'function')
+    t.equal(order.shift(), 1)
+    t.equal(typeof payload.pipe, 'function')
   })
 
   fastify.addHook('onResponse', async (request, reply) => {
@@ -566,7 +612,7 @@ test('preHandler respond with a stream', t => {
     method: 'GET'
   }, (err, res) => {
     t.error(err)
-    t.is(res.statusCode, 200)
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -578,7 +624,7 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
-      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -589,17 +635,17 @@ test('Should log a warning if is an async function with `done`', t => {
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('onError', async (req, reply, payload, done) => {})
     } catch (e) {
-      t.true(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
@@ -621,8 +667,8 @@ test('early termination, onRequest async', async t => {
   })
 
   const res = await app.inject('/')
-  t.is(res.statusCode, 200)
-  t.is(res.body.toString(), 'hello world')
+  t.equal(res.statusCode, 200)
+  t.equal(res.body.toString(), 'hello world')
 })
 
 test('The this should be the same of the encapsulation level', async t => {
@@ -630,9 +676,9 @@ test('The this should be the same of the encapsulation level', async t => {
 
   fastify.addHook('onRequest', async function (req, reply) {
     if (req.raw.url === '/nested') {
-      t.strictEqual(this.foo, 'bar')
+      t.equal(this.foo, 'bar')
     } else {
-      t.strictEqual(this.foo, undefined)
+      t.equal(this.foo, undefined)
     }
   })
 
@@ -669,7 +715,7 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.notEqual(res.statusCode, 200)
+      t.not(res.statusCode, 200)
     })
   })
 
@@ -691,7 +737,7 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.notEqual(res.statusCode, 200)
+      t.not(res.statusCode, 200)
     })
   })
 

@@ -24,6 +24,11 @@ fastify.get('/', options, function (request, reply) {
 })
 ```
 
+You can trigger new logs outside route handlers by using the Pino instance from the Fastify instance:
+```js
+fastify.log.info('Something important happened!');
+```
+
 If you want to pass some options to the logger, just pass them to Fastify.
 You can find all available options in the [Pino documentation](https://github.com/pinojs/pino/blob/master/docs/api.md#pinooptions-stream). If you want to specify a file destination, use:
 
@@ -57,9 +62,9 @@ const fastify = require('fastify')({
 
 <a name="logging-request-id"></a>
 
-By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#gen-request-id) for customization options.
+By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#genreqid) for customization options.
 
-The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.  
+The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.
 This behaviour can be customized by specifying custom serializers.
 ```js
 const fastify = require('fastify')({

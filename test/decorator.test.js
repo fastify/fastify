@@ -56,8 +56,8 @@ test('decorate should throw if a declared dependency is not present', t => {
       instance.decorate('test', () => {}, ['dependency'])
       t.fail()
     } catch (e) {
-      t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-      t.is(e.message, 'The decorator is missing dependency \'dependency\'.')
+      t.ok(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+      t.ok(e.message, 'The decorator is missing dependency \'dependency\'.')
     }
     done()
   })
@@ -115,9 +115,9 @@ test('decorateReply inside register', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -125,9 +125,9 @@ test('decorateReply inside register', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -163,9 +163,9 @@ test('decorateReply as plugin (inside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -173,9 +173,9 @@ test('decorateReply as plugin (inside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -211,9 +211,9 @@ test('decorateReply as plugin (outside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -221,9 +221,9 @@ test('decorateReply as plugin (outside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -258,9 +258,9 @@ test('decorateRequest inside register', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -268,9 +268,9 @@ test('decorateRequest inside register', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -306,9 +306,9 @@ test('decorateRequest as plugin (inside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -316,9 +316,9 @@ test('decorateRequest as plugin (inside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -354,9 +354,9 @@ test('decorateRequest as plugin (outside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/yes'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
 
     sget({
@@ -364,9 +364,9 @@ test('decorateRequest as plugin (outside .after)', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/no'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -512,7 +512,7 @@ test('should register properties via getter/setter objects', t => {
       }
     })
     t.ok(instance.test)
-    t.is(instance.test, 'a getter')
+    t.ok(instance.test, 'a getter')
     done()
   })
 
@@ -547,7 +547,7 @@ test('decorateRequest should work with getter/setter', t => {
   fastify.ready(() => {
     fastify.inject({ url: '/req-decorated-get-set' }, (err, res) => {
       t.error(err)
-      t.deepEqual(JSON.parse(res.payload), { test: 'a getter' })
+      t.same(JSON.parse(res.payload), { test: 'a getter' })
     })
 
     fastify.inject({ url: '/not-decorated' }, (err, res) => {
@@ -583,7 +583,7 @@ test('decorateReply should work with getter/setter', t => {
   fastify.ready(() => {
     fastify.inject({ url: '/res-decorated-get-set' }, (err, res) => {
       t.error(err)
-      t.deepEqual(JSON.parse(res.payload), { test: 'a getter' })
+      t.same(JSON.parse(res.payload), { test: 'a getter' })
     })
 
     fastify.inject({ url: '/not-decorated' }, (err, res) => {
@@ -599,7 +599,7 @@ test('should register empty values', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', null)
-    t.true(instance.hasOwnProperty('test'))
+    t.ok(instance.hasOwnProperty('test'))
     done()
   })
 
@@ -726,22 +726,22 @@ test('decorate* should throw if called after ready', async t => {
     fastify.decorate('test', true)
     t.fail('should not decorate')
   } catch (err) {
-    t.is(err.code, 'FST_ERR_DEC_AFTER_START')
-    t.is(err.message, "The decorator 'test' has been added after start!")
+    t.ok(err.code, 'FST_ERR_DEC_AFTER_START')
+    t.ok(err.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateRequest('test', true)
     t.fail('should not decorate')
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.is(e.message, "The decorator 'test' has been added after start!")
+    t.ok(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.ok(e.message, "The decorator 'test' has been added after start!")
   }
   try {
     fastify.decorateReply('test', true)
     t.fail('should not decorate')
   } catch (e) {
-    t.is(e.code, 'FST_ERR_DEC_AFTER_START')
-    t.is(e.message, "The decorator 'test' has been added after start!")
+    t.ok(e.code, 'FST_ERR_DEC_AFTER_START')
+    t.ok(e.message, "The decorator 'test' has been added after start!")
   }
   await fastify.close()
 })
@@ -749,8 +749,8 @@ test('decorate* should throw if called after ready', async t => {
 test('decorate* should emit warning if an array is passed', t => {
   t.plan(2)
   function onWarning (code, name) {
-    t.strictEqual(name, 'test_array')
-    t.strictEqual(code, 'FSTDEP006')
+    t.equal(name, 'test_array')
+    t.equal(code, 'FSTDEP006')
   }
   const warning = {
     emit: onWarning
@@ -764,8 +764,8 @@ test('decorate* should emit warning if an array is passed', t => {
 test('decorate* should emit warning if object type is passed', t => {
   t.plan(2)
   function onWarning (code, name) {
-    t.strictEqual(name, 'test_object')
-    t.strictEqual(code, 'FSTDEP006')
+    t.equal(name, 'test_object')
+    t.equal(code, 'FSTDEP006')
   }
   const warning = {
     emit: onWarning

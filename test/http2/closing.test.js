@@ -35,7 +35,7 @@ t.test('http/2 request while fastify closing', t => {
           ':method': 'GET',
           ':path': '/'
         }).on('response', headers => {
-          t.strictEqual(headers[':status'], 503)
+          t.equal(headers[':status'], 503)
           t.end()
           this.destroy()
         }).on('error', () => {
@@ -83,7 +83,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
           ':method': 'GET',
           ':path': '/'
         }).on('response', headers => {
-          t.strictEqual(headers[':status'], 200)
+          t.equal(headers[':status'], 200)
           t.end()
           this.destroy()
         }).on('error', () => {
@@ -166,7 +166,7 @@ t.test('http/2 server side session emits a timeout event', { skip: semver.lt(pro
   }).end()
 
   const [headers] = await once(req, 'response')
-  t.strictEqual(headers[':status'], 200)
+  t.equal(headers[':status'], 200)
   req.resume()
 
   // An error might or might not happen, as it's OS dependent.

@@ -11,13 +11,13 @@ test('Custom querystring parser', t => {
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.strictEqual(str, 'foo=bar&baz=faz')
+      t.equal(str, 'foo=bar&baz=faz')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.deepEqual(req.query, {
+    t.same(req.query, {
       foo: 'bar',
       baz: 'faz'
     })
@@ -26,14 +26,14 @@ test('Custom querystring parser', t => {
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     sget({
       method: 'GET',
       url: `${address}?foo=bar&baz=faz`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
 
     fastify.inject({
@@ -41,7 +41,7 @@ test('Custom querystring parser', t => {
       url: `${address}?foo=bar&baz=faz`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })
@@ -51,26 +51,26 @@ test('Custom querystring parser should be called also if there is nothing to par
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.strictEqual(str, '')
+      t.equal(str, '')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.deepEqual(req.query, {})
+    t.same(req.query, {})
     reply.send({ hello: 'world' })
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     sget({
       method: 'GET',
       url: address
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
 
     fastify.inject({
@@ -78,7 +78,7 @@ test('Custom querystring parser should be called also if there is nothing to par
       url: address
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })
@@ -88,26 +88,26 @@ test('Querystring without value', t => {
 
   const fastify = Fastify({
     querystringParser: function (str) {
-      t.strictEqual(str, 'foo')
+      t.equal(str, 'foo')
       return querystring.parse(str)
     }
   })
 
   fastify.get('/', (req, reply) => {
-    t.deepEqual(req.query, { foo: '' })
+    t.same(req.query, { foo: '' })
     reply.send({ hello: 'world' })
   })
 
   fastify.listen(0, (err, address) => {
     t.error(err)
-    t.tearDown(() => fastify.close())
+    t.teardown(() => fastify.close())
 
     sget({
       method: 'GET',
       url: `${address}?foo`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
 
     fastify.inject({
@@ -115,7 +115,7 @@ test('Querystring without value', t => {
       url: `${address}?foo`
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })
@@ -129,7 +129,7 @@ test('Custom querystring parser should be a function', t => {
     })
     t.fail('Should throw')
   } catch (err) {
-    t.strictEqual(
+    t.equal(
       err.message,
       "querystringParser option should be a function, instead got 'number'"
     )

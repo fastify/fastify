@@ -1,0 +1,13 @@
+# PRs that only touch the docs folder
+documentation:
+- all: ["docs/**/*"]
+
+# PRs that only touch type files
+typescript:
+- all: ["**/*[.|-]d.ts"]
+
+plugin:
+- all: ["docs/Ecosystem.md"]
+
+test:
+- all: ["test/**/*"]

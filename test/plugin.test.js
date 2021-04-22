@@ -30,7 +30,7 @@ test('plugin metadata - ignore prefix', t => {
     url: '/'
   }, function (err, res) {
     t.error(err)
-    t.equals(res.payload, 'hello')
+    t.equal(res.payload, 'hello')
   })
 
   function plugin (instance, opts, done) {
@@ -80,9 +80,9 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -139,7 +139,7 @@ test('fastify.register with fastify-plugin should provide access to external fas
     // the decoration is added at the end
     instance.after(() => {
       t.ok(instance.global)
-      t.strictEqual(instance.global_2(), 'hello')
+      t.equal(instance.global_2(), 'hello')
       t.notOk(instance.local)
     })
 
@@ -159,9 +159,9 @@ test('fastify.register with fastify-plugin should provide access to external fas
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -214,9 +214,9 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { test: 'first' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { test: 'first' })
     })
 
     sget({
@@ -224,9 +224,9 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/test2'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { test2: 'second' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { test2: 'second' })
     })
   })
 })
@@ -276,9 +276,9 @@ test('check dependencies - should not throw', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -293,8 +293,8 @@ test('check dependencies - should throw', t => {
         i.decorate('otherTest', () => {}, ['test'])
         t.fail()
       } catch (e) {
-        t.is(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
-        t.is(e.message, 'The decorator is missing dependency \'test\'.')
+        t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')
+        t.equal(e.message, 'The decorator is missing dependency \'test\'.')
       }
       n()
     }))
@@ -328,9 +328,9 @@ test('check dependencies - should throw', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -340,20 +340,20 @@ test('set the plugin name based on the plugin displayName symbol', t => {
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
-    t.strictEqual(fastify.pluginName, 'plugin-A')
+    t.equal(fastify.pluginName, 'plugin-A')
     fastify.register(fp((fastify, opts, done) => {
-      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
+      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB')
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
-      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       done()
     }, { name: 'plugin-AC' }))
     done()
   }, { name: 'plugin-A' }))
 
   fastify.register(fp((fastify, opts, done) => {
-    t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
+    t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
     done()
   }, { name: 'plugin-B' }))
 
@@ -371,18 +371,18 @@ test('plugin name will change when using no encapsulation', t => {
     // store it in a different variable will hold the correct name
     const pluginName = fastify.pluginName
     fastify.register(fp((fastify, opts, done) => {
-      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB')
+      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB')
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
-      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
       done()
     }, { name: 'plugin-AC' }))
     setImmediate(() => {
       // normally we would expect the name plugin-A
       // but we operate on the same instance in each plugin
-      t.strictEqual(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
-      t.strictEqual(pluginName, 'plugin-A')
+      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(pluginName, 'plugin-A')
     })
     done()
   }, { name: 'plugin-A' }))
@@ -397,7 +397,7 @@ test('plugin name is undefined when accessing in no plugin context', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  t.strictEqual(fastify.pluginName, undefined)
+  t.equal(fastify.pluginName, undefined)
 
   fastify.listen(0, err => {
     t.error(err)
@@ -410,20 +410,20 @@ test('set the plugin name based on the plugin function name', t => {
   const fastify = Fastify()
 
   fastify.register(function myPluginA (fastify, opts, done) {
-    t.strictEqual(fastify.pluginName, 'myPluginA')
+    t.equal(fastify.pluginName, 'myPluginA')
     fastify.register(function myPluginAB (fastify, opts, done) {
-      t.strictEqual(fastify.pluginName, 'myPluginAB')
+      t.equal(fastify.pluginName, 'myPluginAB')
       done()
     })
     setImmediate(() => {
       // exact name due to encapsulation
-      t.strictEqual(fastify.pluginName, 'myPluginA')
+      t.equal(fastify.pluginName, 'myPluginA')
     })
     done()
   })
 
   fastify.register(function myPluginB (fastify, opts, done) {
-    t.strictEqual(fastify.pluginName, 'myPluginB')
+    t.equal(fastify.pluginName, 'myPluginB')
     done()
   })
 
@@ -439,17 +439,17 @@ test('approximate a plugin name when no meta data is available', t => {
 
   fastify.register((fastify, opts, done) => {
     // A
-    t.is(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
-    t.is(fastify.pluginName.includes('// A'), true)
+    t.equal(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
+    t.equal(fastify.pluginName.includes('// A'), true)
     fastify.register((fastify, opts, done) => {
       // B
-      t.is(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
-      t.is(fastify.pluginName.includes('// B'), true)
+      t.equal(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
+      t.equal(fastify.pluginName.includes('// B'), true)
       done()
     })
     setImmediate(() => {
-      t.is(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
-      t.is(fastify.pluginName.includes('// A'), true)
+      t.equal(fastify.pluginName.startsWith('(fastify, opts, done)'), true)
+      t.equal(fastify.pluginName.includes('// A'), true)
     })
     done()
   })
@@ -526,9 +526,9 @@ test('plugin encapsulation', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/first'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { plugin: 'first' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { plugin: 'first' })
     })
 
     sget({
@@ -536,9 +536,9 @@ test('plugin encapsulation', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/second'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { plugin: 'second' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { plugin: 'second' })
     })
   })
 })
@@ -553,7 +553,7 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
 
   fastify.listen(0, err => {
     t.ok(err instanceof Error)
-    t.is(err.message, 'err')
+    t.equal(err.message, 'err')
   })
 })
 
@@ -602,7 +602,7 @@ test('add hooks after route declaration', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
+      t.same(JSON.parse(body), { hook1: true, hook2: true, hook3: true })
       fastify.close()
     })
   })
@@ -613,7 +613,7 @@ test('nested plugins', t => {
 
   const fastify = Fastify()
 
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.register(function (fastify, opts, done) {
     fastify.register((fastify, opts, done) => {
@@ -641,7 +641,7 @@ test('nested plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(body.toString(), 'I am child 1')
+      t.same(body.toString(), 'I am child 1')
     })
 
     sget({
@@ -649,7 +649,7 @@ test('nested plugins', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(body.toString(), 'I am child 2')
+      t.same(body.toString(), 'I am child 2')
     })
   })
 })
@@ -659,7 +659,7 @@ test('nested plugins awaited', t => {
 
   const fastify = Fastify()
 
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.register(async function wrap (fastify, opts) {
     await fastify.register(async function child1 (fastify, opts) {
@@ -683,7 +683,7 @@ test('nested plugins awaited', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child1'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(body.toString(), 'I am child 1')
+      t.same(body.toString(), 'I am child 1')
     })
 
     sget({
@@ -691,7 +691,7 @@ test('nested plugins awaited', t => {
       url: 'http://localhost:' + fastify.server.address().port + '/parent/child2'
     }, (err, response, body) => {
       t.error(err)
-      t.deepEqual(body.toString(), 'I am child 2')
+      t.same(body.toString(), 'I am child 2')
     })
   })
 })
@@ -743,7 +743,7 @@ test('plugin metadata - decorators - should throw', t => {
 
   fastify.register(plugin)
   fastify.ready((err) => {
-    t.equals(err.message, "The decorator 'plugin1' is not present in Request")
+    t.equal(err.message, "The decorator 'plugin1' is not present in Request")
   })
 
   function plugin (instance, opts, done) {
@@ -771,7 +771,7 @@ test('plugin metadata - decorators - should throw with plugin name', t => {
 
   fastify.register(plugin)
   fastify.ready((err) => {
-    t.equals(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
+    t.equal(err.message, "The decorator 'plugin1' required by 'the-plugin' is not present in Request")
   })
 
   function plugin (instance, opts, done) {
@@ -874,7 +874,7 @@ test('pluginTimeout default', t => {
     t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
   })
 
-  t.tearDown(clock.uninstall)
+  t.teardown(clock.uninstall)
 })
 
 test('plugin metadata - version', t => {

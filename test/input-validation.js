@@ -1,3 +1,4 @@
+
 'use strict'
 
 const sget = require('simple-get').concat
@@ -148,7 +149,7 @@ module.exports.payloadMethod = function (method, t) {
           url: 'http://localhost:' + fastify.server.address().port
         }, (err, response) => {
           t.error(err)
-          t.strictEqual(response.statusCode, 200)
+          t.equal(response.statusCode, 200)
         })
       } else {
         t.plan(3)
@@ -161,8 +162,8 @@ module.exports.payloadMethod = function (method, t) {
           json: true
         }, (err, response, body) => {
           t.error(err)
-          t.strictEqual(response.statusCode, 200)
-          t.deepEqual(body, { hello: 42 })
+          t.equal(response.statusCode, 200)
+          t.same(body, { hello: 42 })
         })
       }
     })
@@ -178,8 +179,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
+        t.equal(response.statusCode, 400)
+        t.same(body, {
           error: 'Bad Request',
           message: 'body.hello should be integer',
           statusCode: 400
@@ -198,8 +199,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 42 })
       })
     })
 
@@ -215,8 +216,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 42 })
       })
     })
 
@@ -231,8 +232,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 42 })
       })
     })
 
@@ -247,8 +248,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
+        t.equal(response.statusCode, 400)
+        t.same(body, {
           error: 'Bad Request',
           message: '"hello" must be a string',
           statusCode: 400
@@ -267,8 +268,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 200)
-        t.deepEqual(body, { hello: 42 })
+        t.equal(response.statusCode, 200)
+        t.same(body, { hello: 42 })
       })
     })
 
@@ -283,8 +284,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
+        t.equal(response.statusCode, 400)
+        t.same(body, {
           error: 'Bad Request',
           message: 'hello must be a `string` type, but the final value was: `44`.',
           statusCode: 400
@@ -301,8 +302,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
+        t.equal(response.statusCode, 400)
+        t.same(body, {
           error: 'Bad Request',
           message: 'From custom schema compiler!',
           statusCode: '400'
@@ -319,8 +320,8 @@ module.exports.payloadMethod = function (method, t) {
         json: true
       }, (err, response, body) => {
         t.error(err)
-        t.strictEqual(response.statusCode, 400)
-        t.deepEqual(body, {
+        t.equal(response.statusCode, 400)
+        t.same(body, {
           error: 'Bad Request',
           message: 'Always fail!',
           statusCode: '400'

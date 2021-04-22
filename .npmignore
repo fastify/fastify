@@ -11,3 +11,7 @@ CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 .dependabot
 .clinic
+
+# test certification
+test/https/fastify.cert
+test/https/fastify.key

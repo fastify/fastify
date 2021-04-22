@@ -8,6 +8,9 @@ const fs = require('fs')
 const path = require('path')
 const sget = require('simple-get').concat
 
+const { buildCertificate } = require('../build-certificate')
+t.before(buildCertificate)
+
 test('Should support a custom https server', t => {
   t.plan(6)
 

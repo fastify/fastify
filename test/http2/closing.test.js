@@ -10,6 +10,9 @@ const { promisify } = require('util')
 const connect = promisify(http2.connect)
 const { once } = require('events')
 
+const { buildCertificate } = require('../build-certificate')
+t.before(buildCertificate)
+
 t.test('http/2 request while fastify closing', t => {
   let fastify
   try {

@@ -9,6 +9,9 @@ const h2url = require('h2url')
 const sget = require('simple-get').concat
 const msg = { hello: 'world' }
 
+const { buildCertificate } = require('../build-certificate')
+t.before(buildCertificate)
+
 let fastify
 try {
   fastify = Fastify({

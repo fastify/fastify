@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test, before } = require('tap')
 const Fastify = require('../..')
 const fs = require('fs')
 const path = require('path')
@@ -9,6 +9,9 @@ const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
+
+const { buildCertificate } = require('../build-certificate')
+before(buildCertificate)
 
 process.removeAllListeners('warning')
 

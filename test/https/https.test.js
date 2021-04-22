@@ -7,6 +7,9 @@ const fs = require('fs')
 const path = require('path')
 const Fastify = require('../..')
 
+const { buildCertificate } = require('../build-certificate')
+t.before(buildCertificate)
+
 let fastify
 try {
   fastify = Fastify({

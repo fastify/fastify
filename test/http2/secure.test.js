@@ -8,6 +8,9 @@ const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
+const { buildCertificate } = require('../build-certificate')
+t.before(buildCertificate)
+
 let fastify
 try {
   fastify = Fastify({

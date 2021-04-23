@@ -191,5 +191,6 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage) An [i18next](https://www.i18next.com) based i18n (internationalization) middleware to be used with Node.js web frameworks like express or `Fastify` and also for Deno.
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
 - [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL server implementation for Fastify.
+- ['oas-fastify'](https://github.com/ahmadnassri/node-oas-fastify) OAS 3.x to Fastify routes automation. Automatically generates route handlers with fastify configuration and validation.
 - [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get all your network and process stats for your node application. Websocket, http/s and prometheus compatible!
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.

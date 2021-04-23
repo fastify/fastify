@@ -1094,6 +1094,35 @@ test('reply.header can reset the value', t => {
   })
 })
 
+// https://github.com/fastify/fastify/issues/3030
+test('reply.hasHeader computes raw and fastify headers', t => {
+  t.plan(4)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    reply.raw.setHeader('x-bar', 'bar')
+    t.ok(reply.hasHeader('x-foo'))
+    t.ok(reply.hasHeader('x-bar'))
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
+  })
+})
+
 test('Reply should handle JSON content type with a charset', t => {
   t.plan(16)
 

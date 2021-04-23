@@ -290,6 +290,17 @@ function fastify (options) {
     initialConfig
   }
 
+  // convenience binding
+  fastify.delete = fastify.delete.bind(fastify)
+  fastify.get = fastify.get.bind(fastify)
+  fastify.head = fastify.head.bind(fastify)
+  fastify.patch = fastify.patch.bind(fastify)
+  fastify.post = fastify.post.bind(fastify)
+  fastify.put = fastify.put.bind(fastify)
+  fastify.options = fastify.options.bind(fastify)
+  fastify.all = fastify.all.bind(fastify)
+  fastify.route = fastify.route.bind(fastify)
+
   Object.defineProperties(fastify, {
     pluginName: {
       get () {

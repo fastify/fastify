@@ -124,7 +124,7 @@ The route validation internally relies upon [Ajv](https://www.npmjs.com/package/
 Validating the input is very easy: just add the fields that you need inside the route schema, and you are done!
 
 The supported validations are:
-- `body`: validates the body of the request if it is a POST or a PUT.
+- `body`: validates the body of the request if it is a POST, PUT, or PATCH method.
 - `querystring` or `query`: validates the query string.
 - `params`: validates the route params.
 - `headers`: validates the request headers.

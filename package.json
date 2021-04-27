@@ -120,7 +120,7 @@
   "devDependencies": {
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^7.0.0",
-    "@types/node": "^14.10.3",
+    "@types/node": "^15.0.0",
     "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",

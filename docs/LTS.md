@@ -41,11 +41,13 @@ A "month" is to be a period of 30 consecutive days.
 
 ### CI tested operating systems
 
-| OS      | Version                | Package Manager           | Node.js      |
+Fastify uses GitHub Actions for CI testing, please refer to [GitHub's documentation regarding workflow runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) for further details on what the latest virtual environment is in relation to the YAML workflow labels below:
+
+| OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|
-| Linux   | Ubuntu 16.04           | npm                       | 10,12,14,16  |
-| Linux   | Ubuntu 16.04           | yarn,pnpm                 | 10,12        |
-| Windows | Windows Server 2016 R2 | npm                       | 10,12,14,16  |
-| MacOS   | macOS X Mojave 10.14   | npm                       | 10,12,14,16  |
+| Linux   | `ubuntu-latest`        | npm                       | 10,12,14,16  |
+| Linux   | `ubuntu-16.04`         | yarn,pnpm                 | 10,12        |
+| Windows | `windows-latest`       | npm                       | 10,12,14,16  |
+| MacOS   | `macos-latest`         | npm                       | 10,12,14,16  |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines` flag.

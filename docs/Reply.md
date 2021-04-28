@@ -359,7 +359,7 @@ fastify.get('/', {
 })
 ```
 
-If you want to completely customize the error handling, checkout [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
+If you want to completely customize the error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
 *Note: you are responsible for logging when customizing the error handler*
 
 API:

@@ -48,7 +48,7 @@ In addition, you can enable services like [Dependabot](https://dependabot.com/) 
 Awesome, now you know everything you need to know about how to write a good plugin for Fastify!
 After you have built one (or more!) let us know! We will add it to the [ecosystem](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
-If you want to see some real world examples, checkout:
+If you want to see some real world examples, check out:
 - [`point-of-view`](https://github.com/fastify/point-of-view)
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)

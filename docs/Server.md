@@ -256,7 +256,7 @@ Function for generating the request id. It will receive the incoming request as 
 
 + Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
-Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
+Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to check out [hyperid](https://github.com/mcollina/hyperid)
 
 ```js
 let i = 0
@@ -803,7 +803,7 @@ To learn more, read the [Validation and Serialization](Validation-and-Serializat
 <a name="set-reply-serializer"></a>
 #### setReplySerializer
 Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
-Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
+Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
 
 ```js
 fastify.setReplySerializer(function (payload, statusCode){

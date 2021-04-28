@@ -105,6 +105,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-grant`](https://github.com/simov/fastify-grant) Authentication/Authorization plugin for Fastify that supports 200+ OAuth Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin that protects endpoints by checking authenticated user roles and/or scopes.
 - [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown) Shutdown Fastify gracefully and asynchronously.
+- [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify plugin to have fun with [Hasura](https://github.com/hasura/graphql-engine).
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck) Fastify plugin to serve an health check route and a probe script.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera plugin, for writing reliable & fault-tolerant microservices with [nats.io](https://nats.io/).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context) Fastify plugin for "simulating" a thread of execution to allow for true http context to take place per API call within the Fastify lifecycle of calls.
@@ -191,4 +192,5 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API Gateway plugin for `fastify`, a low footprint implementation that uses the `fastify-reply-from` HTTP proxy library.
 - [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL server implementation for Fastify.
 - [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get all your network and process stats for your node application. Websocket, http/s and prometheus compatible!
+- ['oas-fastify'](https://github.com/ahmadnassri/node-oas-fastify) OAS 3.x to Fastify routes automation. Automatically generates route handlers with fastify configuration and validation.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports `fastify`.

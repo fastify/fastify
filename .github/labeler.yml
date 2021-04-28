@@ -8,3 +8,6 @@ typescript:
 
 plugin:
 - all: ["docs/Ecosystem.md"]
+
+test:
+- all: ["test/**/*"]

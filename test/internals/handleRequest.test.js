@@ -255,7 +255,7 @@ test('request should be defined in onSend Hook on options request with content t
   })
 })
 
-test('request should respond with an error if an unserialized payload is sent inside an an async handler', t => {
+test('request should respond with an error if an unserialized payload is sent inside an async handler', t => {
   t.plan(3)
 
   const fastify = require('../..')()

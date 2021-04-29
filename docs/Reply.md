@@ -39,7 +39,7 @@ and properties:
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
 - `.header(name, value)` - Sets a response header.
-- `.headers(object)` - Sets all the keys of the object as a response headers.
+- `.headers(object)` - Sets all the keys of the object as response headers.
 - `.getHeader(name)` - Retrieve value of already set header.
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
@@ -47,7 +47,7 @@ and properties:
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] dest)` - Redirect to the specified url, the status code is optional (default to `302`).
 - `.callNotFound()` - Invokes the custom not found handler.
-- `.serialize(payload)` - Serializes the specified payload using the default json serializer or using the custom serializer (if one is set) and returns the serialized payload.
+- `.serialize(payload)` - Serializes the specified payload using the default JSON serializer or using the custom serializer (if one is set) and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
@@ -89,7 +89,7 @@ if (reply.statusCode >= 299) {
 
 <a name="header"></a>
 ### .header(key, value)
-Sets a response header. If the value is omitted or undefined it is coerced
+Sets a response header. If the value is omitted or undefined, it is coerced
 to `''`.
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
@@ -140,7 +140,7 @@ Returns a boolean indicating if the specified header has been set.
 
 <a name="redirect"></a>
 ### .redirect([code ,] dest)
-Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
+Redirects a request to the specified URL, the status code is optional, default to `302` (if status code is not already set by calling `code`).
 
 Example (no `reply.code()` call) sets status code to `302` and redirects to `/home`
 ```js
@@ -211,8 +211,8 @@ See [`.send()`](#send) for more information on sending different types of values
 
 <a name="raw"></a>
 ### .raw
-This is the [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core. While you're using the fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you're skipping all the fastify
-logic of handling the http response. eg:
+This is the [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core. Whilst you are using the Fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you are skipping all the Fastify
+logic of handling the HTTP response. e.g.:
 
 ```js
 app.get('/cookie-2', (req, reply) => {
@@ -236,7 +236,7 @@ In case a route handler is defined as an async function or it
 returns a promise, it is possible to set `reply.sent = true`
 to indicate that the automatic invocation of `reply.send()` once the
 handler promise resolve should be skipped. By setting `reply.sent =
-true`, an application claims full responsibility of the low-level
+true`, an application claims full responsibility for the low-level
 request and response. Moreover, hooks will not be invoked.
 
 As an example:
@@ -256,7 +256,7 @@ If the handler rejects, the error will be logged.
 ### .hijack()
 Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
 
-To achieve this, fastify provides the method `reply.hijack()` that can be called during the request lifecycle (At any point before `reply.send()` is called), and allows you to prevent fastify from sending the response, and from running the remaining hooks (and user handler if the reply was hijacked before).
+To achieve this, Fastify provides the `reply.hijack()` method that can be called during the request lifecycle (At any point before `reply.send()` is called), and allows you to prevent Fastify from sending the response, and from running the remaining hooks (and user handler if the reply was hijacked before).
 
 NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
 
@@ -266,7 +266,7 @@ As the name suggests, `.send()` is the function that sends the payload to the en
 
 <a name="send-object"></a>
 #### Objects
-As noted above, if you are sending JSON objects, `send` will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise `JSON.stringify()` will be used.
+As noted above, if you are sending JSON objects, `send` will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise, `JSON.stringify()` will be used.
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send({ hello: 'world' })
@@ -275,7 +275,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="send-string"></a>
 #### Strings
-If you pass a string to `send` without a `Content-Type`, it will be sent as `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json; charset=utf-8`, in which case it will be JSON-serialized like an object — see the section above).
+If you pass a string to `send` without a `Content-Type`, it will be sent as `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise, it will be sent unmodified (unless the `Content-Type` header is set to `application/json; charset=utf-8`, in which case it will be JSON-serialized like an object — see the section above).
 ```js
 fastify.get('/json', options, function (request, reply) {
   reply.send('plain string')
@@ -311,14 +311,14 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 
 ```js
 {
-  error: String        // the http error message
+  error: String        // the HTTP error message
   code: String         // the Fastify error code
   message: String      // the user error message
-  statusCode: Number   // the http status code
+  statusCode: Number   // the HTTP status code
 }
 ```
 
-You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br>
+You can add some custom property to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -359,7 +359,7 @@ fastify.get('/', {
 })
 ```
 
-If you want to completely customize the error handling, checkout [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
+If you want to completely customize the error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
 *Note: you are responsible for logging when customizing the error handler*
 
 API:
@@ -390,7 +390,7 @@ fastify.setNotFoundHandler(function (request, reply) {
 
 <a name="payload-type"></a>
 #### Type of the final payload
-The type of the sent payload (after serialization and going through any [`onSend` hooks](Hooks.md#the-onsend-hook)) must be one of the following types, otherwise an error will be thrown:
+The type of the sent payload (after serialization and going through any [`onSend` hooks](Hooks.md#the-onsend-hook)) must be one of the following types, otherwise, an error will be thrown:
 
 - `string`
 - `Buffer`

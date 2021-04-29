@@ -13,7 +13,7 @@ out in this document:
    [https://github.com/fastify/fastify/releases](https://github.com/fastify/fastify/releases).
 
 1. Major releases will receive security updates for an additional six months
-   from the release of the next major release. After this period is expired,
+   from the release of the next major release. After this period
    we will still review and release security fixes as long as they are
    provided by the community and they do not violate other constraints,
    e.g. minimum supported Node.js version.
@@ -23,7 +23,7 @@ out in this document:
    [Node.js LTS policy](https://github.com/nodejs/Release) within the
    LTS period of that given Fastify release line.
 
-A "month" is to be a period of 30 consecutive days.
+A "month" is defined as 30 consecutive days.
 
 [semver]: https://semver.org/
 

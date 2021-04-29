@@ -2,8 +2,7 @@
 
 ## Recommendations
 
-This document contains a set of recommendations when using
-Fastify.
+This document contains a set of recommendations when using Fastify.
 
 * [Use A Reverse Proxy](#reverseproxy)
 * [Kubernetes](#kubernetes)

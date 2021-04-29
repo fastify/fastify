@@ -92,6 +92,28 @@ test('checkDecorators should check if the given decorator is present in the inst
   function fn () {}
 })
 
+test('checkDecorators should accept optional decorators', t => {
+  t.plan(1)
+
+  fn[Symbol.for('plugin-meta')] = {
+    decorators: { }
+  }
+
+  function context () {}
+  context.plugin = true
+  context[symbols.kReply] = { prototype: { plugin: true } }
+  context[symbols.kRequest] = { prototype: { plugin: true } }
+
+  try {
+    pluginUtils.checkDecorators.call(context, fn)
+    t.pass('Everything ok')
+  } catch (err) {
+    t.fail(err)
+  }
+
+  function fn () {}
+})
+
 test('checkDependencies should check if the given dependency is present in the instance', t => {
   t.plan(1)
 

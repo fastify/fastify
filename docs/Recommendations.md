@@ -2,7 +2,7 @@
 
 ## Recommendations
 
-This document contains recommendations and best practices when using
+This document contains a set of recommendations when using
 Fastify.
 
 * [Use A Reverse Proxy](#reverseproxy)

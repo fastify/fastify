@@ -27,5 +27,5 @@ fastify
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err
-  fastify.log.info(`server listening on ${address}`)
+  console.info(`server listening on ${address}`)
 })

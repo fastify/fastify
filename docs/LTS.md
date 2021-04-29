@@ -23,7 +23,7 @@ out in this document:
    [Node.js LTS policy](https://github.com/nodejs/Release) within the
    LTS period of that given Fastify release line.
 
-A "month" is to be 30 consecutive days.
+A "month" is defined as 30 consecutive days.
 
 [semver]: https://semver.org/
 

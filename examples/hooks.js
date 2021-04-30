@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')()
+const fastify = require('../fastify')({ logger: true })
 
 const opts = {
   schema: {
@@ -85,5 +85,4 @@ fastify.listen(3000, function (err) {
   if (err) {
     throw err
   }
-  console.log(`server listening on ${fastify.server.address().port}`)
 })

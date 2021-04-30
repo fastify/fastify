@@ -1,7 +1,7 @@
 'use strict'
 
 const fastify = require('../fastify')({
-  logger: false
+  logger: true
 })
 
 const schema = {
@@ -27,5 +27,4 @@ fastify
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err
-  console.info(`server listening on ${address}`)
 })

@@ -547,6 +547,20 @@ test('throws when route with empty url', async t => {
   }
 })
 
+test('throws when route with empty url in shorthand declaration', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  try {
+    await fastify.get(
+      '',
+      async function handler () { return {} }
+    ).ready()
+  } catch (err) {
+    t.equal(err.message, 'The path could not be empty')
+  }
+})
+
 test('throws when route-level error handler is not a function', t => {
   t.plan(1)
 

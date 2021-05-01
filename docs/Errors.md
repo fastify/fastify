@@ -59,6 +59,11 @@ Some things to consider in your custom error handler:
 
 The router received an invalid url.
 
+<a name="FST_ERR_DUPLICATED_ROUTE"></a>
+#### FST_ERR_DUPLICATED_ROUTE
+
+The HTTP method already has a registered controller for that URL
+
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
 

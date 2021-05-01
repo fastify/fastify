@@ -748,15 +748,21 @@ test('onRoute hook that throws should be caught', t => {
     instance.addHook('onRoute', () => {
       throw new Error('snap')
     })
-    instance.get('/', opts, function (req, reply) {
-      reply.send()
-    })
+
+    try {
+      instance.get('/', opts, function (req, reply) {
+        reply.send()
+      })
+
+      t.fail('onRoute should throw sync if error')
+    } catch (error) {
+      t.ok(error)
+    }
+
     done()
   })
 
-  fastify.ready(err => {
-    t.ok(err)
-  })
+  fastify.ready()
 })
 
 test('onRoute hook with many prefix', t => {

@@ -596,7 +596,7 @@ test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION
     reply.code(200).send({ some: 'thing' })
   })
 
-  fastify.inject('/', (err) => {
+  fastify.ready((err) => {
     t.equal(err.message, 'Failed building the serialization schema for GET: /, due to error CUSTOM_ERROR')
     t.equal(err.statusCode, 500)
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')

@@ -7,7 +7,7 @@
   "types": "fastify.d.ts",
   "scripts": {
     "bench": "branchcmp -r 2 -g -s \"npm run benchmark\"",
-    "benchmark": "npx concurrently -k -s first \"node ./examples/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
+    "benchmark": "npx concurrently -k -s first \"node ./examples/benchmark/simple.js\" \"npx autocannon -c 100 -d 5 -p 10 localhost:3000/\"",
     "coverage": "npm run unit -- --cov --coverage-report=html",
     "license-checker": "license-checker --production --onlyAllow=\"MIT;ISC;BSD-3-Clause;BSD-2-Clause\"",
     "lint": "npm run lint:standard && npm run lint:typescript",

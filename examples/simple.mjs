@@ -2,7 +2,7 @@
 import { fastify } from '../fastify.js'
 
 const app = fastify({
-  logger: false
+  logger: true
 })
 
 const schema = {

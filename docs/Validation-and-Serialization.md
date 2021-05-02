@@ -356,7 +356,7 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of Fastify, since Fastify's default validator is no longer used, and astify's `addSchema` method has no idea what validator you are using._
+_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of Fastify, since Fastify's default validator is no longer used, and Fastify's `addSchema` method has no idea what validator you are using._
 
 <a name="using-other-validation-libraries"></a>
 ##### Using other validation libraries

@@ -3200,3 +3200,41 @@ test('onTimeout should be triggered', t => {
     })
   })
 })
+
+test('onTimeout should be triggered and socket _meta is set', t => {
+  t.plan(6)
+  const fastify = Fastify({ connectionTimeout: 500 })
+
+  fastify.addHook('onTimeout', function (req, res, done) {
+    t.ok('called', 'onTimeout')
+    done()
+  })
+
+  fastify.get('/', async (req, reply) => {
+    req.raw.socket._meta = {}
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/timeout', async (req, reply) => {
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.teardown(() => fastify.close())
+
+    sget({
+      method: 'GET',
+      url: address
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+    sget({
+      method: 'GET',
+      url: `${address}/timeout`
+    }, (err, response, body) => {
+      t.type(err, Error)
+      t.equal(err.message, 'socket hang up')
+    })
+  })
+})

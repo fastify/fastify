@@ -1334,6 +1334,30 @@ test('onSend hook should receive valid request and reply objects if a custom con
   })
 })
 
+test('Content-Length header should be updated if onSend hook modifies the payload', t => {
+  t.plan(2)
+
+  const instance = Fastify()
+
+  instance.get('/', async (_, rep) => {
+    rep.header('content-length', 3)
+    return 'foo'
+  })
+
+  instance.addHook('onSend', async () => 'bar12233000')
+
+  instance.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payloadLength = Buffer.byteLength(res.body)
+    const contentLength = Number(res.headers['content-length'])
+
+    t.equal(payloadLength, contentLength)
+  })
+})
+
 test('cannot add hook after binding', t => {
   t.plan(2)
   const instance = Fastify()

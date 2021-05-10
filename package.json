@@ -143,7 +143,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^3.0.0",
-    "fluent-json-schema": "^2.0.1",
+    "fluent-json-schema": "^3.0.0",
     "form-data": "^4.0.0",
     "frameguard": "^4.0.0",
     "h2url": "^0.2.0",

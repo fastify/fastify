@@ -2,8 +2,7 @@
 
 ## Recommendations
 
-This document contains a set recommendations, or best practices, when using
-Fastify.
+This document contains a set of recommendations when using Fastify.
 
 * [Use A Reverse Proxy](#reverseproxy)
 * [Kubernetes](#kubernetes)
@@ -11,10 +10,10 @@ Fastify.
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
 
-Node.js is an early adopter of frameworks shipping with an easy to use web
+Node.js is an early adopter of frameworks shipping with an easy-to-use web
 server within the standard library. Previously, with languages like PHP or
 Python, one would need either a web server with specific support for the
-language or the ability to setup some sort of [CGI gateway][cgi] that works
+language or the ability to set up some sort of [CGI gateway][cgi] that works
 with the language. With Node.js, one can write an application that
 _directly_ handles HTTP requests. As a result, the temptation is to write
 applications that handle requests for multiple domains, listen on multiple

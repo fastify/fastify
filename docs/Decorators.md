@@ -7,15 +7,15 @@ the server instance itself and any request and reply objects used during the
 HTTP request lifecycle. The decorators API can be used to attach any type of
 property to the core objects, e.g. functions, plain objects, or native types.
 
-This API is a *synchronous* API. Attempting to define a decoration
-asynchronously could result in the Fastify instance booting prior to the
-decoration completing its initialization. To avoid this issue, and register an
+This API is *synchronous*. Attempting to define a decoration
+asynchronously could result in the Fastify instance booting before the
+decoration completes its initialization. To avoid this issue, and register an
 asynchronous decoration, the `register` API, in combination with
 `fastify-plugin`, must be used instead. To learn more, see the
 [Plugins](Plugins.md) documentation.
 
 Decorating core objects with this API allows the underlying JavaScript engine
-to optimize handling of the server, request, and reply objects. This is
+to optimize the handling of server, request, and reply objects. This is
 accomplished by defining the shape of all such object instances before they are
 instantiated and used. As an example, the following is not recommended because
 it will change the shape of objects during their lifecycle:
@@ -55,7 +55,7 @@ fastify.get('/', (req, reply) => {
 })
 ```
 
-Note that it is important to keep initial shape of decorated field as close as possible to the value intended to be set dynamically in the future. Initialize a decorator as a `''` if the intended value is a string, and as `null` if it will be an object or a function.
+Note that it is important to keep the initial shape of a decorated field as close as possible to the value intended to be set dynamically in the future. Initialize a decorator as a `''` if the intended value is a string, and as `null` if it will be an object or a function.
 
 Remember this example works only with value types as reference types will be shared amongst all requests.
 See [decorateRequest](#decorate-request).
@@ -142,7 +142,7 @@ Note: using `decorateReply` will emit a warning if used with a reference type:
 // Don't do this
 fastify.decorateReply('foo', { bar: 'fizz'})
 ```
-In this example the reference of the object is shared with all the requests: **any
+In this example, the reference of the object is shared with all the requests: **any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
 To achieve proper encapsulation across requests configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
@@ -183,8 +183,9 @@ Note: using `decorateRequest` will emit a warning if used with a reference type:
 // Don't do this
 fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
-In this example the reference of the object is shared with all the requests: **any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+In this example, the reference of the object is shared with all the requests: **any
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**.
+
 To achieve proper encapsulation across requests configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
@@ -233,7 +234,7 @@ fastify.hasReplyDecorator('utility')
 ### Decorators and Encapsulation
 <a name="decorators-encapsulation"></a>
 
-Defining a decorator (using `decorate`, `decorateRequest` or `decorateReply`)
+Defining a decorator (using `decorate`, `decorateRequest`, or `decorateReply`)
 with the same name more than once in the same **encapsulated** context will
 throw an exception.
 
@@ -289,8 +290,8 @@ server.listen(3000)
 <a name="getters-setters"></a>
 
 Decorators accept special "getter/setter" objects. These objects have functions
-named `getter` and `setter` (though, the `setter` function is optional). This
-allows defining properties via decorators. For example:
+named `getter` and `setter` (though the `setter` function is optional). This
+allows defining properties via decorators, for example:
 
 ```js
 fastify.decorate('foo', {

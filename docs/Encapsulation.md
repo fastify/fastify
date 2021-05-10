@@ -126,7 +126,7 @@ To see this, start the server and issue requests:
 ## Sharing Between Contexts
 
 Notice that each context in the prior example inherits _only_ from the parent
-contexts. Parent contexts cannot access any entities within its descendent
+contexts. Parent contexts cannot access any entities within their descendent
 contexts. This default is occasionally not desired. In such cases, the
 encapsulation context can be broken through the usage of
 [fastify-plugin][fastify-plugin] such that anything registered in a descendent

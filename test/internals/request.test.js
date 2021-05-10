@@ -5,7 +5,7 @@ const { test } = require('tap')
 const Request = require('../../lib/request')
 
 test('Regular request', t => {
-  t.plan(14)
+  t.plan(15)
   const headers = {
     host: 'hostname'
   }
@@ -29,6 +29,7 @@ test('Regular request', t => {
   t.equal(request.body, null)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.protocol, 'http')
   t.same(request.socket, req.socket)
 })
 
@@ -67,7 +68,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(14)
+  t.plan(15)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -94,7 +95,27 @@ test('Request with trust proxy', t => {
   t.equal(request.body, null)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.protocol, 'http')
   t.same(request.socket, req.socket)
+})
+
+test('Request with trust proxy, encrypted', t => {
+  t.plan(2)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'example.com'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: 'ip', encrypted: true },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.type(request, TpRequest)
+  t.equal(request.protocol, 'https')
 })
 
 test('Request with trust proxy - no x-forwarded-host header', t => {
@@ -173,4 +194,22 @@ test('Request with trust proxy - handles multiple entries in x-forwarded-host/pr
   t.type(request, TpRequest)
   t.equal(request.hostname, 'example.com')
   t.equal(request.protocol, 'https')
+})
+
+test('Request with trust proxy - plain', t => {
+  t.plan(1)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'example.com'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: { remoteAddress: 'ip' },
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.same(request.protocol, 'http')
 })

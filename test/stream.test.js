@@ -2,6 +2,7 @@
 
 const t = require('tap')
 const test = t.test
+const proxyquire = require('proxyquire')
 const sget = require('simple-get').concat
 const fs = require('fs')
 const resolve = require('path').resolve
@@ -13,6 +14,7 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
+const { kDisableRequestLogging } = require('../lib/symbols.js')
 
 test('should respond with a stream', t => {
   t.plan(8)
@@ -136,6 +138,82 @@ test('onSend hook stream', t => {
     const payload = zlib.gunzipSync(res.rawPayload)
     t.equal(payload.toString('utf-8'), file)
     fastify.close()
+  })
+})
+
+test('onSend hook stream should work even if payload is not a proper stream', t => {
+  t.plan(1)
+
+  const reply = proxyquire('../lib/reply', {
+    'readable-stream': {
+      finished: (...args) => {
+        if (args.length === 2) { args[1](new Error('test-error')) }
+      }
+    }
+  })
+  const Fastify = proxyquire('..', {
+    './lib/reply.js': reply
+  })
+  const spyLogger = {
+    fatal: () => { },
+    error: () => { },
+    warn: (message) => {
+      t.equal(message, 'stream payload does not end properly')
+      fastify.close()
+    },
+    info: () => { },
+    debug: () => { },
+    trace: () => { },
+    child: () => { return spyLogger }
+  }
+
+  const fastify = Fastify({ logger: spyLogger })
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+  fastify.addHook('onSend', (req, reply, payload, done) => {
+    const fakeStream = { pipe: () => { } }
+    done(null, fakeStream)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  })
+})
+
+test('onSend hook stream should work on payload with "close" ending function', t => {
+  t.plan(1)
+
+  const reply = proxyquire('../lib/reply', {
+    'readable-stream': {
+      finished: (...args) => {
+        if (args.length === 2) { args[1](new Error('test-error')) }
+      }
+    }
+  })
+  const Fastify = proxyquire('..', {
+    './lib/reply.js': reply
+  })
+
+  const fastify = Fastify({ logger: false })
+  fastify.get('/', function (req, reply) {
+    reply.send({ hello: 'world' })
+  })
+  fastify.addHook('onSend', (req, reply, payload, done) => {
+    const fakeStream = {
+      pipe: () => { },
+      close: (cb) => {
+        cb()
+        t.pass()
+      }
+    }
+    done(null, fakeStream)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
   })
 })
 
@@ -366,6 +444,56 @@ test('Destroying streams prematurely should call abort method', t => {
     reallyLongStream.destroy = undefined
     reallyLongStream.close = undefined
     reallyLongStream.abort = () => t.ok('called')
+    reply.send(reallyLongStream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    const port = fastify.server.address().port
+
+    http.get(`http://localhost:${port}`, function (response) {
+      t.equal(response.statusCode, 200)
+      response.on('readable', function () {
+        response.destroy()
+      })
+      // Node bug? Node never emits 'close' here.
+      response.on('aborted', function () {
+        t.pass('Response closed')
+      })
+    })
+  })
+})
+
+test('Destroying streams prematurely, log is disabled', t => {
+  t.plan(4)
+
+  let fastify = null
+  try {
+    fastify = Fastify({
+      logger: false
+    })
+  } catch (e) {
+    t.fail()
+  }
+  const stream = require('stream')
+  const http = require('http')
+
+  fastify.get('/', function (request, reply) {
+    reply.log[kDisableRequestLogging] = true
+
+    let sent = false
+    const reallyLongStream = new stream.Readable({
+      read: function () {
+        if (!sent) {
+          this.push(Buffer.from('hello\n'))
+        }
+        sent = true
+      }
+    })
+    reallyLongStream.destroy = true
+    reallyLongStream.close = () => t.ok('called')
     reply.send(reallyLongStream)
   })
 

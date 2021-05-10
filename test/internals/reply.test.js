@@ -1616,7 +1616,7 @@ test('reply should not call the custom serializer for errors and not found', t =
 })
 
 test('reply.then', t => {
-  t.plan(2)
+  t.plan(4)
 
   function request () {}
 
@@ -1644,6 +1644,42 @@ test('reply.then', t => {
       t.fail('fulfilled called')
     }, function (err) {
       t.equal(err, _err)
+    })
+
+    response.destroy(_err)
+  })
+
+  t.test('with error but without reject callback', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, request)
+    const _err = new Error('kaboom')
+
+    reply.then(function () {
+      t.fail('fulfilled called')
+    })
+
+    t.pass()
+
+    response.destroy(_err)
+  })
+
+  t.test('with error, without reject callback, with logger', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, request)
+    // spy logger
+    reply.log = {
+      warn: (message) => {
+        t.equal(message, 'unhandled rejection on reply.then')
+      }
+    }
+    const _err = new Error('kaboom')
+
+    reply.then(function () {
+      t.fail('fulfilled called')
     })
 
     response.destroy(_err)

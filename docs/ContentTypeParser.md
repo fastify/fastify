@@ -137,4 +137,4 @@ fastify.route({
 })
  ```
 
-For piping file uploads you may want to checkout [this plugin](https://github.com/fastify/fastify-multipart).
+For piping file uploads you may want to check out [this plugin](https://github.com/fastify/fastify-multipart).

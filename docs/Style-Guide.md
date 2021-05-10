@@ -24,7 +24,7 @@ You need to know the following:
 
 ### Consider your Audience
 
-Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM, and Node.js. It is necessary to keep your readers in mind because they are the ones consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Use words and references that readers can relate with easily. Ask for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
+Before you start writing, think about your audience. In this case, your audience should already know HTTP, JavaScript, NPM, and Node.js. It is necessary to keep your readers in mind because they are the ones consuming your content. You want to give as much useful information as possible. Consider the vital things they need to know and how they can understand them. Use words and references that readers can relate to easily. Ask for feedback from the community, it can help you write better documentation that focuses on the user and what you want to achieve.
 
 ### Get straight to the point
 
@@ -74,9 +74,9 @@ More like this: You can use the following plugins.
 
 > According to [Wikipedia](#), ***You*** is usually a second person pronoun. Also, used to refer to an indeterminate person, as a more common alternative to a very formal indefinite pronoun.
 
-## When to avoid second person "you" as the pronoun
+## When to avoid the second person "you" as the pronoun
 
-One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid second person ("you") or directly addressing the reader.
+One of the main rules of formal writing such as reference documentation, or API documentation, is to avoid the second person ("you") or directly addressing the reader.
 
 **Example**
 
@@ -129,7 +129,7 @@ Example: Since there is no testing framework available, "Fastify recommends ways
 Example: Install dependencies before starting development.
 
 
-**Subjunctive** -  Use when making suggestions, hypothesis or non-factual statements.
+**Subjunctive** -  Use when making suggestions, hypotheses, or non-factual statements.
 
 Example: Reading the documentation on our website is recommended to get comprehensive knowledge of the framework.
 
@@ -148,7 +148,7 @@ Active:  npm installs packages and node dependencies.
 
 ### Documentation titles
 
-When creating a new guide, API or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. Name your files in kebab-cases and avoid Raw or camelCase. To learn more about kebab-case you can visit this medium article on [Case Styles](https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841).
+When creating a new guide, API, or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. Name your files in kebab-cases and avoid Raw or camelCase. To learn more about kebab-case you can visit this medium article on [Case Styles](https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841).
 
 **Examples**: <br>
 >`hook-and-plugins.md`, <br> 

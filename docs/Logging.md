@@ -62,7 +62,7 @@ const fastify = require('fastify')({
 
 <a name="logging-request-id"></a>
 
-By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#genreqid) for customization options.
+By default, Fastify adds an ID to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental ID is generated. See Fastify Factory [`requestIdHeader`](Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](Server.md#genreqid) for customization options.
 
 The default logger is configured with a set of standard serializers that serialize objects with `req`, `res`, and `err` properties. The object received by `req` is the Fastify [`Request`](Request.md) object, while the object received by `res` is the Fastify [`Reply`](Reply.md) object.
 This behaviour can be customized by specifying custom serializers.
@@ -107,7 +107,7 @@ const fastify = require('fastify')({
   }
 });
 ```
-**Note**: The body cannot be serialized inside `req` method because the request is serialized when we create the child logger. At that time, the body is not yet parsed.
+**Note**: The body cannot be serialized inside a `req` method because the request is serialized when we create the child logger. At that time, the body is not yet parsed.
 
 See an approach to log `req.body`
 

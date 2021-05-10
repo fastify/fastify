@@ -1334,6 +1334,30 @@ test('onSend hook should receive valid request and reply objects if a custom con
   })
 })
 
+test('Content-Length header should be updated if onSend hook modifies the payload', t => {
+  t.plan(2)
+
+  const instance = Fastify()
+
+  instance.get('/', async (_, rep) => {
+    rep.header('content-length', 3)
+    return 'foo'
+  })
+
+  instance.addHook('onSend', async () => 'bar12233000')
+
+  instance.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    const payloadLength = Buffer.byteLength(res.body)
+    const contentLength = Number(res.headers['content-length'])
+
+    t.equal(payloadLength, contentLength)
+  })
+})
+
 test('cannot add hook after binding', t => {
   t.plan(2)
   const instance = Fastify()
@@ -3174,6 +3198,44 @@ test('onTimeout should be triggered', t => {
   })
 
   fastify.get('/', async (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.get('/timeout', async (req, reply) => {
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.teardown(() => fastify.close())
+
+    sget({
+      method: 'GET',
+      url: address
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+    sget({
+      method: 'GET',
+      url: `${address}/timeout`
+    }, (err, response, body) => {
+      t.type(err, Error)
+      t.equal(err.message, 'socket hang up')
+    })
+  })
+})
+
+test('onTimeout should be triggered and socket _meta is set', t => {
+  t.plan(6)
+  const fastify = Fastify({ connectionTimeout: 500 })
+
+  fastify.addHook('onTimeout', function (req, res, done) {
+    t.ok('called', 'onTimeout')
+    done()
+  })
+
+  fastify.get('/', async (req, reply) => {
+    req.raw.socket._meta = {}
     reply.send({ hello: 'world' })
   })
 

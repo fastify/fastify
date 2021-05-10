@@ -2,7 +2,7 @@
 
 ## Hooks
 
-Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered, otherwise the event is lost.
+Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered, otherwise, the event is lost.
 
 By using hooks you can interact directly with the lifecycle of Fastify. There are Request/Reply hooks and application hooks:
 
@@ -26,14 +26,14 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
 - [Scope](#scope)
 - [Route level hooks](#route-level-hooks)
 
-**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behaviour may occur, e.g. duplicate invocation of handlers.
+**Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
 ## Request/Reply Hooks
 
 [Request](Request.md) and [Reply](Reply.md) are the core Fastify objects.<br/>
 `done` is the function to continue with the [lifecycle](Lifecycle.md).
 
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](Lifecycle.md).<br>
+It is easy to understand where each hook is executed by looking at the [lifecycle page](Lifecycle.md).<br>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 There are eight different hooks that you can use in Request/Reply *(in order of execution)*:
@@ -80,7 +80,7 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 
 **Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be `null`, because the body parsing happens before the [preValidation](#prevalidation) hook.
 
-**Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
+**Notice:** you should also add a `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
 
 **Notice**: The old syntaxes `function(request, reply, done)` and `async function(request, reply)` for the parser are still supported but they are deprecated.
 
@@ -134,7 +134,7 @@ fastify.addHook('preSerialization', async (request, reply, payload) => {
 })
 ```
 
-Note: the hook is NOT called if the payload is a `string`, a `Buffer`, a `stream` or `null`.
+Note: the hook is NOT called if the payload is a `string`, a `Buffer`, a `stream`, or `null`.
 
 ### onError
 ```js
@@ -204,7 +204,7 @@ fastify.addHook('onResponse', async (request, reply) => {
 })
 ```
 
-The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example to gather statistics.
+The `onResponse` hook is executed when a response has been sent, so you will not be able to send more data to the client. It can however be useful for sending data to external services, for example, to gather statistics.
 
 ### onTimeout
 
@@ -222,7 +222,7 @@ fastify.addHook('onTimeout', async (request, reply) => {
   await asyncMethod()
 })
 ```
-`onTimeout` is useful if you need to monitor the request timed out in your service. (if the `connectionTimeout` property is set on the fastify instance). The `onTimeout` hook is executed when a request is timed out and the http socket has been hanged up. Therefore you will not be able to send data to the client.
+`onTimeout` is useful if you need to monitor the request timed out in your service (if the `connectionTimeout` property is set on the Fastify instance). The `onTimeout` hook is executed when a request is timed out and the HTTP socket has been hanged up. Therefore ,you will not be able to send data to the client.
 
 
 ### Manage Errors from a hook
@@ -254,12 +254,12 @@ fastify.addHook('onResponse', async (request, reply) => {
 
 If needed, you can respond to a request before you reach the route handler,
 for example when implementing an authentication hook.
-Replying from an hook implies that the hook chain is __stopped__ and
-the rest of hooks and the handlers are not executed. If the hook is
+Replying from a hook implies that the hook chain is __stopped__ and
+the rest of the hooks and handlers are not executed. If the hook is
 using the callback approach, i.e. it is not an `async` function or it
 returns a `Promise`, it is as simple as calling `reply.send()` and avoiding
 calling the callback. If the hook is `async`, `reply.send()` __must__ be
-called _before_ the function returns or the promise resolves, otherwise the
+called _before_ the function returns or the promise resolves, otherwise, the
 request will proceed. When `reply.send()` is called outside of the
 promise chain, it is important to `return reply` otherwise the request
 will be executed twice.
@@ -344,7 +344,7 @@ fastify.addHook('onReady', async function () {
 
 <a name="on-close"></a>
 ### onClose
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](Plugins.md) need a "shutdown" event, for example, to close an open connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -355,7 +355,7 @@ fastify.addHook('onClose', (instance, done) => {
 
 <a name="on-route"></a>
 ### onRoute
-Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback. This hook is encapsulated.
+Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners are not passed a callback. This hook is encapsulated.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
   //Some code

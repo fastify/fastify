@@ -7,7 +7,7 @@
 ### Error Handling In Node.js
 
 #### Uncaught Errors
-In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were introduced to try to fix this issue, but did not. 
+In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks, and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were a failed attempt to fix this. 
 
 Given that it is not possible to process all uncaught errors sensibly, the best way to deal with them is to [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly). 
 
@@ -20,7 +20,7 @@ If you are using promises, you should attach a `.catch()` handler synchronously.
 Fastify follows an all-or-nothing approach and aims to be lean and optimal as much as possible. The developer is responsible for making sure that the errors are handled properly. 
 
 #### Errors In Input Data
-Most errors are a result of unexpected input data, so we recommend specifying a [JSON.schema validation](Validation-and-Serialization.md) for your input data.
+Most errors are a result of unexpected input data, so we recommend [validating your input data against a JSON schema](Validation-and-Serialization.md).
 
 #### Catching Uncaught Errors In Fastify
 Fastify tries to catch as many uncaught errors as it can without hindering performance. This includes:
@@ -30,19 +30,19 @@ Fastify tries to catch as many uncaught errors as it can without hindering perfo
 
 The error in both cases will be caught safely and routed to Fastify's default error handler for a generic `500 Internal Server Error` response. 
 
-For customizing this behaviour, you should use [`setErrorHandler`](Server.md#seterrorhandler).
+To customize this behavior you should use [`setErrorHandler`](Server.md#seterrorhandler).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 
 From the [Hooks documentation](Hooks.md#manage-errors-from-a-hook): 
 > If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
-If you have defined a custom error handler for using `setErrorHandler` the error will be routed there, otherwise it will be routed to Fastify’s generic error handler. 
+If you have defined a custom error handler for using `setErrorHandler` the error will be routed there. otherwise, it will be routed to Fastify’s generic error handler. 
 
 Some things to consider in your custom error handler: 
 
-- you can `reply.send(data)` which will be behave as it would be in [regular route handlers](Reply.md#senddata)
-	- objects are serialised, triggering the `preSerialization` lifecycle hook if you have one defined
+- you can `reply.send(data)`, which will behave as it would in [regular route handlers](Reply.md#senddata)
+	- objects are serialized, triggering the `preSerialization` lifecycle hook if you have one defined
 	- strings, buffers, and streams are sent to the client, with appropriate headers (no serialization)
 
 - You can throw a new error in your custom error handler

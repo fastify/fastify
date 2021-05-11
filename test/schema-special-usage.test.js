@@ -10,6 +10,44 @@ const ajvErrors = require('ajv-errors')
 const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
 
 test('Ajv8 usage instead of the bundle one', t => {
+  t.plan(1)
+
+  t.test('use new ajv8 option', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { strictRequired: true }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['missing'],
+          properties: {
+            foo: {
+              type: 'string'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.ready(err => {
+      t.ok(err)
+      t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
+    })
+  })
+})
+
+test('Ajv8 usage with plugins', { skip: 'https://github.com/npm/cli/issues/3147' }, t => {
   t.plan(2)
 
   t.test('use new ajv8 option', t => {

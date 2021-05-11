@@ -126,7 +126,6 @@
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
     "ajv-errors": "^1.0.1",
-    "ajv-formats": "^2.0.2",
     "ajv-i18n": "^3.5.0",
     "ajv-merge-patch": "^4.1.0",
     "ajv-pack": "^0.3.1",

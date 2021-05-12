@@ -46,7 +46,7 @@ Fastify uses GitHub Actions for CI testing, please refer to [GitHub's documentat
 | OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|
 | Linux   | `ubuntu-latest`        | npm                       | 10,12,14,16  |
-| Linux   | `ubuntu-16.04`         | yarn,pnpm                 | 10,12        |
+| Linux   | `ubuntu-18.04`         | yarn,pnpm                 | 10,12        |
 | Windows | `windows-latest`       | npm                       | 10,12,14,16  |
 | MacOS   | `macos-latest`         | npm                       | 10,12,14,16  |
 

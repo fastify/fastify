@@ -3184,6 +3184,7 @@ test('onTimeout should be triggered', t => {
   })
 
   fastify.get('/timeout', async (req, reply) => {
+    return reply
   })
 
   fastify.listen(0, (err, address) => {

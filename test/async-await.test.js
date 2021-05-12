@@ -279,11 +279,13 @@ test('support reply decorators with await', t => {
     setImmediate(() => {
       this.send({ hello: 'world' })
     })
+
+    return this
   })
 
   fastify.get('/', async (req, reply) => {
     await sleep(1)
-    reply.wow()
+    await reply.wow()
   })
 
   fastify.inject({
@@ -293,24 +295,6 @@ test('support reply decorators with await', t => {
     t.error(err)
     const payload = JSON.parse(res.payload)
     t.same(payload, { hello: 'world' })
-  })
-})
-
-test('support 204', t => {
-  t.plan(2)
-
-  const fastify = Fastify()
-
-  fastify.get('/', async (req, reply) => {
-    reply.code(204)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 204)
   })
 })
 
@@ -378,28 +362,7 @@ test('async await plugin', async t => {
   }
 })
 
-test('does not call reply.send() twice if 204 response equal already sent', t => {
-  t.plan(2)
-
-  const fastify = Fastify()
-
-  fastify.get('/', async (req, reply) => {
-    reply.code(204).send()
-    reply.send = () => {
-      throw new Error('reply.send() was called twice')
-    }
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 204)
-  })
-})
-
-test('error is logged because promise was fulfilled with undefined', t => {
+test('promise can be fulfilled with undefined', t => {
   t.plan(3)
 
   let fastify = null
@@ -418,47 +381,6 @@ test('error is logged because promise was fulfilled with undefined', t => {
   t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', async (req, reply) => {
-    reply.code(200)
-  })
-
-  stream.once('data', line => {
-    t.equal(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
-  })
-
-  fastify.listen(0, (err) => {
-    t.error(err)
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/',
-      timeout: 500
-    }, (err, res, body) => {
-      t.equal(err.message, 'Request timed out')
-    })
-  })
-})
-
-test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
-  t.plan(3)
-
-  let fastify = null
-  const stream = split(JSON.parse)
-  try {
-    fastify = Fastify({
-      logger: {
-        stream: stream,
-        level: 'error'
-      }
-    })
-  } catch (e) {
-    t.fail()
-  }
-
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.get('/', async (req, reply) => {
-    reply.code(204)
   })
 
   stream.once('data', line => {
@@ -474,52 +396,7 @@ test('error is not logged because promise was fulfilled with undefined but statu
       url: 'http://localhost:' + fastify.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.equal(res.statusCode, 204)
-    })
-  })
-})
-
-test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
-  t.plan(4)
-
-  let fastify = null
-  const stream = split(JSON.parse)
-  const payload = { hello: 'world' }
-  try {
-    fastify = Fastify({
-      logger: {
-        stream: stream,
-        level: 'error'
-      }
-    })
-  } catch (e) {
-    t.fail()
-  }
-
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.get('/', async (req, reply) => {
-    reply.send(payload)
-  })
-
-  stream.once('data', line => {
-    t.fail('should not log an error')
-  })
-
-  fastify.listen(0, (err) => {
-    t.error(err)
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/'
-    }, (err, res, body) => {
-      t.error(err)
-      t.equal(res.statusCode, 200)
-      t.same(
-        payload,
-        JSON.parse(body)
-      )
+      t.equal(res.body, undefined)
     })
   })
 })

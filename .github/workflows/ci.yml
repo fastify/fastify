@@ -20,7 +20,7 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
 
       - name: Use Node.js
         uses: actions/setup-node@v2.1.5

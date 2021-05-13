@@ -66,8 +66,6 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
 }
 ```
 
-**Notice**: The old syntaxes `function(req, done)` and `async function(req)` for the parser are still supported but they are deprecated.
-
 #### Body Parser
 You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
 ```js

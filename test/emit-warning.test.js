@@ -7,31 +7,6 @@ const semver = require('semver')
 
 process.removeAllListeners('warning')
 
-test('Should emit a warning when accessing request.req instead of request.raw', t => {
-  t.plan(4)
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP001')
-    t.equal(warning.message, 'You are accessing the Node.js core request object via "request.req", Use "request.raw" instead.')
-  }
-
-  const fastify = Fastify()
-
-  fastify.get('/', (request, reply) => {
-    reply.send(request.req.method + request.req.method)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    path: '/'
-  }, (err, res) => {
-    t.error(err)
-    process.removeListener('warning', onWarning)
-  })
-})
-
 test('Should emit a warning when accessing reply.res instead of reply.raw', t => {
   t.plan(4)
 

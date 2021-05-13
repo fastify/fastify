@@ -28,10 +28,6 @@ export interface FastifyRequest<
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
 
-  /**
-   * @deprecated Use `raw` property
-   */
-  readonly req: RawRequest;
   readonly headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   readonly ip: string;
   readonly ips?: string[];

@@ -11,7 +11,7 @@ import * as http2 from 'http2'
 import { Chain as LightMyRequestChain } from 'light-my-request'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
-import { Socket } from 'node:net'
+import { Socket } from 'net'
 
 // FastifyInstance
 // http server

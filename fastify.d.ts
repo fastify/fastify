@@ -14,7 +14,7 @@ import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
-import { Socket } from 'node:net'
+import { Socket } from 'net'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.

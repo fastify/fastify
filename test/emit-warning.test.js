@@ -1,47 +1,10 @@
 'use strict'
 
-const sget = require('simple-get').concat
 const { test } = require('tap')
 const Fastify = require('..')
 const semver = require('semver')
 
 process.removeAllListeners('warning')
-
-test('Should emit a warning when using payload less preParsing hook', t => {
-  t.plan(7)
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP004')
-    t.equal(warning.message, 'You are using the legacy preParsing hook signature. Use the one suggested in the documentation instead.')
-  }
-
-  const fastify = Fastify()
-
-  fastify.addHook('preParsing', function (request, reply, done) {
-    done()
-  })
-
-  fastify.get('/', (request, reply) => {
-    reply.send('OK')
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'OK')
-      process.removeListener('warning', onWarning)
-      fastify.close()
-    })
-  })
-})
 
 if (semver.gte(process.versions.node, '13.0.0')) {
   test('Should emit a warning when accessing request.connection instead of request.socket on Node process greater than 13.0.0', t => {

@@ -82,8 +82,6 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 
 **Notice:** you should also add `receivedEncodedLength` property to the returned stream. This property is used to correctly match the request payload with the `Content-Length` header value. Ideally, this property should be updated on each received chunk.
 
-**Notice**: The old syntaxes `function(request, reply, done)` and `async function(request, reply)` for the parser are still supported but they are deprecated.
-
 ### preValidation
 
 If you are using the `preValidation` hook, you can change the payload before it is validated. For example:

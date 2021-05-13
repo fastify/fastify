@@ -194,37 +194,6 @@ test('preParsing hooks should be able to modify the payload', t => {
   })
 })
 
-test('preParsing hooks can completely ignore the payload - deprecated syntax', t => {
-  t.plan(5)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP004')
-  }
-
-  fastify.addHook('preParsing', async (req, reply) => {
-
-  })
-
-  fastify.post('/', function (request, reply) {
-    reply.send(request.body)
-  })
-
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-
-    process.removeListener('warning', onWarning)
-  })
-})
-
 test('preParsing hooks should handle errors', t => {
   t.plan(3)
   const fastify = Fastify()

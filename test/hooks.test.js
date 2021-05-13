@@ -9,7 +9,6 @@ const fp = require('fastify-plugin')
 const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
-const warning = require('../lib/warnings')
 const payload = { hello: 'world' }
 
 process.removeAllListeners('warning')
@@ -46,7 +45,7 @@ test('hooks', t => {
   }
 
   try {
-    fastify.addHook('preParsing', function (request, reply, done) {
+    fastify.addHook('preParsing', function (request, reply, payload, done) {
       request.preParsing = true
       t.equal(request.test, 'the request is coming')
       t.equal(reply.test, 'the reply has come')
@@ -2545,37 +2544,6 @@ test('preParsing hook should run before parsing and be able to modify the payloa
       t.equal(response.headers['content-length'], '' + JSON.stringify(body).length)
       t.same(body, { hello: 'another world' })
     })
-  })
-})
-
-test('preParsing hooks can completely ignore the payload - deprecated syntax', t => {
-  t.plan(5)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  warning.emitted.delete('FSTDEP004')
-
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP004')
-  }
-
-  fastify.addHook('preParsing', (req, reply, done) => {
-    done()
-  })
-
-  fastify.post('/', function (request, reply) {
-    reply.send(request.body)
-  })
-
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
   })
 })
 

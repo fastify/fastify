@@ -28,7 +28,7 @@ A "month" is defined as 30 consecutive days.
 > ## Security Releases and Semver
 >
 > As a consequence of providing long-term support for major releases, there
-> are occasions where we need to release a breaking changes as a _minor_
+> are occasions where we need to release breaking changes as a _minor_
 > version release. Such changes will _always_ be noted in the
 > [release notes](https://github.com/fastify/fastify/releases).
 >

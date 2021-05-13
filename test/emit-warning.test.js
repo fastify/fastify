@@ -7,31 +7,6 @@ const semver = require('semver')
 
 process.removeAllListeners('warning')
 
-test('Should emit a warning when accessing reply.res instead of reply.raw', t => {
-  t.plan(4)
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP002')
-    t.equal(warning.message, 'You are accessing the Node.js core response object via "reply.res", Use "reply.raw" instead.')
-  }
-
-  const fastify = Fastify()
-
-  fastify.get('/', (request, reply) => {
-    reply.send(reply.res.statusCode + reply.res.statusCode)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    path: '/'
-  }, (err, res) => {
-    t.error(err)
-    process.removeListener('warning', onWarning)
-  })
-})
-
 test('Should emit a warning when using two arguments Content Type Parser instead of three arguments', t => {
   t.plan(7)
 

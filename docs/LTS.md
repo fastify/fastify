@@ -25,6 +25,19 @@ out in this document:
 
 A "month" is defined as 30 consecutive days.
 
+> ## Security Releases and Semver
+>
+> As a consequence of providing long-term support for major releases, there
+> are occasions where we need to release breaking changes as a _minor_
+> version release. Such changes will _always_ be noted in the
+> [release notes](https://github.com/fastify/fastify/releases).
+>
+> To avoid automatically receiving breaking security updates it is possible to use
+> the tilde (`~`) range qualifier. For example, to get patches for the 3.15
+> release, and avoid automatically updating to the 3.16 release, specify
+> the dependency as `"fastify": "~3.15.x"`. This will leave your application vulnerable,
+> so please use with caution.
+
 [semver]: https://semver.org/
 
 <a name="lts-schedule"></a>
@@ -41,7 +54,10 @@ A "month" is defined as 30 consecutive days.
 
 ### CI tested operating systems
 
-Fastify uses GitHub Actions for CI testing, please refer to [GitHub's documentation regarding workflow runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) for further details on what the latest virtual environment is in relation to the YAML workflow labels below:
+Fastify uses GitHub Actions for CI testing, please refer to
+[GitHub's documentation regarding workflow runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)
+for further details on what the latest virtual environment is in relation to
+the YAML workflow labels below:
 
 | OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|

@@ -32,10 +32,11 @@ A "month" is defined as 30 consecutive days.
 > version release. Such changes will _always_ be noted in the
 > [release notes](https://github.com/fastify/fastify/releases).
 >
-> To avoid automatically updating to new patch releases we recommend using
-> a tilde (`~`) range qualifier. For example, to get patches for the 3.15
+> To avoid automatically receiving breaking security updates it is possible to use
+> the tilde (`~`) range qualifier. For example, to get patches for the 3.15
 > release, and avoid automatically updating to the 3.16 release, specify
-> the dependency as `"fastify": "~3.15.x"`.
+> the dependency as `"fastify": "~3.15.x"`. This will leave your application vulnerable,
+> so please use with caution.
 
 [semver]: https://semver.org/
 

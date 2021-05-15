@@ -404,6 +404,19 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="serializer-opts"></a>
+### `serializerOpts`
+
+Customize the options of the default [`fast-json-stringify`](https://github.com/fastify/fast-json-stringify#options) instance that serialize the response's payload:
+
+```js
+const fastify = require('fastify')({
+  serializerOpts: {
+    rounding: 'ceil'
+  }
+})
+```
+
 <a name="http2-session-timeout"></a>
 ### `http2SessionTimeout`
 

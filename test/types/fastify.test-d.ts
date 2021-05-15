@@ -28,7 +28,7 @@ expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must b
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
 // server options
-expectAssignable<FastifyInstance>(fastify({ http2: true }))
+expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))

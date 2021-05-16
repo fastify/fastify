@@ -14,6 +14,7 @@ import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
+import { Socket } from 'net'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -74,6 +75,15 @@ export type FastifyHttpsOptions<
 
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
+export interface ConnectionError extends Error {
+  code: string,
+  bytesParsed: number,
+  rawPacket: {
+    type: string,
+    data: number[]
+  }
+}
+
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
@@ -125,7 +135,11 @@ export type FastifyServerOptions<
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
-  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error,
+  /**
+   * listener to error events emitted by client connections
+   */
+  clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean

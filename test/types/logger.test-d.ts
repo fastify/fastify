@@ -1,5 +1,5 @@
 import { expectType, expectError } from 'tsd'
-import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError } from '../../fastify'
+import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError, FastifyRequest, FastifyReply } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as pino from 'pino'
 
@@ -124,6 +124,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
     serializers: {
       req (IncomingMessage) {
+        expectType<FastifyRequest>(IncomingMessage)
         return {
           method: 'method',
           url: 'url',
@@ -135,6 +136,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
         }
       },
       res (ServerResponse) {
+        expectType<FastifyReply>(ServerResponse)
         return {
           statusCode: 'statusCode'
         }

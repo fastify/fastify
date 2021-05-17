@@ -1685,3 +1685,19 @@ test('reply.then', t => {
     response.destroy(_err)
   })
 })
+
+test('reply.sent should read from response.writableEnded if it is defined', t => {
+  t.plan(1)
+
+  const reply = new Reply({ writableEnded: true }, {}, {})
+
+  t.equal(reply.sent, true)
+})
+
+test('reply.sent should read from response.finished if response.writableEnded is not defined', t => {
+  t.plan(1)
+
+  const reply = new Reply({ finished: true }, {}, {})
+
+  t.equal(reply.sent, true)
+})

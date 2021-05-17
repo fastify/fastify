@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')({
+const fastify = require('../../fastify')({
   logger: false
 })
 

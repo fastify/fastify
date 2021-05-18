@@ -130,6 +130,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory) Fastify MongoDB in Memory Plugin for testing support.
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api) Fastify plugin to create REST API methods based on Mongoose MongoDB models.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose) Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin with support for Models.
+- [`fastify-msgpack`](https://github.com/kenriortega/fastify-msgpack) Fastify and MessagePack, together at last. Uses @msgpack/msgpack by default. 
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share [NATS](https://nats.io) client across Fastify.
 - [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties) Add `additionalProperties: false` by default to your JSON Schemas.
@@ -151,6 +152,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile) Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in a Fastify project.
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify plugin that uses [prettier](https://github.com/prettier/prettier) under the hood to beautify outgoing responses and/or other things in the Fastify server.
 - [`fastify-print-routes`](https://github.com/ShogunPanda/fastify-print-routes) A Fastify plugin that prints all available routes.
+- [`fastify-protobufjs`](https://github.com/kenriortega/fastify-protobufjs) Fastify and protobufjs, together at last. Uses protobufjs by default. 
 - [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the `request.rawBody` field.

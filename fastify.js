@@ -91,6 +91,8 @@ function fastify (options) {
 
   validateBodyLimitOption(options.bodyLimit)
 
+  options = normalizeOptions(options)
+
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
   const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory()
@@ -627,6 +629,50 @@ function fastify (options) {
     this[kErrorHandler] = func.bind(this)
     return this
   }
+}
+
+function normalizeOptions (options) {
+  const deprecatedOptionsMap = new Map([
+    ['clientErrorHandler', 'errorManagement'],
+    ['frameworkErrors', 'errorManagement'],
+    ['return503OnClosing', 'errorManagement'],
+    ['schemaErrorFormatter', 'errorManagement'],
+    ['rewriteUrl', 'routing'],
+    ['constraints', 'routing'],
+    ['exposeHeadRoutes', 'routing'],
+    ['caseSensitive', 'routing'],
+    ['ignoreTrailingSlash', 'routing'],
+    ['onProtoPoisoning', 'security'],
+    ['onConstructorPoisoning', 'security'],
+    ['trustProxy', 'security'],
+    ['connectionTimeout', 'timeouts'],
+    ['keepAliveTimeout', 'timeouts'],
+    ['pluginTimeout', 'timeouts'],
+    ['http2SessionTimeout', 'timeouts']
+  ])
+
+  const normalizedOptions = {}
+
+  for (const key in options) {
+    if (deprecatedOptionsMap.has(key)) {
+      // !TODO: Print deprecation warning
+      const groupKey = deprecatedOptionsMap.get(key)
+
+      normalizedOptions[groupKey] = {
+        ...normalizedOptions[groupKey],
+        [key]: options[key]
+      }
+
+      delete options[key]
+    }
+  }
+
+  return Object.assign({
+    errorManagement: {},
+    routing: {},
+    security: {},
+    timeouts: {}
+  }, normalizedOptions, options)
 }
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {

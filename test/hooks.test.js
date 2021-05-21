@@ -1073,7 +1073,7 @@ test('onSend hook is called after payload is serialized and headers are set', t 
 
     instance.addHook('onSend', function (request, reply, payload, done) {
       t.equal(payload, thePayload)
-      t.equal(reply[symbols.kReplyHeaders]['content-type'], 'application/octet-stream')
+      t.same(reply[symbols.kReplyHeaders]['content-type'], null)
       done()
     })
 

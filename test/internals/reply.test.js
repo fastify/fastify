@@ -477,6 +477,35 @@ test('stream with content type should not send application/octet-stream', t => {
   })
 })
 
+test('stream without content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+  const fs = require('fs')
+  const path = require('path')
+
+  const streamPath = path.join(__dirname, '..', '..', 'package.json')
+  const stream = fs.createReadStream(streamPath)
+  const buf = fs.readFileSync(streamPath)
+
+  fastify.get('/', function (req, reply) {
+    reply.send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.same(response.headers['content-type'], null)
+      t.same(body, buf)
+    })
+  })
+})
+
 test('stream using reply.raw.writeHead should return customize headers', t => {
   t.plan(6)
 

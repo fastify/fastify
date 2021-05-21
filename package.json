@@ -178,6 +178,7 @@
     "@fastify/ajv-compiler": "^1.0.0",
     "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
+    "ajv": "^6.12.2",
     "avvio": "^7.1.2",
     "fast-json-stringify": "^2.5.2",
     "fastify-error": "^0.3.0",

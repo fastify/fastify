@@ -118,6 +118,7 @@
     "node": ">=10.16.0"
   },
   "devDependencies": {
+    "@fastify/ajv-compiler-8": "github:fastify/ajv-compiler#ajv-8",
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^7.0.0",
     "@types/node": "^15.3.0",
@@ -174,9 +175,9 @@
     "yup": "^0.32.0"
   },
   "dependencies": {
+    "@fastify/ajv-compiler": "^1.0.0",
     "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
-    "ajv": "^6.12.2",
     "avvio": "^7.1.2",
     "fast-json-stringify": "^2.5.2",
     "fastify-error": "^0.3.0",

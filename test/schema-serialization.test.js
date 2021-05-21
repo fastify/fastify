@@ -33,6 +33,33 @@ test('basic test', t => {
   })
 })
 
+test('custom serializer options', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    serializerOpts: {
+      rounding: 'ceil'
+    }
+  })
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'integer'
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.send(4.2)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.payload, '5', 'it must use the ceil rouding')
+    t.equal(res.statusCode, 200)
+  })
+})
+
 test('Use the same schema id in different places', t => {
   t.plan(2)
   const fastify = Fastify()

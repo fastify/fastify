@@ -15,6 +15,8 @@ const {
   kReplyIsError,
   kReplySerializerDefault
 } = require('../../lib/symbols')
+const fs = require('fs')
+const path = require('path')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
@@ -452,8 +454,6 @@ test('stream with content type should not send application/octet-stream', t => {
   t.plan(4)
 
   const fastify = require('../..')()
-  const fs = require('fs')
-  const path = require('path')
 
   const streamPath = path.join(__dirname, '..', '..', 'package.json')
   const stream = fs.createReadStream(streamPath)
@@ -481,12 +481,9 @@ test('stream without content type should not send application/octet-stream', t =
   t.plan(4)
 
   const fastify = require('../..')()
-  const fs = require('fs')
-  const path = require('path')
 
-  const streamPath = path.join(__dirname, '..', '..', 'package.json')
-  const stream = fs.createReadStream(streamPath)
-  const buf = fs.readFileSync(streamPath)
+  const stream = fs.createReadStream(__filename)
+  const buf = fs.readFileSync(__filename)
 
   fastify.get('/', function (req, reply) {
     reply.send(stream)
@@ -500,7 +497,7 @@ test('stream without content type should not send application/octet-stream', t =
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.same(response.headers['content-type'], null)
+      t.equal(response.headers['content-type'], undefined)
       t.same(body, buf)
     })
   })

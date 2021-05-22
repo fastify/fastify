@@ -125,6 +125,7 @@
     "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
+    "ajv": "^6.0.0",
     "ajv-errors": "^1.0.1",
     "ajv-i18n": "^3.5.0",
     "ajv-merge-patch": "^4.1.0",

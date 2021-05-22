@@ -9,7 +9,7 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
-import * as ajv from 'ajv'
+import { Options as AjvOptions } from '@fastify/ajv-compiler'
 import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
@@ -126,7 +126,7 @@ export type FastifyServerOptions<
   },
   return503OnClosing?: boolean,
   ajv?: {
-    customOptions?: ajv.Options,
+    customOptions?: AjvOptions,
     plugins?: Function[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(

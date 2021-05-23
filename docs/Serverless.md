@@ -6,7 +6,7 @@ Run serverless applications and REST APIs using your existing Fastify applicatio
 
 - [AWS Lambda](#aws-lambda)
 - [Google Cloud Run](#google-cloud-run)
-- [Zeit Now](#zeit-now)
+- [Vercel](#vercel)
 
 ### Attention Readers:
 > Fastify is not designed to run on serverless environments.
@@ -192,11 +192,11 @@ gcloud beta run deploy --image gcr.io/PROJECT-ID/APP-NAME --platform managed
 
 Your app will be accessible from the URL GCP provides.
 
-## Zeit Now
+## Vercel
 
-[now](https://zeit.co/home) provides zero configuration deployment for
+[Vercel](https://vercel.com/) provides zero configuration deployment for
 Node.js applications. In order to use now, it is as simple as
-configuring your `now.json` file like the following:
+configuring your `vercel.json` file like the following:
 
 ```json
 {
@@ -204,7 +204,7 @@ configuring your `now.json` file like the following:
   "builds": [
     {
       "src": "api/serverless.js",
-      "use": "@now/node",
+      "use": "@vercel/node",
       "config": {
         "helpers": false
       }

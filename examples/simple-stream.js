@@ -6,23 +6,8 @@ const fastify = require('../fastify')({
 
 const Readable = require('stream').Readable
 
-const schema = {
-  schema: {
-    response: {
-      200: {
-        type: 'object',
-        properties: {
-          hello: {
-            type: 'string'
-          }
-        }
-      }
-    }
-  }
-}
-
 fastify
-  .get('/', schema, function (req, reply) {
+  .get('/', function (req, reply) {
     const stream = Readable.from(['hello world'])
     reply.send(stream)
   })

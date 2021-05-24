@@ -859,7 +859,7 @@ test('HEAD route should handle properly each response type', t => {
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-type'], undefined)
     t.equal(res.headers['content-length'], undefined)
     t.equal(res.body, '')
   })
@@ -1007,7 +1007,7 @@ test("HEAD route should handle stream.on('error')", t => {
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-type'], undefined)
   })
 })
 

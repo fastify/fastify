@@ -34,7 +34,7 @@ test('should respond with a stream', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], undefined)
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
@@ -465,7 +465,7 @@ test('should support send module 200 and 404', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], 'application/javascript; charset=UTF-8')
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {

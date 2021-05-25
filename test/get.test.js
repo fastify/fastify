@@ -90,6 +90,18 @@ const headersSchema = {
   }
 }
 
+test('shorthand - get sendReplyTyped', t => {
+  t.plan(1)
+  try {
+    fastify.get('/combined-reply', schema, function (req, reply) {
+      reply.sendReplyTyped(200, { hello: 'world' })
+    })
+    t.pass()
+  } catch (e) {
+    t.fail()
+  }
+})
+
 test('shorthand - get', t => {
   t.plan(1)
   try {
@@ -212,6 +224,19 @@ fastify.listen(0, err => {
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+
+  test('shorthand - request get sendReplyTyped', t => {
+    t.plan(4)
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/combined-reply'
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

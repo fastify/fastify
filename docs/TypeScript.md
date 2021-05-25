@@ -125,6 +125,32 @@ The type system heavily relies on generic properties to provide the most accurat
 
 🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the Fastify type system rely on generic properties. Make sure to reference the detailed type system documentation below to learn more about what is available.
 
+### Type checking responses based on the status code
+
+If you would like to be strict about the responses that are returned to the caller of a route. You can use the RepliesType when creating a route this key allows a type to be specified for any status code.  When `.sendReplyTyped` is called on the reply object, both the status code and the payload data is type scheduled to match.
+
+   ```typescript
+   server.get<{
+    RepliesTyped: {
+      200: {
+        username: string,
+      },
+      404: {
+        resultMessage: 'Not Found'
+        retryable: boolean,
+      }
+     };
+   }>('/get-user-data', async (request, reply) => {
+     const wasUserFound = false;
+     if(wasUserFound) {
+       reply.sendReplyTyped(200, { username: 'Example User' })
+     } else {
+       reply.sendReplyTyped(404, { resultMessage: 'Not Found', retryable: false })
+     }
+     return
+   })
+   ```
+
 ### JSON Schema
 
 To validate your requests and responses you can use JSON Schema files. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
@@ -148,7 +174,7 @@ When you want to use it for validation of some payload in a fastify route you ca
     ```
 
 2. Define the schema you need with `Type` and create the respective type  with `Static`.
-  
+
     ```typescript
     import { Static, Type } from '@sinclair/typebox'
 
@@ -346,7 +372,7 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
   async (request, reply): Promise<void> => {
 
     /*
-    request.body has type 
+    request.body has type
     {
       [x: string]: unknown;
       description?: string;
@@ -357,7 +383,7 @@ fastify.post<{ Body: FromSchema<typeof todo> }>(
 
     request.body.name // will not throw type error
     request.body.notthere // will throw type error
-    
+
     reply.status(201).send();
   },
 );

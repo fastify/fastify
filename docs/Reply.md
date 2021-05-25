@@ -27,6 +27,7 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
+  - [.sendReplyTyped(code, data)](#send-reply-typed)
   - [.then](#then)
 
 <a name="introduction"></a>
@@ -50,6 +51,7 @@ and properties:
 - `.serialize(payload)` - Serializes the specified payload using the default JSON serializer or using the custom serializer (if one is set) and returns the serialized payload.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
+- `.sendReplyTyped(code, payload)` - Combines the calls to status and payload together with type checking for TypeScript.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
 - `.raw` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
@@ -432,6 +434,13 @@ fastify.get('/botnet', async function (request, reply) {
 ```
 
 If you want to know more please review [Routes#async-await](Routes.md#async-await).
+
+
+<a name="send-reply-typed"></a>
+### .sendReplyTyped(code, data)
+
+As the name suggests, `.sendReplyTyped()` is a function that sends a reply to the user along with a status code. When used in combination
+Typescript this method performs type validation of the response.
 
 <a name="then"></a>
 ### .then(fulfilled, rejected)

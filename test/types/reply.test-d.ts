@@ -35,6 +35,15 @@ interface ReplyPayload {
   Reply: {
     test: boolean;
   };
+  RepliesTyped: {
+    200: {
+      resultMessage: string,
+    },
+    404: {
+      resultMessage: 'Not Found'
+      retryable: boolean,
+    }
+  }
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
@@ -55,4 +64,13 @@ expectError(server.get<ReplyPayload>('/get-generic-return-error', async function
 }))
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
   return { foo: 'bar' }
+}))
+server.get<ReplyPayload>('/get-generic-return-typed', async function handler (request, reply) {
+  reply.sendReplyTyped(200, { resultMessage: 'hello world' })
+})
+server.get<ReplyPayload>('/get-generic-return-typed-second', async function handler (request, reply) {
+  reply.sendReplyTyped(404, { resultMessage: 'Not Found', retryable: false })
+})
+expectError(server.get<ReplyPayload>('/get-typed-return-error', async function handler (request, reply) {
+  reply.sendReplyTyped(200, false)
 }))

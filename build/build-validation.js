@@ -18,6 +18,7 @@ const defaultInitOptions = {
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,
+  jsonShorthand: true,
   ignoreTrailingSlash: false,
   maxParamLength: 100,
   onProtoPoisoning: 'error',
@@ -74,6 +75,7 @@ const schema = {
       type: 'boolean',
       default: false
     },
+    jsonShorthand: { type: 'boolean', default: defaultInitOptions.jsonShorthand },
     maxParamLength: { type: 'integer', default: defaultInitOptions.maxParamLength },
     onProtoPoisoning: { type: 'string', default: defaultInitOptions.onProtoPoisoning },
     onConstructorPoisoning: { type: 'string', default: defaultInitOptions.onConstructorPoisoning },

@@ -82,6 +82,7 @@ test('build schema - payload schema', t => {
 test('build schema - avoid repeated normalize schema', t => {
   t.plan(3)
   const opts = {
+    jsonShorthand: true,
     schema: {
       query: {
         type: 'object',
@@ -91,15 +92,16 @@ test('build schema - avoid repeated normalize schema', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema, opts)
   t.not(kSchemaVisited, undefined)
   t.equal(opts.schema[kSchemaVisited], true)
-  t.equal(opts.schema, normalizeSchema(opts.schema))
+  t.equal(opts.schema, normalizeSchema(opts.schema, opts))
 })
 
 test('build schema - query schema', t => {
   t.plan(2)
   const opts = {
+    jsonShorthand: true,
     schema: {
       query: {
         type: 'object',
@@ -109,7 +111,7 @@ test('build schema - query schema', t => {
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema, opts)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -118,13 +120,14 @@ test('build schema - query schema', t => {
 test('build schema - query schema abbreviated', t => {
   t.plan(2)
   const opts = {
+    jsonShorthand: true,
     schema: {
       query: {
         hello: { type: 'string' }
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema, opts)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -150,13 +153,14 @@ test('build schema - querystring schema', t => {
 test('build schema - querystring schema abbreviated', t => {
   t.plan(2)
   const opts = {
+    jsonShorthand: true,
     schema: {
       querystring: {
         hello: { type: 'string' }
       }
     }
   }
-  opts.schema = normalizeSchema(opts.schema)
+  opts.schema = normalizeSchema(opts.schema, opts)
   validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => ajv.compile(schema))
   t.type(opts[symbols.querystringSchema].schema.type, 'string')
   t.equal(typeof opts[symbols.querystringSchema], 'function')
@@ -166,6 +170,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
   t.plan(2)
   try {
     const opts = {
+      jsonShorthand: true,
       schema: {
         query: {
           type: 'object',
@@ -181,7 +186,7 @@ test('build schema - must throw if querystring and query schema exist', t => {
         }
       }
     }
-    opts.schema = normalizeSchema(opts.schema)
+    opts.schema = normalizeSchema(opts.schema, opts)
   } catch (err) {
     t.equal(err.code, 'FST_ERR_SCH_DUPLICATE')
     t.equal(err.message, 'Schema with \'querystring\' already present!')

@@ -9,6 +9,7 @@ Request is a core Fastify object containing the following fields:
 - `headers` - the headers
 - `raw` - the incoming HTTP request from Node core
 - `req` *(deprecated, use `.raw` instead)* - the incoming HTTP request from Node core
+- `instance` - A reference to the fastify instance object
 - `id` - the request id
 - `log` - the logger instance of the incoming request
 - `ip` - the IP address of the incoming request

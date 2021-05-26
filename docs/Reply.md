@@ -5,7 +5,7 @@
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
   - [.statusCode](#statusCode)
-  - [.instance](#instance)
+  - [.server](#server)
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
@@ -89,9 +89,9 @@ if (reply.statusCode >= 299) {
 }
 ```
 
-<a name="instance"></a>
-### .instance
-Contains a reference to the instance object of the current scope.
+<a name="server"></a>
+### .server
+Contains a reference to the server object of the current scope.
 
 ```js
 fastify.decorate('util', function util () {
@@ -99,7 +99,7 @@ fastify.decorate('util', function util () {
 })
 
 fastify.get('/', async function (req, rep) {
-  return rep.instance.util() // foo
+  return rep.server.util() // foo
 })
 ```
 

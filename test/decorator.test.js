@@ -869,11 +869,11 @@ test('Request/reply decorators should be able to access the server instance', as
 
   // ----
   function rootAssert () {
-    t.equal(this.instance, server)
+    t.equal(this.server, server)
   }
 
   function nestedAssert () {
-    t.not(this.instance, server)
-    t.equal(this.instance.foo, 'bar')
+    t.not(this.server, server)
+    t.equal(this.server.foo, 'bar')
   }
 })

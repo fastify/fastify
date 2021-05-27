@@ -286,6 +286,9 @@ function fastify (options) {
     initialConfig
   }
 
+  fastify[kReply].prototype.server = fastify
+  fastify[kRequest].prototype.server = fastify
+
   Object.defineProperties(fastify, {
     pluginName: {
       get () {

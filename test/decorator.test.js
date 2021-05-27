@@ -838,3 +838,42 @@ test('decorate* should not emit warning if string,bool,numbers are passed', t =>
   fastify.decorateReply('test_undefined', undefined)
   t.end('Done')
 })
+
+test('Request/reply decorators should be able to access the server instance', async t => {
+  t.plan(6)
+
+  const server = require('..')({ logger: false })
+  server.decorateRequest('assert', rootAssert)
+  server.decorateReply('assert', rootAssert)
+
+  server.get('/root-assert', async (req, rep) => {
+    req.assert()
+    rep.assert()
+    return 'done'
+  })
+
+  server.register(async instance => {
+    instance.decorateRequest('assert', nestedAssert)
+    instance.decorateReply('assert', nestedAssert)
+    instance.decorate('foo', 'bar')
+
+    instance.get('/nested-assert', async (req, rep) => {
+      req.assert()
+      rep.assert()
+      return 'done'
+    })
+  })
+
+  await server.inject({ method: 'GET', url: '/root-assert' })
+  await server.inject({ method: 'GET', url: '/nested-assert' })
+
+  // ----
+  function rootAssert () {
+    t.equal(this.server, server)
+  }
+
+  function nestedAssert () {
+    t.not(this.server, server)
+    t.equal(this.server.foo, 'bar')
+  }
+})

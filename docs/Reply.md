@@ -5,6 +5,7 @@
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
   - [.statusCode](#statusCode)
+  - [.server](#server)
   - [.header(key, value)](#headerkey-value)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
@@ -38,6 +39,7 @@ and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
+- `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
 - `.getHeader(name)` - Retrieve value of already set header.
@@ -85,6 +87,20 @@ This property reads and sets the HTTP status code. It is an alias for `reply.cod
 if (reply.statusCode >= 299) {
   reply.statusCode = 500
 }
+```
+
+<a name="server"></a>
+### .server
+The Fastify server instance, scoped to the current [encapsulation context](Encapsulation.md).
+
+```js
+fastify.decorate('util', function util () {
+  return 'foo'
+})
+
+fastify.get('/', async function (req, rep) {
+  return rep.server.util() // foo
+})
 ```
 
 <a name="header"></a>

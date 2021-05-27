@@ -845,8 +845,8 @@ test('plugin metadata - dependencies (nested)', t => {
   }
 })
 
-test('pluginTimeout', t => {
-  t.plan(2)
+test('pluginTimeout', { only: true }, t => {
+  t.plan(3)
   const fastify = Fastify({
     pluginTimeout: 10
   })
@@ -855,12 +855,14 @@ test('pluginTimeout', t => {
   })
   fastify.ready((err) => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
   })
 })
 
 test('pluginTimeout default', t => {
-  t.plan(2)
+  t.plan(3)
   const clock = fakeTimer.install()
 
   const fastify = Fastify()
@@ -871,7 +873,9 @@ test('pluginTimeout default', t => {
 
   fastify.ready((err) => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
   })
 
   t.teardown(clock.uninstall)

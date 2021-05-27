@@ -39,7 +39,7 @@ and properties:
 - `.code(statusCode)` - Sets the status code.
 - `.status(statusCode)` - An alias for `.code(statusCode)`.
 - `.statusCode` - Read and set the HTTP status code.
-- `.instance` - A reference to the fastify instance object.
+- `.server` - A reference to the fastify instance object.
 - `.header(name, value)` - Sets a response header.
 - `.headers(object)` - Sets all the keys of the object as response headers.
 - `.getHeader(name)` - Retrieve value of already set header.

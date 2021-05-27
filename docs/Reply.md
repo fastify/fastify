@@ -91,7 +91,7 @@ if (reply.statusCode >= 299) {
 
 <a name="server"></a>
 ### .server
-Contains a reference to the server object of the current scope.
+The Fastify server instance, scoped to the current [encapsulation context](Encapsulation.md).
 
 ```js
 fastify.decorate('util', function util () {

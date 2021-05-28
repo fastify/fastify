@@ -5,6 +5,162 @@ const AJV = require('ajv')
 const S = require('fluent-json-schema')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
+const ajvErrors = require('ajv-errors')
+
+const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
+
+test('Ajv8 usage instead of the bundle one', t => {
+  t.plan(1)
+
+  t.test('use new ajv8 option', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { strictRequired: true }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['missing'],
+          properties: {
+            foo: {
+              type: 'string'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.ready(err => {
+      t.ok(err)
+      t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
+    })
+  })
+})
+
+test('Ajv8 usage with plugins', { skip: 'until npm 7.2 will be bundled with node.js 16 https://github.com/npm/cli/issues/3147' }, t => {
+  t.plan(2)
+
+  t.test('use new ajv8 option', t => {
+    t.plan(3)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: true },
+        plugins: [require('ajv-formats')]
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.json().message, 'body must match format "date"')
+    })
+  })
+
+  t.test('use new ajv8 option - avoid check', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: false }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+    })
+  })
+
+  function callIt (fastify, cb) {
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              format: 'date'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { foo: '99' }
+    }, cb)
+  }
+})
+
+test('Ajv plugins array parameter', t => {
+  t.plan(3)
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        jsonPointers: true,
+        allErrors: true
+      },
+      plugins: [
+        [ajvErrors, { singleError: '@@@@' }]
+      ]
+    }
+  })
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+            minimum: 2,
+            maximum: 10,
+            multipleOf: 2,
+            errorMessage: {
+              type: 'should be number',
+              minimum: 'should be >= 2',
+              maximum: 'should be <= 10',
+              multipleOf: 'should be multipleOf 2'
+            }
+          }
+        }
+      }
+    },
+    handler (req, reply) { reply.send({ ok: 1 }) }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 99 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'body/foo should be <= 10@@@@should be multipleOf 2')
+  })
+})
 
 test('Should handle root $merge keywords in header', t => {
   t.plan(5)

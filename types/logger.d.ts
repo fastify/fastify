@@ -20,7 +20,9 @@
 
 import { FastifyError } from 'fastify-error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
-import { FastifyRequest, RequestGenericInterface } from './request'
+import { RouteGenericInterface } from './route'
+import { FastifyRequest } from './request'
+import { FastifyReply } from './reply'
 
 /**
  * Standard Fastify logging function
@@ -114,8 +116,8 @@ export interface PrettyOptions {
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>
+  RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>>,
+  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
 > {
   serializers?: {
     req?: (req: RawRequest) => {
@@ -139,6 +141,6 @@ export interface FastifyLoggerOptions<
     };
   };
   level?: string;
-  genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequest>) => string;
+  genReqId?: (req: RawRequest) => string;
   prettyPrint?: boolean | PrettyOptions;
 }

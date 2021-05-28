@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')()
+const fastify = require('../fastify')({ logger: true })
 const jsonParser = require('fast-json-body')
 const qs = require('qs')
 
@@ -38,5 +38,4 @@ fastify
 
 fastify.listen(3000, err => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
 })

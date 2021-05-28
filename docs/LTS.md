@@ -13,7 +13,7 @@ out in this document:
    [https://github.com/fastify/fastify/releases](https://github.com/fastify/fastify/releases).
 
 1. Major releases will receive security updates for an additional six months
-   from the release of the next major release. After this period is expired,
+   from the release of the next major release. After this period
    we will still review and release security fixes as long as they are
    provided by the community and they do not violate other constraints,
    e.g. minimum supported Node.js version.
@@ -23,7 +23,20 @@ out in this document:
    [Node.js LTS policy](https://github.com/nodejs/Release) within the
    LTS period of that given Fastify release line.
 
-A "month" is to be a period of 30 consecutive days.
+A "month" is defined as 30 consecutive days.
+
+> ## Security Releases and Semver
+>
+> As a consequence of providing long-term support for major releases, there
+> are occasions where we need to release breaking changes as a _minor_
+> version release. Such changes will _always_ be noted in the
+> [release notes](https://github.com/fastify/fastify/releases).
+>
+> To avoid automatically receiving breaking security updates it is possible to use
+> the tilde (`~`) range qualifier. For example, to get patches for the 3.15
+> release, and avoid automatically updating to the 3.16 release, specify
+> the dependency as `"fastify": "~3.15.x"`. This will leave your application vulnerable,
+> so please use with caution.
 
 [semver]: https://semver.org/
 
@@ -41,11 +54,16 @@ A "month" is to be a period of 30 consecutive days.
 
 ### CI tested operating systems
 
-| OS      | Version                | Package Manager           | Node.js      |
+Fastify uses GitHub Actions for CI testing, please refer to
+[GitHub's documentation regarding workflow runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)
+for further details on what the latest virtual environment is in relation to
+the YAML workflow labels below:
+
+| OS      | YAML Workflow Label    | Package Manager           | Node.js      |
 |---------|------------------------|---------------------------|--------------|
-| Linux   | Ubuntu 16.04           | npm                       | 10,12,14,16  |
-| Linux   | Ubuntu 16.04           | yarn,pnpm                 | 10,12        |
-| Windows | Windows Server 2016 R2 | npm                       | 10,12,14,16  |
-| MacOS   | macOS X Mojave 10.14   | npm                       | 10,12,14,16  |
+| Linux   | `ubuntu-latest`        | npm                       | 10,12,14,16  |
+| Linux   | `ubuntu-18.04`         | yarn,pnpm                 | 10,12        |
+| Windows | `windows-latest`       | npm                       | 10,12,14,16  |
+| MacOS   | `macos-latest`         | npm                       | 10,12,14,16  |
 
 Using [yarn](https://yarnpkg.com/) might require passing the `--ignore-engines` flag.

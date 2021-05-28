@@ -78,7 +78,7 @@ fastify.get('/bar', function (req, reply) {
 
 <a name="factory-max-param-length"></a>
 ### `maxParamLength`
-You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br>
+You can set a custom length for parameters in parametric (standard, regex, and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br>
 This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br>
 *If the maximum length limit is reached, the not found route will be invoked.*
 
@@ -144,7 +144,7 @@ are not present on the object, they will be added accordingly:
           res.send('foo')
         })
         ```
-      Any user supplied serializer will override the default serializer of the
+      Any user-supplied serializer will override the default serializer of the
       corresponding property.
 + `loggerInstance`: a custom logger instance. The logger must conform to the Pino
 interface by having the following methods: `info`, `error`, `debug`, `fatal`, `warn`, `trace`, `child`. For example:
@@ -195,7 +195,7 @@ Please note that this setting will also disable an error log written by the defa
 
 <a name="custom-http-server"></a>
 ### `serverFactory`
-You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
+You can pass a custom HTTP server to Fastify by using the `serverFactory` option.<br/>
 `serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
@@ -216,7 +216,7 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
+Internally Fastify uses the API of Node core HTTP server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
@@ -238,7 +238,7 @@ Please note this setting this option to `false` goes against
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`
 
-The header name used to know the request id. See [the request id](Logging.md#logging-request-id) section.
+The header name used to know the request-id. See [the request-id](Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`
 
@@ -252,11 +252,11 @@ Defines the label used for the request identifier when logging the request.
 <a name="factory-gen-request-id"></a>
 ### `genReqId`
 
-Function for generating the request id. It will receive the incoming request as a parameter.
+Function for generating the request-id. It will receive the incoming request as a parameter.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing integers`
 
-Especially in distributed systems, you may want to override the default id generation behaviour as shown below. For generating `UUID`s you may want to checkout [hyperid](https://github.com/mcollina/hyperid)
+Especially in distributed systems, you may want to override the default ID generation behavior as shown below. For generating `UUID`s you may want to check out [hyperid](https://github.com/mcollina/hyperid)
 
 ```js
 let i = 0
@@ -288,7 +288,7 @@ const fastify = Fastify({ trustProxy: true })
     }
     ```
 
-For more examples refer to [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
+For more examples, refer to the [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
 
 You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
 
@@ -371,7 +371,7 @@ If `false`, the server routes the incoming request as usual.
 <a name="factory-ajv"></a>
 ### `ajv`
 
-Configure the ajv instance used by Fastify without providing a custom one.
+Configure the Ajv instance used by Fastify without providing a custom one.
 
 + Default:
 
@@ -404,14 +404,27 @@ const fastify = require('fastify')({
 })
 ```
 
+<a name="serializer-opts"></a>
+### `serializerOpts`
+
+Customize the options of the default [`fast-json-stringify`](https://github.com/fastify/fast-json-stringify#options) instance that serialize the response's payload:
+
+```js
+const fastify = require('fastify')({
+  serializerOpts: {
+    rounding: 'ceil'
+  }
+})
+```
+
 <a name="http2-session-timeout"></a>
 ### `http2SessionTimeout`
 
 Set a default
-[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming http2 session. The session will be closed on the timeout. Default: `5000` ms.
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming HTTP/2 session. The session will be closed on the timeout. Default: `5000` ms.
 
 Note that this is needed to offer the graceful "close" experience when
-using http2. Node core defaults this to `0`.
+using HTTP/2. Node core defaults this to `0`.
 
 <a name="framework-errors"></a>
 ### `frameworkErrors`
@@ -487,9 +500,9 @@ const fastify = require('fastify')({
 <a name="rewrite-url"></a>
 ### `rewriteUrl`
 
-Set a sync callback function that must return a string that allows rewriting urls.
+Set a sync callback function that must return a string that allows rewriting URLs.
 
-> Rewriting a url will modify the `url` property of the `req` object
+> Rewriting a URL will modify the `url` property of the `req` object
 
 ```js
 function rewriteUrl (req) { // req is the Node.js HTTP request
@@ -604,7 +617,7 @@ fastify.listen(3000, '127.0.0.1', 511, (err, address) => {
 })
 ```
 
-Specifying options is also supported, the object is same as [options](https://nodejs.org/api/net.html#net_server_listen_options_callback) in the Node.js server listen:
+Specifying options is also supported; the object is same as [options](https://nodejs.org/api/net.html#net_server_listen_options_callback) in the Node.js server listen:
 
 ```js
 fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {
@@ -710,7 +723,7 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
-See [`return503OnClosing` flags](Server.md#factory-return-503-on-closing) for changing this behaviour.
+See [`return503OnClosing` flags](Server.md#factory-return-503-on-closing) for changing this behavior.
 
 If it is called without any arguments, it will return a Promise:
 
@@ -729,7 +742,7 @@ Function useful if you need to decorate the fastify instance, Reply or Request, 
 <a name="register"></a>
 #### register
 Fastify allows the user to extend its functionality with plugins.
-A plugin can be a set of routes, a server decorator or whatever, check [here](Plugins.md).
+A plugin can be a set of routes, a server decorator, or whatever, check [here](Plugins.md).
 
 <a name="addHook"></a>
 #### addHook
@@ -773,7 +786,7 @@ Name of the current plugin. There are three ways to define a name (in order).
 
 *Fallback*: The first two lines of your plugin will represent the plugin name. Newlines are replaced by ` -- `. This will help to identify the root cause when you deal with many plugins.
 
-Important: If you have to deal with nested plugins the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
+Important: If you have to deal with nested plugins, the name differs with the usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because no new scope is created and therefore we have no place to attach contextual data. In that case, the plugin name will represent the boot order of all involved plugins in the format of `plugin-A -> plugin-B`.
 
 <a name="log"></a>
 #### log
@@ -785,7 +798,7 @@ Fastify version of the instance. Used for plugin support. See [Plugins](Plugins.
 
 <a name="inject"></a>
 #### inject
-Fake http injection (for testing purposes) [here](Testing.md#inject).
+Fake HTTP injection (for testing purposes) [here](Testing.md#inject).
 
 <a name="add-schema"></a>
 #### addSchema
@@ -802,8 +815,8 @@ To learn more, read the [Validation and Serialization](Validation-and-Serializat
 
 <a name="set-reply-serializer"></a>
 #### setReplySerializer
-Set the reply serializer for all the routes. This will used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
-Note: the function parameter is called only for status `2xx`. Checkout the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
+Set the reply serializer for all the routes. This will be used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
+Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
 
 ```js
 fastify.setReplySerializer(function (payload, statusCode){
@@ -837,11 +850,14 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 
 <a name="schema-error-formatter"></a>
 #### schemaErrorFormatter
-This property can be used set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
+This property can be used to set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
 
 <a name="schema-controller"></a>
 #### schemaController
-This property can be used to fully manage where the schemas of your application will be stored.
+This property can be used to fully manage: 
+- `bucket`: where the schemas of your application will be stored
+- `compilersFactory`: what module must compile the JSON schemas
+
 It can be useful when your schemas are stored in another data structure that is unknown to Fastify.
 See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
 this property helps to resolve.
@@ -851,7 +867,7 @@ const fastify = Fastify({
   schemaController: {
     /**
      * This factory is called whenever `fastify.register()` is called.
-     * It may receive as input the schemas of the parent context if some schemas has been added.
+     * It may receive as input the schemas of the parent context if some schemas have been added.
      * @param {object} parentSchemas these schemas will be returned by the `getSchemas()` method function of the returned `bucket`.
      */
     bucket: function factory (parentSchemas) {
@@ -875,6 +891,45 @@ const fastify = Fastify({
           return allTheSchemaStored
         }
       }
+    },
+
+    /**
+     * The compilers factory let you to fully control the validator and serializer
+     * in the Fastify's lifecycle, providing the encapsulation to your compilers.
+     */
+    compilersFactory: {
+      /**
+       * This factory is called whenever a new validator instance is needed.
+       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * encapsulation context.
+       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly 
+       */
+      buildValidator: function factory (externalSchemas, ajvServerOption) {
+        // This factory function must return a schema validator compiler.
+        // See [#schema-validator](Validation-and-Serialization.md#schema-validator) for details.
+        const yourAjvInstance = new Ajv(ajvServerOption.customOptions)
+        return function validatorCompiler ({ schema, method, url, httpPart }) {
+          return yourAjvInstance.compile(schema)
+        }
+      },
+
+      /**
+       * This factory is called whenever a new serializer instance is needed.
+       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * encapsulation context.
+       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly 
+       */
+      buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
+        // This factory function must return a schema serializer compiler.
+        // See [#schema-serializer](Validation-and-Serialization.md#schema-serializer) for details.
+        return function serializerCompiler ({ schema, method, url, httpStatus }) {
+          return data => JSON.stringify(data)
+        }
+      }
     }
   }
 });
@@ -883,11 +938,11 @@ const fastify = Fastify({
 <a name="set-not-found-handler"></a>
 #### setNotFoundHandler
 
-`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated like a regular route handler so requests will go through the full [Fastify lifecycle](Lifecycle.md#lifecycle).
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated as a regular route handler so requests will go through the full [Fastify lifecycle](Lifecycle.md#lifecycle).
 
 You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
-_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](Reply.md#call-not-found)_. In which case only preHandler will be run.
+_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](Reply.md#call-not-found)_. In which case, only preHandler will be run.
 
 ```js
 fastify.setNotFoundHandler({
@@ -915,7 +970,7 @@ fastify.register(function (instance, options, done) {
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance, and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
 *Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
@@ -1041,7 +1096,7 @@ fastify.get('/', {
 #### initialConfig
 
 `fastify.initialConfig`: Exposes a frozen read-only object registering the initial
-options passed down by the user to the fastify instance.
+options passed down by the user to the Fastify instance.
 
 Currently the properties that can be exposed are:
 - connectionTimeout

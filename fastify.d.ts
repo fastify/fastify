@@ -9,11 +9,12 @@ import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyD
 import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
-import * as ajv from 'ajv'
+import { Options as AjvOptions } from '@fastify/ajv-compiler'
 import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
+import { Socket } from 'net'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -74,6 +75,15 @@ export type FastifyHttpsOptions<
 
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
+export interface ConnectionError extends Error {
+  code: string,
+  bytesParsed: number,
+  rawPacket: {
+    type: string,
+    data: number[]
+  }
+}
+
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
@@ -116,7 +126,7 @@ export type FastifyServerOptions<
   },
   return503OnClosing?: boolean,
   ajv?: {
-    customOptions?: ajv.Options,
+    customOptions?: AjvOptions,
     plugins?: Function[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
@@ -125,7 +135,11 @@ export type FastifyServerOptions<
     res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
-  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error
+  schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error,
+  /**
+   * listener to error events emitted by client connections
+   */
+  clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
@@ -150,7 +164,7 @@ export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 export { FastifyInstance } from './types/instance'
 export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
-export { FastifyContext } from './types/context'
+export { FastifyContext, FastifyContextConfig } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'

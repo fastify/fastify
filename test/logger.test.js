@@ -1488,3 +1488,31 @@ test('should pass when using unWritable props in the logger option', t => {
   })
   t.pass()
 })
+
+test('should be able to use a custom logger', t => {
+  t.plan(1)
+
+  const logger = {
+    fatal: () => {},
+    error: () => {},
+    warn: () => {},
+    info: () => {},
+    debug: () => {},
+    trace: () => {},
+    child: () => {}
+  }
+
+  Fastify({ logger })
+
+  t.pass()
+})
+
+test('should create a default logger if provided one is invalid', t => {
+  t.plan(1)
+
+  const logger = new Date()
+
+  Fastify({ logger })
+
+  t.pass()
+})

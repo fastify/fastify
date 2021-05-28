@@ -9,6 +9,8 @@ const split = require('split2')
 const append = require('vary').append
 const proxyquire = require('proxyquire')
 
+process.removeAllListeners('warning')
+
 test('Should register a versioned route', t => {
   t.plan(11)
   const fastify = Fastify()
@@ -517,6 +519,61 @@ test('Should register a versioned route with custom versioning strategy', t => {
     url: '/',
     headers: {
       Accept: 'application/vnd.example.api+json;version=4'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+})
+
+test('Should get error using an invalid a versioned route, using default validation (deprecated versioning option)', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    versioning: {
+      storage: function () {
+        let versions = {}
+        return {
+          get: (version) => { return versions[version] || null },
+          set: (version, store) => { versions[version] = store },
+          del: (version) => { delete versions[version] },
+          empty: () => { versions = {} }
+        }
+      },
+      deriveVersion: (req, ctx) => {
+        return req.headers.accept
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { version: 'application/vnd.example.api+json;version=1' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'cant match route v1' })
+    }
+  })
+
+  try {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      // not a string version
+      constraints: { version: 2 },
+      handler: (req, reply) => {
+        reply.send({ hello: 'cant match route v2' })
+      }
+    })
+  } catch (err) {
+    t.equal(err.message, 'Version constraint should be a string.')
+  }
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      Accept: 'application/vnd.example.api+json;version=2'
     }
   }, (err, res) => {
     t.error(err)

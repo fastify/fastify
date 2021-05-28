@@ -3,7 +3,7 @@
 # The hitchhiker's guide to plugins
 First of all, `DON'T PANIC`!
 
-Fastify was built from the beginning to be an extremely modular system. We built a powerful API that allows you to add methods and utilities to Fastify by creating a namespace. We built a system that creates an encapsulation model, that allows you to split your application in multiple microservices at any moment, without the need to refactor the entire application.
+Fastify was built from the beginning to be an extremely modular system. We built a powerful API that allows you to add methods and utilities to Fastify by creating a namespace. We built a system that creates an encapsulation model, which allows you to split your application into multiple microservices at any moment, without the need to refactor the entire application.
 
 **Table of contents**
 - [Register](#register)
@@ -19,7 +19,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
 <a name="register"></a>
 ## Register
 As with JavaScript, where everything is an object, in Fastify everything is a plugin.<br>
-Your routes, your utilities and so on are all plugins. To add a new plugin, whatever its functionality may be, in Fastify you have a nice and unique API: [`register`](Plugins.md).
+Your routes, your utilities, and so on are all plugins. To add a new plugin, whatever its functionality may be, in Fastify you have a nice and unique API: [`register`](Plugins.md).
 ```js
 fastify.register(
   require('./my-plugin'),
@@ -31,14 +31,14 @@ fastify.register(
 *Why is encapsulation important?*<br>
 Well, let's say you are creating a new disruptive startup, what do you do? You create an API server with all your stuff, everything in the same place, a monolith!<br>
 Ok, you are growing very fast and you want to change your architecture and try microservices. Usually, this implies a huge amount of work, because of cross dependencies and a lack of separation of concerns in the codebase.<br>
-Fastify helps you in that regard. Thanks to the encapsulation model it will completely avoid cross dependencies, and will help you structure your code into cohesive blocks.
+Fastify helps you in that regard. Thanks to the encapsulation model, it will completely avoid cross dependencies and will help you structure your code into cohesive blocks.
 
 *Let's return to how to correctly use `register`.*<br>
 As you probably know, the required plugins must expose a single function with the following signature
 ```js
 module.exports = function (fastify, options, done) {}
 ```
-Where `fastify` is the encapsulated Fastify instance, `options` is the options object and `done` is the function you **must** call when your plugin is ready.
+Where `fastify` is the encapsulated Fastify instance, `options` is the options object, and `done` is the function you **must** call when your plugin is ready.
 
 Fastify's plugin model is fully reentrant and graph-based, it handles asynchronous code without any problems and it enforces both the load and close order of plugins. *How?* Glad you asked, check out [`avvio`](https://github.com/mcollina/avvio)! Fastify starts loading the plugin __after__ `.listen()`, `.inject()` or `.ready()` are called.
 
@@ -91,7 +91,7 @@ fastify.register((instance, opts, done) => {
   done()
 })
 ```
-Inside the second register call `instance.util` will throw an error, because `util` exists only inside the first register context.<br>
+Inside the second register call `instance.util` will throw an error because `util` exists only inside the first register context.<br>
 Let's step back for a moment and dig deeper into this: every time you use the `register` API, a new context is created which avoids the negative situations mentioned above.
 
 Do note that encapsulation applies to the ancestors and siblings, but not the children.
@@ -114,7 +114,7 @@ fastify.register((instance, opts, done) => {
   done()
 })
 ```
-*Take home message: if you need a utility which is available in every part of your application, take care that it's declared in the root scope of your application. If that is not an option you can use the `fastify-plugin` utility as described [here](#distribution).*
+*Take home message: if you need a utility that is available in every part of your application, take care that it is declared in the root scope of your application. If that is not an option,  you can use the `fastify-plugin` utility as described [here](#distribution).*
 
 `decorate` is not the only API that you can use to extend the server functionality, you can also use `decorateRequest` and `decorateReply`.
 
@@ -247,7 +247,7 @@ Perfect, now you know (almost) all of the tools that you can use to extend Fasti
 The preferred way to distribute a utility is to wrap all your code inside a `register`. Using this, your plugin can support asynchronous bootstrapping *(since `decorate` is a synchronous API)*, in the case of a database connection for example.
 
 *Wait, what? Didn't you tell me that `register` creates an encapsulation and that the stuff I create inside will not be available outside?*<br>
-Yes, I said that. But what I didn't tell you, is that you can tell to Fastify to avoid this behaviour, with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
+Yes, I said that. However, what I didn't tell you is that you can tell Fastify to avoid this behavior with the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module.
 ```js
 const fp = require('fastify-plugin')
 const dbClient = require('db-client')
@@ -362,7 +362,7 @@ warning.emit('FST_ERROR_CODE')
 ## Let's start!
 Awesome, now you know everything you need to know about Fastify and its plugin system to start building your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 
-If you want to see some real-world example, check out:
+If you want to see some real-world examples, check out:
 - [`point-of-view`](https://github.com/fastify/point-of-view)
 Templates rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb)

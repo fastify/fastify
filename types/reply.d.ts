@@ -32,7 +32,7 @@ export interface FastifyReply<
   sent: boolean;
   send(payload?: RouteGeneric['Reply']): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   // Send a reply with a status code and the type fully specified.
-  sendReplyTyped<T extends keyof RouteGeneric['RepliesTyped']>(statusCode: T, payload: RouteGeneric['RepliesTyped'][T]): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  sendWithStatus<T extends keyof RouteGeneric['RepliesTyped']>(statusCode: T, payload: RouteGeneric['RepliesTyped'][T]): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   getHeader(key: string): string | undefined;

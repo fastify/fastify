@@ -90,16 +90,12 @@ const headersSchema = {
   }
 }
 
-test('shorthand - get sendReplyTyped', t => {
+test('shorthand - get sendWithStatus', t => {
   t.plan(1)
-  try {
-    fastify.get('/combined-reply', schema, function (req, reply) {
-      reply.sendReplyTyped(200, { hello: 'world' })
-    })
-    t.pass()
-  } catch (e) {
-    t.fail()
-  }
+  fastify.get('/combined-reply', schema, function (req, reply) {
+    reply.sendWithStatus(200, { hello: 'world' })
+  })
+  t.pass()
 })
 
 test('shorthand - get', t => {
@@ -232,7 +228,7 @@ fastify.listen(0, err => {
     })
   })
 
-  test('shorthand - request get sendReplyTyped', t => {
+  test('shorthand - request get sendWithStatus', t => {
     t.plan(4)
     sget({
       method: 'GET',

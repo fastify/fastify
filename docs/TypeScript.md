@@ -127,7 +127,7 @@ The type system heavily relies on generic properties to provide the most accurat
 
 ### Type checking responses based on the status code
 
-If you would like to be strict about the responses that are returned to the caller of a route. You can use the RepliesType when creating a route this key allows a type to be specified for any status code.  When `.sendReplyTyped` is called on the reply object, both the status code and the payload data is type scheduled to match.
+If you would like to be strict about the responses that are returned to the caller of a route. You can use the RepliesType when creating a route this key allows a type to be specified for any status code.  When `.sendWithStatus` is called on the reply object, both the status code and the payload data is type scheduled to match.
 
    ```typescript
    server.get<{
@@ -143,9 +143,9 @@ If you would like to be strict about the responses that are returned to the call
    }>('/get-user-data', async (request, reply) => {
      const wasUserFound = false;
      if(wasUserFound) {
-       reply.sendReplyTyped(200, { username: 'Example User' })
+       reply.sendWithStatus(200, { username: 'Example User' })
      } else {
-       reply.sendReplyTyped(404, { resultMessage: 'Not Found', retryable: false })
+       reply.sendWithStatus(404, { resultMessage: 'Not Found', retryable: false })
      }
      return
    })
@@ -158,7 +158,6 @@ To validate your requests and responses you can use JSON Schema files. If you di
 Also it has the advantage to use the defined type within your handlers (including pre-validation, etc.).
 
 Here are some options how to achieve this.
-
 
 #### typebox
 

@@ -99,7 +99,6 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const jsonShorthand = options.jsonShorthand === false ? false : defaultInitOptions.jsonShorthand
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -127,14 +126,13 @@ function fastify (options) {
   options.querystringParser = querystringParser
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
-  options.jsonShorthand = jsonShorthand
   options.ajv = ajvOptions
-  options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   const initialConfig = getSecuredInitialConfig(options)
 
-  // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
+  // exposeHeadRoutes and jsonShorthand have their defaults set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
+  options.jsonShorthand = initialConfig.jsonShorthand
 
   let constraints = options.constraints
   if (options.versioning) {

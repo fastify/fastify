@@ -74,22 +74,16 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   })
 })
 
-test('Fastify should throw for an invalid shorthand schema when disabled', t => {
-  t.plan(2)
-
-  const badSchema = {
-    hello: { type: 'string' }
+test('Fastify should throw for an invalid shorthand option type', t => {
+  t.plan(3)
+  try {
+    Fastify({ jsonShorthand: 'hello' })
+    t.fail()
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_INIT_OPTS_INVALID')
+    t.match(e.message, /should be boolean/)
+    t.pass()
   }
-
-  const fastify = Fastify({ jsonShorthand: false })
-
-  fastify.get('/', { schema: { body: badSchema } }, () => {})
-  fastify.get('/not-loaded', { schema: { body: badSchema } }, () => {})
-
-  fastify.ready(err => {
-    t.equal(err.code, 'FST_ERR_SCH_VALIDATION_BUILD')
-    t.match(err.message, /Failed building the validation schema for GET: \//)
-  })
 })
 
 test('Should throw on unsupported method', t => {

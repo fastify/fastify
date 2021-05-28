@@ -27,7 +27,7 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  - [.sendWithStatus(code, data)](#send-reply-typed)
+  - [.sendWithStatus(code, data)](#send-with-status)
   - [.then](#then)
 
 <a name="introduction"></a>
@@ -436,11 +436,11 @@ fastify.get('/botnet', async function (request, reply) {
 If you want to know more please review [Routes#async-await](Routes.md#async-await).
 
 
-<a name="send-reply-typed"></a>
+<a name="send-with-status"></a>
 ### .sendWithStatus(code, data)
 
-As the name suggests, `.sendWithStatus()` is a function that sends a reply to the user along with a status code. When used in combination
-Typescript this method performs type validation of the response.
+Sends a reply with a specific status code.  When used in combination
+with Typescript this method can perform type checking of the response.
 
 <a name="then"></a>
 ### .then(fulfilled, rejected)

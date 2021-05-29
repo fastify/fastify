@@ -1355,29 +1355,11 @@ test('should throw error when attempting to set reply.sent more than once', t =>
     reply.sent = true
     try {
       reply.sent = true
-      t.fail('must throw')
     } catch (err) {
       t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
       t.equal(err.message, 'Reply was already sent.')
     }
     reply.raw.end()
-  })
-
-  fastify.inject('/', (err, res) => {
-    t.error(err)
-    t.pass()
-  })
-})
-
-test('should not throw error when attempting to set reply.sent if the underlining request was sent', t => {
-  t.plan(3)
-  const fastify = require('../..')()
-
-  fastify.get('/', function (req, reply) {
-    reply.raw.end()
-    t.doesNotThrow(() => {
-      reply.sent = true
-    })
   })
 
   fastify.inject('/', (err, res) => {
@@ -1728,20 +1710,4 @@ test('reply.then', t => {
 
     response.destroy(_err)
   })
-})
-
-test('reply.sent should read from response.writableEnded if it is defined', t => {
-  t.plan(1)
-
-  const reply = new Reply({ writableEnded: true }, {}, {})
-
-  t.equal(reply.sent, true)
-})
-
-test('reply.sent should read from response.headersSent and response.finished if response.writableEnded is not defined', t => {
-  t.plan(1)
-
-  const reply = new Reply({ headersSent: true, finished: true }, {}, {})
-
-  t.equal(reply.sent, true)
 })

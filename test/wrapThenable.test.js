@@ -4,7 +4,6 @@ const t = require('tap')
 const test = t.test
 const { kReplySentOverwritten } = require('../lib/symbols')
 const wrapThenable = require('../lib/wrapThenable')
-const Reply = require('../lib/reply')
 
 test('should resolve immediately when reply[kReplySentOverwritten] is true', t => {
   const reply = {}
@@ -16,7 +15,7 @@ test('should resolve immediately when reply[kReplySentOverwritten] is true', t =
 
 test('should reject immediately when reply[kReplySentOverwritten] is true', t => {
   t.plan(1)
-  const reply = new Reply({}, {}, {})
+  const reply = { res: {} }
   reply[kReplySentOverwritten] = true
   reply.log = {
     error: ({ err }) => {

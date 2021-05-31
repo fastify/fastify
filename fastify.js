@@ -130,9 +130,8 @@ function fastify (options) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   const initialConfig = getSecuredInitialConfig(options)
 
-  // exposeHeadRoutes and jsonShorthand have their defaults set from the validator
+  // exposeHeadRoutes have their defaults set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
-  options.jsonShorthand = initialConfig.jsonShorthand
 
   let constraints = options.constraints
   if (options.versioning) {

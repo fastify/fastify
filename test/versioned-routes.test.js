@@ -632,7 +632,7 @@ test('Should trigger a warning when a versioned route is registered via version 
   t.plan(4)
 
   function onWarning (code) {
-    t.equal(code, 'FSTDEP006')
+    t.equal(code, 'FSTDEP008')
   }
   const warning = {
     emit: onWarning

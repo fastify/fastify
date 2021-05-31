@@ -5,7 +5,7 @@ const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
 
-const { version: pkgVersion } = require('./package.json')
+const { version } = require('./package.json')
 const {
   kAvvioBoot,
   kChildren,
@@ -308,7 +308,7 @@ function fastify (options) {
     },
     version: {
       get () {
-        return pkgVersion
+        return version
       }
     },
     errorHandler: {

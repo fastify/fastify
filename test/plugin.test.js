@@ -845,8 +845,8 @@ test('plugin metadata - dependencies (nested)', t => {
   }
 })
 
-test('pluginTimeout', { only: true }, t => {
-  t.plan(3)
+test('pluginTimeout', t => {
+  t.plan(5)
   const fastify = Fastify({
     pluginTimeout: 10
   })
@@ -858,11 +858,31 @@ test('pluginTimeout', { only: true }, t => {
     t.equal(err.message,
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+  })
+})
+
+test('pluginTimeout - named function', { only: true }, t => {
+  t.plan(5)
+  const fastify = Fastify({
+    pluginTimeout: 10
+  })
+  fastify.register(function nameFunction (app, opts, done) {
+    // to no call done on purpose
+  })
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 })
 
 test('pluginTimeout default', t => {
-  t.plan(3)
+  t.plan(5)
   const clock = fakeTimer.install()
 
   const fastify = Fastify()
@@ -876,6 +896,8 @@ test('pluginTimeout default', t => {
     t.equal(err.message,
       "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
     t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 
   t.teardown(clock.uninstall)

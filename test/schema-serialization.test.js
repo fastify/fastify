@@ -1,7 +1,6 @@
 'use strict'
 
 const t = require('tap')
-// const Joi = require('@hapi/joi')
 const Fastify = require('..')
 const test = t.test
 
@@ -30,6 +29,33 @@ test('basic test', t => {
   fastify.inject('/', (err, res) => {
     t.error(err)
     t.same(res.json(), { name: 'Foo', work: 'Bar' })
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('custom serializer options', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    serializerOpts: {
+      rounding: 'ceil'
+    }
+  })
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'integer'
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.send(4.2)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.payload, '5', 'it must use the ceil rouding')
     t.equal(res.statusCode, 200)
   })
 })
@@ -538,5 +564,68 @@ test('do not crash if status code serializer errors', async t => {
     statusCode: 500,
     error: 'Internal Server Error',
     message: '"code" is required!'
+  })
+})
+
+test('custom schema serializer error, empty message', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:code', {
+    schema: {
+      response: {
+        '2xx': { hello: { type: 'string' } },
+        501: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, (request, reply) => {
+    if (request.params.code === '501') {
+      return reply.code(501).send(new Error(''))
+    }
+  })
+
+  const res = await fastify.inject('/501')
+  t.equal(res.statusCode, 501)
+  t.same(res.json(), { message: '' })
+})
+
+test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION_BUILD error', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            some: { type: 'string' }
+          }
+        },
+        500: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        }
+      }
+    },
+    serializerCompiler: () => {
+      throw new Error('CUSTOM_ERROR')
+    }
+  }, function (req, reply) {
+    reply.code(200).send({ some: 'thing' })
+  })
+
+  fastify.ready((err) => {
+    t.equal(err.message, 'Failed building the serialization schema for GET: /, due to error CUSTOM_ERROR')
+    t.equal(err.statusCode, 500)
+    t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
   })
 })

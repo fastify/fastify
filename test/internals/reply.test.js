@@ -1094,6 +1094,35 @@ test('reply.header can reset the value', t => {
   })
 })
 
+// https://github.com/fastify/fastify/issues/3030
+test('reply.hasHeader computes raw and fastify headers', t => {
+  t.plan(4)
+
+  const fastify = require('../../')()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/headers', function (req, reply) {
+    reply.header('x-foo', 'foo')
+    reply.raw.setHeader('x-bar', 'bar')
+    t.ok(reply.hasHeader('x-foo'))
+    t.ok(reply.hasHeader('x-bar'))
+
+    reply.send()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/headers'
+    }, () => {
+      t.pass()
+    })
+  })
+})
+
 test('Reply should handle JSON content type with a charset', t => {
   t.plan(16)
 
@@ -1587,7 +1616,7 @@ test('reply should not call the custom serializer for errors and not found', t =
 })
 
 test('reply.then', t => {
-  t.plan(2)
+  t.plan(4)
 
   function request () {}
 
@@ -1615,6 +1644,42 @@ test('reply.then', t => {
       t.fail('fulfilled called')
     }, function (err) {
       t.equal(err, _err)
+    })
+
+    response.destroy(_err)
+  })
+
+  t.test('with error but without reject callback', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, request)
+    const _err = new Error('kaboom')
+
+    reply.then(function () {
+      t.fail('fulfilled called')
+    })
+
+    t.pass()
+
+    response.destroy(_err)
+  })
+
+  t.test('with error, without reject callback, with logger', t => {
+    t.plan(1)
+
+    const response = new Writable()
+    const reply = new Reply(response, request)
+    // spy logger
+    reply.log = {
+      warn: (message) => {
+        t.equal(message, 'unhandled rejection on reply.then')
+      }
+    }
+    const _err = new Error('kaboom')
+
+    reply.then(function () {
+      t.fail('fulfilled called')
     })
 
     response.destroy(_err)

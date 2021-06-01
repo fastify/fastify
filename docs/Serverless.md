@@ -1,22 +1,22 @@
 <h1 align="center">Serverless</h1>
 
 Run serverless applications and REST APIs using your existing Fastify application.
-By default, Fastify won't work on your serverless platform of choice, you'll need
+By default, Fastify will not work on your serverless platform of choice, you will need
 to make some small changes to fix this. This document contains a small guide for
-the most famous serverless providers and how to use Fastify with them.
+the most popular serverless providers and how to use Fastify with them.
 
 #### Should you use Fastify in a serverless platform?
 
-That's up to you! Keep in mind that functions as a service should always use
+That is up to you! Keep in mind that functions as a service should always use
 small and focused functions, but you can also run an entire web application with them.
-It's important to remember that the bigger the application, the slower the initial boot will be.
-The best way to use for running Fastify applications in serverless environments
+It is important to remember that the bigger the application the slower the initial boot will be.
+The best way to run Fastify applications in serverless environments
 is to use platforms like Google Cloud Run, AWS Fargate, and Azure Container Instances,
-where the server can handle multiple requests at the same time and make full use of Fastify features.
+where the server can handle multiple requests at the same time and make full use of Fastify's features.
 
 One of the best features of using Fastify in serverless applications is the ease of development.
-In your local environment, you will always run directly the Fastify application without the need
-for any additional tool, while the same code will be executed in your serverless platform of
+In your local environment, you will always run the Fastify application directly without the need
+for any additional tools, while the same code will be executed in your serverless platform of
 choice with an additional snippet of code.
 
 ### Contents
@@ -87,7 +87,7 @@ We just require [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fasti
 (make sure you install the dependency `npm i --save aws-lambda-fastify`) and our
 [`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call the
 exported `awsLambdaFastify` function with the `app` as the only parameter.
-The resulting `proxy` function has the correct signature to be used as lambda `handler` function.
+The resulting `proxy` function has the correct signature to be used as a lambda `handler` function.
 This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
@@ -102,7 +102,7 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 ## Google Cloud Run
 
-Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **container** environment. It's primary purpose is to provide an infrastructure-abstracted environment to run arbitrary containers. As a result, Fastify can be deployed to Google Cloud Run with little-to-no code changes from the way you would write your Fastify app normally.
+Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **container** environment. Its primary purpose is to provide an infrastructure-abstracted environment to run arbitrary containers. As a result, Fastify can be deployed to Google Cloud Run with little-to-no code changes from the way you would write your Fastify app normally.
 
 *Follow the steps below to deploy to Google Cloud Run if you are already familiar with gcloud or just follow their [quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
 
@@ -173,7 +173,7 @@ CMD [ "npm", "start" ]
 
 ### Add a .dockerignore
 
-To keep build artifacts out of your container (which keeps it small and improves build times), add a `.dockerignore` file like the one below:
+To keep build artifacts out of your container (which keeps it small and improves build times) add a `.dockerignore` file like the one below:
 
 ```.dockerignore
 Dockerfile
@@ -203,9 +203,9 @@ Your app will be accessible from the URL GCP provides.
 
 ## netlify-lambda
 
-First, please do all preparation steps related to **AWS Lambda**.
+First, please perform all preparation steps related to **AWS Lambda**.
 
-Create folder called `functions` then create `server.js` (and your endpoint path will be `server.js`) inside `functions` folder.
+Create a folder called `functions`,  then create `server.js` (and your endpoint path will be `server.js`) inside the `functions` folder.
 
 ### functions/server.js
 
@@ -228,7 +228,7 @@ export { handler } from '../lambda.js'; // Change `lambda.js` path to your `lamb
 
 ### webpack.config.netlify.js
 
-**Don't forget add this Webpack config, else a lot of problems can occur**
+**Do not forget to add this Webpack config, or else problems may occur**
 
 ```js
 const nodeExternals = require('webpack-node-externals');
@@ -284,8 +284,8 @@ Then it should work fine
 
 ## Vercel
 
-[Vercel](https://vercel.com) provides zero configuration deployment for
-Node.js applications. In order to use now, it is as simple as
+[Vercel](https://vercel.com) provides zero-configuration deployment for
+Node.js applications. In order to use it now, it is as simple as
 configuring your `vercel.json` file like the following:
 
 ```json
@@ -299,7 +299,7 @@ configuring your `vercel.json` file like the following:
 }
 ```
 
-Then, write a `api/serverless.js` like so:
+Then, write `api/serverless.js` like so:
 
 ```js
 "use strict";

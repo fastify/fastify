@@ -1,12 +1,13 @@
 import { expectType, expectError } from 'tsd'
-import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyRequest, FastifyReply } from '../../fastify'
-import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault, RawServerBase } from '../../types/utils'
+import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply } from '../../fastify'
+import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
   expectType<FastifyContext<ContextConfigDefault>>(reply.context)
+  expectType<FastifyContextConfig>(reply.context.config)
   expectType<FastifyLoggerInstance>(reply.log)
   expectType<FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression>>(reply.request)
   expectType<(statusCode: number) => FastifyReply>(reply.code)

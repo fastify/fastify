@@ -1,6 +1,6 @@
 'use strict'
 
-const fastify = require('../fastify')()
+const fastify = require('../fastify')({ logger: true })
 
 fastify.addSchema({
   $id: 'https://foo/common.json',
@@ -33,5 +33,4 @@ fastify
 
 fastify.listen(3000, err => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
 })

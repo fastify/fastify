@@ -9,6 +9,7 @@ Request is a core Fastify object containing the following fields:
 - `headers` - the headers
 - `raw` - the incoming HTTP request from Node core
 - `req` *(deprecated, use `.raw` instead)* - the incoming HTTP request from Node core
+- `server` - The Fastify server instance, scoped to the current [encapsulation context](Encapsulation.md)
 - `id` - the request id
 - `log` - the logger instance of the incoming request
 - `ip` - the IP address of the incoming request
@@ -31,6 +32,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.params)
   console.log(request.headers)
   console.log(request.raw)
+  console.log(request.server)
   console.log(request.id)
   console.log(request.ip)
   console.log(request.ips)

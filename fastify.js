@@ -50,7 +50,8 @@ const setErrorHeaders = require('./lib/setErrorHeaders')
 const {
   FST_ERR_BAD_URL,
   FST_ERR_MISSING_MIDDLEWARE,
-  AVVIO_ERRORS_MAP
+  AVVIO_ERRORS_MAP,
+  appendStackTrace
 } = require('./lib/errors')
 
 const onBadUrlContext = {
@@ -462,8 +463,11 @@ function fastify (options) {
     }
 
     function manageErr (err) {
+      // If the error comes out of Avvio's Error codes
+      // We create a make and preserve the previous error
+      // as cause
       err = err != null && AVVIO_ERRORS_MAP[err.code] != null
-        ? new AVVIO_ERRORS_MAP[err.code](err.message)
+        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
         : err
 
       if (cb) {

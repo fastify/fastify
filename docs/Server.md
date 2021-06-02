@@ -288,7 +288,7 @@ const fastify = Fastify({ trustProxy: true })
     }
     ```
 
-For more examples, refer to the [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
+For more examples, refer to the [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
 You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
 

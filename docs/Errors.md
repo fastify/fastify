@@ -182,7 +182,7 @@ Plugin must be a function or a promise.
 <a name="FST_ERR_PLUGIN_TIMEOUT"></a>
 #### FST_ERR_PLUGIN_TIMEOUT
 
-Plugin did not start in time.
+Plugin did not start in time. Default timeout (in millis): `10000`
 
 <a name="FST_ERR_HOOK_TIMEOUT"></a>
 #### FST_ERR_HOOK_TIMEOUT

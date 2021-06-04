@@ -169,7 +169,7 @@
     "tap": "^15.0.5",
     "tap-mocha-reporter": "^5.0.1",
     "then-sleep": "^1.0.1",
-    "tsd": "^0.14.0",
+    "tsd": "^0.17.0",
     "typescript": "^4.0.2",
     "undici": "^3.3.5",
     "x-xss-protection": "^2.0.0",

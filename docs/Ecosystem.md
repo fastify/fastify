@@ -63,6 +63,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@mgcrea/fastify-session-sodium-crypto`](https://github.com/mgcrea/fastify-session-sodium-crypto) Fast sodium-based crypto for @mgcrea/fastify-session
 - [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session plugin for Fastify that supports both stateless and stateful sessions
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact) A custom compact pino-base prettifier
+- [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs) SeaweedFS for Fastify
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify) Run an [Apollo Server](https://github.com/apollographql/apollo-server) to serve GraphQL with Fastify.
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware for CLS-based request ID generation. An out-of-the-box solution for adding request IDs into your logs.

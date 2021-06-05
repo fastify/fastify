@@ -173,3 +173,33 @@ You cannot use `send` inside the `onError` hook.
 #### FST_ERR_SEND_UNDEFINED_ERR
 
 Undefined error has occurred.
+
+<a name="FST_ERR_PLUGIN_NOT_VALID"></a>
+#### FST_ERR_PLUGIN_NOT_VALID
+
+Plugin must be a function or a promise.
+
+<a name="FST_ERR_PLUGIN_TIMEOUT"></a>
+#### FST_ERR_PLUGIN_TIMEOUT
+
+Plugin did not start in time. Default timeout (in millis): `10000`
+
+<a name="FST_ERR_HOOK_TIMEOUT"></a>
+#### FST_ERR_HOOK_TIMEOUT
+
+A callback for a hook timed out
+
+<a name="FST_ERR_ROOT_PLG_BOOTED"></a>
+#### FST_ERR_ROOT_PLG_BOOTED
+
+Root plugin has already booted (mapped directly from `avvio`)
+
+<a name="FST_ERR_PARENT_PLUGIN_BOOTED"></a>
+#### FST_ERR_PARENT_PLUGIN_BOOTED
+
+Impossible to load plugin because the parent (mapped directly from `avvio`)
+
+<a name="FST_ERR_PLUGIN_CALLBACK_NOT_FN"></a>
+#### FST_ERR_PLUGIN_CALLBACK_NOT_FN
+
+Callback for a hook is not a function (mapped directly from `avvio`)

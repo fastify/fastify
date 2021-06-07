@@ -265,6 +265,11 @@ In the last example we used interfaces to define the types for the request query
        const { username, password } = request.query
        done(username !== 'admin' ? new Error('Must be admin') : undefined)
      }
+     //  or if using async
+     //  preValidation: async (request, reply) => {
+     //    const { username, password } = request.query
+     //    return username !== "admin" ? new Error("Must be admin") : undefined;
+     //  }
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
@@ -281,13 +286,15 @@ In the last example we used interfaces to define the types for the request query
        querystring: QuerystringSchema,
        headers: HeadersSchema
      },
-     preHandler: (request, reply) => {
+     preHandler: (request, reply, done) => {
        const { username, password } = request.query
        const customerHeader = request.headers['h-Custom']
+       done()
      },
      handler: (request, reply) => {
        const { username, password } = request.query
        const customerHeader = request.headers['h-Custom']
+       reply.status(200).send({username});
      }
    })
 
@@ -331,6 +338,7 @@ const todo = {
 With the provided type `FromSchema` you can build a type from your schema and use it in your handler.
 
 ```typescript
+import { FromSchema } from "json-schema-to-ts";
 fastify.post<{ Body: FromSchema<typeof todo> }>(
   '/todo',
   {

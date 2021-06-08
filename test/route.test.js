@@ -530,6 +530,37 @@ test('route error handler overrides global custom error handler', t => {
   })
 })
 
+test('throws when route with empty url', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  try {
+    await fastify.route({
+      method: 'GET',
+      url: '',
+      handler: (req, res) => {
+        res.send('hi!')
+      }
+    }).ready()
+  } catch (err) {
+    t.equal(err.message, 'The first character of a path should be `/` or `*`')
+  }
+})
+
+test('throws when route with empty url in shorthand declaration', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  try {
+    await fastify.get(
+      '',
+      async function handler () { return {} }
+    ).ready()
+  } catch (err) {
+    t.equal(err.message, 'The path could not be empty')
+  }
+})
+
 test('throws when route-level error handler is not a function', t => {
   t.plan(1)
 
@@ -815,6 +846,54 @@ test('HEAD route should respect custom onSend handlers', t => {
     t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
     t.equal(res.body, '')
     t.equal(counter, 2)
+  })
+})
+
+test('route onSend can be function or array of functions', t => {
+  t.plan(12)
+  const counters = { single: 0, multiple: 0 }
+
+  const resBuffer = Buffer.from('I am a coffee!')
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.route({
+    method: 'GET',
+    path: '/coffee',
+    handler: () => resBuffer,
+    onSend: (res, reply, payload, done) => {
+      counters.single += 1
+      done(null, payload)
+    }
+  })
+
+  const customOnSend = (res, reply, payload, done) => {
+    counters.multiple += 1
+    done(null, payload)
+  }
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: () => resBuffer,
+    onSend: [customOnSend, customOnSend]
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.single, 1)
+  })
+
+  fastify.inject({ method: 'HEAD', url: '/more-coffee' }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-length'], `${resBuffer.byteLength}`)
+    t.equal(res.body, '')
+    t.equal(counters.multiple, 2)
   })
 })
 

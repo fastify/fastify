@@ -10,7 +10,7 @@ Run `npm install fastify && npm install tap pino-pretty --save-dev`
 
 ### Separating concerns makes testing easy
 
- First we are going to separate our application code from our server code:
+First, we are going to separate our application code from our server code:
 
 **app.js**:
 
@@ -53,7 +53,7 @@ server.listen(3000, (err, address) => {
 
 ### Benefits of using fastify.inject()
 
-Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
+Fastify comes with built-in support for fake HTTP injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
 Before introducing any tests, we will use the `.inject` method to make a fake request to our route:
 
@@ -80,7 +80,7 @@ test()
 
 First, our code will run inside an asynchronous function, giving us access to async/await.
 
-`.inject` insures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
+`.inject` ensures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
 
 
 
@@ -93,7 +93,7 @@ body:  {"hello":"world"}
 
 
 
-### Testing with http injection
+### Testing with HTTP injection
 
 Now we can replace our `console.log` calls with actual tests!
 
@@ -295,4 +295,4 @@ test('should ...', {only: true}, t => ...)
 - `--node-arg=--inspect-brk` will launch the node debugger
 3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No modification should be necessary.
 
-Now you should be able to step through your test file (and the rest of `fastify`) in your code editor.
+Now you should be able to step through your test file (and the rest of `Fastify`) in your code editor.

@@ -6,7 +6,7 @@ _Fastify_ offers **experimental support** for HTTP2 starting from
 Node 8 LTS, which includes HTTP2 without a flag; HTTP2 is supported 
 over either HTTPS or plaintext.
 
-Currently none of the HTTP2-specific APIs are available through
+Currently, none of the HTTP2-specific APIs are available through
 _Fastify_, but Node's `req` and `res` can be accessed through our
 `Request` and `Reply` interface. PRs are welcome.
 
@@ -71,7 +71,7 @@ $ npx h2url https://localhost:3000
 ### Plain or insecure
 
 If you are building microservices, you can connect to HTTP2 in plain
-text, however this is not supported by browsers.
+text, however, this is not supported by browsers.
 
 ```js
 'use strict'

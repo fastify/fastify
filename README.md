@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/fastify/graphics/raw/HEAD/full-logo.png" width="650" height="auto"/>
+<img src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg" width="650" height="auto"/>
 </div>
 
 <div align="center">
@@ -100,7 +100,7 @@ fastify.get('/', (request, reply) => {
 // Run the server!
 fastify.listen(3000, (err, address) => {
   if (err) throw err
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 ```
 
@@ -118,7 +118,7 @@ fastify.get('/', async (request, reply) => {
 
 fastify.listen(3000, (err, address) => {
   if (err) throw err
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 ```
 

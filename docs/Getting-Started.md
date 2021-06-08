@@ -63,7 +63,7 @@ start()
 ```
 
 Awesome, that was easy.<br>
-Unfortunately, writing a complex application requires significantly more code than this example. A classic problem when you are building a new application is how to handle multiple files, asynchronous bootstrapping and the architecture of your code.<br>
+Unfortunately, writing a complex application requires significantly more code than this example. A classic problem when you are building a new application is how to handle multiple files, asynchronous bootstrapping, and the architecture of your code.<br>
 Fastify offers an easy platform that helps to solve all of the problems outlined above, and more!
 
 > ## Note
@@ -81,7 +81,7 @@ Fastify offers an easy platform that helps to solve all of the problems outlined
 >
 > Similarly, specify `::1` to accept only local connections via IPv6. Or specify `::` to accept connections on all IPv6 addresses, and, if the operating system supports it, also on all IPv4 addresses.
 >
-> When deploying to a Docker (or other type of) container using `0.0.0.0` or `::` would be the easiest method for exposing the application.
+> When deploying to a Docker (or another type of) container using `0.0.0.0` or `::` would be the easiest method for exposing the application.
 
 <a name="first-plugin"></a>
 ### Your first plugin
@@ -196,7 +196,7 @@ module.exports = routes
 
 Wow, that was fast!<br>
 Let's recap what we have done here since we've introduced some new concepts.<br>
-As you can see, we used `register` both for the database connector and the registration of the routes.
+As you can see, we used `register` for both the database connector and the registration of the routes.
 This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
 
@@ -206,7 +206,7 @@ To dig deeper into how Fastify plugins work, how to develop new plugins, and for
 
 <a name="plugin-loading-order"></a>
 ### Loading order of your plugins
-To guarantee a consistent and predictable behaviour of your application, we highly recommend to always load your code as shown below:
+To guarantee consistent and predictable behavior of your application, we highly recommend to always load your code as shown below:
 ```
 └── plugins (from the Fastify ecosystem)
 └── your plugins (your custom plugins)
@@ -260,7 +260,7 @@ fastify.post('/', opts, async (request, reply) => {
   return { hello: 'world' }
 })
 ```
-This example shows how to pass an options object to the route, which accepts a `schema` key, that contains all of the schemas for route, `body`, `querystring`, `params` and `headers`.<br>
+This example shows how to pass an options object to the route, which accepts a `schema` key that contains all of the schemas for route, `body`, `querystring`, `params`, and `headers`.<br>
 Read [Validation and Serialization](Validation-and-Serialization.md) to learn more.
 
 <a name="serialize-data"></a>
@@ -290,7 +290,7 @@ Read [Validation and Serialization](Validation-and-Serialization.md) to learn mo
 
 <a name="extend-server"></a>
 ### Extend your server
-Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.<br>
+Fastify is built to be extremely extensible and minimal, we believe that a bare-bones framework is all that is necessary to make great applications possible.<br>
 In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](Ecosystem.md)!
 
 <a name="test-server"></a>

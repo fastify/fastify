@@ -4,9 +4,8 @@ const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
-let version
-let versionLoaded = false
 
+const { version } = require('./package.json')
 const {
   kAvvioBoot,
   kChildren,
@@ -131,10 +130,6 @@ function fastify (options) {
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
     throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
   }
-
-  ajvOptions.plugins = ajvOptions.plugins.map(plugin => {
-    return Array.isArray(plugin) ? plugin : [plugin]
-  })
 
   // Instance Fastify components
   const { logger, hasLogger } = createLogger(options)
@@ -310,6 +305,9 @@ function fastify (options) {
     initialConfig
   }
 
+  fastify[kReply].prototype.server = fastify
+  fastify[kRequest].prototype.server = fastify
+
   Object.defineProperties(fastify, {
     pluginName: {
       get () {
@@ -330,9 +328,6 @@ function fastify (options) {
     },
     version: {
       get () {
-        if (versionLoaded === false) {
-          version = loadVersion()
-        }
         return version
       }
     },
@@ -682,20 +677,6 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
       }
     }
     httpHandler(req, res)
-  }
-}
-
-function loadVersion () {
-  versionLoaded = true
-  const fs = require('fs')
-  const path = require('path')
-  try {
-    const pkgPath = path.join(__dirname, 'package.json')
-    fs.accessSync(pkgPath, fs.constants.R_OK)
-    const pkg = JSON.parse(fs.readFileSync(pkgPath))
-    return pkg.name === 'fastify' ? pkg.version : undefined
-  } catch (e) {
-    return undefined
   }
 }
 

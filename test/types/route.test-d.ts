@@ -14,6 +14,13 @@ import { FastifyError } from 'fastify-error'
  * - `(path, options)`
  */
 
+declare module '../../fastify' {
+  interface FastifyContextConfig {
+    foo: string;
+    bar: number;
+  }
+}
+
 const routeHandler: RouteHandlerMethod = function (request, reply) {
   expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
@@ -43,12 +50,9 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   interface QuerystringInterface { prop: number }
   interface ParamsInterface { prop: boolean }
   interface HeadersInterface { prop: string }
-
-  interface ContextConfigType {
-    foo: string;
-    bar: number;
+  interface RouteSpecificContextConfigType {
+    extra: boolean
   }
-
   interface RouteGeneric {
     Body: BodyInterface;
     Querystring: QuerystringInterface;
@@ -56,16 +60,17 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     Headers: HeadersInterface;
   }
 
-  fastify()[lowerCaseMethod]<RouteGeneric, ContextConfigType>('/', { config: { foo: 'bar', bar: 100 } }, (req, res) => {
+  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
     expectType<BodyInterface>(req.body)
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
     expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
     expectType<string>(res.context.config.foo)
     expectType<number>(res.context.config.bar)
+    expectType<boolean>(res.context.config.extra)
   })
 
-  fastify().route<RouteGeneric, ContextConfigType>({
+  fastify().route<RouteGeneric>({
     url: '/',
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },

@@ -78,7 +78,7 @@ const fastify = require('fastify')({
 ### Changed schema substitution ([#2023](https://github.com/fastify/fastify/pull/2023))
 
 The non-standard `replace-way` shared schema support has been removed. This
-feature has been replace with JSON Schema specification compliant `$ref` based
+feature has been replaced with JSON Schema specification compliant `$ref` based
 substitution. To help understand this change read
 [Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
@@ -134,7 +134,7 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 );
 ```
 
-### Changed preParsing hook behaviour ([#2286](https://github.com/fastify/fastify/pull/2286))
+### Changed preParsing hook behavior ([#2286](https://github.com/fastify/fastify/pull/2286))
 
 From Fastify v3, the behavior of the `preParsing` hook will change slightly
 in order to support request payload manipulation.
@@ -146,8 +146,7 @@ signature is `fn(request, reply, payload, done)` or
 The hook can optionally return a new stream via `done(null, stream)` or
 returning the stream in case of async functions.
 
-If the hook returns a new stream, it will be used instead of the original one in
-following hooks. A sample use case for this is handling compressed requests.
+If the hook returns a new stream, it will be used instead of the original one in subsequent hooks. A sample use case for this is handling compressed requests.
 
 The new stream should add the `receivedEncodedLength` property to the stream
 that should reflect the actual data size received from the client. For instance,
@@ -156,7 +155,7 @@ This property can (and should) be dynamically updated during `data` events.
 
 The old syntax of Fastify v2 without payload is supported but it is deprecated.
 
-### Changed hooks behaviour ([#2004](https://github.com/fastify/fastify/pull/2004))
+### Changed hooks behavior ([#2004](https://github.com/fastify/fastify/pull/2004))
 
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
 slightly in order to support hook encapsulation.
@@ -173,7 +172,7 @@ plugin.
 In Fastify v3 the content type parsers now have a single signature for parsers.
 
 The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`.
-Note that `request` is now a fastify request, not an `IncomingMessage`.
+Note that `request` is now a Fastify request, not an `IncomingMessage`.
 The payload is by default a stream. If the `parseAs` option is used in
 `addContentTypeParser`, then `payload` reflects the option value (string or buffer).
 

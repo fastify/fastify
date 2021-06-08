@@ -1,4 +1,5 @@
 import fastify, {
+  ConnectionError,
   FastifyInstance,
   FastifyPlugin,
   FastifyPluginAsync,
@@ -10,6 +11,7 @@ import * as http2 from 'http2'
 import { Chain as LightMyRequestChain } from 'light-my-request'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
+import { Socket } from 'net'
 
 // FastifyInstance
 // http server
@@ -26,7 +28,7 @@ expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must b
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
 // server options
-expectAssignable<FastifyInstance>(fastify({ http2: true }))
+expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
@@ -139,6 +141,12 @@ expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
 expectAssignable<FastifyInstance>(fastify({ schemaErrorFormatter: (errors, dataVar) => new Error() }))
+expectAssignable<FastifyInstance>(fastify({
+  clientErrorHandler: (err, socket) => {
+    expectType<ConnectionError>(err)
+    expectType<Socket>(socket)
+  }
+}))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

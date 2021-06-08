@@ -5,8 +5,8 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 
 > ## ⚠  Security Notice
 > Treat the schema definition as application code.
-> As both validation and serialization features dynamically evaluate
-> code with `new Function()`, it is not safe to use
+> Validation and serialization features dynamically evaluate
+> code with `new Function()`, which is not safe to use with 
 > user-provided schemas. See [Ajv](https://npm.im/ajv) and
 > [fast-json-stringify](https://npm.im/fast-json-stringify) for more
 > details.
@@ -25,7 +25,7 @@ Thanks to the `addSchema` API, you can add multiple schemas to the Fastify insta
 As usual, this API is encapsulated.
 
 The shared schemas can be reused through the JSON Schema [**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8) keyword.
-Here an overview on _how_ references work:
+Here an overview of _how_ references work:
 
 + `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the current schema
 + `myField: { $ref: '#/definitions/foo'}` will search for field `definitions.foo` inside the current schema
@@ -81,7 +81,7 @@ fastify.post('/', {
 
 If the validator and the serializer are customized, the `.addSchema` method will not be useful since the actors are no longer
 controlled by Fastify.
-So, to access the schemas added to the Fastify instance, you can simply use `.getSchemas()`:
+To access the schemas added to the Fastify instance, you can simply use `.getSchemas()`:
 
 ```js
 fastify.addSchema({
@@ -124,7 +124,7 @@ The route validation internally relies upon [Ajv](https://www.npmjs.com/package/
 Validating the input is very easy: just add the fields that you need inside the route schema, and you are done!
 
 The supported validations are:
-- `body`: validates the body of the request if it is a POST or a PUT.
+- `body`: validates the body of the request if it is a POST, PUT, or PATCH method.
 - `querystring` or `query`: validates the query string.
 - `params`: validates the route params.
 - `headers`: validates the request headers.
@@ -321,7 +321,7 @@ fastify.post('/foo', {
 <a name="schema-validator"></a>
 #### Validator Compiler
 
-The `validatorCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string.
+The `validatorCompiler` is a function that returns a function that validates the body, URL  parameters, headers, and query string.
 The default `validatorCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface.
 Fastify uses it internally to speed the validation up.
 
@@ -356,7 +356,7 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
   return ajv.compile(schema)
 })
 ```
-_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of fastify, since fastify's default validator is no longer used, and fastify's `addSchema` method has no idea what validator you are using._
+_**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of Fastify, since Fastify's default validator is no longer used, and Fastify's `addSchema` method has no idea what validator you are using._
 
 <a name="using-other-validation-libraries"></a>
 ##### Using other validation libraries
@@ -458,7 +458,7 @@ const errorHandler = (error, request, reply) => {
 
 <a name="serialization"></a>
 ### Serialization
-Usually you will send your data to the clients as JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options.
+Usually, you will send your data to the clients as JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options.
 We encourage you to use an output schema, as it can drastically increase throughput and help prevent accidental disclosure of sensitive information.
 
 Example:
@@ -598,7 +598,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Checkout the [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js) usage.
+If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Check out the [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js) usage.
 
 Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
 Inline comments in the schema below describe how to configure it to show a different error message for each case:
@@ -683,7 +683,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 ### JSON Schema support
 
 JSON Schema has some type of utilities in order to optimize your schemas that,
-in conjunction with the Fastify's shared schema, let you reuse all your schemas easily.
+in conjunction with Fastify's shared schema, let you reuse all your schemas easily.
 
 | Use Case                          | Validator | Serializer |
 |-----------------------------------|-----------|------------|

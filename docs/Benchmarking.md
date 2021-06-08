@@ -3,7 +3,7 @@
 ## Benchmarking
 Benchmarking is important if you want to measure how a change can affect the performance of your application. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches and on different Node.js versions.
 
-The modules we'll use:
+The modules we will use:
 - [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking tool written in node.
 - [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout multiple git branches, execute scripts and log the results.
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands concurrently.

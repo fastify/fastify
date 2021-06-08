@@ -524,6 +524,56 @@ test('Should register a versioned route with custom versioning strategy', t => {
   })
 })
 
+test('Should get error using an invalid a versioned route, using default validation (deprecated versioning option)', t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    versioning: {
+      storage: function () {
+        let versions = {}
+        return {
+          get: (version) => { return versions[version] || null },
+          set: (version, store) => { versions[version] = store },
+          del: (version) => { delete versions[version] },
+          empty: () => { versions = {} }
+        }
+      },
+      deriveVersion: (req, ctx) => {
+        return req.headers.accept
+      }
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { version: 'application/vnd.example.api+json;version=1' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'cant match route v1' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    // not a string version
+    constraints: { version: 2 },
+    handler: (req, reply) => {
+      reply.send({ hello: 'cant match route v2' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      Accept: 'application/vnd.example.api+json;version=2'
+    }
+  }, (err, res) => {
+    t.equal(err.message, 'Version constraint should be a string.')
+  })
+})
+
 test('Vary header check (for documentation example)', t => {
   t.plan(8)
   const fastify = Fastify()
@@ -582,7 +632,7 @@ test('Should trigger a warning when a versioned route is registered via version 
   t.plan(4)
 
   function onWarning (code) {
-    t.equal(code, 'FSTDEP006')
+    t.equal(code, 'FSTDEP008')
   }
   const warning = {
     emit: onWarning

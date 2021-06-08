@@ -152,7 +152,7 @@ test('pretty print - commonPrefix', t => {
 })
 
 test('pretty print - includeMeta, includeHooks', t => {
-  t.plan(4)
+  t.plan(6)
 
   const fastify = Fastify()
   const onTimeout = () => {}
@@ -166,6 +166,7 @@ test('pretty print - includeMeta, includeHooks', t => {
   fastify.ready(() => {
     const radixTree = fastify.printRoutes({ includeHooks: true, includeMeta: ['errorHandler'] })
     const flatTree = fastify.printRoutes({ commonPrefix: false, includeHooks: true, includeMeta: ['errorHandler'] })
+    const hooksOnly = fastify.printRoutes({ commonPrefix: false, includeHooks: true })
 
     const radixExpected = `└── /
     ├── hel
@@ -192,51 +193,20 @@ test('pretty print - includeMeta, includeHooks', t => {
         • (onRequest) ["anonymous()"]
         • (errorHandler) "defaultErrorHandler()"
 `
-    t.equal(typeof radixTree, 'string')
-    t.equal(typeof flatTree, 'string')
-    t.equal(radixTree, radixExpected)
-    t.equal(flatTree, flatExpected)
-  })
-})
 
-test('pretty print - buildPrettyMeta', t => {
-  t.plan(4)
-
-  const fastify = Fastify({
-    buildPrettyMeta: route => {
-      return { override: 'value' }
-    }
-  })
-  const onTimeout = () => {}
-  fastify.get('/hello', () => {})
-  fastify.put('/hello', () => {})
-  fastify.get('/helicopter', () => {})
-
-  fastify.addHook('onRequest', () => {})
-  fastify.addHook('onTimeout', onTimeout)
-
-  fastify.ready(() => {
-    const radixTree = fastify.printRoutes({ includeMeta: true })
-    const flatTree = fastify.printRoutes({ commonPrefix: false, includeMeta: true })
-
-    const radixExpected = `└── /
-    ├── hel
-    │   ├── lo (GET)
-    │   │   • (override) "value"
-    │   └── icopter (GET)
-    │       • (override) "value"
-    └── hello (PUT)
-        • (override) "value"
-`
-    const flatExpected = `└── / (-)
+    const hooksOnlyExpected = `└── / (-)
     ├── helicopter (GET)
-    │   • (override) "value"
+    │   • (onTimeout) ["onTimeout()"]
+    │   • (onRequest) ["anonymous()"]
     └── hello (GET, PUT)
-        • (override) "value"
+        • (onTimeout) ["onTimeout()"]
+        • (onRequest) ["anonymous()"]
 `
     t.equal(typeof radixTree, 'string')
     t.equal(typeof flatTree, 'string')
+    t.equal(typeof hooksOnlyExpected, 'string')
     t.equal(radixTree, radixExpected)
     t.equal(flatTree, flatExpected)
+    t.equal(hooksOnly, hooksOnlyExpected)
   })
 })

@@ -62,8 +62,6 @@ function defaultBuildPrettyMeta (route) {
 
   const cleanKeys = {}
   const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
-  if (!route) return cleanKeys
-  if (!route.store) return cleanKeys
 
   allowedProps.concat(supportedHooks).forEach(k => {
     cleanKeys[k] = route.store[k]
@@ -101,10 +99,6 @@ function fastify (options) {
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
     throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
-  }
-
-  if (options.buildPrettyMeta && typeof options.buildPrettyMeta !== 'function') {
-    throw new Error(`buildPrettyMeta option should be a function, instead got '${typeof options.buildPrettyMeta}'`)
   }
 
   validateBodyLimitOption(options.bodyLimit)
@@ -177,7 +171,7 @@ function fastify (options) {
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
-      buildPrettyMeta: options.buildPrettyMeta || defaultBuildPrettyMeta
+      buildPrettyMeta: defaultBuildPrettyMeta
     }
   })
 
@@ -335,9 +329,6 @@ function fastify (options) {
       get () {
         return this[kErrorHandler]
       }
-    },
-    routes: {
-      get () { return router.getRoutes() }
     }
   })
 

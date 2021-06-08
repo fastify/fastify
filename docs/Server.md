@@ -512,20 +512,6 @@ function rewriteUrl (req) { // req is the Node.js HTTP request
 
 Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it is an instance-wide configuration.
 
-<a name="factory-build-pretty-meta"></a>
-### `buildPrettyMeta`
-
-Set a function to parse and sanitize `route` context properties for [`printRoutes`](#print-routes) output.
-
-```js
-const server = Fastify({
-  buildPrettyMeta: route => {
-    // only pass onError property forward to printRoutes
-    return { onError: route.store.onError }
-  }
-})
-```
-
 ## Instance
 
 ### Server Methods

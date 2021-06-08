@@ -177,7 +177,6 @@
   },
   "dependencies": {
     "@fastify/ajv-compiler": "^1.0.0",
-    "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
     "avvio": "^7.1.2",
     "fast-json-stringify": "^2.5.2",
@@ -187,6 +186,7 @@
     "flatstr": "^1.0.12",
     "light-my-request": "^4.2.0",
     "pino": "^6.2.1",
+    "proxy-addr": "^2.0.7",
     "readable-stream": "^3.4.0",
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",

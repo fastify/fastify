@@ -288,7 +288,7 @@ const fastify = Fastify({ trustProxy: true })
     }
     ```
 
-For more examples, refer to the [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
+For more examples, refer to the [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
 You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
 
@@ -980,6 +980,8 @@ fastify.register(function (instance, options, done) {
   done()
 }, { prefix: '/v1' })
 ```
+
+Fastify calls setNotFoundHandler to add a default 404 handler at startup before plugins are registered. If you would like to augment the behavior of the default 404 handler, for example with plugins, you can call setNotFoundHandler with no arguments `fastify.setNotFoundHandler()` within the context of these registered plugins.
 
 <a name="set-error-handler"></a>
 #### setErrorHandler

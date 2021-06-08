@@ -1,7 +1,6 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import * as LightMyRequest from 'light-my-request'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
@@ -159,6 +158,7 @@ export interface ValidationResult {
 }
 
 /* Export all additional types */
+export type { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 export { FastifyRequest, RequestGenericInterface } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'

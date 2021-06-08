@@ -3,12 +3,15 @@ import fastify, {
   FastifyInstance,
   FastifyPlugin,
   FastifyPluginAsync,
-  FastifyPluginCallback
+  FastifyPluginCallback,
+  LightMyRequestChain,
+  LightMyRequestResponse,
+  LightMyRequestCallback,
+  InjectOptions
 } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import { Chain as LightMyRequestChain } from 'light-my-request'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { Socket } from 'net'
@@ -26,6 +29,14 @@ expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
+
+// light-my-request
+expectAssignable<InjectOptions>({ query: '' })
+fastify({ http2: true, https: {} }).inject().then((resp) => {
+  expectAssignable<LightMyRequestResponse>(resp)
+})
+const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {}
+fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 
 // server options
 expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))

@@ -198,3 +198,45 @@ test('pretty print - includeMeta, includeHooks', t => {
     t.equal(flatTree, flatExpected)
   })
 })
+
+test('pretty print - buildPrettyMeta', t => {
+  t.plan(4)
+
+  const fastify = Fastify({
+    buildPrettyMeta: route => {
+      return { override: 'value' }
+    }
+  })
+  const onTimeout = () => {}
+  fastify.get('/hello', () => {})
+  fastify.put('/hello', () => {})
+  fastify.get('/helicopter', () => {})
+
+  fastify.addHook('onRequest', () => {})
+  fastify.addHook('onTimeout', onTimeout)
+
+  fastify.ready(() => {
+    const radixTree = fastify.printRoutes({ includeMeta: true })
+    const flatTree = fastify.printRoutes({ commonPrefix: false, includeMeta: true })
+
+    const radixExpected = `└── /
+    ├── hel
+    │   ├── lo (GET)
+    │   │   • (override) "value"
+    │   └── icopter (GET)
+    │       • (override) "value"
+    └── hello (PUT)
+        • (override) "value"
+`
+    const flatExpected = `└── / (-)
+    ├── helicopter (GET)
+    │   • (override) "value"
+    └── hello (GET, PUT)
+        • (override) "value"
+`
+    t.equal(typeof radixTree, 'string')
+    t.equal(typeof flatTree, 'string')
+    t.equal(radixTree, radixExpected)
+    t.equal(flatTree, flatExpected)
+  })
+})

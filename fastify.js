@@ -58,6 +58,21 @@ const onBadUrlContext = {
   onError: []
 }
 
+function defaultBuildPrettyMeta (route) {
+  // return a shallow copy of route's sanitized context
+
+  const cleanKeys = {}
+  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
+  if (!route) return cleanKeys
+  if (!route.store) return cleanKeys
+
+  allowedProps.concat(supportedHooks).forEach(k => {
+    cleanKeys[k] = route.store[k]
+  })
+
+  return Object.assign({}, cleanKeys)
+}
+
 function defaultErrorHandler (error, request, reply) {
   if (reply.statusCode < 500) {
     reply.log.info(
@@ -87,6 +102,10 @@ function fastify (options) {
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
     throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
+  }
+
+  if (options.buildPrettyMeta && typeof options.buildPrettyMeta !== 'function') {
+    throw new Error(`buildPrettyMeta option should be a function, instead got '${typeof options.buildPrettyMeta}'`)
   }
 
   validateBodyLimitOption(options.bodyLimit)
@@ -162,7 +181,8 @@ function fastify (options) {
       constraints: constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive
+      caseSensitive: options.caseSensitive,
+      buildPrettyMeta: options.buildPrettyMeta || defaultBuildPrettyMeta
     }
   })
 

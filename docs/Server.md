@@ -1028,6 +1028,31 @@ fastify.ready(() => {
 })
 ```
 
+`fastify.printRoutes({ includeMeta: (true | []) })` will display properties from the `route.store` object for each displayed route. This can be an `array` of keys (e.g. `['onRequest', Symbol('key')]`), or `true` to display all properties. A shorthand option, `fastify.printRoutes({ includeHooks: true })` will include all [hooks](https://www.fastify.io/docs/latest/Hooks/).
+
+```js
+  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['metaProperty'] }))
+  // └── /
+  //     ├── test (GET)
+  //     │   • (onRequest) ["anonymous()","namedFunction()"]
+  //     │   • (metaProperty) "value"
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         │   • (onTimeout) ["anonymous()"]
+  //         └── licopter (GET)
+
+  console.log(fastify.printRoutes({ includeHooks: true }))
+  // └── /
+  //     ├── test (GET)
+  //     │   • (onRequest) ["anonymous()","namedFunction()"]  
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         │   • (onTimeout) ["anonymous()"]
+  //         └── licopter (GET)
+```
+
 <a name="print-plugins"></a>
 #### printPlugins
 
@@ -1044,9 +1069,9 @@ fastify.ready(() => {
   console.error(fastify.printPlugins())
   // will output the following to stderr:
   // └── root
-  //   ├── foo
-  //   │   └── bar
-  //   └── baz
+  //     ├── foo
+  //     │   └── bar
+  //     └── baz
 })
 ```
 

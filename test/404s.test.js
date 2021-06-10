@@ -1738,6 +1738,41 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
     })
   })
 
+  t.test('No route registered', t => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.same(JSON.parse(response.payload), {
+        error: 'Not Found',
+        message: 'Route GET:/%c0 not found',
+        statusCode: 404
+      })
+    })
+  })
+
+  t.test('Only / is registered', t => {
+    t.plan(3)
+    const fastify = Fastify({ logger: true })
+    fastify.get('/', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.same(JSON.parse(response.payload), {
+        error: 'Not Found',
+        message: 'Route GET:/%c0 not found',
+        statusCode: 404
+      })
+    })
+  })
+
   t.end()
 })
 

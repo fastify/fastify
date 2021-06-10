@@ -168,7 +168,11 @@ function fastify (options) {
   })
 
   // 404 router, used for handling encapsulated 404 handlers
-  const fourOhFour = build404(options)
+  const fourOhFour = build404({
+    logger: options.logger,
+    genReqId: options.genReqId,
+    onBadUrl: onBadUrl
+  })
 
   // HTTP server and its handler
   const httpHandler = wrapRouting(router.routing, options)

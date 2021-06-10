@@ -1738,6 +1738,41 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
     })
   })
 
+  t.test('No route registered', t => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 400)
+      t.same(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: "'%c0' is not a valid url component",
+        statusCode: 400
+      })
+    })
+  })
+
+  t.test('Only / is registered', t => {
+    t.plan(3)
+    const fastify = Fastify()
+    fastify.get('/', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 400)
+      t.same(JSON.parse(response.payload), {
+        error: 'Bad Request',
+        message: "'%c0' is not a valid url component",
+        statusCode: 400
+      })
+    })
+  })
+
   t.end()
 })
 

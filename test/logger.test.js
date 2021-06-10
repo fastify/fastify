@@ -1481,6 +1481,25 @@ test('should not log incoming request and outgoing response when disabled', t =>
   })
 })
 
+test('should not log incoming request and outgoing response for 404 onBadUrl when disabled', t => {
+  t.plan(1)
+  const lines = []
+  const dest = new stream.Writable({
+    write: function (chunk, enc, cb) {
+      lines.push(JSON.parse(chunk))
+      cb()
+    }
+  })
+  const fastify = Fastify({ disableRequestLogging: true, logger: { level: 'info', stream: dest } })
+
+  fastify.inject({
+    url: '/%c0',
+    method: 'GET'
+  }, (e, res) => {
+    t.same(lines.length, 0)
+  })
+})
+
 test('should pass when using unWritable props in the logger option', t => {
   t.plan(1)
   Fastify({

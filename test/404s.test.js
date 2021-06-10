@@ -1746,29 +1746,29 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       method: 'GET'
     }, (err, response) => {
       t.error(err)
-      t.equal(response.statusCode, 400)
+      t.equal(response.statusCode, 404)
       t.same(JSON.parse(response.payload), {
-        error: 'Bad Request',
-        message: "'%c0' is not a valid url component",
-        statusCode: 400
+        error: 'Not Found',
+        message: 'Route GET:/%c0 not found',
+        statusCode: 404
       })
     })
   })
 
   t.test('Only / is registered', t => {
     t.plan(3)
-    const fastify = Fastify()
+    const fastify = Fastify({ logger: true })
     fastify.get('/', () => t.fail('we should not be here'))
     fastify.inject({
       url: '/%c0',
       method: 'GET'
     }, (err, response) => {
       t.error(err)
-      t.equal(response.statusCode, 400)
+      t.equal(response.statusCode, 404)
       t.same(JSON.parse(response.payload), {
-        error: 'Bad Request',
-        message: "'%c0' is not a valid url component",
-        statusCode: 400
+        error: 'Not Found',
+        message: 'Route GET:/%c0 not found',
+        statusCode: 404
       })
     })
   })

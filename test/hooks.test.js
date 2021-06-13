@@ -3173,7 +3173,7 @@ test('onTimeout should be triggered', t => {
   })
 
   fastify.get('/', async (req, reply) => {
-    reply.send({ hello: 'world' })
+    await reply.send({ hello: 'world' })
   })
 
   fastify.get('/timeout', async (req, reply) => {
@@ -3212,7 +3212,7 @@ test('onTimeout should be triggered and socket _meta is set', t => {
 
   fastify.get('/', async (req, reply) => {
     req.raw.socket._meta = {}
-    reply.send({ hello: 'world' })
+    return reply.send({ hello: 'world' })
   })
 
   fastify.get('/timeout', async (req, reply) => {

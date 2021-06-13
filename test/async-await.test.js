@@ -79,7 +79,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
   const payload = { hello: 'world' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
   })
 
   t.teardown(server.close.bind(server))
@@ -104,7 +104,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   const payload = { hello: 'world2' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
     return { hello: 'world' }
   })
 
@@ -139,7 +139,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   })
 
   fastify.get('/', async (req, reply) => {
-    reply.send({ hello: 'world' })
+    await reply.send({ hello: 'world' })
     return { hello: 'world2' }
   })
 
@@ -160,7 +160,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
   const payload = { hello: 'world' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
   })
 
   t.teardown(server.close.bind(server))
@@ -185,7 +185,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   const payload = { hello: 'world2' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
     return { hello: 'world' }
   })
 
@@ -478,7 +478,7 @@ test('customErrorHandler support without throwing', t => {
 
   fastify.setErrorHandler(async (err, req, reply) => {
     t.equal(err.message, 'ouch')
-    reply.code(401).send('kaboom')
+    await reply.code(401).send('kaboom')
     reply.send = t.fail.bind(t, 'should not be called')
   })
 

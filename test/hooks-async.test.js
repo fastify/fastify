@@ -132,7 +132,7 @@ test('onRequest hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('onRequest', async (req, reply) => {
@@ -224,7 +224,7 @@ test('preHandler hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('preHandler', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preHandler', async (req, reply) => {
@@ -258,7 +258,7 @@ test('preValidation hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('preValidation', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preValidation', async (req, reply) => {
@@ -383,7 +383,7 @@ test('preValidation hooks should handle throwing null', t => {
 
   fastify.setErrorHandler(async (error, request, reply) => {
     t.ok(error instanceof Error)
-    reply.send(error)
+    await reply.send(error)
   })
 
   fastify.addHook('preValidation', async () => {
@@ -434,7 +434,7 @@ test('onRequest hooks should be able to block a request (last hook)', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preHandler', async (req, reply) => {
@@ -468,7 +468,7 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
   const fastify = Fastify()
 
   fastify.addHook('preHandler', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('onSend', async (req, reply, payload) => {
@@ -502,8 +502,9 @@ test('onRequest respond with a stream', t => {
       const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
       // stream.pipe(res)
       // res.once('finish', resolve)
-      reply.send(stream)
-      reply.raw.once('finish', () => resolve())
+      reply.send(stream).then(() => {
+        reply.raw.once('finish', () => resolve())
+      })
     })
   })
 
@@ -551,10 +552,11 @@ test('preHandler respond with a stream', t => {
   fastify.addHook('preHandler', async (req, reply) => {
     return new Promise((resolve, reject) => {
       const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
-      reply.send(stream)
-      reply.raw.once('finish', () => {
-        t.equal(order.shift(), 2)
-        resolve()
+      reply.send(stream).then(() => {
+        reply.raw.once('finish', () => {
+          t.equal(order.shift(), 2)
+          resolve()
+        })
       })
     })
   })

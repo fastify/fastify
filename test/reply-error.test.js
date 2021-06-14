@@ -459,7 +459,7 @@ test('should not set headers or status code for custom error handler', t => {
   fastify.setErrorHandler(async (err, req, res) => {
     t.equal(res.statusCode, 200)
     t.equal('fake-random-header' in res.headers, false)
-    res.code(500).send(err.message)
+    return res.code(500).send(err.message)
   })
 
   fastify.inject({
@@ -495,7 +495,7 @@ test('error thrown by custom error handler routes to default error handler', t =
     t.equal('fake-random-header' in res.headers, false)
     t.same(err.headers, error.headers)
 
-    res.send(newError)
+    return res.send(newError)
   })
 
   fastify.inject({

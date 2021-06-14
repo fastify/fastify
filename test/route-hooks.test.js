@@ -220,7 +220,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.setErrorHandler(async (error, request, reply) => {
       t.same(error, myError, 'the error object throws by the user')
-      reply.code(500).send({ this: 'is', my: 'error' })
+      return reply.code(500).send({ this: 'is', my: 'error' })
     })
 
     fastify.get('/', {

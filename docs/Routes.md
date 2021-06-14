@@ -203,12 +203,12 @@ fastify.get('/', options, async function (request, reply) {
 
 As you can see, we are not calling `reply.send` to send back the data to the user. You just need to return the body and you are done!
 
-If you need it you can also send back the data to the user with `reply.send`.
+If you need it you can also send back the data to the user with `reply.send`. In this case do not forget to `return reply` or `await reply` in your `async` handler or you will introduce a race condition in certain situations.
 ```js
 fastify.get('/', options, async function (request, reply) {
   var data = await getData()
   var processed = await processData(data)
-  reply.send(processed)
+  return reply.send(processed)
 })
 ```
 

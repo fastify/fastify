@@ -297,7 +297,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       } else {
         app.addHook(hookOrHandler, async (req, reply) => {
           reply.hijack()
-          reply.send('hello from reply.send()')
+          return reply.send('hello from reply.send()')
         })
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }

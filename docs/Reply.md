@@ -19,7 +19,7 @@
   - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
   - [.sent](#sent)
-  - [.hijack](#hijack)
+  - [.hijack()](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -53,6 +53,7 @@ and properties:
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
+- `.hijack()` - interrupt the normal request lifecycle.
 - `.raw` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
@@ -245,33 +246,24 @@ Another example of the misuse of `Reply.raw` is explained in [Reply](Reply.md#ge
 ### .sent
 
 As the name suggests, `.sent` is a property to indicate if
-a response has been sent via `reply.send()`.
+a response has been sent via `reply.send()`. It will also be `true` in case `reply.hijack()` was used.
 
-In case a route handler is defined as an async function or it
-returns a promise, it is possible to set `reply.sent = true`
-to indicate that the automatic invocation of `reply.send()` once the
-handler promise resolve should be skipped. By setting `reply.sent =
-true`, an application claims full responsibility for the low-level
-request and response. Moreover, hooks will not be invoked.
-
-As an example:
-
-```js
-app.get('/', (req, reply) => {
-  reply.sent = true
-  reply.raw.end('hello world')
-
-  return Promise.resolve('this will be skipped')
-})
-```
-
-If the handler rejects, the error will be logged.
+*Modifying the `.sent` property directly is deprecated. Please use the aformentioned `.hijack()` method to achieve the same effect.*
 
 <a name="hijack"></a>
 ### .hijack()
 Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
 
 To achieve this, Fastify provides the `reply.hijack()` method that can be called during the request lifecycle (At any point before `reply.send()` is called), and allows you to prevent Fastify from sending the response, and from running the remaining hooks (and user handler if the reply was hijacked before).
+
+```js
+app.get('/', (req, reply) => {
+  reply.hijack()
+  reply.raw.end('hello world')
+
+  return Promise.resolve('this will be skipped')
+})
+```
 
 NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
 

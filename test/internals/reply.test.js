@@ -17,6 +17,7 @@ const {
 } = require('../../lib/symbols')
 const fs = require('fs')
 const path = require('path')
+const warning = require('../../lib/warnings')
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
@@ -1324,6 +1325,33 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
     t.error(error)
     t.ok(response.headers['set-cookie'])
     t.strictSame(response.headers['set-cookie'], ['one', 'two', 'three', 'four', 'five', 'six'])
+  })
+})
+
+test('should emit deprecation warning when trying to modify the reply.sent property', t => {
+  t.plan(4)
+  const fastify = require('../..')()
+
+  const deprecationCode = 'FSTDEP010'
+  warning.emitted.delete(deprecationCode)
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, deprecationCode)
+  }
+
+  fastify.get('/', (req, reply) => {
+    reply.sent = true
+
+    reply.raw.end()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.pass()
+
+    process.removeListener('warning', onWarning)
   })
 })
 

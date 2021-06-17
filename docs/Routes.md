@@ -69,6 +69,11 @@ They need to be in
 
   `reply` is defined in [Reply](Reply.md).
 
+**Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
+`preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
+more detail in [Hooks](Hooks.md). Additionally, to send a response before the
+request is handled by the `handler` please refer to
+[Respond to a request from a hook](Hooks.md#respond-to-a-request-from-a-hook).
 
 Example:
 ```js

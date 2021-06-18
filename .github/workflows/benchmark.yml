@@ -9,17 +9,15 @@ jobs:
     if: ${{ github.event.label.name == 'benchmark' }}
     runs-on: ubuntu-latest
     outputs:
-      PR-BENCH-10: ${{ steps.benchmark-pr.outputs.BENCH_RESULT10 }}
       PR-BENCH-12: ${{ steps.benchmark-pr.outputs.BENCH_RESULT12 }}
       PR-BENCH-14: ${{ steps.benchmark-pr.outputs.BENCH_RESULT14 }}
       PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
-      MAIN-BENCH-10: ${{ steps.benchmark-main.outputs.BENCH_RESULT10 }}
       MAIN-BENCH-12: ${{ steps.benchmark-main.outputs.BENCH_RESULT12 }}
       MAIN-BENCH-14: ${{ steps.benchmark-main.outputs.BENCH_RESULT14 }}
       MAIN-BENCH-16: ${{ steps.benchmark-main.outputs.BENCH_RESULT16 }}
     strategy:
       matrix:
-        node-version: [10, 12, 14, 16]
+        node-version: [12, 14, 16]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -66,12 +64,6 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           message: |
-            **Node**: 10
-            **PR**: ${{ needs.benchmark.outputs.PR-BENCH-10 }}
-            **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-10 }}
-            
-            ---
-            
             **Node**: 12
             **PR**: ${{ needs.benchmark.outputs.PR-BENCH-12 }}
             **MAIN**: ${{ needs.benchmark.outputs.MAIN-BENCH-12 }}

@@ -68,6 +68,8 @@ The parser for this content type was already registered.
 
 The request body is larger than the provided limit.
 
+This setting can be defined in the Fastify server instance: https://www.fastify.io/docs/latest/Server/#bodylimit
+
 <a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE
 

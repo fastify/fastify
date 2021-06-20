@@ -27,6 +27,7 @@ export interface onRequestHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -41,6 +42,7 @@ export interface onRequestAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -58,6 +60,7 @@ export interface preParsingHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: RequestPayload,
@@ -73,6 +76,7 @@ export interface preParsingAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: RequestPayload,
@@ -90,6 +94,7 @@ export interface preValidationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -104,6 +109,7 @@ export interface preValidationAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -120,6 +126,7 @@ export interface preHandlerHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -134,6 +141,7 @@ export interface preHandlerAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -159,6 +167,7 @@ export interface preSerializationHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: PreSerializationPayload,
@@ -175,6 +184,7 @@ export interface preSerializationAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: PreSerializationPayload
@@ -194,6 +204,7 @@ export interface onSendHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: OnSendPayload,
@@ -210,6 +221,7 @@ export interface onSendAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: OnSendPayload,
@@ -228,6 +240,7 @@ export interface onResponseHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -242,6 +255,7 @@ export interface onResponseAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): Promise<unknown>;
@@ -259,6 +273,7 @@ export interface onTimeoutHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -273,6 +288,7 @@ export interface onTimeoutAsyncHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): Promise<unknown>;
@@ -293,6 +309,7 @@ export interface onErrorHookHandler<
   TError extends Error = FastifyError
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     error: TError,
@@ -309,6 +326,7 @@ export interface onErrorAsyncHookHandler<
   TError extends Error = FastifyError
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     error: TError
@@ -328,6 +346,7 @@ export interface onRouteHookHandler<
   ContextConfig = ContextConfigDefault
 > {
   (
+    this: FastifyInstance<RawServer, RawRequest, RawReply>,
     opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { routePath: string; path: string; prefix: string }
   ): Promise<unknown> | void;
 }
@@ -354,12 +373,15 @@ export interface onRegisterHookHandler<
  */
 export interface onReadyHookHandler {
   (
+    this: FastifyInstance,
     done: HookHandlerDoneFunction
   ): void;
 }
 
 export interface onReadyAsyncHookHandler {
-  (): Promise<unknown>;
+  (
+    this: FastifyInstance,
+  ): Promise<unknown>;
 }
 /**
  * Triggered when fastify.close() is invoked to stop the server. It is useful when plugins need a "shutdown" event, for example to close an open connection to a database.

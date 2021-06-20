@@ -54,7 +54,8 @@ export type FastifyHttp2SecureOptions<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
-  https: http2.SecureServerOptions
+  https: http2.SecureServerOptions,
+  http2SessionTimeout?: number
 }
 
 export type FastifyHttp2Options<
@@ -62,7 +63,7 @@ export type FastifyHttp2Options<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
-  http2SessionTimeout?: number,
+  http2SessionTimeout?: number
 }
 
 export type FastifyHttpsOptions<

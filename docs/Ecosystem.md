@@ -90,6 +90,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache) Fastify plugin to disable client-side caching, inspired by [nocache](https://github.com/helmetjs/nocache).
 - [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB plugin for Fastify. It exposes [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html) object.
 - [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin register for Fastify.
+- [`fastify-early-hints](https://github.com/zekth/fastify-early-hints) Plugin to add HTTP 103 feature based on [RFC 8297](https://httpwg.org/specs/rfc8297.html)
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify project.
 - [`fastify-error-page`](https://github.com/hemerajs/fastify-error-page) Fastify plugin to print errors in structured HTML to the browser.
 - [`fastify-esso`](https://github.com/patrickpissurno/fastify-esso) The easiest authentication plugin for Fastify, with built-in support for Single sign-on (and great documentation).

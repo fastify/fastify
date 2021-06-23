@@ -53,6 +53,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 
 #### [Community](#community)
 
+- [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs) Alternate Fastify and Next.js integration.
 - [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly typed routes with a runtime validation using JSON schema generated from types.
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.

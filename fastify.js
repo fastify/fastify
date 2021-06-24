@@ -140,6 +140,7 @@ function fastify (options) {
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
   options.exposeHeadRoutes = exposeHeadRoutes
+
   const initialConfig = getSecuredInitialConfig(options)
 
   let constraints = options.constraints

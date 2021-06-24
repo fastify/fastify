@@ -44,6 +44,7 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
+const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -71,6 +72,7 @@ function defaultBuildPrettyMeta (route) {
 }
 
 function defaultErrorHandler (error, request, reply) {
+  setErrorHeaders(error, reply)
   if (reply.statusCode < 500) {
     reply.log.info(
       { res: reply, err: error },
@@ -109,7 +111,6 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -139,9 +140,10 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.exposeHeadRoutes = exposeHeadRoutes
-
   const initialConfig = getSecuredInitialConfig(options)
+
+  // exposeHeadRoutes have their defaults set from the validator
+  options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
   let constraints = options.constraints
   if (options.versioning) {

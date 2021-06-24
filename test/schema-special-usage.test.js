@@ -10,7 +10,7 @@ const ajvErrors = require('ajv-errors')
 const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
 
 test('Ajv8 usage instead of the bundle one', t => {
-  t.plan(1)
+  t.plan(2)
 
   t.test('use new ajv8 option', t => {
     t.plan(2)
@@ -44,6 +44,53 @@ test('Ajv8 usage instead of the bundle one', t => {
       t.ok(err)
       t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
     })
+  })
+
+  t.test('use new ajv8 option with JTD schema fails (JTD needs explicit dependency)', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      jsonShorthand: false,
+
+      ajv: {
+        customOptions: { strictRequired: true }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    fastify.post('/', {
+      schema: {
+        body: {
+          discriminator: 'version',
+          mapping: {
+            1: {
+              properties: {
+                foo: { type: 'uint8' }
+              }
+            },
+            2: {
+              properties: {
+                foo: { type: 'string' }
+              }
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify
+      .ready(err => {
+        t.ok(err)
+        t.match(
+          err.message,
+          'Failed building the validation schema for POST: /, due to error strict mode: unknown keyword: "discriminator"',
+          'the JTD schema won\'t compile when using strict mode JSON Schema'
+        )
+      })
   })
 })
 

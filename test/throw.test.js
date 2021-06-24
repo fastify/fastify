@@ -71,6 +71,18 @@ test('Fastify should throw for an invalid schema, printing the error route - bod
   })
 })
 
+test('Fastify should throw for an invalid shorthand option type', t => {
+  t.plan(3)
+  try {
+    Fastify({ jsonShorthand: 'hello' })
+    t.fail()
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_INIT_OPTS_INVALID')
+    t.match(e.message, /should be boolean/)
+    t.pass()
+  }
+})
+
 test('Should throw on unsupported method', t => {
   t.plan(1)
   const fastify = Fastify()

@@ -44,7 +44,6 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
-const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -72,7 +71,6 @@ function defaultBuildPrettyMeta (route) {
 }
 
 function defaultErrorHandler (error, request, reply) {
-  setErrorHeaders(error, reply)
   if (reply.statusCode < 500) {
     reply.log.info(
       { res: reply, err: error },

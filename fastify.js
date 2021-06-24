@@ -2,10 +2,11 @@
 
 const Avvio = require('avvio')
 const http = require('http')
+const path = require('path')
 const querystring = require('querystring')
 let lightMyRequest
 
-const { version } = require('./package.json')
+const { version } = require(path.join(__dirname, 'package.json'))
 const {
   kAvvioBoot,
   kChildren,

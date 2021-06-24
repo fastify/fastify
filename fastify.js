@@ -109,6 +109,7 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
+  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -138,10 +139,8 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
+  options.exposeHeadRoutes = exposeHeadRoutes
   const initialConfig = getSecuredInitialConfig(options)
-
-  // exposeHeadRoutes have their defaults set from the validator
-  options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
   let constraints = options.constraints
   if (options.versioning) {

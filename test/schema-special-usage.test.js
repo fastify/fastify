@@ -66,6 +66,7 @@ test('JTD Usage via manual inclusion', t => {
     fastify.post('/', {
       schema: {
         body: {
+          // JSON Schema style discriminator is invalid in JTD schemas
           discriminator: { propertyName: 'version' },
           oneOf: [
             {

@@ -93,7 +93,7 @@ test('JTD Usage via manual inclusion', t => {
       .ready(err => {
         t.ok(err)
         t.match(
-          err?.message,
+          err ? err.message : undefined,
           `Failed building the validation schema for POST: /,
            due to error schema is invalid: data/discriminator must NOT have additional properties,
            data/oneOf must NOT have additional properties,

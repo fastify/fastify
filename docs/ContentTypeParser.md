@@ -3,6 +3,8 @@
 ## `Content-Type` Parser
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content types. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON and/or plain text parser can be changed.*
 
+*Note: If you decide to specify your own content type with the `Content-Type` header, UTF-8 will not be the default. Be sure to include UTF-8 like this `text/html; charset=utf-8`.*
+
 As with the other APIs, `addContentTypeParser` is encapsulated in the scope in which it is declared. This means that if you declare it in the root scope it will be available everywhere, while if you declare it inside a plugin it will be available only in that scope and its children.
 
 Fastify automatically adds the parsed request payload to the [Fastify request](Request.md) object which you can access with `request.body`.

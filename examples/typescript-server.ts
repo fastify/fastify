@@ -20,7 +20,7 @@ const server: FastifyInstance<
   Server,
   IncomingMessage,
   ServerResponse
-> = fastify();
+> = fastify({ logger: true });
 
 // Define interfaces for our request. We can create these automatically
 // off our JSON Schema files (See TypeScript.md) but for the purpose of this
@@ -75,5 +75,4 @@ server.listen(8080, (err, address) => {
     console.error(err);
     process.exit(0);
   }
-  console.log(`Server listening at ${address}`);
 });

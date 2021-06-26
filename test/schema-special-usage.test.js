@@ -3,8 +3,165 @@
 const { test } = require('tap')
 const Joi = require('@hapi/joi')
 const AJV = require('ajv')
+const S = require('fluent-json-schema')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
+const ajvErrors = require('ajv-errors')
+
+const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
+
+test('Ajv8 usage instead of the bundle one', t => {
+  t.plan(1)
+
+  t.test('use new ajv8 option', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { strictRequired: true }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['missing'],
+          properties: {
+            foo: {
+              type: 'string'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.ready(err => {
+      t.ok(err)
+      t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
+    })
+  })
+})
+
+test('Ajv8 usage with plugins', { skip: 'until npm 7.2 will be bundled with node.js 16 https://github.com/npm/cli/issues/3147' }, t => {
+  t.plan(2)
+
+  t.test('use new ajv8 option', t => {
+    t.plan(3)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: true },
+        plugins: [require('ajv-formats')]
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 400)
+      t.equal(res.json().message, 'body must match format "date"')
+    })
+  })
+
+  t.test('use new ajv8 option - avoid check', t => {
+    t.plan(2)
+    const fastify = Fastify({
+      ajv: {
+        customOptions: { validateFormats: false }
+      },
+      schemaController: {
+        compilersFactory: {
+          buildValidator: buildValidatorAJV8()
+        }
+      }
+    })
+
+    callIt(fastify, (err, res) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+    })
+  })
+
+  function callIt (fastify, cb) {
+    fastify.post('/', {
+      schema: {
+        body: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string',
+              format: 'date'
+            }
+          }
+        }
+      },
+      handler (req, reply) { reply.send({ ok: 1 }) }
+    })
+
+    fastify.inject({
+      method: 'POST',
+      url: '/',
+      payload: { foo: '99' }
+    }, cb)
+  }
+})
+
+test('Ajv plugins array parameter', t => {
+  t.plan(3)
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        jsonPointers: true,
+        allErrors: true
+      },
+      plugins: [
+        [ajvErrors, { singleError: '@@@@' }]
+      ]
+    }
+  })
+
+  fastify.post('/', {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'number',
+            minimum: 2,
+            maximum: 10,
+            multipleOf: 2,
+            errorMessage: {
+              type: 'should be number',
+              minimum: 'should be >= 2',
+              maximum: 'should be <= 10',
+              multipleOf: 'should be multipleOf 2'
+            }
+          }
+        }
+      }
+    },
+    handler (req, reply) { reply.send({ ok: 1 }) }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    payload: { foo: 99 }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.equal(res.json().message, 'body/foo should be <= 10@@@@should be multipleOf 2')
+  })
+})
 
 test('Should handle root $merge keywords in header', t => {
   t.plan(5)
@@ -43,7 +200,7 @@ test('Should handle root $merge keywords in header', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -52,7 +209,7 @@ test('Should handle root $merge keywords in header', t => {
       headers: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -103,7 +260,7 @@ test('Should handle root $patch keywords in header', t => {
       }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -112,7 +269,7 @@ test('Should handle root $patch keywords in header', t => {
       headers: { q: 10 }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -154,7 +311,7 @@ test('Should handle $merge keywords in body', t => {
       url: '/'
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -163,7 +320,7 @@ test('Should handle $merge keywords in body', t => {
       payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -210,7 +367,7 @@ test('Should handle $patch keywords in body', t => {
       payload: { q: 'foo' }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 400)
+      t.equal(res.statusCode, 400)
     })
 
     fastify.inject({
@@ -219,7 +376,7 @@ test('Should handle $patch keywords in body', t => {
       payload: { q: 10 }
     }, (err, res) => {
       t.error(err)
-      t.equals(res.statusCode, 200)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -253,7 +410,7 @@ test("serializer read validator's schemas", t => {
   const fastify = Fastify({
     schemaController: {
       bucket: function factory (storeInit) {
-        t.notOk(storeInit, 'is is always empty because fastify.addSchema is not called')
+        t.notOk(storeInit, 'is always empty because fastify.addSchema is not called')
         return {
           getSchemas () {
             return {
@@ -281,8 +438,8 @@ test("serializer read validator's schemas", t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 })
 
@@ -327,8 +484,8 @@ test('setSchemaController in a plugin', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { hello: 'world' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
   })
 
   async function schemaPlugin (server) {
@@ -403,6 +560,194 @@ test('side effect on schema let the server crash', async t => {
   })
 
   await fastify.ready()
+})
+
+test('only response schema trigger AJV pollution', async t => {
+  const ShowSchema = S.object().id('ShowSchema').prop('name', S.string())
+  const ListSchema = S.array().id('ListSchema').items(S.ref('ShowSchema#'))
+
+  const fastify = Fastify()
+  fastify.addSchema(ListSchema)
+  fastify.addSchema(ShowSchema)
+
+  const routeResponseSchemas = {
+    schema: { response: { 200: S.ref('ListSchema#') } }
+  }
+
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix1' }
+  )
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix2' }
+  )
+
+  await fastify.ready()
+})
+
+test('only response schema trigger AJV pollution #2', async t => {
+  const ShowSchema = S.object().id('ShowSchema').prop('name', S.string())
+  const ListSchema = S.array().id('ListSchema').items(S.ref('ShowSchema#'))
+
+  const fastify = Fastify()
+  fastify.addSchema(ListSchema)
+  fastify.addSchema(ShowSchema)
+
+  const routeResponseSchemas = {
+    schema: {
+      params: S.ref('ListSchema#'),
+      response: { 200: S.ref('ListSchema#') }
+    }
+  }
+
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix1' }
+  )
+  fastify.register(
+    async (app) => { app.get('/resource/', routeResponseSchemas, () => ({})) },
+    { prefix: '/prefix2' }
+  )
+
+  await fastify.ready()
+})
+
+test('setSchemaController in a plugin with head routes', t => {
+  t.plan(6)
+  const baseSchema = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const ajvInstance = new AJV()
+  ajvInstance.addSchema(baseSchema)
+  ajvInstance.addSchema(refSchema)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+  fastify.register(schemaPlugin)
+  fastify.get('/', {
+    schema: {
+      query: ajvInstance.getSchema('urn:schema:ref').schema,
+      response: {
+        '2xx': ajvInstance.getSchema('urn:schema:ref').schema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
+  })
+
+  async function schemaPlugin (server) {
+    server.setSchemaController({
+      bucket () {
+        t.pass('the bucket is created')
+        return {
+          addSchema (source) {
+            ajvInstance.addSchema(source)
+          },
+          getSchema (id) {
+            return ajvInstance.getSchema(id).schema
+          },
+          getSchemas () {
+            return {
+              'urn:schema:base': baseSchema,
+              'urn:schema:ref': refSchema
+            }
+          }
+        }
+      }
+    })
+    server.setValidatorCompiler(function ({ schema }) {
+      if (schema.$id) {
+        const stored = ajvInstance.getSchema(schema.$id)
+        if (stored) {
+          t.pass('the schema is reused')
+          return stored
+        }
+      }
+      t.pass('the schema is compiled')
+
+      return ajvInstance.compile(schema)
+    })
+  }
+  schemaPlugin[Symbol.for('skip-override')] = true
+})
+
+test('multiple refs with the same ids', t => {
+  t.plan(3)
+  const baseSchema = {
+    $id: 'urn:schema:base',
+    definitions: {
+      hello: { type: 'string' }
+    },
+    type: 'object',
+    properties: {
+      hello: { $ref: '#/definitions/hello' }
+    }
+  }
+
+  const refSchema = {
+    $id: 'urn:schema:ref',
+    type: 'object',
+    properties: {
+      hello: { $ref: 'urn:schema:base#/definitions/hello' }
+    }
+  }
+
+  const fastify = Fastify()
+
+  fastify.addSchema(baseSchema)
+  fastify.addSchema(refSchema)
+  fastify.get('/', {
+    schema: {
+      query: refSchema,
+      response: {
+        '2xx': refSchema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.head('/', {
+    schema: {
+      query: refSchema,
+      response: {
+        '2xx': refSchema
+      }
+    },
+    handler (req, res) {
+      res.send({ hello: 'world', evict: 'this' })
+    }
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { hello: 'world' })
+  })
 })
 
 test('JOI validation overwrite request headers', t => {

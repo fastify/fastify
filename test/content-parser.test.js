@@ -53,9 +53,9 @@ test('getParser', t => {
     fastify.addContentTypeParser(/^application\/.+\+xml/, second)
     fastify.addContentTypeParser('text/html', third)
 
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('application/t+xml').fn, second)
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
+    t.equal(fastify[keys.kContentTypeParser].getParser('application/t+xml').fn, second)
+    t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
   })
 
   test('should prefer content type parser with string value', t => {
@@ -66,8 +66,8 @@ test('getParser', t => {
     fastify.addContentTypeParser(/^image\/.*/, first)
     fastify.addContentTypeParser('image/gif', second)
 
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('image/gif').fn, second)
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('image/gif').fn, second)
+    t.equal(fastify[keys.kContentTypeParser].getParser('image/png').fn, first)
   })
 
   test('should return parser that catches all if no other is set', t => {
@@ -78,9 +78,9 @@ test('getParser', t => {
     fastify.addContentTypeParser('*', first)
     fastify.addContentTypeParser(/^text\/.*/, second)
 
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('image/gif').fn, first)
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
-    t.strictEqual(fastify[keys.kContentTypeParser].getParser('text').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('image/gif').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, second)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text').fn, first)
   })
 
   test('should return undefined if no matching parser exist', t => {
@@ -181,7 +181,7 @@ test('add', t => {
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
     contentTypeParser.add('*', {}, first)
-    t.strictEqual(contentTypeParser.customParsers[''].fn, first)
+    t.equal(contentTypeParser.customParsers[''].fn, first)
   })
 
   t.end()

@@ -1,15 +1,20 @@
 import fastify, {
+  ConnectionError,
   FastifyInstance,
   FastifyPlugin,
   FastifyPluginAsync,
-  FastifyPluginCallback
+  FastifyPluginCallback,
+  LightMyRequestChain,
+  LightMyRequestResponse,
+  LightMyRequestCallback,
+  InjectOptions
 } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import { Chain as LightMyRequestChain } from 'light-my-request'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
+import { Socket } from 'net'
 
 // FastifyInstance
 // http server
@@ -19,14 +24,22 @@ expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerRespons
 expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
 // http2 server
 expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {} }))
+expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
 
+// light-my-request
+expectAssignable<InjectOptions>({ query: '' })
+fastify({ http2: true, https: {} }).inject().then((resp) => {
+  expectAssignable<LightMyRequestResponse>(resp)
+})
+const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {}
+fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
+
 // server options
-expectAssignable<FastifyInstance>(fastify({ http2: true }))
+expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
@@ -139,6 +152,12 @@ expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
 expectAssignable<FastifyInstance>(fastify({ schemaErrorFormatter: (errors, dataVar) => new Error() }))
+expectAssignable<FastifyInstance>(fastify({
+  clientErrorHandler: (err, socket) => {
+    expectType<ConnectionError>(err)
+    expectType<Socket>(socket)
+  }
+}))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

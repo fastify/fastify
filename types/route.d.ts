@@ -6,6 +6,7 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpressi
 import { LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
 import { FastifyError } from 'fastify-error'
+import { FastifyContext } from './context'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
@@ -27,7 +28,7 @@ export interface RouteShorthandOptions<
   serializerCompiler?: FastifySerializerCompiler<SchemaCompiler>;
   bodyLimit?: number;
   logLevel?: LogLevel;
-  config?: ContextConfig;
+  config?: FastifyContext<ContextConfig>['config'];
   version?: string;
   constraints?: { [name: string]: any },
   prefixTrailingSlash?: 'slash'|'no-slash'|'both';

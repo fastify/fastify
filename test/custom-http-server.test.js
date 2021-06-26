@@ -37,8 +37,8 @@ test('Should support a custom http server', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })

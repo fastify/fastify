@@ -168,9 +168,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -181,9 +181,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/123'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { foo: 'world', test: 123 })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { foo: 'world', test: 123 })
     })
   })
 
@@ -194,8 +194,8 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/params/world/string'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 400)
+      t.same(JSON.parse(body), {
         error: 'Bad Request',
         message: 'params.test should be integer',
         statusCode: 400
@@ -213,9 +213,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.strictEqual(JSON.parse(body)['x-test'], 1)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.equal(JSON.parse(body)['x-test'], 1)
     })
   })
 
@@ -229,8 +229,8 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 400)
+      t.same(JSON.parse(body), {
         error: 'Bad Request',
         message: "headers['x-test'] should be number",
         statusCode: 400
@@ -245,9 +245,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=123'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 123 })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 123 })
     })
   })
 
@@ -258,8 +258,8 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/query?hello=world'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
-      t.deepEqual(JSON.parse(body), {
+      t.equal(response.statusCode, 400)
+      t.same(JSON.parse(body), {
         error: 'Bad Request',
         message: 'querystring.hello should be integer',
         statusCode: 400
@@ -274,9 +274,9 @@ fastify.listen(0, err => {
       url: 'http://localhost:' + fastify.server.address().port + '/missing'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-length'], '' + body.length)
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 
@@ -291,8 +291,8 @@ fastify.listen(0, err => {
       json: true
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body, { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.same(body, { hello: 'world' })
     })
   })
 })
@@ -312,7 +312,7 @@ test('shorthand - delete with application/json Content-Type header and without b
     body: null
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEqual(JSON.parse(response.payload), null)
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), null)
   })
 })

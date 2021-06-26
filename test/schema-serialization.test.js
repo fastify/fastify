@@ -1,7 +1,6 @@
 'use strict'
 
 const t = require('tap')
-// const Joi = require('@hapi/joi')
 const Fastify = require('..')
 const test = t.test
 
@@ -29,8 +28,35 @@ test('basic test', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), { name: 'Foo', work: 'Bar' })
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.json(), { name: 'Foo', work: 'Bar' })
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('custom serializer options', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    serializerOpts: {
+      rounding: 'ceil'
+    }
+  })
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'integer'
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.send(4.2)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.payload, '5', 'it must use the ceil rouding')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -65,7 +91,7 @@ test('Use the same schema id in different places', t => {
     url: '/123'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), [{ id: 1 }, { id: 2 }, { }])
+    t.same(res.json(), [{ id: 1 }, { id: 2 }, { }])
   })
 })
 
@@ -125,7 +151,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     payload
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), payload)
+    t.same(res.json(), payload)
   })
 
   fastify.inject({
@@ -134,8 +160,8 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     payload: { test: { id: Date.now() } }
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 400)
-    t.deepEqual(res.json(), {
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), {
       error: 'Bad Request',
       message: "body should have required property 'address'",
       statusCode: 400
@@ -233,7 +259,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     payload: locations
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), locations)
+    t.same(res.json(), locations)
 
     fastify.inject({
       method: 'POST',
@@ -244,8 +270,8 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       })
     }, (err, res) => {
       t.error(err)
-      t.strictEqual(res.statusCode, 400)
-      t.deepEqual(res.json(), {
+      t.equal(res.statusCode, 400)
+      t.same(res.json(), {
         error: 'Bad Request',
         message: 'body[0].location.email should match format "email"',
         statusCode: 400
@@ -265,10 +291,10 @@ test('Custom setSerializerCompiler', t => {
   }
 
   fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
-    t.equals(method, 'GET')
-    t.equals(url, '/foo/:id')
-    t.equals(httpStatus, '200')
-    t.deepEqual(schema, outSchema)
+    t.equal(method, 'GET')
+    t.equal(url, '/foo/:id')
+    t.equal(httpStatus, '200')
+    t.same(schema, outSchema)
     return data => JSON.stringify(data)
   })
 
@@ -292,7 +318,7 @@ test('Custom setSerializerCompiler', t => {
     url: '/foo/123'
   }, (err, res) => {
     t.error(err)
-    t.equals(res.payload, JSON.stringify({ id: 1 }))
+    t.equal(res.payload, JSON.stringify({ id: 1 }))
   })
 })
 
@@ -335,15 +361,15 @@ test('Custom serializer per route', async t => {
   })
 
   let res = await fastify.inject('/default')
-  t.equals(res.json().mean, 'default')
+  t.equal(res.json().mean, 'default')
 
   res = await fastify.inject('/custom')
-  t.equals(res.json().mean, 'custom')
+  t.equal(res.json().mean, 'custom')
 
   res = await fastify.inject('/route')
-  t.equals(res.json().mean, 'route')
+  t.equal(res.json().mean, 'route')
 
-  t.equals(hit, 2, 'the custom and route serializer has been called')
+  t.equal(hit, 2, 'the custom and route serializer has been called')
 })
 
 test('Reply serializer win over serializer ', t => {
@@ -351,7 +377,7 @@ test('Reply serializer win over serializer ', t => {
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
-    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    t.same(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
     return 'instance serializator'
   })
 
@@ -380,8 +406,8 @@ test('Reply serializer win over serializer ', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'instance serializator')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'instance serializator')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -390,7 +416,7 @@ test('Reply serializer win over serializer ', t => {
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
-    t.deepEqual(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
+    t.same(payload, { name: 'Foo', work: 'Bar', nick: 'Boo' })
     return 'instance serializator'
   })
 
@@ -419,8 +445,8 @@ test('Reply serializer win over serializer ', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'instance serializator')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'instance serializator')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -491,10 +517,115 @@ test('The schema changes the default error handler output', async t => {
   })
 
   let res = await fastify.inject('/501')
-  t.equals(res.statusCode, 501)
-  t.deepEquals(res.json(), { message: '501 message' })
+  t.equal(res.statusCode, 501)
+  t.same(res.json(), { message: '501 message' })
 
   res = await fastify.inject('/500')
-  t.equals(res.statusCode, 500)
-  t.deepEquals(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
+  t.equal(res.statusCode, 500)
+  t.same(res.json(), { error: 'Internal Server Error', message: '500 message', customId: 42 })
+})
+
+test('do not crash if status code serializer errors', async t => {
+  const fastify = Fastify()
+
+  const requiresFoo = {
+    properties: { foo: { type: 'string' } },
+    required: ['foo']
+  }
+
+  const someUserErrorType2 = {
+    properties: {
+      code: { type: 'number' }
+    },
+    required: ['code']
+  }
+
+  fastify.get(
+    '/',
+    {
+      schema: {
+        query: requiresFoo,
+        response: { 400: someUserErrorType2 }
+      }
+    },
+    (request, reply) => {
+      t.fail('handler, should not be called')
+    }
+  )
+
+  const res = await fastify.inject({
+    path: '/',
+    query: {
+      notfoo: true
+    }
+  })
+  t.equal(res.statusCode, 500)
+  t.same(res.json(), {
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: '"code" is required!'
+  })
+})
+
+test('custom schema serializer error, empty message', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/:code', {
+    schema: {
+      response: {
+        '2xx': { hello: { type: 'string' } },
+        501: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, (request, reply) => {
+    if (request.params.code === '501') {
+      return reply.code(501).send(new Error(''))
+    }
+  })
+
+  const res = await fastify.inject('/501')
+  t.equal(res.statusCode, 501)
+  t.same(res.json(), { message: '' })
+})
+
+test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION_BUILD error', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2xx': {
+          type: 'object',
+          properties: {
+            some: { type: 'string' }
+          }
+        },
+        500: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' }
+          }
+        }
+      }
+    },
+    serializerCompiler: () => {
+      throw new Error('CUSTOM_ERROR')
+    }
+  }, function (req, reply) {
+    reply.code(200).send({ some: 'thing' })
+  })
+
+  fastify.ready((err) => {
+    t.equal(err.message, 'Failed building the serialization schema for GET: /, due to error CUSTOM_ERROR')
+    t.equal(err.statusCode, 500)
+    t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+  })
 })

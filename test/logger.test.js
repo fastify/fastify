@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, tearDown } = require('tap')
+const { test, teardown } = require('tap')
 const http = require('http')
 const stream = require('stream')
 const split = require('split2')
@@ -20,7 +20,7 @@ function file () {
   return file
 }
 
-tearDown(() => {
+teardown(() => {
   files.forEach((file) => {
     try {
       fs.unlinkSync(file)
@@ -211,7 +211,7 @@ test('can use external logger instance with custom serializer', t => {
     const key = check[0]
     const value = check[1]
 
-    t.deepEqual(line[key], value)
+    t.same(line[key], value)
   })
 
   const logger = require('pino')({
@@ -262,7 +262,7 @@ test('expose the logger', t => {
   }
 
   t.ok(fastify.log)
-  t.is(typeof fastify.log, 'object')
+  t.same(typeof fastify.log, 'object')
 })
 
 test('The request id header key can be customized', t => {
@@ -274,7 +274,7 @@ test('The request id header key can be customized', t => {
     logger: { stream: stream, level: 'info' },
     requestIdHeader: 'my-custom-request-id'
   })
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.get('/', (req, reply) => {
     t.equal(req.id, REQUEST_ID)
@@ -322,7 +322,7 @@ test('The request id header key can be customized along with a custom id generat
       return 'foo'
     }
   })
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.get('/one', (req, reply) => {
     t.equal(req.id, REQUEST_ID)
@@ -383,7 +383,7 @@ test('The request id log label can be changed', t => {
     requestIdHeader: 'my-custom-request-id',
     requestIdLogLabel: 'traceId'
   })
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.get('/one', (req, reply) => {
     t.equal(req.id, REQUEST_ID)
@@ -450,12 +450,12 @@ test('The logger should accept custom serializer', t => {
       stream.once('data', line => {
         t.ok(line.req, 'req is defined')
         t.equal(line.msg, 'incoming request', 'message is set')
-        t.deepEqual(line.req, { url: '/custom' }, 'custom req serializer is use')
+        t.same(line.req, { url: '/custom' }, 'custom req serializer is use')
 
         stream.once('data', line => {
           t.ok(line.res, 'res is defined')
           t.equal(line.msg, 'kaboom', 'message is set')
-          t.deepEqual(line.res, { statusCode: 500 }, 'default res serializer is use')
+          t.same(line.res, { statusCode: 500 }, 'default res serializer is use')
         })
       })
     })
@@ -468,7 +468,7 @@ test('reply.send logs an error if called twice in a row', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, lines.shift())
+    t.same(line.msg, lines.shift())
   })
 
   const logger = pino(splitStream)
@@ -489,7 +489,7 @@ test('reply.send logs an error if called twice in a row', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -499,25 +499,25 @@ test('logger can be silented', t => {
     logger: false
   })
   t.ok(fastify.log)
-  t.is(typeof fastify.log, 'object')
-  t.is(typeof fastify.log.fatal, 'function')
-  t.is(typeof fastify.log.error, 'function')
-  t.is(typeof fastify.log.warn, 'function')
-  t.is(typeof fastify.log.info, 'function')
-  t.is(typeof fastify.log.debug, 'function')
-  t.is(typeof fastify.log.trace, 'function')
-  t.is(typeof fastify.log.child, 'function')
+  t.same(typeof fastify.log, 'object')
+  t.same(typeof fastify.log.fatal, 'function')
+  t.same(typeof fastify.log.error, 'function')
+  t.same(typeof fastify.log.warn, 'function')
+  t.same(typeof fastify.log.info, 'function')
+  t.same(typeof fastify.log.debug, 'function')
+  t.same(typeof fastify.log.trace, 'function')
+  t.same(typeof fastify.log.child, 'function')
 
   const childLog = fastify.log.child()
 
-  t.is(typeof childLog, 'object')
-  t.is(typeof childLog.fatal, 'function')
-  t.is(typeof childLog.error, 'function')
-  t.is(typeof childLog.warn, 'function')
-  t.is(typeof childLog.info, 'function')
-  t.is(typeof childLog.debug, 'function')
-  t.is(typeof childLog.trace, 'function')
-  t.is(typeof childLog.child, 'function')
+  t.same(typeof childLog, 'object')
+  t.same(typeof childLog.fatal, 'function')
+  t.same(typeof childLog.error, 'function')
+  t.same(typeof childLog.warn, 'function')
+  t.same(typeof childLog.info, 'function')
+  t.same(typeof childLog.debug, 'function')
+  t.same(typeof childLog.trace, 'function')
+  t.same(typeof childLog.child, 'function')
 })
 
 test('Should set a custom logLevel for a plugin', t => {
@@ -526,7 +526,7 @@ test('Should set a custom logLevel for a plugin', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, lines.shift())
+    t.same(line.msg, lines.shift())
   })
 
   const logger = pino({ level: 'error' }, splitStream)
@@ -554,7 +554,7 @@ test('Should set a custom logLevel for a plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 
   fastify.inject({
@@ -563,7 +563,7 @@ test('Should set a custom logLevel for a plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -573,7 +573,7 @@ test('Should set a custom logSerializers for a plugin', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, 'XHello')
+      t.same(line.test, 'XHello')
     }
   })
 
@@ -597,7 +597,7 @@ test('Should set a custom logSerializers for a plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -646,7 +646,7 @@ test('Should set a custom logLevel for every plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 
   fastify.inject({
@@ -655,7 +655,7 @@ test('Should set a custom logLevel for every plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 
   fastify.inject({
@@ -664,7 +664,7 @@ test('Should set a custom logLevel for every plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -675,7 +675,7 @@ test('Should set a custom logSerializers for every plugin', async t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, lines.shift())
+      t.same(line.test, lines.shift())
     }
   })
 
@@ -709,19 +709,19 @@ test('Should set a custom logSerializers for every plugin', async t => {
     method: 'GET',
     url: '/'
   })
-  t.deepEqual(res.json(), { hello: 'world' })
+  t.same(res.json(), { hello: 'world' })
 
   res = await fastify.inject({
     method: 'GET',
     url: '/test1'
   })
-  t.deepEqual(res.json(), { hello: 'world' })
+  t.same(res.json(), { hello: 'world' })
 
   res = await fastify.inject({
     method: 'GET',
     url: '/test2'
   })
-  t.deepEqual(res.json(), { hello: 'world' })
+  t.same(res.json(), { hello: 'world' })
 })
 
 test('Should override serializers from route', t => {
@@ -730,7 +730,7 @@ test('Should override serializers from route', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, 'ZHello')
+      t.same(line.test, 'ZHello')
     }
   })
 
@@ -757,7 +757,7 @@ test('Should override serializers from route', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -767,7 +767,7 @@ test('Should override serializers from plugin', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, 'ZHello')
+      t.same(line.test, 'ZHello')
     }
   })
 
@@ -799,7 +799,7 @@ test('Should override serializers from plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -809,10 +809,10 @@ test('Should use serializers from plugin and route', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, 'XHello')
+      t.same(line.test, 'XHello')
     }
     if (line.test2) {
-      t.is(line.test2, 'ZHello')
+      t.same(line.test2, 'ZHello')
     }
   })
 
@@ -843,7 +843,7 @@ test('Should use serializers from plugin and route', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -853,10 +853,10 @@ test('Should use serializers from instance fastify and route', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test) {
-      t.is(line.test, 'XHello')
+      t.same(line.test, 'XHello')
     }
     if (line.test2) {
-      t.is(line.test2, 'ZHello')
+      t.same(line.test2, 'ZHello')
     }
   })
 
@@ -886,7 +886,7 @@ test('Should use serializers from instance fastify and route', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -896,9 +896,9 @@ test('Should use serializers inherit from contexts', t => {
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
     if (line.test && line.test2 && line.test3) {
-      t.is(line.test, 'XHello')
-      t.is(line.test2, 'YHello')
-      t.is(line.test3, 'ZHello')
+      t.same(line.test, 'XHello')
+      t.same(line.test2, 'YHello')
+      t.same(line.test3, 'ZHello')
     }
   })
 
@@ -930,7 +930,7 @@ test('Should use serializers inherit from contexts', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -939,7 +939,7 @@ test('Should increase the log level for a specific plugin', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, 'Hello')
+    t.same(line.msg, 'Hello')
     t.ok(line.level === 50)
   })
 
@@ -963,7 +963,7 @@ test('Should increase the log level for a specific plugin', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -972,7 +972,7 @@ test('Should set the log level for the customized 404 handler', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, 'Hello')
+    t.same(line.msg, 'Hello')
     t.ok(line.level === 50)
   })
 
@@ -995,7 +995,7 @@ test('Should set the log level for the customized 404 handler', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -1004,7 +1004,7 @@ test('Should set the log level for the customized 500 handler', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, 'Hello')
+    t.same(line.msg, 'Hello')
     t.ok(line.level === 60)
   })
 
@@ -1032,7 +1032,7 @@ test('Should set the log level for the customized 500 handler', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 500)
+    t.equal(res.statusCode, 500)
   })
 })
 
@@ -1042,7 +1042,7 @@ test('Should set a custom log level for a specific route', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, lines.shift())
+    t.same(line.msg, lines.shift())
   })
 
   const logger = pino({ level: 'error' }, splitStream)
@@ -1067,7 +1067,7 @@ test('Should set a custom log level for a specific route', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 
   fastify.inject({
@@ -1076,7 +1076,7 @@ test('Should set a custom log level for a specific route', t => {
   }, (err, res) => {
     t.error(err)
     const payload = JSON.parse(res.payload)
-    t.deepEqual(payload, { hello: 'world' })
+    t.same(payload, { hello: 'world' })
   })
 })
 
@@ -1091,7 +1091,7 @@ test('The default 404 handler logs the incoming request', t => {
 
   const splitStream = split(JSON.parse)
   splitStream.on('data', (line) => {
-    t.is(line.msg, expectedMessages.shift())
+    t.same(line.msg, expectedMessages.shift())
   })
 
   const logger = pino({ level: 'trace' }, splitStream)
@@ -1105,7 +1105,7 @@ test('The default 404 handler logs the incoming request', t => {
     url: '/not-found'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.statusCode, 404)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -1130,8 +1130,8 @@ test('should serialize request and response', t => {
   }, (e, res) => {
     const l = lines.find((line) => line.res && line.res.statusCode === 500)
     t.ok(l.req)
-    t.is(l.req.method, 'GET')
-    t.is(l.req.url, '/500')
+    t.same(l.req.method, 'GET')
+    t.same(l.req.url, '/500')
   })
 })
 
@@ -1160,7 +1160,7 @@ test('should serialize request and response', t => {
         stream.once('data', line => {
           const expected = 'Server listening at http://[' + ipv6 + ']:' +
             fastify.server.address().port
-          t.is(line.msg, expected)
+          t.same(line.msg, expected)
           fastify.close()
         })
       })
@@ -1182,7 +1182,7 @@ test('Do not wrap IPv4 address', t => {
     stream.once('data', line => {
       const expected = 'Server listening at http://127.0.0.1:' +
         fastify.server.address().port
-      t.is(line.msg, expected)
+      t.same(line.msg, expected)
       fastify.close()
     })
   })
@@ -1262,7 +1262,7 @@ test('should log the error if no error handler is defined', t => {
           t.equal(line.msg, 'a generic error', 'message is set')
           stream.once('data', line => {
             t.equal(line.msg, 'request completed', 'message is set')
-            t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
+            t.same(line.res, { statusCode: 500 }, 'status code is set')
           })
         })
       })
@@ -1300,7 +1300,7 @@ test('should log as info if error status code >= 400 and < 500 if no error handl
           t.equal(line.msg, 'a 400 error', 'message is set')
           stream.once('data', line => {
             t.equal(line.msg, 'request completed', 'message is set')
-            t.deepEqual(line.res, { statusCode: 400 }, 'status code is set')
+            t.same(line.res, { statusCode: 400 }, 'status code is set')
           })
         })
       })
@@ -1334,7 +1334,7 @@ test('should log as error if error status code >= 500 if no error handler is def
           t.equal(line.msg, 'a 503 error', 'message is set')
           stream.once('data', line => {
             t.equal(line.msg, 'request completed', 'message is set')
-            t.deepEqual(line.res, { statusCode: 503 }, 'status code is set')
+            t.same(line.res, { statusCode: 503 }, 'status code is set')
           })
         })
       })
@@ -1369,7 +1369,7 @@ test('should not log the error if error handler is defined', t => {
         stream.once('data', line => {
           t.equal(line.level, 30, 'level is correct')
           t.equal(line.msg, 'request completed', 'message is set')
-          t.deepEqual(line.res, { statusCode: 500 }, 'status code is set')
+          t.same(line.res, { statusCode: 500 }, 'status code is set')
         })
       })
     })
@@ -1400,7 +1400,7 @@ test('should not rely on raw request to log errors', t => {
         stream.once('data', line => {
           t.equal(line.level, 30, 'level is correct')
           t.equal(line.msg, 'something happened', 'message is set')
-          t.deepEqual(line.res, { statusCode: 415 }, 'status code is set')
+          t.same(line.res, { statusCode: 415 }, 'status code is set')
         })
       })
     })
@@ -1430,7 +1430,7 @@ test('should redact the authorization header if so specified', t => {
     }
   })
   fastify.get('/', function (req, reply) {
-    t.is(req.headers.authorization, 'Bearer abcde')
+    t.same(req.headers.authorization, 'Bearer abcde')
     reply.send({ hello: 'world' })
   })
   stream.once('data', listenAtLogLine => {
@@ -1450,8 +1450,8 @@ test('should redact the authorization header if so specified', t => {
       }
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(body.toString(), JSON.stringify({ hello: 'world' }))
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
   })
 })
@@ -1475,9 +1475,9 @@ test('should not log incoming request and outgoing response when disabled', t =>
     url: '/500',
     method: 'GET'
   }, (e, res) => {
-    t.is(lines.length, 1)
+    t.same(lines.length, 1)
     t.ok(lines[0].msg)
-    t.is(lines[0].msg, '500 error')
+    t.same(lines[0].msg, '500 error')
   })
 })
 
@@ -1486,5 +1486,33 @@ test('should pass when using unWritable props in the logger option', t => {
   Fastify({
     logger: Object.defineProperty({}, 'level', { value: 'info' })
   })
+  t.pass()
+})
+
+test('should be able to use a custom logger', t => {
+  t.plan(1)
+
+  const logger = {
+    fatal: () => {},
+    error: () => {},
+    warn: () => {},
+    info: () => {},
+    debug: () => {},
+    trace: () => {},
+    child: () => {}
+  }
+
+  Fastify({ logger })
+
+  t.pass()
+})
+
+test('should create a default logger if provided one is invalid', t => {
+  t.plan(1)
+
+  const logger = new Date()
+
+  Fastify({ logger })
+
   t.pass()
 })

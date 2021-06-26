@@ -1,14 +1,17 @@
 'use strict'
 
-const { test } = require('tap')
+const { test, before } = require('tap')
 const Fastify = require('../..')
-const fs = require('fs')
-const path = require('path')
 const http = require('http')
 const pino = require('pino')
 const split = require('split2')
 const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
+
+const { buildCertificate } = require('../build-certificate')
+before(buildCertificate)
+
+process.removeAllListeners('warning')
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -34,7 +37,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     http2SessionTimeout: 5000
   }
 
-  t.deepEquals(Fastify().initialConfig, fastifyDefaultOptions)
+  t.same(Fastify().initialConfig, fastifyDefaultOptions)
 })
 
 test('Fastify.initialConfig should expose all options', t => {
@@ -69,8 +72,8 @@ test('Fastify.initialConfig should expose all options', t => {
   const options = {
     http2: true,
     https: {
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     },
     ignoreTrailingSlash: true,
     maxParamLength: 200,
@@ -96,26 +99,26 @@ test('Fastify.initialConfig should expose all options', t => {
   }
 
   const fastify = Fastify(options)
-  t.strictEqual(fastify.initialConfig.http2, true)
-  t.strictEqual(fastify.initialConfig.https, true)
-  t.strictEqual(fastify.initialConfig.ignoreTrailingSlash, true)
-  t.strictEqual(fastify.initialConfig.maxParamLength, 200)
-  t.strictEqual(fastify.initialConfig.connectionTimeout, 0)
-  t.strictEqual(fastify.initialConfig.keepAliveTimeout, 5000)
-  t.strictEqual(fastify.initialConfig.bodyLimit, 1049600)
-  t.strictEqual(fastify.initialConfig.onProtoPoisoning, 'remove')
-  t.strictEqual(fastify.initialConfig.caseSensitive, true)
-  t.strictEqual(fastify.initialConfig.requestIdHeader, 'request-id-alt')
-  t.strictEqual(fastify.initialConfig.pluginTimeout, 20000)
+  t.equal(fastify.initialConfig.http2, true)
+  t.equal(fastify.initialConfig.https, true)
+  t.equal(fastify.initialConfig.ignoreTrailingSlash, true)
+  t.equal(fastify.initialConfig.maxParamLength, 200)
+  t.equal(fastify.initialConfig.connectionTimeout, 0)
+  t.equal(fastify.initialConfig.keepAliveTimeout, 5000)
+  t.equal(fastify.initialConfig.bodyLimit, 1049600)
+  t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
+  t.equal(fastify.initialConfig.caseSensitive, true)
+  t.equal(fastify.initialConfig.requestIdHeader, 'request-id-alt')
+  t.equal(fastify.initialConfig.pluginTimeout, 20000)
   t.ok(fastify.initialConfig.constraints.version)
 
   // obfuscated options:
-  t.strictEqual(fastify.initialConfig.serverFactory, undefined)
-  t.strictEqual(fastify.initialConfig.trustProxy, undefined)
-  t.strictEqual(fastify.initialConfig.genReqId, undefined)
-  t.strictEqual(fastify.initialConfig.querystringParser, undefined)
-  t.strictEqual(fastify.initialConfig.logger, undefined)
-  t.strictEqual(fastify.initialConfig.trustProxy, undefined)
+  t.equal(fastify.initialConfig.serverFactory, undefined)
+  t.equal(fastify.initialConfig.trustProxy, undefined)
+  t.equal(fastify.initialConfig.genReqId, undefined)
+  t.equal(fastify.initialConfig.querystringParser, undefined)
+  t.equal(fastify.initialConfig.logger, undefined)
+  t.equal(fastify.initialConfig.trustProxy, undefined)
 })
 
 test('Should throw if you try to modify Fastify.initialConfig', t => {
@@ -139,8 +142,8 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
   const fastify = Fastify({
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     }
   })
 
@@ -178,17 +181,17 @@ test('Original options must not be frozen', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'))
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
   const fastify = Fastify(originalOptions)
 
-  t.strictEqual(Object.isFrozen(originalOptions), false)
-  t.strictEqual(Object.isFrozen(originalOptions.https), false)
-  t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
-  t.strictEqual(Object.isFrozen(fastify.initialConfig.https), true)
+  t.equal(Object.isFrozen(originalOptions), false)
+  t.equal(Object.isFrozen(originalOptions.https), false)
+  t.equal(Object.isFrozen(fastify.initialConfig), true)
+  t.equal(Object.isFrozen(fastify.initialConfig.https), true)
 })
 
 test('Original options must not be altered (test deep cloning)', t => {
@@ -197,8 +200,8 @@ test('Original options must not be altered (test deep cloning)', t => {
   const originalOptions = {
     https: {
       allowHTTP1: true,
-      key: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key'), 'utf8').toString('base64'),
-      cert: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.cert'), 'utf8').toString('base64')
+      key: global.context.key,
+      cert: global.context.cert
     }
   }
 
@@ -207,11 +210,11 @@ test('Original options must not be altered (test deep cloning)', t => {
   const fastify = Fastify(originalOptions)
 
   // initialConfig has been triggered
-  t.strictEqual(Object.isFrozen(fastify.initialConfig), true)
+  t.equal(Object.isFrozen(fastify.initialConfig), true)
 
   // originalOptions must not have been altered
-  t.deepEqual(originalOptions.https.key, originalOptionsClone.https.key)
-  t.deepEqual(originalOptions.https.cert, originalOptionsClone.https.cert)
+  t.same(originalOptions.https.key, originalOptionsClone.https.key)
+  t.same(originalOptions.https.cert, originalOptionsClone.https.cert)
 })
 
 test('Should not have issues when passing stream options to Pino.js', t => {
@@ -233,7 +236,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     fastify = Fastify(originalOptions)
 
     t.type(fastify, 'object')
-    t.deepEqual(fastify.initialConfig, {
+    t.same(fastify.initialConfig, {
       connectionTimeout: 0,
       keepAliveTimeout: 5000,
       bodyLimit: 1024 * 1024,
@@ -290,7 +293,7 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
   t.plan(5)
 
   const object = {
-    buffer: fs.readFileSync(path.join(__dirname, '..', 'https', 'fastify.key')),
+    buffer: Buffer.from(global.context.key),
     dataView: new DataView(new ArrayBuffer(16)),
     float: 1.1,
     integer: 1,
@@ -305,11 +308,11 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
     const frozenObject = deepFreezeObject(object)
 
     // Buffers should not be frozen, as they are Uint8Array inherited instances
-    t.strictEqual(Object.isFrozen(frozenObject.buffer), false)
+    t.equal(Object.isFrozen(frozenObject.buffer), false)
 
-    t.strictEqual(Object.isFrozen(frozenObject), true)
-    t.strictEqual(Object.isFrozen(frozenObject.object), true)
-    t.strictEqual(Object.isFrozen(frozenObject.object.nested), true)
+    t.equal(Object.isFrozen(frozenObject), true)
+    t.equal(Object.isFrozen(frozenObject.object), true)
+    t.equal(Object.isFrozen(frozenObject.object.nested), true)
 
     t.pass()
   } catch (error) {
@@ -318,7 +321,13 @@ test('deepFreezeObject() should not throw on TypedArray', t => {
 })
 
 test('Fastify.initialConfig should accept the deprecated versioning option', t => {
-  t.plan(0)
+  t.plan(1)
+
+  function onWarning (warning) {
+    t.equal(warning.code, 'FSTDEP009')
+  }
+
+  process.on('warning', onWarning)
 
   const versioning = {
     storage: function () {
@@ -336,4 +345,8 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
   }
 
   Fastify({ versioning })
+  setImmediate(function () {
+    process.removeListener('warning', onWarning)
+    t.end()
+  })
 })

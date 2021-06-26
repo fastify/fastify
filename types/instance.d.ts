@@ -8,7 +8,7 @@ import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preVali
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
-import { AddContentTypeParser, hasContentTypeParser } from './content-type-parser'
+import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser } from './content-type-parser'
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -312,9 +312,17 @@ export interface FastifyInstance<
   /**
    * Set the 404 handler
    */
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> (
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault> (
+    opts: {
+      preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+      preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
+    },
+    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   /**
    * Fastify default error handler
@@ -352,6 +360,14 @@ export interface FastifyInstance<
    */
   addContentTypeParser: AddContentTypeParser<RawServer, RawRequest>;
   hasContentTypeParser: hasContentTypeParser;
+  /**
+   * Fastify default JSON parser
+   */
+  getDefaultJsonParser: getDefaultJsonParser;
+  /**
+   * Fastify default plain text parser
+   */
+  defaultTextParser: FastifyBodyParser<string>;
 
   /**
    * Prints the representation of the internal radix tree used by the router
@@ -376,8 +392,8 @@ export interface FastifyInstance<
     ignoreTrailingSlash?: boolean,
     disableRequestLogging?: boolean,
     maxParamLength?: number,
-    onProtoPoisoning?: 'error' | 'remove' | 'ignore',
-    onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
+    onProtoPoisoning?: ProtoAction,
+    onConstructorPoisoning?: ConstructorAction,
     pluginTimeout?: number,
     requestIdHeader?: string,
     requestIdLogLabel?: string,

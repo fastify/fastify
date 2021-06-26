@@ -61,7 +61,7 @@ test('object or null body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, null)
+      t.equal(req.body, null)
       reply.code(200).send({ requestBody: req.body })
     },
     schema: {
@@ -99,8 +99,8 @@ test('object or null body', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { requestBody: null })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { requestBody: null })
     })
   })
 })
@@ -114,7 +114,7 @@ test('nullable body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.strictEqual(req.body, null)
+      t.equal(req.body, null)
       reply.code(200).send({ requestBody: req.body })
     },
     schema: {
@@ -153,8 +153,8 @@ test('nullable body', t => {
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.deepEqual(JSON.parse(body), { requestBody: null })
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body), { requestBody: null })
     })
   })
 })

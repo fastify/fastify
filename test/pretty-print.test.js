@@ -21,7 +21,7 @@ test('pretty print - static routes', t => {
     └── hello/world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -43,7 +43,7 @@ test('pretty print - parametric routes', t => {
     └── hello/:world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -67,7 +67,7 @@ test('pretty print - mixed parametric routes', t => {
             └── /world (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -89,7 +89,7 @@ test('pretty print - wildcard routes', t => {
     └── hello/* (GET)
 `
 
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.equal(tree, expected)
   })
 })
@@ -100,7 +100,7 @@ test('pretty print - empty plugins', t => {
   const fastify = Fastify()
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.match(tree, 'bound root')
   })
 })
@@ -115,9 +115,98 @@ test('pretty print - nested plugins', t => {
   })
   fastify.ready(() => {
     const tree = fastify.printPlugins()
-    t.is(typeof tree, 'string')
+    t.equal(typeof tree, 'string')
     t.match(tree, 'foo')
     t.match(tree, 'bar')
     t.match(tree, 'baz')
+  })
+})
+
+test('pretty print - commonPrefix', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.get('/hello', () => {})
+  fastify.put('/hello', () => {})
+  fastify.get('/helicopter', () => {})
+
+  fastify.ready(() => {
+    const radixTree = fastify.printRoutes()
+    const flatTree = fastify.printRoutes({ commonPrefix: false })
+
+    const radixExpected = `└── /
+    ├── hel
+    │   ├── lo (GET)
+    │   └── icopter (GET)
+    └── hello (PUT)
+`
+    const flatExpected = `└── / (-)
+    ├── helicopter (GET)
+    └── hello (GET, PUT)
+`
+    t.equal(typeof radixTree, 'string')
+    t.equal(typeof flatTree, 'string')
+    t.equal(radixTree, radixExpected)
+    t.equal(flatTree, flatExpected)
+  })
+})
+
+test('pretty print - includeMeta, includeHooks', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+  const onTimeout = () => {}
+  fastify.get('/hello', () => {})
+  fastify.put('/hello', () => {})
+  fastify.get('/helicopter', () => {})
+
+  fastify.addHook('onRequest', () => {})
+  fastify.addHook('onTimeout', onTimeout)
+
+  fastify.ready(() => {
+    const radixTree = fastify.printRoutes({ includeHooks: true, includeMeta: ['errorHandler'] })
+    const flatTree = fastify.printRoutes({ commonPrefix: false, includeHooks: true, includeMeta: ['errorHandler'] })
+    const hooksOnly = fastify.printRoutes({ commonPrefix: false, includeHooks: true })
+
+    const radixExpected = `└── /
+    ├── hel
+    │   ├── lo (GET)
+    │   │   • (onTimeout) ["onTimeout()"]
+    │   │   • (onRequest) ["anonymous()"]
+    │   │   • (errorHandler) "defaultErrorHandler()"
+    │   └── icopter (GET)
+    │       • (onTimeout) ["onTimeout()"]
+    │       • (onRequest) ["anonymous()"]
+    │       • (errorHandler) "defaultErrorHandler()"
+    └── hello (PUT)
+        • (onTimeout) ["onTimeout()"]
+        • (onRequest) ["anonymous()"]
+        • (errorHandler) "defaultErrorHandler()"
+`
+    const flatExpected = `└── / (-)
+    ├── helicopter (GET)
+    │   • (onTimeout) ["onTimeout()"]
+    │   • (onRequest) ["anonymous()"]
+    │   • (errorHandler) "defaultErrorHandler()"
+    └── hello (GET, PUT)
+        • (onTimeout) ["onTimeout()"]
+        • (onRequest) ["anonymous()"]
+        • (errorHandler) "defaultErrorHandler()"
+`
+
+    const hooksOnlyExpected = `└── / (-)
+    ├── helicopter (GET)
+    │   • (onTimeout) ["onTimeout()"]
+    │   • (onRequest) ["anonymous()"]
+    └── hello (GET, PUT)
+        • (onTimeout) ["onTimeout()"]
+        • (onRequest) ["anonymous()"]
+`
+    t.equal(typeof radixTree, 'string')
+    t.equal(typeof flatTree, 'string')
+    t.equal(typeof hooksOnlyExpected, 'string')
+    t.equal(radixTree, radixExpected)
+    t.equal(flatTree, flatExpected)
+    t.equal(hooksOnly, hooksOnlyExpected)
   })
 })

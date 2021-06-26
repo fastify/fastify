@@ -9,7 +9,7 @@ test('proto-poisoning error', t => {
   t.plan(3)
 
   const fastify = Fastify()
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     t.fail('handler should not be called')
@@ -25,7 +25,7 @@ test('proto-poisoning error', t => {
       body: '{ "__proto__": { "a": 42 } }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
+      t.equal(response.statusCode, 400)
     })
   })
 })
@@ -34,7 +34,7 @@ test('proto-poisoning remove', t => {
   t.plan(4)
 
   const fastify = Fastify({ onProtoPoisoning: 'remove' })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     t.equal(undefined, Object.assign({}, request.body).a)
@@ -51,7 +51,7 @@ test('proto-poisoning remove', t => {
       body: '{ "__proto__": { "a": 42 }, "b": 42 }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })
@@ -60,7 +60,7 @@ test('proto-poisoning ignore', t => {
   t.plan(4)
 
   const fastify = Fastify({ onProtoPoisoning: 'ignore' })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     t.equal(42, Object.assign({}, request.body).a)
@@ -77,7 +77,7 @@ test('proto-poisoning ignore', t => {
       body: '{ "__proto__": { "a": 42 }, "b": 42 }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })
@@ -86,7 +86,7 @@ test('constructor-poisoning error (default in v3)', t => {
   t.plan(3)
 
   const fastify = Fastify()
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     reply.send('ok')
@@ -102,7 +102,7 @@ test('constructor-poisoning error (default in v3)', t => {
       body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
+      t.equal(response.statusCode, 400)
     })
   })
 })
@@ -111,7 +111,7 @@ test('constructor-poisoning error', t => {
   t.plan(3)
 
   const fastify = Fastify({ onConstructorPoisoning: 'error' })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     t.fail('handler should not be called')
@@ -127,7 +127,7 @@ test('constructor-poisoning error', t => {
       body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 400)
+      t.equal(response.statusCode, 400)
     })
   })
 })
@@ -136,7 +136,7 @@ test('constructor-poisoning remove', t => {
   t.plan(4)
 
   const fastify = Fastify({ onConstructorPoisoning: 'remove' })
-  t.tearDown(fastify.close.bind(fastify))
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (request, reply) => {
     t.equal(undefined, Object.assign({}, request.body).foo)
@@ -153,7 +153,7 @@ test('constructor-poisoning remove', t => {
       body: '{ "constructor": { "prototype": { "foo": "bar" } } }'
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
+      t.equal(response.statusCode, 200)
     })
   })
 })

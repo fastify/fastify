@@ -10,7 +10,7 @@ Run `npm install fastify && npm install tap pino-pretty --save-dev`
 
 ### Separating concerns makes testing easy
 
- First we are going to separate our application code from our server code:
+First, we are going to separate our application code from our server code:
 
 **app.js**:
 
@@ -53,7 +53,7 @@ server.listen(3000, (err, address) => {
 
 ### Benefits of using fastify.inject()
 
-Fastify comes with built-in support for fake http injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
+Fastify comes with built-in support for fake HTTP injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
 
 Before introducing any tests, we will use the `.inject` method to make a fake request to our route:
 
@@ -78,9 +78,9 @@ const test = async () => {
 test()
 ```
 
-First, our code will run inside an asynchronous function, giving us access to async/await. 
+First, our code will run inside an asynchronous function, giving us access to async/await.
 
-`.inject` insures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
+`.inject` ensures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
 
 
 
@@ -93,7 +93,7 @@ body:  {"hello":"world"}
 
 
 
-### Testing with http injection
+### Testing with HTTP injection
 
 Now we can replace our `console.log` calls with actual tests!
 
@@ -116,7 +116,7 @@ test('requests the "/" route', async t => {
     method: 'GET',
     url: '/'
   })
-  t.strictEqual(response.statusCode, 200, 'returns a status code of 200')
+  t.equal(response.statusCode, 200, 'returns a status code of 200')
 })
 ```
 
@@ -191,7 +191,7 @@ function buildFastify () {
   fastify.get('/', function (request, reply) {
     reply.send({ hello: 'world' })
   })
-  
+
   return fastify
 }
 
@@ -205,21 +205,21 @@ const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(4)
-  
+
   const fastify = buildFastify()
-  
+
   // At the end of your tests it is highly recommended to call `.close()`
   // to ensure that all connections to external services get closed.
-  t.tearDown(() => fastify.close())
+  t.teardown(() => fastify.close())
 
   fastify.inject({
     method: 'GET',
     url: '/'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-    t.deepEqual(response.json(), { hello: 'world' })
+    t.equal(response.statusCode, 200)
+    t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(response.json(), { hello: 'world' })
   })
 })
 ```
@@ -239,22 +239,22 @@ const buildFastify = require('./app')
 
 tap.test('GET `/` route', t => {
   t.plan(5)
-  
+
   const fastify = buildFastify()
-  
-  t.tearDown(() => fastify.close())
-  
+
+  t.teardown(() => fastify.close())
+
   fastify.listen(0, (err) => {
     t.error(err)
-    
+
     request({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
     }, (err, response, body) => {
       t.error(err)
-      t.strictEqual(response.statusCode, 200)
-      t.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.deepEqual(JSON.parse(body), { hello: 'world' })
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(JSON.parse(body), { hello: 'world' })
     })
   })
 })
@@ -269,15 +269,15 @@ const buildFastify = require('./app')
 tap.test('GET `/` route', async (t) => {
   const fastify = buildFastify()
 
-  t.tearDown(() => fastify.close())
-  
+  t.teardown(() => fastify.close())
+
   await fastify.ready()
-  
+
   const response = await supertest(fastify.server)
     .get('/')
     .expect(200)
     .expect('Content-Type', 'application/json; charset=utf-8')
-  t.deepEqual(response.body, { hello: 'world' })
+  t.same(response.body, { hello: 'world' })
 })
 ```
 
@@ -295,4 +295,4 @@ test('should ...', {only: true}, t => ...)
 - `--node-arg=--inspect-brk` will launch the node debugger
 3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No modification should be necessary.
 
-Now you should be able to step through your test file (and the rest of `fastify`) in your code editor.
+Now you should be able to step through your test file (and the rest of `Fastify`) in your code editor.

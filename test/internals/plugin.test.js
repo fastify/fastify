@@ -12,8 +12,8 @@ test("shouldSkipOverride should check the 'skip-override' symbol", t => {
 
   yes[Symbol.for('skip-override')] = true
 
-  t.true(pluginUtils.shouldSkipOverride(yes))
-  t.false(pluginUtils.shouldSkipOverride(no))
+  t.ok(pluginUtils.shouldSkipOverride(yes))
+  t.notOk(pluginUtils.shouldSkipOverride(no))
 
   function yes () {}
   function no () {}
@@ -26,7 +26,7 @@ test('getPluginName should return plugin name if the file is cached', t => {
   require.cache[expectedPluginName] = { exports: fn }
   const pluginName = pluginUtilsPublic.getPluginName(fn)
 
-  t.isEqual(pluginName, expectedPluginName)
+  t.equal(pluginName, expectedPluginName)
 })
 
 test("getMeta should return the object stored with the 'plugin-meta' symbol", t => {
@@ -35,7 +35,7 @@ test("getMeta should return the object stored with the 'plugin-meta' symbol", t 
   const meta = { hello: 'world' }
   fn[Symbol.for('plugin-meta')] = meta
 
-  t.deepEqual(meta, pluginUtils.getMeta(fn))
+  t.same(meta, pluginUtils.getMeta(fn))
 
   function fn () {}
 })
@@ -86,7 +86,29 @@ test('checkDecorators should check if the given decorator is present in the inst
     pluginUtils.checkDecorators.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, "The decorator 'plugin' is not present in Request")
+    t.equal(err.message, "The decorator 'plugin' is not present in Request")
+  }
+
+  function fn () {}
+})
+
+test('checkDecorators should accept optional decorators', t => {
+  t.plan(1)
+
+  fn[Symbol.for('plugin-meta')] = {
+    decorators: { }
+  }
+
+  function context () {}
+  context.plugin = true
+  context[symbols.kReply] = { prototype: { plugin: true } }
+  context[symbols.kRequest] = { prototype: { plugin: true } }
+
+  try {
+    pluginUtils.checkDecorators.call(context, fn)
+    t.pass('Everything ok')
+  } catch (err) {
+    t.fail(err)
   }
 
   function fn () {}
@@ -127,7 +149,7 @@ test('checkDependencies should check if the given dependency is present in the i
     pluginUtils.checkDependencies.call(context, fn)
     t.fail('should throw')
   } catch (err) {
-    t.is(err.message, "The dependency 'plugin' of plugin 'test-plugin' is not registered")
+    t.equal(err.message, "The dependency 'plugin' of plugin 'test-plugin' is not registered")
   }
 
   function fn () {}

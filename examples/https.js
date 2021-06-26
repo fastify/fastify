@@ -6,7 +6,8 @@ const fastify = require('../fastify')({
   https: {
     key: fs.readFileSync(path.join(__dirname, '../test/https/fastify.key')),
     cert: fs.readFileSync(path.join(__dirname, '../test/https/fastify.cert'))
-  }
+  },
+  logger: true
 })
 
 const opts = {
@@ -32,5 +33,4 @@ fastify
 
 fastify.listen(3000, err => {
   if (err) throw err
-  console.log(`server listening on ${fastify.server.address().port}`)
 })

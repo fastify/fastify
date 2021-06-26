@@ -35,8 +35,8 @@ test('should work with valid payload', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, 'michelangelo')
-    t.strictEqual(res.statusCode, 200)
+    t.same(res.payload, 'michelangelo')
+    t.equal(res.statusCode, 200)
   })
 })
 
@@ -55,12 +55,12 @@ test('should fail immediately with invalid payload', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: "body should have required property 'name'"
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -88,12 +88,12 @@ test('should be able to use setErrorHandler specify custom validation error', t 
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.same(JSON.parse(res.payload), {
       statusCode: 422,
       error: 'Unprocessable Entity',
       message: 'validation failed'
     })
-    t.strictEqual(res.statusCode, 422)
+    t.equal(res.statusCode, 422)
   })
 })
 
@@ -115,7 +115,7 @@ test('error inside custom error handler should have validationContext', t => {
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.strictEqual(error.validationContext, 'body')
+    t.equal(error.validationContext, 'body')
     reply.status(500).send(error)
   })
 
@@ -149,7 +149,7 @@ test('error inside custom error handler should have validationContext if specifi
   })
 
   fastify.setErrorHandler(function (error, request, reply) {
-    t.strictEqual(error.validationContext, 'customContext')
+    t.equal(error.validationContext, 'customContext')
     reply.status(500).send(error)
   })
 
@@ -181,14 +181,14 @@ test('should be able to attach validation to request', t => {
   }, (err, res) => {
     t.error(err)
 
-    t.deepEqual(res.json(), [{
+    t.same(res.json(), [{
       keyword: 'required',
       dataPath: '',
       schemaPath: '#/required',
       params: { missingProperty: 'name' },
       message: 'should have required property \'name\''
     }])
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -210,12 +210,12 @@ test('should respect when attachValidation is explicitly set to false', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(JSON.parse(res.payload), {
+    t.same(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
       message: "body should have required property 'name'"
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -243,8 +243,8 @@ test('Attached validation error should take precedence over setErrorHandler', t 
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.payload, "Attached: Error: body should have required property 'name'")
-    t.strictEqual(res.statusCode, 400)
+    t.same(res.payload, "Attached: Error: body should have required property 'name'")
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -278,7 +278,7 @@ test('should handle response validation error', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
 })
 
@@ -308,7 +308,7 @@ test('should handle response validation error with promises', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
+    t.equal(res.payload, '{"statusCode":500,"error":"Internal Server Error","message":"\\"name\\" is required!"}')
   })
 })
 
@@ -336,7 +336,7 @@ test('should return a defined output message parsing AJV errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\'"}')
+    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\'"}')
   })
 })
 
@@ -366,7 +366,7 @@ test('should return a defined output message parsing JOI errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
+    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"\\"name\\" is required"}')
   })
 })
 
@@ -399,7 +399,7 @@ test('should return a defined output message parsing JOI error details', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.strictEqual(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
+    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body \\"name\\" is required"}')
   })
 })
 
@@ -409,7 +409,7 @@ test('the custom error formatter context must be the server instance', t => {
   const fastify = Fastify()
 
   fastify.setSchemaErrorFormatter(function (errors, dataVar) {
-    t.deepEquals(this, fastify)
+    t.same(this, fastify)
     return new Error('my error')
   })
 
@@ -423,12 +423,12 @@ test('the custom error formatter context must be the server instance', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'my error'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -437,7 +437,7 @@ test('the custom error formatter context must be the server instance in options'
 
   const fastify = Fastify({
     schemaErrorFormatter: function (errors, dataVar) {
-      t.deepEquals(this, fastify)
+      t.same(this, fastify)
       return new Error('my error')
     }
   })
@@ -452,12 +452,12 @@ test('the custom error formatter context must be the server instance in options'
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'my error'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -483,12 +483,12 @@ test('should call custom error formatter', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'my error'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -511,12 +511,12 @@ test('should catch error inside formatter and return message', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 500,
       error: 'Internal Server Error',
       message: 'abc'
     })
-    t.strictEqual(res.statusCode, 500)
+    t.equal(res.statusCode, 500)
     t.end()
   })
 })
@@ -531,7 +531,7 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       }
     })
   } catch (err) {
-    t.equals(err.message, 'schemaErrorFormatter option should not be an async function')
+    t.equal(err.message, 'schemaErrorFormatter option should not be an async function')
   }
 
   try {
@@ -539,14 +539,14 @@ test('cannot create a fastify instance with wrong type of errorFormatter', t => 
       schemaErrorFormatter: 500
     })
   } catch (err) {
-    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+    t.equal(err.message, 'schemaErrorFormatter option should be a function, instead got number')
   }
 
   try {
     const fastify = Fastify()
     fastify.setSchemaErrorFormatter(500)
   } catch (err) {
-    t.equals(err.message, 'schemaErrorFormatter option should be a function, instead got number')
+    t.equal(err.message, 'schemaErrorFormatter option should be a function, instead got number')
   }
 })
 
@@ -570,12 +570,12 @@ test('should register a route based schema error formatter', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'abc'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
     t.end()
   })
 })
@@ -613,12 +613,12 @@ test('prefer route based error formatter over global one', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: '123'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -629,12 +629,12 @@ test('prefer route based error formatter over global one', t => {
     url: '/abc'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'abc'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -645,12 +645,12 @@ test('prefer route based error formatter over global one', t => {
     url: '/test'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'abc123'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })
 
@@ -673,12 +673,12 @@ test('adding schemaErrorFormatter', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'abc'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
     t.end()
   })
 })
@@ -733,12 +733,12 @@ test('plugin override', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'A'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -749,12 +749,12 @@ test('plugin override', t => {
     url: '/b'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'B'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -765,12 +765,12 @@ test('plugin override', t => {
     url: '/c'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'C'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -781,12 +781,12 @@ test('plugin override', t => {
     url: '/d'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'D'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 
   fastify.inject({
@@ -797,11 +797,11 @@ test('plugin override', t => {
     url: '/stillC'
   }, (err, res) => {
     t.error(err)
-    t.deepEqual(res.json(), {
+    t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'C'
     })
-    t.strictEqual(res.statusCode, 400)
+    t.equal(res.statusCode, 400)
   })
 })

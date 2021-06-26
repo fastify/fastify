@@ -33,8 +33,8 @@ test('use fluent-json-schema object', t => {
     payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEquals(res.json(), { statusCode: 400, error: 'Bad Request', message: 'params.id should be >= 42' })
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'params.id should be >= 42' })
   })
 
   // check header
@@ -46,8 +46,8 @@ test('use fluent-json-schema object', t => {
     payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEquals(res.json(), { statusCode: 400, error: 'Bad Request', message: 'headers[\'x-custom\'] should match format "email"' })
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'headers[\'x-custom\'] should match format "email"' })
   })
 
   // check query
@@ -59,8 +59,8 @@ test('use fluent-json-schema object', t => {
     payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEquals(res.json(), { statusCode: 400, error: 'Bad Request', message: 'querystring should have required property \'surname\'' })
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'querystring should have required property \'surname\'' })
   })
 
   // check body
@@ -72,8 +72,8 @@ test('use fluent-json-schema object', t => {
     payload: { name: [1, 2, 3] }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 400)
-    t.deepEquals(res.json(), { statusCode: 400, error: 'Bad Request', message: 'body.name should be string' })
+    t.equal(res.statusCode, 400)
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: 'body.name should be string' })
   })
 
   // check response
@@ -85,8 +85,8 @@ test('use fluent-json-schema object', t => {
     payload: { name: 'foo' }
   }, (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), { name: 'a', surname: 'b' })
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { name: 'a', surname: 'b' })
   })
 })
 

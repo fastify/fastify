@@ -45,8 +45,8 @@ test('config', t => {
     url: '/get'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
   })
 
   fastify.inject({
@@ -54,8 +54,8 @@ test('config', t => {
     url: '/route'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
   })
 
   fastify.inject({
@@ -63,8 +63,8 @@ test('config', t => {
     url: '/no-config'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
   })
 })
 
@@ -97,8 +97,8 @@ test('config with exposeHeadRoutes', t => {
     url: '/get'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
   })
 
   fastify.inject({
@@ -106,8 +106,8 @@ test('config with exposeHeadRoutes', t => {
     url: '/route'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
   })
 
   fastify.inject({
@@ -115,7 +115,7 @@ test('config with exposeHeadRoutes', t => {
     url: '/no-config'
   }, (err, response) => {
     t.error(err)
-    t.strictEqual(response.statusCode, 200)
-    t.deepEquals(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
+    t.equal(response.statusCode, 200)
+    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
   })
 })

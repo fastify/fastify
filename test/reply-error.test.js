@@ -472,3 +472,56 @@ invalidErrorCodes.forEach((invalidCode) => {
     })
   })
 })
+
+test('status code should be set to 500 and return an error json payload if route handler throws any non Error object expression', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', () => {
+    /* eslint-disable-next-line */
+    throw { foo: 'bar' }
+  })
+
+  // ----
+  const reply = await fastify.inject({ method: 'GET', url: '/' })
+  t.equal(reply.statusCode, 500)
+  t.equal(JSON.parse(reply.body).foo, 'bar')
+})
+
+test('should preserve the status code set by the user if an expression is thrown in a sync route', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (_, rep) => {
+    rep.status(501)
+
+    /* eslint-disable-next-line */
+    throw { foo: 'bar' }
+  })
+
+  // ----
+  const reply = await fastify.inject({ method: 'GET', url: '/' })
+  t.equal(reply.statusCode, 501)
+  t.equal(JSON.parse(reply.body).foo, 'bar')
+})
+
+test('should trigger error handlers if a sync route throws any non-error object', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', () => {
+    /* eslint-disable-next-line */
+    throw { foo: 'bar' }
+  })
+
+  fastify.setErrorHandler(async (error) => {
+    t.ok(error)
+    return error
+  })
+
+  // ----
+  const reply = await fastify.inject({ method: 'GET', url: '/' })
+  t.equal(reply.statusCode, 500)
+  t.equal(JSON.parse(reply.body).foo, 'bar')
+})

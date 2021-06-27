@@ -256,8 +256,8 @@ Replying from a hook implies that the hook chain is __stopped__ and
 the rest of the hooks and handlers are not executed. If the hook is
 using the callback approach, i.e. it is not an `async` function or it
 returns a `Promise`, it is as simple as calling `reply.send()` and avoiding
-calling the callback. If the hook is `async`, `reply.send()` __must__ be
-called _before_ the function returns or the promise resolves, otherwise, the
+calling the callback. If the hook is `async`, `reply` __must__ be
+awaited or returned, otherwise the
 request will proceed. When `reply.send()` is called outside of the
 promise chain, it is important to `return reply` otherwise the request
 will be executed twice.
@@ -276,7 +276,7 @@ fastify.addHook('onRequest', (request, reply, done) => {
 fastify.addHook('preHandler', async (request, reply) => {
   await something()
   reply.send({ hello: 'world' })
-  return reply // optional in this case, but it is a good practice
+  return reply // mandatory, so the request is not executed further
 })
 ```
 

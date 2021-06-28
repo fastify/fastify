@@ -227,7 +227,7 @@ Internally, and by default, Fastify will automatically infer the root properties
 const AjvJTD = require('ajv/dist/jtd'/* only valid for AJV v7+ */)
 const ajv = new AjvJTD({
   // This would let you throw at start for invalid JTD schema objects
-  allErrors: process.env.node_env === 'development'
+  allErrors: process.env.NODE_ENV === 'development'
 })
 const fastify = Fastify({ jsonShorthand: false })
 fastify.setValidatorCompiler(({ schema }) => {

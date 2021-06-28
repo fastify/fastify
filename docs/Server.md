@@ -245,7 +245,7 @@ fastify.post('/', {
 })
 ```
 
-Note, Fastify does not currently throw on invalid schemas, so if you turn this off in an existing project, you need to be careful that none of your existing schemas become invalid as a result, since they will be treated as a catch-all.
+**Note: Fastify does not currently throw on invalid schemas, so if you turn this off in an existing project, you need to be careful that none of your existing schemas become invalid as a result, since they will be treated as a catch-all.**
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`

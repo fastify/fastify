@@ -7,9 +7,6 @@ const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 
-// JSON Type Definition schema formats AJV Instance, Requires AJV 7+
-const AjvJTD = require('@fastify/ajv-compiler-8/node_modules/ajv/dist/jtd')
-
 const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
 
 test('Ajv8 usage instead of the bundle one', t => {
@@ -47,122 +44,6 @@ test('Ajv8 usage instead of the bundle one', t => {
       t.ok(err)
       t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
     })
-  })
-})
-
-test('JTD Usage via manual inclusion', t => {
-  t.plan(2)
-
-  t.test('use JTD explicit substitution to fail on JSON Schema', t => {
-    t.plan(2)
-    const ajv = new AjvJTD({
-      allErrors: true
-    })
-    const fastify = Fastify({ jsonShorthand: false })
-    fastify.setValidatorCompiler(({ schema }) => {
-      return ajv.compile(schema)
-    })
-
-    fastify.post('/', {
-      schema: {
-        body: {
-          // JSON Schema style discriminator is invalid in JTD schemas
-          discriminator: { propertyName: 'version' },
-          oneOf: [
-            {
-              properties: {
-                version: { const: '1' },
-                foo: { type: 'string' }
-              },
-              required: ['version']
-            },
-            {
-              properties: {
-                version: { const: '2' },
-                foo: { type: 'number' }
-              },
-              required: ['version']
-            }
-          ]
-        }
-      },
-      handler (req, reply) { reply.send({ ok: 1 }) }
-    })
-
-    fastify
-      .ready(err => {
-        t.ok(err)
-        t.match(
-          err ? err.message : undefined,
-          `Failed building the validation schema for POST: /,
-           due to error schema is invalid: data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'ref',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'type',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'enum',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'elements',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'properties',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must have property 'optionalProperties',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data/discriminator must be string,
-           data must have property 'mapping',
-           data/oneOf must NOT have additional properties,
-           data must have property 'values',
-           data/discriminator must NOT have additional properties,
-           data/oneOf must NOT have additional properties,
-           data must match a schema in union
-          `.replace(/\n|( {2})+/g, ''),
-          'the JTD schema won\'t compile when using strict mode JSON Schema'
-        )
-      })
-  })
-
-  t.test('use JTD explicit substitution for basic JTD support', t => {
-    t.plan(1)
-    const ajv = new AjvJTD({
-      allErrors: true
-    })
-    const fastify = Fastify({ jsonShorthand: false })
-    fastify.setValidatorCompiler(({ schema }) => {
-      return ajv.compile(schema)
-    })
-
-    fastify.post('/', {
-      schema: {
-        body: {
-          discriminator: 'version',
-          mapping: {
-            1: {
-              properties: {
-                foo: { type: 'uint8' }
-              }
-            },
-            2: {
-              properties: {
-                foo: { type: 'string' }
-              }
-            }
-          }
-        }
-      },
-      handler (req, reply) { reply.send({ ok: 1 }) }
-    })
-
-    fastify
-      .ready(err => {
-        t.equal(err, undefined)
-      })
   })
 })
 

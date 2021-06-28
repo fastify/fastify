@@ -220,7 +220,7 @@ Internally Fastify uses the API of Node core HTTP server, so if you are using a 
 
 <a name="schema-json-shorthand"></a>
 ### `jsonShorthand`
-
++ Default: `true`
 Internally, and by default, Fastify will automatically infer the root properties of JSON Schemas if it doesn't find valid root properties according to the JSON Schema spec. If you wish to implement your own schema validation compiler, for example: to parse schemas as JTD instead of JSON Schema, then you can explicitly set this option to `false` to make sure the schemas you receive are unmodified and are not being treated internally as JSON Schema.
 
 ```js

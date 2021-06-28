@@ -220,14 +220,14 @@ Internally Fastify uses the API of Node core HTTP server, so if you are using a 
 
 <a name="schema-json-shorthand"></a>
 ### `jsonShorthand`
-
++ Default: `true`
 Internally, and by default, Fastify will automatically infer the root properties of JSON Schemas if it doesn't find valid root properties according to the JSON Schema spec. If you wish to implement your own schema validation compiler, for example: to parse schemas as JTD instead of JSON Schema, then you can explicitly set this option to `false` to make sure the schemas you receive are unmodified and are not being treated internally as JSON Schema.
 
 ```js
 const AjvJTD = require('ajv/dist/jtd'/* only valid for AJV v7+ */)
 const ajv = new AjvJTD({
   // This would let you throw at start for invalid JTD schema objects
-  allErrors: process.env.node_env === 'development'
+  allErrors: process.env.NODE_ENV === 'development'
 })
 const fastify = Fastify({ jsonShorthand: false })
 fastify.setValidatorCompiler(({ schema }) => {
@@ -245,7 +245,7 @@ fastify.post('/', {
 })
 ```
 
-Note, Fastify does not currently throw on invalid schemas, so if you turn this off in an existing project, you need to be careful that none of your existing schemas become invalid as a result, since they will be treated as a catch-all.
+**Note: Fastify does not currently throw on invalid schemas, so if you turn this off in an existing project, you need to be careful that none of your existing schemas become invalid as a result, since they will be treated as a catch-all.**
 
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`

@@ -30,7 +30,7 @@ jobs:
 
       - name: Install
         run: |
-          npm install --ignore-scripts
+          npm install --only=production --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-pr
@@ -46,7 +46,7 @@ jobs:
 
       - name: Install
         run: |
-          npm install --ignore-scripts
+          npm install --only=production --ignore-scripts
 
       - name: Run benchmark
         id: benchmark-main

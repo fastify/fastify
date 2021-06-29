@@ -114,9 +114,6 @@
     "url": "https://github.com/fastify/fastify/issues"
   },
   "homepage": "https://www.fastify.io/",
-  "engines": {
-    "node": ">=10.16.0"
-  },
   "devDependencies": {
     "@fastify/ajv-compiler-8": "github:fastify/ajv-compiler#ajv-8",
     "@hapi/joi": "^17.1.1",

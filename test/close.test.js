@@ -243,7 +243,7 @@ t.test('Current opened connection should not accept new incoming connections', t
     fastify.close()
     setTimeout(() => {
       reply.send({ hello: 'world' })
-    }, 150)
+    }, 250)
   })
 
   fastify.listen(0, err => {

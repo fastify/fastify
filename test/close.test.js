@@ -4,6 +4,7 @@ const net = require('net')
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const { Client } = require('undici')
 
 test('close callback', t => {
   t.plan(4)
@@ -238,6 +239,7 @@ t.test('Current opened connection should continue to work after closing and retu
 })
 
 t.test('Current opened connection should not accept new incoming connections', t => {
+  t.plan(3)
   const fastify = Fastify()
   fastify.get('/', (req, reply) => {
     fastify.close()
@@ -248,21 +250,12 @@ t.test('Current opened connection should not accept new incoming connections', t
 
   fastify.listen(0, err => {
     t.error(err)
-
-    const port = fastify.server.address().port
-    const client = net.createConnection({ port: port }, () => {
-      client.once('data', data => {
-        t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /200 OK/i)
-      })
-      const newConnection = net.createConnection({ port: port })
-      client.write('GET / HTTP/1.1\r\n\r\n')
-      newConnection.on('error', err => {
-        t.ok(err)
-        t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
-        client.destroy()
-        t.end()
-      })
+    const instance = new Client('http://localhost:' + fastify.server.address().port)
+    instance.request({ path: '/', method: 'GET' }).then(data => {
+      t.equal(data.statusCode, 200)
+    })
+    instance.request({ path: '/', method: 'GET' }).then(data => {
+      t.equal(data.statusCode, 503)
     })
   })
 })

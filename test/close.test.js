@@ -238,8 +238,8 @@ t.test('Current opened connection should continue to work after closing and retu
 })
 
 t.test('Current opened connection should not accept new incoming connections', t => {
+  t.plan(5)
   const fastify = Fastify()
-
   fastify.get('/', (req, reply) => {
     fastify.close()
     reply.send({ hello: 'world' })
@@ -252,12 +252,16 @@ t.test('Current opened connection should not accept new incoming connections', t
     const client = net.createConnection({ port: port }, () => {
       client.write('GET / HTTP/1.1\r\n\r\n')
 
+      client.once('data', data => {
+        t.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.match(data.toString(), /200 OK/i)
+      })
+
       const newConnection = net.createConnection({ port: port })
       newConnection.on('error', err => {
         t.ok(err)
         t.ok(['ECONNREFUSED', 'ECONNRESET'].includes(err.code))
         client.destroy()
-        t.end()
       })
     })
   })

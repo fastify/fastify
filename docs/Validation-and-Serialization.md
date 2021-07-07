@@ -253,7 +253,7 @@ curl -X GET "http://localhost:3000/?ids=1
 {"params":{"hello":["1"]}}
 ```
 
-For further information see [here](https://ajv.js.org/docs/coercion.html)
+For further information see [here](https://ajv.js.org/coercion.html)
 
 <a name="ajv-plugins"></a>
 #### Ajv Plugins

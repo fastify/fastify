@@ -102,6 +102,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload) Fastify plugin for uploading files.
 - [`fastify-firebase`](https://github.com/now-ims/fastify-firebase) Fastify plugin for [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup) to Fastify so you can easily use Firebase Auth, Firestore, Cloud Storage, Cloud Messaging, and more.
 - [`fastify-firebase-auth`](https://github.com/oxsav/fastify-firebase-auth) Firebase Authentication for Fastify supporting all of the methods relating to the authentication API.
+- [`fastify-formidable`](https://github.com/climba03003/fastify-formidable) Handy plugin to provide multipart support and fastify-swagger integration.
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace) [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference) Connector for Fastify.
 - [`fastify-get-head`](https://github.com/MetCoder95/fastify-get-head) Small plugin to set a new HEAD route handler for each GET route previously registered in Fastify.
 - [`fastify-good-sessions`](https://github.com/Phara0h/fastify-good-sessions) A good Fastify sessions plugin focused on speed.

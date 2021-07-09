@@ -169,6 +169,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based web framework with REST API routes auto-generation for TypeORM entities using DI and decorators.
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes) Fastify reverse routes plugin, allows to defined named routes and build path using name and parameters.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config) Fastify Rob-Config integration.
+- [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group) Convenient grouping and inheritance of routes
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint) Choose the JSON schema to use based on request parameters.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript) Generate typescript types based on your JSON/YAML validation schemas so they are always in sync.
 - [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session) Create a secure stateless cookie session for Fastify.
@@ -201,4 +202,3 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get all your network and process stats for your node application. Websocket, HTTP/S, and prometheus compatible!
 - [`oas-fastify`](https://github.com/ahmadnassri/node-oas-fastify) OAS 3.x to Fastify routes automation. Automatically generates route handlers with fastify configuration and validation.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify) Swagger and OpenAPI 3.0 spec-based request validation middleware that supports Fastify.
-- [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group) Convenient grouping and inheritance of routes

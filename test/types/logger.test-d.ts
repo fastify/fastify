@@ -1,7 +1,7 @@
 import { expectType, expectError } from 'tsd'
 import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError, FastifyRequest, FastifyReply } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
-import * as pino from 'pino'
+import pino from 'pino'
 import * as fs from 'fs'
 
 expectType<FastifyLoggerInstance>(fastify().log)

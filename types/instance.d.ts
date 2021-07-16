@@ -10,6 +10,12 @@ import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser } from './content-type-parser'
 
+export interface PrintRoutesOptions {
+  includeMeta?: boolean | (string | symbol)[]
+  commonPrefix?: boolean
+  includeHooks?: boolean
+}
+
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
  */
@@ -372,7 +378,7 @@ export interface FastifyInstance<
   /**
    * Prints the representation of the internal radix tree used by the router
    */
-  printRoutes(): string;
+  printRoutes(opts?: PrintRoutesOptions): string;
 
   /**
    * Prints the representation of the plugin tree used by avvio, the plugin registration system

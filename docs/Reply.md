@@ -300,7 +300,7 @@ fastify.get('/json', options, function (request, reply) {
 
 <a name="send-streams"></a>
 #### Streams
-*send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
+*send* can also handle streams out of the box. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('fs')

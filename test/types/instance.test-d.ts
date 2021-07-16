@@ -124,3 +124,9 @@ expectType<InitialConfig>(fastify().initialConfig)
 expectType<FastifyBodyParser<string>>(server.defaultTextParser)
 
 expectType<FastifyBodyParser<string>>(server.getDefaultJsonParser('ignore', 'error'))
+
+expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false, includeMeta: true }))
+
+expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
+
+expectType<string>(server.printRoutes())

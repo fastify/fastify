@@ -40,9 +40,12 @@ export interface FastifyInstance<
   close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
+  // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
+  decorate(property: string | symbol, value: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, ...args: any[]) => any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   decorate(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateRequest(property: string | symbol, value: (this: FastifyRequest, ...args: any[]) => any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   decorateRequest(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateReply(property: string | symbol, value: (this: FastifyReply, ...args: any[]) => any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
   decorateReply(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   hasDecorator(decorator: string | symbol): boolean;

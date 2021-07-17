@@ -117,6 +117,9 @@ upon "greet" and "log" decorators:
 fastify.decorate('utility', fn, ['greet', 'log'])
 ```
 
+Note: using an arrow function will break the binding of `this` to the
+`FastifyInstance`.
+
 If a dependency is not satisfied, the `decorate` method will throw an exception.
 The dependency check is performed before the server instance is booted. Thus,
 it cannot occur during runtime.

@@ -1,4 +1,10 @@
-import fastify, { FastifyBodyParser, FastifyError, FastifyInstance, ValidationResult } from '../../fastify'
+import fastify, {
+  FastifyBodyParser,
+  FastifyError,
+  FastifyInstance,
+  FastifyLoggerInstance,
+  ValidationResult
+} from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
@@ -130,3 +136,13 @@ expectType<string>(server.printRoutes({ includeHooks: true, commonPrefix: false,
 expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] }))
 
 expectType<string>(server.printRoutes())
+
+server.decorate('test', function (x: string) {
+  expectType<FastifyInstance | any>(this)
+})
+server.decorateRequest('test', function (x: string, y: number) {
+  expectType<FastifyRequest | any>(this)
+})
+server.decorateReply('test', function (x: string) {
+  expectType<FastifyReply | any>(this)
+})

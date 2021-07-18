@@ -403,7 +403,7 @@ Registering a new handler, you can pass a configuration object to it and retriev
 const fastify = require('fastify')()
 
 function handler (req, reply) {
-  reply.send(req.routerConfig.output)
+  reply.send(reply.context.config.output)
 }
 
 fastify.get('/en', { config: { output: 'hello world!' } }, handler)

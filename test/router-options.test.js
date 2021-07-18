@@ -128,3 +128,26 @@ test('Should honor frameworkErrors option', t => {
     }
   )
 })
+
+test('Should expose router options via getters on request and reply', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  const config = {
+    rateLimit: {
+      max: 3,
+      timeWindow: '1 minute'
+    },
+    custom: 'foo'
+  }
+
+  fastify.get('/test', { config }, (req, reply) => {
+    t.same(req.routerConfig, config)
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.inject('/test', (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})

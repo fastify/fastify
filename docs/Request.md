@@ -18,6 +18,7 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the url of the incoming request
+- `routerConfig` - the [`config`](Routes.md#routes-config) object defined for the route that is handling the request. The returned value is a shallow copy of the object; in any case you should not modify it.
 - `routerMethod` - the method defined for the router that is handling the request
 - `routerPath` - the path pattern defined for the router that is handling the request
 - `is404` - true if request is being handled by 404 handler, false if it is not

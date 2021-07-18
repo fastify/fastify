@@ -57,6 +57,7 @@ and properties:
 - `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
+- `.context` - Access the [Request's context](Request.md#Request) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {

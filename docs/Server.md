@@ -113,7 +113,7 @@ for more details about prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
 
-+ Default: `'ignore'`
++ Default: `'error'`
 
 <a name="factory-logger"></a>
 ### `logger`

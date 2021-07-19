@@ -1191,6 +1191,32 @@ test('HEAD routes properly auto created for GET routes when prefixTrailingSlash:
   t.equal(noneTrailingReply.statusCode, 200)
 })
 
+test('Request and Reply share the route config', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const config = {
+    this: 'is a string',
+    thisIs: function aFunction () {}
+  }
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    config,
+    handler: (req, reply) => {
+      t.same(req.context, reply.context)
+      t.same(req.context.config, reply.context.config)
+      t.match(req.context.config, config, 'there are url and method additional properties')
+
+      reply.send({ hello: 'world' })
+    }
+  })
+
+  await fastify.inject('/')
+})
+
 test('Will not try to re-createprefixed HEAD route if it already exists and exposeHeadRoutes is true', async (t) => {
   t.plan(1)
 

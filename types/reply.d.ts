@@ -3,6 +3,7 @@ import { FastifyContext } from './context'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
+import { FastifyInstance } from './instance'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -23,6 +24,7 @@ export interface FastifyReply<
   context: FastifyContext<ContextConfig>;
   log: FastifyLoggerInstance;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest>;
+  server: FastifyInstance;
   code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
   statusCode: number;

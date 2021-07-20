@@ -5,7 +5,7 @@ import fastify, {
   FastifyLoggerInstance,
   ValidationResult
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
@@ -137,12 +137,17 @@ expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] })
 
 expectType<string>(server.printRoutes())
 
-server.decorate('test', function (x: string) {
-  expectType<FastifyInstance | any>(this)
+server.decorate<(x: string) => void>('test', function (x: string): void {
+  expectType<FastifyInstance>(this)
 })
-server.decorateRequest('test', function (x: string, y: number) {
-  expectType<FastifyRequest | any>(this)
+server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
+  expectType<FastifyRequest>(this)
 })
-server.decorateReply('test', function (x: string) {
-  expectType<FastifyReply | any>(this)
+server.decorateReply<(x: string) => void>('test', function (x: string): void {
+  expectType<FastifyReply>(this)
 })
+
+expectError(server.decorate<string>('test', true))
+expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
+  return ''
+}))

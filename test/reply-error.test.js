@@ -540,3 +540,59 @@ invalidErrorCodes.forEach((invalidCode) => {
     })
   })
 })
+
+test('error handler is triggered when a string is thrown from sync handler', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const throwable = 'test'
+  const payload = 'error'
+
+  fastify.get('/', function (req, reply) {
+    // eslint-disable-next-line no-throw-literal
+    throw throwable
+  })
+
+  fastify.setErrorHandler((err, req, res) => {
+    t.equal(err, throwable)
+
+    res.send(payload)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, payload)
+  })
+})
+
+test('error handler is triggered when a string is thrown from async handler', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const throwable = 'test'
+  const payload = 'error'
+
+  fastify.get('/', function async (req, reply) {
+    // eslint-disable-next-line no-throw-literal
+    throw throwable
+  })
+
+  fastify.setErrorHandler((err, req, res) => {
+    t.equal(err, throwable)
+
+    res.send(payload)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, payload)
+  })
+})

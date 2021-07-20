@@ -186,3 +186,35 @@ test('add', t => {
 
   t.end()
 })
+
+test('non-Error thrown from content parser is properly handled', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const throwable = 'test'
+  const payload = 'error'
+
+  fastify.addContentTypeParser('text/test', (request, payload, done) => {
+    done(throwable)
+  })
+
+  fastify.post('/', (req, reply) => {
+  })
+
+  fastify.setErrorHandler((err, req, res) => {
+    t.equal(err, throwable)
+
+    res.send(payload)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    headers: { 'Content-Type': 'text/test' },
+    body: 'some text'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, payload)
+  })
+})

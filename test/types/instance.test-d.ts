@@ -140,14 +140,22 @@ expectType<string>(server.printRoutes())
 server.decorate<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyInstance>(this)
 })
+server.decorate('test', function (x: string): void {
+  expectType<FastifyInstance>(this)
+})
+
 server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
 })
+server.decorateRequest('test', function (x: string, y: number): void {
+  expectType<FastifyRequest>(this)
+})
+
 server.decorateReply<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyReply>(this)
 })
-server.decorate('test', function (x: string): void {
-  expectType<FastifyInstance>(this)
+server.decorateReply('test', function (x: string): void {
+  expectType<FastifyReply>(this)
 })
 
 expectError(server.decorate<string>('test', true))

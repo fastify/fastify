@@ -146,6 +146,9 @@ server.decorateRequest<(x: string, y: number) => void>('test', function (x: stri
 server.decorateReply<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyReply>(this)
 })
+server.decorate('test', function (x: string): void {
+  expectType<FastifyInstance>(this)
+})
 
 expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {

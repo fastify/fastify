@@ -40,10 +40,27 @@ export interface FastifyInstance<
   close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
-  decorate(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateRequest(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateReply(property: string | symbol, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
+  decorate<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  decorateRequest<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  decorateReply<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;

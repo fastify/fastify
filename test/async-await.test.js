@@ -646,6 +646,79 @@ test('customErrorHandler only called if reply not already sent', t => {
   })
 })
 
+// See https://github.com/fastify/fastify/issues/3209
+test('setNotFoundHandler should accept return value', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async () => ({ hello: 'world' }))
+
+  fastify.setNotFoundHandler((req, reply) => {
+    reply.code(404)
+    return {
+      error: statusCodes['404'],
+      message: 'lost',
+      statusCode: 404
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/elsewhere'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+    t.same(
+      {
+        error: statusCodes['404'],
+        message: 'lost',
+        statusCode: 404
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})
+
+// See https://github.com/fastify/fastify/issues/3209
+test('customErrorHandler should accept return value', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async (req, reply) => {
+    const error = new Error('ouch')
+    error.statusCode = 400
+    throw error
+  })
+
+  fastify.setErrorHandler((err, req, reply) => {
+    t.equal(err.message, 'ouch')
+    reply.code(401)
+    return {
+      error: statusCodes['401'],
+      message: 'kaboom',
+      statusCode: 401
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 401)
+    t.same(
+      {
+        error: statusCodes['401'],
+        message: 'kaboom',
+        statusCode: 401
+      },
+      JSON.parse(res.payload)
+    )
+  })
+})
+
 test('await self', async t => {
   const app = Fastify()
   t.equal(await app, app)

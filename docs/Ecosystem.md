@@ -162,6 +162,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify that adds support for parsing URL query parameters with [qs](https://github.com/ljharb/qs).
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based access control plugin.
+- [`fastify-recaptcha`](https://github.com/qwertyforce/fastify-recaptcha) Fastify plugin for recaptcha verification.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels) A plugin for fast, reliable, and scalable channels implementation based on Redis streams.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes) Plugin to automatically load routes from a specified path and optionally limit loaded file names by a regular expression.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add `X-Response-Time` header at each request for Fastify, in milliseconds.

@@ -94,7 +94,7 @@ In the example from just above, it is noticeable that we need to specify each co
 To solve this problem Fastify provides the `resetContentTypeParsers` API. This can be used to remove all currently existing content type parsers.
 In the example below we achieve exactly the same as in the example above except that we do not need to specify each content type to delete.
 Just like `removeContentTypeParser`, this API supports encapsulation. The API is especially useful if you want to register a 
-[catch-all content type parser](####Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
+[catch-all content type parser](#Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
 
 ```js
 fastiy.resetContentTypeParsers()

@@ -63,8 +63,8 @@ expectError(fastify().getDefaultJsonParser('error', 'skip'))
 
 expectError(fastify().getDefaultJsonParser('nothing', 'ignore'))
 
-expectType<void>(fastify().resetContentTypeParsers())
-expectError(fastify().resetContentTypeParsers('contentType'))
+expectType<void>(fastify().removeAllContentTypeParsers())
+expectError(fastify().removeAllContentTypeParsers('contentType'))
 
 expectType<void>(fastify().removeContentTypeParser('contentType'))
 expectType<void>(fastify().removeContentTypeParser(/contentType+.*/))

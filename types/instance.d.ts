@@ -8,7 +8,7 @@ import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preVali
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
-import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser, removeContentTypeParser, resetContentTypeParsers } from './content-type-parser'
+import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser, removeContentTypeParser, removeAllContentTypeParsers } from './content-type-parser'
 
 export interface PrintRoutesOptions {
   includeMeta?: boolean | (string | symbol)[]
@@ -388,9 +388,9 @@ export interface FastifyInstance<
    */
   removeContentTypeParser: removeContentTypeParser
   /**
-   * Reset all content type parsers, including the default ones
+   * Remove all content type parsers, including the default ones
    */
-  resetContentTypeParsers: resetContentTypeParsers
+  removeAllContentTypeParsers: removeAllContentTypeParsers
   /**
    * Fastify default JSON parser
    */

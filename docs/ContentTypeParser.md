@@ -56,7 +56,7 @@ fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => 
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
 
-Besides the `addContentTypeParser` API there are further APIs that can be used. These are `hasContentTypeParser`, `removeContentTypeParser` and `resetContentTypeParsers`.
+Besides the `addContentTypeParser` API there are further APIs that can be used. These are `hasContentTypeParser`, `removeContentTypeParser` and `removeAllContentTypeParsers`.
 
 #### hasContentTypeParser
 
@@ -88,16 +88,16 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 fastiy.removeContentTypeParser(['application/json', 'text/plain'])
 ```
 
-#### resetContentTypeParsers
+#### removeAllContentTypeParsers
 
 In the example from just above, it is noticeable that we need to specify each content type that we want to remove.
-To solve this problem Fastify provides the `resetContentTypeParsers` API. This can be used to remove all currently existing content type parsers.
+To solve this problem Fastify provides the `removeAllContentTypeParsers` API. This can be used to remove all currently existing content type parsers.
 In the example below we achieve exactly the same as in the example above except that we do not need to specify each content type to delete.
 Just like `removeContentTypeParser`, this API supports encapsulation. The API is especially useful if you want to register a 
 [catch-all content type parser](#Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
 
 ```js
-fastiy.resetContentTypeParsers()
+fastiy.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('text/xml', function (request, payload, done) {
   xmlParser(payload, function (err, body) {
@@ -180,11 +180,11 @@ fastify.route({
 For piping file uploads you may want to check out [this plugin](https://github.com/fastify/fastify-multipart).
 
 If you really want the content type parser to be executed on all content types and not only on those that don't have a 
-specific one, you should call the `resetContentTypeParsers` method first.
+specific one, you should call the `removeAllContentTypeParsers` method first.
 
 ```js
 // Without this call, the request body with the content type application/json would be processed by the built in json parser
-fastify.resetContentTypeParsers()
+fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('*', function (request, payload, done) {
   var data = ''

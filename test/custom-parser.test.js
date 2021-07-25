@@ -1630,7 +1630,7 @@ test('removeContentTypeParser should support encapsulation', t => {
   })
 })
 
-test('resetContentTypeParsers should support encapsulation', t => {
+test('removeAllContentTypeParsers should support encapsulation', t => {
   t.plan(6)
 
   const fastify = Fastify()
@@ -1640,7 +1640,7 @@ test('resetContentTypeParsers should support encapsulation', t => {
   })
 
   fastify.register(function (instance, options, done) {
-    instance.resetContentTypeParsers()
+    instance.removeAllContentTypeParsers()
 
     instance.post('/encapsulated', (req, reply) => {
       reply.send(req.body)
@@ -1680,7 +1680,7 @@ test('resetContentTypeParsers should support encapsulation', t => {
   })
 })
 
-test('cannot reset content type parsers after binding', t => {
+test('cannot remove all content type parsers after binding', t => {
   t.plan(2)
 
   const fastify = Fastify()
@@ -1690,7 +1690,7 @@ test('cannot reset content type parsers after binding', t => {
   fastify.listen(0, function (err) {
     t.error(err)
 
-    t.throws(() => fastify.resetContentTypeParsers())
+    t.throws(() => fastify.removeAllContentTypeParsers())
   })
 })
 

@@ -245,7 +245,7 @@ test('remove', t => {
   t.end()
 })
 
-test('reset should remove all existing parsers and reset cache', t => {
+test('remove all should remove all existing parsers and reset cache', t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -255,7 +255,7 @@ test('reset should remove all existing parsers and reset cache', t => {
   const contentTypeParser = fastify[keys.kContentTypeParser]
 
   contentTypeParser.getParser('application/xml') // fill cache with one entry
-  contentTypeParser.reset()
+  contentTypeParser.removeAll()
 
   t.same(contentTypeParser.cache.size, 0)
   t.same(contentTypeParser.parserList.length, 0)

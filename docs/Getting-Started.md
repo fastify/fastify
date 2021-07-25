@@ -176,7 +176,7 @@ async function routes (fastify, options) {
 
   fastify.get('/animals', async (request, reply) => {
     const result = await collection.find().toArray()
-    if (result?.length) {
+    if (result.length === 0) {
       throw new Error('No documents found')
     }
     return result

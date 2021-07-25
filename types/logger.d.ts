@@ -145,6 +145,7 @@ export interface FastifyLoggerOptions<
     };
   };
   level?: string;
+  file?: string;
   genReqId?: (req: RawRequest) => string;
   prettyPrint?: boolean | PrettyOptions;
   stream?: FastifyLoggerStreamDestination;

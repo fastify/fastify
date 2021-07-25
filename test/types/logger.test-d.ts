@@ -105,14 +105,14 @@ const serverWithAutoInferredPino = fastify({
 
 expectType<pino.Logger>(serverWithAutoInferredPino.log)
 
-const serverAuthInferredFileOption = fastify({
+const serverAutoInferredFileOption = fastify({
   logger: {
     level: 'info',
     file: '/path/to/file'
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAuthInferredFileOption.log)
+expectType<FastifyLoggerInstance>(serverAutoInferredFileOption.log)
 
 const serverAutoInferredPinoPrettyBooleanOption = fastify({
   logger: {

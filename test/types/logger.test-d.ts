@@ -75,6 +75,19 @@ ServerResponse
 
 expectType<FastifyLoggerInstance>(serverWithLogOptions.log)
 
+const serverWithFileOption = fastify<
+Server,
+IncomingMessage,
+ServerResponse
+>({
+  logger: {
+    level: 'info',
+    file: '/path/to/file'
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverWithFileOption.log)
+
 const serverAutoInferringTypes = fastify({
   logger: {
     level: 'info'
@@ -91,6 +104,15 @@ const serverWithAutoInferredPino = fastify({
 })
 
 expectType<pino.Logger>(serverWithAutoInferredPino.log)
+
+const serverAutoInferredFileOption = fastify({
+  logger: {
+    level: 'info',
+    file: '/path/to/file'
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverAutoInferredFileOption.log)
 
 const serverAutoInferredPinoPrettyBooleanOption = fastify({
   logger: {

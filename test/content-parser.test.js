@@ -186,3 +186,79 @@ test('add', t => {
 
   t.end()
 })
+
+test('remove', t => {
+  test('should remove default parser', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    const contentTypeParser = fastify[keys.kContentTypeParser]
+
+    contentTypeParser.remove('application/json')
+
+    t.notOk(contentTypeParser.customParsers['application/json'])
+    t.notOk(contentTypeParser.parserList.find(parser => parser === 'application/json'))
+  })
+
+  test('should remove RegExp parser', t => {
+    t.plan(2)
+
+    const fastify = Fastify()
+    fastify.addContentTypeParser(/^text\/*/, first)
+
+    const contentTypeParser = fastify[keys.kContentTypeParser]
+
+    contentTypeParser.remove(/^text\/*/)
+
+    t.notOk(contentTypeParser.customParsers[/^text\/*/])
+    t.notOk(contentTypeParser.parserRegExpList.find(parser => parser.toString() === /^text\/*/.toString()))
+  })
+
+  test('should throw an error if content type is neither string nor RegExp', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    t.throws(() => fastify[keys.kContentTypeParser].remove(12), FST_ERR_CTP_INVALID_TYPE)
+  })
+
+  test('should not throw error if content type does not exist', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    t.doesNotThrow(() => fastify[keys.kContentTypeParser].remove('image/png'))
+  })
+
+  test('should not remove any content type parser if content type does not exist', t => {
+    t.plan(1)
+
+    const fastify = Fastify()
+
+    const contentTypeParser = fastify[keys.kContentTypeParser]
+
+    contentTypeParser.remove('image/png')
+
+    t.same(Object.keys(contentTypeParser.customParsers).length, 2)
+  })
+
+  t.end()
+})
+
+test('remove all should remove all existing parsers and reset cache', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+  fastify.addContentTypeParser('application/xml', first)
+  fastify.addContentTypeParser(/^image\/.*/, first)
+
+  const contentTypeParser = fastify[keys.kContentTypeParser]
+
+  contentTypeParser.getParser('application/xml') // fill cache with one entry
+  contentTypeParser.removeAll()
+
+  t.same(contentTypeParser.cache.size, 0)
+  t.same(contentTypeParser.parserList.length, 0)
+  t.same(contentTypeParser.parserRegExpList.length, 0)
+  t.same(Object.keys(contentTypeParser.customParsers).length, 0)
+})

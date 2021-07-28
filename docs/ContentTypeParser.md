@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## `Content-Type` Parser
-Natively, Fastify only supports `'application/json'` and `'text/plain'` content types. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON and/or plain text parser can be changed.*
+Natively, Fastify only supports `'application/json'` and `'text/plain'` content types. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON and/or plain text parser can be changed or removed.*
 
 *Note: If you decide to specify your own content type with the `Content-Type` header, UTF-8 will not be the default. Be sure to include UTF-8 like this `text/html; charset=utf-8`.*
 
@@ -56,7 +56,11 @@ fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => 
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
 
-You can also use the `hasContentTypeParser` API to find if a specific content type parser already exists.
+Besides the `addContentTypeParser` API there are further APIs that can be used. These are `hasContentTypeParser`, `removeContentTypeParser` and `removeAllContentTypeParsers`.
+
+#### hasContentTypeParser
+
+You can use the `hasContentTypeParser` API to find if a specific content type parser already exists.
 
 ```js
 if (!fastify.hasContentTypeParser('application/jsoff')){
@@ -66,6 +70,40 @@ if (!fastify.hasContentTypeParser('application/jsoff')){
     })
   })
 }
+```
+
+#### removeContentTypeParser
+
+With `removeContentTypeParser` a single or an array of content types can be removed. The method supports `string` and
+`RegExp` content types.
+
+```js
+fastify.addContentTypeParser('text/xml', function (request, payload, done) {
+  xmlParser(payload, function (err, body) {
+    done(err, body)
+  })
+})
+
+// Removes the both built-in content type parsers so that only the content type parser for text/html is available
+fastiy.removeContentTypeParser(['application/json', 'text/plain'])
+```
+
+#### removeAllContentTypeParsers
+
+In the example from just above, it is noticeable that we need to specify each content type that we want to remove.
+To solve this problem Fastify provides the `removeAllContentTypeParsers` API. This can be used to remove all currently existing content type parsers.
+In the example below we achieve exactly the same as in the example above except that we do not need to specify each content type to delete.
+Just like `removeContentTypeParser`, this API supports encapsulation. The API is especially useful if you want to register a 
+[catch-all content type parser](#Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
+
+```js
+fastiy.removeAllContentTypeParsers()
+
+fastify.addContentTypeParser('text/xml', function (request, payload, done) {
+  xmlParser(payload, function (err, body) {
+    done(err, body)
+  })
+})
 ```
 
 **Notice**: The old syntaxes `function(req, done)` and `async function(req)` for the parser are still supported but they are deprecated.
@@ -140,3 +178,19 @@ fastify.route({
  ```
 
 For piping file uploads you may want to check out [this plugin](https://github.com/fastify/fastify-multipart).
+
+If you really want the content type parser to be executed on all content types and not only on those that don't have a 
+specific one, you should call the `removeAllContentTypeParsers` method first.
+
+```js
+// Without this call, the request body with the content type application/json would be processed by the built in json parser
+fastify.removeAllContentTypeParsers()
+
+fastify.addContentTypeParser('*', function (request, payload, done) {
+  var data = ''
+  payload.on('data', chunk => { data += chunk })
+  payload.on('end', () => {
+    done(null, data)
+  })
+})
+```

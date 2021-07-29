@@ -180,6 +180,7 @@
     "@fastify/proxy-addr": "^3.0.0",
     "abstract-logging": "^2.0.0",
     "avvio": "fastify/avvio#next",
+    "encodeurl": "^1.0.2",
     "fast-json-stringify": "^2.5.2",
     "fastify-error": "^0.3.0",
     "fastify-warning": "^0.2.0",

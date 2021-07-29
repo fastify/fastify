@@ -231,6 +231,10 @@ test('within an instance', t => {
     reply.code(307).redirect(302, '/')
   })
 
+  fastify.get('/redirect-to-invalid-url', function (req, reply) {
+    reply.redirect('/?key=a’b')
+  })
+
   fastify.get('/custom-serializer', function (req, reply) {
     reply.code(200)
     reply.type('text/plain')
@@ -395,6 +399,13 @@ test('within an instance', t => {
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
         t.equal(response.statusCode, 302)
+      })
+    })
+
+    test('redirect to invalid URL', t => {
+      t.plan(1)
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-to-invalid-url', function (response) {
+        t.equal(response.headers.location, '/?key=a%E2%80%99b')
       })
     })
 

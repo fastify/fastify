@@ -164,7 +164,7 @@ When you want to use it for validation of some payload in a fastify route you ca
     ```typescript
     const app = fastify();
 
-    app.post<{ Body: UserType; Response: UserType }>(
+    app.post<{ Body: UserType; Reply: UserType }>(
       "/",
       {
         schema: {

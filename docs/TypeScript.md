@@ -85,7 +85,7 @@ The type system heavily relies on generic properties to provide the most accurat
      'h-Custom': string;
    }
    ```
-3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance.
+3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RouteGenericInterface` containing five named properties: `Body`, `Querystring`, `Params`, `Headers` and `Reply`. The interfaces `Body`, `Querystring`, `Params` and `Headers` will be passed down through the route method into the route method handler `request` instance and the `Reply` interface to the `reply` instance.
    ```typescript
    server.get<{
      Querystring: IQuerystring,

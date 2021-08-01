@@ -135,6 +135,18 @@ expectAssignable<FastifyInstance>(fastify({
       }),
       validate () {},
       deriveConstraint: () => 'foo'
+    },
+    withObjectValue: {
+      name: 'withObjectValue',
+      storage: () => ({
+        get: () => () => {},
+        set: () => { },
+        del: () => { },
+        empty: () => { }
+      }),
+      validate () {},
+      deriveConstraint: () => {}
+
     }
   }
 }))

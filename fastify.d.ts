@@ -122,7 +122,7 @@ export type FastifyServerOptions<
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
   },
   constraints?: {
-    [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>>,
+    [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
   },
   return503OnClosing?: boolean,
   ajv?: {

@@ -11,7 +11,7 @@ document describes the properties available in that options object.
 <a name="factory-http2"></a>
 ### `http2`
 
-If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html) module is used for binding the socket.
+If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v14.x/docs/api/http2.html) module is used for binding the socket.
 
 + Default: `false`
 
@@ -20,7 +20,7 @@ If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/h
 
 An object used to configure the server's listening socket for TLS. The options
 are the same as the Node.js core
-[`createServer` method](https://nodejs.org/dist/latest-v8.x/docs/api/https.html#https_https_createserver_options_requestlistener).
+[`createServer` method](https://nodejs.org/dist/latest-v14.x/docs/api/https.html#https_https_createserver_options_requestlistener).
 When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the

@@ -14,6 +14,7 @@ import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
+import { Options as FJSOptions } from 'fast-json-stringify'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -102,6 +103,7 @@ export type FastifyServerOptions<
   onProtoPoisoning?: ProtoAction,
   onConstructorPoisoning?: ConstructorAction,
   logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,
+  serializerOpts?: FJSOptions | Record<string, unknown>,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,

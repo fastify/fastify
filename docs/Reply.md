@@ -53,8 +53,8 @@ and properties:
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a buffer, JSON, stream, or an Error object.
 - `.sent` - A boolean value that you can use if you need to know if `send` has already been called.
-- `.raw` - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
-- `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core.
+- `.raw` - The [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core.
+- `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
 - `.context` - Access the [Request's context](Request.md#Request) property.
@@ -109,7 +109,7 @@ fastify.get('/', async function (req, rep) {
 Sets a response header. If the value is omitted or undefined, it is coerced
 to `''`.
 
-For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
+For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
 <a name="headers"></a>
 ### .headers(object)
@@ -228,7 +228,7 @@ See [`.send()`](#send) for more information on sending different types of values
 
 <a name="raw"></a>
 ### .raw
-This is the [`http.ServerResponse`](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) from Node core. Whilst you are using the Fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you are skipping all the Fastify
+This is the [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core. Whilst you are using the Fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you are skipping all the Fastify
 logic of handling the HTTP response. e.g.:
 
 ```js

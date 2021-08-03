@@ -178,6 +178,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
 - [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
+- [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik plugin, with this you can use slonik in every part of your server.
 - [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a Socket.io plugin for Fastify.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.

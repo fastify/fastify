@@ -53,6 +53,7 @@ expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: { } } }))
+expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: { } } }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({

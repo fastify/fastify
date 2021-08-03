@@ -103,7 +103,7 @@ export type FastifyServerOptions<
   onProtoPoisoning?: ProtoAction,
   onConstructorPoisoning?: ConstructorAction,
   logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,
-  serializerOpts?: FJSOptions,
+  serializerOpts?: FJSOptions | Record<string, unknown>,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,

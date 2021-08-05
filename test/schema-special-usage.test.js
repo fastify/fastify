@@ -773,8 +773,8 @@ test('JOI validation overwrite request headers', t => {
 
   fastify.inject('/', (err, res) => {
     t.error(err)
-    t.equals(res.statusCode, 200)
-    t.deepEquals(res.json(), {
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), {
       'user-agent': 'lightMyRequest',
       host: 'localhost:80'
     })

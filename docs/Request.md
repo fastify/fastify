@@ -6,7 +6,7 @@ Request is a core Fastify object containing the following fields:
 - `query` - the parsed querystring
 - `body` - the body
 - `params` - the params matching the URL
-- `headers` - the headers
+- [`headers`](#headers) - the headers getter and setter
 - `raw` - the incoming HTTP request from Node core
 - `req` *(deprecated, use `.raw` instead)* - the incoming HTTP request from Node core
 - `server` - The Fastify server instance, scoped to the current [encapsulation context](Encapsulation.md)
@@ -24,6 +24,20 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of the incoming request.
 - `socket` - the underlying connection of the incoming request
 
+### Headers
+
+The `request.headers` is a getter that return a JSON with the headers of the incoming request.
+You can use it like as setter also.
+
+```js
+request.headers = {
+  'foo': 'bar',
+  'baz': 'qux'
+}
+```
+
+This operation will add to the request headers the new values that can be read calling `request.headers.bar`.  
+Moreover, you can still access the standard request's headers with the `request.raw.headers` property.
 
 ```js
 fastify.post('/:params', options, function (request, reply) {
@@ -38,6 +52,9 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.ips)
   console.log(request.hostname)
   console.log(request.protocol)
+  console.log(request.url)
+  console.log(request.routerMethod)
+  console.log(request.routerPath)
   request.log.info('some info')
 })
 ```

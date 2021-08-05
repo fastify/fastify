@@ -353,7 +353,7 @@ You can change this default setting by passing the option `querystringParser` an
 const qs = require('qs')
 const fastify = require('fastify')({
   // if caseSenstive is set to false, then parse str in lowercase
-  querystringParser: str => qs.parse(!caseSensitive ? str.toLowerCase() : str)
+  querystringParser: str => qs.parse(!fastify.initConfig.caseSensitive ? str.toLowerCase() : str)
 })
 ```
 

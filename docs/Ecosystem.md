@@ -44,13 +44,13 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-routes`](https://github.com/fastify/fastify-routes) Plugin that provides a `Map` of routes.
 - [`fastify-schedule`](https://github.com/fastify/fastify-schedule) Plugin for scheduling periodic jobs, based on [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
 - [`fastify-sensible`](https://github.com/fastify/fastify-sensible) Defaults for Fastify that everyone can agree on. It adds some useful decorators such as HTTP errors and assertions, but also more request and reply methods.
+- [`@fastify/session`](https://github.com/fastify/fastify-session) a session plugin for Fastify.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
-- [`session`](https://github.com/fastify/fastify-session) a session plugin for Fastify.
 
 #### [Community](#community)
 

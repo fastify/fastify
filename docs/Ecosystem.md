@@ -44,6 +44,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-routes`](https://github.com/fastify/fastify-routes) Plugin that provides a `Map` of routes.
 - [`fastify-schedule`](https://github.com/fastify/fastify-schedule) Plugin for scheduling periodic jobs, based on [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
 - [`fastify-sensible`](https://github.com/fastify/fastify-sensible) Defaults for Fastify that everyone can agree on. It adds some useful decorators such as HTTP errors and assertions, but also more request and reply methods.
+- [`@fastify/session`](https://github.com/fastify/fastify-session) a session plugin for Fastify.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
@@ -177,7 +178,6 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
-- [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik plugin, with this you can use slonik in every part of your server.
 - [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a Socket.io plugin for Fastify.

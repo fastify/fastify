@@ -50,6 +50,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
+- [`session`](https://github.com/fastify/fastify-session) a session plugin for Fastify.
 
 #### [Community](#community)
 
@@ -177,7 +178,6 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session) A session plugin with support for arbitrary backing caches via `fastify-caching`.
-- [`fastify-session`](https://github.com/SerayaEryn/fastify-session) a session plugin for Fastify.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik plugin, with this you can use slonik in every part of your server.
 - [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a Socket.io plugin for Fastify.

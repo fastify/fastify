@@ -12,10 +12,11 @@ test('Bundler should work', t => {
   })
 })
 
-test('Bundler should fail with bad plugin version', t => {
-  t.plan(2)
+// Untill there is no proper solution for bundlers, the fastify version
+// is set to undefined for this context
+test('Bundler should work with bad plugin version, undefined version', t => {
+  t.plan(1)
   fastifyFailPlugin.ready((err) => {
-    t.ok(err)
-    t.equal(err.code, 'FST_ERR_PLUGIN_VERSION_MISMATCH')
+    t.error(err)
   })
 })

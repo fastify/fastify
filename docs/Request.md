@@ -26,8 +26,8 @@ Request is a core Fastify object containing the following fields:
 
 ### Headers
 
-The `request.headers` is a getter that return a JSON with the headers of the incoming request.
-You can use it like as setter also.
+The `request.headers` is a getter that return an Object with the headers of the incoming request.
+You can set custom headers like this:
 
 ```js
 request.headers = {

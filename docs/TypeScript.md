@@ -599,7 +599,7 @@ The Fastify API is powered by the `fastify()` method. In JavaScript you would im
      const f = fastify()
      f.listen(8080, () => { console.log('running') })
      ```
-   - Destructuring is still supported, but will also not resolve types
+   - Destructuring is supported and will resolve types properly
      ```typescript
      const { fastify } = require('fastify')
 

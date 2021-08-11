@@ -8,6 +8,17 @@ The Fastify module exports a factory function that is used to create new
 an options object which is used to customize the resulting instance. This
 document describes the properties available in that options object.
 
+- [http2](./Server.md#http2)
+- [https](./Server.md#https)
+- [connectionTimeout](./Server.md#connectiontimeout)
+- [keepAliveTimeout](./Server.md#keepalivetimeout)
+- [ignoreTrailingSlash](./Server.md#ignoretrailingslash)
+- [maxParamLength](./Server.md#maxparamlength)
+- [onProtoPoisoning](./Server.md#onprotopoisoning)
+- [onConstructorPoisoning](./Server.md#onconstructorpoisoning)
+- [logger](./Server.md#logger)
+- [disableRequestLogging](./Server.md#disablerequestlogging)
+
 <a name="factory-http2"></a>
 ### `http2`
 

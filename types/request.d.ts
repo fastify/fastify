@@ -1,6 +1,7 @@
 import { FastifyLoggerInstance } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
+import { FastifyInstance } from './instance'
 
 export interface RequestGenericInterface {
   Body?: RequestBodyDefault;
@@ -23,6 +24,7 @@ export interface FastifyRequest<
   raw: RawRequest;
   query: RouteGeneric['Querystring'];
   log: FastifyLoggerInstance;
+  server: FastifyInstance;
   body: RouteGeneric['Body'];
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

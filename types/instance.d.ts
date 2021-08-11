@@ -8,7 +8,13 @@ import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preVali
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
-import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser } from './content-type-parser'
+import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser, removeContentTypeParser, removeAllContentTypeParsers } from './content-type-parser'
+
+export interface PrintRoutesOptions {
+  includeMeta?: boolean | (string | symbol)[]
+  commonPrefix?: boolean
+  includeHooks?: boolean
+}
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
 
@@ -36,15 +42,27 @@ export interface FastifyInstance<
   close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  // should be able to define something useful with the decorator getter/setter pattern using Generics to enfore the users function returns what they expect it to
-  decorate<K extends keyof FastifyInstance>(property: K, value: FastifyInstance[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorate<K extends string | symbol>(property: NotInInterface<K, FastifyInstance>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
+  decorate<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  decorateRequest<K extends keyof FastifyRequest>(property: K, value: FastifyRequest[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateRequest<K extends string | symbol>(property: NotInInterface<K, FastifyRequest>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateRequest<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  decorateReply<K extends keyof FastifyReply>(property: K, value: FastifyReply[K], dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
-  decorateReply<K extends string | symbol>(property: NotInInterface<K, FastifyReply>, value: any, dependencies?: string[]): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  decorateReply<T>(property: string | symbol,
+    value: T extends (...args: any[]) => any
+      ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
+      : T,
+    dependencies?: string[]
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
@@ -368,6 +386,14 @@ export interface FastifyInstance<
   addContentTypeParser: AddContentTypeParser<RawServer, RawRequest>;
   hasContentTypeParser: hasContentTypeParser;
   /**
+   * Remove an existing content type parser
+   */
+  removeContentTypeParser: removeContentTypeParser
+  /**
+   * Remove all content type parsers, including the default ones
+   */
+  removeAllContentTypeParsers: removeAllContentTypeParsers
+  /**
    * Fastify default JSON parser
    */
   getDefaultJsonParser: getDefaultJsonParser;
@@ -379,7 +405,7 @@ export interface FastifyInstance<
   /**
    * Prints the representation of the internal radix tree used by the router
    */
-  printRoutes(): string;
+  printRoutes(opts?: PrintRoutesOptions): string;
 
   /**
    * Prints the representation of the plugin tree used by avvio, the plugin registration system

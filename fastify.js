@@ -35,7 +35,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -59,6 +59,19 @@ const onBadUrlContext = {
   },
   onSend: [],
   onError: []
+}
+
+function defaultBuildPrettyMeta (route) {
+  // return a shallow copy of route's sanitized context
+
+  const cleanKeys = {}
+  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
+
+  allowedProps.concat(supportedHooks).forEach(k => {
+    cleanKeys[k] = route.store[k]
+  })
+
+  return Object.assign({}, cleanKeys)
 }
 
 function defaultErrorHandler (error, request, reply) {
@@ -163,7 +176,8 @@ function fastify (options) {
       constraints: constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive
+      caseSensitive: options.caseSensitive,
+      buildPrettyMeta: defaultBuildPrettyMeta
     }
   })
 
@@ -263,6 +277,8 @@ function fastify (options) {
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
     getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
     defaultTextParser: ContentTypeParser.defaultParsers.defaultTextParser,
+    removeContentTypeParser: ContentTypeParser.helpers.removeContentTypeParser,
+    removeAllContentTypeParsers: ContentTypeParser.helpers.removeAllContentTypeParsers,
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
@@ -283,7 +299,7 @@ function fastify (options) {
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
-    printRoutes: router.printRoutes,
+    printRoutes,
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
@@ -640,6 +656,12 @@ function fastify (options) {
 
     this[kErrorHandler] = func.bind(this)
     return this
+  }
+
+  function printRoutes (opts = {}) {
+    // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
+    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    return router.printRoutes(opts)
   }
 }
 

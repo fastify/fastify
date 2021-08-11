@@ -15,7 +15,8 @@ type TestPayloadType = {
 
 // Synchronous Tests
 
-server.addHook('onRequest', (request, reply, done) => {
+server.addHook('onRequest', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -23,7 +24,8 @@ server.addHook('onRequest', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('preParsing', (request, reply, payload, done) => {
+server.addHook('preParsing', function (request, reply, payload, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<RequestPayload>(payload)
@@ -32,7 +34,8 @@ server.addHook('preParsing', (request, reply, payload, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('preValidation', (request, reply, done) => {
+server.addHook('preValidation', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -40,7 +43,8 @@ server.addHook('preValidation', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('preHandler', (request, reply, done) => {
+server.addHook('preHandler', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -49,6 +53,7 @@ server.addHook('preHandler', (request, reply, done) => {
 })
 
 server.addHook<TestPayloadType>('preSerialization', function (request, reply, payload, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload) // we expect this to be unknown when not specified like in the previous test
@@ -58,7 +63,8 @@ server.addHook<TestPayloadType>('preSerialization', function (request, reply, pa
   expectError<void>(done(new Error(), 'foobar'))
 })
 
-server.addHook<TestPayloadType>('onSend', (request, reply, payload, done) => {
+server.addHook<TestPayloadType>('onSend', function (request, reply, payload, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload)
@@ -68,7 +74,8 @@ server.addHook<TestPayloadType>('onSend', (request, reply, payload, done) => {
   expectError<void>(done(new Error(), 'foobar'))
 })
 
-server.addHook('onResponse', (request, reply, done) => {
+server.addHook('onResponse', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -76,7 +83,8 @@ server.addHook('onResponse', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('onTimeout', (request, reply, done) => {
+server.addHook('onTimeout', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectAssignable<(err?: FastifyError) => void>(done)
@@ -84,7 +92,8 @@ server.addHook('onTimeout', (request, reply, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('onError', (request, reply, error, done) => {
+server.addHook('onError', function (request, reply, error, done) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<FastifyError>(error)
@@ -92,7 +101,8 @@ server.addHook('onError', (request, reply, error, done) => {
   expectType<void>(done())
 })
 
-server.addHook('onRoute', (opts) => {
+server.addHook('onRoute', function (opts) {
+  expectType<FastifyInstance>(this)
   expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
 })
 
@@ -104,6 +114,7 @@ server.addHook('onRegister', (instance, done) => {
 })
 
 server.addHook('onReady', function (done) {
+  expectType<FastifyInstance>(this)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
@@ -118,50 +129,59 @@ server.addHook('onClose', (instance, done) => {
 
 // Asynchronous
 
-server.addHook('onRequest', async (request, reply) => {
+server.addHook('onRequest', async function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
-server.addHook('preParsing', async (request, reply, payload) => {
+server.addHook('preParsing', async function (request, reply, payload) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<RequestPayload>(payload)
 })
 
-server.addHook('preValidation', async (request, reply) => {
+server.addHook('preValidation', async function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
-server.addHook('preHandler', (request, reply) => {
+server.addHook('preHandler', async function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
 server.addHook<TestPayloadType>('preSerialization', async function (request, reply, payload) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload) // we expect this to be unknown when not specified like in the previous test
 })
 
-server.addHook<TestPayloadType>('onSend', async (request, reply, payload) => {
+server.addHook<TestPayloadType>('onSend', async function (request, reply, payload) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<TestPayloadType>(payload)
 })
 
-server.addHook('onResponse', async (request, reply) => {
+server.addHook('onResponse', async function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
-server.addHook('onTimeout', async (request, reply) => {
+server.addHook('onTimeout', async function (request, reply) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
 })
 
-server.addHook('onError', async (request, reply, error) => {
+server.addHook('onError', async function (request, reply, error) {
+  expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<FastifyError>(error)
@@ -169,6 +189,10 @@ server.addHook('onError', async (request, reply, error) => {
 
 server.addHook('onRegister', async (instance) => {
   expectType<FastifyInstance>(instance)
+})
+
+server.addHook('onReady', async function () {
+  expectType<FastifyInstance>(this)
 })
 
 server.addHook('onClose', async (instance) => {

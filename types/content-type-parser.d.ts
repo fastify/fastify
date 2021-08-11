@@ -60,3 +60,7 @@ export type ProtoAction = 'error' | 'remove' | 'ignore'
 export type ConstructorAction = 'error' | 'remove' | 'ignore'
 
 export type getDefaultJsonParser = (onProtoPoisoning: ProtoAction, onConstructorPoisoning: ConstructorAction) => FastifyBodyParser<string>
+
+export type removeContentTypeParser = (contentType: string | RegExp | (string | RegExp)[]) => void
+
+export type removeAllContentTypeParsers = () => void

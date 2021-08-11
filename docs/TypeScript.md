@@ -85,7 +85,7 @@ The type system heavily relies on generic properties to provide the most accurat
      'h-Custom': string;
    }
    ```
-3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RequestGenericInterface` containing four named properties: `Body`, `Querystring`, `Params`, and `Headers`. The interfaces will be passed down through the route method into the route method handler `request` instance.
+3. Using the two interfaces, define a new API route and pass them as generics. The shorthand route methods (i.e. `.get`) accept a generic object `RouteGenericInterface` containing five named properties: `Body`, `Querystring`, `Params`, `Headers` and `Reply`. The interfaces `Body`, `Querystring`, `Params` and `Headers` will be passed down through the route method into the route method handler `request` instance and the `Reply` interface to the `reply` instance.
    ```typescript
    server.get<{
      Querystring: IQuerystring,
@@ -164,7 +164,7 @@ When you want to use it for validation of some payload in a fastify route you ca
     ```typescript
     const app = fastify();
 
-    app.post<{ Body: UserType; Response: UserType }>(
+    app.post<{ Body: UserType; Reply: UserType }>(
       "/",
       {
         schema: {
@@ -265,6 +265,11 @@ In the last example we used interfaces to define the types for the request query
        const { username, password } = request.query
        done(username !== 'admin' ? new Error('Must be admin') : undefined)
      }
+     //  or if using async
+     //  preValidation: async (request, reply) => {
+     //    const { username, password } = request.query
+     //    return username !== "admin" ? new Error("Must be admin") : undefined;
+     //  }
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']
      // do something with request data
@@ -281,13 +286,15 @@ In the last example we used interfaces to define the types for the request query
        querystring: QuerystringSchema,
        headers: HeadersSchema
      },
-     preHandler: (request, reply) => {
+     preHandler: (request, reply, done) => {
        const { username, password } = request.query
        const customerHeader = request.headers['h-Custom']
+       done()
      },
      handler: (request, reply) => {
        const { username, password } = request.query
        const customerHeader = request.headers['h-Custom']
+       reply.status(200).send({username});
      }
    })
 
@@ -331,6 +338,7 @@ const todo = {
 With the provided type `FromSchema` you can build a type from your schema and use it in your handler.
 
 ```typescript
+import { FromSchema } from "json-schema-to-ts";
 fastify.post<{ Body: FromSchema<typeof todo> }>(
   '/todo',
   {

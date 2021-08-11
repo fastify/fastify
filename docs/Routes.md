@@ -69,6 +69,11 @@ They need to be in
 
   `reply` is defined in [Reply](Reply.md).
 
+**Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
+`preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
+more detail in [Hooks](Hooks.md). Additionally, to send a response before the
+request is handled by the `handler` please refer to
+[Respond to a request from a hook](Hooks.md#respond-to-a-request-from-a-hook).
 
 Example:
 ```js
@@ -422,7 +427,7 @@ Fastify will require a request `Accept-Version` header to be set if the route ha
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { version: '1.2.0'} },
+  constraints: { version: '1.2.0' },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
@@ -470,7 +475,7 @@ You can provide a `host` key in the `constraints` route option for to limit that
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { host: 'auth.fastify.io' } },
+  constraints: { host: 'auth.fastify.io' },
   handler: function (request, reply) {
     reply.send('hello world from auth.fastify.io')
   }
@@ -503,7 +508,7 @@ RegExp `host` constraints can also be specified allowing constraining to hosts m
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { host: /.*\.fastify\.io/ } }, // will match any subdomain of fastify.io
+  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.io
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

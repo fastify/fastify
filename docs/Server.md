@@ -11,7 +11,7 @@ document describes the properties available in that options object.
 <a name="factory-http2"></a>
 ### `http2`
 
-If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/http2.html) module is used for binding the socket.
+If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v14.x/docs/api/http2.html) module is used for binding the socket.
 
 + Default: `false`
 
@@ -20,7 +20,7 @@ If `true` Node.js core's [HTTP/2](https://nodejs.org/dist/latest-v8.x/docs/api/h
 
 An object used to configure the server's listening socket for TLS. The options
 are the same as the Node.js core
-[`createServer` method](https://nodejs.org/dist/latest-v8.x/docs/api/https.html#https_https_createserver_options_requestlistener).
+[`createServer` method](https://nodejs.org/dist/latest-v14.x/docs/api/https.html#https_https_createserver_options_requestlistener).
 When this property is `null`, the socket will not be configured for TLS.
 
 This option also applies when the
@@ -113,7 +113,7 @@ for more details about prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
 
-+ Default: `'ignore'`
++ Default: `'error'`
 
 <a name="factory-logger"></a>
 ### `logger`
@@ -218,6 +218,37 @@ fastify.listen(3000)
 
 Internally Fastify uses the API of Node core HTTP server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
 
+<a name="schema-json-shorthand"></a>
+### `jsonShorthand`
+
++ Default: `true`
+
+Internally, and by default, Fastify will automatically infer the root properties of JSON Schemas if it doesn't find valid root properties according to the JSON Schema spec. If you wish to implement your own schema validation compiler, for example: to parse schemas as JTD instead of JSON Schema, then you can explicitly set this option to `false` to make sure the schemas you receive are unmodified and are not being treated internally as JSON Schema.
+
+```js
+const AjvJTD = require('ajv/dist/jtd'/* only valid for AJV v7+ */)
+const ajv = new AjvJTD({
+  // This would let you throw at start for invalid JTD schema objects
+  allErrors: process.env.NODE_ENV === 'development'
+})
+const fastify = Fastify({ jsonShorthand: false })
+fastify.setValidatorCompiler(({ schema }) => {
+  return ajv.compile(schema)
+})
+fastify.post('/', {
+  schema: {
+    body: {
+      properties: {
+        foo: { type: 'uint8' }
+      }
+    }
+  },
+  handler (req, reply) { reply.send({ ok: 1 }) }
+})
+```
+
+**Note: Fastify does not currently throw on invalid schemas, so if you turn this off in an existing project, you need to be careful that none of your existing schemas become invalid as a result, since they will be treated as a catch-all.**
+
 <a name="factory-case-sensitive"></a>
 ### `caseSensitive`
 
@@ -232,7 +263,7 @@ fastify.get('/user/:username', (request, reply) => {
 })
 ```
 
-Please note this setting this option to `false` goes against
+Please note that setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
 
 <a name="factory-request-id-header"></a>
@@ -288,7 +319,7 @@ const fastify = Fastify({ trustProxy: true })
     }
     ```
 
-For more examples, refer to the [`@fastify/proxy-addr`](https://www.npmjs.com/package/@fastify/proxy-addr) package.
+For more examples, refer to the [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
 You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
 
@@ -423,8 +454,10 @@ const fastify = require('fastify')({
 Set a default
 [timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming HTTP/2 session. The session will be closed on the timeout. Default: `5000` ms.
 
-Note that this is needed to offer the graceful "close" experience when
-using HTTP/2. Node core defaults this to `0`.
+Note that this is needed to offer the graceful "close" experience when using HTTP/2. 
+The low default has been chosen to mitigate denial of service attacks. 
+When the server is behind a load balancer or can scale automatically this value can be 
+increased to fit the use case. Node core defaults this to `0`. ` 
 
 <a name="framework-errors"></a>
 ### `frameworkErrors`
@@ -967,6 +1000,8 @@ fastify.register(function (instance, options, done) {
 }, { prefix: '/v1' })
 ```
 
+Fastify calls setNotFoundHandler to add a default 404 handler at startup before plugins are registered. If you would like to augment the behavior of the default 404 handler, for example with plugins, you can call setNotFoundHandler with no arguments `fastify.setNotFoundHandler()` within the context of these registered plugins.
+
 <a name="set-error-handler"></a>
 #### setErrorHandler
 
@@ -1026,6 +1061,31 @@ fastify.ready(() => {
 })
 ```
 
+`fastify.printRoutes({ includeMeta: (true | []) })` will display properties from the `route.store` object for each displayed route. This can be an `array` of keys (e.g. `['onRequest', Symbol('key')]`), or `true` to display all properties. A shorthand option, `fastify.printRoutes({ includeHooks: true })` will include all [hooks](https://www.fastify.io/docs/latest/Hooks/).
+
+```js
+  console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['metaProperty'] }))
+  // └── /
+  //     ├── test (GET)
+  //     │   • (onRequest) ["anonymous()","namedFunction()"]
+  //     │   • (metaProperty) "value"
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         │   • (onTimeout) ["anonymous()"]
+  //         └── licopter (GET)
+
+  console.log(fastify.printRoutes({ includeHooks: true }))
+  // └── /
+  //     ├── test (GET)
+  //     │   • (onRequest) ["anonymous()","namedFunction()"]  
+  //     │   └── /hello (GET)
+  //     └── hel
+  //         ├── lo/world (GET)
+  //         │   • (onTimeout) ["anonymous()"]
+  //         └── licopter (GET)
+```
+
 <a name="print-plugins"></a>
 #### printPlugins
 
@@ -1042,9 +1102,9 @@ fastify.ready(() => {
   console.error(fastify.printPlugins())
   // will output the following to stderr:
   // └── root
-  //   ├── foo
-  //   │   └── bar
-  //   └── baz
+  //     ├── foo
+  //     │   └── bar
+  //     └── baz
 })
 ```
 

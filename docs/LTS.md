@@ -19,9 +19,10 @@ out in this document:
    e.g. minimum supported Node.js version.
 
 1. Major releases will be tested and verified against all Node.js
-   releases that are supported by the
+   release lines that are supported by the
    [Node.js LTS policy](https://github.com/nodejs/Release) within the
-   LTS period of that given Fastify release line.
+   LTS period of that given Fastify release line. This implies that only
+   the latest Node.js release of a given line is supported.
 
 A "month" is defined as 30 consecutive days.
 

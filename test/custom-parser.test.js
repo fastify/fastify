@@ -1437,3 +1437,206 @@ test('should prefer string content types over RegExp ones', t => {
     })
   })
 })
+
+test('removeContentTypeParser should support arrays of content types to remove', t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('application/xml', function (req, payload, done) {
+    payload.on('data', () => {})
+    payload.on('end', () => {
+      done(null, 'xml')
+    })
+  })
+
+  fastify.addContentTypeParser(/^image\/.*/, function (req, payload, done) {
+    payload.on('data', () => {})
+    payload.on('end', () => {
+      done(null, 'image')
+    })
+  })
+
+  fastify.removeContentTypeParser([/^image\/.*/, 'application/json'])
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '<?xml version="1.0">',
+      headers: {
+        'Content-Type': 'application/xml'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'xml')
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '',
+      headers: {
+        'Content-Type': 'image/png'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{test: "test"}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+      fastify.close()
+    })
+  })
+})
+
+test('removeContentTypeParser should support encapsulation', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser('application/xml', function (req, payload, done) {
+    payload.on('data', () => {})
+    payload.on('end', () => {
+      done(null, 'xml')
+    })
+  })
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.register(function (instance, options, done) {
+    instance.removeContentTypeParser('application/xml')
+
+    instance.post('/encapsulated', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    done()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/encapsulated',
+      body: '<?xml version="1.0">',
+      headers: {
+        'Content-Type': 'application/xml'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '<?xml version="1.0">',
+      headers: {
+        'Content-Type': 'application/xml'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.same(body.toString(), 'xml')
+      fastify.close()
+    })
+  })
+})
+
+test('removeAllContentTypeParsers should support encapsulation', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.post('/', (req, reply) => {
+    reply.send(req.body)
+  })
+
+  fastify.register(function (instance, options, done) {
+    instance.removeAllContentTypeParsers()
+
+    instance.post('/encapsulated', (req, reply) => {
+      reply.send(req.body)
+    })
+
+    done()
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/encapsulated',
+      body: '{}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 415)
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      body: '{"test":1}',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.same(JSON.parse(body.toString()).test, 1)
+      fastify.close()
+    })
+  })
+})
+
+test('cannot remove all content type parsers after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    t.throws(() => fastify.removeAllContentTypeParsers())
+  })
+})
+
+test('cannot remove content type parsers after binding', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    t.throws(() => fastify.removeContentTypeParser('application/json'))
+  })
+})

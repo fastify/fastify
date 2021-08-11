@@ -109,6 +109,10 @@ export interface PrettyOptions {
   suppressFlushSyncWarning?: boolean;
 }
 
+export interface FastifyLoggerStreamDestination {
+  write(msg: string): void;
+}
+
 /**
  * Fastify Custom Logger options. To enable configuration of all Pino options,
  * refer to this example:
@@ -141,6 +145,8 @@ export interface FastifyLoggerOptions<
     };
   };
   level?: string;
+  file?: string;
   genReqId?: (req: RawRequest) => string;
   prettyPrint?: boolean | PrettyOptions;
+  stream?: FastifyLoggerStreamDestination;
 }

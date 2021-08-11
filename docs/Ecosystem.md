@@ -70,6 +70,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for Kubernetes Liveness and Readiness Probes.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware for CLS-based request ID generation. An out-of-the-box solution for adding request IDs into your logs.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds 405 HTTP status to your routes
+- [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin that automatically adds an Allow header to responses with routes. Also sends 405 responses for routes that have a handler but not for the request's method.
 - [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Fastify AMQP connection plugin, to use with RabbitMQ or another connector. Just a wrapper to [`amqplib`](https://github.com/squaremo/amqp.node).
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal) Angular server-side rendering support using [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server) for Fastify
 - [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify plugin to authenticate HTTP requests based on api key and signature

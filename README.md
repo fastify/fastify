@@ -25,19 +25,19 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 
 <br />
 
- - [Requirements](./ReadME.md#requirements)
- - [Quick start](./ReadME.md#quick-start)
- - [Install](./ReadME.md#install)
- - [Example](./ReadME.md#example)
- - [Fastify v1.x and v2.x](./ReadME.md#fastify-v1x-and-v2x)
- - [Core features](./ReadME.md#core-features)
- - [Benchmarks](./ReadME.md#benchmarks)
- - [Documentation](./ReadME.md#documentation)
- - [Ecosystem](./ReadME.md#ecosystem)
- - [Support](./ReadME.md#support)
- - [Team](./ReadME.md#team)
- - [Hosted by](./ReadME.md#hosted-by)
- - [License](./ReadME.md#license)
+ - [Requirements](./README.md#requirements)
+ - [Quick start](./README.md#quick-start)
+ - [Install](./README.md#install)
+ - [Example](./README.md#example)
+ - [Fastify v1.x and v2.x](./README.md#fastify-v1x-and-v2x)
+ - [Core features](./README.md#core-features)
+ - [Benchmarks](./README.md#benchmarks)
+ - [Documentation](./README.md#documentation)
+ - [Ecosystem](./README.md#ecosystem)
+ - [Support](./README.md#support)
+ - [Team](./README.md#team)
+ - [Hosted by](./README.md#hosted-by)
+ - [License](./README.md#license)
 
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
 How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?

@@ -84,6 +84,13 @@ yarn add fastify
 
 ```js
 // Require the framework and instantiate it
+
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -103,6 +110,12 @@ fastify.listen(3000, (err, address) => {
 with async-await:
 
 ```js
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })

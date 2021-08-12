@@ -104,9 +104,23 @@ Let's declare our basic server, but instead of declaring the route inside the en
 ```js
 // ESM
 import Fastify from 'fastify'
+import firstRoute from './our-first-route'
 const fastify = Fastify({
   logger: true
 })
+
+fastify.register(firstRoute)
+
+fastify.listen(3000, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  // Server is now listening on ${address}
+})
+```
+
+```js
 // CommonJs
 const fastify = require('fastify')({
   logger: true
@@ -119,7 +133,7 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 ```
 

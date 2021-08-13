@@ -477,7 +477,7 @@ test('should not set headers or status code for custom error handler', t => {
 test('error thrown by custom error handler routes to default error handler', t => {
   t.plan(6)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
 
   const error = new Error('kaboom')
   error.headers = {

@@ -127,6 +127,78 @@ test('default clientError handler ignores ECONNRESET', t => {
   })
 })
 
+test('default clientError handler ignores sockets in destroyed state', t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100,
+    logger: {
+      level: 'trace'
+    }
+  })
+  fastify.server.on('clientError', () => {
+    // this handler is called after default handler, so we can make sure end was not called
+    t.pass()
+  })
+  fastify.server.emit('clientError', new Error(), {
+    destroyed: true,
+    end () {
+      t.fail('end should not be called')
+    },
+    destroy () {
+      t.fail('destroy should not be called')
+    }
+  })
+})
+
+test('default clientError handler destroys sockets in writable state', t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100,
+    logger: {
+      level: 'trace'
+    }
+  })
+
+  fastify.server.emit('clientError', new Error(), {
+    destroyed: false,
+    writable: true,
+    encrypted: true,
+    end () {
+      t.fail('end should not be called')
+    },
+    destroy () {
+      t.pass('destroy should be called')
+    }
+  })
+})
+
+test('default clientError handler destroys http sockets in non-writable state', t => {
+  t.plan(1)
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100,
+    logger: {
+      level: 'trace'
+    }
+  })
+
+  fastify.server.emit('clientError', new Error(), {
+    destroyed: false,
+    writable: false,
+    end () {
+      t.fail('end should not be called')
+    },
+    destroy () {
+      t.pass('destroy should be called')
+    }
+  })
+})
+
 test('error handler binding', t => {
   t.plan(5)
 

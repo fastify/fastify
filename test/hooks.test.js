@@ -161,7 +161,7 @@ test('hooks', t => {
   })
 })
 
-test('onRequest hook should support encapsulation / 1', t => {
+test('onRequest hook should support encapsulation / 1', { only: true }, t => {
   t.plan(5)
   const fastify = Fastify()
 

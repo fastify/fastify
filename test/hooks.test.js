@@ -2409,11 +2409,12 @@ test('preValidation hook should support encapsulation / 3', t => {
 test('onError hook', t => {
   t.plan(3)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ logger: true })
 
   const err = new Error('kaboom')
 
   fastify.addHook('onError', (request, reply, error, done) => {
+    console.log('onError', err)
     t.match(error, err)
     done()
   })
@@ -2475,19 +2476,20 @@ test('onError hook with setErrorHandler', t => {
 
     const fastify = Fastify()
 
-    const err = new Error('ouch')
+    const external = new Error('ouch')
+    const internal = new Error('kaboom')
 
     fastify.setErrorHandler((_, req, reply) => {
-      reply.send(err)
+      reply.send(external)
     })
 
     fastify.addHook('onError', (request, reply, error, done) => {
-      t.match(error, err)
+      t.match(error, internal)
       done()
     })
 
     fastify.get('/', (req, reply) => {
-      reply.send(new Error('kaboom'))
+      reply.send(internal)
     })
 
     fastify.inject({
@@ -2503,34 +2505,6 @@ test('onError hook with setErrorHandler', t => {
     })
   })
 
-  t.test('Hide error', t => {
-    t.plan(2)
-
-    const fastify = Fastify()
-
-    fastify.setErrorHandler((_, req, reply) => {
-      reply.send({ hello: 'world' })
-    })
-
-    fastify.addHook('onError', (request, reply, error, done) => {
-      t.fail('Should not be called')
-    })
-
-    fastify.get('/', (req, reply) => {
-      reply.send(new Error('kaboom'))
-    })
-
-    fastify.inject({
-      method: 'GET',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.same(
-        JSON.parse(res.payload),
-        { hello: 'world' }
-      )
-    })
-  })
   t.end()
 })
 

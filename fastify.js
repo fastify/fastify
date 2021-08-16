@@ -45,7 +45,6 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
-const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -54,7 +53,7 @@ const {
   appendStackTrace
 } = require('./lib/errors')
 
-const {buildErrorHandler} = require('./lib/error-handler.js')
+const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const onBadUrlContext = {
   config: {

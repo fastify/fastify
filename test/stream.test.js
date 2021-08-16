@@ -62,7 +62,6 @@ test('should respond with a stream (error)', { only: true }, t => {
   })
 })
 
-
 test('should trigger the onSend hook', t => {
   t.plan(4)
   const fastify = Fastify()

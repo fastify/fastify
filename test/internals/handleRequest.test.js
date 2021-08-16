@@ -55,7 +55,7 @@ test('handler function - invalid schema', t => {
         }
       }
     },
-    errorHandler: { func: () => { t.pass('errorHandler called') }},
+    errorHandler: { func: () => { t.pass('errorHandler called') } },
     handler: () => {},
     Reply: Reply,
     Request: Request,
@@ -108,7 +108,7 @@ test('handler function - preValidationCallback with finished response', t => {
   res.end = () => {
     t.fail()
   }
-    res.writeHead = () => {}
+  res.writeHead = () => {}
   const context = {
     handler: (req, reply) => {
       t.fail()

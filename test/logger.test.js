@@ -1343,7 +1343,7 @@ test('should log as error if error status code >= 500 if no error handler is def
 })
 
 test('should not log the error if error handler is defined and it does not error', t => {
-  t.plan(7)
+  t.plan(8)
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
@@ -1356,6 +1356,7 @@ test('should not log the error if error handler is defined and it does not error
     reply.send(new Error('something happened'))
   })
   fastify.setErrorHandler((err, req, reply) => {
+    t.ok(err)
     reply.send('something bad happened')
   })
   fastify.listen(0, err => {

@@ -6,7 +6,7 @@ const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
-let fastify = Fastify({
+const fastify = Fastify({
   logger: true,
   http2: true
 })

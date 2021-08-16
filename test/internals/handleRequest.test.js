@@ -38,14 +38,9 @@ test('handleRequest function - invoke with error', t => {
   handleRequest(new Error('Kaboom'), request, reply)
 })
 
-test('handler function - invalid schema', { skip: true }, t => {
-  t.plan(2)
+test('handler function - invalid schema', t => {
+  t.plan(1)
   const res = {}
-  res.end = () => {
-    t.equal(res.statusCode, 400)
-    t.pass()
-  }
-  res.writeHead = () => {}
   res.log = { error: () => {}, info: () => {} }
   const context = {
     config: {
@@ -60,7 +55,7 @@ test('handler function - invalid schema', { skip: true }, t => {
         }
       }
     },
-    errorHandler: {},
+    errorHandler: { func: () => { t.pass('errorHandler called') }},
     handler: () => {},
     Reply: Reply,
     Request: Request,

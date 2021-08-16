@@ -622,3 +622,19 @@ test('should trigger error handlers if a sync route throws any non-error object'
   const reply = await fastify.inject({ method: 'GET', url: '/' })
   t.equal(reply.statusCode, 500)
 })
+
+test('should trigger error handlers if a sync route throws undefined', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  const throwable = undefined
+
+  fastify.get('/', function async (req, reply) {
+    // eslint-disable-next-line no-throw-literal
+    throw throwable
+  })
+
+  const reply = await fastify.inject({ method: 'GET', url: '/' })
+  t.equal(reply.statusCode, 500)
+})

@@ -42,7 +42,7 @@ test('should respond with a stream (success)', t => {
   })
 })
 
-test('should respond with a stream (error)', { only: true }, t => {
+test('should respond with a stream (error)', t => {
   t.plan(3)
   const fastify = Fastify()
 

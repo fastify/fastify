@@ -477,7 +477,7 @@ test('should not set headers or status code for custom error handler', t => {
 test('error thrown by custom error handler routes to default error handler', t => {
   t.plan(6)
 
-  const fastify = Fastify({ logger: true })
+  const fastify = Fastify()
 
   const error = new Error('kaboom')
   error.headers = {
@@ -628,11 +628,9 @@ test('should trigger error handlers if a sync route throws undefined', async t =
 
   const fastify = Fastify()
 
-  const throwable = undefined
-
   fastify.get('/', function async (req, reply) {
     // eslint-disable-next-line no-throw-literal
-    throw throwable
+    throw undefined
   })
 
   const reply = await fastify.inject({ method: 'GET', url: '/' })

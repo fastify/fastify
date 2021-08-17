@@ -161,7 +161,7 @@ test('hooks', t => {
   })
 })
 
-test('onRequest hook should support encapsulation / 1', { only: true }, t => {
+test('onRequest hook should support encapsulation / 1', t => {
   t.plan(5)
   const fastify = Fastify()
 
@@ -2409,12 +2409,11 @@ test('preValidation hook should support encapsulation / 3', t => {
 test('onError hook', t => {
   t.plan(3)
 
-  const fastify = Fastify({ logger: true })
+  const fastify = Fastify()
 
   const err = new Error('kaboom')
 
   fastify.addHook('onError', (request, reply, error, done) => {
-    console.log('onError', err)
     t.match(error, err)
     done()
   })

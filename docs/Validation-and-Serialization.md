@@ -14,7 +14,7 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 
 ### Core concepts
 The validation and the serialization tasks are processed by two different, and customizable, actors:
-- [Ajv](https://www.npmjs.com/package/ajv) for the validation of a request
+- [Ajv v6](https://www.npmjs.com/package/ajv/v/6.12.6) for the validation of a request
 - [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for the serialization of a response's body
 
 These two separate entities share only the JSON schemas added to Fastify's instance through `.addSchema(schema)`.
@@ -120,7 +120,7 @@ fastify.register((instance, opts, done) => {
 
 
 ### Validation
-The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON Schema validator.
+The route validation internally relies upon [Ajv v6](https://www.npmjs.com/package/ajv/v/6.12.6) which is a high-performance JSON Schema validator.
 Validating the input is very easy: just add the fields that you need inside the route schema, and you are done!
 
 The supported validations are:
@@ -130,6 +130,8 @@ The supported validations are:
 - `headers`: validates the request headers.
 
 All the validations can be a complete JSON Schema object (with a `type` property of `'object'` and a `'properties'` object containing parameters) or a simpler variation in which the `type` and `properties` attributes are forgone and the parameters are listed at the top level (see the example below).
+
+> ℹ If you need to use the lastest version of Ajv (v8) you should read how to do it in the [`schemaController`](Server.md#schema-controller) section. It is explained the easier way to avoid to implement a custom validator.
 
 Example:
 ```js
@@ -232,7 +234,7 @@ curl -X GET "http://localhost:3000/?ids=1
 {"statusCode":400,"error":"Bad Request","message":"querystring/hello should be array"}
 ```
 
-Using `coerceTypes` as 'array' should fix it:
+Using `coerceTypes` as 'array' will fix it:
 
 ```js
 const ajv = new Ajv({
@@ -258,7 +260,8 @@ For further information see [here](https://ajv.js.org/coercion.html)
 <a name="ajv-plugins"></a>
 #### Ajv Plugins
 
-You can provide a list of plugins you want to use with Ajv:
+You can provide a list of plugins you want to use with the default `ajv` instance.  
+Note that the plugin must be **compatible with Ajv v6**.
 
 > Refer to [`ajv options`](Server.md#ajv) to check plugins format
 

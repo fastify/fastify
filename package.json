@@ -115,7 +115,7 @@
   },
   "homepage": "https://www.fastify.io/",
   "devDependencies": {
-    "@fastify/ajv-compiler-8": "github:fastify/ajv-compiler#ajv-8",
+    "@fastify/ajv-compiler-8": "npm:@fastify/ajv-compiler@^2.0.0",
     "@fastify/pre-commit": "^2.0.1",
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^7.0.0",

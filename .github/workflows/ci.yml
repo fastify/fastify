@@ -63,3 +63,4 @@ jobs:
       - uses: fastify/github-action-merge-dependabot@v2.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          target: minor

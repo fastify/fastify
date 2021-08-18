@@ -37,15 +37,18 @@ To customize this behavior you should use [`setErrorHandler`](Server.md#seterror
 From the [Hooks documentation](Hooks.md#manage-errors-from-a-hook): 
 > If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
-If you have defined a custom error handler using `setErrorHandler` the error will
-be routed there. If `setErrorHandler` has been called multiple times, the error will be
-routed to the precedent error handler if the error handler or an hook `throw` or
-call `reply.send(error)`.
-Error handlers are fully encapsulated, so a `setErrorHandler` call in an encapsulated
-plugin will limit its effect there.
-The root error handler is Fastify’s generic error handler which will use the header
-and status code in the Error object if it exists.
-The headers and status code will not be automatically set if a custom error handler
+When a custom error handler has been defined through
+[`setErrorHandler`](./Server.md#seterrorhandler), the custom error handler will
+receive the error passed to the `done()` callback (or through other supported
+automatic error handling mechanisms). If `setErrorHandler` has been used
+multiple times to define multiple handlers, the error will be routed to the most
+precedent handler defined within the error [encapsulation context](./Encapsulation.md).
+Error handlers are fully encapsulated, so a `setErrorHandler` call within a
+plugin will limit the error handler to that plugin's context.
+
+The root error handler is Fastify's generic error handler. This error handler
+will use the headers and status code in the `Error` object, if they exist. The
+headers and status code will not be automatically set if a custom error handler
 is provided.
 
 Some things to consider in your custom error handler: 

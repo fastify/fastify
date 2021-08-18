@@ -31,13 +31,13 @@ test('onError hook nested', async t => {
   fastify.register(async function (fastify) {
     fastify.setErrorHandler(async function a (err) {
       t.equal(err.message, 'kaboom')
-      throw new Error('catched')
+      throw new Error('caught')
     })
     fastify.get('/encapsulated', async () => { throw new Error('kaboom') })
   })
 
   fastify.setErrorHandler(async function b (err) {
-    t.equal(err.message, 'catched')
+    t.equal(err.message, 'caught')
     throw new Error('wrapped')
   })
 

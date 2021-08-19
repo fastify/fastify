@@ -48,7 +48,7 @@ test('Ajv8 usage instead of the bundle one', t => {
   })
 })
 
-test('Ajv8 usage with plugins', { skip: 'until npm 7.2 will be bundled with node.js 16 https://github.com/npm/cli/issues/3147' }, t => {
+test('Ajv8 usage with plugins', t => {
   t.plan(2)
 
   t.test('use new ajv8 option', t => {

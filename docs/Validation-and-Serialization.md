@@ -3,6 +3,8 @@
 ## Validation and Serialization
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](https://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
+All the examples in this section are using the [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7) specification.
+
 > ## ⚠  Security Notice
 > Treat the schema definition as application code.
 > Validation and serialization features dynamically evaluate

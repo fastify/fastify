@@ -545,7 +545,7 @@ test('should return localized error messages with ajv-i18n', t => {
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), [{
-      dataPath: '',
+      instancePath: '',
       keyword: 'required',
       message: 'должно иметь обязательное поле work',
       params: { missingProperty: 'work' },

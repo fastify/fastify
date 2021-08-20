@@ -70,8 +70,8 @@ test('fastify instance get invalid ajv options.plugins', t => {
 test('fastify instance should contain default errorHandler', t => {
   t.plan(3)
   const fastify = Fastify()
-  t.ok(fastify[kErrorHandler] instanceof Function)
-  t.same(fastify.errorHandler, fastify[kErrorHandler])
+  t.ok(fastify[kErrorHandler].func instanceof Function)
+  t.same(fastify.errorHandler, fastify[kErrorHandler].func)
   t.same(Object.getOwnPropertyDescriptor(fastify, 'errorHandler').set, undefined)
 })
 
@@ -94,6 +94,6 @@ test('errorHandler in plugin should be separate from the external one', async t 
 
   await fastify.ready()
 
-  t.ok(fastify[kErrorHandler] instanceof Function)
-  t.same(fastify.errorHandler, fastify[kErrorHandler])
+  t.ok(fastify[kErrorHandler].func instanceof Function)
+  t.same(fastify.errorHandler, fastify[kErrorHandler].func)
 })

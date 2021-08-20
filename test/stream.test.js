@@ -16,17 +16,12 @@ const Readable = require('stream').Readable
 const split = require('split2')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
 
-test('should respond with a stream', t => {
-  t.plan(8)
+test('should respond with a stream (success)', t => {
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(stream)
-  })
-
-  fastify.get('/error', function (req, reply) {
-    const stream = fs.createReadStream('not-existing-file', 'utf8')
     reply.code(200).send(stream)
   })
 
@@ -44,6 +39,21 @@ test('should respond with a stream', t => {
         t.equal(expected.toString(), data.toString())
       })
     })
+  })
+})
+
+test('should respond with a stream (error)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/error', function (req, reply) {
+    const stream = fs.createReadStream('not-existing-file', 'utf8')
+    reply.code(200).send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)

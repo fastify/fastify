@@ -2,8 +2,8 @@ import fastify, {
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
-  FastifyLoggerInstance,
-  ValidationResult
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression
 } from '../../fastify'
 import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
@@ -99,6 +99,8 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+
+expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
 expectType<FastifyInstance>(fastify().get('/', {
   handler: () => {},

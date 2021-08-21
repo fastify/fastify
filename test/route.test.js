@@ -1326,3 +1326,60 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   t.ok(true)
 })
+
+test('GET route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/shouldThrow',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+})
+
+test('HEAD route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'HEAD',
+      path: '/shouldThrow',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+})
+
+test('[HEAD, GET] route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: ['HEAD', 'GET'],
+      path: '/shouldThrow',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  })
+})

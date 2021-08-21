@@ -1343,7 +1343,7 @@ test('GET route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  })
+  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
 })
 
 test('HEAD route with body schema should throw', t => {
@@ -1362,7 +1362,7 @@ test('HEAD route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  })
+  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
 })
 
 test('[HEAD, GET] route with body schema should throw', t => {
@@ -1381,5 +1381,5 @@ test('[HEAD, GET] route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  })
+  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
 })

@@ -426,8 +426,8 @@ const fastify = require('fastify')({
       nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
     },
     plugins: [
-      require('ajv-merge-patch')
-      [require('ajv-keywords'), 'instanceof'];
+      require('ajv-merge-patch'),
+      [require('ajv-keywords'), 'instanceof']
       // Usage: [plugin, pluginOptions] - Plugin with options
       // Usage: plugin - Plugin without options
     ]

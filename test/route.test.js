@@ -1335,7 +1335,7 @@ test('GET route with body schema should throw', t => {
   t.throws(() => {
     fastify.route({
       method: 'GET',
-      path: '/shouldThrow',
+      path: '/get',
       schema: {
         body: {}
       },
@@ -1343,7 +1343,7 @@ test('GET route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
+  }, new Error('Body validation schema for GET:/get route is not supported!'))
 })
 
 test('HEAD route with body schema should throw', t => {
@@ -1362,7 +1362,7 @@ test('HEAD route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
+  }, new Error('Body validation schema for HEAD:/shouldThrow route is not supported!'))
 })
 
 test('[HEAD, GET] route with body schema should throw', t => {
@@ -1373,7 +1373,7 @@ test('[HEAD, GET] route with body schema should throw', t => {
   t.throws(() => {
     fastify.route({
       method: ['HEAD', 'GET'],
-      path: '/shouldThrow',
+      path: '/shouldThrowHead',
       schema: {
         body: {}
       },
@@ -1381,7 +1381,7 @@ test('[HEAD, GET] route with body schema should throw', t => {
         reply.send({ hello: 'world' })
       }
     })
-  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
+  }, new Error('Body validation schema for HEAD:/shouldThrowHead route is not supported!'))
 })
 
 test('GET route with body schema should throw - shorthand', t => {
@@ -1399,7 +1399,7 @@ test('GET route with body schema should throw - shorthand', t => {
       reply.send({ hello: 'world' })
     }
     )
-  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
+  }, new Error('Body validation schema for GET:/shouldThrow route is not supported!'))
 })
 
 test('HEAD route with body schema should throw - shorthand', t => {
@@ -1408,7 +1408,7 @@ test('HEAD route with body schema should throw - shorthand', t => {
   const fastify = Fastify()
 
   t.throws(() => {
-    fastify.head('/shouldThrow', {
+    fastify.head('/shouldThrow2', {
       schema: {
         body: {}
       }
@@ -1417,5 +1417,5 @@ test('HEAD route with body schema should throw - shorthand', t => {
       reply.send({ hello: 'world' })
     }
     )
-  }, new Error('Body validation schemas for GET and HEAD routes are not supported!'))
+  }, new Error('Body validation schema for HEAD:/shouldThrow2 route is not supported!'))
 })

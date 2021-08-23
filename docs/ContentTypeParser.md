@@ -9,6 +9,9 @@ As with the other APIs, `addContentTypeParser` is encapsulated in the scope in w
 
 Fastify automatically adds the parsed request payload to the [Fastify request](Request.md) object which you can access with `request.body`.
 
+Note that for `GET` and `HEAD` requests the payload is never parsed. For `OPTIONS` and `DELETE` requests the payload is only parsed if 
+the content type is given in the content-type header. If it is not given, the [catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and `PATCH`, but the payload is simply not parsed.
+
 ### Usage
 ```js
 fastify.addContentTypeParser('application/jsoff', function (request, payload, done) {

@@ -1326,3 +1326,96 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   t.ok(true)
 })
+
+test('GET route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/get',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new Error('Body validation schema for GET:/get route is not supported!'))
+})
+
+test('HEAD route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'HEAD',
+      path: '/shouldThrow',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new Error('Body validation schema for HEAD:/shouldThrow route is not supported!'))
+})
+
+test('[HEAD, GET] route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: ['HEAD', 'GET'],
+      path: '/shouldThrowHead',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new Error('Body validation schema for HEAD:/shouldThrowHead route is not supported!'))
+})
+
+test('GET route with body schema should throw - shorthand', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.get('/shouldThrow', {
+      schema: {
+        body: {}
+      }
+    },
+    function (req, reply) {
+      reply.send({ hello: 'world' })
+    }
+    )
+  }, new Error('Body validation schema for GET:/shouldThrow route is not supported!'))
+})
+
+test('HEAD route with body schema should throw - shorthand', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.head('/shouldThrow2', {
+      schema: {
+        body: {}
+      }
+    },
+    function (req, reply) {
+      reply.send({ hello: 'world' })
+    }
+    )
+  }, new Error('Body validation schema for HEAD:/shouldThrow2 route is not supported!'))
+})

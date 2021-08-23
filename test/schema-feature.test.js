@@ -826,7 +826,7 @@ test('Validation context in validation result', t => {
     t.equal(err.validationContext, 'body')
     reply.send()
   })
-  fastify.get('/', {
+  fastify.post('/', {
     handler: echoParams,
     schema: {
       body: {
@@ -839,7 +839,7 @@ test('Validation context in validation result', t => {
     }
   })
   fastify.inject({
-    method: 'GET',
+    method: 'POST',
     url: '/',
     payload: {} // body lacks required field, will fail validation
   }, (err, res) => {
@@ -880,7 +880,7 @@ test('The schema build should not modify the input', t => {
     ]
   })
 
-  fastify.get('/', {
+  fastify.post('/', {
     schema: {
       description: 'get',
       body: { $ref: 'second#' },
@@ -949,14 +949,14 @@ test('Cross schema reference with encapsulation references', t => {
     }
 
     instance.get('/get', { schema: { response: { 200: multipleRef } } }, () => { })
-    instance.get('/double-get', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
+    instance.get('/double-get', { schema: { querystring: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/post', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/double', { schema: { response: { 200: { $ref: 'encapsulation' } } } }, () => { })
     done()
   }, { prefix: '/foo' })
 
   fastify.post('/post', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
-  fastify.get('/get', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
+  fastify.get('/get', { schema: { params: refItem, response: { 200: refItem } } }, () => { })
 
   fastify.ready(err => {
     t.error(err)
@@ -1008,7 +1008,7 @@ test('onReady hook has the compilers ready', t => {
   fastify.get(`/${Math.random()}`, {
     handler: (req, reply) => reply.send(),
     schema: {
-      body: { type: 'object' },
+      headers: { type: 'object' },
       response: { 200: { type: 'object' } }
     }
   })
@@ -1098,7 +1098,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
 })
 
 function addRandomRoute (server) {
-  server.get(`/${Math.random()}`,
+  server.post(`/${Math.random()}`,
     { schema: { body: { type: 'object' } } },
     (req, reply) => reply.send()
   )

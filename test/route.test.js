@@ -1246,3 +1246,25 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
 
   t.ok(true)
 })
+
+test('Correct error message is produced if "path" option is used', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/test'
+    })
+  }, new Error('Missing handler function for GET:/test route.'))
+
+  t.throws(() => {
+    fastify.route({
+      method: 'POST',
+      url: '/test',
+      handler: function () {},
+      errorHandler: ''
+    })
+  }, new Error('Error Handler for POST:/test route, if defined, must be a function'))
+})

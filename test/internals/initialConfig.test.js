@@ -102,7 +102,7 @@ test('Fastify.initialConfig should expose all options', t => {
 
   const fastify = Fastify(options)
   t.equal(fastify.initialConfig.http2, true)
-  t.equal(fastify.initialConfig.https, true)
+  t.equal(fastify.initialConfig.https, true, 'for security reason the key cert is hidden')
   t.equal(fastify.initialConfig.ignoreTrailingSlash, true)
   t.equal(fastify.initialConfig.maxParamLength, 200)
   t.equal(fastify.initialConfig.connectionTimeout, 0)
@@ -170,7 +170,7 @@ test('Return an error if options do not match the validation schema', t => {
   } catch (error) {
     t.type(error, Error)
     t.equal(error.name, 'FastifyError')
-    t.equal(error.message, 'Invalid initialization options: \'["should be boolean"]\'')
+    t.equal(error.message, 'Invalid initialization options: \'["must be boolean"]\'')
     t.equal(error.code, 'FST_ERR_INIT_OPTS_INVALID')
     t.ok(error.stack)
     t.pass()

@@ -322,6 +322,7 @@ test('Extending schema', t => {
             allOf: [
               { $ref: 'address.id#/definitions/address' },
               {
+                type: 'object',
                 properties: { type: { enum: ['residential', 'business'] } },
                 required: ['type']
               }

@@ -98,7 +98,13 @@ test('Example - get schema encapsulated', async t => {
 
 test('Example - validation', t => {
   t.plan(1)
-  const fastify = Fastify()
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allowUnionTypes: true
+      }
+    }
+  })
   const handler = () => { }
 
   const bodyJsonSchema = {
@@ -450,7 +456,7 @@ test('should return custom error messages with ajv-errors', t => {
 
   const fastify = Fastify({
     ajv: {
-      customOptions: { allErrors: true, jsonPointers: true },
+      customOptions: { allErrors: true },
       plugins: [
         require('ajv-errors')
       ]

@@ -611,7 +611,7 @@ Inline comments in the schema below describe how to configure it to show a diffe
 ```js
 const fastify = Fastify({
   ajv: {
-    customOptions: { jsonPointers: true },
+    customOptions: { allErrors: true },
     plugins: [
       require('ajv-errors')
     ]

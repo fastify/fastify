@@ -84,6 +84,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](https://bookshelfjs.org/) ORM support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
+- [`fastify-bree`](https://github.com/climba03003/fastify-bree) Fastify plugin to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest) Casbin support for Fastify based on a RESTful model.
 - [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Fastify [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like protection of endpoints via either a preSerialization & preHandler hook, sanitizing the inputs and outputs of your application based on user rights.

@@ -156,8 +156,17 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.type(error, TypeError)
     t.equal(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.ok(error.stack)
-    t.pass()
+    t.same(fastify.initialConfig.https, {
+      allowHTTP1: true
+    }, 'key cert removed')
   }
+})
+
+test('https value check', t => {
+  t.plan(1)
+
+  const fastify = Fastify({})
+  t.notOk(fastify.initialConfig.https)
 })
 
 test('Return an error if options do not match the validation schema', t => {

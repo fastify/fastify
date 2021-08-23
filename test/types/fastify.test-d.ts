@@ -158,7 +158,7 @@ expectAssignable<FastifyInstance>(fastify({ return503OnClosing: true }))
 expectAssignable<FastifyInstance>(fastify({
   ajv: {
     customOptions: {
-      nullable: false
+      removeAdditional: 'all'
     },
     plugins: [() => { }]
   }

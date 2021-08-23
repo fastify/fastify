@@ -3,7 +3,7 @@ import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from '../../f
 import { RouteGenericInterface } from '../../types/route'
 import { ContextConfigDefault } from '../../types/utils'
 import { FastifyReply } from '../../types/reply'
-import Ajv = require('ajv')
+import Ajv from 'ajv'
 
 const server = fastify()
 
@@ -83,7 +83,7 @@ expectAssignable<FastifyInstance>(server.post('/test', {
 
 expectAssignable<FastifyInstance>(server.setValidatorCompiler<FastifySchema & { validate: Record<string, unknown> }>(
   function ({ schema }) {
-    return new Ajv().compile(schema.validate)
+    return new Ajv().compile(schema)
   }
 ))
 

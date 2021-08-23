@@ -412,8 +412,7 @@ Configure the Ajv v6 instance used by Fastify without providing a custom one.
     removeAdditional: true,
     useDefaults: true,
     coerceTypes: true,
-    allErrors: false,
-    nullable: true
+    allErrors: false
   },
   plugins: []
 }
@@ -423,7 +422,7 @@ Configure the Ajv v6 instance used by Fastify without providing a custom one.
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
+      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/#options)
     },
     plugins: [
       require('ajv-merge-patch')

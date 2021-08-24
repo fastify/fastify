@@ -84,6 +84,13 @@ yarn add fastify
 
 ```js
 // Require the framework and instantiate it
+
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -103,6 +110,12 @@ fastify.listen(3000, (err, address) => {
 with async-await:
 
 ```js
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -162,6 +175,7 @@ matters to you.
 
 ## Documentation
 * <a href="./docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
+* <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
 * <a href="./docs/Server.md"><code><b>Server</b></code></a>
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
 * <a href="./docs/Encapsulation.md"><code><b>Encapsulation</b></code></a>

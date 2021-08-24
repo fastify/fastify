@@ -60,9 +60,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: fastify/github-action-merge-dependabot@v2.2.0
+      - uses: fastify/github-action-merge-dependabot@v2.4.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          target: minor
 
   package:
     needs: test
@@ -82,4 +83,3 @@ jobs:
       - name: Test bundle
         run: |
           cd test/bundler/webpack && npm run test
-

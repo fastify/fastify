@@ -85,7 +85,7 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 })
 
 // Removes the both built-in content type parsers so that only the content type parser for text/html is available
-fastiy.removeContentTypeParser(['application/json', 'text/plain'])
+fastify.removeContentTypeParser(['application/json', 'text/plain'])
 ```
 
 #### removeAllContentTypeParsers
@@ -97,7 +97,7 @@ Just like `removeContentTypeParser`, this API supports encapsulation. The API is
 [catch-all content type parser](#Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
 
 ```js
-fastiy.removeAllContentTypeParsers()
+fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('text/xml', function (request, payload, done) {
   xmlParser(payload, function (err, body) {

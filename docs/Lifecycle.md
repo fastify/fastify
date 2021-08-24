@@ -19,7 +19,7 @@ Incoming Request
                              │
                    4**/5** ◀─┴─▶ preValidation Hook
                                   │
-                            415 ◀─┴─▶ Validation
+                            400 ◀─┴─▶ Validation
                                         │
                               4**/5** ◀─┴─▶ preHandler Hook
                                               │

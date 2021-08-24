@@ -81,7 +81,7 @@ test('Fastify should throw for an invalid shorthand option type', t => {
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_INIT_OPTS_INVALID')
-    t.match(e.message, /should be boolean/)
+    t.match(e.message, /must be boolean/)
     t.pass()
   }
 })

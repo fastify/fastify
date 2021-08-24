@@ -3,6 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
+const deepClone = require('rfdc')({ circles: true, proto: false })
 const { kSchemaController } = require('../lib/symbols.js')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
@@ -917,7 +918,11 @@ test('Cross schema reference with encapsulation references', t => {
   t.plan(1)
 
   const fastify = Fastify()
-  fastify.addSchema({ $id: 'http://foo/item', type: 'object', properties: { foo: { type: 'string' } } })
+  fastify.addSchema({
+    $id: 'http://foo/item',
+    type: 'object',
+    properties: { foo: { type: 'string' } }
+  })
 
   const refItem = { $ref: 'http://foo/item#' }
 
@@ -948,7 +953,7 @@ test('Cross schema reference with encapsulation references', t => {
       }
     }
 
-    instance.get('/get', { schema: { response: { 200: multipleRef } } }, () => { })
+    instance.get('/get', { schema: { response: { 200: deepClone(multipleRef) } } }, () => { })
     instance.get('/double-get', { schema: { querystring: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/post', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/double', { schema: { response: { 200: { $ref: 'encapsulation' } } } }, () => { })

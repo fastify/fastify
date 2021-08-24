@@ -115,7 +115,7 @@
   },
   "homepage": "https://www.fastify.io/",
   "devDependencies": {
-    "@fastify/ajv-compiler-8": "npm:@fastify/ajv-compiler@^2.0.0",
+    "@fastify/ajv-compiler-6": "npm:@fastify/ajv-compiler@^1.0.0",
     "@fastify/pre-commit": "^2.0.1",
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^7.0.0",
@@ -123,12 +123,10 @@
     "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
-    "ajv": "^6.0.0",
-    "ajv-errors": "^1.0.1",
+    "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
-    "ajv-i18n": "^3.5.0",
-    "ajv-merge-patch": "^4.1.0",
-    "ajv-pack": "^0.3.1",
+    "ajv-i18n": "^4.0.1",
+    "ajv-merge-patch": "^5.0.1",
     "branch-comparer": "^1.0.2",
     "cors": "^2.8.5",
     "coveralls": "^3.1.0",
@@ -172,7 +170,7 @@
     "yup": "^0.32.0"
   },
   "dependencies": {
-    "@fastify/ajv-compiler": "^1.0.0",
+    "@fastify/ajv-compiler": "^2.1.0",
     "abstract-logging": "^2.0.0",
     "avvio": "fastify/avvio#next",
     "fast-json-stringify": "^2.5.2",

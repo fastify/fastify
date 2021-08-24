@@ -73,7 +73,7 @@ test('Basic validation test', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: "body should have required property 'work'" })
+    t.same(res.json(), { statusCode: 400, error: 'Bad Request', message: "body must have required property 'work'" })
     t.equal(res.statusCode, 400)
   })
 })
@@ -288,7 +288,7 @@ test('Triple $ref with a simple $id', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.same(res.json().message, "body should have required property 'foo'")
+    t.same(res.json().message, "body must have required property 'foo'")
   })
 })
 
@@ -322,6 +322,7 @@ test('Extending schema', t => {
             allOf: [
               { $ref: 'address.id#/definitions/address' },
               {
+                type: 'object',
                 properties: { type: { enum: ['residential', 'business'] } },
                 required: ['type']
               }
@@ -413,7 +414,7 @@ test('Should work with nested ids', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
-    t.equal(res.json().message, 'params.id should be number')
+    t.equal(res.json().message, 'params/id must be number')
   })
 })
 
@@ -510,7 +511,7 @@ test('JSON Schema validation keywords', t => {
     t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
-      message: 'params.ip should match format "ipv4"'
+      message: 'params/ip must match format "ipv4"'
     })
   })
 })
@@ -564,7 +565,7 @@ test('Nested id calls', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       error: 'Bad Request',
-      message: 'body.host.ip should match format "ipv4"',
+      message: 'body/host/ip must match format "ipv4"',
       statusCode: 400
     })
   })
@@ -666,7 +667,7 @@ test('Use shared schema and $ref with $id ($ref to $id)', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       error: 'Bad Request',
-      message: "body should have required property 'address'",
+      message: "body must have required property 'address'",
       statusCode: 400
     })
   })
@@ -686,8 +687,7 @@ test('Use items with $ref', t => {
 
   const body = {
     type: 'array',
-    items: { $ref: 'http://example.com/ref-to-external-validator.json#' },
-    default: []
+    items: { $ref: 'http://example.com/ref-to-external-validator.json#' }
   }
 
   fastify.post('/', {
@@ -783,7 +783,7 @@ test('Use $ref to /definitions', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       error: 'Bad Request',
-      message: 'body.test.id should be number',
+      message: 'body/test/id must be number',
       statusCode: 400
     })
   })

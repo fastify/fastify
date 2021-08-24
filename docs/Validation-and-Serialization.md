@@ -3,6 +3,8 @@
 ## Validation and Serialization
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](https://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
+All the examples in this section are using the [JSON Schema Draft 7](https://json-schema.org/specification-links.html#draft-7) specification.
+
 > ## ⚠  Security Notice
 > Treat the schema definition as application code.
 > Validation and serialization features dynamically evaluate
@@ -14,7 +16,7 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 
 ### Core concepts
 The validation and the serialization tasks are processed by two different, and customizable, actors:
-- [Ajv v6](https://www.npmjs.com/package/ajv/v/6.12.6) for the validation of a request
+- [Ajv v8](https://www.npmjs.com/package/ajv) for the validation of a request
 - [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) for the serialization of a response's body
 
 These two separate entities share only the JSON schemas added to Fastify's instance through `.addSchema(schema)`.
@@ -120,7 +122,7 @@ fastify.register((instance, opts, done) => {
 
 
 ### Validation
-The route validation internally relies upon [Ajv v6](https://www.npmjs.com/package/ajv/v/6.12.6) which is a high-performance JSON Schema validator.
+The route validation internally relies upon [Ajv v8](https://www.npmjs.com/package/ajv) which is a high-performance JSON Schema validator.
 Validating the input is very easy: just add the fields that you need inside the route schema, and you are done!
 
 The supported validations are:
@@ -198,7 +200,7 @@ const schema = {
 fastify.post('/the/url', { schema }, handler)
 ```
 
-*Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
+*Note that Ajv will try to [coerce](https://ajv.js.org/coercion.html) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
 The Ajv default configuration in Fastify doesn't support coercing array parameters in querystring. However, Fastify allows [`customOptions`](Server.md#ajv) in Ajv instance. The `coerceTypes: 'array'` will coerce one parameter to a single element in array. Example:
 
@@ -261,7 +263,7 @@ For further information see [here](https://ajv.js.org/coercion.html)
 #### Ajv Plugins
 
 You can provide a list of plugins you want to use with the default `ajv` instance.  
-Note that the plugin must be **compatible with Ajv v6**.
+Note that the plugin must be **compatible with the Ajv version shipped within Fastify**.
 
 > Refer to [`ajv options`](Server.md#ajv) to check plugins format
 
@@ -328,14 +330,16 @@ The `validatorCompiler` is a function that returns a function that validates the
 The default `validatorCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface.
 Fastify uses it internally to speed the validation up.
 
-Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#options-to-modify-validated-data) is:
+Fastify's [baseline ajv configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 
 ```js
 {
-  removeAdditional: true, // remove additional properties
-  useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   coerceTypes: true, // change data type of data to match type keyword
-  nullable: true     // support keyword "nullable" from Open API 3 specification.
+  useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
+  removeAdditional: true, // remove additional properties
+  // Explicitly set allErrors to `false`.
+  // When set to `true`, a DoS attack is possible.
+  allErrors: false
 }
 ```
 
@@ -347,11 +351,9 @@ If you want to change or set additional config options, you will need to create 
 const fastify = require('fastify')()
 const Ajv = require('ajv')
 const ajv = new Ajv({
-  // the fastify defaults (if needed)
-  removeAdditional: true,
+  removeAdditional: 'all',
   useDefaults: true,
-  coerceTypes: true,
-  nullable: true,
+  coerceTypes: 'array',
   // any other options
   // ...
 })
@@ -364,7 +366,7 @@ _**Note:** If you use a custom instance of any validator (even Ajv), you have to
 <a name="using-other-validation-libraries"></a>
 ##### Using other validation libraries
 
-The `setValidatorCompiler` function makes it easy to substitute `ajv` with almost any Javascript validation library ([joi](https://github.com/hapijs/joi/), [yup](https://github.com/jquense/yup/), ...) or a custom one:
+The `setValidatorCompiler` function makes it easy to substitute `ajv` with almost any JavaScript validation library ([joi](https://github.com/hapijs/joi/), [yup](https://github.com/jquense/yup/), ...) or a custom one:
 
 ```js
 const Joi = require('@hapi/joi')
@@ -417,7 +419,7 @@ fastify.post('/the/url', {
 
 ##### Validation messages with other validation libraries
 
-Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are eventually run through the `schemaErrorsText` function which is responsible for building human-friendly error messages. However, the `schemaErrorsText` function is written with `ajv` in mind : as a result, you may run into odd or incomplete error messages when using other validation libraries.
+Fastify's validation error messages are tightly coupled to the default validation engine: errors returned from `ajv` are eventually run through the `schemaErrorFormatter` function which is responsible for building human-friendly error messages. However, the `schemaErrorFormatter` function is written with `ajv` in mind : as a result, you may run into odd or incomplete error messages when using other validation libraries.
 
 To circumvent this issue, you have 2 main options :
 
@@ -426,8 +428,8 @@ To circumvent this issue, you have 2 main options :
 
 To help you in writing a custom `errorHandler`, Fastify adds 2 properties to all validation errors:
 
-* validation: the content of the `error` property of the object returned by the validation function (returned by your custom `schemaCompiler`)
-* validationContext: the 'context' (body, params, query, headers) where the validation error occurred
+* `validation`: the content of the `error` property of the object returned by the validation function (returned by your custom `schemaCompiler`)
+* `validationContext`: the 'context' (body, params, query, headers) where the validation error occurred
 
 A very contrived example of such a custom `errorHandler` handling validation errors is shown below:
 
@@ -609,7 +611,7 @@ Inline comments in the schema below describe how to configure it to show a diffe
 ```js
 const fastify = Fastify({
   ajv: {
-    customOptions: { jsonPointers: true },
+    customOptions: { allErrors: true },
     plugins: [
       require('ajv-errors')
     ]

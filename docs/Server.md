@@ -402,28 +402,14 @@ If `false`, the server routes the incoming request as usual.
 <a name="factory-ajv"></a>
 ### `ajv`
 
-Configure the Ajv v6 instance used by Fastify without providing a custom one.
-
-+ Default:
-
-```js
-{
-  customOptions: {
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true,
-    allErrors: false,
-    nullable: true
-  },
-  plugins: []
-}
-```
+Configure the Ajv v8 instance used by Fastify without providing a custom one.
+The default configuration is explained in the [#schema-validator](Validation-and-Serialization.md#schema-validator) section.
 
 ```js
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      nullable: false // Refer to [ajv options](https://ajv.js.org/#options)
+      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/#options)
     },
     plugins: [
       require('ajv-merge-patch')
@@ -896,7 +882,7 @@ See [issue #2446](https://github.com/fastify/fastify/issues/2446) for an example
 this property helps to resolve.
 
 Another use case is to tweak all the schemas processing.
-Doing so it is possible to use Ajv v8, instead of the default v6! We will see an example of this later.
+Doing so it is possible to use Ajv v8 JTD or Standalone feature. To use such as JTD or the Standalone mode, refers to the [`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
 
 ```js
 const fastify = Fastify({
@@ -969,37 +955,6 @@ const fastify = Fastify({
     }
   }
 });
-```
-
-##### Ajv 8 as default schema validator
-
-Ajv 8 is the evolution of Ajv 6, and it has a lot of improvements and new features.
-To use the new Ajv 8 features such as JTD or the Standalone mode, refers to the [`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
-
-To use Ajv 8 as default schema validator, you can use the following code:
-
-```js
-const AjvCompiler = require('@fastify/ajv-compiler') // It must be the v2.x.x version
-
-// Note that the `format` schema's keyword is no longer supported on Ajv 8 by default.
-// So you need to add it manually.
-const ajvFormats = require('ajv-formats')
-
-const app = fastify({
-  ajv: {
-    customOptions: {
-      validateFormats: true
-    },
-    plugins: [ajvFormats]
-  },
-  schemaController: {
-    compilersFactory: {
-      buildValidator: AjvCompiler()
-    }
-  }
-})
-
-// Done! You can now use Ajv 8 options and keywords into your schemas!
 ```
 
 <a name="set-not-found-handler"></a>

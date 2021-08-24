@@ -44,7 +44,7 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `exposeHeadRoute`: creates a sibling `HEAD` route for any `GET` routes. Defaults to the value of [`exposeHeadRoutes`](Server.md#exposeHeadRoutes) instance option. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
-* `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
+* `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler. The default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv one.
 * `onRequest(request, reply, done)`: a [function](Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.

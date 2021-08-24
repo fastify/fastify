@@ -58,7 +58,7 @@ test('should fail immediately with invalid payload', t => {
     t.same(res.json(), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name'"
+      message: "body must have required property 'name'"
     })
     t.equal(res.statusCode, 400)
   })
@@ -183,10 +183,10 @@ test('should be able to attach validation to request', t => {
 
     t.same(res.json(), [{
       keyword: 'required',
-      dataPath: '',
+      instancePath: '',
       schemaPath: '#/required',
       params: { missingProperty: 'name' },
-      message: 'should have required property \'name\''
+      message: 'must have required property \'name\''
     }])
     t.equal(res.statusCode, 400)
   })
@@ -213,7 +213,7 @@ test('should respect when attachValidation is explicitly set to false', t => {
     t.same(JSON.parse(res.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: "body should have required property 'name'"
+      message: "body must have required property 'name'"
     })
     t.equal(res.statusCode, 400)
   })
@@ -243,7 +243,7 @@ test('Attached validation error should take precedence over setErrorHandler', t 
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.same(res.payload, "Attached: Error: body should have required property 'name'")
+    t.same(res.payload, "Attached: Error: body must have required property 'name'")
     t.equal(res.statusCode, 400)
   })
 })
@@ -336,7 +336,7 @@ test('should return a defined output message parsing AJV errors', t => {
     url: '/'
   }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body should have required property \'name\'"}')
+    t.equal(res.payload, '{"statusCode":400,"error":"Bad Request","message":"body must have required property \'name\'"}')
   })
 })
 
@@ -467,7 +467,7 @@ test('should call custom error formatter', t => {
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
       t.equal(errors.length, 1)
-      t.equal(errors[0].message, "should have required property 'name'")
+      t.equal(errors[0].message, "must have required property 'name'")
       t.equal(dataVar, 'body')
       return new Error('my error')
     }

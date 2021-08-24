@@ -1241,6 +1241,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
 test('contentTypeParser should add multiple custom parsers with RegExp values', t => {
   t.plan(10)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -1304,7 +1305,6 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(body.toString(), 'abcdefgmyExtension')
-      fastify.close()
     })
   })
 })
@@ -1312,6 +1312,7 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
 test('catch all content type parser should not interfere with content type parser', t => {
   t.plan(10)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -1379,7 +1380,6 @@ test('catch all content type parser should not interfere with content type parse
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(body.toString(), 'my texthtml')
-      fastify.close()
     })
   })
 })
@@ -1387,6 +1387,7 @@ test('catch all content type parser should not interfere with content type parse
 test('should prefer string content types over RegExp ones', t => {
   t.plan(7)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -1433,7 +1434,6 @@ test('should prefer string content types over RegExp ones', t => {
       t.error(err)
       t.equal(response.statusCode, 200)
       t.same(body.toString(), 'javascript')
-      fastify.close()
     })
   })
 })
@@ -1442,6 +1442,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
   t.plan(8)
 
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.addContentTypeParser('application/xml', function (req, payload, done) {
     payload.on('data', () => {})
@@ -1501,7 +1502,6 @@ test('removeContentTypeParser should support arrays of content types to remove',
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 415)
-      fastify.close()
     })
   })
 })

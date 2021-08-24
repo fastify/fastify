@@ -37,7 +37,19 @@ To customize this behavior you should use [`setErrorHandler`](Server.md#seterror
 From the [Hooks documentation](Hooks.md#manage-errors-from-a-hook): 
 > If you get an error during the execution of your hook, just pass it to `done()` and Fastify will automatically close the request and send the appropriate error code to the user.
 
-If you have defined a custom error handler using `setErrorHandler` the error will be routed there, otherwise it will be routed to Fastify’s generic error handler. Fastify's generic error handler will use the header and status code in the Error object if it exists. The headers and status code will not be automatically set if a custom error handler is provided.
+When a custom error handler has been defined through
+[`setErrorHandler`](./Server.md#seterrorhandler), the custom error handler will
+receive the error passed to the `done()` callback (or through other supported
+automatic error handling mechanisms). If `setErrorHandler` has been used
+multiple times to define multiple handlers, the error will be routed to the most
+precedent handler defined within the error [encapsulation context](./Encapsulation.md).
+Error handlers are fully encapsulated, so a `setErrorHandler` call within a
+plugin will limit the error handler to that plugin's context.
+
+The root error handler is Fastify's generic error handler. This error handler
+will use the headers and status code in the `Error` object, if they exist. The
+headers and status code will not be automatically set if a custom error handler
+is provided.
 
 Some things to consider in your custom error handler: 
 
@@ -46,10 +58,8 @@ Some things to consider in your custom error handler:
 	- strings, buffers, and streams are sent to the client, with appropriate headers (no serialization)
 
 - You can throw a new error in your custom error handler
-	- errors (new error or the received error parameter re-thrown) - will trigger the `onError` lifecycle hook and send the error to the user
-	- an error will not be triggered twice from a lifecycle hook - Fastify internally monitors the error invocation to avoid infinite loops for errors thrown in the reply phases of the lifecycle. (those after the route handler) 
-	- errors sent or thrown by a custom error handler will be routed to Fastify's default error handler
-
+	- errors (new error or the received error parameter re-thrown) - will call the parent `errorHandler`.
+  - `onError` hook will be triggered once only for the first error being thrown.
 
 <a name="fastify-error-codes"></a>
 ### Fastify Error Codes

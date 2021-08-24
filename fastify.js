@@ -45,7 +45,6 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
-const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -53,6 +52,8 @@ const {
   AVVIO_ERRORS_MAP,
   appendStackTrace
 } = require('./lib/errors')
+
+const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const onBadUrlContext = {
   config: {
@@ -72,22 +73,6 @@ function defaultBuildPrettyMeta (route) {
   })
 
   return Object.assign({}, cleanKeys)
-}
-
-function defaultErrorHandler (error, request, reply) {
-  setErrorHeaders(error, reply)
-  if (reply.statusCode < 500) {
-    reply.log.info(
-      { res: reply, err: error },
-      error && error.message
-    )
-  } else {
-    reply.log.error(
-      { req: request, res: reply, err: error },
-      error && error.message
-    )
-  }
-  reply.send(error)
 }
 
 function fastify (options) {
@@ -211,7 +196,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
-    [kErrorHandler]: defaultErrorHandler,
+    [kErrorHandler]: buildErrorHandler(),
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -338,7 +323,7 @@ function fastify (options) {
     },
     errorHandler: {
       get () {
-        return this[kErrorHandler]
+        return this[kErrorHandler].func
       }
     }
   })
@@ -656,7 +641,7 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this[kErrorHandler] = func.bind(this)
+    this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
 

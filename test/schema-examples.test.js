@@ -437,7 +437,7 @@ test('Example - schemas examples', t => {
     }
   }
 
-  fastify.get('/', {
+  fastify.post('/', {
     handler,
     schema: {
       body: refToId,

@@ -401,7 +401,7 @@ function fastify (options) {
 
   try {
     const dc = require('diagnostics_channel')
-    const initChannel = dc.channel('fastify:initialized')
+    const initChannel = dc.channel('fastify.initialized')
     if (initChannel.hasSubscribers) {
       initChannel.publish({ fastify })
     }

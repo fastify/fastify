@@ -567,9 +567,16 @@ fastify.route({
 
 ## Diagnostics Channel Hooks
 
+> **Note:** The `diagnostics_channel` is currently experimental on Node.js, so
+> its API is subject to change even in semver-patch releases of Node.js. For
+> versions of Node.js supported by Fastify where `diagnostics_channel` is
+> unavailable, the hook will use the
+> [polyfill](https://www.npmjs.com/package/diagnostics_channel) if it is
+> available. Otherwise this feature will not be present.
+
 Currently, one
 [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
-event, `'fastify:initialized'`, happens at initialization time. The Fastify
+event, `'fastify.initialized'`, happens at initialization time. The Fastify
 instance is passed into the hook as a property of the object passed in. At this
 point, the instance can be interacted with to add hooks, plugins, routes or any
 other sort of modification.
@@ -582,7 +589,7 @@ tools first" fashion.
 ```js
 const tracer = /* retrieved from elsehwere in the package */
 const dc = require('diagnostics_channel')
-const channel = dc.channel('fastify:initialized')
+const channel = dc.channel('fastify.initialized')
 const spans = new WeakMap()
 
 channel.subscribe(function ({ fastify }) {

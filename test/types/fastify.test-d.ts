@@ -72,6 +72,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
   }
 }))
 const customLogger = {
+  level: 'info',
   info: () => { },
   warn: () => { },
   error: () => { },

@@ -16,9 +16,9 @@ export type SerializerFn = pino.SerializerFn
 
 export type Bindings = pino.Bindings
 
-export type FastifyLoggerInstance = pino.Logger
+export type FastifyLoggerInstance = pino.BaseLogger
 
-export type PrettyOptions = pino.PrettyOptions
+export type PrettyOptions = pino.PrettyOptions & { suppressFlushSyncWarning?: boolean }
 
 /**
  * Fastify Custom Logger options. To enable configuration of all Pino options,

@@ -30,10 +30,6 @@ How can you efficiently handle the resources of your server, knowing that you ar
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 
-### Requirements
-
-Node.js v10 LTS (10.16.0) or later.
-
 ### Quick start
 
 Create a folder and make it your current working directory:
@@ -88,6 +84,13 @@ yarn add fastify
 
 ```js
 // Require the framework and instantiate it
+
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -107,6 +110,12 @@ fastify.listen(3000, (err, address) => {
 with async-await:
 
 ```js
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })

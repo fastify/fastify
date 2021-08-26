@@ -1,26 +1,27 @@
 'use strict'
 
 const { test } = require('tap')
+const Joi = require('@hapi/joi')
 const AJV = require('ajv')
 const S = require('fluent-json-schema')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 
-const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
+const buildValidatorAJV6 = require('@fastify/ajv-compiler-6')
 
-test('Ajv8 usage instead of the bundle one', t => {
-  t.plan(1)
+test('Ajv6 usage instead of the bundle one', t => {
+  t.plan(2)
 
-  t.test('use new ajv8 option', t => {
+  t.test('use old ajv6 option', t => {
     t.plan(2)
     const fastify = Fastify({
       ajv: {
-        customOptions: { strictRequired: true }
+        customOptions: { jsonPointers: true }
       },
       schemaController: {
         compilersFactory: {
-          buildValidator: buildValidatorAJV8()
+          buildValidator: buildValidatorAJV6()
         }
       }
     })
@@ -41,64 +42,39 @@ test('Ajv8 usage instead of the bundle one', t => {
     })
 
     fastify.ready(err => {
-      t.ok(err)
-      t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
-    })
-  })
-})
-
-test('Ajv8 usage with plugins', { skip: 'until npm 7.2 will be bundled with node.js 16 https://github.com/npm/cli/issues/3147' }, t => {
-  t.plan(2)
-
-  t.test('use new ajv8 option', t => {
-    t.plan(3)
-    const fastify = Fastify({
-      ajv: {
-        customOptions: { validateFormats: true },
-        plugins: [require('ajv-formats')]
-      },
-      schemaController: {
-        compilersFactory: {
-          buildValidator: buildValidatorAJV8()
-        }
-      }
-    })
-
-    callIt(fastify, (err, res) => {
       t.error(err)
-      t.equal(res.statusCode, 400)
-      t.equal(res.json().message, 'body must match format "date"')
+      t.pass('the removed ajv6 option let the startup pass')
     })
   })
 
-  t.test('use new ajv8 option - avoid check', t => {
+  t.test('use old ajv6 option within a response schema', t => {
     t.plan(2)
     const fastify = Fastify({
-      ajv: {
-        customOptions: { validateFormats: false }
-      },
       schemaController: {
         compilersFactory: {
-          buildValidator: buildValidatorAJV8()
+          buildValidator: buildValidatorAJV6()
         }
       }
     })
 
-    callIt(fastify, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 200)
-    })
-  })
-
-  function callIt (fastify, cb) {
     fastify.post('/', {
       schema: {
         body: {
           type: 'object',
+          required: ['missing'],
           properties: {
             foo: {
-              type: 'string',
-              format: 'date'
+              type: 'string'
+            }
+          }
+        },
+        response: {
+          '2xx': {
+            type: 'object',
+            properties: {
+              ok: {
+                type: 'integer'
+              }
             }
           }
         }
@@ -106,12 +82,11 @@ test('Ajv8 usage with plugins', { skip: 'until npm 7.2 will be bundled with node
       handler (req, reply) { reply.send({ ok: 1 }) }
     })
 
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { foo: '99' }
-    }, cb)
-  }
+    fastify.ready(err => {
+      t.error(err)
+      t.pass('startup successfull')
+    })
+  })
 })
 
 test('Ajv plugins array parameter', t => {
@@ -119,7 +94,6 @@ test('Ajv plugins array parameter', t => {
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        jsonPointers: true,
         allErrors: true
       },
       plugins: [
@@ -747,5 +721,36 @@ test('multiple refs with the same ids', t => {
     t.error(err)
     t.equal(res.statusCode, 200)
     t.same(res.json(), { hello: 'world' })
+  })
+})
+
+test('JOI validation overwrite request headers', t => {
+  t.plan(3)
+  const schemaValidator = ({ schema }) => data => {
+    const validationResult = schema.validate(data)
+    return validationResult
+  }
+
+  const fastify = Fastify()
+  fastify.setValidatorCompiler(schemaValidator)
+
+  fastify.get('/', {
+    schema: {
+      headers: Joi.object({
+        'user-agent': Joi.string().required(),
+        host: Joi.string().required()
+      })
+    }
+  }, (request, reply) => {
+    reply.send(request.headers)
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), {
+      'user-agent': 'lightMyRequest',
+      host: 'localhost:80'
+    })
   })
 })

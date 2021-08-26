@@ -1757,7 +1757,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
 
   t.test('Only / is registered', t => {
     t.plan(3)
-    const fastify = Fastify({ logger: true })
+    const fastify = Fastify()
     fastify.get('/', () => t.fail('we should not be here'))
     fastify.inject({
       url: '/%c0',

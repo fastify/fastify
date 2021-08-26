@@ -1335,6 +1335,7 @@ test('should emit deprecation warning when trying to modify the reply.sent prope
   const deprecationCode = 'FSTDEP010'
   warning.emitted.delete(deprecationCode)
 
+  process.removeAllListeners('warning')
   process.on('warning', onWarning)
   function onWarning (warning) {
     t.equal(warning.name, 'FastifyDeprecation')

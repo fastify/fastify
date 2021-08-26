@@ -163,7 +163,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       error: 'Bad Request',
-      message: "body should have required property 'address'",
+      message: "body must have required property 'address'",
       statusCode: 400
     })
   })
@@ -236,8 +236,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
     type: 'array',
-    items: { $ref: 'http://example.com/asset.json#' },
-    default: []
+    items: { $ref: 'http://example.com/asset.json#' }
   }
 
   fastify.post('/', {
@@ -273,7 +272,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       t.equal(res.statusCode, 400)
       t.same(res.json(), {
         error: 'Bad Request',
-        message: 'body[0].location.email should match format "email"',
+        message: 'body/0/location/email must match format "email"',
         statusCode: 400
       })
     })
@@ -529,11 +528,13 @@ test('do not crash if status code serializer errors', async t => {
   const fastify = Fastify()
 
   const requiresFoo = {
+    type: 'object',
     properties: { foo: { type: 'string' } },
     required: ['foo']
   }
 
   const someUserErrorType2 = {
+    type: 'object',
     properties: {
       code: { type: 'number' }
     },

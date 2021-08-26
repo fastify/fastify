@@ -1,7 +1,6 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import * as LightMyRequest from 'light-my-request'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
@@ -15,6 +14,7 @@ import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
+import { Options as FJSOptions } from 'fast-json-stringify'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -55,7 +55,8 @@ export type FastifyHttp2SecureOptions<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
-  https: http2.SecureServerOptions
+  https: http2.SecureServerOptions,
+  http2SessionTimeout?: number
 }
 
 export type FastifyHttp2Options<
@@ -63,7 +64,7 @@ export type FastifyHttp2Options<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
-  http2SessionTimeout?: number,
+  http2SessionTimeout?: number
 }
 
 export type FastifyHttpsOptions<
@@ -102,6 +103,7 @@ export type FastifyServerOptions<
   onProtoPoisoning?: ProtoAction,
   onConstructorPoisoning?: ConstructorAction,
   logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,
+  serializerOpts?: FJSOptions | Record<string, unknown>,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
@@ -122,7 +124,7 @@ export type FastifyServerOptions<
     deriveVersion<Context>(req: Object, ctx?: Context): string // not a fan of using Object here. Also what is Context? Can either of these be better defined?
   },
   constraints?: {
-    [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>>,
+    [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
   },
   return503OnClosing?: boolean,
   ajv?: {
@@ -159,10 +161,11 @@ export interface ValidationResult {
 }
 
 /* Export all additional types */
+export type { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 export { FastifyRequest, RequestGenericInterface } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
-export { FastifyInstance } from './types/instance'
+export { FastifyInstance, PrintRoutesOptions } from './types/instance'
 export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext, FastifyContextConfig } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'

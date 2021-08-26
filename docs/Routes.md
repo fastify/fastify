@@ -34,7 +34,9 @@ fastify.route(options)
 They need to be in
   [JSON Schema](https://json-schema.org/) format, check [here](Validation-and-Serialization.md) for more info.
 
-  * `body`: validates the body of the request if it is a POST, PUT, or PATCH method.
+  * `body`: validates the body of the request if it is a `'POST'`, `'PUT'`, `'PATCH'`, `'OPTIONS'` or `'DELETE'` method.
+            Validation can only be successful if the request payload has been parsed by a content type parser before.
+            See [here](ContentTypeParser.md) for more details.
   * `querystring` or `query`: validates the querystring. This can be a complete JSON
   Schema object, with the property `type` of `object` and `properties` object of parameters, or
   simply the values of what would be contained in the `properties` object as shown below.
@@ -42,7 +44,7 @@ They need to be in
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
 * `exposeHeadRoute`: creates a sibling `HEAD` route for any `GET` routes. Defaults to the value of [`exposeHeadRoutes`](Server.md#exposeHeadRoutes) instance option. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
-* `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
+* `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler. The default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv one.
 * `onRequest(request, reply, done)`: a [function](Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
@@ -69,6 +71,11 @@ They need to be in
 
   `reply` is defined in [Reply](Reply.md).
 
+**Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
+`preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
+more detail in [Hooks](Hooks.md). Additionally, to send a response before the
+request is handled by the `handler` please refer to
+[Respond to a request from a hook](Hooks.md#respond-to-a-request-from-a-hook).
 
 Example:
 ```js
@@ -422,7 +429,7 @@ Fastify will require a request `Accept-Version` header to be set if the route ha
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { version: '1.2.0'} },
+  constraints: { version: '1.2.0' },
   handler: function (request, reply) {
     reply.send({ hello: 'world' })
   }
@@ -470,7 +477,7 @@ You can provide a `host` key in the `constraints` route option for to limit that
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { host: 'auth.fastify.io' } },
+  constraints: { host: 'auth.fastify.io' },
   handler: function (request, reply) {
     reply.send('hello world from auth.fastify.io')
   }
@@ -503,7 +510,7 @@ RegExp `host` constraints can also be specified allowing constraining to hosts m
 fastify.route({
   method: 'GET',
   url: '/',
-  { constraints: { host: /.*\.fastify\.io/ } }, // will match any subdomain of fastify.io
+  constraints: { host: /.*\.fastify\.io/ }, // will match any subdomain of fastify.io
   handler: function (request, reply) {
     reply.send('hello world from ' + request.headers.host)
   }

@@ -35,7 +35,7 @@ const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTI
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')
-const { Hooks, hookRunnerApplication } = require('./lib/hooks')
+const { Hooks, hookRunnerApplication, supportedHooks } = require('./lib/hooks')
 const { createLogger } = require('./lib/logger')
 const pluginUtils = require('./lib/pluginUtils')
 const reqIdGenFactory = require('./lib/reqIdGenFactory')
@@ -45,7 +45,6 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const { defaultInitOptions } = getSecuredInitialConfig
-const setErrorHeaders = require('./lib/setErrorHeaders')
 
 const {
   FST_ERR_BAD_URL,
@@ -54,6 +53,8 @@ const {
   appendStackTrace
 } = require('./lib/errors')
 
+const { buildErrorHandler } = require('./lib/error-handler.js')
+
 const onBadUrlContext = {
   config: {
   },
@@ -61,20 +62,17 @@ const onBadUrlContext = {
   onError: []
 }
 
-function defaultErrorHandler (error, request, reply) {
-  setErrorHeaders(error, reply)
-  if (reply.statusCode < 500) {
-    reply.log.info(
-      { res: reply, err: error },
-      error && error.message
-    )
-  } else {
-    reply.log.error(
-      { req: request, res: reply, err: error },
-      error && error.message
-    )
-  }
-  reply.send(error)
+function defaultBuildPrettyMeta (route) {
+  // return a shallow copy of route's sanitized context
+
+  const cleanKeys = {}
+  const allowedProps = ['errorHandler', 'logLevel', 'logSerializers']
+
+  allowedProps.concat(supportedHooks).forEach(k => {
+    cleanKeys[k] = route.store[k]
+  })
+
+  return Object.assign({}, cleanKeys)
 }
 
 function fastify (options) {
@@ -163,7 +161,8 @@ function fastify (options) {
       constraints: constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
-      caseSensitive: options.caseSensitive
+      caseSensitive: options.caseSensitive,
+      buildPrettyMeta: defaultBuildPrettyMeta
     }
   })
 
@@ -197,7 +196,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
-    [kErrorHandler]: defaultErrorHandler,
+    [kErrorHandler]: buildErrorHandler(),
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -263,6 +262,8 @@ function fastify (options) {
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
     getDefaultJsonParser: ContentTypeParser.defaultParsers.getDefaultJsonParser,
     defaultTextParser: ContentTypeParser.defaultParsers.defaultTextParser,
+    removeContentTypeParser: ContentTypeParser.helpers.removeContentTypeParser,
+    removeAllContentTypeParsers: ContentTypeParser.helpers.removeAllContentTypeParsers,
     // Fastify architecture methods (initialized by Avvio)
     register: null,
     after: null,
@@ -283,7 +284,7 @@ function fastify (options) {
     // fake http injection
     inject: inject,
     // pretty print of the registered routes
-    printRoutes: router.printRoutes,
+    printRoutes,
     // custom error handling
     setNotFoundHandler: setNotFoundHandler,
     setErrorHandler: setErrorHandler,
@@ -322,7 +323,7 @@ function fastify (options) {
     },
     errorHandler: {
       get () {
-        return this[kErrorHandler]
+        return this[kErrorHandler].func
       }
     }
   })
@@ -540,9 +541,8 @@ function fastify (options) {
 
   function defaultClientErrorHandler (err, socket) {
     // In case of a connection reset, the socket has been destroyed and there is nothing that needs to be done.
-    // https://github.com/fastify/fastify/issues/2036
-    // https://github.com/nodejs/node/issues/33302
-    if (err.code === 'ECONNRESET') {
+    // https://nodejs.org/api/http.html#http_event_clienterror
+    if (err.code === 'ECONNRESET' || socket.destroyed) {
       return
     }
 
@@ -556,11 +556,14 @@ function fastify (options) {
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
     this.log.trace({ err }, 'client error')
+    // Copying standard node behaviour
+    // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
-    if (socket.writable) {
-      socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+    if (socket.writable && socket.bytesWritten === 0) {
+      socket.write(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
     }
+    socket.destroy(err)
   }
 
   // If the router does not match any route, every request will land here
@@ -638,8 +641,14 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this[kErrorHandler] = func.bind(this)
+    this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
+  }
+
+  function printRoutes (opts = {}) {
+    // includeHooks:true - shortcut to include all supported hooks exported by fastify.Hooks
+    opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
+    return router.printRoutes(opts)
   }
 }
 

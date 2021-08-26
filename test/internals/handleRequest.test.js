@@ -39,13 +39,8 @@ test('handleRequest function - invoke with error', t => {
 })
 
 test('handler function - invalid schema', t => {
-  t.plan(2)
+  t.plan(1)
   const res = {}
-  res.end = () => {
-    t.equal(res.statusCode, 400)
-    t.pass()
-  }
-  res.writeHead = () => {}
   res.log = { error: () => {}, info: () => {} }
   const context = {
     config: {
@@ -60,6 +55,7 @@ test('handler function - invalid schema', t => {
         }
       }
     },
+    errorHandler: { func: () => { t.pass('errorHandler called') } },
     handler: () => {},
     Reply: Reply,
     Request: Request,

@@ -182,7 +182,7 @@ module.exports.payloadMethod = function (method, t) {
         t.equal(response.statusCode, 400)
         t.same(body, {
           error: 'Bad Request',
-          message: 'body.hello should be integer',
+          message: 'body/hello must be integer',
           statusCode: 400
         })
       })

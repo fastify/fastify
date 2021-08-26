@@ -21,6 +21,13 @@ yarn add fastify
 Let's write our first server:
 ```js
 // Require the framework and instantiate it
+
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -36,13 +43,19 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 ```
 
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br>
 *(We also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks.)*
 ```js
+// ESM
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -89,6 +102,26 @@ As with JavaScript, where everything is an object, with Fastify everything is a 
 Before digging into it, let's see how it works!<br>
 Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](Routes.md) docs).
 ```js
+// ESM
+import Fastify from 'fastify'
+import firstRoute from './our-first-route'
+const fastify = Fastify({
+  logger: true
+})
+
+fastify.register(firstRoute)
+
+fastify.listen(3000, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  // Server is now listening on ${address}
+})
+```
+
+```js
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -100,7 +133,7 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 ```
 
@@ -132,6 +165,28 @@ npm i --save fastify-plugin fastify-mongodb
 
 **server.js**
 ```js
+// ESM
+import Fastify from 'fastify'
+import dbConnector from './our-db-connector'
+import firstRoute from './our-first-route'
+
+const fastify = Fastify({
+  logger: true
+})
+fastify.register(dbConnector)
+fastify.register(firstRoute)
+
+fastify.listen(3000, function (err, address) {
+  if (err) {
+    fastify.log.error(err)
+    process.exit(1)
+  }
+  // Server is now listening on ${address}
+})
+```
+
+```js
+// CommonJs
 const fastify = require('fastify')({
   logger: true
 })
@@ -144,13 +199,31 @@ fastify.listen(3000, function (err, address) {
     fastify.log.error(err)
     process.exit(1)
   }
-  fastify.log.info(`server listening on ${address}`)
+  // Server is now listening on ${address}
 })
 
 ```
 
 **our-db-connector.js**
 ```js
+// ESM
+import fastifyPlugin from 'fastify-plugin'
+import fastifyMongo from 'fastify-mongodb'
+
+async function dbConnector (fastify, options) {
+  fastify.register(fastifyMongo, {
+    url: 'mongodb://localhost:27017/test_database'
+  })
+}
+
+// Wrapping a plugin function with fastify-plugin exposes the decorators	
+// and hooks, declared inside the plugin to the parent scope.
+module.exports = fastifyPlugin(dbConnector)
+
+```
+
+```js
+// CommonJs
 const fastifyPlugin = require('fastify-plugin')
 
 async function dbConnector (fastify, options) {
@@ -184,7 +257,7 @@ async function routes (fastify, options) {
 
   fastify.get('/animals/:animal', async (request, reply) => {
     const result = await collection.findOne({ animal: request.params.animal })
-    if (result === null) {
+    if (!result) {
       throw new Error('Invalid value')
     }
     return result
@@ -200,7 +273,7 @@ As you can see, we used `register` for both the database connector and the regis
 This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
 
-We have also used the `decorate` API to add custom objects to the Fastify namespace, making them available for use everywhere. Use of this API is encouraged to facilitate easy code reuse and to decrease code or logic duplication.
+The MongoDB plugin uses the `decorate` API to add custom objects to the Fastify instance, making them available for use everywhere. Use of this API is encouraged to facilitate easy code reuse and to decrease code or logic duplication.
 
 To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](Plugins-Guide.md).
 
@@ -242,6 +315,8 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 ### Validate your data
 Data validation is extremely important and a core concept of the framework.<br>
 To validate incoming requests, Fastify uses [JSON Schema](https://json-schema.org/).
+(JTD schemas are loosely supported, but `jsonShorthand` must be disabled first)
+
 Let's look at an example demonstrating validation for routes:
 ```js
 const opts = {

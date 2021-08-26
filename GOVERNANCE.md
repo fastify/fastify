@@ -80,7 +80,7 @@ The consensus to grant a new candidate Collaborator status is reached when:
 - at least one of the Lead Maintainers approve
 - at least two of the Team Members approve
 
-After these conditions are satisfied, the [onboarding process](#onboarding-collaborators) may start.
+After these conditions are satisfied, the [onboarding process](CONTRIBUTING.md#onboarding-collaborators) may start.
 
 
 ## Lead Maintainers nominations

@@ -4,6 +4,7 @@ import { RawServerDefault, RequestParamsDefault, RequestHeadersDefault, RequestQ
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
+import { FastifyInstance } from '../../types/instance'
 
 interface RequestBody {
   content: string;
@@ -55,6 +56,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyLoggerInstance>(request.log)
   expectType<RawRequestDefaultExpression['socket']>(request.socket)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
+  expectType<FastifyInstance>(request.server)
 }
 
 const postHandler: Handler = function (request) {
@@ -66,6 +68,7 @@ const postHandler: Handler = function (request) {
   expectType<string>(request.query.from)
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
+  expectType<FastifyInstance>(request.server)
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
@@ -77,6 +80,7 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<string>(request.query.from)
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
+  expectType<FastifyInstance>(request.server)
 }
 
 const server = fastify()

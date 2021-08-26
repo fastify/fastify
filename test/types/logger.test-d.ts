@@ -1,6 +1,7 @@
 import { expectType } from 'tsd'
 import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyRequest, FastifyReply } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
+import * as fs from 'fs'
 import P from 'pino'
 
 expectType<FastifyLoggerInstance>(fastify().log)
@@ -77,6 +78,19 @@ ServerResponse
 
 expectType<FastifyLoggerInstance>(serverWithLogOptions.log)
 
+const serverWithFileOption = fastify<
+Server,
+IncomingMessage,
+ServerResponse
+>({
+  logger: {
+    level: 'info',
+    file: '/path/to/file'
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverWithFileOption.log)
+
 const serverAutoInferringTypes = fastify({
   logger: {
     level: 'info'
@@ -93,6 +107,15 @@ const serverWithAutoInferredPino = fastify({
 })
 
 expectType<P.Logger>(serverWithAutoInferredPino.log)
+
+const serverAutoInferredFileOption = fastify({
+  logger: {
+    level: 'info',
+    file: '/path/to/file'
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverAutoInferredFileOption.log)
 
 const serverAutoInferredPinoPrettyBooleanOption = fastify({
   logger: {
@@ -157,3 +180,9 @@ const serverAutoInferredSerializerObjectOption = fastify({
 })
 
 expectType<FastifyLoggerInstance>(serverAutoInferredSerializerObjectOption.log)
+
+const passStreamAsOption = fastify({
+  logger: {
+    stream: fs.createWriteStream('/tmp/stream.out')
+  }
+})

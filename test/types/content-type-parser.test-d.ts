@@ -62,3 +62,11 @@ expectType<FastifyBodyParser<string>>(fastify().getDefaultJsonParser('error', 'i
 expectError(fastify().getDefaultJsonParser('error', 'skip'))
 
 expectError(fastify().getDefaultJsonParser('nothing', 'ignore'))
+
+expectType<void>(fastify().removeAllContentTypeParsers())
+expectError(fastify().removeAllContentTypeParsers('contentType'))
+
+expectType<void>(fastify().removeContentTypeParser('contentType'))
+expectType<void>(fastify().removeContentTypeParser(/contentType+.*/))
+expectType<void>(fastify().removeContentTypeParser(['contentType', /contentType+.*/]))
+expectError(fastify().removeContentTypeParser({}))

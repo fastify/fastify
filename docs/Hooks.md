@@ -564,3 +564,38 @@ fastify.route({
 ```
 
 **Note**: both options also accept an array of functions.
+
+## Diagnostics Channel Hooks
+
+Currently, one
+[`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
+event, `'fastify:initialized'`, happens at initialization time. The Fastify
+instance is passed into the hook as a property of the object passed in. At this
+point, the instance can be interacted with to add hooks, plugins, routes or any
+other sort of modification.
+
+For example, a tracing package might do something like the following (which is,
+of course, a simplification). This would be in a file loaded in the
+initialization of the tracking package, in the typical "require instrumentation
+tools first" fashion.
+
+```js
+const tracer = /* retrieved from elsehwere in the package */
+const dc = require('diagnostics_channel')
+const channel = dc.channel('fastify:initialized')
+const spans = new WeakMap()
+
+channel.subscribe(function ({ fastify }) {
+  fastify.addHook('onRequest', (request, reply, done) => {
+    const span = tracer.startSpan('fastify.request')
+    spans.set(reqest, span)
+    done()
+  })
+
+  fastify.addHook('onResponse', (request, reply, done) => {
+    const span = spans.get(request)
+    span.finish()
+    done()
+  })
+})
+```

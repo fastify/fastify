@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [10, 12]
+        node-version: [12, 14]
         os: [ubuntu-18.04]
 
     steps:
@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         # Maintenance and active LTS
-        node-version: [10, 12]
+        node-version: [12, 14]
         os: [ubuntu-18.04]
 
     steps:

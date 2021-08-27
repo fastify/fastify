@@ -1,5 +1,12 @@
 import { expectType } from 'tsd'
-import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyRequest, FastifyReply } from '../../fastify'
+import fastify, {
+  FastifyLogFn,
+  LogLevel,
+  FastifyLoggerInstance,
+  FastifyRequest,
+  FastifyReply,
+  FastifyBaseLogger
+} from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
@@ -17,7 +24,7 @@ class Foo {}
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
 })
 
-interface CustomLogger extends FastifyLoggerInstance {
+interface CustomLogger extends FastifyBaseLogger {
   customMethod(msg: string, ...args: unknown[]): void;
 }
 
@@ -97,7 +104,7 @@ const serverAutoInferringTypes = fastify({
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAutoInferringTypes.log)
+expectType<FastifyBaseLogger>(serverAutoInferringTypes.log)
 
 const serverWithAutoInferredPino = fastify({
   logger: P({
@@ -115,7 +122,7 @@ const serverAutoInferredFileOption = fastify({
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAutoInferredFileOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
 const serverAutoInferredPinoPrettyBooleanOption = fastify({
   logger: {
@@ -123,7 +130,7 @@ const serverAutoInferredPinoPrettyBooleanOption = fastify({
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyBooleanOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyBooleanOption.log)
 
 const serverAutoInferredPinoPrettyObjectOption = fastify({
   logger: {
@@ -144,7 +151,7 @@ const serverAutoInferredPinoPrettyObjectOption = fastify({
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAutoInferredPinoPrettyObjectOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyObjectOption.log)
 
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
@@ -179,7 +186,7 @@ const serverAutoInferredSerializerObjectOption = fastify({
   }
 })
 
-expectType<FastifyLoggerInstance>(serverAutoInferredSerializerObjectOption.log)
+expectType<FastifyBaseLogger>(serverAutoInferredSerializerObjectOption.log)
 
 const passStreamAsOption = fastify({
   logger: {

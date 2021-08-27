@@ -16,7 +16,10 @@ export type SerializerFn = pino.SerializerFn
 
 export type Bindings = pino.Bindings
 
-export type FastifyLoggerInstance = pino.BaseLogger
+export type FastifyLoggerInstance = pino.Logger
+export type FastifyBaseLogger = pino.BaseLogger & {
+  child(bindings: Bindings): FastifyBaseLogger
+}
 
 export type PrettyOptions = pino.PrettyOptions & { suppressFlushSyncWarning?: boolean }
 

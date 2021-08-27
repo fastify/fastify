@@ -576,7 +576,7 @@ fastify.route({
 
 Currently, one
 [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
-event, `'fastify.initialized'`, happens at initialization time. The Fastify
+event, `'fastify.initialization'`, happens at initialization time. The Fastify
 instance is passed into the hook as a property of the object passed in. At this
 point, the instance can be interacted with to add hooks, plugins, routes or any
 other sort of modification.

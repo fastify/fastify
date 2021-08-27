@@ -595,7 +595,7 @@ const spans = new WeakMap()
 channel.subscribe(function ({ fastify }) {
   fastify.addHook('onRequest', (request, reply, done) => {
     const span = tracer.startSpan('fastify.request')
-    spans.set(reqest, span)
+    spans.set(request, span)
     done()
   })
 

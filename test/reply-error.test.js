@@ -526,7 +526,6 @@ test('should trigger error handlers if a sync route throws any non-error object'
   t.equal(JSON.parse(reply.body).foo, 'bar')
 })
 
-// Issue 3283 https://github.com/fastify/fastify/issues/3283
 test('setting content-type on reply object should not hang the server case 1', t => {
   t.plan(2)
   const fastify = Fastify()

@@ -546,8 +546,8 @@ test('setting content-type on reply object should not hang the server case 1', t
   })
 })
 
-test('setting content-type on reply object should not hang the server case 2', t => {
-  t.plan(2)
+test('setting content-type on reply object should not hang the server case 2', async t => {
+  t.plan(1)
   const fastify = Fastify()
 
   fastify.get('/', (req, reply) => {
@@ -557,22 +557,24 @@ test('setting content-type on reply object should not hang the server case 2', t
       .send({ bar: 'foo', baz: 'foobar' })
   })
 
-  fastify.inject({
-    url: '/',
-    method: 'GET'
-  }, (err, res) => {
-    //  the server should not hang and send a 500 reply
-    t.error(err)
-    t.same(
-      {
-        error: 'Internal Server Error',
-        message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
-        statusCode: 500,
-        code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE'
-      },
-      JSON.parse(res.payload)
-    )
-  })
+  try {
+    await fastify.listen(0)
+    const res = await fastify.inject({
+      url: '/',
+      method: 'GET'
+    })
+    t.same({
+      error: 'Internal Server Error',
+      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      statusCode: 500,
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE'
+    },
+    res.json())
+  } catch (error) {
+    t.error(error)
+  } finally {
+    await fastify.close()
+  }
 })
 
 test('setting content-type on reply object should not hang the server case 3', t => {

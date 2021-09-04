@@ -7,7 +7,7 @@ import fastify, {
   LightMyRequestChain,
   LightMyRequestResponse,
   LightMyRequestCallback,
-  InjectOptions
+  InjectOptions, FastifyBaseLogger
 } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
@@ -54,9 +54,9 @@ expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' }
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: { } } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: { } } }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
   logger: {
     level: 'info',
     genReqId: () => 'request-id',
@@ -87,6 +87,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
   }
 }))
 const customLogger = {
+  level: 'info',
   info: () => { },
   warn: () => { },
   error: () => { },
@@ -95,7 +96,7 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyLoggerInstance>>(fastify({ logger: customLogger }))
+expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: customLogger }))
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))

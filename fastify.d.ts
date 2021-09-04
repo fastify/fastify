@@ -5,7 +5,7 @@ import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
-import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
+import {FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions} from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import { Options as AjvOptions } from '@fastify/ajv-compiler'
@@ -28,31 +28,31 @@ declare function fastify<
   Server extends http2.Http2SecureServer,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 >(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 >(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 >(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 export default fastify
 
 export type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   https: http2.SecureServerOptions,
@@ -61,7 +61,7 @@ export type FastifyHttp2SecureOptions<
 
 export type FastifyHttp2Options<
   Server extends http2.Http2Server,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   http2SessionTimeout?: number
@@ -69,7 +69,7 @@ export type FastifyHttp2Options<
 
 export type FastifyHttpsOptions<
   Server extends https.Server,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
   https: https.ServerOptions
 }
@@ -90,7 +90,7 @@ export interface ConnectionError extends Error {
  */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = {
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
@@ -166,7 +166,7 @@ export { FastifyRequest, RequestGenericInterface } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
 export { FastifyInstance, PrintRoutesOptions } from './types/instance'
-export { FastifyLoggerOptions, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
+export { FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext, FastifyContextConfig } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'

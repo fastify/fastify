@@ -25,7 +25,9 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 
 <br />
 
- - [Requirements](./README.md#requirements)
+An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
+How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
+
  - [Quick start](./README.md#quick-start)
  - [Install](./README.md#install)
  - [Example](./README.md#example)
@@ -38,9 +40,6 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
  - [Team](./README.md#team)
  - [Hosted by](./README.md#hosted-by)
  - [License](./README.md#license)
-
-An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
-How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 

@@ -230,7 +230,7 @@ test('Example Joi', t => {
   const fastify = Fastify()
   const handler = () => { }
 
-  const Joi = require('@hapi/joi')
+  const Joi = require('joi')
   fastify.post('/the/url', {
     schema: {
       body: Joi.object().keys({

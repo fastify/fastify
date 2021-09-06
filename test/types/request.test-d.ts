@@ -63,11 +63,11 @@ const getHandler: RouteHandler = function (request, _reply) {
 }
 
 const postHandler: Handler = function (request) {
-  expectType<RequestBody>(request.body)
+  expectType<RequestBody>(request.body!)
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  expectType<string>(request.body.content)
+  expectType<string>(request.body!.content)
   expectType<string>(request.query.from)
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
@@ -75,11 +75,11 @@ const postHandler: Handler = function (request) {
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
-  expectType<RequestBody>(request.body)
+  expectType<RequestBody>(request.body!)
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  expectType<string>(request.body.content)
+  expectType<string>(request.body!.content)
   expectType<string>(request.query.from)
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])

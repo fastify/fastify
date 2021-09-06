@@ -61,7 +61,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   }
 
   fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
-    expectType<BodyInterface>(req.body)
+    expectType<BodyInterface>(req.body!)
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
     expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -76,7 +76,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     config: { foo: 'bar', bar: 100 },
     prefixTrailingSlash: 'slash',
     onRequest: (req, res, done) => { // these handlers are tested in `hooks.test-d.ts`
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -84,7 +84,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     preParsing: (req, res, payload, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -95,7 +95,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
     },
     preValidation: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -103,7 +103,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     preHandler: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -111,7 +111,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     onResponse: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -120,7 +120,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.statusCode)
     },
     onError: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -128,7 +128,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     preSerialization: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -136,7 +136,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     onSend: (req, res, done) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)
@@ -144,7 +144,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(res.context.config.bar)
     },
     handler: (req, res) => {
-      expectType<BodyInterface>(req.body)
+      expectType<BodyInterface>(req.body!)
       expectType<QuerystringInterface>(req.query)
       expectType<ParamsInterface>(req.params)
       expectType<http.IncomingHttpHeaders & HeadersInterface>(req.headers)

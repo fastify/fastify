@@ -26,7 +26,7 @@ export interface FastifyRequest<
   headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   server: FastifyInstance;
-  body: RouteGeneric['Body'];
+  body?: RouteGeneric['Body'];
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };

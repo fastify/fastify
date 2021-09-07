@@ -171,7 +171,7 @@
   "dependencies": {
     "@fastify/ajv-compiler": "^2.1.0",
     "abstract-logging": "^2.0.1",
-    "avvio": "fastify/avvio#next",
+    "avvio": "^8.0.0",
     "fast-json-stringify": "^2.7.9",
     "fastify-error": "^0.3.1",
     "fastify-warning": "^0.2.0",

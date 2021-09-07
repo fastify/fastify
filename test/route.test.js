@@ -5,7 +5,7 @@ const split = require('split2')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
 

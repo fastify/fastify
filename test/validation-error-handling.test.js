@@ -1,7 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const Fastify = require('..')
 
 const schema = {

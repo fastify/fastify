@@ -150,3 +150,4 @@ out.tap
 # test certification
 test/https/fastify.cert
 test/https/fastify.key
+/test/types/import.js

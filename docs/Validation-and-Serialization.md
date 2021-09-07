@@ -369,7 +369,7 @@ _**Note:** If you use a custom instance of any validator (even Ajv), you have to
 The `setValidatorCompiler` function makes it easy to substitute `ajv` with almost any JavaScript validation library ([joi](https://github.com/hapijs/joi/), [yup](https://github.com/jquense/yup/), ...) or a custom one:
 
 ```js
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 
 fastify.post('/the/url', {
   schema: {

@@ -39,7 +39,9 @@ For a concrete example, consider the situation where:
 
 There are many reverse proxy solutions available, and your environment may
 dictate the solution to use, e.g. AWS or GCP. Given the above, we could use
-[HAProxy][haproxy] to solve these requirements:
+[HAProxy][haproxy] or [Nginx][nginx] to solve these requirements:
+
+### HAProxy
 
 ```conf
 # The global section defines base HAProxy (engine) instance configuration.
@@ -160,6 +162,83 @@ backend static-backend
 [scale-horiz]: https://en.wikipedia.org/wiki/Scalability#Horizontal
 [why-use]: https://web.archive.org/web/20190821102906/https://medium.com/intrinsic/why-should-i-use-a-reverse-proxy-if-node-js-is-production-ready-5a079408b2ca
 [haproxy]: https://www.haproxy.org/
+
+### Nginx
+
+```nginx
+upstream fastify_app {
+  # more info: http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+  server 10.10.11.1:80;
+  server 10.10.11.2:80;
+  server 10.10.11.3:80 backup;
+}
+
+server {
+  # default server
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  
+  # specify host
+  # listen 80;
+  # listen [::]:80;
+  # server_name example.tld;
+
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+server {
+  # default server
+  listen 443 ssl http2 default_server;
+  listen [::]:443 ssl http2 default_server;
+  
+  # specify host
+  # listen 443 ssl http2;
+  # listen [::]:443 ssl http2;
+  # server_name example.tld;
+
+  # public private keys
+  ssl_certificate /path/to/fullchain.pem;
+  ssl_certificate_key /path/to/private.pem;
+  ssl_trusted_certificate /path/to/chain.pem;
+
+  # use https://ssl-config.mozilla.org/ for best practice configuration
+  ssl_session_timeout 1d;
+  ssl_session_cache shared:FastifyApp:10m;
+  ssl_session_tickets off;
+  
+  # modern configuration
+  ssl_protocols TLSv1.3;
+  ssl_prefer_server_ciphers off;
+  
+  # HSTS (ngx_http_headers_module is required) (63072000 seconds)
+  add_header Strict-Transport-Security "max-age=63072000" always;
+  
+  # OCSP stapling
+  ssl_stapling on;
+  ssl_stapling_verify on;
+
+  # custom resolver
+  # resolver 127.0.0.1;
+      
+  location / {
+    # more info: http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+    proxy_http_version 1.1;
+    proxy_cache_bypass $http_upgrade;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    
+    proxy_pass http://fastify_app:3000;
+  }
+}
+```
+
+[nginx]: http://nginx.org/
 
 ## Kubernetes
 <a id="kubernetes"></a>

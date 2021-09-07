@@ -8,6 +8,38 @@ The Fastify module exports a factory function that is used to create new
 an options object which is used to customize the resulting instance. This
 document describes the properties available in that options object.
 
+- [http2](./Server.md#http2)
+- [https](./Server.md#https)
+- [connectionTimeout](./Server.md#connectiontimeout)
+- [keepAliveTimeout](./Server.md#keepalivetimeout)
+- [ignoreTrailingSlash](./Server.md#ignoretrailingslash)
+- [maxParamLength](./Server.md#maxparamlength)
+- [onProtoPoisoning](./Server.md#onprotopoisoning)
+- [onConstructorPoisoning](./Server.md#onconstructorpoisoning)
+- [logger](./Server.md#logger)
+- [serverFactory](./Server.md#serverfactory)
+- [jsonShorthand](./Server.md#jsonshorthand)
+- [caseSensitive](./Server.md#casesensitive)
+- [requestIdHeader](./Server.md#requestidheader)
+- [requestIdLogLabel](./Server.md#requestidloglabel)
+- [genReqId](./Server.md#genreqid)
+- [trustProxy](./Server.md#trustProxy)
+- [pluginTimeout](./Server.md#plugintimeout)
+- [querystringParser](./Server.md#querystringParser)
+- [exposeHeadRoutes](./Server.md#exposeheadroutes)
+- [constraints](./Server.md#constraints)
+- [return503OnClosing](./Server.md#return503onclosing)
+- [ajv](./Server.md#ajv)
+- [serializerOpts](./Server.md#serializeropts)
+- [http2SessionTimeout](./Server.md#http2sessiontimeout)
+- [frameworkErrors](./Server.md#frameworkerrors)
+- [clientErrorHandler](./Server.md#clienterrorhandler)
+- [rewriteUrl](./Server.md#rewriteurl)
+- [Instance](./Server.md#instance)
+- [Server Methods](./Server.md#server-methods)
+- [initialConfig](./Server.md#initialConfig)
+
+
 <a name="factory-http2"></a>
 ### `http2`
 

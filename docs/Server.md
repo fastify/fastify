@@ -48,7 +48,7 @@ Defines the server keep-alive timeout in milliseconds. See documentation for
 to understand the effect of this option. This option only applies when HTTP/1
 is in use. Also, when `serverFactory` option is specified, this option is ignored.
 
-+ Default: `5000` (5 seconds)
++ Default: `72000` (72 seconds)
 
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`
@@ -438,7 +438,7 @@ const fastify = require('fastify')({
 ### `http2SessionTimeout`
 
 Set a default
-[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming HTTP/2 session. The session will be closed on the timeout. Default: `5000` ms.
+[timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming HTTP/2 session. The session will be closed on the timeout. Default: `72000` ms.
 
 Note that this is needed to offer the graceful "close" experience when using HTTP/2. 
 The low default has been chosen to mitigate denial of service attacks. 

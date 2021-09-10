@@ -23,7 +23,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 
   const fastifyDefaultOptions = {
     connectionTimeout: 0,
-    keepAliveTimeout: 5000,
+    keepAliveTimeout: 72000,
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
     disableRequestLogging: false,
@@ -35,7 +35,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     pluginTimeout: 10000,
     requestIdHeader: 'request-id',
     requestIdLogLabel: 'reqId',
-    http2SessionTimeout: 5000,
+    http2SessionTimeout: 72000,
     exposeHeadRoutes: true
   }
 
@@ -80,7 +80,7 @@ test('Fastify.initialConfig should expose all options', t => {
     ignoreTrailingSlash: true,
     maxParamLength: 200,
     connectionTimeout: 0,
-    keepAliveTimeout: 5000,
+    keepAliveTimeout: 72000,
     bodyLimit: 1049600,
     onProtoPoisoning: 'remove',
     serverFactory,
@@ -106,7 +106,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.ignoreTrailingSlash, true)
   t.equal(fastify.initialConfig.maxParamLength, 200)
   t.equal(fastify.initialConfig.connectionTimeout, 0)
-  t.equal(fastify.initialConfig.keepAliveTimeout, 5000)
+  t.equal(fastify.initialConfig.keepAliveTimeout, 72000)
   t.equal(fastify.initialConfig.bodyLimit, 1049600)
   t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.equal(fastify.initialConfig.caseSensitive, true)
@@ -249,7 +249,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     t.type(fastify, 'object')
     t.same(fastify.initialConfig, {
       connectionTimeout: 0,
-      keepAliveTimeout: 5000,
+      keepAliveTimeout: 72000,
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
       disableRequestLogging: false,
@@ -261,7 +261,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       pluginTimeout: 10000,
       requestIdHeader: 'request-id',
       requestIdLogLabel: 'reqId',
-      http2SessionTimeout: 5000,
+      http2SessionTimeout: 72000,
       exposeHeadRoutes: true
     })
   } catch (error) {

@@ -23,7 +23,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
 
 const defaultInitOptions = {
   connectionTimeout: 0, // 0 sec
-  keepAliveTimeout: 5000, // 5 sec
+  keepAliveTimeout: 72000, // 72 seconds
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,
@@ -35,7 +35,7 @@ const defaultInitOptions = {
   pluginTimeout: 10000,
   requestIdHeader: 'request-id',
   requestIdLogLabel: 'reqId',
-  http2SessionTimeout: 5000,
+  http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true
 }
 

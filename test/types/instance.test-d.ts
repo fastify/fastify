@@ -42,8 +42,14 @@ expectAssignable<FastifyInstance>(
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 
+async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+server.setErrorHandler(asyncFastifyErrorHandler)
+
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
+
+function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+server.setErrorHandler(asyncNodeJSErrorHandler)
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }

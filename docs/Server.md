@@ -423,7 +423,7 @@ Configure the Ajv instance used by Fastify without providing a custom one.
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      nullable: false // Refer to [ajv options](https://ajv.js.org/options.html)
+      nullable: false // Refer to [ajv options](https://github.com/ajv-validator/ajv/tree/v6#options)
     },
     plugins: [
       require('ajv-merge-patch'),

@@ -322,6 +322,47 @@ test('Custom setSerializerCompiler', t => {
   })
 })
 
+test('Custom setSerializerCompiler returns bad serialized output', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  const outSchema = {
+    $id: 'test',
+    type: 'object',
+    whatever: 'need to be parsed by the custom serializer'
+  }
+
+  fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+    return data => {
+      t.pass('returning an invalid serialization')
+      return { not: 'a string' }
+    }
+  })
+
+  fastify.get('/:id', {
+    handler (req, reply) { throw new Error('ops') },
+    schema: {
+      response: {
+        500: outSchema
+      }
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/123'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 500)
+    t.strictSame(res.json(), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
+      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      statusCode: 500
+    })
+  })
+})
+
 test('Custom serializer per route', async t => {
   const fastify = Fastify()
 

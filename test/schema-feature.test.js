@@ -204,7 +204,7 @@ test('Should throw of the schema does not exists in output', t => {
 
   fastify.ready(err => {
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.equal(err.message, "Failed building the serialization schema for GET: /:id, due to error Cannot read property 'type' of undefined") // error from fast-json-strinfigy
+    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot read propert.*/) // error from fast-json-strinfigy
   })
 })
 

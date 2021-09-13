@@ -64,3 +64,22 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           target: minor
+
+  package:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - name: Use Node.js
+        uses: actions/setup-node@v2.1.5
+        with:
+          node-version: 14
+      - name: install fastify
+        run: |
+          npm install --ignore-scripts
+      - name: install bundler stack
+        run: |
+          cd test/bundler/webpack && npm install
+      - name: Test bundle
+        run: |
+          cd test/bundler/webpack && npm run test

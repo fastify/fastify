@@ -194,7 +194,8 @@
       "lib/configValidator.js",
       "fastify.d.ts",
       "types/*",
-      "test/types/*"
+      "test/types/*",
+      "test/same-shape.test.js"
     ]
   },
   "tsd": {

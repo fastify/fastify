@@ -89,7 +89,7 @@ test('checkDependencies should throw if a dependency is not present', t => {
   t.plan(2)
   const instance = {}
   try {
-    decorator.dependencies(instance, ['test'])
+    decorator.dependencies(instance, 'foo', ['test'])
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_DEC_MISSING_DEPENDENCY')

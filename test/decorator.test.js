@@ -17,6 +17,15 @@ test('server methods should exist', t => {
   t.ok(fastify.hasDecorator)
 })
 
+test('should check if the given decoration already exist when null', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.decorate('null', null)
+  fastify.ready(() => {
+    t.ok(fastify.hasDecorator('null'))
+  })
+})
+
 test('server methods should be encapsulated via .register', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -425,6 +434,15 @@ test('hasRequestDecorator', t => {
     t.ok(fastify.hasRequestDecorator(requestDecoratorName))
   })
 
+  t.test('should check if the given request decoration already exist when null', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    fastify.decorateRequest(requestDecoratorName, null)
+    t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+  })
+
   t.test('should be plugin encapsulable', t => {
     t.plan(4)
     const fastify = Fastify()
@@ -478,6 +496,15 @@ test('hasReplyDecorator', t => {
 
     t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
     fastify.decorateReply(replyDecoratorName, 42)
+    t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+  })
+
+  t.test('should check if the given reply decoration already exist when null', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    fastify.decorateReply(replyDecoratorName, null)
     t.ok(fastify.hasReplyDecorator(replyDecoratorName))
   })
 

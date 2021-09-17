@@ -390,7 +390,7 @@ const fastify = require('fastify')({
 })
 ```
 
-You could also stick with the parser that Fastify uses but change some handling behaviour, like the example below for case insensitive keys and values.
+You can also use Fastify's default parser but change some handling behaviour, like the example below for case insensitive keys and values:
 
 ```js
 const querystring = require('querystring')

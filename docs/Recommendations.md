@@ -238,7 +238,7 @@ server {
 }
 ```
 
-[nginx]: http://nginx.org/
+[nginx]: https://nginx.org/
 
 ## Kubernetes
 <a id="kubernetes"></a>

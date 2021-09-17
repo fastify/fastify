@@ -78,7 +78,7 @@ conforms to the styles this project uses. Notably, this project uses
 <a id="contributing-vscode"></a>
 What follows is how to use [Visual Studio Code (VSCode) portable](https://code.visualstudio.com/docs/editor/portable)
 to create a Fastify specific environment. This guide is written as if you are
-setting up the environment on macOS, but the prinicples are the same across
+setting up the environment on macOS, but the principles are the same across
 all platforms. See the previously linked VSCode portable guide for help with
 other platforms.
 

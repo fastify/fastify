@@ -335,7 +335,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 }
 ```
 
-You can add some custom property to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
+You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -376,7 +376,7 @@ fastify.get('/', {
 })
 ```
 
-If you want to completely customize the error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
+If you want to customize error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
 *Note: you are responsible for logging when customizing the error handler*
 
 API:

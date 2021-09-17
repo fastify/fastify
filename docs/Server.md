@@ -110,7 +110,7 @@ fastify.get('/bar', function (req, reply) {
 
 <a name="factory-max-param-length"></a>
 ### `maxParamLength`
-You can set a custom length for parameters in parametric (standard, regex, and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br>
+You can set a custom length for parameters in parametric (standard, regex, and multi) routes by using `maxParamLength` option; the default value is 100 characters.<br>
 This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br>
 *If the maximum length limit is reached, the not found route will be invoked.*
 
@@ -167,7 +167,7 @@ are not present on the object, they will be added accordingly:
     * `level`: the minimum logging level. If not set, it will be set to `'info'`.
     * `serializers`: a hash of serialization functions. By default, serializers
       are added for `req` (incoming request objects), `res` (outgoing response
-      objets), and `err` (standard `Error` objects). When a log method receives
+      objects), and `err` (standard `Error` objects). When a log method receives
       an object with any of these properties then the respective serializer will
       be used for that property. For example:
         ```js
@@ -228,7 +228,7 @@ Please note that this setting will also disable an error log written by the defa
 <a name="custom-http-server"></a>
 ### `serverFactory`
 You can pass a custom HTTP server to Fastify by using the `serverFactory` option.<br/>
-`serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
+`serverFactory` is a function that takes a `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
 const serverFactory = (handler, opts) => {
@@ -255,7 +255,7 @@ Internally Fastify uses the API of Node core HTTP server, so if you are using a 
 
 + Default: `true`
 
-Internally, and by default, Fastify will automatically infer the root properties of JSON Schemas if it doesn't find valid root properties according to the JSON Schema spec. If you wish to implement your own schema validation compiler, for example: to parse schemas as JTD instead of JSON Schema, then you can explicitly set this option to `false` to make sure the schemas you receive are unmodified and are not being treated internally as JSON Schema.
+Internally, and by default, Fastify will automatically infer the root properties of JSON Schemas if it does not find valid root properties according to the JSON Schema spec. If you wish to implement your own schema validation compiler, for example: to parse schemas as JTD instead of JSON Schema, then you can explicitly set this option to `false` to make sure the schemas you receive are unmodified and are not being treated internally as JSON Schema.
 
 ```js
 const AjvJTD = require('ajv/dist/jtd'/* only valid for AJV v7+ */)
@@ -333,7 +333,7 @@ const fastify = require('fastify')({
 <a name="factory-trust-proxy"></a>
 ### `trustProxy`
 
-By enabling the `trustProxy` option, Fastify will have knowledge that it's sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
+By enabling the `trustProxy` option, Fastify will know that it is sitting behind a proxy and that the `X-Forwarded-*` header fields may be trusted, which otherwise may be easily spoofed.
 
 ```js
 const fastify = Fastify({ trustProxy: true })
@@ -497,7 +497,7 @@ increased to fit the use case. Node core defaults this to `0`. `
 + Default: `null`
 
 Fastify provides default error handlers for the most common use cases.
-Using this option it is possible to override one or more of those handlers with custom code.
+It is possible to override one or more of those handlers with custom code using this option.
 
 *Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
 
@@ -519,7 +519,7 @@ const fastify = require('fastify')({
 
 Set a [clientErrorHandler](https://nodejs.org/api/http.html#http_event_clienterror) that listens to `error` events emitted by client connections and responds with a `400`.
 
-Using this option it is possible to override the default `clientErrorHandler`.
+It is possible to override the default `clientErrorHandler` using this option.
 
 + Default:
 ```js
@@ -649,7 +649,7 @@ fastify.ready().then(() => {
 
 <a name="listen"></a>
 #### listen
-Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core. By default, the server will listen on the address resolved by `localhost` when no specific address is provided (`127.0.0.1` or `::1` depending on the operating system). If listening on any available interface is desired, then specifying `0.0.0.0` for the address will listen on all IPv4 address. Using `::` for the address will listen on all IPv6 addresses, and, depending on OS, may also listen on all IPv4 addresses. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+Starts the server on the given port after all the plugins are loaded, internally waits for the `.ready()` event. The callback is the same as the Node core. By default, the server will listen on the address resolved by `localhost` when no specific address is provided (`127.0.0.1` or `::1` depending on the operating system). If listening on any available interface is desired, then specifying `0.0.0.0` for the address will listen on all IPv4 addresses. Using `::` for the address will listen on all IPv6 addresses and, depending on OS, may also listen on all IPv4 addresses. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 ```js
 fastify.listen(3000, (err, address) => {
@@ -962,15 +962,15 @@ const fastify = Fastify({
     },
 
     /**
-     * The compilers factory let you to fully control the validator and serializer
+     * The compilers factory let you fully control the validator and serializer
      * in the Fastify's lifecycle, providing the encapsulation to your compilers.
      */
     compilersFactory: {
       /**
        * This factory is called whenever a new validator instance is needed.
-       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * It may be called whenever `fastify.register()` is called only if new schemas have been added to the
        * encapsulation context.
-       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * It may receive as input the schemas of the parent context if some schemas have been added.
        * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
        * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly 
        */
@@ -985,9 +985,9 @@ const fastify = Fastify({
 
       /**
        * This factory is called whenever a new serializer instance is needed.
-       * It may be called whenever `fastify.register()` is called only if new schemas has been added to the
+       * It may be called whenever `fastify.register()` is called only if new schemas have been added to the
        * encapsulation context.
-       * It may receive as input the schemas of the parent context if some schemas has been added.
+       * It may receive as input the schemas of the parent context if some schemas have been added.
        * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
        * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly 
        */
@@ -1006,7 +1006,7 @@ const fastify = Fastify({
 ##### Ajv 8 as default schema validator
 
 Ajv 8 is the evolution of Ajv 6, and it has a lot of improvements and new features.
-To use the new Ajv 8 features such as JTD or the Standalone mode, refers to the [`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
+To use the new Ajv 8 features such as JTD or the Standalone mode, refer to the [`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
 
 To use Ajv 8 as default schema validator, you can use the following code:
 
@@ -1031,7 +1031,7 @@ const app = fastify({
   }
 })
 
-// Done! You can now use Ajv 8 options and keywords into your schemas!
+// Done! You can now use Ajv 8 options and keywords in your schemas!
 ```
 
 <a name="set-not-found-handler"></a>

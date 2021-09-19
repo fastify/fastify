@@ -298,6 +298,8 @@ fastify.get('/user/:username', (request, reply) => {
 Please note that setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
 
+Also note, this setting will not affect query strings. If you want to change the way query strings are handled take a look at [`querystringParser`](./Server.md#querystringParser).
+
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`
 
@@ -387,6 +389,17 @@ const fastify = require('fastify')({
   querystringParser: str => qs.parse(str)
 })
 ```
+
+You can also use Fastify's default parser but change some handling behaviour, like the example below for case insensitive keys and values:
+
+```js
+const querystring = require('querystring')
+const fastify = require('fastify')({
+  querystringParser: str => querystring.parse(str.toLowerCase())
+})
+```
+
+Note, if you only want the keys (and not the values) to be case insensitive we recommend using a custom parser to convert only the keys to lowercase.
 
 <a name="exposeHeadRoutes"></a>
 ### `exposeHeadRoutes`

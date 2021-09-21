@@ -183,3 +183,11 @@ const passStreamAsOption = fastify({
     stream: fs.createWriteStream('/tmp/stream.out')
   }
 })
+
+const serverWithRedaction = fastify({
+  logger: {
+    redact: ['req.headers.authorization']
+  }
+})
+
+expectType<FastifyLoggerInstance>(serverWithRedaction.log)

@@ -113,6 +113,12 @@ export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
 }
 
+interface RedactOptions {
+  paths: string[];
+  censor?: string | ((v: any) => any) | undefined;
+  remove?: boolean | undefined;
+}
+
 /**
  * Fastify Custom Logger options. To enable configuration of all Pino options,
  * refer to this example:
@@ -149,4 +155,5 @@ export interface FastifyLoggerOptions<
   genReqId?: (req: RawRequest) => string;
   prettyPrint?: boolean | PrettyOptions;
   stream?: FastifyLoggerStreamDestination;
+  redact?: string[] | RedactOptions | undefined;
 }

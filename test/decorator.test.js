@@ -904,3 +904,38 @@ test('Request/reply decorators should be able to access the server instance', as
     t.equal(this.server.foo, 'bar')
   }
 })
+
+test('plugin required decorators', async t => {
+  const plugin1 = fp(
+    async (instance) => {
+      instance.decorateRequest('someThing', null)
+
+      instance.addHook('onRequest', async (request, reply) => {
+        request.someThing = 'hello'
+      })
+    },
+    {
+      name: 'custom-plugin-one',
+      fastify: '3.x'
+    }
+  )
+
+  const plugin2 = fp(
+    async () => {
+      // nothing
+    },
+    {
+      name: 'custom-plugin-two',
+      fastify: '3.x',
+      dependencies: ['custom-plugin-one'],
+      decorators: {
+        request: ['someThing']
+      }
+    }
+  )
+
+  const app = Fastify()
+  app.register(plugin1)
+  app.register(plugin2)
+  await app.ready()
+})

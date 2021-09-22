@@ -939,3 +939,90 @@ test('plugin required decorators', async t => {
   app.register(plugin2)
   await app.ready()
 })
+
+test('decorateRequest/decorateReply empty string', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test', '')
+  fastify.decorateReply('test2', '')
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, '')
+    t.equal(reply.test2, '')
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest/decorateReply is undefined', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test', undefined)
+  fastify.decorateReply('test2', undefined)
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, null)
+    t.equal(reply.test2, null)
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest/decorateReply is not set to a value', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test')
+  fastify.decorateReply('test2')
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, null)
+    t.equal(reply.test2, null)
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})

@@ -241,6 +241,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     t.same(fastify.initialConfig, {
       connectionTimeout: 0,
       keepAliveTimeout: 5000,
+      maxRequestsPerSocket: null,
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
       disableRequestLogging: false,

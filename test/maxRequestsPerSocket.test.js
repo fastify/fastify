@@ -3,7 +3,7 @@
 const net = require('net')
 const { test } = require('tap')
 const semver = require('semver')
-const Fastify = require('..')
+const Fastify = require('../fastify')
 
 test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
   t.plan(8)

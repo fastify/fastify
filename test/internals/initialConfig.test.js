@@ -24,6 +24,7 @@ test('without options passed to Fastify, initialConfig should expose default val
   const fastifyDefaultOptions = {
     connectionTimeout: 0,
     keepAliveTimeout: 5000,
+    maxRequestsPerSocket: null,
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
     disableRequestLogging: false,

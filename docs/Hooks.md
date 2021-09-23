@@ -90,7 +90,7 @@ If you are using the `preValidation` hook, you can change the payload before it 
 
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
-  req.body = { ...req.body, importantKey: 'randomString' }
+  request.body = { ...request.body, importantKey: 'randomString' }
   done()
 })
 ```
@@ -98,7 +98,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
   const importantKey = await generateRandomString()
-  req.body = { ...req.body, importantKey }
+  request.body = { ...request.body, importantKey }
 })
 ```
 

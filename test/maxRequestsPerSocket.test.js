@@ -120,7 +120,7 @@ test('maxRequestsPerSocket should not throw when default option applied for node
   const Fastify = proxyquire('../fastify', {
     './lib/server.js': server
   })
-    
+
   Fastify({ maxRequestsPerSocket: 0 })
   t.pass()
 })

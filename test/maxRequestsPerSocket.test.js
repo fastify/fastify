@@ -88,6 +88,40 @@ test('maxRequestsPerSocket zero should behave same as null', { skip: semver.lt(p
   })
 })
 
+test('maxRequestsPerSocket should allowed on node >= 16.10.0', async (t) => {
+  t.plan(2)
+  const server = proxyquire('../lib/server', {
+    process: {
+      versions: {
+        node: '16.10.0'
+      }
+    }
+  })
+  const Fastify = proxyquire('../fastify', {
+    './lib/server.js': server
+  })
+
+  const initialConfig = Fastify({ maxRequestsPerSocket: 5 }).initialConfig
+  t.same(initialConfig.maxRequestsPerSocket, 5)
+})
+
+test('maxRequestsPerSocket should allowed on node >= 16.10.0', async (t) => {
+  t.plan(2)
+  const server = proxyquire('../lib/server', {
+    process: {
+      versions: {
+        node: '16.10.0'
+      }
+    }
+  })
+  const Fastify = proxyquire('../fastify', {
+    './lib/server.js': server
+  })
+
+  const initialConfig = Fastify().initialConfig
+  t.same(initialConfig.maxRequestsPerSocket, 0)
+})
+
 test('maxRequestsPerSocket should throw on node < 16.10.0', async (t) => {
   t.plan(2)
   const server = proxyquire('../lib/server', {

@@ -4,6 +4,7 @@ const net = require('net')
 const { test } = require('tap')
 const semver = require('semver')
 const Fastify = require('../fastify')
+const proxyquire = require('proxyquire')
 
 test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
   t.plan(8)
@@ -87,8 +88,19 @@ test('maxRequestsPerSocket zero should behave same as null', { skip: semver.lt(p
   })
 })
 
-test('maxRequestsPerSocket on node version smaller than 16.10.0', { skip: semver.gte(process.versions.node, '16.10.0') }, async (t) => {
+test('maxRequestsPerSocket on node version smaller than 16.10.0', async (t) => {
   t.plan(2)
+  const server = proxyquire('../lib/server', {
+    process: {
+      versions: {
+        node: '16.9.1'
+      }
+    }
+  })
+  const Fastify = proxyquire('../fastify', {
+    './lib/server.js': server
+  })
+
   try {
     Fastify({ maxRequestsPerSocket: 5 })
   } catch (err) {

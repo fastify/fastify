@@ -88,7 +88,7 @@ is in use. Also, when `serverFactory` option is specified, this option is ignore
 
 Defines the maximum number of requests socket can handle before closing keep alive connection. See documentation for
 [`server.maxRequestsPerSocket` property](https://nodejs.org/dist/latest-v16.x/docs/api/http.html#http_server_maxrequestspersocket)
-to understand the effect of this option. This option only applies when HTTP/1
+to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is ignored.
 >  Only node version greater or equal to 16.10.0 support this option.
 

@@ -113,12 +113,11 @@ test('should pass error for missing request decorator', t => {
 })
 
 test('decorateReply inside register', t => {
-  t.plan(12)
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -256,12 +255,11 @@ test('decorateReply as plugin (outside .after)', t => {
 })
 
 test('decorateRequest inside register', t => {
-  t.plan(12)
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')
@@ -976,8 +974,8 @@ test('decorateRequest/decorateReply is undefined', t => {
   fastify.decorateRequest('test', undefined)
   fastify.decorateReply('test2', undefined)
   fastify.get('/yes', (req, reply) => {
-    t.equal(req.test, null)
-    t.equal(reply.test2, null)
+    t.equal(req.test, undefined)
+    t.equal(reply.test2, undefined)
     reply.send({ hello: 'world' })
   })
   t.teardown(fastify.close.bind(fastify))
@@ -1005,8 +1003,8 @@ test('decorateRequest/decorateReply is not set to a value', t => {
   fastify.decorateRequest('test')
   fastify.decorateReply('test2')
   fastify.get('/yes', (req, reply) => {
-    t.equal(req.test, null)
-    t.equal(reply.test2, null)
+    t.equal(req.test, undefined)
+    t.equal(reply.test2, undefined)
     reply.send({ hello: 'world' })
   })
   t.teardown(fastify.close.bind(fastify))

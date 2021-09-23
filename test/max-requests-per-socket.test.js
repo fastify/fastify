@@ -7,7 +7,7 @@ const Fastify = require('..')
 
 test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
   t.plan(8)
-  
+
   const fastify = Fastify({ maxRequestsPerSocket: 2 })
   fastify.get('/', (req, reply) => {
     reply.send({ hello: 'world' })
@@ -15,7 +15,7 @@ test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function(err) {
+  fastify.listen(0, function (err) {
     t.error(err)
 
     const port = fastify.server.address().port
@@ -49,7 +49,7 @@ test('maxRequestsPerSocket on node version smaller than 16.10.0', { skip: semver
   t.plan(2)
   try {
     Fastify({ maxRequestsPerSocket: 5 })
-  } catch( err ) {
+  } catch (err) {
     t.same(err.code, 'FST_ERR_HTTP_MAX_REQUESTS_PER_SOCKET_INVALID_VERSION')
     t.same(err.message, '"maxRequestsPerSocket" is available only from node >= 16.10.0')
   }

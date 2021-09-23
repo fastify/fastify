@@ -92,7 +92,7 @@ to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is ignored.
 >  At the time of this writing, only node version greater or equal to 16.10.0 support this option. Check the Node.js documentation for availability in the version you are running.
 
-+ Default: `null` (no limit)
++ Default: `0` (no limit)
 
 <a name="factory-ignore-slash"></a>
 ### `ignoreTrailingSlash`

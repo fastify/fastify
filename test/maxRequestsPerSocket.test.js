@@ -45,6 +45,48 @@ test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver
   })
 })
 
+test('maxRequestsPerSocket zero should behave same as null', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
+  t.plan(10)
+
+  const fastify = Fastify({ maxRequestsPerSocket: 0 })
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, function (err) {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const client = net.createConnection({ port: port }, () => {
+      client.write('GET / HTTP/1.1\r\n\r\n')
+
+      client.once('data', data => {
+        t.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+        t.match(data.toString(), /200 OK/i)
+
+        client.write('GET / HTTP/1.1\r\n\r\n')
+
+        client.once('data', data => {
+          t.match(data.toString(), /Connection:\s*keep-alive/i)
+          t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+          t.match(data.toString(), /200 OK/i)
+
+          client.write('GET / HTTP/1.1\r\n\r\n')
+
+          client.once('data', data => {
+            t.match(data.toString(), /Connection:\s*keep-alive/i)
+            t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+            t.match(data.toString(), /200 OK/i)
+          })
+        })
+      })
+    })
+  })
+})
+
 test('maxRequestsPerSocket on node version smaller than 16.10.0', { skip: semver.gte(process.versions.node, '16.10.0') }, async (t) => {
   t.plan(2)
   try {

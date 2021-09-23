@@ -15,7 +15,7 @@ const ajv = new Ajv({
 const defaultInitOptions = {
   connectionTimeout: 0, // 0 sec
   keepAliveTimeout: 5000, // 5 sec
-  maxRequestsPerSocket: null, // no limit
+  maxRequestsPerSocket: 0, // no limit
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,

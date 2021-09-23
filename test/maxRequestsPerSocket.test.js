@@ -89,7 +89,7 @@ test('maxRequestsPerSocket zero should behave same as null', { skip: semver.lt(p
 })
 
 test('maxRequestsPerSocket should allowed on node >= 16.10.0', async (t) => {
-  t.plan(2)
+  t.plan(1)
   const server = proxyquire('../lib/server', {
     process: {
       versions: {
@@ -106,7 +106,7 @@ test('maxRequestsPerSocket should allowed on node >= 16.10.0', async (t) => {
 })
 
 test('maxRequestsPerSocket should allowed on node >= 16.10.0', async (t) => {
-  t.plan(2)
+  t.plan(1)
   const server = proxyquire('../lib/server', {
     process: {
       versions: {

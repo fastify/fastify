@@ -6,7 +6,7 @@ const semver = require('semver')
 const Fastify = require('../fastify')
 const proxyquire = require('proxyquire')
 
-test('maxRequestsPerSocket on node version greater than 16.10.0', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
+test('maxRequestsPerSocket on node version >= 16.10.0', { skip: semver.lt(process.versions.node, '16.10.0') }, t => {
   t.plan(8)
 
   const fastify = Fastify({ maxRequestsPerSocket: 2 })
@@ -88,7 +88,7 @@ test('maxRequestsPerSocket zero should behave same as null', { skip: semver.lt(p
   })
 })
 
-test('maxRequestsPerSocket on node version smaller than 16.10.0', async (t) => {
+test('maxRequestsPerSocket should throw on node < 16.10.0', async (t) => {
   t.plan(2)
   const server = proxyquire('../lib/server', {
     process: {
@@ -107,4 +107,20 @@ test('maxRequestsPerSocket on node version smaller than 16.10.0', async (t) => {
     t.same(err.code, 'FST_ERR_HTTP_MAX_REQUESTS_PER_SOCKET_INVALID_VERSION')
     t.same(err.message, '"maxRequestsPerSocket" is available only from node >= 16.10.0')
   }
+})
+
+test('maxRequestsPerSocket should not throw when default option applied for node < 16.10.0', async (t) => {
+  const server = proxyquire('../lib/server', {
+    process: {
+      versions: {
+        node: '16.9.1'
+      }
+    }
+  })
+  const Fastify = proxyquire('../fastify', {
+    './lib/server.js': server
+  })
+    
+  Fastify({ maxRequestsPerSocket: 0 })
+  t.pass()
 })

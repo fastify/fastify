@@ -26,7 +26,7 @@ document describes the properties available in that options object.
 - [genReqId](./Server.md#genreqid)
 - [trustProxy](./Server.md#trustProxy)
 - [pluginTimeout](./Server.md#plugintimeout)
-- [querystringParser](./Server.md#querystringParser)
+- [querystringParser](./Server.md#querystringparser)
 - [exposeHeadRoutes](./Server.md#exposeheadroutes)
 - [constraints](./Server.md#constraints)
 - [return503OnClosing](./Server.md#return503onclosing)
@@ -310,7 +310,7 @@ fastify.get('/user/:username', (request, reply) => {
 Please note that setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
 
-Also note, this setting will not affect query strings. If you want to change the way query strings are handled take a look at [`querystringParser`](./Server.md#querystringParser).
+Also note, this setting will not affect query strings. If you want to change the way query strings are handled take a look at [`querystringParser`](./Server.md#querystringparser).
 
 <a name="factory-request-id-header"></a>
 ### `requestIdHeader`

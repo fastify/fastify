@@ -187,6 +187,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide Server-Sent Events using Async Iterators (supports newer versions of Fastify).
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to initialize and encapsulate [Stripe Node.js](https://github.com/stripe/stripe-node) instances in Fastify.
+- [`fastify-supabase`](https://github.com/coopflow/fastify-supabase) Plugin to initialize and encapsulate [Supabase](https://github.com/supabase/supabase-js) instances in Fastify.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen) Automatically generate a browser-compatible, trusted, self-signed, localhost-only, TLS certificate.
 - [`fastify-tokenize`](https://github.com/Bowser65/fastify-tokenize) [Tokenize](https://github.com/Bowser65/Tokenize) plugin for Fastify that removes the pain of managing authentication tokens, with built-in integration for `fastify-auth`.
 - [`fastify-totp`](https://github.com/heply/fastify-totp) A plugin to handle TOTP (e.g. for 2FA).

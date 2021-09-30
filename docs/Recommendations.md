@@ -166,62 +166,94 @@ backend static-backend
 ### Nginx
 
 ```nginx
+# This upstream block groups 3 servers into one named backend fastify_app
+# with 2 primary servers distributed via round-robin
+# and one backup which is used when the first 2 are not reachable
+# This also assumes your fastify servers are listening on port 80.
+# more info: http://nginx.org/en/docs/http/ngx_http_upstream_module.html
 upstream fastify_app {
-  # more info: http://nginx.org/en/docs/http/ngx_http_upstream_module.html
   server 10.10.11.1:80;
   server 10.10.11.2:80;
   server 10.10.11.3:80 backup;
 }
 
+# This server block asks NGINX to respond with a redirect when
+# an incoming request from port 80 (typically plain HTTP), to 
+# the same request URL but with HTTPS as protocol.
+# This block is optional, and usually used if you are handling
+# SSL termination in NGINX, like in the example here.
 server {
-  # default server
+  # default server is a special parameter to ask NGINX
+  # to set this server block to the default for this address/port
+  # which in this case is any address and port 80
   listen 80 default_server;
   listen [::]:80 default_server;
   
-  # specify host
+  # With a server_name directive you can also ask NGINX to
+  # use this server block only with matching server name(s)
   # listen 80;
   # listen [::]:80;
   # server_name example.tld;
 
+  # This matches all paths from the request and responds with
+  # the redirect mentioned above.
   location / {
     return 301 https://$host$request_uri;
   }
 }
 
+# This server block asks NGINX to respond to requests from
+# port 443 with SSL enabled and accept HTTP/2 connections.
+# This is where the request is then proxied to the fastify_app
+# server group via port 3000.
 server {
-  # default server
+  # This listen directive asks NGINX to accept requests
+  # coming to any address, port 443, with SSL, and HTTP/2
+  # if possible.
   listen 443 ssl http2 default_server;
   listen [::]:443 ssl http2 default_server;
-  
-  # specify host
+
+  # With a server_name directive you can also ask NGINX to
+  # use this server block only with matching server name(s)
   # listen 443 ssl http2;
   # listen [::]:443 ssl http2;
   # server_name example.tld;
 
-  # public private keys
+  # Your SSL/TLS certificate (chain) and secret key in the PEM format
   ssl_certificate /path/to/fullchain.pem;
   ssl_certificate_key /path/to/private.pem;
-  ssl_trusted_certificate /path/to/chain.pem;
 
-  # use https://ssl-config.mozilla.org/ for best practice configuration
+  # A generic best practice baseline for based
+  # on https://ssl-config.mozilla.org/
   ssl_session_timeout 1d;
   ssl_session_cache shared:FastifyApp:10m;
   ssl_session_tickets off;
-  
-  # modern configuration
+
+  # This tells NGINX to only accept TLS 1.3, which should be fine
+  # with most modern browsers including IE 11 with certain updates.
+  # If you want to support older browsers you might need to add
+  # additional fallback protocols.
   ssl_protocols TLSv1.3;
   ssl_prefer_server_ciphers off;
-  
-  # HSTS (ngx_http_headers_module is required) (63072000 seconds)
+
+  # This adds a header that tells browsers to only ever use HTTPS
+  # with this server.
   add_header Strict-Transport-Security "max-age=63072000" always;
-  
-  # OCSP stapling
+
+  # The following directives are only necessary if you want to
+  # enable OCSP Stapling.
   ssl_stapling on;
   ssl_stapling_verify on;
+  ssl_trusted_certificate /path/to/chain.pem;
 
-  # custom resolver
+  # Custom nameserver to resolve upstream server names
   # resolver 127.0.0.1;
-      
+
+  # This section matches all paths and proxies it to the backend server
+  # group specified above. Note the additional headers that forward
+  # information about the original request. You might want to set
+  # trustProxy to the address of your NGINX server so the X-Forwarded
+  * fields are used by fastify.
   location / {
     # more info: http://nginx.org/en/docs/http/ngx_http_proxy_module.html
     proxy_http_version 1.1;
@@ -232,8 +264,12 @@ server {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
-    
-    proxy_pass http://fastify_app:3000;
+
+    # This is the directive that proxies requests to the specified server.
+    # If you are using an upstream group, then you do not need to specify a port.
+    # If you are directly proxying to a server e.g.
+    # proxy_pass http://127.0.0.1:3000 then specify a port.
+    proxy_pass http://fastify_app;
   }
 }
 ```

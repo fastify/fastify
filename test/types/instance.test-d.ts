@@ -2,8 +2,8 @@ import fastify, {
   FastifyBodyParser,
   FastifyError,
   FastifyInstance,
-  FastifyLoggerInstance,
-  ValidationResult
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression
 } from '../../fastify'
 import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
@@ -42,8 +42,14 @@ expectAssignable<FastifyInstance>(
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 
+async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+server.setErrorHandler(asyncFastifyErrorHandler)
+
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
+
+function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+server.setErrorHandler(asyncNodeJSErrorHandler)
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
@@ -99,6 +105,8 @@ expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+
+expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
 expectType<FastifyInstance>(fastify().get('/', {
   handler: () => {},

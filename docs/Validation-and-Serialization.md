@@ -257,6 +257,46 @@ curl -X GET "http://localhost:3000/?ids=1
 {"params":{"hello":["1"]}}
 ```
 
+You can also specify a custom schema validator for each parameter type (body, querystring, params, headers).
+
+For example, the following code disable type cohercion only for the `body` parameters, changing the ajv default options:
+
+```js
+const schemaCompilers = {
+  body: new Ajv({
+    removeAdditional: false,
+    coerceTypes: false,
+    allErrors: true
+  }),
+  params: new Ajv({
+    removeAdditional: false,
+    coerceTypes: true,
+    allErrors: true
+  }),
+  querystring: new Ajv({
+    removeAdditional: false,
+    coerceTypes: true,
+    allErrors: true
+  }),
+  headers: new Ajv({
+    removeAdditional: false,
+    coerceTypes: true,
+    allErrors: true
+  })
+}
+
+server.setValidatorCompiler(req => {
+    if (!req.httpPart) {
+      throw new Error('Missing httpPart')
+    }
+    const compiler = schemaCompilers[req.httpPart]
+    if (!compiler) {
+      throw new Error(`Missing compiler for ${req.httpPart}`)
+    }
+    return compiler.compile(req.schema)
+})
+```
+
 For further information see [here](https://ajv.js.org/coercion.html)
 
 <a name="ajv-plugins"></a>

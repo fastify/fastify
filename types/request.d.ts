@@ -23,6 +23,7 @@ export interface FastifyRequest<
   params: RouteGeneric['Params'];
   raw: RawRequest;
   query: RouteGeneric['Querystring'];
+  headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   server: FastifyInstance;
   body: RouteGeneric['Body'];
@@ -30,7 +31,10 @@ export interface FastifyRequest<
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
 
-  readonly headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  /**
+   * @deprecated Use `raw` property
+   */
+  readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   readonly ip: string;
   readonly ips?: string[];
   readonly hostname: string;

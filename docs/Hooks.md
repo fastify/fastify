@@ -88,7 +88,7 @@ If you are using the `preValidation` hook, you can change the payload before it 
 
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
-  req.body = { ...req.body, importantKey: 'randomString' }
+  request.body = { ...request.body, importantKey: 'randomString' }
   done()
 })
 ```
@@ -96,7 +96,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
   const importantKey = await generateRandomString()
-  req.body = { ...req.body, importantKey }
+  request.body = { ...request.body, importantKey }
 })
 ```
 
@@ -562,3 +562,45 @@ fastify.route({
 ```
 
 **Note**: both options also accept an array of functions.
+
+## Diagnostics Channel Hooks
+
+> **Note:** The `diagnostics_channel` is currently experimental on Node.js, so
+> its API is subject to change even in semver-patch releases of Node.js. For
+> versions of Node.js supported by Fastify where `diagnostics_channel` is
+> unavailable, the hook will use the
+> [polyfill](https://www.npmjs.com/package/diagnostics_channel) if it is
+> available. Otherwise this feature will not be present.
+
+Currently, one
+[`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
+event, `'fastify.initialization'`, happens at initialization time. The Fastify
+instance is passed into the hook as a property of the object passed in. At this
+point, the instance can be interacted with to add hooks, plugins, routes or any
+other sort of modification.
+
+For example, a tracing package might do something like the following (which is,
+of course, a simplification). This would be in a file loaded in the
+initialization of the tracking package, in the typical "require instrumentation
+tools first" fashion.
+
+```js
+const tracer = /* retrieved from elsehwere in the package */
+const dc = require('diagnostics_channel')
+const channel = dc.channel('fastify.initialization')
+const spans = new WeakMap()
+
+channel.subscribe(function ({ fastify }) {
+  fastify.addHook('onRequest', (request, reply, done) => {
+    const span = tracer.startSpan('fastify.request')
+    spans.set(request, span)
+    done()
+  })
+
+  fastify.addHook('onResponse', (request, reply, done) => {
+    const span = spans.get(request)
+    span.finish()
+    done()
+  })
+})
+```

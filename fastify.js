@@ -120,6 +120,7 @@ function fastify (options) {
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
+  options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
@@ -388,6 +389,17 @@ function fastify (options) {
 
   // Delay configuring clientError handler so that it can access fastify state.
   server.on('clientError', options.clientErrorHandler.bind(fastify))
+
+  try {
+    const dc = require('diagnostics_channel')
+    const initChannel = dc.channel('fastify.initialization')
+    if (initChannel.hasSubscribers) {
+      initChannel.publish({ fastify })
+    }
+  } catch (e) {
+    // This only happens if `diagnostics_channel` isn't available, i.e. earlier
+    // versions of Node.js. In that event, we don't care, so ignore the error.
+  }
 
   return fastify
 

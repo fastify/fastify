@@ -47,7 +47,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for Fastify.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
-- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
+- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
@@ -84,6 +84,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your routes to the console, so you definitely know which endpoints are available.
 - [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify plugin to add [bookshelf.js](https://bookshelfjs.org/) ORM support.
 - [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin to add [boom](https://github.com/hapijs/boom) support.
+- [`fastify-bree`](https://github.com/climba03003/fastify-bree) Fastify plugin to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest) Casbin support for Fastify based on a RESTful model.
 - [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Fastify [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like protection of endpoints via either a preSerialization & preHandler hook, sanitizing the inputs and outputs of your application based on user rights.
@@ -186,6 +187,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide Server-Sent Events using Async Iterators (supports newer versions of Fastify).
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to initialize and encapsulate [Stripe Node.js](https://github.com/stripe/stripe-node) instances in Fastify.
+- [`fastify-supabase`](https://github.com/coopflow/fastify-supabase) Plugin to initialize and encapsulate [Supabase](https://github.com/supabase/supabase-js) instances in Fastify.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen) Automatically generate a browser-compatible, trusted, self-signed, localhost-only, TLS certificate.
 - [`fastify-tokenize`](https://github.com/Bowser65/fastify-tokenize) [Tokenize](https://github.com/Bowser65/Tokenize) plugin for Fastify that removes the pain of managing authentication tokens, with built-in integration for `fastify-auth`.
 - [`fastify-totp`](https://github.com/heply/fastify-totp) A plugin to handle TOTP (e.g. for 2FA).

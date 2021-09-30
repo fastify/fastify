@@ -39,8 +39,8 @@ export interface FastifyInstance<
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
-  close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  close(): Promise<undefined>;
+  close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate<T>(property: string | symbol,
@@ -84,6 +84,7 @@ export interface FastifyInstance<
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
 
+  routing(req: RawRequest, res: RawReply): void;
   getDefaultRoute: DefaultRoute<RawRequest, RawReply>;
   setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
 
@@ -358,7 +359,7 @@ export interface FastifyInstance<
    * Set a function that will be called whenever an error happens
    */
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void | Promise<void>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

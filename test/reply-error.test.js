@@ -636,3 +636,74 @@ test('should trigger error handlers if a sync route throws undefined', async t =
   const reply = await fastify.inject({ method: 'GET', url: '/' })
   t.equal(reply.statusCode, 500)
 })
+
+test('setting content-type on reply object should not hang the server case 1', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply
+      .code(200)
+      .headers({ 'content-type': 'text/plain; charset=utf-32' })
+      .send(JSON.stringify({ bar: 'foo', baz: 'foobar' }))
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('setting content-type on reply object should not hang the server case 2', async t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply
+      .code(200)
+      .headers({ 'content-type': 'text/plain; charset=utf-8' })
+      .send({ bar: 'foo', baz: 'foobar' })
+  })
+
+  try {
+    await fastify.listen(0)
+    const res = await fastify.inject({
+      url: '/',
+      method: 'GET'
+    })
+    t.same({
+      error: 'Internal Server Error',
+      message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
+      statusCode: 500,
+      code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE'
+    },
+    res.json())
+  } catch (error) {
+    t.error(error)
+  } finally {
+    await fastify.close()
+  }
+})
+
+test('setting content-type on reply object should not hang the server case 3', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/', (req, reply) => {
+    reply
+      .code(200)
+      .headers({ 'content-type': 'application/json' })
+      .send({ bar: 'foo', baz: 'foobar' })
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 200)
+  })
+})

@@ -5,6 +5,32 @@ const Fastify = require('..')
 
 const AJV = require('ajv')
 
+const customSchemaCompilers = {
+  body: new AJV({
+    coerceTypes: false
+  }),
+  params: new AJV({
+    coerceTypes: true
+  }),
+  querystring: new AJV({
+    coerceTypes: true
+  })
+}
+
+const customValidatorCompiler = req => {
+  if (!req.httpPart) {
+    throw new Error('Missing httpPart')
+  }
+
+  const compiler = customSchemaCompilers[req.httpPart]
+
+  if (!compiler) {
+    throw new Error(`Missing compiler for ${req.httpPart}`)
+  }
+
+  return compiler.compile(req.schema)
+}
+
 const schemaA = {
   $id: 'urn:schema:foo',
   type: 'object',
@@ -844,5 +870,79 @@ test('Custom AJV settings - pt2', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 400)
+  })
+})
+
+test('Custom AJV settings on different parameters - pt1', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.setValidatorCompiler(customValidatorCompiler)
+
+  fastify.post('/api/:id', {
+    schema: {
+      querystring: { id: { type: 'integer' } },
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'number' }
+        },
+        required: ['num']
+      }
+    },
+    handler: (req, reply) => {
+      t.fail('the handler is not called because the "12" is not coerced to number')
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/api/42',
+    payload: {
+      num: '12'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+  })
+})
+
+test('Custom AJV settings on different parameters - pt2', t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  fastify.setValidatorCompiler(customValidatorCompiler)
+
+  fastify.post('/api/:id', {
+    schema: {
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' }
+        },
+        required: ['id']
+      },
+      body: {
+        type: 'object',
+        properties: {
+          num: { type: 'number' }
+        },
+        required: ['num']
+      }
+    },
+    handler: (req, reply) => {
+      t.same(typeof req.params.id, 'number')
+      t.same(typeof req.body.num, 'number')
+      t.same(req.params.id, 42)
+      t.same(req.body.num, 12)
+    }
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/api/42',
+    payload: {
+      num: 12
+    }
   })
 })

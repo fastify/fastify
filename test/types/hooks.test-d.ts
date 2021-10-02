@@ -97,7 +97,7 @@ server.addHook('onError', function (request, reply, error, done) {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<FastifyError>(error)
-  expectType<string | undefined>(error.validation)
+  expectType<ValidationResult[] | undefined>(error.validation)
   expectType<string | undefined>(error.validationContext)
   expectType<() => void>(done)
   expectType<void>(done())

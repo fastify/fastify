@@ -149,6 +149,7 @@ type TrustProxyFunction = (address: string, hop: number) => boolean
 declare module 'fastify-error' {
   interface FastifyError {
     validation?: ValidationResult[];
+    validationContext?: string;
   }
 }
 

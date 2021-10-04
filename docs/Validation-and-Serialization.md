@@ -257,7 +257,7 @@ curl -X GET "http://localhost:3000/?ids=1
 
 You can also specify a custom schema validator for each parameter type (body, querystring, params, headers).
 
-For example, the following code disable type cohercion only for the `body` parameters, changing the ajv default options:
+For example, the following code disable type coercion only for the `body` parameters, changing the ajv default options:
 
 ```js
 const schemaCompilers = {

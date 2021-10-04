@@ -1,4 +1,4 @@
-import { expectAssignable, expectError } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, { FastifyInstance, FastifyPluginAsync } from '../../fastify'
 
 const testPluginOptsAsync: FastifyPluginAsync = async function (_instance, _opts) { }
@@ -13,4 +13,16 @@ expectAssignable<FastifyInstance>(
   fastify().register(
     testPluginOptsAsync, { prefix: '/example', logLevel: 'info', logSerializers: { key: (value: any) => `${value}` } }
   )
+)
+
+expectAssignable<FastifyInstance>(
+  fastify().register(testPluginOptsAsync, () => {
+    return {}
+  })
+)
+
+expectAssignable<FastifyInstance>(
+  fastify().register(testPluginOptsAsync, (instance) => {
+    expectType<FastifyInstance>(instance)
+  })
 )

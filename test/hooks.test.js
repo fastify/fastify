@@ -714,7 +714,7 @@ test('onRoute hook should able to change the route url', t => {
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (route) => {
       t.equal(route.url, '/föö')
-      route.url = encodeURI(route.url)
+      route.url = '/föö2'
     })
 
     instance.get('/föö', (request, reply) => {
@@ -730,7 +730,7 @@ test('onRoute hook should able to change the route url', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + encodeURI('/föö')
+      url: 'http://localhost:' + fastify.server.address().port + encodeURI('/föö2')
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)

@@ -672,13 +672,19 @@ function validateSchemaErrorFormatter (schemaErrorFormatter) {
   }
 }
 
-function wrapRouting (httpHandler, { rewriteUrl, logger }) {
-  if (!rewriteUrl) {
-    return httpHandler
+function safeDecodeURI (url, logger) {
+  try {
+    return decodeURI(url)
+  } catch (e) {
+    logger.debug('failed to decodeURI ' + url)
+    return url
   }
+}
+
+function wrapRouting (httpHandler, { rewriteUrl, logger }) {
   return function preRouting (req, res) {
-    const originalUrl = req.url
-    const url = rewriteUrl(req)
+    const originalUrl = req.url = safeDecodeURI(req.url, logger) // always decodeURI before routing
+    const url = typeof rewriteUrl === 'function' ? rewriteUrl(req) : originalUrl
     if (originalUrl !== url) {
       logger.debug({ originalUrl, url }, 'rewrite url')
       if (typeof url === 'string') {

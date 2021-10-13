@@ -35,6 +35,9 @@ This example will get you up and running with Fastify and TypeScript. It results
     }
   }
   ```
+
+*Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
+
 3. Initialize a TypeScript configuration file:
   ```bash
   npx tsc --init

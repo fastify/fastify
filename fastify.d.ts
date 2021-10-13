@@ -130,7 +130,7 @@ export type FastifyServerOptions<
   },
   schemaController?: {
     bucket?: (parentSchemas?: unknown) => {
-      add(schema: unknown): FastifyInstance;
+      addSchema(schema: unknown): FastifyInstance;
       getSchema(schemaId: string): unknown;
       getSchemas(): Record<string, unknown>;
     };

@@ -181,7 +181,7 @@
     "find-my-way": "^4.1.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^4.2.0",
-    "pino": "^6.13.0",
+    "pino": "^7.0.1",
     "proxy-addr": "^2.0.7",
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",

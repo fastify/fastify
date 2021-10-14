@@ -7,7 +7,7 @@ const http = require('http')
 const NotFound = require('http-errors').NotFound
 const EventEmitter = require('events').EventEmitter
 const Reply = require('../../lib/reply')
-const { Writable } = require('readable-stream')
+const { Writable } = require('stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,

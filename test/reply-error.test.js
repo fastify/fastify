@@ -6,6 +6,8 @@ const net = require('net')
 const Fastify = require('..')
 const statusCodes = require('http').STATUS_CODES
 const split = require('split2')
+const fs = require('fs')
+const path = require('path')
 
 const codes = Object.keys(statusCodes)
 codes.forEach(code => {
@@ -594,5 +596,31 @@ test('setting content-type on reply object should not hang the server case 3', t
   }, (err, res) => {
     t.error(err)
     t.equal(res.statusCode, 200)
+  })
+})
+
+test('pipe stream inside error handler should not cause error', t => {
+  t.plan(3)
+  const location = path.join(__dirname, '..', 'package.json')
+  const json = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json')).toString('utf8'))
+
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((_error, _request, reply) => {
+    const stream = fs.createReadStream(location)
+    reply.code(400).type('application/json; charset=utf-8').send(stream)
+  })
+
+  fastify.get('/', (request, reply) => {
+    throw new Error('This is an error.')
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 400)
+    t.same(JSON.parse(res.payload), json)
   })
 })

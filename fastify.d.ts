@@ -135,8 +135,8 @@ export type FastifyServerOptions<
       getSchemas(): Record<string, unknown>;
     };
     compilersFactory?: {
-      buildValidator: ValidatorCompiler;
-      buildSerializer: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
+      buildValidator?: ValidatorCompiler;
+      buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
     };
   };
   return503OnClosing?: boolean,

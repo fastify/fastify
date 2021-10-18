@@ -421,7 +421,7 @@ function fastify (options) {
   // If the server is not ready yet, this
   // utility will automatically force it.
   function inject (opts, cb) {
-    // lightMyRequest is dynamically laoded as it seems very expensive
+    // lightMyRequest is dynamically loaded as it seems very expensive
     // because of Ajv
     if (lightMyRequest === undefined) {
       lightMyRequest = require('light-my-request')

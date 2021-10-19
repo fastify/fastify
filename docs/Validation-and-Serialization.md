@@ -609,7 +609,7 @@ const fastify = Fastify({
   ajv: {
     customOptions: {
       jsonPointers: true,
-      allErrors: true
+      allErrors: true // Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
     },
     plugins: [
       require('ajv-errors')

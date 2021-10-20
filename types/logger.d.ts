@@ -27,10 +27,10 @@ export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
 }
 
+export type PinoLoggerOptions = pino.LoggerOptions
+
 /**
- * Fastify Custom Logger options. To enable configuration of all Pino options,
- * refer to this example:
- * https://github.com/fastify/fastify/blob/2f56e10a24ecb70c2c7950bfffd60eda8f7782a6/docs/TypeScript.md#example-5-specifying-logger-types
+ * Fastify Custom Logger options.
  */
 export interface FastifyLoggerOptions<
   RawServer extends RawServerBase = RawServerDefault,

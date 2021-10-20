@@ -193,3 +193,19 @@ const passStreamAsOption = fastify({
     stream: fs.createWriteStream('/tmp/stream.out')
   }
 })
+
+expectType<FastifyBaseLogger>(passStreamAsOption.log)
+
+const passPinoOption = fastify({
+  logger: {
+    redact: ['custom'],
+    messageKey: 'msg',
+    nestedKey: 'nested',
+    prettyPrint: {
+
+    },
+    enabled: true
+  }
+})
+
+expectType<FastifyBaseLogger>(passPinoOption.log)

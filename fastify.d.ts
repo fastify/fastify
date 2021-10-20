@@ -5,7 +5,7 @@ import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
-import {FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions} from './types/logger'
+import {FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions} from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import { Options as AjvOptions } from '@fastify/ajv-compiler'
@@ -102,7 +102,7 @@ export type FastifyServerOptions<
   exposeHeadRoutes?: boolean,
   onProtoPoisoning?: ProtoAction,
   onConstructorPoisoning?: ConstructorAction,
-  logger?: boolean | FastifyLoggerOptions<RawServer> | Logger,
+  logger?: boolean | FastifyLoggerOptions<RawServer> & PinoLoggerOptions | Logger,
   serializerOpts?: FJSOptions | Record<string, unknown>,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,

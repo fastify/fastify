@@ -177,7 +177,7 @@
     "fastify-warning": "^0.2.0",
     "find-my-way": "^4.3.3",
     "light-my-request": "^4.4.4",
-    "pino": "^7.0.0-rc.4",
+    "pino": "^7.0.3",
     "proxy-addr": "^2.0.7",
     "readable-stream": "^3.6.0",
     "rfdc": "^1.3.0",

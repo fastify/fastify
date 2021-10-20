@@ -739,20 +739,18 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Some of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, it's also possible to pass a preconfigured external instance of Pino (or any other compatible logger) to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](Logging.md) documentation for more info.
-
-To use an external instance of Pino, add `@types/pino` to devDependencies and pass the instance to `logger` field:
+Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Since `pino@7`, all of it's properties can be configured via `logger` field when constructing Fastify's instance. If properties you need aren't exposed, please open an Issue
+to [`Pino`](https://github.com/pinojs/pino/issues) or pass a preconfigured external instance of Pino (or any other compatible logger) as temporary fix to Fastify via the same field. This allows creating custom serializers as well, see the [Logging](Logging.md) documentation for more info.
 
 ```typescript
 import fastify from 'fastify'
-import pino from 'pino'
 
 const server = fastify({
-  logger: pino({
+  logger: {
     level: 'info',
     redact: ['x-userinfo'],
     messageKey: 'message'
-  })
+  }
 })
 
 server.get('/', async (request, reply) => {

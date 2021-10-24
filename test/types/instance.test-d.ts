@@ -5,7 +5,7 @@ import fastify, {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression
 } from '../../fastify'
-import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'

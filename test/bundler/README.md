@@ -6,7 +6,7 @@ Please note this might result in features behaving differently, like the version
 
 ## Test bundlers
 
-The bundler test stack has been set apart from the rest of the Unit testing stack because it's not a 
+The bundler test stack has been defined separately from the rest of the Unit testing stack because it's not a 
 part of the fastify lib itself. Note that the tests run in CI only on NodeJs LTS version.
 Developers do not need to install every bundler to run unit tests.
 

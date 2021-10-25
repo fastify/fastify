@@ -2,7 +2,7 @@
 
 In some cases, developers bundle their apps for several targets such as serverless applications. 
 Even if it's not recommended by Fastify team; we need to ensure we do not break the build process. 
-Please note this might result in features behaving differently like the version handling check for plugins.
+Please note this might result in features behaving differently, like the version handling check for plugins.
 
 ## Test bundlers
 

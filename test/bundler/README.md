@@ -24,6 +24,6 @@ stack dependencies. See:
 ## Bundler test development
 
 To not break the fastify unit testing stack please name test files like this `*-test.js` and not `*.test.js`, 
-otherwise it will be caught by regex used for unit tests for fastify.
+otherwise it will be targeted by the regular expression used for unit tests for fastify.
 Tests need to ensure the build process works and the fastify application can be run, 
 no need to go in deep testing unless an issue is raised.

@@ -3,18 +3,24 @@ import * as http2 from 'http2'
 import * as https from 'https'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/typeProvider'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
 import { FastifyLoggerInstance, FastifyLoggerOptions } from './types/logger'
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import { Options as AjvOptions } from '@fastify/ajv-compiler'
+import { FastifySchema } from './types/schema'
 import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
+import { FastifyContextConfig } from './types/context'
 import { Options as FJSOptions } from 'fast-json-stringify'
+import { ValidatorCompiler } from '@fastify/ajv-compiler'
+import { FastifySerializerCompiler } from './types/schema';
+import { RouteGenericInterface } from './types/route'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -28,26 +34,38 @@ declare function fastify<
   Server extends http2.Http2SecureServer,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+>(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+>(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+>(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger,RouteGeneric,  SchemaCompiler, TypeProvider>>
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+>(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
 export default fastify
 
 export type FastifyHttp2SecureOptions<
@@ -108,7 +126,7 @@ export type FastifyServerOptions<
   caseSensitive?: boolean,
   requestIdHeader?: string,
   requestIdLogLabel?: string;
-  genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
+  genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: unknown },
   /**
@@ -126,15 +144,26 @@ export type FastifyServerOptions<
   constraints?: {
     [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
   },
+  schemaController?: {
+    bucket?: (parentSchemas?: unknown) => {
+      addSchema(schema: unknown): FastifyInstance;
+      getSchema(schemaId: string): unknown;
+      getSchemas(): Record<string, unknown>;
+    };
+    compilersFactory?: {
+      buildValidator?: ValidatorCompiler;
+      buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
+    };
+  };
   return503OnClosing?: boolean,
   ajv?: {
     customOptions?: AjvOptions,
     plugins?: Function[]
   },
-  frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
+  frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
     error: FastifyError,
-    req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,
-    res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>>
+    req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>,
+    res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RequestGeneric, FastifyContextConfig, SchemaCompiler, TypeProvider>
   ) => void,
   rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
   schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error,
@@ -176,4 +205,5 @@ export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 export * from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/typeProvider'
 export { fastify }

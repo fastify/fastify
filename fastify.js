@@ -247,6 +247,8 @@ function fastify (options) {
     },
     // expose logger instance
     log: logger,
+    // type provider
+    typeProvider: typeProvider,
     // hooks
     addHook: addHook,
     // schemas
@@ -500,6 +502,11 @@ function fastify (options) {
 
   function use () {
     throw new FST_ERR_MISSING_MIDDLEWARE()
+  }
+
+  // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
+  function typeProvider () {
+    return this
   }
 
   // wrapper that we expose to the user for hooks handling

@@ -38,7 +38,7 @@ declare function fastify<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
+>(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
@@ -47,7 +47,7 @@ declare function fastify<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
+>(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
@@ -56,7 +56,7 @@ declare function fastify<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger,RouteGeneric,  SchemaCompiler, TypeProvider>>
+>(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
@@ -65,7 +65,7 @@ declare function fastify<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
->(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>>
+>(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 export default fastify
 
 export type FastifyHttp2SecureOptions<

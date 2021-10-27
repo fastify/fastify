@@ -32,7 +32,7 @@ export interface onRequestHookHandler<
 
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     done: HookHandlerDoneFunction
@@ -49,7 +49,7 @@ export interface onRequestAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
   ): Promise<unknown>;
@@ -69,7 +69,7 @@ export interface preParsingHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: RequestPayload,
@@ -87,7 +87,7 @@ export interface preParsingAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: RequestPayload,
@@ -107,7 +107,7 @@ export interface preValidationHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     done: HookHandlerDoneFunction
@@ -124,7 +124,7 @@ export interface preValidationAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
   ): Promise<unknown>;
@@ -143,7 +143,7 @@ export interface preHandlerHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     done: HookHandlerDoneFunction
@@ -160,7 +160,7 @@ export interface preHandlerAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
   ): Promise<unknown>;
@@ -188,7 +188,7 @@ export interface preSerializationHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: PreSerializationPayload,
@@ -207,7 +207,7 @@ export interface preSerializationAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: PreSerializationPayload
@@ -229,7 +229,7 @@ export interface onSendHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: OnSendPayload,
@@ -248,7 +248,7 @@ export interface onSendAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     payload: OnSendPayload,
@@ -269,7 +269,7 @@ export interface onResponseHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     done: HookHandlerDoneFunction
@@ -286,7 +286,7 @@ export interface onResponseAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
   ): Promise<unknown>;
@@ -306,7 +306,7 @@ export interface onTimeoutHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     done: HookHandlerDoneFunction
@@ -323,7 +323,7 @@ export interface onTimeoutAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
   ): Promise<unknown>;
@@ -346,7 +346,7 @@ export interface onErrorHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     error: TError,
@@ -365,7 +365,7 @@ export interface onErrorAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     error: TError
@@ -387,7 +387,7 @@ export interface onRouteHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
     opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> & { routePath: string; path: string; prefix: string }
   ): Promise<unknown> | void;
 }
@@ -402,12 +402,10 @@ export interface onRegisterHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerInstance,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void; // documentation is missing the `done` method
 }
@@ -435,12 +433,10 @@ export interface onCloseHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   Logger = FastifyLoggerInstance,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, RouteGeneric, SchemaCompiler, TypeProvider>,
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void;
 }

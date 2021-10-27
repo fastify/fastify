@@ -70,7 +70,7 @@ export type RouteHandlerMethod<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+  this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
 ) => void | Promise<RouteGeneric['Reply'] | void>
@@ -103,15 +103,15 @@ export interface RouteShorthandMethod<
     path: string,
     opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>;
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
     path: string,
     handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, FastifySchema, TypeProvider>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, FastifySchema, TypeProvider>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>;
   <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema>(
     path: string,
     opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
-  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>;
+  ): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>;
 }
 
 /**
@@ -140,7 +140,7 @@ export type RouteHandler<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+  this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
 ) => void | Promise<RouteGeneric['Reply'] | void>

@@ -1,8 +1,6 @@
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
-import { RouteGenericInterface } from './route'
-import { FastifySchema } from './schema'
 import { FastifyLoggerInstance } from './logger'
 
 export type FastifyPluginOptions = Record<string, any>
@@ -15,12 +13,10 @@ export type FastifyPluginOptions = Record<string, any>
 export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, TypeProvider>,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -33,11 +29,9 @@ export type FastifyPluginCallback<
 export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, RouteGeneric, SchemaCompiler, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, TypeProvider>,
   opts: Options
 ) => Promise<void>;
 

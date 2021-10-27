@@ -23,7 +23,15 @@ export interface RouteShorthandOptions<
   SchemaCompiler = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
-  schema?: Partial<SchemaCompiler>, // FastifySchema
+
+  // ----------------------------------------------------------------------
+  // Note: The Partial<T> used here resolves two tests specific to schema
+  // augmentation. The preference would be to remove this partial and just
+  // pass the SchemaCompiler directly. Remove the Partial below to reveal
+  // the failing tests.
+  // ----------------------------------------------------------------------
+
+  schema?: Partial<SchemaCompiler>, // originally FastifySchema
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
 

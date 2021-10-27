@@ -26,7 +26,7 @@ type UndefinedToUnknown<T> = T extends undefined ? unknown : T
  * This type handles request context resolution either via generic arguments
  * or type provider. If the user specifies both generic arguments as well as
  * a type provider, this type will override the type provider and use the
- * generic arguments. This enables users to override undeseriable inference
+ * generic arguments. This enables users to override undesirable inference
  * behaviours in the type provider.
  */
 export type ResolveFastifyRequestContext<

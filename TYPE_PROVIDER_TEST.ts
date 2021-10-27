@@ -1,24 +1,19 @@
 import { FastifyInstance } from './types/instance'
 import { FastifyTypeProvider } from './types/typeProvider'
+
+declare const fastify: FastifyInstance
+
+// --------------------------------------------------------------------
+// Example Usage
+// --------------------------------------------------------------------
+
 import { Type, Static } from '@sinclair/typebox'
-
-declare const instance: FastifyInstance
-
-// ---------------------------------------------------------
-// Type Provider Syntax
-// ---------------------------------------------------------
 
 interface TypeBoxTypeProvider extends FastifyTypeProvider {
     output: Static<this["input"]>
 }
 
-// ---------------------------------------------------------
-// General Usage
-// ---------------------------------------------------------
-
-const fastify = instance.typeProvider<TypeBoxTypeProvider>()
-
-fastify.get('/', {
+fastify.typeProvider<TypeBoxTypeProvider>().get('/', {
     schema: {
         body: Type.Object({
             x: Type.Number(),
@@ -38,14 +33,11 @@ fastify.get('/', {
     const { a, b, c } = req.params
 })
 
-// ---------------------------------------------------------
-// Generic Arguments Override Provider
-// ---------------------------------------------------------
+// --------------------------------------------------------------------
+// Should override provider when specifiying generic arguments
+// --------------------------------------------------------------------
 
-fastify.get<{
-    Body: 'HELLO',
-    Params: 'WORLD'
-}>('/', {
+fastify.typeProvider<TypeBoxTypeProvider>().get<{ Body: 'hello', Params: 'world' }>('/', {
     schema: {
         body: Type.Object({
             x: Type.Number(),
@@ -59,7 +51,64 @@ fastify.get<{
         })
     }
 }, (req, res) => {
-    const BODY = req.body
+    const BODY   = req.body
     const PARAMS = req.params
 
+})
+
+// ---------------------------------------------------------
+// Should support multiple type inference libraries
+// ---------------------------------------------------------
+
+import { FromSchema } from 'json-schema-to-ts'
+
+// @ts-ignore excessive stack depth on json parsing
+interface JsonSchemaProvider extends FastifyTypeProvider {
+    output: FromSchema<this["input"]>
+}
+
+fastify.typeProvider<JsonSchemaProvider>().get('/', {
+    schema: {
+        body: {
+            type: 'object',
+            properties: {
+                a: { type: 'string' },
+                b: { type: 'number' },
+                c: { type: 'boolean' }
+            },
+
+        } as const
+    }
+}, (req, res) => {
+    req.body.a // a = string
+    req.body.b // b = number
+    req.body.c // c = boolean
+})
+
+// ---------------------------------------------------------
+// Should support future inference requirements
+// ---------------------------------------------------------
+
+export type ExtractParams<S extends string, Params extends string[]> = 
+    S extends `/${infer R}`            ? ExtractParams<R, Params>         : 
+    S extends `:${infer P}/${infer R}` ? ExtractParams<R, [...Params, P]> :
+    S extends `:${infer P}`            ? [...Params, P]                                 :
+    S extends `${infer _}/${infer R}`  ? ExtractParams<R, Params>         : 
+    Params
+
+export type TupleToUnion  <T extends string[]> = {[K in keyof T]: T[K]}[number]
+export type UnionToObject <T extends string> = { [K in T]: string }
+export type ParseUrl      <T> = T extends string ? UnionToObject<TupleToUnion<ExtractParams<T, []>>> : never
+
+interface UrlProvider extends FastifyTypeProvider {
+    output: ParseUrl<this["input"]>
+}
+
+fastify.typeProvider<UrlProvider>().get('/', {
+    schema: {
+        body: '/users/:userId/orders/:orderId' as const
+    }
+}, (req, res) => {
+
+    const { userId, orderId } = req.body
 })

@@ -23,14 +23,7 @@ export interface RouteShorthandOptions<
   SchemaCompiler = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
-  // ---------------------------------------------------------------------------------------------
-  // Note: We swap the FastifySchema type for the generic type `SchemaCompiler`. This enables
-  // the generic type to propagate through to the request handler for inference via the
-  // the configured type provider. However, swapping this breaks several inference tests
-  // inside 'schema.test-d.ts'. It's difficult to reconcile this type given it's serving
-  // multiple roles. For review.
-  // ---------------------------------------------------------------------------------------------
-  schema?: SchemaCompiler, // FastifySchema
+  schema?: Partial<SchemaCompiler>, // FastifySchema
   attachValidation?: boolean;
   exposeHeadRoute?: boolean;
 

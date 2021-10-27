@@ -1,7 +1,8 @@
 import fastify, { FastifyTypeProvider } from '../../fastify'
-import { Type, Static } from '@sinclair/typebox'
 import { expectAssignable, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
+import { Type, TSchema, Static } from '@sinclair/typebox'
+import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 
 const server = fastify()
 
@@ -30,7 +31,7 @@ expectAssignable(server.typeProvider<NumberProvider>().get(
 ))
 
 // -------------------------------------------------------------------
-// Override if specifying generic arguments
+// Override
 // -------------------------------------------------------------------
 
 interface OverriddenProvider extends FastifyTypeProvider { output: 'inferenced' }
@@ -55,7 +56,7 @@ expectAssignable(server.typeProvider<OverriddenProvider>().get<{ Body: 'override
 // TypeBox
 // -------------------------------------------------------------------
 
-interface TypeBoxProvider extends FastifyTypeProvider { output: Static<this['input']> }
+interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : never }
 
 expectAssignable(server.typeProvider<TypeBoxProvider>().get(
   '/',
@@ -72,5 +73,32 @@ expectAssignable(server.typeProvider<TypeBoxProvider>().get(
     expectType<number>(req.body.x)
     expectType<number>(req.body.y)
     expectType<number>(req.body.z)
+  }
+))
+
+// -------------------------------------------------------------------
+// JsonSchemaToTs
+// -------------------------------------------------------------------
+
+interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : never }
+
+expectAssignable(server.typeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'string' },
+          z: { type: 'boolean' }
+        }
+      } as const
+    }
+  },
+  (req) => {
+    expectType<number | undefined>(req.body.x)
+    expectType<string | undefined>(req.body.y)
+    expectType<boolean | undefined>(req.body.z)
   }
 ))

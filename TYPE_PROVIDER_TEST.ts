@@ -7,11 +7,9 @@ declare const fastify: FastifyInstance
 // Example Usage
 // --------------------------------------------------------------------
 
-import { Type, Static } from '@sinclair/typebox'
+import { Type, Static, TSchema } from '@sinclair/typebox'
 
-interface TypeBoxTypeProvider extends FastifyTypeProvider {
-    output: Static<this["input"]>
-}
+interface TypeBoxTypeProvider extends FastifyTypeProvider { output: this["input"] extends TSchema ? Static<this["input"]> : never }
 
 fastify.typeProvider<TypeBoxTypeProvider>().get('/', {
     schema: {
@@ -60,14 +58,13 @@ fastify.typeProvider<TypeBoxTypeProvider>().get<{ Body: 'hello', Params: 'world'
 // Should support multiple type inference libraries
 // ---------------------------------------------------------
 
-import { FromSchema } from 'json-schema-to-ts'
+import { FromSchema, JSONSchema } from 'json-schema-to-ts'
 
-// @ts-ignore excessive stack depth on json parsing
-interface JsonSchemaProvider extends FastifyTypeProvider {
-    output: FromSchema<this["input"]>
+interface JsonSchemaToTsTypeProvider extends FastifyTypeProvider {
+    output: this["input"] extends JSONSchema ? FromSchema<this["input"]> : never
 }
 
-fastify.typeProvider<JsonSchemaProvider>().get('/', {
+fastify.typeProvider<JsonSchemaToTsTypeProvider>().get('/', {
     schema: {
         body: {
             type: 'object',

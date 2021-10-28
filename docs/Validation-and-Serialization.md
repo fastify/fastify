@@ -11,9 +11,9 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 > [fast-json-stringify](https://npm.im/fast-json-stringify) for more
 > details.
 > 
-> Moreover, the [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html) can't be turned on in Fastify.
-> This option is used to access Databases and reading them during the validation process may lead to DDOS attacks to your
-> application. If you need to run `async` tasks, use [Fastify's hooks](./Hooks.md) instead.
+> Moreover, the [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html) should not be used as part of the first validation strategy.
+> This option is used to access Databases and reading them during the validation process may lead to Denial of Service Attacks to your
+> application. If you need to run `async` tasks, use [Fastify's hooks](./Hooks.md) instead after validation completes, such as `preHandler`.
 
 
 ### Core concepts

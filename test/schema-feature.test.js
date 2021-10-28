@@ -1296,6 +1296,7 @@ test('setSchemaController: Inherits correctly parent schemas', async t => {
   const customAjv = new Ajv({ coerceTypes: false })
   const server = Fastify()
 
+  // this schema must be added before calling setSchemaController()
   server.addSchema({
     $id: 'some',
     type: 'array',

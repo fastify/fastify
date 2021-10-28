@@ -35,8 +35,6 @@ declare function fastify<
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -45,8 +43,6 @@ declare function fastify<
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -55,8 +51,6 @@ declare function fastify<
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -66,8 +60,6 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  SchemaCompiler extends FastifySchema = FastifySchema,
-  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 export default fastify

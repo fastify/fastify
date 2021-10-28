@@ -18,9 +18,6 @@ import { Options as FJSOptions } from 'fast-json-stringify'
 import { FastifySchema } from './types/schema'
 import { FastifyContextConfig } from './types/context'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/typeProvider'
-import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { FastifySerializerCompiler } from './types/schema';
-import { RouteGenericInterface } from './types/route'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.

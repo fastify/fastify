@@ -1291,25 +1291,41 @@ test('setSchemaController per instance', t => {
   fastify.ready(err => { t.error(err) })
 })
 
-test('setSchemaController: Inherits correctly parent schemas', async t => {
-  t.plan(2)
+test('setSchemaController: Inherits correctly parent schemas with a customized validator instance', async t => {
+  t.plan(5)
   const customAjv = new Ajv({ coerceTypes: false })
   const server = Fastify()
-
-  // this schema must be added before calling setSchemaController()
-  server.addSchema({
+  const someSchema = {
     $id: 'some',
     type: 'array',
     items: {
       type: 'string'
     }
-  })
+  }
+  const errorResponseSchema = {
+    $id: 'error_response',
+    type: 'object',
+    properties: {
+      statusCode: {
+        type: 'integer'
+      },
+      message: {
+        type: 'string'
+      }
+    }
+  }
 
-  server.register(fp((instance, _, done) => {
+  // these schemas must be added before calling setSchemaController()
+  server.addSchema(someSchema)
+  server.addSchema(errorResponseSchema)
+
+  server.register((instance, _, done) => {
     instance.setSchemaController({
       compilersFactory: {
         buildValidator: function (externalSchemas) {
           const schemaKeys = Object.keys(externalSchemas)
+          t.equal(schemaKeys.length, 2, 'Contains same number of schemas')
+          t.hasStrict([someSchema, errorResponseSchema], Object.values(externalSchemas), 'Contains expected schemas')
           for (const key of schemaKeys) {
             if (customAjv.getSchema(key) == null) {
               customAjv.addSchema(externalSchemas[key], key)
@@ -1322,37 +1338,40 @@ test('setSchemaController: Inherits correctly parent schemas', async t => {
       }
     })
 
-    done()
-  }))
-
-  server.post(
-    '/',
-    {
-      schema: {
-        querystring: {
-          msg: {
-            $ref: 'some#'
+    instance.get(
+      '/',
+      {
+        schema: {
+          querystring: {
+            msg: {
+              $ref: 'some#'
+            }
+          },
+          response: {
+            '4xx': {
+              $ref: 'error_response#'
+            }
           }
         }
+      },
+      (req, reply) => {
+        reply.send({ noop: 'noop' })
       }
-    },
-    (req, reply) => {
-      reply.send({ noop: 'noop' })
+    )
+
+    done()
+  })
+
+  const res = await server.inject({
+    method: 'GET',
+    url: '/',
+    query: {
+      msg: ['string']
     }
-  )
+  })
+  const json = res.json()
 
-  try {
-    const res = await server.inject({
-      method: 'POST',
-      url: '/',
-      query: {
-        msg: ['string']
-      }
-    })
-
-    t.equal(res.json().message, 'querystring.msg should be array')
-    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
-  } catch (err) {
-    t.error(err)
-  }
+  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(json.statusCode, 400)
+  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
 })

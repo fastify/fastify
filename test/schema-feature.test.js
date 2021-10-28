@@ -3,6 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
+const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
 
 const echoParams = (req, reply) => { reply.send(req.params) }
@@ -1288,4 +1289,69 @@ test('setSchemaController per instance', t => {
   })
 
   fastify.ready(err => { t.error(err) })
+})
+
+test('setSchemaController: Inherits correctly parent schemas', async t => {
+  t.plan(2)
+  const customAjv = new Ajv({ coerceTypes: false })
+  const server = Fastify()
+
+  server.addSchema({
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  })
+
+  server.register(fp((instance, _, done) => {
+    instance.setSchemaController({
+      compilersFactory: {
+        buildValidator: function (externalSchemas) {
+          const schemaKeys = Object.keys(externalSchemas)
+          for (const key of schemaKeys) {
+            if (customAjv.getSchema(key) == null) {
+              customAjv.addSchema(externalSchemas[key], key)
+            }
+          }
+          return function validatorCompiler ({ schema }) {
+            return customAjv.compile(schema)
+          }
+        }
+      }
+    })
+
+    done()
+  }))
+
+  server.post(
+    '/',
+    {
+      schema: {
+        querystring: {
+          msg: {
+            $ref: 'some#'
+          }
+        }
+      }
+    },
+    (req, reply) => {
+      reply.send({ noop: 'noop' })
+    }
+  )
+
+  try {
+    const res = await server.inject({
+      method: 'POST',
+      url: '/',
+      query: {
+        msg: ['string']
+      }
+    })
+
+    t.equal(res.json().message, 'querystring.msg should be array')
+    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  } catch (err) {
+    t.error(err)
+  }
 })

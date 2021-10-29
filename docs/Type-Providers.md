@@ -2,13 +2,13 @@
 
 ## Type Providers
 
-Type Providers are a TypeScript only feature that enables Fastify to statically infer type information directly from inline JSON Schema. They are an alternative to using generic arguments on routes; and can greatly reduce the need to keep associated types for each schema defined in your project.
+Type Providers are a TypeScript only feature that enables Fastify to statically infer type information directly from inline JSON Schema. They are an alternative to specifying generic arguments on routes; and can greatly reduce the need to keep associated types for each schema defined in your project.
 
 ### Providers
 
-Type Providers are offered as additional plugins you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs.
+Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `fastify-type-provider-{provider-name}` naming convention. 
 
-The following inference libraries are supported:
+The following inference packages are supported:
 
 - `json-schema-to-ts` - [github](https://github.com/ThomasAribart/json-schema-to-ts)
 - `typebox` - [github](https://github.com/sinclairzx81/typebox)
@@ -18,15 +18,15 @@ The following inference libraries are supported:
 The following sets up a `json-schema-to-ts` Type Provider
 
 ```bash
-$ npm install fastify-json-schema-to-ts-type-provider --save
+$ npm install fastify-type-provider-json-schema-to-ts --save
 ```
 
 ```typescript
-import { JsonSchemaToTsTypeProvider } from 'fastify-json-schema-to-ts-type-provider'
+import { JsonSchemaToTsTypeProvider } from 'fastify-type-provider-json-schema-to-ts'
 
 import fastify from 'fastify'
 
-const server = fastify().typeProvider<JsonSchemaToTsTypeProvider>()
+const server = fastify().withTypeProvider<JsonSchemaToTsTypeProvider>()
 
 server.get('/route', {
     schema: {
@@ -53,15 +53,15 @@ server.get('/route', {
 The following sets up a TypeBox Type Provider
 
 ```bash
-$ npm install fastify-typebox-type-provider --save
+$ npm install fastify-type-provider-typebox --save
 ```
 
 ```typescript
-import { TypeBoxTypeProvider, Type } from 'fastify-typebox-type-provider'
+import { TypeBoxTypeProvider, Type } from 'fastify-type-provider-typebox'
 
 import fastify from 'fastify'
 
-const server = fastify().typeProvider<TypeBoxTypeProvider>()
+const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
     schema: {

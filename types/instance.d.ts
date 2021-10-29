@@ -86,7 +86,7 @@ export interface FastifyInstance<
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, any> & PromiseLike<undefined>>;
+  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
   routing(req: RawRequest, res: RawReply): void;
   getDefaultRoute: DefaultRoute<RawRequest, RawReply>;

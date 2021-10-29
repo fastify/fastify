@@ -3,12 +3,23 @@
 const { test } = require('tap')
 const Fastify = require('..')
 
-test('Type Provider function is defined', t => {
+test('Should export withTypeProvider function', t => {
   t.plan(1)
   try {
-    Fastify().typeProvider()
+    Fastify().withTypeProvider()
     t.pass()
   } catch (e) {
+    t.fail()
+  }
+})
+
+test('Should return same instance', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  const next = fastify.withTypeProvider()
+  if (next === fastify) {
+    t.pass()
+  } else {
     t.fail()
   }
 })

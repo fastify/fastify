@@ -12,7 +12,7 @@ const server = fastify()
 
 interface NumberProvider extends FastifyTypeProvider { output: number } // remap all schemas to numbers
 
-expectAssignable(server.typeProvider<NumberProvider>().get(
+expectAssignable(server.withTypeProvider<NumberProvider>().get(
   '/',
   {
     schema: {
@@ -36,7 +36,7 @@ expectAssignable(server.typeProvider<NumberProvider>().get(
 
 interface OverriddenProvider extends FastifyTypeProvider { output: 'inferenced' }
 
-expectAssignable(server.typeProvider<OverriddenProvider>().get<{ Body: 'override' }>(
+expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'override' }>(
   '/',
   {
     schema: {
@@ -58,7 +58,7 @@ expectAssignable(server.typeProvider<OverriddenProvider>().get<{ Body: 'override
 
 interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : never }
 
-expectAssignable(server.typeProvider<TypeBoxProvider>().get(
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   '/',
   {
     schema: {
@@ -82,7 +82,7 @@ expectAssignable(server.typeProvider<TypeBoxProvider>().get(
 
 interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : never }
 
-expectAssignable(server.typeProvider<JsonSchemaToTsProvider>().get(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
   {
     schema: {

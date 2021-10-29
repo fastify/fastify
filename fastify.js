@@ -248,7 +248,7 @@ function fastify (options) {
     // expose logger instance
     log: logger,
     // type provider
-    typeProvider: typeProvider,
+    withTypeProvider: withTypeProvider,
     // hooks
     addHook: addHook,
     // schemas
@@ -505,7 +505,7 @@ function fastify (options) {
   }
 
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
-  function typeProvider () {
+  function withTypeProvider () {
     return this
   }
 

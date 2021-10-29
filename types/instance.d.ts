@@ -34,7 +34,7 @@ export interface FastifyInstance<
   version: string | undefined;
   log: Logger;
 
-  typeProvider<Provider extends TypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
+  withTypeProvider<Provider extends TypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   getSchema(schemaId: string): unknown;

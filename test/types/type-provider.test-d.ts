@@ -102,3 +102,28 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+// -------------------------------------------------------------------
+// Instance Type Remappable
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          x: { type: 'number' },
+          y: { type: 'string' },
+          z: { type: 'boolean' }
+        }
+      } as const
+    }
+  },
+  (req) => {
+    expectType<number | undefined>(req.body.x)
+    expectType<string | undefined>(req.body.y)
+    expectType<boolean | undefined>(req.body.z)
+  }
+))

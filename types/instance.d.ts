@@ -34,7 +34,7 @@ export interface FastifyInstance<
   version: string | undefined;
   log: Logger;
 
-  withTypeProvider<Provider extends TypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
+  withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   getSchema(schemaId: string): unknown;
@@ -86,7 +86,7 @@ export interface FastifyInstance<
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
+  register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, any> & PromiseLike<undefined>>;
 
   routing(req: RawRequest, res: RawReply): void;
   getDefaultRoute: DefaultRoute<RawRequest, RawReply>;

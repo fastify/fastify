@@ -127,3 +127,70 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().withTypeProvider<Jso
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+// -------------------------------------------------------------------
+// Request Hooks
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      body: Type.Object({
+        x: Type.Number(),
+        y: Type.String(),
+        z: Type.Boolean()
+      })
+    },
+    preHandler: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preParsing: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preSerialization: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    preValidation: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onError: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onRequest: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onResponse: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onTimeout: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    },
+    onSend: req => {
+      expectType<number>(req.body.x)
+      expectType<string>(req.body.y)
+      expectType<boolean>(req.body.z)
+    }
+  },
+  req => {
+    expectType<number>(req.body.x)
+    expectType<string>(req.body.y)
+    expectType<boolean>(req.body.z)
+  }
+))

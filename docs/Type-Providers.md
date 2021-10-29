@@ -13,7 +13,7 @@ The following inference packages are supported:
 - `json-schema-to-ts` - [github](https://github.com/ThomasAribart/json-schema-to-ts)
 - `typebox` - [github](https://github.com/sinclairzx81/typebox)
 
-### Json Schema to Js
+### Json Schema to Ts
 
 The following sets up a `json-schema-to-ts` Type Provider
 

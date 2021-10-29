@@ -9,7 +9,7 @@ import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser, removeContentTypeParser, removeAllContentTypeParsers } from './content-type-parser'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 
 export interface PrintRoutesOptions {
   includeMeta?: boolean | (string | symbol)[]

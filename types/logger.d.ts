@@ -3,7 +3,7 @@ import { RouteGenericInterface } from './route'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
 import pino from 'pino'

@@ -6,7 +6,7 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpressi
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
 import { FastifyError } from 'fastify-error'
 import { FastifyContext } from './context'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyLoggerInstance, LogLevel } from './logger'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}

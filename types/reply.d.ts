@@ -4,7 +4,7 @@ import { FastifyLoggerInstance } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
 export interface ReplyGenericInterface {

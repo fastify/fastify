@@ -17,7 +17,7 @@ import { Socket } from 'net'
 import { Options as FJSOptions } from 'fast-json-stringify'
 import { FastifySchema } from './types/schema'
 import { FastifyContextConfig } from './types/context'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -187,5 +187,5 @@ export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 export * from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
-export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/typeProvider'
+export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 export { fastify }

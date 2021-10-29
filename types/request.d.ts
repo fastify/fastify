@@ -2,7 +2,7 @@ import { FastifyLoggerInstance } from './logger'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, CallTypeProvider } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault, CallTypeProvider } from './type-provider'
 import { FastifySchema } from './schema'
 
 export interface RequestGenericInterface {

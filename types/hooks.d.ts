@@ -6,7 +6,7 @@ import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { FastifyLoggerInstance } from './logger'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
 type HookHandlerDoneFunction = <TError extends Error = FastifyError>(err?: TError) => void

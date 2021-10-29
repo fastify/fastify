@@ -1,7 +1,7 @@
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression } from './utils'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifySchema } from './schema'
 
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void

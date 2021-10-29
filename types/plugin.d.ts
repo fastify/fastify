@@ -1,6 +1,6 @@
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './typeProvider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyLoggerInstance } from './logger'
 
 export type FastifyPluginOptions = Record<string, any>

@@ -16,10 +16,5 @@ test('Should export withTypeProvider function', t => {
 test('Should return same instance', t => {
   t.plan(1)
   const fastify = Fastify()
-  const next = fastify.withTypeProvider()
-  t.equal(next,fastify)
-    t.pass()
-  } else {
-    t.fail()
-  }
+  t.equal(fastify, fastify.withTypeProvider())
 })

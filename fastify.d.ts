@@ -97,6 +97,8 @@ export type FastifyServerOptions<
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
+  maxRequestsPerSocket?: number,
+  requestTimeout?: number,
   pluginTimeout?: number,
   bodyLimit?: number,
   maxParamLength?: number,

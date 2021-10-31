@@ -4,6 +4,8 @@ import { FastifyLoggerInstance } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { FastifySchema } from './schema'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -19,19 +21,21 @@ export interface FastifyReply<
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
   log: FastifyLoggerInstance;
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest>;
+  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
-  code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   statusCode: number;
   sent: boolean;
-  send(payload?: RouteGeneric['Reply']): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  send(payload?: RouteGeneric['Reply']): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   getHeader(key: string): string | undefined;
   getHeaders(): {
     // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
@@ -40,13 +44,13 @@ export interface FastifyReply<
   removeHeader(key: string): void;
   hasHeader(key: string): boolean;
   // Note: should consider refactoring the argument order for redirect. statusCode is optional so it should be after the required url param
-  redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  redirect(statusCode: number, url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  redirect(url: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  hijack(): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   callNotFound(): void;
   getResponseTime(): number;
-  type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
-  serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
 }

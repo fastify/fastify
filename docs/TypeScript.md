@@ -332,7 +332,7 @@ const todo = {
     done: { type: 'boolean' },
   },
   required: ['name'],
-} as const;
+} as const; // don't forget to use const !
 ```
 
 With the provided type `FromSchema` you can build a type from your schema and use it in your handler.

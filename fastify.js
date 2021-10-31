@@ -133,6 +133,7 @@ function fastify (options) {
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
+  options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader

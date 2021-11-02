@@ -1375,3 +1375,235 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
   t.equal(json.statusCode, 400)
   t.equal(res.statusCode, 400, 'Should not coearce the string into array')
 })
+
+test('setSchemaController: Inherits buildSerializer from parent if not present within the instance', async t => {
+  t.plan(6)
+  const customAjv = new Ajv({ coerceTypes: false })
+  const someSchema = {
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  }
+  const errorResponseSchema = {
+    $id: 'error_response',
+    type: 'object',
+    properties: {
+      statusCode: {
+        type: 'integer'
+      },
+      message: {
+        type: 'string'
+      }
+    }
+  }
+  let rootSerializerCalled = 0
+  let rootValidatorCalled = 0
+  let childValidatorCalled = 0
+  const rootBuildSerializer = function (externalSchemas) {
+    rootSerializerCalled++
+    return function serializer () {
+      return data => {
+        return JSON.stringify({
+          statusCode: data.statusCode,
+          message: data.message
+        })
+      }
+    }
+  }
+  const rootBuildValidator = function (externalSchemas) {
+    rootValidatorCalled++
+    return function validatorCompiler ({ schema }) {
+      return customAjv.compile(schema)
+    }
+  }
+  const server = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: rootBuildValidator,
+        buildSerializer: rootBuildSerializer
+      }
+    }
+  })
+
+  // these schemas must be added before calling setSchemaController()
+  server.addSchema(someSchema)
+  server.addSchema(errorResponseSchema)
+
+  server.register((instance, _, done) => {
+    instance.setSchemaController({
+      compilersFactory: {
+        buildValidator: function (externalSchemas) {
+          childValidatorCalled++
+          const schemaKeys = Object.keys(externalSchemas)
+          for (const key of schemaKeys) {
+            if (customAjv.getSchema(key) == null) {
+              customAjv.addSchema(externalSchemas[key], key)
+            }
+          }
+          return function validatorCompiler ({ schema }) {
+            return customAjv.compile(schema)
+          }
+        }
+      }
+    })
+
+    instance.get(
+      '/',
+      {
+        schema: {
+          querystring: {
+            msg: {
+              $ref: 'some#'
+            }
+          },
+          response: {
+            '4xx': {
+              $ref: 'error_response#'
+            }
+          }
+        }
+      },
+      (req, reply) => {
+        reply.send({ noop: 'noop' })
+      }
+    )
+
+    done()
+  })
+
+  const res = await server.inject({
+    method: 'GET',
+    url: '/',
+    query: {
+      msg: ['string']
+    }
+  })
+  const json = res.json()
+
+  t.equal(json.statusCode, 400)
+  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(rootSerializerCalled, 1, 'Should be called from the child')
+  t.equal(rootValidatorCalled, 0, 'Should not be called from the child')
+  t.equal(childValidatorCalled, 1, 'Should be called from the child')
+  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+})
+
+test('setSchemaController: Inherits buildValidator from parent if not present within the instance', async t => {
+  t.plan(6)
+  const customAjv = new Ajv({ coerceTypes: false })
+  const someSchema = {
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  }
+  const errorResponseSchema = {
+    $id: 'error_response',
+    type: 'object',
+    properties: {
+      statusCode: {
+        type: 'integer'
+      },
+      message: {
+        type: 'string'
+      }
+    }
+  }
+  let rootSerializerCalled = 0
+  let rootValidatorCalled = 0
+  let childSerializerCalled = 0
+  const rootBuildSerializer = function (externalSchemas) {
+    rootSerializerCalled++
+    return function serializer () {
+      return data => JSON.stringify(data)
+    }
+  }
+  const rootBuildValidator = function (externalSchemas) {
+    rootValidatorCalled++
+    const schemaKeys = Object.keys(externalSchemas)
+    for (const key of schemaKeys) {
+      if (customAjv.getSchema(key) == null) {
+        customAjv.addSchema(externalSchemas[key], key)
+      }
+    }
+    return function validatorCompiler ({ schema }) {
+      return customAjv.compile(schema)
+    }
+  }
+  const server = Fastify({
+    schemaController: {
+      compilersFactory: {
+        buildValidator: rootBuildValidator,
+        buildSerializer: rootBuildSerializer
+      }
+    }
+  })
+
+  // these schemas must be added before calling setSchemaController()
+  server.addSchema(someSchema)
+  server.addSchema(errorResponseSchema)
+
+  server.register((instance, _, done) => {
+    instance.register((subInstance, _, subDone) => {
+      subInstance.setSchemaController({
+        compilersFactory: {
+          buildSerializer: function (externalSchemas) {
+            childSerializerCalled++
+            return function serializerCompiler () {
+              return data => {
+                return JSON.stringify({
+                  statusCode: data.statusCode,
+                  message: data.message
+                })
+              }
+            }
+          }
+        }
+      })
+
+      subInstance.get(
+        '/',
+        {
+          schema: {
+            querystring: {
+              msg: {
+                $ref: 'some#'
+              }
+            },
+            response: {
+              '4xx': {
+                $ref: 'error_response#'
+              }
+            }
+          }
+        },
+        (req, reply) => {
+          reply.send({ noop: 'noop' })
+        }
+      )
+
+      subDone()
+    })
+
+    done()
+  })
+
+  const res = await server.inject({
+    method: 'GET',
+    url: '/',
+    query: {
+      msg: ['string']
+    }
+  })
+  const json = res.json()
+
+  t.equal(json.statusCode, 400)
+  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(rootSerializerCalled, 0, 'Should be called from the child')
+  t.equal(rootValidatorCalled, 1, 'Should not be called from the child')
+  t.equal(childSerializerCalled, 1, 'Should be called from the child')
+  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+})

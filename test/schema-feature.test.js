@@ -1487,7 +1487,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
   t.equal(rootSerializerCalled, 1, 'Should be called from the child')
   t.equal(rootValidatorCalled, 0, 'Should not be called from the child')
   t.equal(childValidatorCalled, 1, 'Should be called from the child')
-  t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  t.equal(res.statusCode, 400, 'Should not coerce the string into array')
 })
 
 test('setSchemaController: Inherits buildValidator from parent if not present within the instance', async t => {

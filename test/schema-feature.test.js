@@ -1366,7 +1366,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
     method: 'GET',
     url: '/',
     query: {
-      msg: ['string']
+      msg: 'string'
     }
   })
   const json = res.json()

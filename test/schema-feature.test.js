@@ -1315,7 +1315,6 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
     }
   }
 
-  // these schemas must be added before calling setSchemaController()
   server.addSchema(someSchema)
   server.addSchema(errorResponseSchema)
 
@@ -1427,7 +1426,6 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     }
   })
 
-  // these schemas must be added before calling setSchemaController()
   server.addSchema(someSchema)
   server.addSchema(errorResponseSchema)
 
@@ -1542,10 +1540,6 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
     }
   })
 
-  // these schemas must be added before calling setSchemaController()
-  server.addSchema(someSchema)
-  server.addSchema(errorResponseSchema)
-
   server.register((instance, _, done) => {
     instance.register((subInstance, _, subDone) => {
       subInstance.setSchemaController({
@@ -1590,6 +1584,9 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
 
     done()
   })
+
+  server.addSchema(someSchema)
+  server.addSchema(errorResponseSchema)
 
   const res = await server.inject({
     method: 'GET',

@@ -1477,7 +1477,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
     method: 'GET',
     url: '/',
     query: {
-      msg: ['string']
+      msg: 'string'
     }
   })
   const json = res.json()

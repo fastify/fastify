@@ -1,11 +1,11 @@
 'use strict'
 
+const VERSION = '3.23.1'
+
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
-let version
-let versionLoaded = false
 
 const {
   kAvvioBoot,
@@ -326,12 +326,7 @@ function fastify (options) {
       get () { return this[kSchemaController].getSerializerCompiler() }
     },
     version: {
-      get () {
-        if (versionLoaded === false) {
-          version = loadVersion()
-        }
-        return version
-      }
+      get () { return VERSION }
     },
     errorHandler: {
       get () {
@@ -690,20 +685,6 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
       }
     }
     httpHandler(req, res)
-  }
-}
-
-function loadVersion () {
-  versionLoaded = true
-  const fs = require('fs')
-  const path = require('path')
-  try {
-    const pkgPath = path.join(__dirname, 'package.json')
-    fs.accessSync(pkgPath, fs.constants.R_OK)
-    const pkg = JSON.parse(fs.readFileSync(pkgPath))
-    return pkg.name === 'fastify' ? pkg.version : undefined
-  } catch (e) {
-    return undefined
   }
 }
 

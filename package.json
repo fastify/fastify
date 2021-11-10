@@ -14,6 +14,7 @@
     "lint:fix": "standard --fix",
     "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
+    "prepublishOnly": "tap --no-check-coverage test/internals/version.test.js",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run lint && npm run unit -- --cov --coverage-report=lcovonly && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",

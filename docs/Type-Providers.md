@@ -85,4 +85,6 @@ server.get('/route', {
 })
 ```
 
+TypeBox uses the properties `kind` and `modifier` internally. Those are not strictly valid JSON schema and will throw an AJV error. To remove the error it's either necessary to omit the properties by using [`Type.strict()`](https://github.com/sinclairzx81/typebox#strict) or use the AJV options for adding custom keywords.
+
 See also the [TypeBox documentation](https://github.com/sinclairzx81/typebox#validation) on how to set up AJV to work with TypeBox.

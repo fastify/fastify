@@ -1,7 +1,5 @@
 .editorconfig
 .gitattributes
-.git
-.DS_Store
 .gitignore
 .github
 .nyc_output
@@ -9,7 +7,6 @@ coverage/
 tools/
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
-.dependabot
 .clinic
 
 # test certification

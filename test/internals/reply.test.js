@@ -1368,6 +1368,48 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
   fastify.inject({ method: 'GET', url: '/' })
 })
 
+test('reply.getResponseTime() should return the time since a request started while inflight', t => {
+  t.plan(1)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send('hello world')
+    }
+  })
+
+  fastify.addHook('preValidation', (req, reply, done) => {
+    t.not(reply.getResponseTime(), reply.getResponseTime())
+    done()
+  })
+
+  fastify.addHook('onResponse', (req, reply) => {
+    t.end()
+  })
+
+  fastify.inject({ method: 'GET', url: '/' })
+})
+
+test('reply.getResponseTime() should return the same value after a request is finished', t => {
+  t.plan(1)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send('hello world')
+    }
+  })
+
+  fastify.addHook('onResponse', (req, reply) => {
+    t.equal(reply.getResponseTime(), reply.getResponseTime())
+    t.end()
+  })
+
+  fastify.inject({ method: 'GET', url: '/' })
+})
+
 test('reply should use the custom serializer', t => {
   t.plan(4)
   const fastify = require('../..')()

@@ -61,7 +61,14 @@ import { TypeBoxTypeProvider, Type } from 'fastify-type-provider-typebox'
 
 import fastify from 'fastify'
 
-const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
+const server = fastify({
+    ajv: {
+        customOptions: {
+            strict: 'log',
+            keywords: ['kind', 'modifier'],
+        },
+    },
+}).withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
     schema: {
@@ -77,3 +84,5 @@ server.get('/route', {
     const { foo, bar } = request.query // type safe!
 })
 ```
+
+See also the [TypeBox documentation](https://github.com/sinclairzx81/typebox#validation) on how to set up AJV to work with TypeBox.

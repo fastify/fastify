@@ -61,7 +61,14 @@ import { TypeBoxTypeProvider, Type } from 'fastify-type-provider-typebox'
 
 import fastify from 'fastify'
 
-const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
+const server = fastify({
+    ajv: {
+        customOptions: {
+            strict: 'log',
+            keywords: ['kind', 'modifier'],
+        },
+    },
+}).withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
     schema: {
@@ -77,3 +84,7 @@ server.get('/route', {
     const { foo, bar } = request.query // type safe!
 })
 ```
+
+TypeBox uses the properties `kind` and `modifier` internally. These properties are not strictly valid JSON schema which will cause `AJV@7` and newer versions to throw an invalid schema error. To remove the error it's either necessary to omit the properties by using [`Type.Strict()`](https://github.com/sinclairzx81/typebox#strict) or use the AJV options for adding custom keywords.
+
+See also the [TypeBox documentation](https://github.com/sinclairzx81/typebox#validation) on how to set up AJV to work with TypeBox.

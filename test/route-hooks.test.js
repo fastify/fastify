@@ -523,3 +523,31 @@ test('onTimeout on route', t => {
     })
   })
 })
+
+test('onError on route', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  const err = new Error('kaboom')
+
+  fastify.get('/',
+    {
+      onError (request, reply, error, done) {
+        t.match(error, err)
+        done()
+      }
+    },
+    (req, reply) => {
+      reply.send(err)
+    })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      message: 'kaboom',
+      statusCode: 500
+    })
+  })
+})

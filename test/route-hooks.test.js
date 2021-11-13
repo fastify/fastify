@@ -2,6 +2,7 @@
 
 const { Readable } = require('stream')
 const test = require('tap').test
+const sget = require('simple-get').concat
 const Fastify = require('../')
 
 process.removeAllListeners('warning')
@@ -494,5 +495,31 @@ test('onRequest option should be called before preParsing', t => {
     t.error(err)
     const payload = JSON.parse(res.payload)
     t.same(payload, { hello: 'world' })
+  })
+})
+
+test('onTimeout on route', t => {
+  t.plan(4)
+  const fastify = Fastify({ connectionTimeout: 500 })
+
+  fastify.get('/timeout', {
+    async  handler (request, reply) { },
+    onTimeout (request, reply, done) {
+      t.pass('onTimeout called')
+      done()
+    }
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+    t.teardown(() => fastify.close())
+
+    sget({
+      method: 'GET',
+      url: `${address}/timeout`
+    }, (err, response, body) => {
+      t.type(err, Error)
+      t.equal(err.message, 'socket hang up')
+    })
   })
 })

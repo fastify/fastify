@@ -50,6 +50,8 @@ They need to be in
 * `preSerialization(request, reply, payload, done)`: a [function](Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
 * `onSend(request, reply, payload, done)`: a [function](Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
 * `onResponse(request, reply, done)`: a [function](Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
+* `onTimeout(request, reply, done)`: a [function](Hooks.md#ontimeout) called when a request is timed out and the HTTP socket has been hanged up.
+* `onError(request, reply, error, done)`: a [function](Hooks.md#onerror) called when an Error is thrown or send to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The [Fastify server](Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
 * `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](Server.md#setErrorHandler), for requests to the route. To access the default handler, you can access `instance.errorHandler`. Note that this will point to fastify's default `errorHandler` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](Validation-and-Serialization.md#schema-validator) documentation.

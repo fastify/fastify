@@ -369,7 +369,7 @@ Fastify parses `'application/json'` and `'text/plain'` request payloads natively
 The following example returns the parsed body of a request back to the client:
 
 ```js
-const opts = {
+const opts = {}
 fastify.post('/', opts, async (request, reply) => {
   return request.body
 })

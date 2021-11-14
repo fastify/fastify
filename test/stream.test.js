@@ -14,7 +14,7 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
-const { kDisableRequestLogging, kReplySent } = require('../lib/symbols.js')
+const { kDisableRequestLogging } = require('../lib/symbols.js')
 
 test('should respond with a stream (success)', t => {
   t.plan(6)
@@ -653,7 +653,7 @@ test('should mark reply as sent before pumping the payload stream into response 
   const handleRequest = proxyquire('../lib/handleRequest', {
     './wrapThenable': (thenable, reply) => {
       thenable.then(function (payload) {
-        t.equal(reply[kReplySent], true)
+        t.equal(reply.sent, true)
       })
     }
   })
@@ -670,7 +670,7 @@ test('should mark reply as sent before pumping the payload stream into response 
 
   fastify.get('/', async function (req, reply) {
     const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(stream)
+    return reply.code(200).send(stream)
   })
 
   fastify.inject({

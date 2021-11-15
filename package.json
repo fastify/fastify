@@ -121,7 +121,7 @@
     "@hapi/joi": "^17.1.1",
     "@sinonjs/fake-timers": "^8.1.0",
     "@types/node": "^16.0.0",
-    "@types/pino": "^6.0.1",
+    "@types/pino": "^7.0.5",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
     "ajv": "^6.0.0",

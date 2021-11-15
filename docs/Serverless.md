@@ -328,8 +328,6 @@ export default async (req, res) => {
 
 ## Google Cloud Functions
 
-You can easly use Fastify inside your Google Cloud Functions.
-
 ### Creation of Fastify instance
 ```js
 const fastify = require("fastify")({

@@ -337,7 +337,7 @@ const fastify = require("fastify")({
 
 ### Add Custom `contentTypeParser` to Fastyfy instance
 
-As explained [here](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since Google Cloud Functions platform perform the parsing of the body request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/latest/ContentTypeParser/) to mitigate this behavior.
+As explained [here](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since the Google Cloud Functions platform parses the body of the request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/latest/ContentTypeParser/) to mitigate this behavior.
 
 ```js
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {

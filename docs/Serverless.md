@@ -345,7 +345,7 @@ fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
 });
 ```
 
-### Defines your endpoint (examples)
+### Define your endpoint (examples)
 
 A simple `GET` endpoint
 ```js

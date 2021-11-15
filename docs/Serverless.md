@@ -328,23 +328,18 @@ export default async (req, res) => {
 
 ## Google Cloud Functions
 
-You can run Fastify as a Google Cloud Functions using [`serverFactory`](https://www.fastify.io/docs/v1.13.x/Server/#serverfactory) option to pass the cloud function HTTP request to Fastify `handler`.
+You can easly use Fastify inside your Google Cloud Functions.
 
-### Creation of Fastify instance with `serverFactory`
+### Creation of Fastify instance
 ```js
 const fastify = require("fastify")({
-  serverFactory: (handler, opts) => {
-    const server = require("http").createServer((req, res) => {
-      handler(req, res);
-    });
-    return server;
-  },
+  logger: true // you can also define the level passing an object configuration to logger: {level: 'debug'}
 });
 ```
 
-### Add Custom `contentTypeParse` to Fastyfy instance
+### Add Custom `contentTypeParser` to Fastyfy instance
 
-As explained [here](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since Google Cloud Functions platform perform the parsing of the body request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/v1.13.x/ContentTypeParser/) to mitigate this behavior.
+As explained [here](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since Google Cloud Functions platform perform the parsing of the body request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/latest/ContentTypeParser/) to mitigate this behavior.
 
 ```js
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
@@ -394,7 +389,7 @@ fastify.route({
 
 ### Implement and export the function
 
-Final step, implement the function to handle the request with Fastify and export it
+Final step, implement the function to handle the request and passing it to Fastify by emitting `request` event to `fastify.server`
 
 ```js
 const fastifyFunction = async (request, reply) => {
@@ -448,7 +443,8 @@ gcloud functions logs read
 
 #### Example request to `/hello` endpoint
 ```bash
-curl -X POST $GOOGLE_CLOUD_FUNCTION_URL/me -H "Content-Type: application/json" -d '{ "name": "Fastify" }'
+curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me -H "Content-Type: application/json" -d '{ "name": "Fastify" }'
+{"message":"Hello Fastify!"}
 ```
 
 ### References

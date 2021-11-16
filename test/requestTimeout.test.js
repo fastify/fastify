@@ -5,7 +5,7 @@ const { test } = require('tap')
 const Fastify = require('../fastify')
 
 test('requestTimeout passed to server', t => {
-  t.plan(4)
+  t.plan(5)
 
   try {
     Fastify({ requestTimeout: 500.1 })
@@ -23,6 +23,9 @@ test('requestTimeout passed to server', t => {
 
   const httpServer = Fastify({ requestTimeout: 1000 }).server
   t.equal(httpServer.requestTimeout, 1000)
+
+  const httpsServer = Fastify({ requestTimeout: 1000, https: true }).server
+  t.equal(httpsServer.requestTimeout, 1000)
 
   const serverFactory = (handler, _) => {
     const server = http.createServer((req, res) => {

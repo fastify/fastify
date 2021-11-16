@@ -90,6 +90,12 @@ expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
 expectAssignable<void>(server.listen(3000, (err, address) => {}))
 expectAssignable<void>(server.listen('3000', (err, address) => {}))
 
+// test listen method callback types
+expectAssignable<void>(server.listen('3000', (err, address) => {
+  expectAssignable<Error|null>(err)
+  expectAssignable<string>(address)
+}))
+
 // test listen method promise
 expectAssignable<PromiseLike<string>>(server.listen(3000))
 expectAssignable<PromiseLike<string>>(server.listen('3000'))

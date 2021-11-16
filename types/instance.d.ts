@@ -70,11 +70,11 @@ export interface FastifyInstance<
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
   inject(): LightMyRequestChain;
 
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error, address: string) => void): void;
-  listen(port: number | string, address: string, callback: (err: Error, address: string) => void): void;
-  listen(port: number | string, callback: (err: Error, address: string) => void): void;
+  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
+  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
+  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error, address: string) => void): void;
+  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error|null, address: string) => void): void;
   listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;

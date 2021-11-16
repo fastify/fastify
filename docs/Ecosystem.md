@@ -158,6 +158,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo) Fastify plugin for memoize responses by expressive settings.
+- [`fastify-polyglot`](https://github.com/heply/fastify-polyglot) A plugin to handle i18n using [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile) Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in a Fastify project.
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify plugin that uses [prettier](https://github.com/prettier/prettier) under the hood to beautify outgoing responses and/or other things in the Fastify server.
 - [`fastify-print-routes`](https://github.com/ShogunPanda/fastify-print-routes) A Fastify plugin that prints all available routes.

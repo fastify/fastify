@@ -187,7 +187,7 @@ Or as a development library:
 npm i --save-dev @google-cloud/functions-framework
 ```
 
-Than you can run your function locally with Functions Framework
+Than you can run your function locally with Functions Framework:
 ``` bash
 npx @google-cloud/functions-framework --target=fastifyFunction
 ```

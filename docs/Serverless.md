@@ -177,7 +177,7 @@ export.fastifyFunction = fastifyFunction;
 
 Install [Google Functions Framework for Node.js](https://github.com/GoogleCloudPlatform/functions-framework-nodejs).
 
-You can install it globally
+You can install it globally:
 ```bash
 npm i -g @google-cloud/functions-framework
 ```

@@ -2,6 +2,10 @@ version: 2
 updates:
 - package-ecosystem: github-actions
   directory: "/"
+  ignore:
+      - dependency-name: "actions/*"
+        update-types:
+            ["version-update:semver-minor", "version-update:semver-patch"]
   schedule:
     interval: daily
   open-pull-requests-limit: 10

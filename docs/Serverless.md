@@ -162,7 +162,7 @@ fastify.route({
 
 ### Implement and export the function
 
-Final step, implement the function to handle the request and passing it to Fastify by emitting `request` event to `fastify.server`
+Final step, implement the function to handle the request and pass it to Fastify by emitting `request` event to `fastify.server`:
 
 ```js
 const fastifyFunction = async (request, reply) => {

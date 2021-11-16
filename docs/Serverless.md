@@ -182,7 +182,7 @@ You can install it globally:
 npm i -g @google-cloud/functions-framework
 ```
 
-or as a development library.
+Or as a development library:
 ```bash
 npm i --save-dev @google-cloud/functions-framework
 ```

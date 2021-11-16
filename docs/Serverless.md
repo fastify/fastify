@@ -192,7 +192,7 @@ Than you can run your function locally with Functions Framework:
 npx @google-cloud/functions-framework --target=fastifyFunction
 ```
 
-or add this command to your `package.json` scripts 
+Or add this command to your `package.json` scripts:
 ```json
 "scripts": {
 ...

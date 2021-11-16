@@ -129,7 +129,7 @@ fastify.get('/', async (request, reply) => {
 })
 ```
 
-Or a more complete `POST` endpoint with schema validation 
+Or a more complete `POST` endpoint with schema validation: 
 ```js
 fastify.route({
   method: 'POST',

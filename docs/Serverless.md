@@ -122,7 +122,7 @@ fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
 
 ### Define your endpoint (examples)
 
-A simple `GET` endpoint
+A simple `GET` endpoint:
 ```js
 fastify.get('/', async (request, reply) => {
   reply.send({message: 'Hello World!'})

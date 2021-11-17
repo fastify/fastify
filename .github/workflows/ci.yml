@@ -40,7 +40,7 @@ jobs:
       - name: Set the value
         if: matrix.node-version == '17'
         run: |
-          echo "NODE_OPTIONS=--dns-result-order=ipv4first" >> $GITHUB_ENV
+          echo "NODE_OPTIONS=\"--dns-result-order=ipv4first\"" >> $GITHUB_ENV
 
       - name: Run tests
         run: |

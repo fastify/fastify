@@ -1605,7 +1605,7 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
   t.equal(res.statusCode, 400, 'Should not coearce the string into array')
 })
 
-test('Should throw if not default validator passed', { only: true }, async t => {
+test('Should throw if not default validator passed', async t => {
   t.plan(4)
   const customAjv = new Ajv({ coerceTypes: false })
   const someSchema = {
@@ -1649,6 +1649,67 @@ test('Should throw if not default validator passed', { only: true }, async t => 
     instance.addSchema(anotherSchema)
 
     instance.register(plugin, {})
+
+    instance.post(
+      '/',
+      {
+        schema: {
+          query: {
+            msg: {
+              $ref: 'some#'
+            }
+          },
+          headers: {
+            'x-another': {
+              $ref: 'another#'
+            }
+          }
+        }
+      },
+      (req, reply) => {
+        reply.send({ noop: 'noop' })
+      }
+    )
+
+    done()
+  })
+
+  try {
+    const res = await server.inject({
+      method: 'POST',
+      url: '/',
+      query: {
+        msg: ['string']
+      }
+    })
+
+    t.equal(res.json().message, 'querystring.msg should be array')
+    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  } catch (err) {
+    t.error(err)
+  }
+})
+
+test('Should throw if not default validator passed', async t => {
+  t.plan(2)
+  const someSchema = {
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  }
+  const anotherSchema = {
+    $id: 'another',
+    type: 'integer'
+  }
+
+  const server = Fastify()
+
+  server.addSchema(someSchema)
+
+  server.register((instance, opts, done) => {
+    instance.addSchema(anotherSchema)
 
     instance.post(
       '/',

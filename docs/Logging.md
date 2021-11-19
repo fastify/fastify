@@ -40,7 +40,7 @@ const fastify = require('fastify')({
 
 ### Usage
 You can use logger like this in your route handlers:
-```
+```js
 fastify.get('/', options, function (request, reply) {
   request.log.info('Some info about the current request')
   reply.send({ hello: 'world' })

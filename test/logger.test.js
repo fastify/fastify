@@ -1517,7 +1517,7 @@ test('should create a default logger if provided one is invalid', t => {
   t.pass()
 })
 
-test('should not throw error when serializing custom res', t => {
+test('should not throw error when serializing custom req', t => {
   t.plan(1)
 
   const lines = []

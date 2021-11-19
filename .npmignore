@@ -8,7 +8,9 @@ tools/
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 .clinic
-
+docs/
+test/
+examples/
 # test certification
 test/https/fastify.cert
 test/https/fastify.key

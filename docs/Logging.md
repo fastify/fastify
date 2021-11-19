@@ -11,13 +11,34 @@ this purpose.
 
 As Fastify is focused on performance, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
 
-Enabling the logger is extremely easy:
+Enabling the production JSON logger:
 
 ```js
 const fastify = require('fastify')({
   logger: true
 })
+```
 
+Enabling the logger with sensible configuration for both local development and production environment requires bit more configuration:
+```js
+const { NODE_ENV} = process.env
+
+const fastify = require('fastify')({
+  logger: {
+      prettyPrint:
+        NODE_ENV === 'development'
+          ? {
+              translateTime: 'HH:MM:ss Z',
+              ignore: 'pid,hostname'
+            }
+          : false
+    }
+})
+```
+⚠️ Also you need to install `pino-pretty` as it is not included by default for performance reasons.
+
+You can use it like this in your route handlers:
+```
 fastify.get('/', options, function (request, reply) {
   request.log.info('Some info about the current request')
   reply.send({ hello: 'world' })

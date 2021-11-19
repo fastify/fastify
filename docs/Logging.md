@@ -22,7 +22,7 @@ const fastify = require('fastify')({
 
 Enabling the logger with sensible configuration for both local development and production environment requires bit more configuration:
 ```js
-const { NODE_ENV} = process.env
+const { NODE_ENV } = process.env
 
 const fastify = require('fastify')({
   logger: {

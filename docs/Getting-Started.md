@@ -264,8 +264,7 @@ async function routes (fastify, options) {
   })
 
   fastify.post('/animals', async (request, reply) => {
-    // we can use the `request.body` object to get the data sent by the client.
-    // remember to validate the input data
+    // we can use the `request.body` object to get the data sent by the client
     const result = await collection.insertOne({ animal: request.body.animal })
     return result
   })

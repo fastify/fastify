@@ -102,3 +102,13 @@ test('maxRequestsPerSocket should 0', async (t) => {
   const initialConfig = Fastify().initialConfig
   t.same(initialConfig.maxRequestsPerSocket, 0)
 })
+
+test('requestTimeout passed to server', t => {
+  t.plan(2)
+
+  const httpServer = Fastify({ maxRequestsPerSocket: 5 }).server
+  t.equal(httpServer.maxRequestsPerSocket, 5)
+
+  const httpsServer = Fastify({ maxRequestsPerSocket: 5, https: true }).server
+  t.equal(httpsServer.maxRequestsPerSocket, 5)
+})

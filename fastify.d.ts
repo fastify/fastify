@@ -15,8 +15,7 @@ import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
 import { Options as FJSOptions } from 'fast-json-stringify'
-import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { FastifySerializerCompiler } from './types/schema';
+import { FastifySerializerCompiler, FastifySchemaCompiler } from './types/schema';
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -30,32 +29,37 @@ declare function fastify<
   Server extends http2.Http2SecureServer,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+>(opts: FastifyHttp2SecureOptions<Server, Logger, Ajv>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+>(opts: FastifyHttp2Options<Server, Logger, Ajv>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+>(opts: FastifyHttpsOptions<Server, Logger, Ajv>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
->(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+>(opts?: FastifyServerOptions<Server, Logger, Ajv>): FastifyInstance<Server, Request, Reply, Logger> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger>>
 export default fastify
 
 export type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+> = FastifyServerOptions<Server, Logger, Ajv> & {
   http2: true,
   https: http2.SecureServerOptions,
   http2SessionTimeout?: number
@@ -63,16 +67,18 @@ export type FastifyHttp2SecureOptions<
 
 export type FastifyHttp2Options<
   Server extends http2.Http2Server,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+> = FastifyServerOptions<Server, Logger, Ajv> & {
   http2: true,
   http2SessionTimeout?: number
 }
 
 export type FastifyHttpsOptions<
   Server extends https.Server,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> = FastifyServerOptions<Server, Logger> & {
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
+> = FastifyServerOptions<Server, Logger, Ajv> & {
   https: https.ServerOptions
 }
 
@@ -87,12 +93,18 @@ export interface ConnectionError extends Error {
   }
 }
 
+export interface FastifyAjvOptions {
+  customOptions?: AjvOptions,
+  plugins?: Function[]
+}
+
 /**
  * Options for a fastify server instance. Utilizes conditional logic on the generic server parameter to enforce certain https and http2
  */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  Ajv = FastifyAjvOptions
 > = {
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
@@ -137,15 +149,12 @@ export type FastifyServerOptions<
       getSchemas(): Record<string, unknown>;
     };
     compilersFactory?: {
-      buildValidator?: ValidatorCompiler;
+      buildValidator?: (externalSchemas: Record<string, unknown>, options?: Ajv) => FastifySchemaCompiler<unknown>;
       buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
     };
   };
   return503OnClosing?: boolean,
-  ajv?: {
-    customOptions?: AjvOptions,
-    plugins?: Function[]
-  },
+  ajv?: Ajv,
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
     error: FastifyError,
     req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>,

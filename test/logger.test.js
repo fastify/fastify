@@ -1529,6 +1529,6 @@ test('should not throw error when serializing custom res', t => {
   })
   const fastify = Fastify({ logger: { level: 'info', stream: dest } })
   fastify.log.info({ req: {} })
-  
+
   t.same(lines[0].req, {})
 })

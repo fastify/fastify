@@ -20,7 +20,7 @@ const fastify = require('fastify')({
 })
 ```
 
-Enabling the logger with sensible configuration for both local development and production environment requires bit more configuration:
+Enabling the logger with appropriate configuration for both local development and production environment requires bit more configuration:
 ```js
 const fastify = require('fastify')({
   logger: {
@@ -34,7 +34,7 @@ const fastify = require('fastify')({
     }
 })
 ```
-⚠️ `pino-pretty` needs to be installed as a dev dependency, It is not included by default for performance reasons.
+⚠️ `pino-pretty` needs to be installed as a dev dependency, it is not included by default for performance reasons.
 
 ### Usage
 You can use the logger like this in your route handlers:

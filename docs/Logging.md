@@ -22,12 +22,10 @@ const fastify = require('fastify')({
 
 Enabling the logger with sensible configuration for both local development and production environment requires bit more configuration:
 ```js
-const { NODE_ENV } = process.env
-
 const fastify = require('fastify')({
   logger: {
       prettyPrint:
-        NODE_ENV === 'development'
+        environment === 'development'
           ? {
               translateTime: 'HH:MM:ss Z',
               ignore: 'pid,hostname'

@@ -37,7 +37,8 @@ const fastify = require('fastify')({
 ⚠️ `pino-pretty` needs to be installed as a dev dependency, It is not included by default for performance reasons.
 
 ### Usage
-You can use logger like this in your route handlers:
+You can use the logger like this in your route handlers:
+
 ```js
 fastify.get('/', options, function (request, reply) {
   request.log.info('Some info about the current request')

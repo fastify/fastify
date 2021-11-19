@@ -2,6 +2,7 @@
 
 ## Logging
 
+### Enable logging
 Logging is disabled by default, and you can enable it by passing
 `{ logger: true }` or `{ logger: { level: 'info' } }` when you create
 a fastify instance. Note that if the logger is disabled, it is impossible to
@@ -35,9 +36,10 @@ const fastify = require('fastify')({
     }
 })
 ```
-⚠️ Also you need to install `pino-pretty` as it is not included by default for performance reasons.
+⚠️ Also you need to install `pino-pretty` as a dev dependency. It is not included by default for performance reasons.
 
-You can use it like this in your route handlers:
+### Usage
+You can use logger like this in your route handlers:
 ```
 fastify.get('/', options, function (request, reply) {
   request.log.info('Some info about the current request')

@@ -1,5 +1,5 @@
 import { expectType } from 'tsd'
-import fastify, { RouteHandler, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface } from '../../fastify'
+import fastify, { RouteHandler, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface, FastifyContext, ContextConfigDefault, FastifyContextConfig } from '../../fastify'
 import { RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyRequest } from '../../types/request'
@@ -50,6 +50,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<RawRequestDefaultExpression>(request.raw)
   expectType<RequestBodyDefault>(request.body)
   expectType<RequestParamsDefault>(request.params)
+  expectType<FastifyContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyContextConfig>(request.context.config)
 
   expectType<RequestHeadersDefault & RawRequestDefaultExpression['headers']>(request.headers)
   request.headers = {}
@@ -72,6 +74,8 @@ const postHandler: Handler = function (request) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
+  expectType<FastifyContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyContextConfig>(request.context.config)
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
@@ -84,6 +88,8 @@ function putHandler (request: CustomRequest, reply: FastifyReply) {
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])
   expectType<FastifyInstance>(request.server)
+  expectType<FastifyContext<ContextConfigDefault>>(request.context)
+  expectType<FastifyContextConfig>(request.context.config)
 }
 
 const server = fastify()

@@ -1604,3 +1604,149 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
   t.equal(childSerializerCalled, 1, 'Should be called from the child')
   t.equal(res.statusCode, 400, 'Should not coearce the string into array')
 })
+
+test('Should throw if not default validator passed', async t => {
+  t.plan(4)
+  const customAjv = new Ajv({ coerceTypes: false })
+  const someSchema = {
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  }
+  const anotherSchema = {
+    $id: 'another',
+    type: 'integer'
+  }
+  const plugin = fp(function (pluginInstance, _, pluginDone) {
+    pluginInstance.setSchemaController({
+      compilersFactory: {
+        buildValidator: function (externalSchemas) {
+          const schemaKeys = Object.keys(externalSchemas)
+          t.equal(schemaKeys.length, 2)
+          t.same(schemaKeys, ['some', 'another'])
+
+          for (const key of schemaKeys) {
+            if (customAjv.getSchema(key) == null) {
+              customAjv.addSchema(externalSchemas[key], key)
+            }
+          }
+          return function validatorCompiler ({ schema }) {
+            return customAjv.compile(schema)
+          }
+        }
+      }
+    })
+
+    pluginDone()
+  })
+  const server = Fastify()
+
+  server.addSchema(someSchema)
+
+  server.register((instance, opts, done) => {
+    instance.addSchema(anotherSchema)
+
+    instance.register(plugin, {})
+
+    instance.post(
+      '/',
+      {
+        schema: {
+          query: {
+            msg: {
+              $ref: 'some#'
+            }
+          },
+          headers: {
+            'x-another': {
+              $ref: 'another#'
+            }
+          }
+        }
+      },
+      (req, reply) => {
+        reply.send({ noop: 'noop' })
+      }
+    )
+
+    done()
+  })
+
+  try {
+    const res = await server.inject({
+      method: 'POST',
+      url: '/',
+      query: {
+        msg: ['string']
+      }
+    })
+
+    t.equal(res.json().message, 'querystring.msg should be array')
+    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  } catch (err) {
+    t.error(err)
+  }
+})
+
+test('Should throw if not default validator passed', async t => {
+  t.plan(2)
+  const someSchema = {
+    $id: 'some',
+    type: 'array',
+    items: {
+      type: 'string'
+    }
+  }
+  const anotherSchema = {
+    $id: 'another',
+    type: 'integer'
+  }
+
+  const server = Fastify()
+
+  server.addSchema(someSchema)
+
+  server.register((instance, opts, done) => {
+    instance.addSchema(anotherSchema)
+
+    instance.post(
+      '/',
+      {
+        schema: {
+          query: {
+            msg: {
+              $ref: 'some#'
+            }
+          },
+          headers: {
+            'x-another': {
+              $ref: 'another#'
+            }
+          }
+        }
+      },
+      (req, reply) => {
+        reply.send({ noop: 'noop' })
+      }
+    )
+
+    done()
+  })
+
+  try {
+    const res = await server.inject({
+      method: 'POST',
+      url: '/',
+      query: {
+        msg: ['string']
+      }
+    })
+
+    t.equal(res.json().message, 'querystring.msg should be array')
+    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+  } catch (err) {
+    t.error(err)
+  }
+})

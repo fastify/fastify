@@ -631,8 +631,7 @@ function fastify (options) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController" when fastify instance is already started!')
     const old = this[kSchemaController]
-    const parent = old.parent || old
-    const schemaController = SchemaController.buildSchemaController(parent, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)

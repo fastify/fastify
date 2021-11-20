@@ -115,10 +115,12 @@ to `''`.
     - While sending different values as cookie with `set-cookie` as the key, every value will be sent as cookie instead of replacing the previous value.
 
     ```js
-    res.header('set-cookie', 'foo');
-    res.header('set-cookie', 'bar');
+    reply.header('set-cookie', 'foo');
+    reply.header('set-cookie', 'bar');
     ```
   - The browser will only consider the latest reference of a key for `set-cookie` header. The fact that this is done this way is to avoid parsing the set-cookie header when you add it in the reply and speeds up the serialization of the reply.
+
+  - To reset the `set-cookie`, you need to make an explicit call to `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)` [here](#removeheaderkey).
 
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 

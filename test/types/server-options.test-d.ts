@@ -1,7 +1,5 @@
-import fastify, { FastifyInstance, FastifyServerOptions } from '../../fastify'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyLoggerInstance } from '../../types/logger'
-import { RawServerDefault } from '../../types/utils'
+import fastify, { FastifyInstance } from '../../fastify'
+import { expectError, expectAssignable } from 'tsd'
 
 expectAssignable<FastifyInstance>(
   fastify({

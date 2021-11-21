@@ -18,19 +18,6 @@ expectAssignable<FastifyInstance>(
   })
 )
 
-expectAssignable<FastifyInstance>(
-  fastify({
-    ajv: {
-      random: true
-    },
-    schemaController: {
-      compilersFactory: {
-        buildValidator: (externalSchemas, options) => () => (): boolean => options?.random ?? true
-      }
-    }
-  })
-)
-
 expectError<FastifyInstance>(
   fastify({
     ajv: {

@@ -262,6 +262,24 @@ async function routes (fastify, options) {
     }
     return result
   })
+
+  const animalBodyJsonSchema = {
+    type: 'object',
+    required: ['animal'],
+    properties: {
+      animal: { type: 'string' },
+    },
+  }
+
+  const schema = {
+    body: animalBodyJsonSchema,
+  }
+
+  fastify.post('/animals', { schema }, async (request, reply) => {
+    // we can use the `request.body` object to get the data sent by the client
+    const result = await collection.insertOne({ animal: request.body.animal })
+    return result
+  })
 }
 
 module.exports = routes
@@ -362,6 +380,20 @@ fastify.get('/', opts, async (request, reply) => {
 ```
 By specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
 Read [Validation and Serialization](Validation-and-Serialization.md) to learn more.
+
+<a name="request-payload"></a>
+### Parsing request payloads
+Fastify parses `'application/json'` and `'text/plain'` request payloads natively, with the result accessible from the [Fastify request](Request.md) object at `request.body`.<br>
+The following example returns the parsed body of a request back to the client:
+
+```js
+const opts = {}
+fastify.post('/', opts, async (request, reply) => {
+  return request.body
+})
+```
+
+Read [Content Type Parser](ContentTypeParser.md) to learn more about Fastify's default parsing functionality and how to support other content types.
 
 <a name="extend-server"></a>
 ### Extend your server

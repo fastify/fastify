@@ -4,7 +4,7 @@
 The first parameter of the handler function is `Request`.<br>
 Request is a core Fastify object containing the following fields:
 - `query` - the parsed querystring, its format is specified by [`querystringParser`](Server.md#querystringparser)
-- `body` - the body
+- `body` - the request payload, see [Content Type Parser](ContentTypeParser.md) for details on what request payloads Fastify natively parses and how to support other content types
 - `params` - the params matching the URL
 - [`headers`](#headers) - the headers getter and setter
 - `raw` - the incoming HTTP request from Node core

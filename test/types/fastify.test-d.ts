@@ -26,9 +26,24 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
 expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
 expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
+expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ schemaController: {} }))
+expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(
+  fastify({
+    schemaController: {
+      compilersFactory: {}
+    }
+  })
+)
 
 expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
 expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
+expectError(
+  fastify({
+    schemaController: {
+      bucket: () => ({}) // cannot be empty
+    }
+  })
+)
 
 // light-my-request
 expectAssignable<InjectOptions>({ query: '' })

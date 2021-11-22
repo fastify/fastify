@@ -1,9 +1,10 @@
 import { FastifyLoggerInstance } from './logger'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
+import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, CallTypeProvider } from './type-provider'
 import { FastifySchema } from './schema'
+import { FastifyContext } from './context'
 
 export interface RequestGenericInterface {
   Body?: RequestBodyDefault;
@@ -50,6 +51,7 @@ export interface FastifyRequest<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  ContextConfig = ContextConfigDefault,
   Context extends FastifyRequestContext = ResolveFastifyRequestContext<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   id: any;
@@ -60,6 +62,7 @@ export interface FastifyRequest<
   log: FastifyLoggerInstance;
   server: FastifyInstance;
   body: Context['body'];
+  context: FastifyContext<ContextConfig>;
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };

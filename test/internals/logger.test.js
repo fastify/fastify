@@ -112,3 +112,23 @@ test('The logger should error if both stream and file destination are given', t 
     t.equal(err.message, 'Cannot specify both logger.stream and logger.file options')
   }
 })
+
+test('The serializer prevent fails if the request socket is undefined', t => {
+  t.plan(1)
+
+  const serialized = loggerUtils.serializers.req({
+    method: 'GET',
+    url: '/',
+    socket: undefined,
+    headers: {}
+  })
+
+  t.same(serialized, {
+    method: 'GET',
+    url: '/',
+    version: undefined,
+    hostname: undefined,
+    remoteAddress: undefined,
+    remotePort: undefined
+  })
+})

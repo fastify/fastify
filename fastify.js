@@ -1,11 +1,11 @@
 'use strict'
 
+const VERSION = '4.0.0-dev'
+
 const Avvio = require('avvio')
 const http = require('http')
 const querystring = require('querystring')
 let lightMyRequest
-let version
-let versionLoaded = false
 
 const {
   kAvvioBoot,
@@ -121,6 +121,7 @@ function fastify (options) {
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
+  options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
@@ -317,12 +318,7 @@ function fastify (options) {
       get () { return this[kSchemaController].getSerializerCompiler() }
     },
     version: {
-      get () {
-        if (versionLoaded === false) {
-          version = loadVersion()
-        }
-        return version
-      }
+      get () { return VERSION }
     },
     errorHandler: {
       get () {
@@ -413,7 +409,7 @@ function fastify (options) {
   // If the server is not ready yet, this
   // utility will automatically force it.
   function inject (opts, cb) {
-    // lightMyRequest is dynamically laoded as it seems very expensive
+    // lightMyRequest is dynamically loaded as it seems very expensive
     // because of Ajv
     if (lightMyRequest === undefined) {
       lightMyRequest = require('light-my-request')
@@ -642,7 +638,7 @@ function fastify (options) {
   function setSchemaController (schemaControllerOpts) {
     throwIfAlreadyStarted('Cannot call "setSchemaController" when fastify instance is already started!')
     const old = this[kSchemaController]
-    const schemaController = SchemaController.buildSchemaController(old.parent, Object.assign({}, old.opts, schemaControllerOpts))
+    const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
     this[kSchemaController] = schemaController
     this.getSchema = schemaController.getSchema.bind(schemaController)
     this.getSchemas = schemaController.getSchemas.bind(schemaController)
@@ -695,20 +691,6 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
       }
     }
     httpHandler(req, res)
-  }
-}
-
-function loadVersion () {
-  versionLoaded = true
-  const fs = require('fs')
-  const path = require('path')
-  try {
-    const pkgPath = path.join(__dirname, 'package.json')
-    fs.accessSync(pkgPath, fs.constants.R_OK)
-    const pkg = JSON.parse(fs.readFileSync(pkgPath))
-    return pkg.name === 'fastify' ? pkg.version : undefined
-  } catch (e) {
-    return undefined
   }
 }
 

@@ -13,6 +13,7 @@ document describes the properties available in that options object.
 - [connectionTimeout](./Server.md#connectiontimeout)
 - [keepAliveTimeout](./Server.md#keepalivetimeout)
 - [maxRequestsPerSocket](./Server.md#maxRequestsPerSocket)
+- [requestTimeout](./Server.md#requestTimeout)
 - [ignoreTrailingSlash](./Server.md#ignoretrailingslash)
 - [maxParamLength](./Server.md#maxparamlength)
 - [onProtoPoisoning](./Server.md#onprotopoisoning)
@@ -91,6 +92,17 @@ Defines the maximum number of requests socket can handle before closing keep ali
 to understand the effect of this option. This option only applies when HTTP/1.1
 is in use. Also, when `serverFactory` option is specified, this option is ignored.
 >  At the time of this writing, only node version greater or equal to 16.10.0 support this option. Check the Node.js documentation for availability in the version you are running.
+
++ Default: `0` (no limit)
+
+<a name="factory-request-timeout"></a>
+### `requestTimeout`
+
+Defines the maximum number of milliseconds for receiving the entire request from the client.
+[`server.requestTimeout` property](https://nodejs.org/dist/latest/docs/api/http.html#http_server_requesttimeout)
+to understand the effect of this option. Also, when `serverFactory` option is specified, this option is ignored.
+It must be set to a non-zero value (e.g. 120 seconds) to protect against potential Denial-of-Service attacks in case the server is deployed without a reverse proxy in front.
+>  At the time of this writing, only node version greater or equal to 14.11.0 support this option. Check the Node.js documentation for availability in the version you are running.
 
 + Default: `0` (no limit)
 

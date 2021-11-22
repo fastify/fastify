@@ -12,6 +12,10 @@ All the examples in this section are using the [JSON Schema Draft 7](https://jso
 > user-provided schemas. See [Ajv](https://npm.im/ajv) and
 > [fast-json-stringify](https://npm.im/fast-json-stringify) for more
 > details.
+> 
+> Moreover, the [`$async` Ajv feature](https://ajv.js.org/guide/async-validation.html) should not be used as part of the first validation strategy.
+> This option is used to access Databases and reading them during the validation process may lead to Denial of Service Attacks to your
+> application. If you need to run `async` tasks, use [Fastify's hooks](./Hooks.md) instead after validation completes, such as `preHandler`.
 
 
 ### Core concepts
@@ -259,7 +263,7 @@ curl -X GET "http://localhost:3000/?ids=1
 
 You can also specify a custom schema validator for each parameter type (body, querystring, params, headers).
 
-For example, the following code disable type cohercion only for the `body` parameters, changing the ajv default options:
+For example, the following code disable type coercion only for the `body` parameters, changing the ajv default options:
 
 ```js
 const schemaCompilers = {
@@ -644,6 +648,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 ```
 
 If you want custom error response in schema without headaches and quickly, you can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors). Check out the [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js) usage.
+> Make sure to install version 1.0.1 of `ajv-errors`, because later versions of it are not compatible with AJV v6 (the version shipped by Fastify v3).
 
 Below is an example showing how to add **custom error messages for each property** of a schema by supplying custom AJV options.
 Inline comments in the schema below describe how to configure it to show a different error message for each case:
@@ -651,7 +656,10 @@ Inline comments in the schema below describe how to configure it to show a diffe
 ```js
 const fastify = Fastify({
   ajv: {
-    customOptions: { allErrors: true },
+    customOptions: {
+      jsonPointers: true,
+      allErrors: true // Warning: Enabling this option may lead to this security issue https://www.cvedetails.com/cve/CVE-2020-8192/
+    },
     plugins: [
       require('ajv-errors')
     ]

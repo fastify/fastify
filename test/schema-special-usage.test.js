@@ -84,7 +84,7 @@ test('Ajv6 usage instead of the bundle one', t => {
 
     fastify.ready(err => {
       t.error(err)
-      t.pass('startup successfull')
+      t.pass('startup successful')
     })
   })
 })

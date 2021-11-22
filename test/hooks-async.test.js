@@ -550,15 +550,11 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {
-    return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
-      reply.send(stream).then(() => {
-        reply.raw.once('finish', () => {
-          t.equal(order.shift(), 2)
-          resolve()
-        })
-      })
+    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    reply.raw.once('finish', () => {
+      t.equal(order.shift(), 2)
     })
+    return reply.send(stream)
   })
 
   fastify.addHook('preHandler', async (req, reply) => {

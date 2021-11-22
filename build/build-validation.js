@@ -25,6 +25,7 @@ const defaultInitOptions = {
   connectionTimeout: 0, // 0 sec
   keepAliveTimeout: 72000, // 72 seconds
   maxRequestsPerSocket: 0, // no limit
+  requestTimeout: 0, // no limit
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
   disableRequestLogging: false,
@@ -47,6 +48,7 @@ const schema = {
     connectionTimeout: { type: 'integer', default: defaultInitOptions.connectionTimeout },
     keepAliveTimeout: { type: 'integer', default: defaultInitOptions.keepAliveTimeout },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
+    requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
     http2: { type: 'boolean' },

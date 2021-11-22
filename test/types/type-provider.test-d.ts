@@ -1,5 +1,5 @@
 import fastify, { FastifyTypeProvider } from '../../fastify'
-import { expectAssignable, expectType } from 'tsd'
+import { expectAssignable, expectType, printType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'

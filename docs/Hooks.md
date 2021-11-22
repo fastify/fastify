@@ -220,7 +220,7 @@ fastify.addHook('onTimeout', async (request, reply) => {
   await asyncMethod()
 })
 ```
-`onTimeout` is useful if you need to monitor the request timed out in your service (if the `connectionTimeout` property is set on the Fastify instance). The `onTimeout` hook is executed when a request is timed out and the HTTP socket has been hanged up. Therefore ,you will not be able to send data to the client.
+`onTimeout` is useful if you need to monitor the request timed out in your service (if the `connectionTimeout` property is set on the Fastify instance). The `onTimeout` hook is executed when a request is timed out and the HTTP socket has been hanged up. Therefore, you will not be able to send data to the client.
 
 
 ### Manage Errors from a hook

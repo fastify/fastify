@@ -64,7 +64,7 @@ export type RouteHandlerMethod<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
 ) => void | Promise<RouteGeneric['Reply'] | void>
 
@@ -134,7 +134,7 @@ export type RouteHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
-  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>,
+  request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
 ) => void | Promise<RouteGeneric['Reply'] | void>
 

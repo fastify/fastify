@@ -192,10 +192,14 @@ matters to you.
 * <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
 <<<<<<< HEAD
+<<<<<<< HEAD
 * <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
 =======
 * <a href="./docs/Referenence/Server.md"><code><b>Server</b></code></a>
 >>>>>>> Start of docs reorginization
+=======
+* <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
+>>>>>>> Fix typos in Reference (#3475)
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
 * <a href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
 * <a href="./docs/Logging.md"><code><b>Logging</b></code></a>

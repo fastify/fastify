@@ -31,7 +31,7 @@ fastify.addContentTypeParser('application/jsoff', async function (request, paylo
   return res
 })
 
-// Handle all content types that matches RegExp 
+// Handle all content types that matches RegExp
 fastify.addContentTypeParser(/^image\/.*/, function (request, payload, done) {
   imageParser(payload, function (err, body) {
     done(err, body)
@@ -51,7 +51,7 @@ So if you want to specify a general content type more precisely, first specify t
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 
-// Here the desired behavior is achieved because fastify first tries to match the `application/vnd.custom+xml` content type parser 
+// Here the desired behavior is achieved because fastify first tries to match the `application/vnd.custom+xml` content type parser
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
@@ -93,7 +93,7 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 In the example from just above, it is noticeable that we need to specify each content type that we want to remove.
 To solve this problem Fastify provides the `removeAllContentTypeParsers` API. This can be used to remove all currently existing content type parsers.
 In the example below we achieve exactly the same as in the example above except that we do not need to specify each content type to delete.
-Just like `removeContentTypeParser`, this API supports encapsulation. The API is especially useful if you want to register a 
+Just like `removeContentTypeParser`, this API supports encapsulation. The API is especially useful if you want to register a
 [catch-all content type parser](#Catch-All) that should be executed for every content type and the built-in parsers should be ignored as well.
 
 ```js
@@ -109,7 +109,7 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 **Notice**: The old syntaxes `function(req, done)` and `async function(req)` for the parser are still supported but they are deprecated.
 
 #### Body Parser
-You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
+You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](./Referenence/Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
@@ -126,7 +126,7 @@ See [`example/parser.js`](../examples/parser.js) for an example.
 
 ##### Custom Parser Options
 + `parseAs` (string): Either `'string'` or `'buffer'` to designate how the incoming data should be collected. Default: `'buffer'`.
-+ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](Server.md#bodylimit).
++ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](./Referenence/Server.md#bodylimit).
 
 #### Catch-All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you can just use the `'*'` content type.
@@ -179,7 +179,7 @@ fastify.route({
 
 For piping file uploads you may want to check out [this plugin](https://github.com/fastify/fastify-multipart).
 
-If you really want the content type parser to be executed on all content types and not only on those that don't have a 
+If you really want the content type parser to be executed on all content types and not only on those that don't have a
 specific one, you should call the `removeAllContentTypeParsers` method first.
 
 ```js

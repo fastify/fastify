@@ -396,7 +396,7 @@ fastify.get('/', (request, reply) => {
 ### `pluginTimeout`
 
 The maximum amount of time in *milliseconds* in which a plugin can load.
-If not, [`ready`](Server.md#ready)
+If not, [`ready`](./Server.md#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 + Default: `10000`
@@ -523,10 +523,10 @@ const fastify = require('fastify')({
 Set a default
 [timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback) to every incoming HTTP/2 session. The session will be closed on the timeout. Default: `5000` ms.
 
-Note that this is needed to offer the graceful "close" experience when using HTTP/2. 
-The low default has been chosen to mitigate denial of service attacks. 
-When the server is behind a load balancer or can scale automatically this value can be 
-increased to fit the use case. Node core defaults this to `0`. ` 
+Note that this is needed to offer the graceful "close" experience when using HTTP/2.
+The low default has been chosen to mitigate denial of service attacks.
+When the server is behind a load balancer or can scale automatically this value can be
+increased to fit the use case. Node core defaults this to `0`. `
 
 <a name="framework-errors"></a>
 ### `frameworkErrors`
@@ -620,7 +620,7 @@ Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it
 
 <a name="server"></a>
 #### server
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](Server.md).
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](./Server.md).
 
 <a name="after"></a>
 #### after
@@ -825,7 +825,7 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 `fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](Hooks.md#on-close) hook.<br>
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
-See [`return503OnClosing` flags](Server.md#factory-return-503-on-closing) for changing this behavior.
+See [`return503OnClosing` flags](./Server.md#factory-return-503-on-closing) for changing this behavior.
 
 If it is called without any arguments, it will return a Promise:
 
@@ -918,7 +918,7 @@ To learn more, read the [Validation and Serialization](Validation-and-Serializat
 <a name="set-reply-serializer"></a>
 #### setReplySerializer
 Set the reply serializer for all the routes. This will be used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
-Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](Server.md#seterrorhandler) for errors.
+Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](./Server.md#seterrorhandler) for errors.
 
 ```js
 fastify.setReplySerializer(function (payload, statusCode){
@@ -956,7 +956,7 @@ This property can be used to set a function to format errors that happen while t
 
 <a name="schema-controller"></a>
 #### schemaController
-This property can be used to fully manage: 
+This property can be used to fully manage:
 - `bucket`: where the schemas of your application will be stored
 - `compilersFactory`: what module must compile the JSON schemas
 
@@ -1009,7 +1009,7 @@ const fastify = Fastify({
        * encapsulation context.
        * It may receive as input the schemas of the parent context if some schemas have been added.
        * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
-       * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly 
+       * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly
        */
       buildValidator: function factory (externalSchemas, ajvServerOption) {
         // This factory function must return a schema validator compiler.
@@ -1026,7 +1026,7 @@ const fastify = Fastify({
        * encapsulation context.
        * It may receive as input the schemas of the parent context if some schemas have been added.
        * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
-       * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly 
+       * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly
        */
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
@@ -1160,7 +1160,7 @@ fastify.ready(() => {
   //     │   └── /hello (GET)
   //     ├── hello/world (GET)
   //     └── helicopter (GET)
-  
+
 })
 ```
 
@@ -1181,7 +1181,7 @@ fastify.ready(() => {
   console.log(fastify.printRoutes({ includeHooks: true }))
   // └── /
   //     ├── test (GET)
-  //     │   • (onRequest) ["anonymous()","namedFunction()"]  
+  //     │   • (onRequest) ["anonymous()","namedFunction()"]
   //     │   └── /hello (GET)
   //     └── hel
   //         ├── lo/world (GET)

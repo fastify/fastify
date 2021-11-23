@@ -271,9 +271,9 @@ fastify.get('/', (request, reply) => {
 - Deprecated `request.req` and `reply.res` for [`request.raw`](Request.md) and
 [`reply.raw`](Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))
 - Removed `modifyCoreObjects` option ([#2015](https://github.com/fastify/fastify/pull/2015))
-- Added [`connectionTimeout`](./Referenence/Server.md#factory-connection-timeout)
+- Added [`connectionTimeout`](./Reference/Server.md#factory-connection-timeout)
 option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added [`keepAliveTimeout`](./Referenence/Server.md#factory-keep-alive-timeout)
+- Added [`keepAliveTimeout`](./Reference/Server.md#factory-keep-alive-timeout)
 option ([#2086](https://github.com/fastify/fastify/pull/2086))
 - Added async-await support for [plugins](Plugins.md#async-await)
 ([#2093](https://github.com/fastify/fastify/pull/2093))

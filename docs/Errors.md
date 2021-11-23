@@ -30,7 +30,7 @@ Fastify tries to catch as many uncaught errors as it can without hindering perfo
 
 The error in both cases will be caught safely and routed to Fastify's default error handler for a generic `500 Internal Server Error` response.
 
-To customize this behavior you should use [`setErrorHandler`](./Referenence/Server.md#seterrorhandler).
+To customize this behavior you should use [`setErrorHandler`](./Reference/Server.md#seterrorhandler).
 
 ### Errors In Fastify Lifecycle Hooks And A Custom Error Handler
 
@@ -68,7 +68,7 @@ The parser for this content type was already registered.
 
 The request body is larger than the provided limit.
 
-This setting can be defined in the Fastify server instance: [`bodyLimit`](./Referenence/Server.md#bodyLimit)
+This setting can be defined in the Fastify server instance: [`bodyLimit`](./Reference/Server.md#bodyLimit)
 
 <a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE

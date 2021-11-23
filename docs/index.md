@@ -10,7 +10,7 @@ Fastify's API and implementation details thoroughly for the developer who
 needs such. The guides category utilizes an informal, educational, style as
 a means to introduce newcomers to core, and advanced, Fastify concepts.
 
-[Reference]: ./Referenence/index.md
+[Reference]: ./Reference/index.md
 [Guides]: ./Guides/index.md
 
 ## Where To Start

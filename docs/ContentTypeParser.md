@@ -109,7 +109,7 @@ fastify.addContentTypeParser('text/xml', function (request, payload, done) {
 **Notice**: The old syntaxes `function(req, done)` and `async function(req)` for the parser are still supported but they are deprecated.
 
 #### Body Parser
-You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](./Referenence/Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
+You can parse the body of a request in two ways. The first one is shown above: you add a custom content type parser and handle the request stream. In the second one, you should pass a `parseAs` option to the `addContentTypeParser` API, where you declare how you want to get the body. It could be of type `'string'` or `'buffer'`. If you use the `parseAs` option, Fastify will internally handle the stream and perform some checks, such as the [maximum size](./Reference/Server.md#factory-body-limit) of the body and the content length. If the limit is exceeded the custom parser will not be invoked.
 ```js
 fastify.addContentTypeParser('application/json', { parseAs: 'string' }, function (req, body, done) {
   try {
@@ -126,7 +126,7 @@ See [`example/parser.js`](../examples/parser.js) for an example.
 
 ##### Custom Parser Options
 + `parseAs` (string): Either `'string'` or `'buffer'` to designate how the incoming data should be collected. Default: `'buffer'`.
-+ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](./Referenence/Server.md#bodylimit).
++ `bodyLimit` (number): The maximum payload size, in bytes, that the custom parser will accept. Defaults to the global body limit passed to the [`Fastify factory function`](./Reference/Server.md#bodylimit).
 
 #### Catch-All
 There are some cases where you need to catch all requests regardless of their content type. With Fastify, you can just use the `'*'` content type.

@@ -135,7 +135,7 @@ The supported validations are:
 
 All the validations can be a complete JSON Schema object (with a `type` property of `'object'` and a `'properties'` object containing parameters) or a simpler variation in which the `type` and `properties` attributes are forgone and the parameters are listed at the top level (see the example below).
 
-> ℹ If you need to use the lastest version of Ajv (v8) you should read how to do it in the [`schemaController`](./Referenence/Server.md#schema-controller) section. It is explained the easier way to avoid to implement a custom validator.
+> ℹ If you need to use the lastest version of Ajv (v8) you should read how to do it in the [`schemaController`](./Reference/Server.md#schema-controller) section. It is explained the easier way to avoid to implement a custom validator.
 
 Example:
 ```js
@@ -204,7 +204,7 @@ fastify.post('/the/url', { schema }, handler)
 
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
-The Ajv default configuration in Fastify doesn't support coercing array parameters in querystring. However, Fastify allows [`customOptions`](./Referenence/Server.md#ajv) in Ajv instance. The `coerceTypes: 'array'` will coerce one parameter to a single element in array. Example:
+The Ajv default configuration in Fastify doesn't support coercing array parameters in querystring. However, Fastify allows [`customOptions`](./Reference/Server.md#ajv) in Ajv instance. The `coerceTypes: 'array'` will coerce one parameter to a single element in array. Example:
 
 ```js
 const opts = {
@@ -307,7 +307,7 @@ For further information see [here](https://ajv.js.org/coercion.html)
 You can provide a list of plugins you want to use with the default `ajv` instance.
 Note that the plugin must be **compatible with Ajv v6**.
 
-> Refer to [`ajv options`](./Referenence/Server.md#ajv) to check plugins format
+> Refer to [`ajv options`](./Reference/Server.md#ajv) to check plugins format
 
 ```js
 const fastify = require('fastify')({
@@ -383,7 +383,7 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
 }
 ```
 
-This baseline configuration can be modified by providing [`ajv.customOptions`](./Referenence/Server.md#factory-ajv) to your Fastify factory.
+This baseline configuration can be modified by providing [`ajv.customOptions`](./Reference/Server.md#factory-ajv) to your Fastify factory.
 
 If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 

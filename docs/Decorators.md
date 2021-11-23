@@ -70,7 +70,7 @@ for more information on this topic.
 #### `decorate(name, value, [dependencies])`
 <a name="decorate"></a>
 
-This method is used to customize the Fastify [server](Server.md) instance.
+This method is used to customize the Fastify [server](./Referenence/Server.md) instance.
 
 For example, to attach a new method to the server instance:
 
@@ -98,7 +98,7 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
-The decorated [Fastify server](Server.md) is bound to `this` in route [route](Routes.md) handlers:
+The decorated [Fastify server](./Referenence/Server.md) is bound to `this` in route [route](Routes.md) handlers:
 
 ```js
 fastify.decorate('db', new DbConnection())
@@ -146,7 +146,7 @@ Note: using `decorateReply` will emit a warning if used with a reference type:
 fastify.decorateReply('foo', { bar: 'fizz'})
 ```
 In this example, the reference of the object is shared with all the requests: **any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
+mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**.
 To achieve proper encapsulation across requests configure a new value for each incoming request
 in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
 
@@ -157,7 +157,7 @@ async function myPlugin (app) {
   app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
-  }) 
+  })
 }
 
 module.exports = fp(myPlugin)
@@ -199,7 +199,7 @@ async function myPlugin (app) {
   app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
-  }) 
+  })
 }
 
 module.exports = fp(myPlugin)

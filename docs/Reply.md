@@ -107,22 +107,22 @@ fastify.get('/', async function (req, rep) {
 
 <a name="header"></a>
 ### .header(key, value)
-Sets a response header. If the value is omitted or undefined, it is coerced
-to `''`.
+Sets a response header. If the value is omitted or undefined, it is coerced to `''`.
+For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
 <a name="set-cookie"></a>
 - ### set-cookie
-    - While sending different values as cookie with `set-cookie` as the key, every value will be sent as cookie instead of replacing the previous value.
+    - When sending different values as a cookie with `set-cookie` as the key, every value will be sent as a cookie instead of replacing the previous value.
 
     ```js
     reply.header('set-cookie', 'foo');
     reply.header('set-cookie', 'bar');
     ```
-  - The browser will only consider the latest reference of a key for `set-cookie` header. The fact that this is done this way is to avoid parsing the set-cookie header when you add it in the reply and speeds up the serialization of the reply.
+  - The browser will only consider the latest reference of a key for the `set-cookie` header. This is done to avoid parsing the `set-cookie` header when added to a reply and speeds up the serialization of the reply.
 
-  - To reset the `set-cookie`, you need to make an explicit call to `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)` [here](#removeheaderkey).
+  - To reset the `set-cookie` header, you need to make an explicit call to `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)` [here](#removeheaderkey).
 
-For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
+
 
 <a name="headers"></a>
 ### .headers(object)

@@ -371,6 +371,11 @@ export interface FastifyInstance<
   setSerializerCompiler<T = FastifySchema>(schemaCompiler: FastifySerializerCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
+   * Set the schema controller for all routes.
+   */
+  setSchemaController(schemaControllerOpts:(payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+
+  /**
   * Set the reply serializer for all routes.
   */
   setReplySerializer(replySerializer: (payload: unknown, statusCode: number) => string): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;

@@ -9,7 +9,7 @@ import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
-import { SchemaControllerOptions } from '../../types/instance'
+import { FastifySchemaControllerOptions } from '../../types/schema'
 
 const server = fastify()
 
@@ -88,7 +88,7 @@ server.setSchemaController({
   }
 })
 
-function invalidSchemaController (schemaControllerOptions: SchemaControllerOptions) {}
+function invalidSchemaController (schemaControllerOptions: FastifySchemaControllerOptions) {}
 expectError(server.setSchemaController(invalidSchemaController))
 
 server.setReplySerializer(function (payload, statusCode) {

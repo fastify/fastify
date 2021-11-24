@@ -67,6 +67,14 @@ server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))
 
+server.setSchemaController(function (payload, statusCode) {
+  expectType<unknown>(payload)
+  expectType<number>(statusCode)
+})
+
+function invalidSchemaController (payload: number, statusCode: string) {}
+expectError(server.setSchemaController(invalidSchemaController))
+
 server.setReplySerializer(function (payload, statusCode) {
   expectType<unknown>(payload)
   expectType<number>(statusCode)

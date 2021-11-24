@@ -43,7 +43,7 @@ test('default 400 on request error with custom error handler', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
-    t.type(request, fastify[kRequest])
+    t.type(request, fastify[kRequest].parent)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')

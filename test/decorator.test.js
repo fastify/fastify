@@ -864,7 +864,7 @@ test('decorate* should not emit warning if string,bool,numbers are passed', t =>
   t.end('Done')
 })
 
-test('Request/reply decorators should be able to access the server instance', { only: true }, async t => {
+test('Request/reply decorators should be able to access the server instance', async t => {
   t.plan(6)
 
   const server = require('..')({ logger: false })

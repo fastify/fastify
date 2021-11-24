@@ -1,6 +1,12 @@
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 import { RouteOptions, RouteShorthandMethod, RouteGenericInterface, DefaultRoute } from './route'
-import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
+import {
+  FastifySchema,
+  FastifySchemaCompiler,
+  FastifySchemaValidationError,
+  FastifySerializerCompiler,
+  FastifySchemaControllerOptions
+} from './schema'
 import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRegister } from './register'
@@ -373,7 +379,7 @@ export interface FastifyInstance<
   /**
    * Set the schema controller for all routes.
    */
-  setSchemaController(schemaControllerOpts: (payload: unknown, statusCode: number) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  setSchemaController(schemaControllerOpts: FastifySchemaControllerOptions): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**
   * Set the reply serializer for all routes.

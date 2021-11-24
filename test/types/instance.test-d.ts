@@ -9,6 +9,7 @@ import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { SchemaControllerOptions } from '../../types/instance'
 
 const server = fastify()
 
@@ -67,12 +68,27 @@ server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))
 
-server.setSchemaController(function (payload, statusCode) {
-  expectType<unknown>(payload)
-  expectType<number>(statusCode)
+server.setSchemaController({
+  bucket: (parentSchemas: unknown) => {
+    return {
+      addSchema (schema: unknown) {
+        expectType<unknown>(schema)
+        expectType<FastifyInstance>(server.addSchema({ type: 'null' }))
+        return server.addSchema({ type: 'null' })
+      },
+      getSchema (schemaId: string) {
+        expectType<string>(schemaId)
+        return server.getSchema('SchemaId')
+      },
+      getSchemas () {
+        expectType<Record<string, unknown>>(server.getSchemas())
+        return server.getSchemas()
+      }
+    }
+  }
 })
 
-function invalidSchemaController (payload: number, statusCode: string) {}
+function invalidSchemaController (schemaControllerOptions: SchemaControllerOptions) {}
 expectError(server.setSchemaController(invalidSchemaController))
 
 server.setReplySerializer(function (payload, statusCode) {

@@ -1516,3 +1516,19 @@ test('should create a default logger if provided one is invalid', t => {
 
   t.pass()
 })
+
+test('should not throw error when serializing custom req', t => {
+  t.plan(1)
+
+  const lines = []
+  const dest = new stream.Writable({
+    write: function (chunk, enc, cb) {
+      lines.push(JSON.parse(chunk))
+      cb()
+    }
+  })
+  const fastify = Fastify({ logger: { level: 'info', stream: dest } })
+  fastify.log.info({ req: {} })
+
+  t.same(lines[0].req, {})
+})

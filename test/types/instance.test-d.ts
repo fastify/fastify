@@ -5,7 +5,7 @@ import fastify, {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression
 } from '../../fastify'
-import { expectAssignable, expectError, expectNotAssignable, expectType } from 'tsd'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
@@ -42,8 +42,14 @@ expectAssignable<FastifyInstance>(
 function fastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(fastifyErrorHandler)
 
+async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
+server.setErrorHandler(asyncFastifyErrorHandler)
+
 function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(nodeJSErrorHandler)
+
+function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+server.setErrorHandler(asyncNodeJSErrorHandler)
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
@@ -83,6 +89,12 @@ expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
 expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
 expectAssignable<void>(server.listen(3000, (err, address) => {}))
 expectAssignable<void>(server.listen('3000', (err, address) => {}))
+
+// test listen method callback types
+expectAssignable<void>(server.listen('3000', (err, address) => {
+  expectAssignable<Error|null>(err)
+  expectAssignable<string>(address)
+}))
 
 // test listen method promise
 expectAssignable<PromiseLike<string>>(server.listen(3000))

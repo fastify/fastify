@@ -1,5 +1,7 @@
 <div align="center">
-<img src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg" width="650" height="auto"/>
+  <a href="https://fastify.io/">
+    <img src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg" width="650" height="auto"/>
+  </a>
 </div>
 
 <div align="center">
@@ -27,6 +29,19 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 
 An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
 How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
+
+ - [Quick start](./README.md#quick-start)
+ - [Install](./README.md#install)
+ - [Example](./README.md#example)
+ - [Fastify v1.x and v2.x](./README.md#fastify-v1x-and-v2x)
+ - [Core features](./README.md#core-features)
+ - [Benchmarks](./README.md#benchmarks)
+ - [Documentation](./README.md#documentation)
+ - [Ecosystem](./README.md#ecosystem)
+ - [Support](./README.md#support)
+ - [Team](./README.md#team)
+ - [Hosted by](./README.md#hosted-by)
+ - [License](./README.md#license)
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
 

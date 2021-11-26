@@ -2,6 +2,7 @@
 
 ## Logging
 
+### Enable logging
 Logging is disabled by default, and you can enable it by passing
 `{ logger: true }` or `{ logger: { level: 'info' } }` when you create
 a fastify instance. Note that if the logger is disabled, it is impossible to
@@ -11,13 +12,34 @@ this purpose.
 
 As Fastify is focused on performance, it uses [pino](https://github.com/pinojs/pino) as its logger, with the default log level, when enabled, set to `'info'`.
 
-Enabling the logger is extremely easy:
+Enabling the production JSON logger:
 
 ```js
 const fastify = require('fastify')({
   logger: true
 })
+```
 
+Enabling the logger with appropriate configuration for both local development and production environment requires bit more configuration:
+```js
+const fastify = require('fastify')({
+  logger: {
+      prettyPrint:
+        environment === 'development'
+          ? {
+              translateTime: 'HH:MM:ss Z',
+              ignore: 'pid,hostname'
+            }
+          : false
+    }
+})
+```
+⚠️ `pino-pretty` needs to be installed as a dev dependency, it is not included by default for performance reasons.
+
+### Usage
+You can use the logger like this in your route handlers:
+
+```js
 fastify.get('/', options, function (request, reply) {
   request.log.info('Some info about the current request')
   reply.send({ hello: 'world' })

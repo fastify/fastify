@@ -17,6 +17,15 @@ test('server methods should exist', t => {
   t.ok(fastify.hasDecorator)
 })
 
+test('should check if the given decoration already exist when null', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  fastify.decorate('null', null)
+  fastify.ready(() => {
+    t.ok(fastify.hasDecorator('null'))
+  })
+})
+
 test('server methods should be encapsulated via .register', t => {
   t.plan(2)
   const fastify = Fastify()
@@ -104,12 +113,11 @@ test('should pass error for missing request decorator', t => {
 })
 
 test('decorateReply inside register', t => {
-  t.plan(12)
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorateReply('test', 'test')
-    t.ok(instance[symbols.kReply].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(reply.test, 'test exists')
@@ -247,12 +255,11 @@ test('decorateReply as plugin (outside .after)', t => {
 })
 
 test('decorateRequest inside register', t => {
-  t.plan(12)
+  t.plan(11)
   const fastify = Fastify()
 
   fastify.register((instance, opts, done) => {
     instance.decorateRequest('test', 'test')
-    t.ok(instance[symbols.kRequest].prototype.test)
 
     instance.get('/yes', (req, reply) => {
       t.ok(req.test, 'test exists')
@@ -425,6 +432,15 @@ test('hasRequestDecorator', t => {
     t.ok(fastify.hasRequestDecorator(requestDecoratorName))
   })
 
+  t.test('should check if the given request decoration already exist when null', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasRequestDecorator(requestDecoratorName))
+    fastify.decorateRequest(requestDecoratorName, null)
+    t.ok(fastify.hasRequestDecorator(requestDecoratorName))
+  })
+
   t.test('should be plugin encapsulable', t => {
     t.plan(4)
     const fastify = Fastify()
@@ -478,6 +494,15 @@ test('hasReplyDecorator', t => {
 
     t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
     fastify.decorateReply(replyDecoratorName, 42)
+    t.ok(fastify.hasReplyDecorator(replyDecoratorName))
+  })
+
+  t.test('should check if the given reply decoration already exist when null', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    t.notOk(fastify.hasReplyDecorator(replyDecoratorName))
+    fastify.decorateReply(replyDecoratorName, null)
     t.ok(fastify.hasReplyDecorator(replyDecoratorName))
   })
 
@@ -876,4 +901,126 @@ test('Request/reply decorators should be able to access the server instance', as
     t.not(this.server, server)
     t.equal(this.server.foo, 'bar')
   }
+})
+
+test('plugin required decorators', async t => {
+  const plugin1 = fp(
+    async (instance) => {
+      instance.decorateRequest('someThing', null)
+
+      instance.addHook('onRequest', async (request, reply) => {
+        request.someThing = 'hello'
+      })
+    },
+    {
+      name: 'custom-plugin-one',
+      fastify: '3.x'
+    }
+  )
+
+  const plugin2 = fp(
+    async () => {
+      // nothing
+    },
+    {
+      name: 'custom-plugin-two',
+      fastify: '3.x',
+      dependencies: ['custom-plugin-one'],
+      decorators: {
+        request: ['someThing']
+      }
+    }
+  )
+
+  const app = Fastify()
+  app.register(plugin1)
+  app.register(plugin2)
+  await app.ready()
+})
+
+test('decorateRequest/decorateReply empty string', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test', '')
+  fastify.decorateReply('test2', '')
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, '')
+    t.equal(reply.test2, '')
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest/decorateReply is undefined', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test', undefined)
+  fastify.decorateReply('test2', undefined)
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, undefined)
+    t.equal(reply.test2, undefined)
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
+})
+
+test('decorateRequest/decorateReply is not set to a value', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.decorateRequest('test')
+  fastify.decorateReply('test2')
+  fastify.get('/yes', (req, reply) => {
+    t.equal(req.test, undefined)
+    t.equal(reply.test2, undefined)
+    reply.send({ hello: 'world' })
+  })
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/yes'
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(response.headers['content-length'], '' + body.length)
+      t.same(JSON.parse(body), { hello: 'world' })
+    })
+  })
 })

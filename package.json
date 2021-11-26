@@ -1,6 +1,6 @@
 {
   "name": "fastify",
-  "version": "3.21.0",
+  "version": "3.24.0",
   "description": "Fast and low overhead web framework, for Node.js",
   "main": "fastify.js",
   "type": "commonjs",
@@ -14,6 +14,7 @@
     "lint:fix": "standard --fix",
     "lint:standard": "standard --verbose | snazzy",
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
+    "prepublishOnly": "tap --no-check-coverage test/internals/version.test.js",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run lint && npm run unit -- --cov --coverage-report=lcovonly && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",
@@ -118,7 +119,7 @@
     "@fastify/ajv-compiler-8": "npm:@fastify/ajv-compiler@^2.0.0",
     "@fastify/pre-commit": "^2.0.1",
     "@hapi/joi": "^17.1.1",
-    "@sinonjs/fake-timers": "^7.0.0",
+    "@sinonjs/fake-timers": "^8.1.0",
     "@types/node": "^16.0.0",
     "@types/pino": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^4.5.0",
@@ -160,12 +161,12 @@
     "serve-static": "^1.14.1",
     "simple-get": "^4.0.0",
     "snazzy": "^9.0.0",
-    "split2": "^3.1.1",
+    "split2": "^4.1.0",
     "standard": "^16.0.1",
     "tap": "^15.0.5",
     "tap-mocha-reporter": "^5.0.1",
     "then-sleep": "^1.0.1",
-    "tsd": "^0.17.0",
+    "tsd": "^0.19.0",
     "typescript": "^4.0.2",
     "undici": "^3.3.5",
     "x-xss-protection": "^2.0.0",
@@ -183,7 +184,6 @@
     "light-my-request": "^4.2.0",
     "pino": "^6.13.0",
     "proxy-addr": "^2.0.7",
-    "readable-stream": "^3.4.0",
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",
     "semver": "^7.3.2",
@@ -194,7 +194,8 @@
       "lib/configValidator.js",
       "fastify.d.ts",
       "types/*",
-      "test/types/*"
+      "test/types/*",
+      "test/same-shape.test.js"
     ]
   },
   "tsd": {

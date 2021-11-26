@@ -7,7 +7,7 @@ const http = require('http')
 const NotFound = require('http-errors').NotFound
 const EventEmitter = require('events').EventEmitter
 const Reply = require('../../lib/reply')
-const { Writable } = require('readable-stream')
+const { Writable } = require('stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,
@@ -1362,6 +1362,48 @@ test('reply.getResponseTime() should return a number greater than 0 after the ti
 
   fastify.addHook('onResponse', (req, reply) => {
     t.ok(reply.getResponseTime() > 0)
+    t.end()
+  })
+
+  fastify.inject({ method: 'GET', url: '/' })
+})
+
+test('reply.getResponseTime() should return the time since a request started while inflight', t => {
+  t.plan(1)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send('hello world')
+    }
+  })
+
+  fastify.addHook('preValidation', (req, reply, done) => {
+    t.not(reply.getResponseTime(), reply.getResponseTime())
+    done()
+  })
+
+  fastify.addHook('onResponse', (req, reply) => {
+    t.end()
+  })
+
+  fastify.inject({ method: 'GET', url: '/' })
+})
+
+test('reply.getResponseTime() should return the same value after a request is finished', t => {
+  t.plan(1)
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send('hello world')
+    }
+  })
+
+  fastify.addHook('onResponse', (req, reply) => {
+    t.equal(reply.getResponseTime(), reply.getResponseTime())
     t.end()
   })
 

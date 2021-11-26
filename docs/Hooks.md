@@ -90,7 +90,7 @@ If you are using the `preValidation` hook, you can change the payload before it 
 
 ```js
 fastify.addHook('preValidation', (request, reply, done) => {
-  req.body = { ...req.body, importantKey: 'randomString' }
+  request.body = { ...request.body, importantKey: 'randomString' }
   done()
 })
 ```
@@ -98,7 +98,7 @@ Or `async/await`:
 ```js
 fastify.addHook('preValidation', async (request, reply) => {
   const importantKey = await generateRandomString()
-  req.body = { ...req.body, importantKey }
+  request.body = { ...request.body, importantKey }
 })
 ```
 
@@ -222,7 +222,7 @@ fastify.addHook('onTimeout', async (request, reply) => {
   await asyncMethod()
 })
 ```
-`onTimeout` is useful if you need to monitor the request timed out in your service (if the `connectionTimeout` property is set on the Fastify instance). The `onTimeout` hook is executed when a request is timed out and the HTTP socket has been hanged up. Therefore ,you will not be able to send data to the client.
+`onTimeout` is useful if you need to monitor the request timed out in your service (if the `connectionTimeout` property is set on the Fastify instance). The `onTimeout` hook is executed when a request is timed out and the HTTP socket has been hanged up. Therefore, you will not be able to send data to the client.
 
 
 ### Manage Errors from a hook

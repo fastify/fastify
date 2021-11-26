@@ -47,7 +47,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for Fastify.
 - [`fastify-static`](https://github.com/fastify/fastify-static) Plugin for serving static files as fast as possible.
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
-- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [websocket-stream](https://github.com/maxogden/websocket-stream).
+- [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
@@ -91,6 +91,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents) Fastify plugin to generate and forward Fastify events in the Cloudevents format.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb) Fastify plugin to connect to a CockroachDB PostgreSQL instance via the Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify plugin to add CouchDB support via [nano](https://github.com/apache/nano).
+- [`fastify-crud-generator`](https://github.com/heply/fastify-crud-generator) A plugin to rapidly generate CRUD routes for any entity.
 - [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck) Fastify plugin to add health route in your server that asserts custom functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify plugin that provides the set of TypeScript decorators.
 - [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache) Fastify plugin to disable client-side caching, inspired by [nocache](https://github.com/helmetjs/nocache).
@@ -158,6 +159,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify OrientDB connection plugin, with which you can share the OrientDB connection across every part of your server.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo) Fastify plugin for memoize responses by expressive settings.
+- [`fastify-polyglot`](https://github.com/heply/fastify-polyglot) A plugin to handle i18n using [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile) Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in a Fastify project.
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify plugin that uses [prettier](https://github.com/prettier/prettier) under the hood to beautify outgoing responses and/or other things in the Fastify server.
 - [`fastify-print-routes`](https://github.com/ShogunPanda/fastify-print-routes) A Fastify plugin that prints all available routes.
@@ -187,6 +189,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide Server-Sent Events using Async Iterators (supports newer versions of Fastify).
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to initialize and encapsulate [Stripe Node.js](https://github.com/stripe/stripe-node) instances in Fastify.
+- [`fastify-supabase`](https://github.com/coopflow/fastify-supabase) Plugin to initialize and encapsulate [Supabase](https://github.com/supabase/supabase-js) instances in Fastify.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen) Automatically generate a browser-compatible, trusted, self-signed, localhost-only, TLS certificate.
 - [`fastify-tokenize`](https://github.com/Bowser65/fastify-tokenize) [Tokenize](https://github.com/Bowser65/Tokenize) plugin for Fastify that removes the pain of managing authentication tokens, with built-in integration for `fastify-auth`.
 - [`fastify-totp`](https://github.com/heply/fastify-totp) A plugin to handle TOTP (e.g. for 2FA).

@@ -22,6 +22,7 @@ choice with an additional snippet of code.
 ### Contents
 
 - [AWS Lambda](#aws-lambda)
+- [Google Cloud Functions](#google-cloud-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
@@ -99,6 +100,128 @@ An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverle
 
 - API Gateway does not support streams yet, so you are not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
 - API Gateway has a timeout of 29 seconds, so it is important to provide a reply during this time.
+
+## Google Cloud Functions
+
+### Creation of Fastify instance
+```js
+const fastify = require("fastify")({
+  logger: true // you can also define the level passing an object configuration to logger: {level: 'debug'}
+});
+```
+
+### Add Custom `contentTypeParser` to Fastify instance
+
+As explained [in issue #946](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since the Google Cloud Functions platform parses the body of the request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/latest/ContentTypeParser/) to mitigate this behavior.
+
+```js
+fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
+  done(null, body.body);
+});
+```
+
+### Define your endpoint (examples)
+
+A simple `GET` endpoint:
+```js
+fastify.get('/', async (request, reply) => {
+  reply.send({message: 'Hello World!'})
+})
+```
+
+Or a more complete `POST` endpoint with schema validation: 
+```js
+fastify.route({
+  method: 'POST',
+  url: '/hello',
+  schema: {
+    body: {
+      type: 'object',
+      properties: {
+        name: { type: 'string'}
+      },
+      required: ['name']
+    },
+    response: {
+      200: {
+        type: 'object', 
+        properties: {
+          message: {type: 'string'}
+        }
+      }
+    },
+  },
+  handler: async (request, reply) => {
+    const { name } = request.body;
+    reply.code(200).send({
+      message: `Hello ${name}!`
+    })
+  }
+})
+```
+
+### Implement and export the function
+
+Final step, implement the function to handle the request and pass it to Fastify by emitting `request` event to `fastify.server`:
+
+```js
+const fastifyFunction = async (request, reply) => {
+  await fastify.ready();
+  fastify.server.emit('request', request, reply)
+}
+
+export.fastifyFunction = fastifyFunction;
+```
+
+### Local test
+
+Install [Google Functions Framework for Node.js](https://github.com/GoogleCloudPlatform/functions-framework-nodejs).
+
+You can install it globally:
+```bash
+npm i -g @google-cloud/functions-framework
+```
+
+Or as a development library:
+```bash
+npm i --save-dev @google-cloud/functions-framework
+```
+
+Than you can run your function locally with Functions Framework:
+``` bash
+npx @google-cloud/functions-framework --target=fastifyFunction
+```
+
+Or add this command to your `package.json` scripts:
+```json
+"scripts": {
+...
+"dev": "npx @google-cloud/functions-framework --target=fastifyFunction"
+...
+}
+```
+and run it with `npm run dev`.
+
+
+### Deploy
+```bash
+gcloud functions deploy fastifyFunction \
+--runtime nodejs14 --trigger-http --region $GOOGLE_REGION --allow-unauthenticated
+```
+
+#### Read logs
+```bash
+gcloud functions logs read
+```
+
+#### Example request to `/hello` endpoint
+```bash
+curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me -H "Content-Type: application/json" -d '{ "name": "Fastify" }'
+{"message":"Hello Fastify!"}
+```
+
+### References
+- [Google Cloud Functions - Node.js Quickstart ](https://cloud.google.com/functions/docs/quickstart-nodejs)
 
 ## Google Cloud Run
 

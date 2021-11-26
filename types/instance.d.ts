@@ -27,7 +27,7 @@ export interface FastifyInstance<
 > {
   server: RawServer;
   prefix: string;
-  version: string | undefined;
+  version: string;
   log: Logger;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
@@ -37,8 +37,8 @@ export interface FastifyInstance<
   after(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   after(afterListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
-  close(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
-  close(closeListener: () => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  close(): Promise<undefined>;
+  close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
   decorate<T>(property: string | symbol,
@@ -70,11 +70,11 @@ export interface FastifyInstance<
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
   inject(): LightMyRequestChain;
 
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error, address: string) => void): void;
-  listen(port: number | string, address: string, callback: (err: Error, address: string) => void): void;
-  listen(port: number | string, callback: (err: Error, address: string) => void): void;
+  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
+  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
+  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error, address: string) => void): void;
+  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error|null, address: string) => void): void;
   listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
@@ -357,7 +357,7 @@ export interface FastifyInstance<
    * Set a function that will be called whenever an error happens
    */
   setErrorHandler<TError extends Error = FastifyError, RouteGeneric extends RouteGenericInterface = RouteGenericInterface>(
-    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+    handler: (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>, error: TError, request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void | Promise<void>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

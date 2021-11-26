@@ -1,16 +1,16 @@
 # Bundlers test stack
 
-In some cases developers bundle their apps for several targets, eg: serveless applications. 
+In some cases, developers bundle their apps for several targets such as serverless applications. 
 Even if it's not recommended by Fastify team; we need to ensure we do not break the build process. 
-Please note this might result in feature behaving differently like the version handling check for plugins.
+Please note this might result in features behaving differently, like the version handling check for plugins.
 
 ## Test bundlers
 
-The bundler test stack has been set appart than the rest of the Unit testing stack because it's not a 
+The bundler test stack has been defined separately from the rest of the Unit testing stack because it's not a 
 part of the fastify lib itself. Note that the tests run in CI only on NodeJs LTS version.
-Developers does not need to install every bundler to run unit tests.
+Developers do not need to install every bundler to run unit tests.
 
-To run the bundler tests you'll need to first install the repository dependencies and after the bundler
+To run the bundler tests you will need to install the repository dependencies followed by the bundler
 stack dependencies. See:
 
 ```bash
@@ -24,6 +24,6 @@ stack dependencies. See:
 ## Bundler test development
 
 To not break the fastify unit testing stack please name test files like this `*-test.js` and not `*.test.js`, 
-otherwise it can be catched by unit-test regex of fastify.
-Test need to ensure the build process works and the fastify application can be run, 
+otherwise it will be targeted by the regular expression used for unit tests for fastify.
+Tests need to ensure the build process works and the fastify application can be run, 
 no need to go in deep testing unless an issue is raised.

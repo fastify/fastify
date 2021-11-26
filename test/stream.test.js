@@ -14,7 +14,7 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
-const { kDisableRequestLogging } = require('../lib/symbols.js')
+const { kDisableRequestLogging, kReplySent } = require('../lib/symbols.js')
 
 test('should respond with a stream', t => {
   t.plan(8)
@@ -145,7 +145,7 @@ test('onSend hook stream should work even if payload is not a proper stream', t 
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
-    'readable-stream': {
+    stream: {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
       }
@@ -186,7 +186,7 @@ test('onSend hook stream should work on payload with "close" ending function', t
   t.plan(1)
 
   const reply = proxyquire('../lib/reply', {
-    'readable-stream': {
+    stream: {
       finished: (...args) => {
         if (args.length === 2) { args[1](new Error('test-error')) }
       }
@@ -634,5 +634,41 @@ test('should destroy stream when response is ended', t => {
       t.error(err)
       t.equal(response.statusCode, 200)
     })
+  })
+})
+
+test('should mark reply as sent before pumping the payload stream into response for async route handler', t => {
+  t.plan(3)
+
+  const handleRequest = proxyquire('../lib/handleRequest', {
+    './wrapThenable': (thenable, reply) => {
+      thenable.then(function (payload) {
+        t.equal(reply[kReplySent], true)
+      })
+    }
+  })
+
+  const route = proxyquire('../lib/route', {
+    './handleRequest': handleRequest
+  })
+
+  const Fastify = proxyquire('..', {
+    './lib/route': route
+  })
+
+  const fastify = Fastify()
+
+  fastify.get('/', async function (req, reply) {
+    const stream = fs.createReadStream(__filename, 'utf8')
+    reply.code(200).send(stream)
+  })
+
+  fastify.inject({
+    url: '/',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
+    fastify.close()
   })
 })

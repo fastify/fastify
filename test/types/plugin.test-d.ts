@@ -48,8 +48,8 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
 httpsServer
   .register(testPluginOpts)
   .after((_error) => { })
-  .close(() => { })
   .ready((_error) => { })
+  .close(() => { })
 
 // Thenable
 expectAssignable<PromiseLike<undefined>>(httpsServer.after())

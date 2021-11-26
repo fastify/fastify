@@ -15,6 +15,8 @@ import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
 import { Options as FJSOptions } from 'fast-json-stringify'
+import { ValidatorCompiler } from '@fastify/ajv-compiler'
+import { FastifySerializerCompiler } from './types/schema';
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -95,6 +97,8 @@ export type FastifyServerOptions<
   ignoreTrailingSlash?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
+  maxRequestsPerSocket?: number,
+  requestTimeout?: number,
   pluginTimeout?: number,
   bodyLimit?: number,
   maxParamLength?: number,
@@ -126,6 +130,17 @@ export type FastifyServerOptions<
   constraints?: {
     [name: string]: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>,
   },
+  schemaController?: {
+    bucket?: (parentSchemas?: unknown) => {
+      addSchema(schema: unknown): FastifyInstance;
+      getSchema(schemaId: string): unknown;
+      getSchemas(): Record<string, unknown>;
+    };
+    compilersFactory?: {
+      buildValidator?: ValidatorCompiler;
+      buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
+    };
+  };
   return503OnClosing?: boolean,
   ajv?: {
     customOptions?: AjvOptions,

@@ -1,4 +1,4 @@
-import fastify, { FastifyBodyParser, FastifyContentTypeParser } from '../../fastify'
+import fastify, { FastifyBodyParser } from '../../fastify'
 import { expectError, expectType } from 'tsd'
 import { IncomingMessage } from 'http'
 import { FastifyRequest } from '../../types/request'

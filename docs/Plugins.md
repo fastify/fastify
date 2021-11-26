@@ -4,7 +4,7 @@
 Fastify allows the user to extend its functionalities with plugins.
 A plugin can be a set of routes, a server [decorator](Decorators.md), or whatever. The API that you will need to use one or more plugins, is `register`.<br>
 
-By default, `register` creates a *new scope*, this means that if you make some changes to the Fastify instance (via `decorate`), this change will not be reflected by the current context ancestors, but only to its sons. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
+By default, `register` creates a *new scope*, this means that if you make some changes to the Fastify instance (via `decorate`), this change will not be reflected by the current context ancestors, but only to its descendants. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
 
 You already see in the [getting started](Getting-Started.md#register) section how using this API is pretty straightforward.
 ```

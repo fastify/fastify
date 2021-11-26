@@ -7,6 +7,7 @@
   - [.statusCode](#statusCode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
+      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
@@ -106,10 +107,22 @@ fastify.get('/', async function (req, rep) {
 
 <a name="header"></a>
 ### .header(key, value)
-Sets a response header. If the value is omitted or undefined, it is coerced
-to `''`.
-
+Sets a response header. If the value is omitted or undefined, it is coerced to `''`.
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
+
+<a name="set-cookie"></a>
+- ### set-cookie
+    - When sending different values as a cookie with `set-cookie` as the key, every value will be sent as a cookie instead of replacing the previous value.
+
+    ```js
+    reply.header('set-cookie', 'foo');
+    reply.header('set-cookie', 'bar');
+    ```
+  - The browser will only consider the latest reference of a key for the `set-cookie` header. This is done to avoid parsing the `set-cookie` header when added to a reply and speeds up the serialization of the reply.
+
+  - To reset the `set-cookie` header, you need to make an explicit call to `reply.removeHeader('set-cookie')`, read more about `.removeHeader(key)` [here](#removeheaderkey).
+
+
 
 <a name="headers"></a>
 ### .headers(object)
@@ -335,7 +348,7 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 }
 ```
 
-You can add some custom property to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
+You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -376,7 +389,7 @@ fastify.get('/', {
 })
 ```
 
-If you want to completely customize the error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
+If you want to customize error handling, check out [`setErrorHandler`](Server.md#seterrorhandler) API.<br>
 *Note: you are responsible for logging when customizing the error handler*
 
 API:

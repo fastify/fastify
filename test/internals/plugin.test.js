@@ -53,8 +53,8 @@ test('checkDecorators should check if the given decorator is present in the inst
 
   function context () {}
   context.plugin = true
-  context[symbols.kReply] = { prototype: { plugin: true } }
-  context[symbols.kRequest] = { prototype: { plugin: true } }
+  context[symbols.kReply] = { prototype: { plugin: true }, props: [] }
+  context[symbols.kRequest] = { prototype: { plugin: true }, props: [] }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)
@@ -79,8 +79,8 @@ test('checkDecorators should check if the given decorator is present in the inst
 
   function context () {}
   context.plugin = true
-  context[symbols.kReply] = { prototype: { plugin: true } }
-  context[symbols.kRequest] = { prototype: {} }
+  context[symbols.kReply] = { prototype: { plugin: true }, props: [] }
+  context[symbols.kRequest] = { prototype: {}, props: [] }
 
   try {
     pluginUtils.checkDecorators.call(context, fn)

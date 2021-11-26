@@ -213,3 +213,50 @@ test('Request with trust proxy - plain', t => {
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.same(request.protocol, 'http')
 })
+
+test('Request with undefined socket', t => {
+  t.plan(15)
+  const headers = {
+    host: 'hostname'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: undefined,
+    headers
+  }
+  const request = new Request('id', 'params', req, 'query', 'log')
+  t.type(request, Request)
+  t.equal(request.id, 'id')
+  t.equal(request.params, 'params')
+  t.same(request.raw, req)
+  t.equal(request.query, 'query')
+  t.equal(request.headers, headers)
+  t.equal(request.log, 'log')
+  t.equal(request.ip, undefined)
+  t.equal(request.ips, undefined)
+  t.equal(request.hostname, 'hostname')
+  t.equal(request.body, null)
+  t.equal(request.method, 'GET')
+  t.equal(request.url, '/')
+  t.equal(request.protocol, undefined)
+  t.same(request.socket, req.socket)
+})
+
+test('Request with trust proxy and undefined socket', t => {
+  t.plan(1)
+  const headers = {
+    'x-forwarded-for': '2.2.2.2, 1.1.1.1',
+    'x-forwarded-host': 'example.com'
+  }
+  const req = {
+    method: 'GET',
+    url: '/',
+    socket: undefined,
+    headers
+  }
+
+  const TpRequest = Request.buildRequest(Request, true)
+  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  t.same(request.protocol, undefined)
+})

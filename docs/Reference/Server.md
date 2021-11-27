@@ -8,39 +8,78 @@ The Fastify module exports a factory function that is used to create new
 an options object which is used to customize the resulting instance. This
 document describes the properties available in that options object.
 
-- [http2](./Server.md#http2)
-- [https](./Server.md#https)
-- [connectionTimeout](./Server.md#connectiontimeout)
-- [keepAliveTimeout](./Server.md#keepalivetimeout)
-- [maxRequestsPerSocket](./Server.md#maxRequestsPerSocket)
-- [requestTimeout](./Server.md#requestTimeout)
-- [ignoreTrailingSlash](./Server.md#ignoretrailingslash)
-- [maxParamLength](./Server.md#maxparamlength)
-- [onProtoPoisoning](./Server.md#onprotopoisoning)
-- [onConstructorPoisoning](./Server.md#onconstructorpoisoning)
-- [logger](./Server.md#logger)
-- [serverFactory](./Server.md#serverfactory)
-- [jsonShorthand](./Server.md#jsonshorthand)
-- [caseSensitive](./Server.md#casesensitive)
-- [requestIdHeader](./Server.md#requestidheader)
-- [requestIdLogLabel](./Server.md#requestidloglabel)
-- [genReqId](./Server.md#genreqid)
-- [trustProxy](./Server.md#trustProxy)
-- [pluginTimeout](./Server.md#plugintimeout)
-- [querystringParser](./Server.md#querystringparser)
-- [exposeHeadRoutes](./Server.md#exposeheadroutes)
-- [constraints](./Server.md#constraints)
-- [return503OnClosing](./Server.md#return503onclosing)
-- [ajv](./Server.md#ajv)
-- [serializerOpts](./Server.md#serializeropts)
-- [http2SessionTimeout](./Server.md#http2sessiontimeout)
-- [frameworkErrors](./Server.md#frameworkerrors)
-- [clientErrorHandler](./Server.md#clienterrorhandler)
-- [rewriteUrl](./Server.md#rewriteurl)
-- [Instance](./Server.md#instance)
-- [Server Methods](./Server.md#server-methods)
-- [initialConfig](./Server.md#initialConfig)
-
+- [Factory](#factory)
+  - [`http2`](#http2)
+  - [`https`](#https)
+  - [`connectionTimeout`](#connectiontimeout)
+  - [`keepAliveTimeout`](#keepalivetimeout)
+  - [`maxRequestsPerSocket`](#maxrequestspersocket)
+  - [`requestTimeout`](#requesttimeout)
+  - [`ignoreTrailingSlash`](#ignoretrailingslash)
+  - [`maxParamLength`](#maxparamlength)
+  - [`bodyLimit`](#bodylimit)
+  - [`onProtoPoisoning`](#onprotopoisoning)
+  - [`onConstructorPoisoning`](#onconstructorpoisoning)
+  - [`logger`](#logger)
+  - [`disableRequestLogging`](#disablerequestlogging)
+  - [`serverFactory`](#serverfactory)
+  - [`jsonShorthand`](#jsonshorthand)
+  - [`caseSensitive`](#casesensitive)
+  - [`requestIdHeader`](#requestidheader)
+  - [`requestIdLogLabel`](#requestidloglabel)
+  - [`genReqId`](#genreqid)
+  - [`trustProxy`](#trustproxy)
+  - [`pluginTimeout`](#plugintimeout)
+  - [`querystringParser`](#querystringparser)
+  - [`exposeHeadRoutes`](#exposeheadroutes)
+  - [`constraints`](#constraints)
+  - [`return503OnClosing`](#return503onclosing)
+  - [`ajv`](#ajv)
+  - [`serializerOpts`](#serializeropts)
+  - [`http2SessionTimeout`](#http2sessiontimeout)
+  - [`frameworkErrors`](#frameworkerrors)
+  - [`clientErrorHandler`](#clienterrorhandler)
+  - [`rewriteUrl`](#rewriteurl)
+- [Instance](#instance)
+  - [Server Methods](#server-methods)
+    - [server](#server)
+    - [after](#after)
+    - [ready](#ready)
+    - [listen](#listen)
+    - [getDefaultRoute](#getdefaultroute)
+    - [setDefaultRoute](#setdefaultroute)
+    - [routing](#routing)
+    - [route](#route)
+    - [close](#close)
+    - [decorate*](#decorate)
+    - [register](#register)
+    - [addHook](#addhook)
+    - [prefix](#prefix)
+    - [pluginName](#pluginname)
+    - [log](#log)
+    - [version](#version)
+    - [inject](#inject)
+    - [addSchema](#addschema)
+    - [getSchemas](#getschemas)
+    - [getSchema](#getschema)
+    - [setReplySerializer](#setreplyserializer)
+    - [setValidatorCompiler](#setvalidatorcompiler)
+    - [setSchemaErrorFormatter](#setschemaerrorformatter)
+    - [setSerializerCompiler](#setserializercompiler)
+    - [validatorCompiler](#validatorcompiler)
+    - [serializerCompiler](#serializercompiler)
+    - [schemaErrorFormatter](#schemaerrorformatter)
+    - [schemaController](#schemacontroller)
+      - [Ajv 8 as default schema validator](#ajv-8-as-default-schema-validator)
+    - [setNotFoundHandler](#setnotfoundhandler)
+    - [setErrorHandler](#seterrorhandler)
+    - [printRoutes](#printroutes)
+    - [printPlugins](#printplugins)
+    - [addContentTypeParser](#addcontenttypeparser)
+    - [getDefaultJsonParser](#getdefaultjsonparser)
+    - [defaultTextParser](#defaulttextparser)
+    - [errorHandler](#errorhandler)
+    - [initialConfig](#initialconfig)
 
 ### `http2`
 <a name="factory-http2"></a>
@@ -57,7 +96,7 @@ are the same as the Node.js core
 [`createServer` method](https://nodejs.org/dist/latest-v14.x/docs/api/https.html#https_https_createserver_options_requestlistener).
 When this property is `null`, the socket will not be configured for TLS.
 
-This option also applies when the [`http2`](./Server.md#factory-http2) option is set.
+This option also applies when the [`http2`](#factory-http2) option is set.
 
 + Default: `null`
 
@@ -132,8 +171,10 @@ fastify.get('/bar', function (req, reply) {
 ### `maxParamLength`
 <a name="factory-max-param-length"></a>
 
-You can set a custom length for parameters in parametric (standard, regex, and multi) routes by using `maxParamLength` option; the default value is 100 characters.<br>
-This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br>
+You can set a custom length for parameters in parametric (standard, regex, and multi) routes by using `maxParamLength` option; the default value is 100 characters.
+
+This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+
 *If the maximum length limit is reached, the not found route will be invoked.*
 
 ### `bodyLimit`
@@ -251,7 +292,8 @@ Please note that this setting will also disable an error log written by the defa
 ### `serverFactory`
 <a name="custom-http-server"></a>
 
-You can pass a custom HTTP server to Fastify by using the `serverFactory` option.<br/>
+You can pass a custom HTTP server to Fastify by using the `serverFactory` option.
+
 `serverFactory` is a function that takes a `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
@@ -272,7 +314,8 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core HTTP server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
+Internally Fastify uses the API of Node core HTTP server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.
+
 
 ### `jsonShorthand`
 <a name="schema-json-shorthand"></a>
@@ -322,12 +365,12 @@ fastify.get('/user/:username', (request, reply) => {
 Please note that setting this option to `false` goes against
 [RFC3986](https://tools.ietf.org/html/rfc3986#section-6.2.2.1).
 
-Also note, this setting will not affect query strings. If you want to change the way query strings are handled take a look at [`querystringParser`](./Server.md#querystringparser).
+Also note, this setting will not affect query strings. If you want to change the way query strings are handled take a look at [`querystringParser`](#querystringparser).
 
 ### `requestIdHeader`
 <a name="factory-request-id-header"></a>
 
-The header name used to know the request-id. See [the request-id](Logging.md#logging-request-id) section.
+The header name used to know the request-id. See [the request-id](../Logging.md#logging-request-id) section.
 
 + Default: `'request-id'`
 
@@ -379,7 +422,7 @@ const fastify = Fastify({ trustProxy: true })
 
 For more examples, refer to the [`proxy-addr`](https://www.npmjs.com/package/proxy-addr) package.
 
-You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](Request.md) object.
+You may access the `ip`, `ips`, `hostname` and `protocol` values on the [`request`](../Request.md) object.
 
 ```js
 fastify.get('/', (request, reply) => {
@@ -396,7 +439,7 @@ fastify.get('/', (request, reply) => {
 <a name="plugin-timeout"></a>
 
 The maximum amount of time in *milliseconds* in which a plugin can load.
-If not, [`ready`](./Server.md#ready)
+If not, [`ready`](#ready)
 will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 
 + Default: `10000`
@@ -404,7 +447,8 @@ will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 ### `querystringParser`
 <a name="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core `querystring` module.<br/>
+The default query string parser that Fastify uses is the Node.js's core `querystring` module.
+
 You can change this default setting by passing the option `querystringParser` and use a custom one, such as [`qs`](https://www.npmjs.com/package/qs).
 
 ```js
@@ -621,7 +665,7 @@ Note that `rewriteUrl` is called _before_ routing, it is not encapsulated and it
 #### server
 <a name="server"></a>
 
-`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](./Server.md).
+`fastify.server`: The Node core [server](https://nodejs.org/api/http.html#http_class_http_server) object as returned by the [**`Fastify factory function`**](#factory).
 
 #### after
 <a name="after"></a>
@@ -827,14 +871,15 @@ fastify.routing(req, res)
 #### route
 <a name="route"></a>
 
-Method to add routes to the server, it also has shorthand functions, check [here](Routes.md).
+Method to add routes to the server, it also has shorthand functions, check [here](../Routes.md).
 
 #### close
 <a name="close"></a>
 
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](Hooks.md#on-close) hook.<br>
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](../Hooks.md#on-close) hook.
+
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
-See [`return503OnClosing` flags](./Server.md#factory-return-503-on-closing) for changing this behavior.
+See [`return503OnClosing` flags](#factory-return-503-on-closing) for changing this behavior.
 
 If it is called without any arguments, it will return a Promise:
 
@@ -849,18 +894,18 @@ fastify.close().then(() => {
 #### decorate*
 <a name="decorate"></a>
 
-Function useful if you need to decorate the fastify instance, Reply or Request, check [here](Decorators.md).
+Function useful if you need to decorate the fastify instance, Reply or Request, check [here](../Decorators.md).
 
 #### register
 <a name="register"></a>
 
 Fastify allows the user to extend its functionality with plugins.
-A plugin can be a set of routes, a server decorator, or whatever, check [here](Plugins.md).
+A plugin can be a set of routes, a server decorator, or whatever, check [here](../Plugins.md).
 
 #### addHook
 <a name="addHook"></a>
 
-Function to add a specific hook in the lifecycle of Fastify, check [here](Hooks.md).
+Function to add a specific hook in the lifecycle of Fastify, check [here](../Hooks.md).
 
 #### prefix
 <a name="prefix"></a>
@@ -907,23 +952,24 @@ Important: If you have to deal with nested plugins, the name differs with the us
 #### log
 <a name="log"></a>
 
-The logger instance, check [here](Logging.md).
+The logger instance, check [here](../Logging.md).
 
 #### version
 <a name="version"></a>
 
-Fastify version of the instance. Used for plugin support. See [Plugins](Plugins.md#handle-the-scope) for information on how the version is used by plugins.
+Fastify version of the instance. Used for plugin support. See [Plugins](../Plugins.md#handle-the-scope) for information on how the version is used by plugins.
 
 #### inject
 <a name="inject"></a>
 
-Fake HTTP injection (for testing purposes) [here](Testing.md#inject).
+Fake HTTP injection (for testing purposes) [here](../Testing.md#inject).
 
 #### addSchema
 <a name="add-schema"></a>
 
-`fastify.addSchema(schemaObj)`, adds a JSON schema to the Fastify instance. This allows you to reuse it everywhere in your application just by using the standard `$ref` keyword.<br/>
-To learn more, read the [Validation and Serialization](Validation-and-Serialization.md) documentation.
+`fastify.addSchema(schemaObj)`, adds a JSON schema to the Fastify instance. This allows you to reuse it everywhere in your application just by using the standard `$ref` keyword.
+
+To learn more, read the [Validation and Serialization](../Validation-and-Serialization.md) documentation.
 
 #### getSchemas
 <a name="get-schemas"></a>
@@ -938,8 +984,8 @@ To learn more, read the [Validation and Serialization](Validation-and-Serializat
 #### setReplySerializer
 <a name="set-reply-serializer"></a>
 
-Set the reply serializer for all the routes. This will be used as default if a [Reply.serializer(func)](Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
-Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](./Server.md#seterrorhandler) for errors.
+Set the reply serializer for all the routes. This will be used as default if a [Reply.serializer(func)](../Reply.md#serializerfunc) has not been set. The handler is fully encapsulated, so different plugins can set different error handlers.
+Note: the function parameter is called only for status `2xx`. Check out the [`setErrorHandler`](#seterrorhandler) for errors.
 
 ```js
 fastify.setReplySerializer(function (payload, statusCode){
@@ -951,17 +997,17 @@ fastify.setReplySerializer(function (payload, statusCode){
 #### setValidatorCompiler
 <a name="set-validator-compiler"></a>
 
-Set the schema validator compiler for all routes. See [#schema-validator](Validation-and-Serialization.md#schema-validator).
+Set the schema validator compiler for all routes. See [#schema-validator](../Validation-and-Serialization.md#schema-validator).
 
 #### setSchemaErrorFormatter
 <a name="set-schema-error-formatter"></a>
 
-Set the schema error formatter for all routes. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
+Set the schema error formatter for all routes. See [#error-handling](../Validation-and-Serialization.md#schemaerrorformatter).
 
 #### setSerializerCompiler
 <a name="set-serializer-resolver"></a>
 
-Set the schema serializer compiler for all routes. See [#schema-serializer](Validation-and-Serialization.md#schema-serializer).
+Set the schema serializer compiler for all routes. See [#schema-serializer](../Validation-and-Serialization.md#schema-serializer).
 **Note:** [`setReplySerializer`](#set-reply-serializer) has priority if set!
 
 #### validatorCompiler
@@ -979,7 +1025,7 @@ The input `schema` can access all the shared schemas added with [`.addSchema`](#
 #### schemaErrorFormatter
 <a name="schema-error-formatter"></a>
 
-This property can be used to set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](Validation-and-Serialization.md#schemaerrorformatter).
+This property can be used to set a function to format errors that happen while the `validationCompiler` fails to validate the schema. See [#error-handling](../Validation-and-Serialization.md#schemaerrorformatter).
 
 #### schemaController
 <a name="schema-controller"></a>
@@ -1041,7 +1087,7 @@ const fastify = Fastify({
        */
       buildValidator: function factory (externalSchemas, ajvServerOption) {
         // This factory function must return a schema validator compiler.
-        // See [#schema-validator](Validation-and-Serialization.md#schema-validator) for details.
+        // See [#schema-validator](../Validation-and-Serialization.md#schema-validator) for details.
         const yourAjvInstance = new Ajv(ajvServerOption.customOptions)
         return function validatorCompiler ({ schema, method, url, httpPart }) {
           return yourAjvInstance.compile(schema)
@@ -1058,7 +1104,7 @@ const fastify = Fastify({
        */
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
-        // See [#schema-serializer](Validation-and-Serialization.md#schema-serializer) for details.
+        // See [#schema-serializer](../Validation-and-Serialization.md#schema-serializer) for details.
         return function serializerCompiler ({ schema, method, url, httpStatus }) {
           return data => JSON.stringify(data)
         }
@@ -1102,11 +1148,11 @@ const app = fastify({
 #### setNotFoundHandler
 <a name="set-not-found-handler"></a>
 
-`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated as a regular route handler so requests will go through the full [Fastify lifecycle](Lifecycle.md#lifecycle).
+`fastify.setNotFoundHandler(handler(request, reply))`: set the 404 handler. This call is encapsulated by prefix, so different plugins can set different not found handlers if a different [`prefix` option](../Plugins.md#route-prefixing-option) is passed to `fastify.register()`. The handler is treated as a regular route handler so requests will go through the full [Fastify lifecycle](../Lifecycle.md#lifecycle).
 
 You can also register [`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and [`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for the 404 handler.
 
-_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](Reply.md#call-not-found)_. In which case, only preHandler will be run.
+_Note: The `preValidation` hook registered using this method will run for a route that Fastify does not recognize and **not** when a route handler manually calls [`reply.callNotFound`](../Reply.md#call-not-found)_. In which case, only preHandler will be run.
 
 ```js
 fastify.setNotFoundHandler({
@@ -1136,7 +1182,8 @@ Fastify calls setNotFoundHandler to add a default 404 handler at startup before 
 #### setErrorHandler
 <a name="set-error-handler"></a>
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br>
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.
+
 *Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
@@ -1164,7 +1211,8 @@ if (statusCode >= 500) {
 #### printRoutes
 <a name="print-routes"></a>
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging. Alternatively, `fastify.printRoutes({ commonPrefix: false })` can be used to print the flattened routes tree.<br/>
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging. Alternatively, `fastify.printRoutes({ commonPrefix: false })` can be used to print the flattened routes tree.
+
 *Remember to call it inside or after a `ready` call.*
 
 ```js
@@ -1220,7 +1268,8 @@ fastify.ready(() => {
 #### printPlugins
 <a name="print-plugins"></a>
 
-`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.<br/>
+`fastify.printPlugins()`: Prints the representation of the internal plugin tree used by the avvio, useful for debugging require order issues.
+
 *Remember to call it inside or after a `ready` call.*
 
 ```js
@@ -1245,7 +1294,7 @@ fastify.ready(() => {
 `fastify.addContentTypeParser(content-type, options, parser)` is used to pass custom parser for a given content type. Useful for adding parsers for custom content types, e.g. `text/json, application/vnd.oasis.opendocument.text`. `content-type` can be a string, string array or RegExp.
 
 ```js
-// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the [`secure-json-parse` documentation](https://github.com/fastify/secure-json-parse#api) for more information.
 
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 ```
@@ -1253,7 +1302,7 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 #### getDefaultJsonParser
 <a name="getDefaultJsonParser"></a>
 
-`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes two arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configuration. See the <a href="https://github.com/fastify/secure-json-parse#api">`secure-json-parse` documentation</a> for more information.
+`fastify.getDefaultJsonParser(onProtoPoisoning, onConstructorPoisoning)` takes two arguments. First argument is ProtoType poisoning configuration and second argument is constructor poisoning configuration. See the [`secure-json-parse` documentation](https://github.com/fastify/secure-json-parse#api) for more information.
 
 
 #### defaultTextParser

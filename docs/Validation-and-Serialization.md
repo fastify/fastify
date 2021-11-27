@@ -573,7 +573,7 @@ fastify.get('/user', {
 })
 ```
 
-*If you need a custom serializer in a very specific part of your code, you can set one with [`reply.serializer(...)`](Reply.md#serializerfunc).*
+*If you need a custom serializer in a very specific part of your code, you can set one with [`reply.serializer(...)`](./Reply.md#serializerfunc).*
 
 ### Error Handling
 When schema validation fails for a request, Fastify will automatically return a  status 400 response including the result from the validator in the payload. As an example, if you have the following schema for your route

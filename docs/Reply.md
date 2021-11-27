@@ -4,23 +4,22 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
-  - [.statusCode](#statusCode)
+  - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
-      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
-  - [.redirect([code,] dest)](#redirectcode--dest)
+  - [.redirect([code ,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
-  - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
+  - [.raw](#raw)
   - [.sent](#sent)
-  - [.hijack](#hijack)
+  - [.hijack()](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -29,7 +28,7 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  - [.then](#then)
+  - [.then(fulfilled, rejected)](#thenfulfilled-rejected)
 
 ### Introduction
 <a name="introduction"></a>
@@ -59,7 +58,7 @@ and properties:
 - `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](Request.md#Request) property.
+- `.context` - Access the [Request's context](./Request.md#Request) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -112,11 +111,9 @@ fastify.get('/', async function (req, rep) {
 ### .header(key, value)
 <a name="header"></a>
 
-Sets a response header. If the value is omitted or undefined, it is coerced
-to `''`.
 Sets a response header. If the value is omitted or undefined, it is coerced to `''`.
-For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
+For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
 - ### set-cookie
 <a name="set-cookie"></a>
@@ -219,7 +216,7 @@ reply.callNotFound()
 
 Invokes the custom response time getter to calculate the amount of time passed since the request was started.
 
-Note that unless this function is called in the [`onResponse` hook](Hooks.md#onresponse) it will always return `0`.
+Note that unless this function is called in the [`onResponse` hook](./Hooks.md#onresponse) it will always return `0`.
 
 ```js
 const milliseconds = reply.getResponseTime()
@@ -272,7 +269,7 @@ app.get('/cookie-2', (req, reply) => {
   reply.raw.end()
 })
 ```
-Another example of the misuse of `Reply.raw` is explained in [Reply](Reply.md#getheaders).
+Another example of the misuse of `Reply.raw` is explained in [Reply](./Reply.md#getheaders).
 
 ### .sent
 <a name="sent"></a>
@@ -373,7 +370,8 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 }
 ```
 
-You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
+You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.
+
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -414,7 +412,8 @@ fastify.get('/', {
 })
 ```
 
-If you want to customize error handling, check out [`setErrorHandler`](./Reference/Server.md#seterrorhandler) API.<br>
+If you want to customize error handling, check out [`setErrorHandler`](./Reference/Server.md#seterrorhandler) API.
+
 *Note: you are responsible for logging when customizing the error handler*
 
 API:
@@ -446,7 +445,7 @@ fastify.setNotFoundHandler(function (request, reply) {
 #### Type of the final payload
 <a name="payload-type"></a>
 
-The type of the sent payload (after serialization and going through any [`onSend` hooks](Hooks.md#the-onsend-hook)) must be one of the following types, otherwise, an error will be thrown:
+The type of the sent payload (after serialization and going through any [`onSend` hooks](./Hooks.md#the-onsend-hook)) must be one of the following types, otherwise, an error will be thrown:
 
 - `string`
 - `Buffer`
@@ -457,7 +456,8 @@ The type of the sent payload (after serialization and going through any [`onSend
 #### Async-Await and Promises
 <a name="async-await-promise"></a>
 
-Fastify natively handles promises and supports async-await.<br>
+Fastify natively handles promises and supports async-await.
+
 *Note that in the following examples we are not using reply.send.*
 ```js
 const delay = promisify(setTimeout)
@@ -488,7 +488,7 @@ fastify.get('/botnet', async function (request, reply) {
 })
 ```
 
-If you want to know more please review [Routes#async-await](Routes.md#async-await).
+If you want to know more please review [Routes#async-await](./Routes.md#async-await).
 
 ### .then(fulfilled, rejected)
 <a name="then"></a>

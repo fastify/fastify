@@ -1,8 +1,11 @@
-<h1 align="center">Fastify</h1>
+---
+title: Fluent Schema
+sidebar_label: Fluent Schema
+hide_title: false
+---
 
-## Fluent Schema
 
-The [Validation and Serialization](https://github.com/fastify/fastify/blob/master/docs/Validation-and-Serialization.md) documentation outlines all parameters accepted by Fastify to set up JSON Schema Validation in order to validate the input, and JSON Schema Serialization in order to optimize the output.
+The [Validation and Serialization](./Validation-and-Serialization.md) documentation outlines all parameters accepted by Fastify to set up JSON Schema Validation in order to validate the input, and JSON Schema Serialization in order to optimize the output.
 
 [`fluent-schema`](https://github.com/fastify/fluent-schema) can be used to simplify this task while allowing the reuse of constants.
 

@@ -1,11 +1,24 @@
-<h1 align="center">Serverless</h1>
+---
+title: Serverless
+sidebar_label: Serverless
+hide_title: false
+---
 
 Run serverless applications and REST APIs using your existing Fastify application.
 
 ### Contents
 
 - [AWS Lambda](#aws-lambda)
+  - [app.js](#appjs)
+  - [lambda.js](#lambdajs)
+  - [Example](#example)
+  - [Considerations](#considerations)
 - [Google Cloud Run](#google-cloud-run)
+  - [Adjust Fastify server](#adjust-fastify-server)
+  - [Add a Dockerfile](#add-a-dockerfile)
+  - [Add a .dockerignore](#add-a-dockerignore)
+  - [Submit build](#submit-build)
+  - [Deploy Image](#deploy-image)
 - [Vercel](#vercel)
 
 ### Attention Readers:

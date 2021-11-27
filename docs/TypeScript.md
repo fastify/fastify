@@ -1,7 +1,9 @@
-<h1 align="center">Fastify</h1>
+---
+title: TypeScript
+sidebar_label: TypeScript
+hide_title: false
+---
 
-<a id="typescript"></a>
-## TypeScript
 Fastify is shipped with a typings file, but you may need to install `@types/node`, depending on the Node.js version you are using.
 
 ## Types support
@@ -45,8 +47,9 @@ server.get('/ping', opts, (request, reply) => {
 })
 ```
 
-<a id="generic-parameters"></a>
 ## Generic Parameters
+<a name="generic-parameters"></a>
+
 Since you can validate the querystring, params, body, and headers, you can also override the default types of those values on the request interface:
 
 ```ts
@@ -161,8 +164,9 @@ server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, repl
 })
 ```
 
-<a id="http-prototypes"></a>
 ## HTTP Prototypes
+<a name="http-prototypes"></a>
+
 By default, fastify will determine which version of http is being used based on the options you pass to it. If for any
 reason you need to override this you can do so as shown below:
 
@@ -186,8 +190,9 @@ In this example we pass a modified `http.IncomingMessage` interface since it has
 application.
 
 
-<a id="contributing"></a>
 ## Contributing
+<a name="contributing"></a>
+
 TypeScript related changes can be considered to fall into one of two categories:
 
 * [`Core`](#core-types) - The typings bundled with fastify
@@ -195,15 +200,16 @@ TypeScript related changes can be considered to fall into one of two categories:
 
 Make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly!
 
-<a id="core-types"></a>
 ### Core Types
+<a name="core-types"></a>
+
 When updating core types you should make a PR to this repository. Ensure you:
 
 1. Update `examples/typescript-server.ts` to reflect the changes (if necessary)
 2. Update `test/types/index.ts` to validate changes work as expected
 
-<a id="plugin-types"></a>
 ### Plugin Types
+<a name="plugin-types"></a>
 
 Plugins maintained by and organized under the fastify organization on GitHub should ship with typings just like fastify itself does.
 Some plugins already include typings but many do not. We are happy to accept contributions to those plugins without any typings, see [fastify-cors](https://github.com/fastify/fastify-cors) for an example of a plugin that comes with it's own typings.
@@ -212,8 +218,9 @@ Typings for third-party-plugins may either be included with the plugin or hosted
 
 Some types might not be available yet, so don't be shy about contributing.
 
-<a id="authoring-plugin-types"></a>
 ### Authoring Plugin Types
+<a name="authoring-plugin-types"></a>
+
 Typings for many plugins that extend the `FastifyRequest`, `FastifyReply` or `FastifyInstance` objects can be achieved as shown below.
 
 This code shows the typings for the [`fastify-static`](https://github.com/fastify/fastify-static) plugin.

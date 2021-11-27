@@ -1,6 +1,9 @@
-<h1 align="center">Fastify</h1>
+---
+title: Validation and Serialization
+sidebar_label: Validation and Serialization
+hide_title: false
+---
 
-## Validation and Serialization
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 > ## ⚠  Security Notice
@@ -11,8 +14,9 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 > [fast-json-stringify](http://npm.im/fast-json-stringify) for more
 > details.
 
-<a name="validation"></a>
 ### Validation
+<a name="validation"></a>
+
 The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator. Validating the input is very easy: just add the fields that you need inside the route schema, and you are done! The supported validations are:
 - `body`: validates the body of the request if it is a POST, a PATCH or a PUT.
 - `querystring` or `query`: validates the query string. This can be a complete JSON Schema object (with a `type` property of `'object'` and a `'properties'` object containing parameters) or a simpler variation in which the `type` and `properties` attributes are forgone and the query parameters are listed at the top level (see the example below).
@@ -100,8 +104,9 @@ fastify.post('/the/url', { schema }, handler)
 ```
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
-<a name="shared-schema"></a>
 #### Adding a shared schema
+<a name="shared-schema"></a>
+
 Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. As usual, this API is encapsulated.
 
 There are two ways to reuse your shared schemas:
@@ -227,8 +232,8 @@ fastify.route({
 })
 ```
 
-<a name="get-shared-schema"></a>
 #### Retrieving a copy of shared schemas
+<a name="get-shared-schema"></a>
 
 The function `getSchemas` returns the shared schemas available in the selected scope:
 ```js
@@ -255,12 +260,12 @@ This example will returns:
 | /sub  | one, two        |
 | /deep | one, two, three |
 
-<a name="ajv-plugins"></a>
 #### Ajv Plugins
+<a name="ajv-plugins"></a>
 
 You can provide a list of plugins you want to use with Ajv:
 
-> Refer to [`ajv options`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to check plugins format
+> Refer to [`ajv options`](./Server.md#factory-ajv) to check plugins format
 
 ```js
 const fastify = require('fastify')({
@@ -326,8 +331,8 @@ fastify.route({
 })
 ```
 
-<a name="schema-compiler"></a>
 #### Schema Compiler
+<a name="schema-compiler"></a>
 
 The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string. The default `schemaCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface. Fastify uses it internally to speed the validation up.
 
@@ -342,7 +347,7 @@ Fastify's [baseline ajv configuration](https://github.com/epoberezkin/ajv#option
 }
 ```
 
-This baseline configuration can be modified by providing [`ajv.customOptions`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-ajv) to your Fastify factory.
+This baseline configuration can be modified by providing [`ajv.customOptions`](./Server.md#factory-ajv) to your Fastify factory.
 
 If you want to change or set additional config options, you will need to create your own instance and override the existing one like:
 
@@ -368,8 +373,8 @@ fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 ```
 _**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of fastify, since fastify's default validator is no longer used, and fastify's `addSchema` method has no idea what validator you are using._
 
-<a name="using-other-validation-libraries"></a>
 #### Using other validation libraries
+<a name="using-other-validation-libraries"></a>
 
 The `schemaCompiler` function makes it easy to substitute `ajv` with almost any Javascript validation library ([joi](https://github.com/hapijs/joi/), [yup](https://github.com/jquense/yup/), ...).
 
@@ -499,8 +504,8 @@ const errorHandler = (error, request, reply) => {
 }
 ```
 
-<a name="schema-resolver"></a>
 #### Schema Resolver
+<a name="schema-resolver"></a>
 
 The `schemaResolver` is a function that works together with the `schemaCompiler`: you can't use it
 with the default schema compiler. This feature is useful when you use complex schemas with `$ref` keyword
@@ -561,8 +566,9 @@ fastify.route({
 })
 ```
 
-<a name="serialization"></a>
 ### Serialization
+<a name="serialization"></a>
+
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.
 
 Example:
@@ -863,8 +869,9 @@ const refToSharedSchemaDefinitions = {
 }
 ```
 
-<a name="resources"></a>
 ### Resources
+<a name="resources"></a>
+
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)
 - [fast-json-stringify documentation](https://github.com/fastify/fast-json-stringify)

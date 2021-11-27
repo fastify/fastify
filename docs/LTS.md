@@ -1,8 +1,8 @@
-<h1 align="center">Fastify</h1>
-
-<a name="lts"></a>
-
-## Long Term Support
+---
+title: Long Term Support
+sidebar_label: Long Term Support
+hide_title: false
+---
 
 Fastify's Long Term Support (LTS) is provided according the schedule laid
 out in this document:

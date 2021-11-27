@@ -1,6 +1,8 @@
-<h1 align="center">Fastify</h1>
-
-## Decorators
+---
+title: Decorators
+sidebar_label: Decorators
+hide_title: false
+---
 
 The decorators API allows customization of the core Fastify objects, such as
 the server instance itself and any request and reply objects used during the

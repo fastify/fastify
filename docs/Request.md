@@ -1,7 +1,10 @@
-<h1 align="center">Fastify</h1>
+---
+title: Request
+sidebar_label: Request
+hide_title: false
+---
 
-## Request
-The first parameter of the handler function is `Request`.<br>
+The first parameter of the handler function is `Request`.<br/>
 Request is a core Fastify object containing the following fields:
 - `query` - the parsed querystring
 - `body` - the body
@@ -11,7 +14,7 @@ Request is a core Fastify object containing the following fields:
 - `id` - the request id
 - `log` - the logger instance of the incoming request
 - `ip` - the IP address of the incoming request
-- `ips` - an array of the IP addresses in the `X-Forwarded-For` header of the incoming request (only when the [`trustProxy`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-trust-proxy) option is enabled)
+- `ips` - an array of the IP addresses in the `X-Forwarded-For` header of the incoming request (only when the [`trustProxy`](./Server.md#factory-trust-proxy) option is enabled)
 - `hostname` - the hostname of the incoming request
 
 ```js

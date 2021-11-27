@@ -1,10 +1,10 @@
 <h1 align="center">Fastify</h1>
 
-<a id="errors"></a>
 ## Errors
+<a id="errors"></a>
 
-<a name="error-handling"></a>
 ### Error Handling In Node.js
+<a name="error-handling"></a>
 
 #### Uncaught Errors
 In Node.js, uncaught errors are likely to cause memory leaks, file descriptor leaks, and other major production issues. [Domains](https://nodejs.org/en/docs/guides/domain-postmortem/) were a failed attempt to fix this.
@@ -50,122 +50,122 @@ Some things to consider in your custom error handler:
 	- an error will not be triggered twice from a lifecycle hook - Fastify internally monitors the error invocation to avoid infinite loops for errors thrown in the reply phases of the lifecycle. (those after the route handler)
 
 
-<a name="fastify-error-codes"></a>
 ### Fastify Error Codes
+<a name="fastify-error-codes"></a>
 
-<a name="FST_ERR_BAD_URL"></a>
 #### FST_ERR_BAD_URL
+<a name="FST_ERR_BAD_URL"></a>
 
 The router received an invalid url.
 
-<a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
+<a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 
 The parser for this content type was already registered.
 
-<a name="FST_ERR_CTP_BODY_TOO_LARGE"></a>
 #### FST_ERR_CTP_BODY_TOO_LARGE
+<a name="FST_ERR_CTP_BODY_TOO_LARGE"></a>
 
 The request body is larger than the provided limit.
 
 This setting can be defined in the Fastify server instance: [`bodyLimit`](./Reference/Server.md#bodyLimit)
 
-<a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 #### FST_ERR_CTP_EMPTY_TYPE
+<a name="FST_ERR_CTP_EMPTY_TYPE"></a>
 
 The content type cannot be an empty string.
 
-<a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
 #### FST_ERR_CTP_INVALID_CONTENT_LENGTH
+<a name="FST_ERR_CTP_INVALID_CONTENT_LENGTH"></a>
 
 Request body size did not match Content-Length.
 
-<a name="FST_ERR_CTP_INVALID_HANDLER"></a>
 #### FST_ERR_CTP_INVALID_HANDLER
+<a name="FST_ERR_CTP_INVALID_HANDLER"></a>
 
 An invalid handler was passed for the content type.
 
-<a name="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 #### FST_ERR_CTP_INVALID_MEDIA_TYPE
+<a name="FST_ERR_CTP_INVALID_MEDIA_TYPE"></a>
 
 The received media type is not supported (i.e. there is no suitable `Content-Type` parser for it).
 
-<a name="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
 #### FST_ERR_CTP_INVALID_PARSE_TYPE
+<a name="FST_ERR_CTP_INVALID_PARSE_TYPE"></a>
 
 The provided parse type is not supported. Accepted values are `string` or `buffer`.
 
-<a name="FST_ERR_CTP_INVALID_TYPE"></a>
 #### FST_ERR_CTP_INVALID_TYPE
+<a name="FST_ERR_CTP_INVALID_TYPE"></a>
 
 The `Content-Type` should be a string.
 
-<a name="FST_ERR_DEC_ALREADY_PRESENT"></a>
 #### FST_ERR_DEC_ALREADY_PRESENT
+<a name="FST_ERR_DEC_ALREADY_PRESENT"></a>
 
 A decorator with the same name is already registered.
 
-<a name="FST_ERR_DEC_MISSING_DEPENDENCY"></a>
 #### FST_ERR_DEC_MISSING_DEPENDENCY
+<a name="FST_ERR_DEC_MISSING_DEPENDENCY"></a>
 
 The decorator cannot be registered due to a missing dependency.
 
-<a name="FST_ERR_HOOK_INVALID_HANDLER"></a>
 #### FST_ERR_HOOK_INVALID_HANDLER
+<a name="FST_ERR_HOOK_INVALID_HANDLER"></a>
 
 The hook callback must be a function.
 
-<a name="FST_ERR_HOOK_INVALID_TYPE"></a>
 #### FST_ERR_HOOK_INVALID_TYPE
+<a name="FST_ERR_HOOK_INVALID_TYPE"></a>
 
 The hook name must be a string.
 
-<a name="FST_ERR_LOG_INVALID_DESTINATION"></a>
 #### FST_ERR_LOG_INVALID_DESTINATION
+<a name="FST_ERR_LOG_INVALID_DESTINATION"></a>
 
 The logger accepts either a `'stream'` or a `'file'` as the destination.
 
-<a name="FST_ERR_PROMISE_NOT_FULFILLED"></a>
 #### FST_ERR_PROMISE_NOT_FULFILLED
+<a name="FST_ERR_PROMISE_NOT_FULFILLED"></a>
 
 A promise may not be fulfilled with 'undefined' when statusCode is not 204.
 
-<a id="FST_ERR_REP_ALREADY_SENT"></a>
 #### FST_ERR_REP_ALREADY_SENT
+<a id="FST_ERR_REP_ALREADY_SENT"></a>
 
 A response was already sent.
 
-<a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 #### FST_ERR_REP_INVALID_PAYLOAD_TYPE
+<a name="FST_ERR_REP_INVALID_PAYLOAD_TYPE"></a>
 
 Reply payload can be either a `string` or a `Buffer`.
 
-<a name="FST_ERR_SCH_ALREADY_PRESENT"></a>
 #### FST_ERR_SCH_ALREADY_PRESENT
+<a name="FST_ERR_SCH_ALREADY_PRESENT"></a>
 
 A schema with the same `$id` already exists.
 
-<a name="FST_ERR_SCH_MISSING_ID"></a>
 #### FST_ERR_SCH_MISSING_ID
+<a name="FST_ERR_SCH_MISSING_ID"></a>
 
 The schema provided does not have `$id` property.
 
-<a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
 #### FST_ERR_SCH_SERIALIZATION_BUILD
+<a name="FST_ERR_SCH_SERIALIZATION_BUILD"></a>
 
 The JSON schema provided for serialization of a route response is not valid.
 
-<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
 #### FST_ERR_SCH_VALIDATION_BUILD
+<a name="FST_ERR_SCH_VALIDATION_BUILD"></a>
 
 The JSON schema provided for validation to a route is not valid.
 
-<a id="FST_ERR_SEND_INSIDE_ONERR"></a>
 #### FST_ERR_SEND_INSIDE_ONERR
+<a id="FST_ERR_SEND_INSIDE_ONERR"></a>
 
 You cannot use `send` inside the `onError` hook.
 
-<a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
 #### FST_ERR_SEND_UNDEFINED_ERR
+<a name="FST_ERR_SEND_UNDEFINED_ERR"></a>
 
 Undefined error has occurred.

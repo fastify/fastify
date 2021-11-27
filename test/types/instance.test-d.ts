@@ -3,7 +3,8 @@ import fastify, {
   FastifyError,
   FastifyInstance,
   RawReplyDefaultExpression,
-  RawRequestDefaultExpression
+  RawRequestDefaultExpression,
+  RawServerDefault
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { FastifyRequest } from '../../types/request'
@@ -50,6 +51,50 @@ server.setErrorHandler(nodeJSErrorHandler)
 
 function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(asyncNodeJSErrorHandler)
+
+class CustomError extends Error {
+  private __brand: any;
+}
+interface ReplyPayload {
+  Reply: {
+    test: boolean;
+  };
+}
+// typed sync error handler
+server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+  expectType<CustomError>(error)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+})
+// typed async error handler send
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+  expectType<CustomError>(error)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+})
+// typed async error handler return
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+  expectType<CustomError>(error)
+  return { test: true }
+})
+// typed sync error handler send error
+expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+  expectType<CustomError>(error)
+  reply.send({ test: 'foo' })
+}))
+// typed sync error handler return error
+expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+  expectType<CustomError>(error)
+  return { test: 'foo' }
+}))
+// typed async error handler send error
+expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+  expectType<CustomError>(error)
+  reply.send({ test: 'foo' })
+}))
+// typed async error handler return error
+expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+  expectType<CustomError>(error)
+  return { test: 'foo' }
+}))
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }

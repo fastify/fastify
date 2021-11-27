@@ -342,8 +342,9 @@ fastify.addHook('onReady', async function () {
 })
 ```
 
-<a name="on-close"></a>
 ### onClose
+<a name="on-close"></a>
+
 Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](Plugins.md) need a "shutdown" event, for example, to close an open connection to a database.<br>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
@@ -353,8 +354,9 @@ fastify.addHook('onClose', (instance, done) => {
 })
 ```
 
-<a name="on-route"></a>
 ### onRoute
+<a name="on-route"></a>
+
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners are not passed a callback. This hook is encapsulated.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
@@ -384,8 +386,9 @@ fastify.addHook('onRoute', (routeOptions) => {
 })
 ```
 
-<a name="on-register"></a>
 ### onRegister
+<a name="on-register"></a>
+
 Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
 This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context, thus this hook is encapsulated.<br/>
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
@@ -418,8 +421,9 @@ fastify.addHook('onRegister', (instance, opts) => {
 })
 ```
 
-<a name="scope"></a>
 ## Scope
+<a name="scope"></a>
+
 Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
@@ -457,9 +461,10 @@ fastify.register(async function plugin (fastify, opts) {
 
 Warn: if you declare the function with an [arrow function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions), the `this` will not be Fastify, but the one of the current scope.
 
-<a name="route-hooks"></a>
 
 ## Route level hooks
+<a name="route-hooks"></a>
+
 You can declare one or more custom lifecycle hooks ([onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler), [preSerialization](#preserialization), [onSend](#onsend), [onTimeout](#ontimeout), and [onError](#onerror)) hook(s) that will be **unique** for the route.
 If you do so, those hooks are always executed as the last hook in their category. <br/>
 This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.

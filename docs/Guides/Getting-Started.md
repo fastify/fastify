@@ -5,8 +5,9 @@ Hello! Thank you for checking out Fastify!<br>
 This document aims to be a gentle introduction to the framework and its features. It is an elementary preface with examples and links to other parts of the documentation.<br>
 Let's start!
 
-<a name="install"></a>
 ### Install
+<a name="install"></a>
+
 Install with npm:
 ```
 npm i fastify --save
@@ -16,8 +17,9 @@ Install with yarn:
 yarn add fastify
 ```
 
-<a name="first-server"></a>
 ### Your first server
+<a name="first-server"></a>
+
 Let's write our first server:
 ```js
 // Require the framework and instantiate it
@@ -96,8 +98,9 @@ Fastify offers an easy platform that helps to solve all of the problems outlined
 >
 > When deploying to a Docker (or another type of) container using `0.0.0.0` or `::` would be the easiest method for exposing the application.
 
-<a name="first-plugin"></a>
 ### Your first plugin
+<a name="first-plugin"></a>
+
 As with JavaScript, where everything is an object, with Fastify everything is a plugin.<br>
 Before digging into it, let's see how it works!<br>
 Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](Routes.md) docs).
@@ -295,8 +298,9 @@ The MongoDB plugin uses the `decorate` API to add custom objects to the Fastify 
 
 To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](Plugins-Guide.md).
 
-<a name="plugin-loading-order"></a>
 ### Loading order of your plugins
+<a name="plugin-loading-order"></a>
+
 To guarantee consistent and predictable behavior of your application, we highly recommend to always load your code as shown below:
 ```
 └── plugins (from the Fastify ecosystem)
@@ -329,8 +333,9 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
           └── your services
 ```
 
-<a name="validate-data"></a>
 ### Validate your data
+<a name="validate-data"></a>
+
 Data validation is extremely important and a core concept of the framework.<br>
 To validate incoming requests, Fastify uses [JSON Schema](https://json-schema.org/).
 (JTD schemas are loosely supported, but `jsonShorthand` must be disabled first)
@@ -356,8 +361,9 @@ fastify.post('/', opts, async (request, reply) => {
 This example shows how to pass an options object to the route, which accepts a `schema` key that contains all of the schemas for route, `body`, `querystring`, `params`, and `headers`.<br>
 Read [Validation and Serialization](Validation-and-Serialization.md) to learn more.
 
-<a name="serialize-data"></a>
 ### Serialize your data
+<a name="serialize-data"></a>
+
 Fastify has first class support for JSON. It is extremely optimized to parse JSON bodies and to serialize JSON output.<br>
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the schema option as shown in the following example:
 ```js
@@ -381,8 +387,9 @@ fastify.get('/', opts, async (request, reply) => {
 By specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
 Read [Validation and Serialization](Validation-and-Serialization.md) to learn more.
 
-<a name="request-payload"></a>
 ### Parsing request payloads
+<a name="request-payload"></a>
+
 Fastify parses `'application/json'` and `'text/plain'` request payloads natively, with the result accessible from the [Fastify request](Request.md) object at `request.body`.<br>
 The following example returns the parsed body of a request back to the client:
 
@@ -395,18 +402,21 @@ fastify.post('/', opts, async (request, reply) => {
 
 Read [Content Type Parser](ContentTypeParser.md) to learn more about Fastify's default parsing functionality and how to support other content types.
 
-<a name="extend-server"></a>
 ### Extend your server
+<a name="extend-server"></a>
+
 Fastify is built to be extremely extensible and minimal, we believe that a bare-bones framework is all that is necessary to make great applications possible.<br>
 In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](Ecosystem.md)!
 
-<a name="test-server"></a>
 ### Test your server
+<a name="test-server"></a>
+
 Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.<br>
 Read the [testing](Testing.md) documentation to learn more!
 
-<a name="cli"></a>
 ### Run your server from CLI
+<a name="cli"></a>
+
 Fastify also has CLI integration thanks to [fastify-cli](https://github.com/fastify/fastify-cli).
 
 First, install `fastify-cli`:
@@ -443,8 +453,9 @@ Then run your server with:
 npm start
 ```
 
-<a name="slides"></a>
 ### Slides and Videos
+<a name="slides"></a>
+
 - Slides
   - [Take your HTTP server to ludicrous speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed) by [@mcollina](https://github.com/mcollina)
   - [What if I told you that HTTP can be fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast) by [@delvedor](https://github.com/delvedor)

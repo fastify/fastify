@@ -1,10 +1,12 @@
-<h1 align="center">Fastify</h1>
-
-## Middlewares
+---
+title: Middlewares
+sidebar_label: Middlewares
+hide_title: false
+---
 
 Fastify out of the box provides an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.
 
-*If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) page.*
+*If you need a visual feedback to understand when the middlewares are executed take a look to the [lifecycle](./Lifecycle.md) page.*
 
 Fastify middlewares don't support the full syntax `middleware(err, req, res, next)`, because error handling is done inside Fastify.
 Furthermore methods added by Express and Restify to the enhanced versions of `req` and `res` are not supported in Fastify middlewares.
@@ -30,12 +32,13 @@ const helmet = require('fastify-helmet')
 fastify.register(helmet)
 ```
 
-Remember that middlewares can be encapsulated, this means that you can decide where your middlewares should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md).
+Remember that middlewares can be encapsulated, this means that you can decide where your middlewares should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md).
 
-Fastify middlewares also do not expose the `send` method or other methods specific to the Fastify [Reply]('./Reply.md' "Reply") instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") objects internally, but this is done after the middlewares phase. If you need to create a middleware you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook that has the [Request](./Request.md "Request") and [Reply](./Reply.md "Reply") Fastify instances. For more information, see [Hooks](./Hooks.md "Hooks").
+Fastify middlewares also do not expose the `send` method or other methods specific to the Fastify [Reply](./Reply.md) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md) and [Reply](./Reply.md) objects internally, but this is done after the middlewares phase. If you need to create a middleware you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook that has the [Request](./Request.md) and [Reply](./Reply.md) Fastify instances. For more information, see [Hooks](./Hooks.md).
 
-<a name="restrict-usage"></a>
 #### Restrict middleware execution to a certain path(s)
+<a name="restrict-usage"></a>
+
 If you need to run a middleware only under certain path(s), just pass the path as first parameter to `use` and you are done!
 
 *Note that this does not support routes with parameters, (eg: `/user/:id/comments`) and wildcard is not supported in multiple paths.*

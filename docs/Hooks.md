@@ -1,6 +1,8 @@
-<h1 align="center">Fastify</h1>
-
-## Hooks
+---
+title: Hooks
+sidebar_label: Hooks
+hide_title: false
+---
 
 Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
 
@@ -83,12 +85,12 @@ fastify.addHook('onResponse', async (res) => {
 |-------------|-------------|
 | req |  Node.js [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage) |
 | res | Node.js [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse) |
-| request | Fastify [Request](https://github.com/fastify/fastify/blob/master/docs/Request.md) interface |
-| reply | Fastify [Reply](https://github.com/fastify/fastify/blob/master/docs/Reply.md) interface |
+| request | Fastify [Request](./Request.md) interface |
+| reply | Fastify [Reply](./Reply.md) interface |
 | payload | The serialized payload |
-| next | Function to continue with the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md) |
+| next | Function to continue with the [lifecycle](./Lifecycle.md) |
 
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).<br>
+It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).<br/>
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 If you get an error during the execution of your hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
@@ -107,9 +109,9 @@ fastify.addHook('preHandler', (request, reply, next) => {
 })
 ```
 
-*The error will be handled by [`Reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md#errors).*
+*The error will be handled by [`Reply`](./Reply.md#errors).*
 
-Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](https://github.com/fastify/fastify/blob/master/docs/Request.md) and [`reply`](https://github.com/fastify/fastify/blob/master/docs/Reply.md) core Fastify objects.
+Note that in the `'preHandler'` and `'onSend'` hook the request and reply objects are different from `'onRequest'`, because the two arguments are [`request`](./Request.md) and [`reply`](./Reply.md) core Fastify objects.
 
 #### The `onSend` Hook
 
@@ -175,9 +177,10 @@ You are able to hook into the application-lifecycle as well. It's important to n
 - `'onClose'`
 - `'onRoute'`
 
+### onClose
 <a name="on-close"></a>
-**'onClose'**<br>
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) need a "shutdown" event, such as a connection to a database.<br>
+
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, such as a connection to a database.<br/>
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -185,8 +188,9 @@ fastify.addHook('onClose', (instance, done) => {
   done()
 })
 ```
+### onRoute
 <a name="on-route"></a>
-**'onRoute'**<br>
+
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
@@ -199,9 +203,10 @@ fastify.addHook('onRoute', (routeOptions) => {
   routeOptions.prefix
 })
 ```
-<a name="scope"></a>
 ### Scope
-Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](https://github.com/fastify/fastify/blob/master/docs/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+<a name="scope"></a>
+
+Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (req, res, next) {
@@ -211,9 +216,10 @@ fastify.addHook('onRequest', function (req, res, next) {
 ```
 Note: using an arrow function will break the binding of this to the Fastify instance.
 
-<a name="before-handler"></a>
 ### beforeHandler
-Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.<br>
+<a name="before-handler"></a>
+
+Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.<br/>
 **`beforeHandler` is executed always after the `preHandler` hook.**
 
 ```js

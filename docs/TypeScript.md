@@ -1,7 +1,9 @@
-<h1 align="center">Fastify</h1>
+---
+title: TypeScript
+sidebar_label: TypeScript
+hide_title: false
+---
 
-<a id="typescript"></a>
-## TypeScript
 Fastify is shipped with a typings file, but it still require to install `@types/node`, depending on the Node.js version that you are using.
 
 ## Types support
@@ -44,8 +46,9 @@ server.get('/ping', opts, (request, reply) => {
 })
 ```
 
-<a id="generic-parameters"></a>
 ## Generic Parameters
+<a name="generic-parameters"></a>
+
 Since you can validate the querystring, params, body, and headers, you can also override the default types of those values on the request interface:
 
 ```ts
@@ -160,8 +163,9 @@ server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, repl
 })
 ```
 
-<a id="http-prototypes"></a>
 ## HTTP Prototypes
+<a name="http-prototypes"></a>
+
 By default, fastify will determine which version of http is being used based on the options you pass to it. If for any
 reason you need to override this you can do so as shown below:
 
@@ -185,8 +189,9 @@ In this example we pass a modified `http.IncomingMessage` interface since it has
 application.
 
 
-<a id="contributing"></a>
 ## Contributing
+<a name="contributing"></a>
+
 TypeScript related changes can be considered to fall into one of two categories:
 
 * Core - The typings bundled with fastify
@@ -194,15 +199,16 @@ TypeScript related changes can be considered to fall into one of two categories:
 
 Make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly!
 
-<a id="core-types"></a>
 ### Core Types
+<a name="core-types"></a>
+
 When updating core types you should make a PR to this repository. Ensure you:
 
 1. Update `examples/typescript-server.ts` to reflect the changes (if necessary)
 2. Update `test/types/index.ts` to validate changes work as expected
 
-<a id="plugin-types"></a>
 ### Plugin Types
+<a name="plugin-types"></a>
 
 Typings for plugins are hosted in DefinitelyTyped. This means when using plugins you should install like so:
 
@@ -212,8 +218,9 @@ npm install fastify-url-data @types/fastify-url-data
 
 After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
 
-<a id="authoring-plugin-types"></a>
 ### Authoring Plugin Types
+<a name="authoring-plugin-types"></a>
+
 Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
 
 This code demonstrates adding types for `fastify-url-data` to your application.

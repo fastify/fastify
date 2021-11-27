@@ -1,15 +1,19 @@
-<h1 align="center">Fastify</h1>
-
-## Decorators
+---
+title: Decorators
+sidebar_label: Decorators
+hide_title: false
+---
 
 If you need to add functionality to the Fastify instance, the `decorate` API is what you need.
 
 The API allows you to add new properties to the Fastify instance. A value is not restricted to a function and could also be an object or a string, for example.
 
-<a name="usage"></a>
 ### Usage
-<a name="decorate"></a>
+<a name="usage"></a>
+
 **decorate**
+<a name="decorate"></a>
+
 Just call the `decorate` API and pass the name of the new property and its value.
 ```js
 fastify.decorate('utility', () => {
@@ -32,8 +36,9 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
-<a name="decorate-reply"></a>
 **decorateReply**
+<a name="decorate-reply"></a>
+
 As the name suggests, this API is needed if you want to add new methods to the `Reply` core object. Just call the `decorateReply` API and pass the name of the new property and its value:
 ```js
 fastify.decorateReply('utility', function () {
@@ -43,8 +48,9 @@ fastify.decorateReply('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `reply` instance.
 
-<a name="decorate-request"></a>
 **decorateRequest**
+<a name="decorate-request"></a>
+
 As above, this API is needed if you want to add new methods to the `Request` core object. Just call the `decorateRequest` API and pass the name of the new property and its value:
 ```js
 fastify.decorateRequest('utility', function () {
@@ -54,8 +60,8 @@ fastify.decorateRequest('utility', function () {
 
 Note: using an arrow function will break the binding of `this` to the Fastify `request` instance.
 
-<a name="decorators-encapsulation"></a>
 #### Decorators and encapsulation
+<a name="decorators-encapsulation"></a>
 
 If you define a decorator (using decorate, decorateRequest or decorateReply) with the same name more than once in the same **encapsulated** plugin, fastify will throw an exception.
 
@@ -107,8 +113,8 @@ server.register(async function (server, opts) {
 server.listen(3000)
 ```
 
-<a name="getters-setters"></a>
 #### Getters and Setters
+<a name="getters-setters"></a>
 
 Decorators accept special "getter/setter" objects. These objects have functions named `getter` and `setter` (though, the `setter` function is optional). This allows defining properties via decorators. For example:
 
@@ -126,8 +132,9 @@ Will define the `foo` property on the *Fastify* instance:
 console.log(fastify.foo) // 'a getter'
 ```
 
-<a name="usage_notes"></a>
 #### Usage Notes
+<a name="usage_notes"></a>
+
 `decorateReply` and `decorateRequest` are used to modify the `Reply` and `Request` constructors respectively by adding methods or properties. To update these properties you should directly access the desired property of the `Reply` or `Request` object.
 
 As an example let's add a user property to the `Request` object:
@@ -148,12 +155,14 @@ fastify.get('/', (req, reply) => {
 ```
 Note: The usage of `decorateReply` and `decorateRequest` is optional in this case but will allow Fastify to optimize for performance.
 
-<a name="sync-async"></a>
 #### Sync and Async
-`decorate` is a *synchronous* API. If you need to add a decorator that has an *asynchronous* bootstrap, Fastify could boot up before your decorator is ready. To avoid this issue, you must use the `register` API in combination with `fastify-plugin`. To learn more, check out the [Plugins](https://github.com/fastify/fastify/blob/master/docs/Plugins.md) documentation as well.
+<a name="sync-async"></a>
 
-<a name="dependencies"></a>
+`decorate` is a *synchronous* API. If you need to add a decorator that has an *asynchronous* bootstrap, Fastify could boot up before your decorator is ready. To avoid this issue, you must use the `register` API in combination with `fastify-plugin`. To learn more, check out the [Plugins](./Plugins.md) documentation as well.
+
 #### Dependencies
+<a name="dependencies"></a>
+
 If your decorator depends on another decorator, you can easily declare the other decorator as a dependency. You just need to add an array of strings (representing the names of the decorators on which yours depends) as the third parameter:
 ```js
 fastify.decorate('utility', fn, ['greet', 'log'])
@@ -161,22 +170,25 @@ fastify.decorate('utility', fn, ['greet', 'log'])
 
 If a dependency is not satisfied, `decorate` will throw an exception, but don't worry: the dependency check is executed before the server boots up, so it won't ever happen at runtime.
 
-<a name="has-decorator"></a>
 #### hasDecorator
+<a name="has-decorator"></a>
+
 You can check for the presence of a decorator with the `hasDecorator` API:
 ```js
 fastify.hasDecorator('utility')
 ```
 
-<a name="has-request-decorator"></a>
 #### hasRequestDecorator
+<a name="has-request-decorator"></a>
+
 You can check for the presence of a Request decorator with the `hasRequestDecorator` API:
 ```js
 fastify.hasRequestDecorator('utility')
 ```
 
-<a name="has-reply-decorator"></a>
 #### hasReplyDecorator
+<a name="has-reply-decorator"></a>
+
 You can check for the presence of a Reply decorator with the `hasReplyDecorator` API:
 ```js
 fastify.hasReplyDecorator('utility')

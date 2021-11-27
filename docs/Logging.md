@@ -1,6 +1,8 @@
-<h1 align="center">Fastify</h1>
-
-## Logging
+---
+title: Logging
+sidebar_label: Logging
+hide_title: false
+---
 
 Logging is disabled by default, and you can enable it by passing
 `{ logger: true }` or `{ logger: { level: 'info' } }` when you create
@@ -46,7 +48,7 @@ fastify.get('/', options, function (request, reply) {
 
 <a name="logging-request-id" />
 
-By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](https://github.com/fastify/fastify/blob/master/docs/Server.md#factory-request-id-header) options for customizing that header name.
+By default fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](./Server.md#factory-request-id-header) options for customizing that header name.
 Additionally, `genReqId` option can be used for generating the request id by yourself. It will received the incoming request as a parameter.
 
 ```js
@@ -91,4 +93,4 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
-*The logger instance for the current request is available in every part of the [lifecycle](https://github.com/fastify/fastify/blob/master/docs/Lifecycle.md).*
+*The logger instance for the current request is available in every part of the [lifecycle](./Lifecycle.md).*

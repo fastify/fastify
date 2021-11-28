@@ -10,7 +10,7 @@ This document contains a set of recommendations when using Fastify.
 - [Kubernetes](#kubernetes)
 
 ## Use A Reverse Proxy
-<a name="reverseproxy"></a>
+<a id="reverseproxy"></a>
 
 Node.js is an early adopter of frameworks shipping with an easy-to-use web
 server within the standard library. Previously, with languages like PHP or
@@ -279,7 +279,7 @@ server {
 [nginx]: https://nginx.org/
 
 ## Kubernetes
-<a name="kubernetes"></a>
+<a id="kubernetes"></a>
 
 The `readinessProbe` uses [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe will not be able to reach the application in this case. In order to make it work, the application must listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec, as per the following example:
 

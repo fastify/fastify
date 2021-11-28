@@ -123,7 +123,7 @@ To see this, start the server and issue requests:
 [bearer]: https://github.com/fastify/fastify-bearer-auth
 
 ## Sharing Between Contexts
-<a name="shared-context"></a>
+<a id="shared-context"></a>
 
 Notice that each context in the prior example inherits _only_ from the parent
 contexts. Parent contexts cannot access any entities within their descendent

@@ -21,14 +21,14 @@ You have two ways to declare a route with Fastify, the shorthand method and the 
   - [Host Constraints](#host-constraints)
 
 ### Full declaration
-<a name="full-declaration"></a>
+<a id="full-declaration"></a>
 
 ```js
 fastify.route(options)
 ```
 
 ### Routes options
-<a name="options"></a>
+<a id="options"></a>
 
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
@@ -105,7 +105,7 @@ fastify.route({
 ```
 
 ### Shorthand declaration
-<a name="shorthand-declaration"></a>
+<a id="shorthand-declaration"></a>
 
 The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
 
@@ -167,7 +167,7 @@ fastify.get('/', opts)
 > Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then throws duplicate `handler` error.
 
 ### Url building
-<a name="url-building"></a>
+<a id="url-building"></a>
 
 Fastify supports both static and dynamic URLs.
 
@@ -210,7 +210,7 @@ fastify.post('/name::verb') // will be interpreted as /name:verb
 ```
 
 ### Async Await
-<a name="async-await"></a>
+<a id="async-await"></a>
 
 Are you an `async/await` user? We have you covered!
 ```js
@@ -260,7 +260,7 @@ fastify.get('/', options, async function (request, reply) {
 * You cannot return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 ### Promise resolution
-<a name="promise-resolution"></a>
+<a id="promise-resolution"></a>
 
 If your handler is an `async` function or returns a promise, you should be aware of a special behavior that is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
 
@@ -276,7 +276,7 @@ In this way, we can support both `callback-style` and `async-await`, with the mi
 **Notice**: Every async function returns a promise by itself.
 
 ### Route Prefixing
-<a name="route-prefixing"></a>
+<a id="route-prefixing"></a>
 
 Sometimes you need to maintain two or more different versions of the same API; a classic approach is to prefix all the routes with the API version number, `/v1/user` for example.
 Fastify offers you a fast and smart way to create different versions of the same API without changing all the route names by hand, *route prefixing*. Let's see how it works:
@@ -326,7 +326,7 @@ and `/something/`.
 See the `prefixTrailingSlash` route option above to change this behavior.
 
 ### Custom Log Level
-<a name="custom-log-level"></a>
+<a id="custom-log-level"></a>
 
 It could happen that you need different log levels in your routes; Fastify achieves this in a very straightforward way.
 
@@ -353,7 +353,7 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
 
 ### Custom Log Serializer
-<a name="custom-log-serializer"></a>
+<a id="custom-log-serializer"></a>
 
 In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
@@ -413,7 +413,7 @@ fastify.listen(3000)
 ```
 
 ### Config
-<a name="routes-config"></a>
+<a id="routes-config"></a>
 
 Registering a new handler, you can pass a configuration object to it and retrieve it in the handler.
 
@@ -432,7 +432,7 @@ fastify.listen(3000)
 ```
 
 ### Constraints
-<a name="constraints"></a>
+<a id="constraints"></a>
 
 Fastify supports constraining routes to match only certain requests based on some property of the request, like the `Host` header, or any other value via [`find-my-way`](https://github.com/delvedor/find-my-way) constraints. Constraints are specified in the `constraints` property of the route options. Fastify has two built-in constraints ready for use: the `version` constraint and the `host` constraint, and you can add your own custom constraint strategies to inspect other parts of a request to decide if a route should be executed for a request.
 

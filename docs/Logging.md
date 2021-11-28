@@ -82,7 +82,7 @@ const fastify = require('fastify')({
 })
 ```
 
-<a name="logging-request-id"></a>
+<a id="logging-request-id"></a>
 
 By default, Fastify adds an ID to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental ID is generated. See Fastify Factory [`requestIdHeader`](./Reference/Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](./Reference/Server.md#genreqid) for customization options.
 

@@ -69,13 +69,20 @@ fastify.route({
 ### Shorthand declaration
 <a name="shorthand-declaration"></a>
 
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:<br/>
-`fastify.get(path, [options], handler)`<br/>
-`fastify.head(path, [options], handler)`<br/>
-`fastify.post(path, [options], handler)`<br/>
-`fastify.put(path, [options], handler)`<br/>
-`fastify.delete(path, [options], handler)`<br/>
-`fastify.options(path, [options], handler)`<br/>
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
+
+`fastify.get(path, [options], handler)`
+
+`fastify.head(path, [options], handler)`
+
+`fastify.post(path, [options], handler)`
+
+`fastify.put(path, [options], handler)`
+
+`fastify.delete(path, [options], handler)`
+
+`fastify.options(path, [options], handler)`
+
 `fastify.patch(path, [options], handler)`
 
 Example:
@@ -124,7 +131,8 @@ fastify.get('/', opts)
 ### Url building
 <a name="url-building"></a>
 
-Fastify supports both static and dynamic urls.<br/>
+Fastify supports both static and dynamic urls.
+
 To register a **parametric** path, use the *colon* before the parameter name. For **wildcard** use the *star*.
 *Remember that static routes are always checked before parametric and wildcard.*
 
@@ -242,7 +250,8 @@ Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-p
 ### Custom Log Level
 <a name="custom-log-level"></a>
 
-It could happen that you need different log levels in your routes, with Fastify achieve this is very straightforward.<br/>
+It could happen that you need different log levels in your routes, with Fastify achieve this is very straightforward.
+
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/API.md#discussion-3) that you need.
 
 Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and [`setErrorHandler`](./Server.md#seterrorhandler) will be affected.
@@ -288,8 +297,10 @@ fastify.listen(3000)
 <a name="version"></a>
 
 #### Default
-If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.<br/>
-Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).<br/>
+If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.
+
+Fastify will automatically detect the `Accept-Version` header and route the request accordingly (advanced ranges and pre-releases currently are not supported).
+
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
 ```js
 fastify.route({
@@ -311,7 +322,8 @@ fastify.inject({
   // { hello: 'world' }
 })
 ```
-If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
+If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.
+
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
 
 #### Custom

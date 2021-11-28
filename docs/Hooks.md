@@ -90,7 +90,8 @@ fastify.addHook('onResponse', async (res) => {
 | payload | The serialized payload |
 | next | Function to continue with the [lifecycle](./Lifecycle.md) |
 
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).<br/>
+It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).
+
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 If you get an error during the execution of your hook, just pass it to `next()` and Fastify will automatically close the request and send the appropriate error code to the user.
@@ -180,7 +181,8 @@ You are able to hook into the application-lifecycle as well. It's important to n
 ### onClose
 <a name="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, such as a connection to a database.<br/>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, such as a connection to a database.
+
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -219,7 +221,8 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 ### beforeHandler
 <a name="before-handler"></a>
 
-Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.<br/>
+Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.
+
 **`beforeHandler` is executed always after the `preHandler` hook.**
 
 ```js

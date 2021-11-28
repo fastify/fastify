@@ -4,7 +4,8 @@ sidebar_label: Request
 hide_title: false
 ---
 
-The first parameter of the handler function is `Request`.<br/>
+The first parameter of the handler function is `Request`.
+
 Request is a core Fastify object containing the following fields:
 - `query` - the parsed querystring
 - `body` - the body

@@ -59,8 +59,10 @@ fastify.get('/bar', function (req, reply) {
 ### `maxParamLength`
 <a name="factory-max-param-length"></a>
 
-You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br/>
-This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br/>
+You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.
+
+This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+
 *If the maximum length limit is reached, the not found route will be invoked.*
 
 ### `bodyLimit`
@@ -120,7 +122,8 @@ are not present on the object, they will be added accordingly:
 ### `serverFactory`
 <a name="custom-http-server"></a>
 
-You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
+You can pass a custom http server to Fastify by using the `serverFactory` option.
+
 `serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
@@ -368,7 +371,8 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 <a name="close"></a>
 
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](./Hooks.md#on-close) hook.<br/>
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](./Hooks.md#on-close) hook.
+
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
 
 #### decorate
@@ -434,7 +438,8 @@ Fake http injection (for testing purposes) [here](./Testing.md#inject).
 #### addSchema
 <a name="add-schema"></a>
 
-`fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.<br/>
+`fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.
+
 To learn more, see [shared schema example](./Validation-and-Serialization.md#shared-schema) in the [Validation and Serialization](./Validation-and-Serialization.md) documentation.
 
 #### setSchemaCompiler
@@ -482,7 +487,8 @@ fastify.setErrorHandler(function (error, request, reply) {
 #### printRoutes
 <a name="print-routes"></a>
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.<br/>
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.
+
 *Remember to call it inside or after a `ready` call.*
 
 ```js

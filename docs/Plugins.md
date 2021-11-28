@@ -5,7 +5,8 @@ hide_title: false
 ---
 
 Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server [decorator](./Decorators.md) or whatever. The API that you will need to use one or more plugins, is `register`.<br/>
+A plugin can be a set of routes, a server [decorator](./Decorators.md) or whatever. The API that you will need to use one or more plugins, is `register`.
+
 
 By default, `register` creates a *new scope*, this means that if you do some changes to the Fastify instance (via `decorate`), this change will not be reflected to the current context ancestors, but only to its sons. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
 
@@ -47,13 +48,15 @@ fastify.register(require('fastify-foo'), {
 #### Route Prefixing option
 <a name="route-prefixing-option"></a>
 
-If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](./Routes.md#route-prefixing).<br/>
+If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](./Routes.md#route-prefixing).
+
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
 
 #### Error handling
 <a name="error-handling"></a>
 
-The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).<br/>
+The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).
+
 As general rule, it is highly recommended that you handle your errors in the next `after` or `ready` block, otherwise you will get them inside the `listen` callback.
 
 ```js
@@ -85,7 +88,8 @@ await fastify.listen(3000)
 ### Create a plugin
 <a name="create-plugin"></a>
 
-Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.<br/>
+Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.
+
 Example:
 ```js
 module.exports = function (fastify, opts, next) {

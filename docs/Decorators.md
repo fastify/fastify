@@ -12,7 +12,7 @@ asynchronously could result in the Fastify instance booting before the
 decoration completes its initialization. To avoid this issue, and register an
 asynchronous decoration, the `register` API, in combination with
 `fastify-plugin`, must be used instead. To learn more, see the
-[Plugins](Plugins.md) documentation.
+[Plugins](./Plugins.md) documentation.
 
 Decorating core objects with this API allows the underlying JavaScript engine
 to optimize the handling of server, request, and reply objects. This is
@@ -65,10 +65,10 @@ See
 for more information on this topic.
 
 ### Usage
-<a name="usage"></a>
+<a id="usage"></a>
 
 #### `decorate(name, value, [dependencies])`
-<a name="decorate"></a>
+<a id="decorate"></a>
 
 This method is used to customize the Fastify [server](./Reference/Server.md) instance.
 
@@ -98,7 +98,7 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
-The decorated [Fastify server](./Reference/Server.md) is bound to `this` in route [route](Routes.md) handlers:
+The decorated [Fastify server](./Reference/Server.md) is bound to `this` in route [route](./Routes.md) handlers:
 
 ```js
 fastify.decorate('db', new DbConnection())
@@ -125,7 +125,7 @@ The dependency check is performed before the server instance is booted. Thus,
 it cannot occur during runtime.
 
 #### `decorateReply(name, value, [dependencies])`
-<a name="decorate-reply"></a>
+<a id="decorate-reply"></a>
 
 As the name suggests, this API is used to add new methods/properties to the core
 `Reply` object:
@@ -148,7 +148,7 @@ fastify.decorateReply('foo', { bar: 'fizz'})
 In this example, the reference of the object is shared with all the requests: **any
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**.
 To achieve proper encapsulation across requests configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+in the [`'onRequest'` hook](./Hooks.md#onrequest). Example:
 
 ```js
 const fp = require('fastify-plugin')
@@ -166,7 +166,7 @@ module.exports = fp(myPlugin)
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
 #### `decorateRequest(name, value, [dependencies])`
-<a name="decorate-request"></a>
+<a id="decorate-request"></a>
 
 As above with [`decorateReply`](#decorate-reply), this API is used add new
 methods/properties to the core `Request` object:
@@ -190,7 +190,7 @@ In this example, the reference of the object is shared with all the requests: **
 mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**.
 
 To achieve proper encapsulation across requests configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+in the [`'onRequest'` hook](./Hooks.md#onrequest). Example:
 
 ```js
 const fp = require('fastify-plugin')
@@ -208,7 +208,7 @@ module.exports = fp(myPlugin)
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
 #### `hasDecorator(name)`
-<a name="has-decorator"></a>
+<a id="has-decorator"></a>
 
 Used to check for the existence of a server instance decoration:
 
@@ -217,7 +217,7 @@ fastify.hasDecorator('utility')
 ```
 
 #### hasRequestDecorator
-<a name="has-request-decorator"></a>
+<a id="has-request-decorator"></a>
 
 Used to check for the existence of a Request decoration:
 
@@ -226,7 +226,7 @@ fastify.hasRequestDecorator('utility')
 ```
 
 #### hasReplyDecorator
-<a name="has-reply-decorator"></a>
+<a id="has-reply-decorator"></a>
 
 Used to check for the existence of a Reply decoration:
 
@@ -235,7 +235,7 @@ fastify.hasReplyDecorator('utility')
 ```
 
 ### Decorators and Encapsulation
-<a name="decorators-encapsulation"></a>
+<a id="decorators-encapsulation"></a>
 
 Defining a decorator (using `decorate`, `decorateRequest`, or `decorateReply`)
 with the same name more than once in the same **encapsulated** context will
@@ -290,7 +290,7 @@ server.listen(3000)
 ```
 
 ### Getters and Setters
-<a name="getters-setters"></a>
+<a id="getters-setters"></a>
 
 Decorators accept special "getter/setter" objects. These objects have functions
 named `getter` and `setter` (though the `setter` function is optional). This

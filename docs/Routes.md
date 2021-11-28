@@ -5,34 +5,36 @@
 The routes methods will configure the endpoints of your application.
 You have two ways to declare a route with Fastify, the shorthand method and the full declaration.
 
-- [Full Declaration](#full-declaration)
-- [Route Options](#options)
-- [Shorthand Declaration](#shorthand-declaration)
-- [URL Parameters](#url-building)
-- [Use `async`/`await`](#async-await)
+- [Full declaration](#full-declaration)
+- [Routes options](#routes-options)
+- [Shorthand declaration](#shorthand-declaration)
+- [Url building](#url-building)
+- [Async Await](#async-await)
 - [Promise resolution](#promise-resolution)
 - [Route Prefixing](#route-prefixing)
-- Logs
-  - [Custom Log Level](#custom-log-level)
-  - [Custom Log Serializer](#custom-log-serializer)
-- [Route handler configuration](#routes-config)
-- [Route constraints](#constraints)
+  - [Handling of / route inside prefixed plugins](#handling-of--route-inside-prefixed-plugins)
+- [Custom Log Level](#custom-log-level)
+- [Custom Log Serializer](#custom-log-serializer)
+- [Config](#config)
+- [Constraints](#constraints)
+  - [Version Constraints](#version-constraints)
+  - [Host Constraints](#host-constraints)
 
 ### Full declaration
-<a name="full-declaration"></a>
+<a id="full-declaration"></a>
 
 ```js
 fastify.route(options)
 ```
 
 ### Routes options
-<a name="options"></a>
+<a id="options"></a>
 
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response.
 They need to be in
-  [JSON Schema](https://json-schema.org/) format, check [here](Validation-and-Serialization.md) for more info.
+  [JSON Schema](https://json-schema.org/) format, check [here](./Validation-and-Serialization.md) for more info.
 
   * `body`: validates the body of the request if it is a POST, PUT, or PATCH method.
   * `querystring` or `query`: validates the querystring. This can be a complete JSON
@@ -43,39 +45,39 @@ They need to be in
     schema allows us to have 10-20% more throughput.
 * `exposeHeadRoute`: creates a sibling `HEAD` route for any `GET` routes. Defaults to the value of [`exposeHeadRoutes`](./Reference/Server.md#exposeHeadRoutes) instance option. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
-* `onRequest(request, reply, done)`: a [function](Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
-* `preParsing(request, reply, done)`: a [function](Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
-* `preValidation(request, reply, done)`: a [function](Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
-* `preHandler(request, reply, done)`: a [function](Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
-* `preSerialization(request, reply, payload, done)`: a [function](Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
-* `onSend(request, reply, payload, done)`: a [function](Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
-* `onResponse(request, reply, done)`: a [function](Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
-* `onTimeout(request, reply, done)`: a [function](Hooks.md#ontimeout) called when a request is timed out and the HTTP socket has been hanged up.
-* `onError(request, reply, error, done)`: a [function](Hooks.md#onerror) called when an Error is thrown or send to the client by the route handler.
+* `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
+* `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
+* `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation) called after the shared `preValidation` hooks, useful if you need to perform authentication at route level for example, it could also be an array of functions.
+* `preHandler(request, reply, done)`: a [function](./Hooks.md#prehandler) called just before the request handler, it could also be an array of functions.
+* `preSerialization(request, reply, payload, done)`: a [function](./Hooks.md#preserialization) called just before the serialization, it could also be an array of functions.
+* `onSend(request, reply, payload, done)`: a [function](./Hooks.md#route-hooks) called right before a response is sent, it could also be an array of functions.
+* `onResponse(request, reply, done)`: a [function](./Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
+* `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called when a request is timed out and the HTTP socket has been hanged up.
+* `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror) called when an Error is thrown or send to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The [Fastify server](./Reference/Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
 * `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](./Reference/Server.md#setErrorHandler), for requests to the route. To access the default handler, you can access `instance.errorHandler`. Note that this will point to fastify's default `errorHandler` only if a plugin hasn't overridden it already.
-* `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](Validation-and-Serialization.md#schema-validator) documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](Validation-and-Serialization.md#schema-serializer) documentation.
-* `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from the validation compiler. See the [Validation and Serialization](Validation-and-Serialization.md#error-handling) documentation. Overrides the global schema error formatter handler, and anything set by `setSchemaErrorFormatter`, for requests to the route.
+* `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-validator) documentation.
+* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-serializer) documentation.
+* `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from the validation compiler. See the [Validation and Serialization](./Validation-and-Serialization.md#error-handling) documentation. Overrides the global schema error formatter handler, and anything set by `setSchemaErrorFormatter`, for requests to the route.
 * `bodyLimit`: prevents the default JSON body parser from parsing request bodies larger than this number of bytes. Must be an integer. You may also set this option globally when first creating the Fastify instance with `fastify(options)`. Defaults to `1048576` (1 MiB).
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
-* `version`: a [semver](https://semver.org/) compatible string that defined the version of the endpoint. [Example](Routes.md#version).
+* `version`: a [semver](https://semver.org/) compatible string that defined the version of the endpoint. [Example](./Routes.md#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
   * `slash`: Will register only `/prefix/`.
   * `no-slash`: Will register only `/prefix`.
 
-  `request` is defined in [Request](Request.md).
+  `request` is defined in [Request](./Request.md).
 
-  `reply` is defined in [Reply](Reply.md).
+  `reply` is defined in [Reply](./Reply.md).
 
 **Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
 `preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
-more detail in [Hooks](Hooks.md). Additionally, to send a response before the
+more detail in [Hooks](./Hooks.md). Additionally, to send a response before the
 request is handled by the `handler` please refer to
-[Respond to a request from a hook](Hooks.md#respond-to-a-request-from-a-hook).
+[Respond to a request from a hook](./Hooks.md#respond-to-a-request-from-a-hook).
 
 Example:
 ```js
@@ -103,15 +105,22 @@ fastify.route({
 ```
 
 ### Shorthand declaration
-<a name="shorthand-declaration"></a>
+<a id="shorthand-declaration"></a>
 
-The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:<br>
-`fastify.get(path, [options], handler)`<br>
-`fastify.head(path, [options], handler)`<br>
-`fastify.post(path, [options], handler)`<br>
-`fastify.put(path, [options], handler)`<br>
-`fastify.delete(path, [options], handler)`<br>
-`fastify.options(path, [options], handler)`<br>
+The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
+
+`fastify.get(path, [options], handler)`
+
+`fastify.head(path, [options], handler)`
+
+`fastify.post(path, [options], handler)`
+
+`fastify.put(path, [options], handler)`
+
+`fastify.delete(path, [options], handler)`
+
+`fastify.options(path, [options], handler)`
+
 `fastify.patch(path, [options], handler)`
 
 Example:
@@ -158,9 +167,10 @@ fastify.get('/', opts)
 > Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then throws duplicate `handler` error.
 
 ### Url building
-<a name="url-building"></a>
+<a id="url-building"></a>
 
-Fastify supports both static and dynamic URLs.<br>
+Fastify supports both static and dynamic URLs.
+
 To register a **parametric** path, use the *colon* before the parameter name. For **wildcard**, use the *star*.
 *Remember that static routes are always checked before parametric and wildcard.*
 
@@ -200,7 +210,7 @@ fastify.post('/name::verb') // will be interpreted as /name:verb
 ```
 
 ### Async Await
-<a name="async-await"></a>
+<a id="async-await"></a>
 
 Are you an `async/await` user? We have you covered!
 ```js
@@ -250,7 +260,7 @@ fastify.get('/', options, async function (request, reply) {
 * You cannot return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 ### Promise resolution
-<a name="promise-resolution"></a>
+<a id="promise-resolution"></a>
 
 If your handler is an `async` function or returns a promise, you should be aware of a special behavior that is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
 
@@ -266,7 +276,7 @@ In this way, we can support both `callback-style` and `async-await`, with the mi
 **Notice**: Every async function returns a promise by itself.
 
 ### Route Prefixing
-<a name="route-prefixing"></a>
+<a id="route-prefixing"></a>
 
 Sometimes you need to maintain two or more different versions of the same API; a classic approach is to prefix all the routes with the API version number, `/v1/user` for example.
 Fastify offers you a fast and smart way to create different versions of the same API without changing all the route names by hand, *route prefixing*. Let's see how it works:
@@ -316,9 +326,10 @@ and `/something/`.
 See the `prefixTrailingSlash` route option above to change this behavior.
 
 ### Custom Log Level
-<a name="custom-log-level"></a>
+<a id="custom-log-level"></a>
 
-It could happen that you need different log levels in your routes; Fastify achieves this in a very straightforward way.<br/>
+It could happen that you need different log levels in your routes; Fastify achieves this in a very straightforward way.
+
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string) that you need.
 
 Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](./Reference/Server.md#setnotfoundhandler) and [`setErrorHandler`](./Reference/Server.md#seterrorhandler) will be affected.
@@ -342,7 +353,7 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
 
 ### Custom Log Serializer
-<a name="custom-log-serializer"></a>
+<a id="custom-log-serializer"></a>
 
 In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
@@ -402,7 +413,7 @@ fastify.listen(3000)
 ```
 
 ### Config
-<a name="routes-config"></a>
+<a id="routes-config"></a>
 
 Registering a new handler, you can pass a configuration object to it and retrieve it in the handler.
 
@@ -421,14 +432,16 @@ fastify.listen(3000)
 ```
 
 ### Constraints
-<a name="constraints"></a>
+<a id="constraints"></a>
 
 Fastify supports constraining routes to match only certain requests based on some property of the request, like the `Host` header, or any other value via [`find-my-way`](https://github.com/delvedor/find-my-way) constraints. Constraints are specified in the `constraints` property of the route options. Fastify has two built-in constraints ready for use: the `version` constraint and the `host` constraint, and you can add your own custom constraint strategies to inspect other parts of a request to decide if a route should be executed for a request.
 
 #### Version Constraints
 
-You can provide a `version` key in the `constraints` option to a route. Versioned routes allow you to declare multiple handlers for the same HTTP route path, which will then be matched according to each request's `Accept-Version` header. The `Accept-Version` header value should follow the [semver](http://semver.org/) specification, and routes should be declared with exact semver versions for matching.<br/>
-Fastify will require a request `Accept-Version` header to be set if the route has a version set, and will prefer a versioned route to a non-versioned route for the same path. Advanced version ranges and pre-releases currently are not supported.<br/>
+You can provide a `version` key in the `constraints` option to a route. Versioned routes allow you to declare multiple handlers for the same HTTP route path, which will then be matched according to each request's `Accept-Version` header. The `Accept-Version` header value should follow the [semver](http://semver.org/) specification, and routes should be declared with exact semver versions for matching.
+
+Fastify will require a request `Accept-Version` header to be set if the route has a version set, and will prefer a versioned route to a non-versioned route for the same path. Advanced version ranges and pre-releases currently are not supported.
+
 *Be aware that using this feature will cause a degradation of the overall performances of the router.*
 
 ```js
@@ -470,7 +483,8 @@ fastify.inject({
 > })
 > ```
 
-If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.<br/>
+If you declare multiple versions with the same major or minor, Fastify will always choose the highest compatible with the `Accept-Version` header value.
+
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
 
 It is possible to define a custom version matching logic. This can be done through the [`constraints`](./Reference/Server.md#constraints) configuration when creating a Fastify server instance.

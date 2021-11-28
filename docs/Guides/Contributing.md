@@ -7,17 +7,18 @@ help us.
 
 > ## Note
 > This is an informal guide. Please review the formal
-> [CONTRIBUTING document](/CONTRIBUTING.md) for full details and our
+> [CONTRIBUTING document](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md) for full details and our
 > [Developer Certificate of Origin](https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin).
 
 ## Table Of Contents
 <a id="contributing-toc"></a>
 
-0. [Types Of Contributions We're Looking For](#contribution-types)
-0. [Ground Rules & Expectations](#contributing-rules)
-0. [How To Contribute](#contributing-how-to)
-0. [Setting Up Your Environment](#contributing-environment)
-  * [Using Visual Studio Code](#contributing-vscode)
+- [Table Of Contents](#table-of-contents)
+- [Types Of Contributions We're Looking For](#types-of-contributions-were-looking-for)
+- [Ground Rules & Expectations](#ground-rules--expectations)
+- [How To Contribute](#how-to-contribute)
+- [Setting Up Your Environment](#setting-up-your-environment)
+  - [Using Visual Studio Code](#using-visual-studio-code)
 
 ## Types Of Contributions We're Looking For
 <a id="contribution-types"></a>
@@ -40,7 +41,7 @@ you should expect from others):
   project is maintained by a diverse set of people from all across the globe.
   Each person has their own views and opinions about the project. Try to listen
   to each other and reach an agreement or compromise.
-* We have a [Code of Conduct](/CODE_OF_CONDUCT.md). You must adhere to it to
+* We have a [Code of Conduct](https://github.com/fastify/fastify/blob/main/CODE_OF_CONDUCT.md). You must adhere to it to
   participate in this project.
 * If you open a pull request, please ensure that your contribution passes all
   tests. If there are test failures, you will need to address them before we
@@ -76,6 +77,7 @@ conforms to the styles this project uses. Notably, this project uses
 
 ### Using Visual Studio Code
 <a id="contributing-vscode"></a>
+
 What follows is how to use [Visual Studio Code (VSCode) portable](https://code.visualstudio.com/docs/editor/portable)
 to create a Fastify specific environment. This guide is written as if you are
 setting up the environment on macOS, but the principles are the same across

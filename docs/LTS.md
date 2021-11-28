@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
 ## Long Term Support
-<a name="lts"></a>
+<a id="lts"></a>
 
 Fastify's Long Term Support (LTS) is provided according to the schedule laid
 out in this document:
@@ -41,7 +41,7 @@ A "month" is defined as 30 consecutive days.
 [semver]: https://semver.org/
 
 ### Schedule
-<a name="lts-schedule"></a>
+<a id="lts-schedule"></a>
 
 | Version | Release Date | End Of LTS Date | Node.js              |
 | :------ | :----------- | :-------------- | :------------------- |
@@ -50,7 +50,7 @@ A "month" is defined as 30 consecutive days.
 | 3.0.0   | 2020-07-07   | TBD             | 10, 12, 14, 16       |
 
 ### CI tested operating systems
-<a name="supported-os"></a>
+<a id="supported-os"></a>
 
 Fastify uses GitHub Actions for CI testing, please refer to
 [GitHub's documentation regarding workflow runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources)

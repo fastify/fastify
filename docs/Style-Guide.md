@@ -8,7 +8,7 @@ Welcome to *Fastify Style Guide*. This guide is here to provide you with a conve
 
 This guide is for anyone who loves to build with Fastify or wants to contribute to our documentation. You do not need to be an expert in writing technical documentation. This guide is here to help you.
 
-Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTING.md](/CONTRIBUTING.md) file on GitHub to join our Open Source folks.
+Visit the [contribute](https://www.fastify.io/contribute) page on our website or read the [CONTRIBUTING.md](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md) file on GitHub to join our Open Source folks.
 
 ## Before you write
 
@@ -64,7 +64,7 @@ There are a few things you need to use and avoid when writing your documentation
 
 ### When to use the second person "you" as the pronoun
 
-When writing articles or guides, your content should communicate directly to readers in the second person ("you") addressed form. It is easier to give them direct instruction on what to do on a particular topic. To see an example, visit the [Plugins-guide.md](/docs/Plugins-Guide.md) page on Github. 
+When writing articles or guides, your content should communicate directly to readers in the second person ("you") addressed form. It is easier to give them direct instruction on what to do on a particular topic. To see an example, visit the [Plugins-guide.md](./Plugins-Guide.md) page on Github. 
 
 **Example**
 
@@ -84,7 +84,7 @@ Less like this: You can use the following recommendation as an example.
 
 More like this: As an example, the following recommendations should be referenced.
 
-To view a live example, refer to the [Decorators.md](/docs/Decorators.md) reference document. 
+To view a live example, refer to the [Decorators.md](./Decorators.md) reference document. 
 
 
 ### Avoid using contractions
@@ -150,9 +150,12 @@ Active:  npm installs packages and node dependencies.
 
 When creating a new guide, API, or reference in the `/docs/` directory, use short titles that best describe the topic of your documentation. Name your files in kebab-cases and avoid Raw or camelCase. To learn more about kebab-case you can visit this medium article on [Case Styles](https://medium.com/better-programming/string-case-styles-camel-pascal-snake-and-kebab-case-981407998841).
 
-**Examples**: <br>
->`hook-and-plugins.md`, <br> 
- `adding-test-plugins.md`, <br>
+**Examples**: 
+
+>`hook-and-plugins.md`, 
+ 
+ `adding-test-plugins.md`, 
+
  `removing-requests.md`.
 
 ### Hyperlinks

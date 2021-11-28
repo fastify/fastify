@@ -292,7 +292,8 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
   statusCode: Number   // the http status code
 }
 ```
-You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.<br/>
+You can add some custom property to the Error object, such as `headers`, that will be used to enhance the http response.
+
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -303,7 +304,8 @@ fastify.get('/', function (request, reply) {
 })
 ```
 
-If you want to completely customize the error handling, checkout [`setErrorHandler`](./Server.md#seterrorhandler) API.<br/>
+If you want to completely customize the error handling, checkout [`setErrorHandler`](./Server.md#seterrorhandler) API.
+
 *Note: you are responsibile for logging when customizing the error handler*
 
 API:
@@ -346,7 +348,8 @@ The type of the sent payload (after serialization and going through any [`onSend
 #### Async-Await and Promises
 <a name="async-await-promise"></a>
 
-Fastify natively handles promises and supports async-await.<br/>
+Fastify natively handles promises and supports async-await.
+
 *Note that in the following examples we are not using reply.send.*
 ```js
 const delay = promisify(setTimeout)

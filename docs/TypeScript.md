@@ -8,7 +8,8 @@ Fastify is shipped with a typings file, but you may need to install `@types/node
 
 ## Types support
 We do care about the TypeScript community, and one of our core team members is currently reworking all types.
-We do our best to have the typings updated with the latest version of the API, but *it can happen* that the typings are not in sync.<br/>
+We do our best to have the typings updated with the latest version of the API, but *it can happen* that the typings are not in sync.
+
 Luckily this is Open Source and you can contribute to fix them, we will be very happy to accept the fix and release it as soon as possible as a patch release. Checkout the [contributing](#contributing) rules!
 
 Plugins may or may not include typings. See [Plugin Types](#plugin-types) for more information.

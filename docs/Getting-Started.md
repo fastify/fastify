@@ -4,8 +4,10 @@ sidebar_label: Getting Started
 hide_title: false
 ---
 
-Hello! Thank you for checking out Fastify!<br/>
-This document aims to be a gentle introduction to the framework and its features. It is an elementary preface with examples and links to other parts of the documentation.<br/>
+Hello! Thank you for checking out Fastify!
+
+This document aims to be a gentle introduction to the framework and its features. It is an elementary preface with examples and links to other parts of the documentation.
+
 Let's start!
 
 ### Install
@@ -45,7 +47,8 @@ fastify.listen(3000, function (err, address) {
 })
 ```
 
-Do you prefer to use `async/await`? Fastify supports it out-of-the-box.<br/>
+Do you prefer to use `async/await`? Fastify supports it out-of-the-box.
+
 *(We also suggest using [make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid file descriptor and memory leaks.)*
 ```js
 const fastify = require('fastify')()
@@ -65,8 +68,10 @@ const start = async () => {
 start()
 ```
 
-Awesome, that was easy.<br/>
-Unfortunately, writing a complex application requires significantly more code than this example. A classic problem when you are building a new application is how to handle multiple files, asynchronous bootstrapping and the architecture of your code.<br/>
+Awesome, that was easy.
+
+Unfortunately, writing a complex application requires significantly more code than this example. A classic problem when you are building a new application is how to handle multiple files, asynchronous bootstrapping and the architecture of your code.
+
 Fastify offers an easy platform that helps to solve all of the problems outlined above, and more!
 
 > ## Note
@@ -89,8 +94,10 @@ Fastify offers an easy platform that helps to solve all of the problems outlined
 ### Your first plugin
 <a name="first-plugin"></a>
 
-As with JavaScript, where everything is an object, with Fastify everything is a plugin.<br/>
-Before digging into it, let's see how it works!<br/>
+As with JavaScript, where everything is an object, with Fastify everything is a plugin.
+
+Before digging into it, let's see how it works!
+
 Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](./Routes.md) docs).
 ```js
 const fastify = require('fastify')({
@@ -122,11 +129,14 @@ module.exports = routes
 In this example, we used the `register` API, which is the core of the Fastify framework. It is the only way to add routes, plugins, et cetera.
 
 At the beginning of this guide, we noted that Fastify provides a foundation that assists with asynchronous bootstrapping of your application. Why is this important?
-Consider the scenario where a database connection is needed to handle data storage. Obviously, the database connection needs to be available before the server is accepting connections. How do we address this problem?<br/>
-A typical solution is to use a complex callback, or promises - a system that will mix the framework API with other libraries and the application code.<br/>
+Consider the scenario where a database connection is needed to handle data storage. Obviously, the database connection needs to be available before the server is accepting connections. How do we address this problem?
+
+A typical solution is to use a complex callback, or promises - a system that will mix the framework API with other libraries and the application code.
+
 Fastify handles this internally, with minimum effort!
 
-Let's rewrite the above example with a database connection.<br/>
+Let's rewrite the above example with a database connection.
+
 *(we will use a simple example, for a robust solution consider using [`fastify-mongo`](https://github.com/fastify/fastify-mongodb) or another in the Fastify [ecosystem](./Ecosystem.md))*
 
 First, install `fastify-plugin`:
@@ -195,8 +205,10 @@ async function routes (fastify, options) {
 module.exports = routes
 ```
 
-Wow, that was fast!<br/>
-Let's recap what we have done here since we've introduced some new concepts.<br/>
+Wow, that was fast!
+
+Let's recap what we have done here since we've introduced some new concepts.
+
 As you can see, we used `register` both for the database connector and the registration of the routes.
 This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](./Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
@@ -216,7 +228,8 @@ To guarantee a consistent and predictable behaviour of your application, we high
 └── hooks and middlewares
 └── your services
 ```
-In this way, you will always have access to all of the properties declared in the current scope.<br/>
+In this way, you will always have access to all of the properties declared in the current scope.
+
 As discussed previously, Fastify offers a solid encapsulation model, to help you build your application as single and independent services. If you want to register a plugin only for a subset of routes, you just have to replicate the above structure.
 ```
 └── plugins (from the Fastify ecosystem)
@@ -243,7 +256,8 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 ### Validate your data
 <a name="validate-data"></a>
 
-Data validation is extremely important and a core concept of the framework.<br/>
+Data validation is extremely important and a core concept of the framework.
+
 To validate incoming requests, Fastify uses [JSON Schema](http://json-schema.org/).
 Let's look at an example demonstrating validation for routes:
 ```js
@@ -263,13 +277,15 @@ fastify.post('/', opts, async (request, reply) => {
   return { hello: 'world' }
 })
 ```
-This example shows how to pass an options object to the route, which accepts a `schema` key, that contains all of the schemas for route, `body`, `querystring`, `params` and `headers`.<br/>
+This example shows how to pass an options object to the route, which accepts a `schema` key, that contains all of the schemas for route, `body`, `querystring`, `params` and `headers`.
+
 Read [Validation and Serialization](./Validation-and-Serialization.md) to learn more.
 
 ### Serialize your data
 <a name="serialize-data"></a>
 
-Fastify has first class support for JSON. It is extremely optimized to parse JSON bodies and to serialize JSON output.<br/>
+Fastify has first class support for JSON. It is extremely optimized to parse JSON bodies and to serialize JSON output.
+
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the schema option as shown in the following example:
 ```js
 const opts = {
@@ -295,13 +311,15 @@ Read [Validation and Serialization](./Validation-and-Serialization.md) to learn 
 ### Extend your server
 <a name="extend-server"></a>
 
-Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.<br/>
+Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.
+
 In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](./Ecosystem.md)!
 
 ### Test your server
 <a name="test-server"></a>
 
-Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.<br/>
+Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.
+
 Read the [testing](./Testing.md) documentation to learn more!
 
 ### Run your server from CLI

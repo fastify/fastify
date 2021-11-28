@@ -59,8 +59,10 @@ fastify.get('/bar', function (req, reply) {
 ### `maxParamLength`
 <a name="factory-max-param-length"></a>
 
-You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.<br/>
-This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).<br/>
+You can set a custom length for parameters in parametric (standard, regex and multi) routes by using `maxParamLength` option, the default value is 100 characters.
+
+This can be useful especially if you have some regex based route, protecting you against [DoS attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
+
 *If the maximum length limit is reached, the not found route will be invoked.*
 
 ### `bodyLimit`
@@ -178,7 +180,8 @@ fastify.addHook('onResponse', (req, reply, done) => {
 ### `serverFactory`
 <a name="custom-http-server"></a>
 
-You can pass a custom http server to Fastify by using the `serverFactory` option.<br/>
+You can pass a custom http server to Fastify by using the `serverFactory` option.
+
 `serverFactory` is a function that takes an `handler` parameter, which takes the `request` and `response` objects as parameters, and an options object, which is the same you have passed to Fastify.
 
 ```js
@@ -199,7 +202,8 @@ fastify.get('/', (req, reply) => {
 fastify.listen(3000)
 ```
 
-Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.<br/>
+Internally Fastify uses the API of Node core http server, so if you are using a custom server you must be sure to have the same API exposed. If not, you can enhance the server instance inside the `serverFactory` function before the `return` statement.
+
 *Note that we have also added `modifyCoreObjects: false` because in some serverless environments such as Google Cloud Functions, some Node.js core properties are not writable.*
 
 ### `caseSensitive`
@@ -296,7 +300,8 @@ will complete with an `Error` with code `'ERR_AVVIO_PLUGIN_TIMEOUT'`.
 ### `querystringParser`
 <a name="factory-querystring-parser"></a>
 
-The default query string parser that Fastify uses is the Node.js's core `querystring` module.<br/>
+The default query string parser that Fastify uses is the Node.js's core `querystring` module.
+
 You can change this default setting by passing the option `querystringParser` and use a custom one, such as [`qs`](https://www.npmjs.com/package/qs).
 
 ```js
@@ -612,7 +617,8 @@ Method to add routes to the server, it also has shorthand functions, check [here
 #### close
 <a name="close"></a>
 
-`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](./Hooks.md#on-close) hook.<br/>
+`fastify.close(callback)`: call this function to close the server instance and run the [`'onClose'`](./Hooks.md#on-close) hook.
+
 Calling `close` will also cause the server to respond to every new incoming request with a `503` error and destroy that request.
 See [`return503OnClosing` flags](./Server.md#factory-return-503-on-closing) for changing this behaviour.
 
@@ -702,7 +708,8 @@ Fake http injection (for testing purposes) [here](./Testing.md#inject).
 #### addSchema
 <a name="add-schema"></a>
 
-`fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.<br/>
+`fastify.addSchema(schemaObj)`, adds a shared schema to the Fastify instance. This allows you to reuse it everywhere in your application just by writing the schema id that you need.
+
 To learn more, see [shared schema example](./Validation-and-Serialization.md#shared-schema) in the [Validation and Serialization](./Validation-and-Serialization.md) documentation.
 
 #### setReplySerializer
@@ -769,7 +776,8 @@ fastify.register(function (instance, options, done) {
 #### setErrorHandler
 <a name="set-error-handler"></a>
 
-`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance, and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.<br/>
+`fastify.setErrorHandler(handler(error, request, reply))`: Set a function that will be called whenever an error happens. The handler is bound to the Fastify instance, and is fully encapsulated, so different plugins can set different error handlers. *async-await* is supported as well.
+
 *Note: If the error `statusCode` is less than 400, Fastify will automatically set it at 500 before calling the error handler.*
 
 ```js
@@ -797,7 +805,8 @@ if (statusCode >= 500) {
 #### printRoutes
 <a name="print-routes"></a>
 
-`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.<br/>
+`fastify.printRoutes()`: Prints the representation of the internal radix tree used by the router, useful for debugging.
+
 *Remember to call it inside or after a `ready` call.*
 
 ```js

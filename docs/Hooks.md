@@ -31,10 +31,12 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
 
 ## Request/Reply Hooks
 
-[Request](./Request.md) and [Reply](./Reply.md) are the core Fastify objects.<br/>
+[Request](./Request.md) and [Reply](./Reply.md) are the core Fastify objects.
+
 `done` is the function to continue with the [lifecycle](./Lifecycle.md).
 
-It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).<br/>
+It is pretty easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).
+
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 There are eight different hooks that you can use in Request/Reply *(in order of execution)*:
@@ -140,9 +142,12 @@ fastify.addHook('onError', async (request, reply, error) => {
   // You should not use this hook to update the error
 })
 ```
-This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
-It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
-This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends an error back to the user *(Note that the default `customErrorHandler` always sends the error back to the user)*.<br/>
+This hook is useful if you need to do some custom error logging or add some specific header in case of error.
+
+It is not intended for changing the error, and calling `reply.send` will throw an exception.
+
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends an error back to the user *(Note that the default `customErrorHandler` always sends the error back to the user)*.
+
 **Notice:** unlike the other hooks, pass an error to the `done` function is not supported.
 
 ### onSend
@@ -317,7 +322,8 @@ fastify.addHook('onReady', async function () {
 ### onClose
 <a name="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example to close an open connection to a database.<br/>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example to close an open connection to a database.
+
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -359,8 +365,10 @@ fastify.addHook('onRoute', (routeOptions) => {
 ### onRegister
 <a name="on-register"></a>
 
-Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
-This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.<br/>
+Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.
+
+This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context.
+
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
@@ -408,7 +416,8 @@ Note: using an arrow function will break the binding of this to the Fastify inst
 <a name="route-hooks"></a>
 
 You can declare one or more custom [onRequest](#onRequest), [onReponse](#onResponse), [preParsing](#preParsing), [preValidation](#preValidation), [preHandler](#preHandler) and [preSerialization](#preSerialization) hook(s) that will be **unique** for the route.
-If you do so, those hooks are always executed as the last hook in their category. <br/>
+If you do so, those hooks are always executed as the last hook in their category. 
+
 This can be useful if you need to implement authentication, where the [preParsing](#preParsing) or [preValidation](#preValidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
 

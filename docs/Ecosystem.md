@@ -49,6 +49,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
+- [`middie`](https://github.com/fastify/middie) Middleware engine for Fastify.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
 

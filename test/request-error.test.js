@@ -157,10 +157,7 @@ test('default clientError handler destroys sockets in writable state', t => {
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100,
-    logger: {
-      level: 'trace'
-    }
+    keepAliveTimeout: 100
   })
 
   fastify.server.emit('clientError', new Error(), {
@@ -181,10 +178,7 @@ test('default clientError handler destroys http sockets in non-writable state', 
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100,
-    logger: {
-      level: 'trace'
-    }
+    keepAliveTimeout: 100
   })
 
   fastify.server.emit('clientError', new Error(), {

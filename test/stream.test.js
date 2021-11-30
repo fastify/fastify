@@ -599,14 +599,13 @@ test('should support send module 200 and 404', { only: true }, t => {
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
-    
+
     const url = getUrl(fastify)
 
     sget(url, function (err, response, data) {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/octet-stream')
       t.equal(response.statusCode, 200)
-      console.log(data.toString())
 
       fs.readFile(__filename, (err, expected) => {
         t.error(err)

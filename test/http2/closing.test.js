@@ -11,6 +11,15 @@ const { once } = require('events')
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 t.test('http/2 request while fastify closing', t => {
   let fastify
   try {
@@ -30,7 +39,7 @@ t.test('http/2 request while fastify closing', t => {
 
     // Skipped because there is likely a bug on Node 8.
     t.test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
-      const url = `http://127.0.0.1:${fastify.server.address().port}`
+      const url = getUrl(fastify)
       const session = http2.connect(url, function () {
         this.request({
           ':method': 'GET',
@@ -78,7 +87,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 
     // Skipped because there is likely a bug on Node 8.
     t.test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
-      const url = `http://127.0.0.1:${fastify.server.address().port}`
+      const url = getUrl(fastify)
       const session = http2.connect(url, function () {
         this.request({
           ':method': 'GET',
@@ -115,7 +124,7 @@ t.test('http/2 closes successfully with async await', { skip: semver.lt(process.
 
   await fastify.listen(0)
 
-  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const url = getUrl(fastify)
   const session = await connect(url)
   // An error might or might not happen, as it's OS dependent.
   session.on('error', () => {})
@@ -135,7 +144,7 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
 
   await fastify.listen(0)
 
-  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const url = getUrl(fastify)
   const session = await connect(url)
   // An error might or might not happen, as it's OS dependent.
   session.on('error', () => {})
@@ -159,7 +168,7 @@ t.test('http/2 server side session emits a timeout event', { skip: semver.lt(pro
 
   await fastify.listen(0)
 
-  const url = `http://127.0.0.1:${fastify.server.address().port}`
+  const url = getUrl(fastify)
   const session = await connect(url)
   const req = session.request({
     ':method': 'GET',

@@ -431,7 +431,7 @@ fastify.addHook('onRegister', (instance, opts) => {
 ## Scope
 <a id="scope"></a>
 
-Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](../Guides/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (request, reply, done) {

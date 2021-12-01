@@ -6,7 +6,7 @@ A plugin can be a set of routes, a server [decorator](./Decorators.md), or whate
 
 By default, `register` creates a *new scope*, this means that if you make some changes to the Fastify instance (via `decorate`), this change will not be reflected by the current context ancestors, but only to its descendants. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
 
-You already see in the [getting started](./Guides/Getting-Started.md#register) section how using this API is pretty straightforward.
+You already see in the [getting started](../Guides/Getting-Started.md#register) section how using this API is pretty straightforward.
 ```
 fastify.register(plugin, [options])
 ```
@@ -18,7 +18,7 @@ The optional `options` parameter for `fastify.register` supports a predefined se
 
 + [`logLevel`](./Routes.md#custom-log-level)
 + [`logSerializers`](./Routes.md#custom-log-serializer)
-+ [`prefix`](./Plugins.md#route-prefixing-options)
++ [`prefix`](#route-prefixing-options)
 
 **Note: Those options will be ignored when used with fastify-plugin**
 

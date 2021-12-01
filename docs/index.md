@@ -12,13 +12,12 @@ a means to introduce newcomers to core, and advanced, Fastify concepts.
 
 ## Where To Start
 
-Complete newcomers to Fastify should first read our [Getting Started][gs]
-guide.
+Complete newcomers to Fastify should first read our [Getting Started](./Guides/Getting-Started.md) guide.
 
 Developers experienced with Fastify should consult the
-[reference documentation][Reference] directly to find the topic they are
+[reference documentation](./Reference/index.md) directly to find the topic they are
 seeking more information about.
 
 ## Additional Documentation
 
-- Fastify's [Long Term Support (LTS)](./LTS.md) policy
+- Fastify's [Long Term Support (LTS)](./Reference/LTS.md) policy

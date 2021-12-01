@@ -111,7 +111,7 @@ As with JavaScript, where everything is an object, with Fastify everything is a 
 
 Before digging into it, let's see how it works!
 
-Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](../Routes.md) docs).
+Let's declare our basic server, but instead of declaring the route inside the entry point, we'll declare it in an external file (check out the [route declaration](../Reference/Routes.md) docs).
 ```js
 // ESM
 import Fastify from 'fastify'
@@ -306,13 +306,13 @@ Let's recap what we have done here since we've introduced some new concepts.
 
 As you can see, we used `register` for both the database connector and the registration of the routes.
 
-This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](../Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
+This is one of the best features of Fastify, it will load your plugins in the same order you declare them, and it will load the next plugin only once the current one has been loaded. In this way, we can register the database connector in the first plugin and use it in the second *(read [here](../Reference/Plugins.md#handle-the-scope) to understand how to handle the scope of a plugin)*.
 
 Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or `fastify.ready()`
 
 The MongoDB plugin uses the `decorate` API to add custom objects to the Fastify instance, making them available for use everywhere. Use of this API is encouraged to facilitate easy code reuse and to decrease code or logic duplication.
 
-To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](../Plugins-Guide.md).
+To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](./Plugins-Guide.md).
 
 ### Loading order of your plugins
 <a id="plugin-loading-order"></a>
@@ -379,7 +379,7 @@ fastify.post('/', opts, async (request, reply) => {
 ```
 This example shows how to pass an options object to the route, which accepts a `schema` key that contains all of the schemas for route, `body`, `querystring`, `params`, and `headers`.
 
-Read [Validation and Serialization](../Validation-and-Serialization.md) to learn more.
+Read [Validation and Serialization](../Reference/Validation-and-Serialization.md) to learn more.
 
 ### Serialize your data
 <a id="serialize-data"></a>
@@ -406,12 +406,12 @@ fastify.get('/', opts, async (request, reply) => {
 })
 ```
 By specifying a schema as shown, you can speed up serialization by a factor of 2-3. This also helps to protect against leakage of potentially sensitive data, since Fastify will serialize only the data present in the response schema.
-Read [Validation and Serialization](../Validation-and-Serialization.md) to learn more.
+Read [Validation and Serialization](../Reference/Validation-and-Serialization.md) to learn more.
 
 ### Parsing request payloads
 <a id="request-payload"></a>
 
-Fastify parses `'application/json'` and `'text/plain'` request payloads natively, with the result accessible from the [Fastify request](../Request.md) object at `request.body`.
+Fastify parses `'application/json'` and `'text/plain'` request payloads natively, with the result accessible from the [Fastify request](../Reference/Request.md) object at `request.body`.
 
 The following example returns the parsed body of a request back to the client:
 
@@ -422,21 +422,21 @@ fastify.post('/', opts, async (request, reply) => {
 })
 ```
 
-Read [Content-Type Parser](../ContentTypeParser.md) to learn more about Fastify's default parsing functionality and how to support other content types.
+Read [Content-Type Parser](../Reference/ContentTypeParser.md) to learn more about Fastify's default parsing functionality and how to support other content types.
 
 ### Extend your server
 <a id="extend-server"></a>
 
 Fastify is built to be extremely extensible and minimal, we believe that a bare-bones framework is all that is necessary to make great applications possible.
 
-In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](../Ecosystem.md)!
+In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](./Ecosystem.md)!
 
 ### Test your server
 <a id="test-server"></a>
 
 Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.
 
-Read the [testing](../Testing.md) documentation to learn more!
+Read the [testing](./Testing.md) documentation to learn more!
 
 ### Run your server from CLI
 <a id="cli"></a>

@@ -43,7 +43,7 @@ They need to be in
   * `params`: validates the params.
   * `response`: filter and generate a schema for the response, setting a
     schema allows us to have 10-20% more throughput.
-* `exposeHeadRoute`: creates a sibling `HEAD` route for any `GET` routes. Defaults to the value of [`exposeHeadRoutes`](./Reference/Server.md#exposeHeadRoutes) instance option. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
+* `exposeHeadRoute`: creates a sibling `HEAD` route for any `GET` routes. Defaults to the value of [`exposeHeadRoutes`](./Server.md#exposeHeadRoutes) instance option. If you want a custom `HEAD` handler without disabling this option, make sure to define it before the `GET` route.
 * `attachValidation`: attach `validationError` to request, if there is a schema validation error, instead of sending the error to the error handler.
 * `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) as soon that a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called before parsing the request, it could also be an array of functions.
@@ -54,8 +54,8 @@ They need to be in
 * `onResponse(request, reply, done)`: a [function](./Hooks.md#onresponse) called when a response has been sent, so you will not be able to send more data to the client. It could also be an array of functions.
 * `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called when a request is timed out and the HTTP socket has been hanged up.
 * `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror) called when an Error is thrown or send to the client by the route handler.
-* `handler(request, reply)`: the function that will handle this request. The [Fastify server](./Reference/Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
-* `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](./Reference/Server.md#setErrorHandler), for requests to the route. To access the default handler, you can access `instance.errorHandler`. Note that this will point to fastify's default `errorHandler` only if a plugin hasn't overridden it already.
+* `handler(request, reply)`: the function that will handle this request. The [Fastify server](./Server.md) will be bound to `this` when the handler is called. Note: using an arrow function will break the binding of `this`.
+* `errorHandler(error, request, reply)`: a custom error handler for the scope of the request. Overrides the default error global handler, and anything set by [`setErrorHandler`](./Server.md#setErrorHandler), for requests to the route. To access the default handler, you can access `instance.errorHandler`. Note that this will point to fastify's default `errorHandler` only if a plugin hasn't overridden it already.
 * `validatorCompiler({ schema, method, url, httpPart })`: function that builds schemas for request validations. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-validator) documentation.
 * `serializerCompiler({ { schema, method, url, httpStatus } })`: function that builds schemas for response serialization. See the [Validation and Serialization](./Validation-and-Serialization.md#schema-serializer) documentation.
 * `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from the validation compiler. See the [Validation and Serialization](./Validation-and-Serialization.md#error-handling) documentation. Overrides the global schema error formatter handler, and anything set by `setSchemaErrorFormatter`, for requests to the route.
@@ -63,7 +63,7 @@ They need to be in
 * `logLevel`: set log level for this route. See below.
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
-* `version`: a [semver](https://semver.org/) compatible string that defined the version of the endpoint. [Example](./Routes.md#version).
+* `version`: a [semver](https://semver.org/) compatible string that defined the version of the endpoint. [Example](#version).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
   * `slash`: Will register only `/prefix/`.
@@ -332,7 +332,7 @@ It could happen that you need different log levels in your routes; Fastify achie
 
 You just need to pass the option `logLevel` to the plugin option or the route option with the [value](https://github.com/pinojs/pino/blob/master/docs/api.md#level-string) that you need.
 
-Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](./Reference/Server.md#setnotfoundhandler) and [`setErrorHandler`](./Reference/Server.md#seterrorhandler) will be affected.
+Be aware that if you set the `logLevel` at plugin level, also the [`setNotFoundHandler`](./Server.md#setnotfoundhandler) and [`setErrorHandler`](./Server.md#seterrorhandler) will be affected.
 
 ```js
 // server.js
@@ -487,7 +487,7 @@ If you declare multiple versions with the same major or minor, Fastify will alwa
 
 If the request will not have the `Accept-Version` header, a 404 error will be returned.
 
-It is possible to define a custom version matching logic. This can be done through the [`constraints`](./Reference/Server.md#constraints) configuration when creating a Fastify server instance.
+It is possible to define a custom version matching logic. This can be done through the [`constraints`](./Server.md#constraints) configuration when creating a Fastify server instance.
 
 #### Host Constraints
 

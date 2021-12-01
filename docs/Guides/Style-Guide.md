@@ -64,7 +64,7 @@ There are a few things you need to use and avoid when writing your documentation
 
 ### When to use the second person "you" as the pronoun
 
-When writing articles or guides, your content should communicate directly to readers in the second person ("you") addressed form. It is easier to give them direct instruction on what to do on a particular topic. To see an example, visit the [Plugins-guide.md](./Plugins-Guide.md) page on Github. 
+When writing articles or guides, your content should communicate directly to readers in the second person ("you") addressed form. It is easier to give them direct instruction on what to do on a particular topic. To see an example, visit the [Plugins Guide](./Plugins-Guide.md). 
 
 **Example**
 
@@ -84,7 +84,7 @@ Less like this: You can use the following recommendation as an example.
 
 More like this: As an example, the following recommendations should be referenced.
 
-To view a live example, refer to the [Decorators.md](./Decorators.md) reference document. 
+To view a live example, refer to the [Decorators](../Reference/Decorators.md) reference document.
 
 
 ### Avoid using contractions

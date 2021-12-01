@@ -1,7 +1,5 @@
 ---
 title: Lifecycle
-sidebar_label: Lifecycle
-hide_title: false
 ---
 
 Following the schema of the internal lifecycle of Fastify.

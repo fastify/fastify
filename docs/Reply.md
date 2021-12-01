@@ -1,7 +1,5 @@
 ---
 title: Reply
-sidebar_label: Reply
-hide_title: false
 ---
 
 - [Introduction](#introduction)
@@ -29,7 +27,7 @@ hide_title: false
 - [.then(fullfilled, rejected)](#thenfullfilled-rejected)
 
 ### Introduction
-<a name="introduction"></a>
+<a id="introduction"></a>
 
 The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions
@@ -73,12 +71,12 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ```
 
 ### .code(statusCode)
-<a name="code"></a>
+<a id="code"></a>
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 ### .statusCode
-<a name="statusCode"></a>
+<a id="statusCode"></a>
 
 This property reads and sets the HTTP status code. It is an alias for `reply.code()` when used as a setter.
 ```js
@@ -88,7 +86,7 @@ if (reply.statusCode >= 299) {
 ```
 
 ### .header(key, value)
-<a name="header"></a>
+<a id="header"></a>
 
 Sets a response header. If the value is omitted or undefined it is coerced
 to `''`.
@@ -96,7 +94,7 @@ to `''`.
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest/docs/api/http.html#http_response_setheader_name_value).
 
 ### .headers(object)
-<a name="headers"></a>
+<a id="headers"></a>
 
 Sets all the keys of the object as response headers. [`.header`](#headerkey-value) will be called under the hood.
 ```js
@@ -107,7 +105,7 @@ reply.headers({
 ```
 
 ### .getHeader(key)
-<a name="getHeader"></a>
+<a id="getHeader"></a>
 
 Retrieves the value of a previously set header.
 ```js
@@ -116,7 +114,7 @@ reply.getHeader('x-foo') // 'foo'
 ```
 
 ### .removeHeader(key)
-<a name="getHeader"></a>
+<a id="getHeader"></a>
 
 Remove the value of a previously set header.
 ```js
@@ -126,12 +124,12 @@ reply.getHeader('x-foo') // undefined
 ```
 
 ### .hasHeader(key)
-<a name="hasHeader"></a>
+<a id="hasHeader"></a>
 
 Returns a boolean indicating if the specified header has been set.
 
 ### .redirect([code ,] dest)
-<a name="redirect"></a>
+<a id="redirect"></a>
 
 Redirects a request to the specified url, the status code is optional, default to `302` (if status code is not already set by calling `code`).
 
@@ -156,7 +154,7 @@ reply.code(303).redirect(302, '/home')
 ```
 
 ### .callNotFound()
-<a name="call-not-found"></a>
+<a id="call-not-found"></a>
 
 Invokes the custom not found handler. Note that it will only call `preHandler` hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 
@@ -165,7 +163,7 @@ reply.callNotFound()
 ```
 
 ### .getResponseTime()
-<a name="getResponseTime"></a>
+<a id="getResponseTime"></a>
 
 Invokes the custom response time getter to calculate the amount of time passed since the request was started.
 
@@ -174,7 +172,7 @@ const milliseconds = reply.getResponseTime()
 ```
 
 ### .type(contentType)
-<a name="type"></a>
+<a id="type"></a>
 
 Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
@@ -184,7 +182,7 @@ reply.type('text/html')
 ```
 
 ### .serializer(func)
-<a name="serializer"></a>
+<a id="serializer"></a>
 
 `.send()` will by default JSON-serialize any value that is not one of: `Buffer`, `stream`, `string`, `undefined`, `Error`. If you need to replace the default serializer with a custom serializer for a particular request, you can do so with the `.serializer()` utility. Be aware that if you are using a custom serializer, you must set a custom `'Content-Type'` header.
 
@@ -205,7 +203,7 @@ reply
 See [`.send()`](#send) for more information on sending different types of values.
 
 ### .sent
-<a name="sent"></a>
+<a id="sent"></a>
 
 As the name suggests, `.sent` is a property to indicate if
 a response has been sent via `reply.send()`.
@@ -231,12 +229,12 @@ app.get('/', (req, reply) => {
 If the handler rejects, the error will be logged.
 
 ### .send(data)
-<a name="send"></a>
+<a id="send"></a>
 
 As the name suggests, `.send()` is the function that sends the payload to the end user.
 
 #### Objects
-<a name="send-object"></a>
+<a id="send-object"></a>
 
 As noted above, if you are sending JSON objects, `send` will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise `JSON.stringify()` will be used.
 ```js
@@ -246,7 +244,7 @@ fastify.get('/json', options, function (request, reply) {
 ```
 
 #### Strings
-<a name="send-string"></a>
+<a id="send-string"></a>
 
 If you pass a string to `send` without a `Content-Type`, it will be sent as `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise it will be sent unmodified (unless the `Content-Type` header is set to `application/json; charset=utf-8`, in which case it will be JSON-serialized like an object — see the section above).
 ```js
@@ -256,7 +254,7 @@ fastify.get('/json', options, function (request, reply) {
 ```
 
 #### Streams
-<a name="send-streams"></a>
+<a id="send-streams"></a>
 
 *send* can also handle streams out of the box, internally uses [pump](https://www.npmjs.com/package/pump) to avoid leaks of file descriptors. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
@@ -268,7 +266,7 @@ fastify.get('/streams', function (request, reply) {
 ```
 
 #### Buffers
-<a name="send-buffers"></a>
+<a id="send-buffers"></a>
 
 If you are sending a buffer and you have not set a `'Content-Type'` header, *send* will set it to `'application/octet-stream'`.
 ```js
@@ -281,7 +279,7 @@ fastify.get('/streams', function (request, reply) {
 ```
 
 #### Errors
-<a name="errors"></a>
+<a id="errors"></a>
 
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:
 ```js
@@ -335,7 +333,7 @@ fastify.setNotFoundHandler(function (request, reply) {
 ```
 
 #### Type of the final payload
-<a name="payload-type"></a>
+<a id="payload-type"></a>
 
 The type of the sent payload (after serialization and going through any [`onSend` hooks](./Hooks.md#the-onsend-hook)) must be one of the following types, otherwise an error will be thrown:
 
@@ -346,7 +344,7 @@ The type of the sent payload (after serialization and going through any [`onSend
 - `null`
 
 #### Async-Await and Promises
-<a name="async-await-promise"></a>
+<a id="async-await-promise"></a>
 
 Fastify natively handles promises and supports async-await.
 
@@ -378,7 +376,7 @@ fastify.get('/teapot', async function (request, reply) => {
 If you want to know more please review [Routes#async-await](./Routes.md#async-await).
 
 ### .then(fullfilled, rejected)
-<a name="then"></a>
+<a id="then"></a>
 
 As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
 The `await` syntax calls the `reply.then()`.

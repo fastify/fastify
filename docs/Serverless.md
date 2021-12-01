@@ -1,7 +1,5 @@
 ---
 title: Serverless
-sidebar_label: Serverless
-hide_title: false
 ---
 
 Run serverless applications and REST APIs using your existing Fastify application.

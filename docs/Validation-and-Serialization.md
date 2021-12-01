@@ -1,7 +1,5 @@
 ---
 title: Validation and Serialization
-sidebar_label: Validation and Serialization
-hide_title: false
 ---
 
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
@@ -15,7 +13,7 @@ Fastify uses a schema-based approach, and even if it is not mandatory we recomme
 > details.
 
 ### Validation
-<a name="validation"></a>
+<a id="validation"></a>
 
 The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator. Validating the input is very easy: just add the fields that you need inside the route schema, and you are done! The supported validations are:
 - `body`: validates the body of the request if it is a POST, a PATCH or a PUT.
@@ -105,7 +103,7 @@ fastify.post('/the/url', { schema }, handler)
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
 #### Adding a shared schema
-<a name="shared-schema"></a>
+<a id="shared-schema"></a>
 
 Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. As usual, this API is encapsulated.
 
@@ -233,7 +231,7 @@ fastify.route({
 ```
 
 #### Retrieving a copy of shared schemas
-<a name="get-shared-schema"></a>
+<a id="get-shared-schema"></a>
 
 The function `getSchemas` returns the shared schemas available in the selected scope:
 ```js
@@ -261,7 +259,7 @@ This example will returns:
 | /deep | one, two, three |
 
 #### Ajv Plugins
-<a name="ajv-plugins"></a>
+<a id="ajv-plugins"></a>
 
 You can provide a list of plugins you want to use with Ajv:
 
@@ -332,7 +330,7 @@ fastify.route({
 ```
 
 #### Schema Compiler
-<a name="schema-compiler"></a>
+<a id="schema-compiler"></a>
 
 The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string. The default `schemaCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface. Fastify uses it internally to speed the validation up.
 
@@ -374,7 +372,7 @@ fastify.schemaCompiler = function (schema) { return ajv.compile(schema) })
 _**Note:** If you use a custom instance of any validator (even Ajv), you have to add schemas to the validator instead of fastify, since fastify's default validator is no longer used, and fastify's `addSchema` method has no idea what validator you are using._
 
 #### Using other validation libraries
-<a name="using-other-validation-libraries"></a>
+<a id="using-other-validation-libraries"></a>
 
 The `schemaCompiler` function makes it easy to substitute `ajv` with almost any Javascript validation library ([joi](https://github.com/hapijs/joi/), [yup](https://github.com/jquense/yup/), ...).
 
@@ -505,7 +503,7 @@ const errorHandler = (error, request, reply) => {
 ```
 
 #### Schema Resolver
-<a name="schema-resolver"></a>
+<a id="schema-resolver"></a>
 
 The `schemaResolver` is a function that works together with the `schemaCompiler`: you can't use it
 with the default schema compiler. This feature is useful when you use complex schemas with `$ref` keyword
@@ -567,7 +565,7 @@ fastify.route({
 ```
 
 ### Serialization
-<a name="serialization"></a>
+<a id="serialization"></a>
 
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.
 
@@ -870,7 +868,7 @@ const refToSharedSchemaDefinitions = {
 ```
 
 ### Resources
-<a name="resources"></a>
+<a id="resources"></a>
 
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)

@@ -1,7 +1,5 @@
 ---
 title: Write Plugin
-sidebar_label: Write Plugin
-hide_title: false
 ---
 
 # How to write a good plugin

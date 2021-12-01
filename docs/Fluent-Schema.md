@@ -1,7 +1,5 @@
 ---
 title: Fluent Schema
-sidebar_label: Fluent Schema
-hide_title: false
 ---
 
 

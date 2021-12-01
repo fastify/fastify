@@ -1,7 +1,5 @@
 ---
 title: Getting Started
-sidebar_label: Getting Started
-hide_title: false
 ---
 
 Hello! Thank you for checking out Fastify!
@@ -11,7 +9,7 @@ This document aims to be a gentle introduction to the framework and its features
 Let's start!
 
 ### Install
-<a name="install"></a>
+<a id="install"></a>
 
 Install with npm:
 ```
@@ -23,7 +21,7 @@ yarn add fastify
 ```
 
 ### Your first server
-<a name="first-server"></a>
+<a id="first-server"></a>
 
 Let's write our first server:
 ```js
@@ -92,7 +90,7 @@ Fastify offers an easy platform that helps to solve all of the problems outlined
 > When deploying to a Docker (or other type of) container using `0.0.0.0` or `::` would be the easiest method for exposing the application.
 
 ### Your first plugin
-<a name="first-plugin"></a>
+<a id="first-plugin"></a>
 
 As with JavaScript, where everything is an object, with Fastify everything is a plugin.
 
@@ -218,7 +216,7 @@ We have also used the `decorate` API to add custom objects to the Fastify namesp
 To dig deeper into how Fastify plugins work, how to develop new plugins, and for details on how to use the whole Fastify API to deal with the complexity of asynchronously bootstrapping an application, read [the hitchhiker's guide to plugins](./Plugins-Guide.md).
 
 ### Loading order of your plugins
-<a name="plugin-loading-order"></a>
+<a id="plugin-loading-order"></a>
 
 To guarantee a consistent and predictable behaviour of your application, we highly recommend to always load your code as shown below:
 ```
@@ -254,7 +252,7 @@ As discussed previously, Fastify offers a solid encapsulation model, to help you
 ```
 
 ### Validate your data
-<a name="validate-data"></a>
+<a id="validate-data"></a>
 
 Data validation is extremely important and a core concept of the framework.
 
@@ -282,7 +280,7 @@ This example shows how to pass an options object to the route, which accepts a `
 Read [Validation and Serialization](./Validation-and-Serialization.md) to learn more.
 
 ### Serialize your data
-<a name="serialize-data"></a>
+<a id="serialize-data"></a>
 
 Fastify has first class support for JSON. It is extremely optimized to parse JSON bodies and to serialize JSON output.
 
@@ -309,21 +307,21 @@ Simply by specifying a schema as shown, you can speed up serialization by a fact
 Read [Validation and Serialization](./Validation-and-Serialization.md) to learn more.
 
 ### Extend your server
-<a name="extend-server"></a>
+<a id="extend-server"></a>
 
 Fastify is built to be extremely extensible and minimal, we believe that a bare bones framework is all that is necessary to make great applications possible.
 
 In other words, Fastify is not a "batteries included" framework, and relies on an amazing [ecosystem](./Ecosystem.md)!
 
 ### Test your server
-<a name="test-server"></a>
+<a id="test-server"></a>
 
 Fastify does not offer a testing framework, but we do recommend a way to write your tests that uses the features and architecture of Fastify.
 
 Read the [testing](./Testing.md) documentation to learn more!
 
 ### Run your server from CLI
-<a name="cli"></a>
+<a id="cli"></a>
 
 Fastify also has CLI integration thanks to [fastify-cli](https://github.com/fastify/fastify-cli).
 
@@ -362,7 +360,7 @@ npm start
 ```
 
 ### Slides and Videos
-<a name="slides"></a>
+<a id="slides"></a>
 
 - Slides
   - [Take your HTTP server to ludicrous speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed) by [@mcollina](https://github.com/mcollina)

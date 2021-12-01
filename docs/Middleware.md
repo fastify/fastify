@@ -1,7 +1,5 @@
 ---
 title: Middleware
-sidebar_label: Middleware
-hide_title: false
 ---
 
 Fastify provides an asynchronous [middleware engine](https://github.com/fastify/middie) out-of-the-box, which is compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middleware.
@@ -37,7 +35,7 @@ Remember that middleware can be encapsulated, this means that you can decide whe
 Fastify middleware also do not expose the `send` method or other methods specific to the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects internally, but this is done after the middleware phase. If you need to create middleware, you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook which already has the [Request](./Request.md#request) and [Reply](./Reply.md#reply) Fastify instances. For more information, see [Hooks](./Hooks.md#hooks).
 
 #### Restrict middleware execution to a certain path(s)
-<a name="restrict-usage"></a>
+<a id="restrict-usage"></a>
 
 If you need to run a middleware only under certain path(s), just pass the path as first parameter to `use` and you are done!
 
@@ -58,6 +56,6 @@ fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 ```
 
 #### Express middleware compatibility
-<a name="express-middleware"></a>
+<a id="express-middleware"></a>
 
 Express modifies the prototype of the node core Request and Response objects heavily so Fastify cannot guarantee full middleware compatibility. Express specific functionality such as `res.sendFile()`, `res.send()` or `express.Router()` instances will not work with Fastify. For example, [cors](https://github.com/expressjs/cors) is compatible while [passport](https://github.com/jaredhanson/passport) is not.

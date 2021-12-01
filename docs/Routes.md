@@ -1,7 +1,5 @@
 ---
 title: Routes
-sidebar_label: Routes
-hide_title: false
 ---
 
 The routes methods will configure the endpoints of your application. 
@@ -23,14 +21,14 @@ You have two ways to declare a route with Fastify, the shorthand method and the 
   - [Custom](#custom)
 
 ### Full declaration
-<a name="full-declaration"></a>
+<a id="full-declaration"></a>
 
 ```js
 fastify.route(options)
 ```
 
 ### Routes option
-<a name="options"></a>
+<a id="options"></a>
 
 * `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`, `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the url to match this route (alias: `path`).
@@ -97,7 +95,7 @@ fastify.route({
 ```
 
 ### Shorthand declaration
-<a name="shorthand-declaration"></a>
+<a id="shorthand-declaration"></a>
 
 The above route declaration is more *Hapi*-like, but if you prefer an *Express/Restify* approach, we support it as well:
 
@@ -159,7 +157,7 @@ fastify.get('/', opts)
 > Note: if the handler is specified in both the `options` and as the third parameter to the shortcut method then throws duplicate `handler` error.
 
 ### Url building
-<a name="url-building"></a>
+<a id="url-building"></a>
 
 Fastify supports both static and dynamic urls.
 
@@ -197,7 +195,7 @@ Having a route with multiple parameters may affect negatively the performance, s
 If you are interested in how we handle the routing, checkout [find-my-way](https://github.com/delvedor/find-my-way).
 
 ### Async Await
-<a name="async-await"></a>
+<a id="async-await"></a>
 
 Are you an `async/await` user? We have you covered!
 ```js
@@ -247,7 +245,7 @@ fastify.get('/', options, async function (request, reply) {
 * You can't return `undefined`. For more details read [promise-resolution](#promise-resolution).
 
 ### Promise resolution
-<a name="promise-resolution"></a>
+<a id="promise-resolution"></a>
 
 If your handler is an `async` function or returns a promise, you should be aware of a special behaviour which is necessary to support the callback and promise control-flow. If the handler's promise is resolved with `undefined`, it will be ignored causing the request to hang and an *error* log to be emitted.
 
@@ -263,7 +261,7 @@ In this way, we can support both `callback-style` and `async-await`, with the mi
 **Notice**: Every async function returns a promise by itself.
 
 ### Route Prefixing
-<a name="route-prefixing"></a>
+<a id="route-prefixing"></a>
 
 Sometimes you need to maintain two or more different versions of the same api, a classic approach is to prefix all the routes with the api version number, `/v1/user` for example.
 Fastify offers you a fast and smart way to create different version of the same api without changing all the route names by hand, *route prefixing*. Let's see how it works:
@@ -313,7 +311,7 @@ and `/something/`.
 See the `prefixTrailingSlash` route option above to change this behaviour.
 
 ### Custom Log Level
-<a name="custom-log-level"></a>
+<a id="custom-log-level"></a>
 
 It could happen that you need different log levels in your routes, Fastify achieves this in a very straightforward way.
 
@@ -340,7 +338,7 @@ fastify.get('/', { logLevel: 'warn' }, (request, reply) => {
 *Remember that the custom log level is applied only to the routes, and not to the global Fastify Logger, accessible with `fastify.log`*
 
 ### Custom Log Serializer
-<a name="custom-log-serializer"></a>
+<a id="custom-log-serializer"></a>
 
 In some context, you may need to log a large object but it could be a waste of resources for some routes. In this case, you can define some [`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object) and attach them in the right context!
 
@@ -400,7 +398,7 @@ fastify.listen(3000)
 ```
 
 ### Config
-<a name="routes-config"></a>
+<a id="routes-config"></a>
 
 Registering a new handler, you can pass a configuration object to it and retrieve it in the handler.
 
@@ -419,7 +417,7 @@ fastify.listen(3000)
 ```
 
 ### Version
-<a name="version"></a>
+<a id="version"></a>
 
 #### Default
 If needed you can provide a version option, which will allow you to declare multiple versions of the same route. The versioning should follow the [semver](http://semver.org/) specification.

@@ -1,7 +1,5 @@
 ---
 title: Recommendations
-sidebar_label: Recommendations
-hide_title: false
 ---
 
 This document contains a set recommendations, or best practices, when using
@@ -10,7 +8,7 @@ Fastify.
 - [Use A Reverse Proxy](#use-a-reverse-proxy)
 
 ## Use A Reverse Proxy
-<a name="reverseproxy"></a>
+<a id="reverseproxy"></a>
 
 Node.js is an early adopter of frameworks shipping with an easy to use web
 server within the standard library. Previously, with languages like PHP or

@@ -1,7 +1,5 @@
 ---
 title: HTTP2
-sidebar_label: HTTP2
-hide_title: false
 ---
 
 _Fastify_ offers **experimental support** for HTTP2 starting from Node

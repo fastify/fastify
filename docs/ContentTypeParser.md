@@ -1,7 +1,5 @@
 ---
 title: Content-Type Parser
-sidebar_label: Content-Type Parser
-hide_title: false
 ---
 
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content types. The default charset is `utf-8`. If you need to support different content types, you can use the `addContentTypeParser` API. *The default JSON and/or plain text parser can be changed.*

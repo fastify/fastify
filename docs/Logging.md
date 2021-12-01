@@ -1,7 +1,5 @@
 ---
 title: Logging
-sidebar_label: Logging
-hide_title: false
 ---
 
 Logging is disabled by default, and you can enable it by passing
@@ -57,7 +55,7 @@ const fastify = require('fastify')({
 })
 ```
 
-<a name="logging-request-id"></a>
+<a id="logging-request-id"></a>
 
 By default, fastify adds an id to every request for easier tracking. If the "request-id" header is present its value is used, otherwise a new incremental id is generated. See Fastify Factory [`requestIdHeader`](./Server.md#factory-request-id-header) and Fastify Factory [`genReqId`](./Server.md#gen-request-id) for customization options.
 

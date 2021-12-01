@@ -1,7 +1,5 @@
 ---
 title: Request
-sidebar_label: Request
-hide_title: false
 ---
 
 The first parameter of the handler function is `Request`.

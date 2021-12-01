@@ -1,13 +1,11 @@
 ---
 title: Validation and Serialization
-sidebar_label: Validation and Serialization
-hide_title: false
 ---
 
 Fastify uses a schema-based approach, and even if it is not mandatory we recommend using [JSON Schema](http://json-schema.org/) to validate your routes and serialize your outputs. Internally, Fastify compiles the schema into a highly performant function.
 
 ### Validation
-<a name="validation"></a>
+<a id="validation"></a>
 
 The route validation internally relies upon [Ajv](https://www.npmjs.com/package/ajv), which is a high-performance JSON schema validator. Validating the input is very easy: just add the fields that you need inside the route schema, and you are done! The supported validations are:
 - `body`: validates the body of the request if it is a POST or a PUT.
@@ -53,7 +51,7 @@ fastify.post('/the/url', { schema }, handler)
 *Note that Ajv will try to [coerce](https://github.com/epoberezkin/ajv#coercing-data-types) the values to the types specified in your schema `type` keywords, both to pass the validation and to use the correctly typed data afterwards.*
 
 #### Adding a shared schema
-<a name="shared-schema"></a>
+<a id="shared-schema"></a>
 
 Thanks to the `addSchema` API, you can add multiple schemas to the Fastify instance and then reuse them in multiple parts of your application. *(Note that this API is not encapsulated)*
 ```js
@@ -106,12 +104,12 @@ fastify.route({
 ```
 
 #### Retrieving a copy of all shared schemas
-<a name="get-shared-schema"></a>
+<a id="get-shared-schema"></a>
 
 The function `getSchemas` returns all shared schemas that were added by `addSchema` method.
 
 #### Schema Compiler
-<a name="schema-compiler"></a>
+<a id="schema-compiler"></a>
 
 The `schemaCompiler` is a function that returns a function that validates the body, url parameters, headers, and query string. The default `schemaCompiler` returns a function that implements the [ajv](https://ajv.js.org/) validation interface. Fastify uses it internally to speed the validation up.
 
@@ -163,7 +161,7 @@ In that case the function returned by `schemaCompiler` returns an object like:
 * `value`: the coerced value that passed the validation
 
 ### Serialization
-<a name="serialization"></a>
+<a id="serialization"></a>
 
 Usually you will send your data to the clients via JSON, and Fastify has a powerful tool to help you, [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify), which is used if you have provided an output schema in the route options. We encourage you to use an output schema, as it will increase your throughput by 100-400% depending on your payload and will prevent accidental disclosure of sensitive information.
 
@@ -383,7 +381,7 @@ const refToSharedSchemaDefinitions = {
 ```
 
 ### Resources
-<a name="resources"></a>
+<a id="resources"></a>
 
 - [JSON Schema](http://json-schema.org/)
 - [Understanding JSON schema](https://spacetelescope.github.io/understanding-json-schema/)

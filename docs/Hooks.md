@@ -1,7 +1,5 @@
 ---
 title: Hooks
-sidebar_label: Hooks
-hide_title: false
 ---
 
 Hooks are registered with the `fastify.addHook` method and allow you to listen to specific events in the application or request/response lifecycle. You have to register a hook before the event is triggered otherwise the event is lost.
@@ -179,7 +177,7 @@ You are able to hook into the application-lifecycle as well. It's important to n
 - `'onRoute'`
 
 ### onClose
-<a name="on-close"></a>
+<a id="on-close"></a>
 
 Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, such as a connection to a database.
 
@@ -191,7 +189,7 @@ fastify.addHook('onClose', (instance, done) => {
 })
 ```
 ### onRoute
-<a name="on-route"></a>
+<a id="on-route"></a>
 
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners do not get passed a callback.
 ```js
@@ -206,7 +204,7 @@ fastify.addHook('onRoute', (routeOptions) => {
 })
 ```
 ### Scope
-<a name="scope"></a>
+<a id="scope"></a>
 
 Except for [Application Hooks](#application-hooks), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](./Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
@@ -219,7 +217,7 @@ fastify.addHook('onRequest', function (req, res, next) {
 Note: using an arrow function will break the binding of this to the Fastify instance.
 
 ### beforeHandler
-<a name="before-handler"></a>
+<a id="before-handler"></a>
 
 Despite the name, `beforeHandler` is not a standard hook like `preHandler`, but is a function that your register right in the route option that will be executed only in the specified route. Can be useful if you need to handle the authentication at route level instead of at hook level (`preHandler` for example), it could also be an array of functions.
 

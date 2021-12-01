@@ -1,7 +1,5 @@
 ---
 title: Plugins Guide
-sidebar_label: Plugins Guide
-hide_title: false
 ---
 
 # The hitchhiker's guide to plugins
@@ -20,7 +18,7 @@ Fastify was built from the beginning to be an extremely modular system. We built
   - [Let's start!](#lets-start)
 
 ## Register
-<a name="register"></a>
+<a id="register"></a>
 
 As in JavaScript everything is an object, in Fastify everything is a plugin.
 
@@ -66,7 +64,7 @@ module.exports = function (fastify, options, next) {
 Well, now you know how to use the `register` api and how it works, but how do we add new functionality to Fastify and even better, share them with other developers?
 
 ## Decorators
-<a name="decorators"></a>
+<a id="decorators"></a>
 
 Okay, let's say that you wrote an utility that is so good that you decided to make it available along all your code. How would you do it? Probably something like the following:
 ```js
@@ -191,7 +189,7 @@ fastify.get('/happiness', (request, reply) => {
 We've seen how to extend server functionality and how handle the encapsulation system, but what if you need to add a function that must be executed every time that the server "[emits](./Lifecycle.md)" an event?
 
 ## Hooks
-<a name="hooks"></a>
+<a id="hooks"></a>
 
 You just built an amazing utility, but now you need to execute that for every request, this is what you will likely do:
 ```js
@@ -257,7 +255,7 @@ As you probably noticed at this time, `request` and `reply` are not the standard
 
 
 ## Middlewares
-<a name="middlewares"></a>
+<a id="middlewares"></a>
 
 Fastify [supports](./Middlewares.md) out of the box Express/Restify/Connect middlewares, this means that you can just drop-in your old code and it will work! *(faster, by the way)*
 
@@ -269,7 +267,7 @@ fastify.use(yourMiddleware)
 ```
 
 ## How to handle encapsulation and distribution
-<a name="distribution"></a>
+<a id="distribution"></a>
 
 Perfect, now you know (almost) all the tools that you can use to extend Fastify. But probably there is something you noted when trying out your code.
 
@@ -296,7 +294,7 @@ module.exports = fp(dbPlugin)
 You can also tell to `fastify-plugin` to check the installed version of Fastify, in case of you need a specific api.
 
 ## Handle errors
-<a name="handle-errors"></a>
+<a id="handle-errors"></a>
 
 It can happen that one of your plugins could fail during the startup. Maybe you expect it and you have a custom logic that will be triggered in that case. How can you do this?
 The `after` api is what you need. `after` simply registers a callback that will be executed just after a register, and it can take up to three parameters.
@@ -318,7 +316,7 @@ fastify
 ```
 
 ## Let's start!
-<a name="start"></a>
+<a id="start"></a>
 
 Awesome, now you know everything you need to know about Fastify and its plugin system to start building your first plugin, and please if you do, tell us! We will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem) section of our documentation!
 

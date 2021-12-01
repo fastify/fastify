@@ -1,7 +1,5 @@
 ---
 title: Long Term Support
-sidebar_label: Long Term Support
-hide_title: false
 ---
 
 Fastify's Long Term Support (LTS) is provided according the schedule laid
@@ -19,7 +17,7 @@ A "month" is to be a period of 30 consecutive days.
 
 [semver]: https://semver.org/
 
-<a name="lts-schedule"></a>
+<a id="lts-schedule"></a>
 
 ### Schedule
 
@@ -27,7 +25,7 @@ A "month" is to be a period of 30 consecutive days.
 | :------ | :----------- | :-------------- | :------------------ |
 | 1.0.0   | 2018-03-06   | 2019-09-01      | 6, 8, 9, 10, 11, 12 |
 
-<a name="supported-os"></a>
+<a id="supported-os"></a>
 
 ### CI tested operating systems
 

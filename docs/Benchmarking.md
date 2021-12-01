@@ -1,7 +1,5 @@
 ---
 title: Benchmarking
-sidebar_label: Benchmarking
-hide_title: false
 ---
 
 Benchmarking is important if you want to measure how a change can impact your application performance. We provide a simple way to benchmark your application from the point of view of a user and contributor. The setup allows you to automate benchmarks in different branches on different Node.js versions.

@@ -1,7 +1,5 @@
 ---
 title: TypeScript
-sidebar_label: TypeScript
-hide_title: false
 ---
 
 Fastify is shipped with a typings file, but it still require to install `@types/node`, depending on the Node.js version that you are using.
@@ -48,7 +46,7 @@ server.get('/ping', opts, (request, reply) => {
 ```
 
 ## Generic Parameters
-<a name="generic-parameters"></a>
+<a id="generic-parameters"></a>
 
 Since you can validate the querystring, params, body, and headers, you can also override the default types of those values on the request interface:
 
@@ -165,7 +163,7 @@ server.get<unknown, Params, unknown, unknown>('/ping/:bar', opts, (request, repl
 ```
 
 ## HTTP Prototypes
-<a name="http-prototypes"></a>
+<a id="http-prototypes"></a>
 
 By default, fastify will determine which version of http is being used based on the options you pass to it. If for any
 reason you need to override this you can do so as shown below:
@@ -191,7 +189,7 @@ application.
 
 
 ## Contributing
-<a name="contributing"></a>
+<a id="contributing"></a>
 
 TypeScript related changes can be considered to fall into one of two categories:
 
@@ -201,7 +199,7 @@ TypeScript related changes can be considered to fall into one of two categories:
 Make sure to read our [`CONTRIBUTING.md`](https://github.com/fastify/fastify/blob/master/CONTRIBUTING.md) file before getting started to make sure things go smoothly!
 
 ### Core Types
-<a name="core-types"></a>
+<a id="core-types"></a>
 
 When updating core types you should make a PR to this repository. Ensure you:
 
@@ -209,7 +207,7 @@ When updating core types you should make a PR to this repository. Ensure you:
 2. Update `test/types/index.ts` to validate changes work as expected
 
 ### Plugin Types
-<a name="plugin-types"></a>
+<a id="plugin-types"></a>
 
 Typings for plugins are hosted in DefinitelyTyped. This means when using plugins you should install like so:
 
@@ -220,7 +218,7 @@ npm install fastify-url-data @types/fastify-url-data
 After this you should be good to go. Some types might not be available yet, so don't be shy about contributing.
 
 ### Authoring Plugin Types
-<a name="authoring-plugin-types"></a>
+<a id="authoring-plugin-types"></a>
 
 Typings for many plugins that extend the `FastifyRequest` and `FastifyReply` objects can be achieved as shown below.
 

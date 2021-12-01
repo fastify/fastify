@@ -1,7 +1,5 @@
 ---
 title: Middlewares
-sidebar_label: Middlewares
-hide_title: false
 ---
 
 Fastify out of the box provides an asynchronous [middleware engine](https://github.com/fastify/middie) compatible with [Express](https://expressjs.com/) and [Restify](http://restify.com/) middlewares.
@@ -37,7 +35,7 @@ Remember that middlewares can be encapsulated, this means that you can decide wh
 Fastify middlewares also do not expose the `send` method or other methods specific to the Fastify [Reply](./Reply.md) instance. This is because Fastify wraps the incoming `req` and `res` Node instances using the [Request](./Request.md) and [Reply](./Reply.md) objects internally, but this is done after the middlewares phase. If you need to create a middleware you have to use the Node `req` and `res` instances. Otherwise, you can use the `preHandler` hook that has the [Request](./Request.md) and [Reply](./Reply.md) Fastify instances. For more information, see [Hooks](./Hooks.md).
 
 #### Restrict middleware execution to a certain path(s)
-<a name="restrict-usage"></a>
+<a id="restrict-usage"></a>
 
 If you need to run a middleware only under certain path(s), just pass the path as first parameter to `use` and you are done!
 

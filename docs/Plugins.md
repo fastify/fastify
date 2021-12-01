@@ -1,7 +1,5 @@
 ---
 title: Plugins
-sidebar_label: Plugins
-hide_title: false
 ---
 
 Fastify allows the user to extend its functionalities with plugins.
@@ -16,7 +14,7 @@ fastify.register(plugin, [options])
 ```
 
 ### Plugin Options
-<a name="plugin-options"></a>
+<a id="plugin-options"></a>
 
 The optional `options` parameter for `fastify.register` supports a predefined set of options that Fastify itself will use, except when the plugin has been wrapped with [fastify-plugin](https://github.com/fastify/fastify-plugin). This options object will also be passed to the plugin upon invocation, regardless of whether or not the plugin has been wrapped. The currently supported list of Fastify specific options is:
 
@@ -46,14 +44,14 @@ fastify.register(require('fastify-foo'), {
 ```
 
 #### Route Prefixing option
-<a name="route-prefixing-option"></a>
+<a id="route-prefixing-option"></a>
 
 If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](./Routes.md#route-prefixing).
 
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option won't work.
 
 #### Error handling
-<a name="error-handling"></a>
+<a id="error-handling"></a>
 
 The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).
 
@@ -86,7 +84,7 @@ await fastify.ready()
 await fastify.listen(3000)
 ```
 ### Create a plugin
-<a name="create-plugin"></a>
+<a id="create-plugin"></a>
 
 Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an options object and the next callback.
 
@@ -117,7 +115,7 @@ Sometimes, you will need to know when the server is about to close, for example 
 Do not forget that `register` will always create a new Fastify scope, if you don't need that, read the following section.
 
 ### Handle the scope
-<a name="handle-scope"></a>
+<a id="handle-scope"></a>
 
 If you are using `register` only for extending the functionality of the server with  [`decorate`](./Decorators.md), it is your responsibility to tell Fastify to not create a new scope, otherwise your changes will not be accessible by the user in the upper scope.
 

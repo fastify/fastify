@@ -32,6 +32,10 @@ await fastify.register(require('fastify-express'));
 fastify.use(require('cors')());
 ```
 
+**v4:**
+
+Starting v4 we have deprecated the use of `.use`. Both `middie` and `fastify-express` will still be there and maintained.
+
 ### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
 
 The logging [Serializers](Logging.md) have been updated to now Fastify

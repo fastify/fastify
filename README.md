@@ -195,7 +195,6 @@ matters to you.
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
 * <a href="./docs/Encapsulation.md"><code><b>Encapsulation</b></code></a>
 * <a href="./docs/Logging.md"><code><b>Logging</b></code></a>
-* <a href="./docs/Middleware.md"><code><b>Middleware</b></code></a>
 * <a href="./docs/Hooks.md"><code><b>Hooks</b></code></a>
 * <a href="./docs/Decorators.md"><code><b>Decorators</b></code></a>
 * <a href="./docs/Validation-and-Serialization.md"><code><b>Validation and Serialization</b></code></a>

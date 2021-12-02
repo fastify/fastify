@@ -18,6 +18,8 @@ The optional `options` parameter for `fastify.register` supports a predefined se
 + [`logLevel`](Routes.md#custom-log-level)
 + [`logSerializers`](Routes.md#custom-log-serializer)
 + [`prefix`](Plugins.md#route-prefixing-options)
++ [`middie`]()
++ [`fastify-express`]()
 
 **Note: Those options will be ignored when used with fastify-plugin**
 

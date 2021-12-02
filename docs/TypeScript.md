@@ -128,250 +128,98 @@ The type system heavily relies on generic properties to provide the most accurat
 
 🎉 Good work, now you can define interfaces for each route and have strictly typed request and reply instances. Other parts of the Fastify type system rely on generic properties. Make sure to reference the detailed type system documentation below to learn more about what is available.
 
-### JSON Schema
+### JSON Schema Validation with Type Providers
 
 To validate your requests and responses you can use JSON Schema files. If you didn't know already, defining schemas for your Fastify routes can increase their throughput! Check out the [Validation and Serialization](Validation-and-Serialization.md) documentation for more info.
 
-Also it has the advantage to use the defined type within your handlers (including pre-validation, etc.).
+Type Providers are a newly introduced feature in v4 that enables Fastify to statically infer type information directly from inline JSON Schema. They are an alternative to specifying generic arguments on routes; and can greatly reduce the need to keep associated types for each schema defined in your project.
 
-Here are some options how to achieve this.
+#### Providers
 
+Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `fastify-type-provider-{provider-name}` naming convention. 
 
-#### typebox
+The following inference packages are supported:
 
-A useful library for building types and a schema at once is [typebox](https://www.npmjs.com/package/@sinclair/typebox).
-With typebox you define your schema within your code and use them directly as types or schemas as you need them.
+- `typebox` - [github](https://github.com/sinclairzx81/typebox)
+- `json-schema-to-ts` - [github](https://github.com/ThomasAribart/json-schema-to-ts)
 
-When you want to use it for validation of some payload in a fastify route you can do it as follows:
+#### TypeBox
 
-1. Install `typebox` in your project.
-
-    ```bash
-    npm i @sinclair/typebox
-    ```
-
-2. Define the schema you need with `Type` and create the respective type  with `Static`.
-  
-    ```typescript
-    import { Static, Type } from '@sinclair/typebox'
-
-    const User = Type.Object({
-      name: Type.String(),
-      mail: Type.Optional(Type.String({ format: "email" })),
-    });
-    type UserType = Static<typeof User>;
-    ```
-
-3. Use the defined type and schema during the definition of your route
-
-    ```typescript
-    const app = fastify();
-
-    app.post<{ Body: UserType; Reply: UserType }>(
-      "/",
-      {
-        schema: {
-          body: User,
-          response: {
-            200: User,
-          },
-        },
-      },
-      (req, rep) => {
-        const { body: user } = req;
-        /* user has type
-        * const user: StaticProperties<{
-        *  name: TString;
-        *  mail: TOptional<TString>;
-        * }>
-        */
-        //...
-        rep.status(200).send(user);
-      }
-    );
-    ```
-
-#### Schemas in JSON Files
-
-In the last example we used interfaces to define the types for the request querystring and headers. Many users will already be using JSON Schemas to define these properties, and luckily there is a way to transform existing JSON Schemas into TypeScript interfaces!
-
-1. If you did not complete the 'Getting Started' example, go back and follow steps 1-4 first.
-2. Install the `json-schema-to-typescript` module:
-
-   ```bash
-   npm i -D json-schema-to-typescript
-   ```
-
-3. Create a new folder called `schemas` and add two files `headers.json` and `querystring.json`. Copy and paste the following schema definitions into the respective files:
-
-   ```json
-   {
-     "title": "Headers Schema",
-     "type": "object",
-     "properties": {
-       "h-Custom": { "type": "string" }
-     },
-     "additionalProperties": false,
-     "required": ["h-Custom"]
-   }
-   ```
-
-   ```json
-   {
-     "title": "Querystring Schema",
-     "type": "object",
-     "properties": {
-       "username": { "type": "string" },
-       "password": { "type": "string" }
-     },
-     "additionalProperties": false,
-     "required": ["username", "password"]
-   }
-   ```
-
-4. Add a `compile-schemas` script to the package.json:
-
-```json
-   {
-     "scripts": {
-       "compile-schemas": "json2ts -i schemas -o types"
-     }
-   }
-```
-
-   `json2ts` is a CLI utility included in `json-schema-to-typescript`. `schemas` is the input path, and `types` is the output path.
-5. Run `npm run compile-schemas`. Two new files should have been created in the `types` directory.
-6. Update `index.ts` to have the following code:
-
-```typescript
-   import fastify from 'fastify'
-
-   // import json schemas as normal
-   import QuerystringSchema from './schemas/querystring.json'
-   import HeadersSchema from './schemas/headers.json'
-
-   // import the generated interfaces
-   import { QuerystringSchema as QuerystringSchemaInterface } from './types/querystring'
-   import { HeadersSchema as HeadersSchemaInterface } from './types/headers'
-
-   const server = fastify()
-
-   server.get<{
-     Querystring: QuerystringSchemaInterface,
-     Headers: HeadersSchemaInterface
-   }>('/auth', {
-     schema: {
-       querystring: QuerystringSchema,
-       headers: HeadersSchema
-     },
-     preValidation: (request, reply, done) => {
-       const { username, password } = request.query
-       done(username !== 'admin' ? new Error('Must be admin') : undefined)
-     }
-     //  or if using async
-     //  preValidation: async (request, reply) => {
-     //    const { username, password } = request.query
-     //    return username !== "admin" ? new Error("Must be admin") : undefined;
-     //  }
-   }, async (request, reply) => {
-     const customerHeader = request.headers['h-Custom']
-     // do something with request data
-     return `logged in!`
-   })
-
-   server.route<{
-     Querystring: QuerystringSchemaInterface,
-     Headers: HeadersSchemaInterface
-   }>({
-     method: 'GET',
-     url: '/auth2',
-     schema: {
-       querystring: QuerystringSchema,
-       headers: HeadersSchema
-     },
-     preHandler: (request, reply, done) => {
-       const { username, password } = request.query
-       const customerHeader = request.headers['h-Custom']
-       done()
-     },
-     handler: (request, reply) => {
-       const { username, password } = request.query
-       const customerHeader = request.headers['h-Custom']
-       reply.status(200).send({username});
-     }
-   })
-
-   server.listen(8080, (err, address) => {
-     if (err) {
-       console.error(err)
-       process.exit(0)
-     }
-     console.log(`Server listening at ${address}`)
-   })
-   ```
-   Pay special attention to the imports at the top of this file. It might seem redundant, but you need to import both the schema files and the generated interfaces.
-
-Great work! Now you can make use of both JSON Schemas and TypeScript definitions.
-
-#### json-schema-to-ts
-
-If you do not want to generate types from your schemas, but want to use them diretly from your code, you can use the package
-[json-schema-to-ts](https://www.npmjs.com/package/json-schema-to-ts).
-
-You can install it as dev-dependency.
+The following sets up a TypeBox Type Provider
 
 ```bash
-npm install -D json-schema-to-ts
+$ npm install fastify-type-provider-typebox --save
 ```
 
-In your code you can define your schema like a normal object. But be aware of making it *const* like explained in the docs of the module.
-
 ```typescript
-const todo = {
+import { TypeBoxTypeProvider, Type } from 'fastify-type-provider-typebox'
+
+import fastify from 'fastify'
+
+const server = fastify({
+    ajv: {
+        customOptions: {
+            strict: 'log',
+            keywords: ['kind', 'modifier'],
+        },
+    },
+}).withTypeProvider<TypeBoxTypeProvider>()
+
+server.get('/route', {
+    schema: {
+        querystring: Type.Object({
+            foo: Type.Number(),
+            bar: Type.String()
+        })
+    }
+}, (request, reply) => {
+
+    // type Query = { foo: number, bar: string }
+
+    const { foo, bar } = request.query // type safe!
+})
+```
+
+TypeBox uses the properties `kind` and `modifier` internally. These properties are not strictly valid JSON schema which will cause `AJV@7` and newer versions to throw an invalid schema error. To remove the error it's either necessary to omit the properties by using [`Type.Strict()`](https://github.com/sinclairzx81/typebox#strict) or use the AJV options for adding custom keywords.
+
+See also the [TypeBox documentation](https://github.com/sinclairzx81/typebox#validation) on how to set up AJV to work with TypeBox.
+
+#### Json Schema to Ts
+
+If you already have schemas defined as objects in TS files, you can use `json-schema-to-ts` type provider to generate and use TypeScript interfaces directly!
+
+```bash
+$ npm install fastify-type-provider-json-schema-to-ts --save
+```
+
+ ```typescript
+import { JsonSchemaToTsTypeProvider } from 'fastify-type-provider-json-schema-to-ts'
+
+import fastify from 'fastify'
+
+const server = fastify().withTypeProvider<JsonSchemaToTsTypeProvider>()
+
+const QuerystringSchema = {
+  title: 'Querystring Schema',
   type: 'object',
   properties: {
-    name: { type: 'string' },
-    description: { type: 'string' },
-    done: { type: 'boolean' },
+    foo: { type: 'string' },
+    bar: { type: 'string' }
   },
-  required: ['name'],
+  additionalProperties: false,
+  required: ['foo', 'bar']
 } as const; // don't forget to use const !
-```
 
-With the provided type `FromSchema` you can build a type from your schema and use it in your handler.
-
-```typescript
-import { FromSchema } from "json-schema-to-ts";
-fastify.post<{ Body: FromSchema<typeof todo> }>(
-  '/todo',
-  {
+server.get('/route', {
     schema: {
-      body: todo,
-      response: {
-        201: {
-          type: 'string',
-        },
-      },
+        querystring: QuerystringSchema
     }
-  },
-  async (request, reply): Promise<void> => {
+}, (request, reply) => {
 
-    /*
-    request.body has type 
-    {
-      [x: string]: unknown;
-      description?: string;
-      done?: boolean;
-      name: string;
-    }
-    */
+    // type Query = { foo: number, bar: string }
 
-    request.body.name // will not throw type error
-    request.body.notthere // will throw type error
-    
-    reply.status(201).send();
-  },
-);
+    const { foo, bar } = request.query // type safe!
+})
 ```
 
 ### Plugins

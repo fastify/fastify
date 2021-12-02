@@ -8,3 +8,5 @@ All v3 deprecations have been removed and they will no longer work after upgradi
 ## Breaking Changes
 
 ## Deprecation of `app.use()`
+
+Starting this version of Fastify, we have deprecated the use of `app.use()`.

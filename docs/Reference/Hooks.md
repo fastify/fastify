@@ -25,15 +25,18 @@ By using hooks you can interact directly with the lifecycle of Fastify. There ar
   - [onRegister](#onregister)
 - [Scope](#scope)
 - [Route level hooks](#route-level-hooks)
+- [Diagnostics Channel Hooks](#diagnostics-channel-hooks)
 
 **Notice:** the `done` callback is not available when using `async`/`await` or returning a `Promise`. If you do invoke a `done` callback in this situation unexpected behavior may occur, e.g. duplicate invocation of handlers.
 
 ## Request/Reply Hooks
 
-[Request](Request.md) and [Reply](Reply.md) are the core Fastify objects.<br/>
-`done` is the function to continue with the [lifecycle](Lifecycle.md).
+[Request](./Request.md) and [Reply](./Reply.md) are the core Fastify objects.
 
-It is easy to understand where each hook is executed by looking at the [lifecycle page](Lifecycle.md).<br>
+`done` is the function to continue with the [lifecycle](./Lifecycle.md).
+
+It is easy to understand where each hook is executed by looking at the [lifecycle page](./Lifecycle.md).
+
 Hooks are affected by Fastify's encapsulation, and can thus be applied to selected routes. See the [Scopes](#scope) section for more information.
 
 There are eight different hooks that you can use in Request/Reply *(in order of execution)*:
@@ -150,9 +153,12 @@ fastify.addHook('onError', async (request, reply, error) => {
   // You should not use this hook to update the error
 })
 ```
-This hook is useful if you need to do some custom error logging or add some specific header in case of error.<br/>
-It is not intended for changing the error, and calling `reply.send` will throw an exception.<br/>
-This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends an error back to the user *(Note that the default `customErrorHandler` always sends the error back to the user)*.<br/>
+This hook is useful if you need to do some custom error logging or add some specific header in case of error.
+
+It is not intended for changing the error, and calling `reply.send` will throw an exception.
+
+This hook will be executed only after the `customErrorHandler` has been executed, and only if the `customErrorHandler` sends an error back to the user *(Note that the default `customErrorHandler` always sends the error back to the user)*.
+
 **Notice:** unlike the other hooks, pass an error to the `done` function is not supported.
 
 ### onSend
@@ -190,7 +196,6 @@ Note: If you change the payload, you may only change it to a `string`, a `Buffer
 
 ### onResponse
 ```js
-
 fastify.addHook('onResponse', (request, reply, done) => {
   // Some code
   done()
@@ -209,7 +214,6 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 ### onTimeout
 
 ```js
-
 fastify.addHook('onTimeout', (request, reply, done) => {
   // Some code
   done()
@@ -241,7 +245,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
   done(new Error('Some error'))
 })
 ```
-*The error will be handled by [`Reply`](Reply.md#errors).*
+*The error will be handled by [`Reply`](./Reply.md#errors).*
 
 Or if you're using `async/await` you can just throw an error:
 ```js
@@ -343,9 +347,10 @@ fastify.addHook('onReady', async function () {
 ```
 
 ### onClose
-<a name="on-close"></a>
+<a id="on-close"></a>
 
-Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](Plugins.md) need a "shutdown" event, for example, to close an open connection to a database.<br>
+Triggered when `fastify.close()` is invoked to stop the server. It is useful when [plugins](./Plugins.md) need a "shutdown" event, for example, to close an open connection to a database.
+
 The first argument is the Fastify instance, the second one the `done` callback.
 ```js
 fastify.addHook('onClose', (instance, done) => {
@@ -355,7 +360,7 @@ fastify.addHook('onClose', (instance, done) => {
 ```
 
 ### onRoute
-<a name="on-route"></a>
+<a id="on-route"></a>
 
 Triggered when a new route is registered. Listeners are passed a `routeOptions` object as the sole parameter. The interface is synchronous, and, as such, the listeners are not passed a callback. This hook is encapsulated.
 ```js
@@ -387,10 +392,12 @@ fastify.addHook('onRoute', (routeOptions) => {
 ```
 
 ### onRegister
-<a name="on-register"></a>
+<a id="on-register"></a>
 
-Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.<br/>
-This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context, thus this hook is encapsulated.<br/>
+Triggered when a new plugin is registered and a new encapsulation context is created. The hook will be executed **before** the registered code.
+
+This hook can be useful if you are developing a plugin that needs to know when a plugin context is formed, and you want to operate in that specific context, thus this hook is encapsulated.
+
 **Note:** This hook will not be called if a plugin is wrapped inside [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 ```js
 fastify.decorate('data', [])
@@ -422,9 +429,9 @@ fastify.addHook('onRegister', (instance, opts) => {
 ```
 
 ## Scope
-<a name="scope"></a>
+<a id="scope"></a>
 
-Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
+Except for [onClose](#onclose), all hooks are encapsulated. This means that you can decide where your hooks should run by using `register` as explained in the [plugins guide](../Guides/Plugins-Guide.md). If you pass a function, that function is bound to the right Fastify context and from there you have full access to the Fastify API.
 
 ```js
 fastify.addHook('onRequest', function (request, reply, done) {
@@ -463,10 +470,11 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 
 
 ## Route level hooks
-<a name="route-hooks"></a>
+<a id="route-hooks"></a>
 
 You can declare one or more custom lifecycle hooks ([onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler), [preSerialization](#preserialization), [onSend](#onsend), [onTimeout](#ontimeout), and [onError](#onerror)) hook(s) that will be **unique** for the route.
-If you do so, those hooks are always executed as the last hook in their category. <br/>
+If you do so, those hooks are always executed as the last hook in their category.
+
 This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.
 

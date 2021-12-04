@@ -1,7 +1,8 @@
 <h1 align="center">Fastify</h1>
 
 ## Lifecycle
-Following the schema of the internal lifecycle of Fastify.<br>
+Following the schema of the internal lifecycle of Fastify.
+
 On the right branch of every section there is the next phase of the lifecycle, on the left branch there is the corresponding error code that will be generated if the parent throws an error *(note that all the errors are automatically handled by Fastify)*.
 
 ```
@@ -73,6 +74,6 @@ If the reply was hijacked, we skip all the below steps. Otherwise, when it is be
 
 Note: `reply sent` means that the JSON payload will be serialized by:
 
-- the [reply serialized](./Reference/Server.md#setreplyserializer) if set
-- or by the [serializer compiler](./Reference/Server.md#setserializercompiler) when a JSON schema has been set for the returning HTTP status code
+- the [reply serialized](./Server.md#setreplyserializer) if set
+- or by the [serializer compiler](./Server.md#setserializercompiler) when a JSON schema has been set for the returning HTTP status code
 - or by the default `JSON.stringify` function

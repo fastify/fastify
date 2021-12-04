@@ -2,23 +2,23 @@
 
 ## Plugins
 Fastify allows the user to extend its functionalities with plugins.
-A plugin can be a set of routes, a server [decorator](Decorators.md), or whatever. The API that you will need to use one or more plugins, is `register`.<br>
+A plugin can be a set of routes, a server [decorator](./Decorators.md), or whatever. The API that you will need to use one or more plugins, is `register`.
 
 By default, `register` creates a *new scope*, this means that if you make some changes to the Fastify instance (via `decorate`), this change will not be reflected by the current context ancestors, but only to its descendants. This feature allows us to achieve plugin *encapsulation* and *inheritance*, in this way we create a *direct acyclic graph* (DAG) and we will not have issues caused by cross dependencies.
 
-You already see in the [getting started](./Guides/Getting-Started.md#register) section how using this API is pretty straightforward.
+You already see in the [getting started](../Guides/Getting-Started.md#register) section how using this API is pretty straightforward.
 ```
 fastify.register(plugin, [options])
 ```
 
 ### Plugin Options
-<a name="plugin-options"></a>
+<a id="plugin-options"></a>
 
 The optional `options` parameter for `fastify.register` supports a predefined set of options that Fastify itself will use, except when the plugin has been wrapped with [fastify-plugin](https://github.com/fastify/fastify-plugin). This options object will also be passed to the plugin upon invocation, regardless of whether or not the plugin has been wrapped. The currently supported list of Fastify specific options is:
 
-+ [`logLevel`](Routes.md#custom-log-level)
-+ [`logSerializers`](Routes.md#custom-log-serializer)
-+ [`prefix`](Plugins.md#route-prefixing-options)
++ [`logLevel`](./Routes.md#custom-log-level)
++ [`logSerializers`](./Routes.md#custom-log-serializer)
++ [`prefix`](#route-prefixing-options)
 
 **Note: Those options will be ignored when used with fastify-plugin**
 
@@ -59,20 +59,22 @@ fastify.register(fp((fastify, opts, done) => {
 fastify.register(require('fastify-foo'), parent => parent.foo_bar)
 ```
 
-The Fastify instance passed on to the function is the latest state of the **external Fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin i.e. utilizing an existing database connection to wrap around it.
+The Fastify instance passed on to the function is the latest state of the **external Fastify instance** the plugin was declared on, allowing access to variables injected via [`decorate`](./Decorators.md) by preceding plugins according to the **order of registration**. This is useful in case a plugin depends on changes made to the Fastify instance by a preceding plugin i.e. utilizing an existing database connection to wrap around it.
 
 Keep in mind that the Fastify instance passed on to the function is the same as the one that will be passed into the plugin, a copy of the external Fastify instance rather than a reference. Any usage of the instance will behave the same as it would if called within the plugins function i.e. if `decorate` is called, the decorated variables will be available within the plugins function unless it was wrapped with [`fastify-plugin`](https://github.com/fastify/fastify-plugin).
 
 #### Route Prefixing option
-<a name="route-prefixing-option"></a>
+<a id="route-prefixing-option"></a>
 
-If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](Routes.md#route-prefixing).<br>
+If you pass an option with the key `prefix` with a `string` value, Fastify will use it to prefix all the routes inside the register, for more info check [here](./Routes.md#route-prefixing).
+
 Be aware that if you use [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will not work.
 
 #### Error handling
-<a name="error-handling"></a>
+<a id="error-handling"></a>
 
-The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).<br>
+The error handling is done by [avvio](https://github.com/mcollina/avvio#error-handling).
+
 As a general rule, it is highly recommended that you handle your errors in the next `after` or `ready` block, otherwise you will get them inside the `listen` callback.
 
 ```js
@@ -94,7 +96,7 @@ fastify.listen(3000, (err, address) => {
 ```
 
 ### async/await
-<a name="async-await"></a>
+<a id="async-await"></a>
 
 *async/await* is supported by `after`, `ready` and `listen`, as well as
 `fastify` being a [Thenable](https://promisesaplus.com/).
@@ -110,7 +112,7 @@ await fastify.listen(3000)
 ```
 
 #### ESM support
-<a name="esm-support"></a>
+<a id="esm-support"></a>
 
 ESM is supported as well from [Node.js `v13.3.0`](https://nodejs.org/api/esm.html) and above!
 
@@ -135,9 +137,10 @@ export default plugin
 ```
 
 ### Create a plugin
-<a name="create-plugin"></a>
+<a id="create-plugin"></a>
 
-Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an `options` object, and the `done` callback.<br>
+Creating a plugin is very easy, you just need to create a function that takes three parameters, the `fastify` instance, an `options` object, and the `done` callback.
+
 Example:
 ```js
 module.exports = function (fastify, opts, done) {
@@ -160,14 +163,14 @@ module.exports = function (fastify, opts, done) {
   done()
 }
 ```
-Sometimes, you will need to know when the server is about to close, for example, because you must close a connection to a database. To know when this is going to happen, you can use the [`'onClose'`](Hooks.md#on-close) hook.
+Sometimes, you will need to know when the server is about to close, for example, because you must close a connection to a database. To know when this is going to happen, you can use the [`'onClose'`](./Hooks.md#on-close) hook.
 
 Do not forget that `register` will always create a new Fastify scope, if you do not need that, read the following section.
 
 ### Handle the scope
-<a name="handle-scope"></a>
+<a id="handle-scope"></a>
 
-If you are using `register` only for extending the functionality of the server with  [`decorate`](Decorators.md), it is your responsibility to tell Fastify not to create a new scope. Otherwise, your changes will not be accessible by the user in the upper scope.
+If you are using `register` only for extending the functionality of the server with  [`decorate`](./Decorators.md), it is your responsibility to tell Fastify not to create a new scope. Otherwise, your changes will not be accessible by the user in the upper scope.
 
 You have two ways to tell Fastify to avoid the creation of a new context:
 - Use the [`fastify-plugin`](https://github.com/fastify/fastify-plugin) module

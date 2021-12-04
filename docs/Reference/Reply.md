@@ -4,23 +4,22 @@
 - [Reply](#reply)
   - [Introduction](#introduction)
   - [.code(statusCode)](#codestatuscode)
-  - [.statusCode](#statusCode)
+  - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
-      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
-  - [.redirect([code,] dest)](#redirectcode--dest)
+  - [.redirect([code ,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
-  - [.raw](#raw)
   - [.serializer(func)](#serializerfunc)
+  - [.raw](#raw)
   - [.sent](#sent)
-  - [.hijack](#hijack)
+  - [.hijack()](#hijack)
   - [.send(data)](#senddata)
     - [Objects](#objects)
     - [Strings](#strings)
@@ -29,10 +28,14 @@
     - [Errors](#errors)
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
-  - [.then](#then)
+  - [.then(fulfilled, rejected)](#thenfulfilled-rejected)
 
 ### Introduction
+<<<<<<< HEAD:docs/Reply.md
 <a name="introduction"></a>
+=======
+<a id="introduction"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 The second parameter of the handler function is `Reply`.
 Reply is a core Fastify object that exposes the following functions
@@ -59,7 +62,7 @@ and properties:
 - `.res` *(deprecated, use `.raw` instead)* - The [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](Request.md#Request) property.
+- `.context` - Access the [Request's context](./Request.md#Request) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -80,12 +83,20 @@ fastify.get('/', {config: {foo: 'bar'}}, function (request, reply) {
 ```
 
 ### .code(statusCode)
+<<<<<<< HEAD:docs/Reply.md
 <a name="code"></a>
+=======
+<a id="code"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 If not set via `reply.code`, the resulting `statusCode` will be `200`.
 
 ### .statusCode
+<<<<<<< HEAD:docs/Reply.md
 <a name="statusCode"></a>
+=======
+<a id="statusCode"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 This property reads and sets the HTTP status code. It is an alias for `reply.code()` when used as a setter.
 ```js
@@ -95,9 +106,15 @@ if (reply.statusCode >= 299) {
 ```
 
 ### .server
+<<<<<<< HEAD:docs/Reply.md
 <a name="server"></a>
 
 The Fastify server instance, scoped to the current [encapsulation context](./Reference/Encapsulation.md).
+=======
+<a id="server"></a>
+
+The Fastify server instance, scoped to the current [encapsulation context](./Encapsulation.md).
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 ```js
 fastify.decorate('util', function util () {
@@ -110,13 +127,24 @@ fastify.get('/', async function (req, rep) {
 ```
 
 ### .header(key, value)
+<<<<<<< HEAD:docs/Reply.md
 <a name="header"></a>
+=======
+<a id="header"></a>
+
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 Sets a response header. If the value is omitted or undefined, it is coerced to `''`.
+
 For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
+<<<<<<< HEAD:docs/Reply.md
 <a name="set-cookie"></a>
 
+=======
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 - ### set-cookie
+<a id="set-cookie"></a>
+
     - When sending different values as a cookie with `set-cookie` as the key, every value will be sent as a cookie instead of replacing the previous value.
 
     ```js
@@ -130,7 +158,11 @@ For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/d
 
 
 ### .headers(object)
+<<<<<<< HEAD:docs/Reply.md
 <a name="headers"></a>
+=======
+<a id="headers"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Sets all the keys of the object as response headers. [`.header`](#headerkey-value) will be called under the hood.
 ```js
@@ -141,7 +173,11 @@ reply.headers({
 ```
 
 ### .getHeader(key)
+<<<<<<< HEAD:docs/Reply.md
 <a name="getHeader"></a>
+=======
+<a id="getHeader"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Retrieves the value of a previously set header.
 ```js
@@ -150,7 +186,11 @@ reply.getHeader('x-foo') // 'foo'
 ```
 
 ### .getHeaders()
+<<<<<<< HEAD:docs/Reply.md
 <a name="getHeaders"></a>
+=======
+<a id="getHeaders"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Gets a shallow copy of all current response headers, including those set via the raw `http.ServerResponse`. Note that headers set via Fastify take precedence over those set via `http.ServerResponse`.
 
@@ -162,7 +202,11 @@ reply.getHeaders() // { 'x-foo': 'foo', 'x-bar': 'bar' }
 ```
 
 ### .removeHeader(key)
+<<<<<<< HEAD:docs/Reply.md
 <a name="getHeader"></a>
+=======
+<a id="getHeader"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Remove the value of a previously set header.
 ```js
@@ -172,12 +216,20 @@ reply.getHeader('x-foo') // undefined
 ```
 
 ### .hasHeader(key)
+<<<<<<< HEAD:docs/Reply.md
 <a name="hasHeader"></a>
+=======
+<a id="hasHeader"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Returns a boolean indicating if the specified header has been set.
 
 ### .redirect([code ,] dest)
+<<<<<<< HEAD:docs/Reply.md
 <a name="redirect"></a>
+=======
+<a id="redirect"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Redirects a request to the specified URL, the status code is optional, default to `302` (if status code is not already set by calling `code`).
 
@@ -202,27 +254,41 @@ reply.code(303).redirect(302, '/home')
 ```
 
 ### .callNotFound()
+<<<<<<< HEAD:docs/Reply.md
 <a name="call-not-found"></a>
 
 Invokes the custom not found handler. Note that it will only call `preHandler` hook specified in [`setNotFoundHandler`](./Reference/Server.md#set-not-found-handler).
+=======
+<a id="call-not-found"></a>
+
+Invokes the custom not found handler. Note that it will only call `preHandler` hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 ```js
 reply.callNotFound()
 ```
 
 ### .getResponseTime()
+<<<<<<< HEAD:docs/Reply.md
 <a name="getResponseTime"></a>
+=======
+<a id="getResponseTime"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Invokes the custom response time getter to calculate the amount of time passed since the request was started.
 
-Note that unless this function is called in the [`onResponse` hook](Hooks.md#onresponse) it will always return `0`.
+Note that unless this function is called in the [`onResponse` hook](./Hooks.md#onresponse) it will always return `0`.
 
 ```js
 const milliseconds = reply.getResponseTime()
 ```
 
 ### .type(contentType)
+<<<<<<< HEAD:docs/Reply.md
 <a name="type"></a>
+=======
+<a id="type"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Sets the content type for the response.
 This is a shortcut for `reply.header('Content-Type', 'the/type')`.
@@ -232,7 +298,11 @@ reply.type('text/html')
 ```
 
 ### .serializer(func)
+<<<<<<< HEAD:docs/Reply.md
 <a name="serializer"></a>
+=======
+<a id="serializer"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 `.send()` will by default JSON-serialize any value that is not one of: `Buffer`, `stream`, `string`, `undefined`, `Error`. If you need to replace the default serializer with a custom serializer for a particular request, you can do so with the `.serializer()` utility. Be aware that if you are using a custom serializer, you must set a custom `'Content-Type'` header.
 
@@ -253,7 +323,11 @@ reply
 See [`.send()`](#send) for more information on sending different types of values.
 
 ### .raw
+<<<<<<< HEAD:docs/Reply.md
 <a name="raw"></a>
+=======
+<a id="raw"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 This is the [`http.ServerResponse`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_class_http_serverresponse) from Node core. Whilst you are using the Fastify `Reply` object, the use of `Reply.raw` functions is at your own risk as you are skipping all the Fastify
 logic of handling the HTTP response. e.g.:
@@ -268,10 +342,14 @@ app.get('/cookie-2', (req, reply) => {
   reply.raw.end()
 })
 ```
-Another example of the misuse of `Reply.raw` is explained in [Reply](Reply.md#getheaders).
+Another example of the misuse of `Reply.raw` is explained in [Reply](#getheaders).
 
 ### .sent
+<<<<<<< HEAD:docs/Reply.md
 <a name="sent"></a>
+=======
+<a id="sent"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 As the name suggests, `.sent` is a property to indicate if
 a response has been sent via `reply.send()`.
@@ -297,7 +375,11 @@ app.get('/', (req, reply) => {
 If the handler rejects, the error will be logged.
 
 ### .hijack()
+<<<<<<< HEAD:docs/Reply.md
 <a name="hijack"></a>
+=======
+<a id="hijack"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 Sometimes you might need to halt the execution of the normal request lifecycle and handle sending the response manually.
 
@@ -306,12 +388,20 @@ To achieve this, Fastify provides the `reply.hijack()` method that can be called
 NB (*): If `reply.raw` is used to send a response back to the user, `onResponse` hooks will still be executed
 
 ### .send(data)
+<<<<<<< HEAD:docs/Reply.md
 <a name="send"></a>
+=======
+<a id="send"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 As the name suggests, `.send()` is the function that sends the payload to the end user.
 
 #### Objects
+<<<<<<< HEAD:docs/Reply.md
 <a name="send-object"></a>
+=======
+<a id="send-object"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 As noted above, if you are sending JSON objects, `send` will serialize the object with [fast-json-stringify](https://www.npmjs.com/package/fast-json-stringify) if you set an output schema, otherwise, `JSON.stringify()` will be used.
 ```js
@@ -321,7 +411,11 @@ fastify.get('/json', options, function (request, reply) {
 ```
 
 #### Strings
+<<<<<<< HEAD:docs/Reply.md
 <a name="send-string"></a>
+=======
+<a id="send-string"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 If you pass a string to `send` without a `Content-Type`, it will be sent as `text/plain; charset=utf-8`. If you set the `Content-Type` header and pass a string to `send`, it will be serialized with the custom serializer if one is set, otherwise, it will be sent unmodified (unless the `Content-Type` header is set to `application/json; charset=utf-8`, in which case it will be JSON-serialized like an object — see the section above).
 ```js
@@ -331,7 +425,11 @@ fastify.get('/json', options, function (request, reply) {
 ```
 
 #### Streams
+<<<<<<< HEAD:docs/Reply.md
 <a name="send-streams"></a>
+=======
+<a id="send-streams"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 *send* can also handle streams out of the box. If you are sending a stream and you have not set a `'Content-Type'` header, *send* will set it at `'application/octet-stream'`.
 ```js
@@ -343,7 +441,11 @@ fastify.get('/streams', function (request, reply) {
 ```
 
 #### Buffers
+<<<<<<< HEAD:docs/Reply.md
 <a name="send-buffers"></a>
+=======
+<a id="send-buffers"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 If you are sending a buffer and you have not set a `'Content-Type'` header, *send* will set it to `'application/octet-stream'`.
 ```js
@@ -356,7 +458,11 @@ fastify.get('/streams', function (request, reply) {
 ```
 
 #### Errors
+<<<<<<< HEAD:docs/Reply.md
 <a name="errors"></a>
+=======
+<a id="errors"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 If you pass to *send* an object that is an instance of *Error*, Fastify will automatically create an error structured as the following:
 
@@ -369,7 +475,8 @@ If you pass to *send* an object that is an instance of *Error*, Fastify will aut
 }
 ```
 
-You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.<br>
+You can add custom properties to the Error object, such as `headers`, that will be used to enhance the HTTP response.
+
 *Note: If you are passing an error to `send` and the statusCode is less than 400, Fastify will automatically set it at 500.*
 
 Tip: you can simplify errors by using the [`http-errors`](https://npm.im/http-errors) module or [`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to generate errors:
@@ -410,7 +517,12 @@ fastify.get('/', {
 })
 ```
 
+<<<<<<< HEAD:docs/Reply.md
 If you want to customize error handling, check out [`setErrorHandler`](./Reference/Server.md#seterrorhandler) API.<br>
+=======
+If you want to customize error handling, check out [`setErrorHandler`](./Server.md#seterrorhandler) API.
+
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 *Note: you are responsible for logging when customizing the error handler*
 
 API:
@@ -426,7 +538,11 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
+<<<<<<< HEAD:docs/Reply.md
 The not found errors generated by the router will use the  [`setNotFoundHandler`](./Reference/Server.md#setnotfoundhandler)
+=======
+The not found errors generated by the router will use the  [`setNotFoundHandler`](./Server.md#setnotfoundhandler)
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 API:
 
@@ -440,9 +556,15 @@ fastify.setNotFoundHandler(function (request, reply) {
 ```
 
 #### Type of the final payload
+<<<<<<< HEAD:docs/Reply.md
 <a name="payload-type"></a>
 
 The type of the sent payload (after serialization and going through any [`onSend` hooks](Hooks.md#the-onsend-hook)) must be one of the following types, otherwise, an error will be thrown:
+=======
+<a id="payload-type"></a>
+
+The type of the sent payload (after serialization and going through any [`onSend` hooks](./Hooks.md#the-onsend-hook)) must be one of the following types, otherwise, an error will be thrown:
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 - `string`
 - `Buffer`
@@ -451,9 +573,16 @@ The type of the sent payload (after serialization and going through any [`onSend
 - `null`
 
 #### Async-Await and Promises
+<<<<<<< HEAD:docs/Reply.md
 <a name="async-await-promise"></a>
 
 Fastify natively handles promises and supports async-await.<br>
+=======
+<a id="async-await-promise"></a>
+
+Fastify natively handles promises and supports async-await.
+
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 *Note that in the following examples we are not using reply.send.*
 ```js
 const delay = promisify(setTimeout)
@@ -484,10 +613,14 @@ fastify.get('/botnet', async function (request, reply) {
 })
 ```
 
-If you want to know more please review [Routes#async-await](Routes.md#async-await).
+If you want to know more please review [Routes#async-await](./Routes.md#async-await).
 
 ### .then(fulfilled, rejected)
+<<<<<<< HEAD:docs/Reply.md
 <a name="then"></a>
+=======
+<a id="then"></a>
+>>>>>>> 2dfafcfa1f95af77000190fec277e623a691f05e:docs/Reference/Reply.md
 
 As the name suggests, a `Reply` object can be awaited upon, i.e. `await reply` will wait until the reply is sent.
 The `await` syntax calls the `reply.then()`.

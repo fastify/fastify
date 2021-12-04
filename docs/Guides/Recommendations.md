@@ -4,8 +4,10 @@
 
 This document contains a set of recommendations when using Fastify.
 
-* [Use A Reverse Proxy](#reverseproxy)
-* [Kubernetes](#kubernetes)
+- [Use A Reverse Proxy](#use-a-reverse-proxy)
+  - [HAProxy](#haproxy)
+  - [Nginx](#nginx)
+- [Kubernetes](#kubernetes)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>

@@ -551,7 +551,7 @@ fastify.post('/the/url', { schema }, handler)
 <a name="schema-serializer"></a>
 #### Serializer Compiler
 
-The `serializerCompiler` is a function that returns a function that must return a string from an input object. You must provide a function to serialize every route where you have defined a `response` JSON Schema.
+The `serializerCompiler` is a function that returns a function that must return a string from an input object. When you define a response JSON Schema, you can change the default serialization method by providing a function to serialize every route where you do.
 
 ```js
 fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {

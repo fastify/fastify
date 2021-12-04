@@ -49,6 +49,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`fastify-swagger`](https://github.com/fastify/fastify-swagger) Plugin for serving Swagger/OpenAPI documentation for Fastify, supporting dynamic generation.
 - [`fastify-websocket`](https://github.com/fastify/fastify-websocket) WebSocket support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 - [`fastify-url-data`](https://github.com/fastify/fastify-url-data) Decorate the `Request` object with a method to access raw URL components.
+- [`middie`](https://github.com/fastify/middie) Middleware engine for Fastify.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Measure process load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
 
@@ -59,6 +60,7 @@ Plugins maintained by the Fastify team are listed under [Core](#core) while plug
 - [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server) Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your Fastify API graceful.
+- [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics) Minimalistic and opinionated plugin that collects usage/process metrics and dispatches to [statsd](https://github.com/statsd/statsd).
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit) A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger) A plugin to enable compact request logging for Fastify
 - [`@mgcrea/fastify-session-redis-store`](https://github.com/mgcrea/fastify-session-redis-store) Redis store for @mgcrea/fastify-session using ioredis

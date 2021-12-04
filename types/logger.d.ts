@@ -15,16 +15,14 @@ export type FastifyLogFn = pino.LogFn
 
 export type LogLevel = pino.Level
 
-export type SerializerFn = pino.SerializerFn
-
 export type Bindings = pino.Bindings
 
 export type FastifyLoggerInstance = pino.Logger
-export type FastifyBaseLogger = pino.BaseLogger & {
+// TODO make pino export BaseLogger again
+// export type FastifyBaseLogger = pino.BaseLogger & {
+export type FastifyBaseLogger = pino.Logger & {
   child(bindings: Bindings): FastifyBaseLogger
 }
-
-export type PrettyOptions = pino.PrettyOptions & { suppressFlushSyncWarning?: boolean }
 
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;
@@ -64,6 +62,5 @@ export interface FastifyLoggerOptions<
   level?: string;
   file?: string;
   genReqId?: (req: RawRequest) => string;
-  prettyPrint?: boolean | PrettyOptions;
   stream?: FastifyLoggerStreamDestination;
 }

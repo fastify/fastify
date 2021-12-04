@@ -16,7 +16,16 @@ const Readable = require('stream').Readable
 const split = require('split2')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
 
-test('should respond with a stream (success)', t => {
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
+test('should respond with a stream', t => {
   t.plan(6)
   const fastify = Fastify()
 
@@ -583,7 +592,7 @@ test('return a 404 if the stream emits a 404 error', t => {
   })
 })
 
-test('should support send module 200 and 404', t => {
+test('should support send module 200 and 404', { only: true }, t => {
   t.plan(8)
   const fastify = Fastify()
 
@@ -601,7 +610,9 @@ test('should support send module 200 and 404', t => {
     t.error(err)
     fastify.server.unref()
 
-    sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
+    const url = getUrl(fastify)
+
+    sget(url, function (err, response, data) {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/javascript; charset=UTF-8')
       t.equal(response.statusCode, 200)
@@ -612,7 +623,7 @@ test('should support send module 200 and 404', t => {
       })
     })
 
-    sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
+    sget(url + '/error', function (err, response) {
       t.error(err)
       t.equal(response.statusCode, 404)
     })

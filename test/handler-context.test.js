@@ -4,6 +4,15 @@ const http = require('http')
 const test = require('tap').test
 const fastify = require('../')
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 test('handlers receive correct `this` context', (t) => {
   t.plan(4)
 
@@ -29,8 +38,7 @@ test('handlers receive correct `this` context', (t) => {
     t.ok(instance.foo)
     t.equal(instance.foo, 'foo')
 
-    const address = `http://127.0.0.1:${instance.server.address().port}/`
-    http.get(address, () => {}).on('error', t.threw)
+    http.get(getUrl(instance), () => {}).on('error', t.threw)
   })
 })
 
@@ -50,7 +58,6 @@ test('handlers have access to the internal context', (t) => {
   instance.listen(0, (err) => {
     instance.server.unref()
     if (err) t.threw(err)
-    const address = `http://127.0.0.1:${instance.server.address().port}/`
-    http.get(address, () => {}).on('error', t.threw)
+    http.get(getUrl(instance), () => {}).on('error', t.threw)
   })
 })

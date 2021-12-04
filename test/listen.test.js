@@ -3,15 +3,29 @@
 const os = require('os')
 const path = require('path')
 const fs = require('fs')
-const test = require('tap').test
+const { test, before } = require('tap')
 const Fastify = require('..')
+const dns = require('dns').promises
+
+let localhost
+let localhostForURL
+
+before(async function () {
+  const lookup = await dns.lookup('localhost')
+  localhost = lookup.address
+  if (lookup.family === 6) {
+    localhostForURL = `[${lookup.address}]`
+  } else {
+    localhostForURL = localhost
+  }
+})
 
 test('listen accepts a callback', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   fastify.listen((err) => {
-    t.equal(fastify.server.address().address, '127.0.0.1')
+    t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
 })
@@ -21,7 +35,7 @@ test('listen accepts a port and a callback', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0, (err) => {
-    t.equal(fastify.server.address().address, '127.0.0.1')
+    t.equal(fastify.server.address().address, localhost)
     t.error(err)
   })
 })
@@ -31,7 +45,7 @@ test('listen accepts a port and a callback with (err, address)', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0, (err, address) => {
-    t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     t.error(err)
   })
 })
@@ -40,7 +54,7 @@ test('listen accepts a port, address, and callback', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0, '127.0.0.1', (err) => {
+  fastify.listen(0, localhost, (err) => {
     t.error(err)
   })
 })
@@ -78,8 +92,8 @@ test('listen accepts a port, address and a callback with (err, address)', t => {
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0, '127.0.0.1', (err, address) => {
-    t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+  fastify.listen(0, localhost, (err, address) => {
+    t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     t.error(err)
   })
 })
@@ -88,7 +102,7 @@ test('listen accepts a port, address, backlog and callback', t => {
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0, '127.0.0.1', 511, (err) => {
+  fastify.listen(0, localhost, 511, (err) => {
     t.error(err)
   })
 })
@@ -97,8 +111,8 @@ test('listen accepts a port, address, backlog and callback with (err, address)',
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
-  fastify.listen(0, '127.0.0.1', 511, (err, address) => {
-    t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+  fastify.listen(0, localhost, 511, (err, address) => {
+    t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     t.error(err)
   })
 })
@@ -111,7 +125,7 @@ test('listen after Promise.resolve()', t => {
     .then(() => {
       f.listen(0, (err, address) => {
         f.server.unref()
-        t.equal(address, 'http://127.0.0.1:' + f.server.address().port)
+        t.equal(address, `http://${localhostForURL}:${f.server.address().port}`)
         t.error(err)
       })
     })
@@ -153,7 +167,7 @@ test('double listen errors callback with (err, address)', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0, (err1, address1) => {
-    t.equal(address1, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.equal(address1, `http://${localhostForURL}:${fastify.server.address().port}`)
     t.error(err1)
     fastify.listen(fastify.server.address().port, (err2, address2) => {
       t.equal(address2, null)
@@ -167,7 +181,7 @@ test('listen twice on the same port', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0, (err1, address1) => {
-    t.equal(address1, 'http://127.0.0.1:' + fastify.server.address().port)
+    t.equal(address1, `http://${localhostForURL}:${fastify.server.address().port}`)
     t.error(err1)
     const s2 = Fastify()
     t.teardown(s2.close.bind(s2))
@@ -184,7 +198,7 @@ test('listen twice on the same port callback with (err, address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0, (err1, address1) => {
     const _port = fastify.server.address().port
-    t.equal(address1, 'http://127.0.0.1:' + _port)
+    t.equal(address1, `http://${localhostForURL}:${_port}`)
     t.error(err1)
     const s2 = Fastify()
     t.teardown(s2.close.bind(s2))
@@ -221,7 +235,7 @@ test('listen without callback (port zero)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0)
     .then(() => {
-      t.equal(fastify.server.address().address, '127.0.0.1')
+      t.equal(fastify.server.address().address, localhost)
     })
 })
 
@@ -231,7 +245,7 @@ test('listen without callback (port not given)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen()
     .then(() => {
-      t.equal(fastify.server.address().address, '127.0.0.1')
+      t.equal(fastify.server.address().address, localhost)
     })
 })
 
@@ -241,7 +255,7 @@ test('listen null without callback with (address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(null)
     .then(address => {
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     })
 })
 
@@ -251,7 +265,7 @@ test('listen without port without callback with (address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen()
     .then(address => {
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     })
 })
 
@@ -261,7 +275,7 @@ test('listen with undefined without callback with (address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(undefined)
     .then(address => {
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     })
 })
 
@@ -271,7 +285,7 @@ test('listen without callback with (address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0)
     .then(address => {
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
     })
 })
 
@@ -295,7 +309,7 @@ test('double listen without callback with (address)', t => {
   t.teardown(fastify.close.bind(fastify))
   fastify.listen(0)
     .then(address => {
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
       fastify.listen(0)
         .catch(err => {
           t.ok(err)
@@ -329,7 +343,7 @@ test('listen twice on the same port without callback rejects with (address)', t 
     .then(address => {
       const s2 = Fastify()
       t.teardown(s2.close.bind(s2))
-      t.equal(address, 'http://127.0.0.1:' + fastify.server.address().port)
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
       s2.listen(fastify.server.address().port)
         .catch(err => {
           t.ok(err)

@@ -1,9 +1,10 @@
 'use strict'
 
 const t = require('tap')
-const test = t.test
+const { test, before } = t
 const sget = require('simple-get').concat
 const fastify = require('..')
+const dns = require('dns').promises
 
 const sgetForwardedRequest = (app, forHeader, path, protoHeader) => {
   const headers = {
@@ -38,6 +39,13 @@ const testRequestValues = (t, req, options) => {
   }
 }
 
+let localhost
+
+before(async function () {
+  const lookup = await dns.lookup('localhost')
+  localhost = lookup.address
+})
+
 test('trust proxy, not add properties to node req', (t) => {
   t.plan(8)
   const app = fastify({
@@ -49,7 +57,7 @@ test('trust proxy, not add properties to node req', (t) => {
   })
 
   app.get('/trustproxychain', function (req, reply) {
-    testRequestValues(t, req, { ip: '2.2.2.2', ips: ['127.0.0.1', '1.1.1.1', '2.2.2.2'] })
+    testRequestValues(t, req, { ip: '2.2.2.2', ips: [localhost, '1.1.1.1', '2.2.2.2'] })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
@@ -66,7 +74,7 @@ test('trust proxy, not add properties to node req', (t) => {
 test('trust proxy chain', (t) => {
   t.plan(3)
   const app = fastify({
-    trustProxy: ['127.0.0.1', '192.168.1.1']
+    trustProxy: [localhost, '192.168.1.1']
   })
 
   app.get('/trustproxychain', function (req, reply) {
@@ -86,7 +94,7 @@ test('trust proxy chain', (t) => {
 test('trust proxy function', (t) => {
   t.plan(3)
   const app = fastify({
-    trustProxy: (address) => address === '127.0.0.1'
+    trustProxy: (address) => address === localhost
   })
   app.get('/trustproxyfunc', function (req, reply) {
     testRequestValues(t, req, { ip: '1.1.1.1' })
@@ -108,7 +116,7 @@ test('trust proxy number', (t) => {
     trustProxy: 1
   })
   app.get('/trustproxynumber', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1'] })
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'] })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 
@@ -124,10 +132,10 @@ test('trust proxy number', (t) => {
 test('trust proxy IP addresses', (t) => {
   t.plan(4)
   const app = fastify({
-    trustProxy: '127.0.0.1, 2.2.2.2'
+    trustProxy: `${localhost}, 2.2.2.2`
   })
   app.get('/trustproxyipaddrs', function (req, reply) {
-    testRequestValues(t, req, { ip: '1.1.1.1', ips: ['127.0.0.1', '1.1.1.1'] })
+    testRequestValues(t, req, { ip: '1.1.1.1', ips: [localhost, '1.1.1.1'] })
     reply.code(200).send({ ip: req.ip, hostname: req.hostname })
   })
 

@@ -5,6 +5,15 @@ const sget = require('simple-get')
 const Fastify = require('../')
 const { FST_ERR_BAD_URL } = require('../lib/errors')
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 test('Should honor ignoreTrailingSlash option', t => {
   t.plan(4)
   const fastify = Fastify({
@@ -19,7 +28,7 @@ test('Should honor ignoreTrailingSlash option', t => {
     fastify.server.unref()
     if (err) t.threw(err)
 
-    const baseUrl = 'http://127.0.0.1:' + fastify.server.address().port
+    const baseUrl = getUrl(fastify)
 
     sget.concat(baseUrl + '/test', (err, res, data) => {
       if (err) t.threw(err)

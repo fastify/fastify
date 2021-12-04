@@ -25,6 +25,15 @@ function plainTextParser (request, callback) {
   }
 }
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 process.removeAllListeners('warning')
 
 test('contentTypeParser method should exist', t => {
@@ -61,7 +70,7 @@ test('contentTypeParser should add a custom parser', t => {
 
       sget({
         method: 'POST',
-        url: 'http://localhost:' + fastify.server.address().port,
+        url: getUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'application/jsoff'
@@ -78,7 +87,7 @@ test('contentTypeParser should add a custom parser', t => {
 
       sget({
         method: 'OPTIONS',
-        url: 'http://localhost:' + fastify.server.address().port,
+        url: getUrl(fastify),
         body: '{"hello":"world"}',
         headers: {
           'Content-Type': 'application/jsoff'

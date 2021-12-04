@@ -48,7 +48,6 @@ const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_BAD_URL,
-  FST_ERR_MISSING_MIDDLEWARE,
   AVVIO_ERRORS_MAP,
   appendStackTrace
 } = require('./lib/errors')
@@ -324,11 +323,6 @@ function fastify (options) {
     }
   })
 
-  // We are adding `use` to the fastify prototype so the user
-  // can still access it (and get the expected error), but `decorate`
-  // will not detect it, and allow the user to override it.
-  Object.setPrototypeOf(fastify, { use })
-
   if (options.schemaErrorFormatter) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)
     fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
@@ -491,10 +485,6 @@ function fastify (options) {
         resolveReady(fastify)
       }
     }
-  }
-
-  function use () {
-    throw new FST_ERR_MISSING_MIDDLEWARE()
   }
 
   // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.

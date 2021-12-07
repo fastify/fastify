@@ -1714,7 +1714,7 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(response.payload), {
         error: 'Bad Request',
-        message: "'%world' is not a valid url component",
+        message: "'/hello/%world' is not a valid url component",
         statusCode: 400
       })
     })

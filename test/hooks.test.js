@@ -13,6 +13,15 @@ const payload = { hello: 'world' }
 
 process.removeAllListeners('warning')
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 test('hooks', t => {
   t.plan(43)
   const fastify = Fastify({ exposeHeadRoutes: false })
@@ -713,12 +722,12 @@ test('onRoute hook should able to change the route url', t => {
 
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (route) => {
-      t.equal(route.url, '/föö')
+      t.equal(route.url, '/foo')
       route.url = encodeURI(route.url)
     })
 
-    instance.get('/föö', (request, reply) => {
-      reply.send('here /föö')
+    instance.get('/foo', (request, reply) => {
+      reply.send('here /foo')
     })
 
     done()
@@ -730,11 +739,11 @@ test('onRoute hook should able to change the route url', t => {
 
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + encodeURI('/föö')
+      url: getUrl(fastify) + encodeURI('/foo')
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
-      t.equal(body.toString(), 'here /föö')
+      t.equal(body.toString(), 'here /foo')
     })
   })
 })

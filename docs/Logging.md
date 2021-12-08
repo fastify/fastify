@@ -116,8 +116,8 @@ const fastify = require('fastify')({
         return {
           method: request.method,
           url: request.url,
-          path: request.path,
-          parameters: request.parameters,
+          path: request.routerPath,
+          parameters: request.params,
           // Including the headers in the log could be in violation
           // of privacy laws, e.g. GDPR. You should use the "redact" option to
           // remove sensitive fields. It could also leak authentication data in

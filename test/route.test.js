@@ -9,6 +9,15 @@ const joi = require('joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
 
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
+
 test('route', t => {
   t.plan(9)
   const test = t.test
@@ -1418,4 +1427,28 @@ test('HEAD route with body schema should throw - shorthand', t => {
     }
     )
   }, new Error('Body validation schema for HEAD:/shouldThrow2 route is not supported!'))
+})
+
+test('route with non-english characters', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/föö', (request, reply) => {
+    reply.send('here /föö')
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: getUrl(fastify) + encodeURI('/föö')
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'here /föö')
+    })
+  })
 })

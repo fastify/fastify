@@ -133,7 +133,7 @@ test('Should honor frameworkErrors option', t => {
     },
     (err, res) => {
       t.error(err)
-      t.equal(res.body, '\'%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
     }
   )
 })

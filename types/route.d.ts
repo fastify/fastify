@@ -6,7 +6,7 @@ import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpressi
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
 import { FastifyError } from 'fastify-error'
 import { FastifyContext } from './context'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyReplyReturnType } from './type-provider'
 import { FastifyLoggerInstance, LogLevel } from './logger'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
@@ -66,7 +66,7 @@ export type RouteHandlerMethod<
   this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
-) => void | Promise<RouteGeneric['Reply'] | void>
+) => ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
 
 /**
  * Shorthand options including the handler function property

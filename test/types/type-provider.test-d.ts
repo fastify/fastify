@@ -1,5 +1,5 @@
 import fastify, { FastifyTypeProvider } from '../../fastify'
-import { expectAssignable, expectType, printType } from 'tsd'
+import { expectAssignable, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
@@ -192,5 +192,142 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
     expectType<number>(req.body.x)
     expectType<string>(req.body.y)
     expectType<boolean>(req.body.z)
+  }
+))
+
+// -------------------------------------------------------------------
+// TypeBox Response Type
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: Type.String(),
+        400: Type.Number(),
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    res.send('hello')
+    res.send(42)
+    res.send({ error: 'error' })
+  }
+))
+// -------------------------------------------------------------------
+// TypeBox Response Type: Return
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: Type.String(),
+        400: Type.Number(),
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return 42
+      case 3: return { error: 'error' }
+    }
+  }
+))
+
+// -------------------------------------------------------------------
+// JsonSchemaToTs Response Type
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: { type: 'string' },
+        400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    res.send('hello')
+    res.send(42)
+    res.send({ error: 'error' })
+  }
+))
+
+// -------------------------------------------------------------------
+// JsonSchemaToTs Response Type: Return
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: { type: 'string' },
+        400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return 42
+      case 3: return { error: 'error' }
+    }
+  }
+))
+
+// -------------------------------------------------------------------
+// Response Type Override
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: number}>(
+  '/',
+  {
+    schema: {
+      response: {
+        200: { type: 'string' },
+        400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    res.send(42)
+  }
+))
+
+// -------------------------------------------------------------------
+// Response Type Override: Return
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: number}>(
+  '/',
+  {
+    schema: {
+      response: {
+        200: { type: 'string' },
+        400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    return 42
   }
 ))

@@ -62,11 +62,12 @@ export type RouteHandlerMethod<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  ReturnType = ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
 > = (
   this: FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
-) => ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
+) => ReturnType
 
 /**
  * Shorthand options including the handler function property

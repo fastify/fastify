@@ -23,7 +23,7 @@ export interface FastifyReply<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-  Context extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
+  ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
@@ -34,7 +34,7 @@ export interface FastifyReply<
   status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   statusCode: number;
   sent: boolean;
-  send(payload?: Context): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   getHeader(key: string): string | undefined;

@@ -24,16 +24,16 @@ export interface FastifyRequest<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  Context extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   id: any;
-  params: Context['params'];
+  params: RequestType['params'];
   raw: RawRequest;
-  query: Context['query'];
-  headers: RawRequest['headers'] & Context['headers']; // this enables the developer to extend the existing http(s|2) headers list
+  query: RequestType['query'];
+  headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   server: FastifyInstance;
-  body: Context['body'];
+  body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

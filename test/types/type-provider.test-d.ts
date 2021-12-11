@@ -296,7 +296,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 // Response Type Override
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: number}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
   '/',
   {
     schema: {
@@ -308,7 +308,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: n
     }
   },
   async (_, res) => {
-    res.send(42)
+    res.send(true)
   }
 ))
 
@@ -316,7 +316,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: n
 // Response Type Override: Return
 // -------------------------------------------------------------------
 
-expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: number}>(
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
   '/',
   {
     schema: {
@@ -328,6 +328,6 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: n
     }
   },
   async (_, res) => {
-    return 42
+    return true
   }
 ))

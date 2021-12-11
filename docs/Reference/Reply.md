@@ -7,12 +7,13 @@
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
+      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
-  - [.redirect([code ,] dest)](#redirectcode--dest)
+  - [.redirect([code,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
@@ -118,7 +119,6 @@ For more information, see [`http.ServerResponse#setHeader`](https://nodejs.org/d
 - ### set-cookie
 <a id="set-cookie"></a>
 
-- ### set-cookie
     - When sending different values as a cookie with `set-cookie` as the key, every value will be sent as a cookie instead of replacing the previous value.
 
     ```js

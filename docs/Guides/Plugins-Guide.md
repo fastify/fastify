@@ -317,7 +317,7 @@ async function plugin (fastify, opts) {
 
 export default plugin
 ```
-__Note__: Fastify does not support named imports within an ESM context. Instead, the `default` export is available. 
+__Note__: Fastify does not support named imports within an ESM context. Instead, the `default` export is available.
 
 ```js
 // server.mjs

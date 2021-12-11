@@ -473,7 +473,7 @@ Warn: if you declare the function with an [arrow function](https://developer.moz
 <a id="route-hooks"></a>
 
 You can declare one or more custom lifecycle hooks ([onRequest](#onrequest), [onResponse](#onresponse), [preParsing](#preparsing), [preValidation](#prevalidation), [preHandler](#prehandler), [preSerialization](#preserialization), [onSend](#onsend), [onTimeout](#ontimeout), and [onError](#onerror)) hook(s) that will be **unique** for the route.
-If you do so, those hooks are always executed as the last hook in their category. 
+If you do so, those hooks are always executed as the last hook in their category.
 
 This can be useful if you need to implement authentication, where the [preParsing](#preparsing) or [preValidation](#prevalidation) hooks are exactly what you need.
 Multiple route-level hooks can also be specified as an array.

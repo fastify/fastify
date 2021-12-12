@@ -1489,26 +1489,30 @@ database.
 
 <!-- Links -->
 
-[Fastify]:
-#fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
-[RawServerGeneric]: #rawserver [RawRequestGeneric]: #rawrequest
-[RawReplyGeneric]: #rawreply [LoggerGeneric]: #logger [RawBodyGeneric]: #rawbody
-[HTTPMethods]: #fastifyhttpmethods [RawServerBase]: #fastifyrawserverbase
-[RawServerDefault]: #fastifyrawserverdefault [FastifyRequest]:
-#fastifyfastifyrequestrawserver-rawrequest-requestgeneric
+[Fastify]: #fastifyrawserver-rawrequest-rawreply-loggeropts-fastifyserveroptions-fastifyinstance
+[RawServerGeneric]: #rawserver
+[RawRequestGeneric]: #rawrequest
+[RawReplyGeneric]: #rawreply
+[LoggerGeneric]: #logger
+[RawBodyGeneric]: #rawbody
+[HTTPMethods]: #fastifyhttpmethods
+[RawServerBase]: #fastifyrawserverbase
+[RawServerDefault]: #fastifyrawserverdefault
+[FastifyRequest]: #fastifyfastifyrequestrawserver-rawrequest-requestgeneric
 [FastifyRequestGenericInterface]: #fastifyrequestgenericinterface
 [RawRequestDefaultExpression]: #fastifyrawrequestdefaultexpressionrawserver
 [FastifyReply]: #fastifyfastifyreplyrawserver-rawreply-contextconfig
 [RawReplyDefaultExpression]: #fastifyrawreplydefaultexpression
 [FastifyServerOptions]: #fastifyfastifyserveroptions-rawserver-logger
-[FastifyInstance]: #fastifyfastifyinstance [FastifyLoggerOptions]:
-#fastifyfastifyloggeroptions [ContextConfigGeneric]: #ContextConfigGeneric
-[FastifyPlugin]:
-##fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
+[FastifyInstance]: #fastifyfastifyinstance
+[FastifyLoggerOptions]: #fastifyfastifyloggeroptions
+[ContextConfigGeneric]: #ContextConfigGeneric
+[FastifyPlugin]: #fastifyfastifypluginoptions-rawserver-rawrequest-requestgeneric
 [FastifyPluginCallback]: #fastifyfastifyplugincallbackoptions
-[FastifyPluginAsync]: #fastifyfastifypluginasyncoptions [FastifyPluginOptions]:
-#fastifyfastifypluginoptions [FastifyRegister]:
-#fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
-[FastifyRegisterOptions]: #fastifyfastifytregisteroptions [LogLevel]:
-#fastifyloglevel [FastifyError]: #fastifyfastifyerror [RouteOptions]:
-#fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig
+[FastifyPluginAsync]: #fastifyfastifypluginasyncoptions
+[FastifyPluginOptions]: #fastifyfastifypluginoptions
+[FastifyRegister]: #fastifyfastifyregisterrawserver-rawrequest-requestgenericplugin-fastifyplugin-opts-fastifyregisteroptions
+[FastifyRegisterOptions]: #fastifyfastifytregisteroptions
+[LogLevel]: #fastifyloglevel
+[FastifyError]: #fastifyfastifyerror
+[RouteOptions]: #fastifyrouteoptionsrawserver-rawrequest-rawreply-requestgeneric-contextconfig

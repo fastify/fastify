@@ -118,7 +118,7 @@
   "devDependencies": {
     "@fastify/ajv-compiler-6": "npm:@fastify/ajv-compiler@^1.0.0",
     "@fastify/pre-commit": "^2.0.2",
-    "@sinclair/typebox": "^0.20.5",
+    "@sinclair/typebox": "^0.23.1",
     "@sinonjs/fake-timers": "^7.1.2",
     "@types/node": "^16.7.10",
     "@typescript-eslint/eslint-plugin": "^4.30.0",

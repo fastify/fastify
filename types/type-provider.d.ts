@@ -34,7 +34,7 @@ type ResolveRequestHeaders<TypeProvider extends FastifyTypeProvider, SchemaCompi
 type ResolveRequestBody<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
   UndefinedToUnknown<keyof RouteGeneric['Body'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
 
-// The target request type. This type in inferenced on fastify 'requests' via generic argument assignment
+// The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
   params: Params,
   query: Querystring,
@@ -67,7 +67,7 @@ type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, Sc
   [K in keyof SchemaCompiler['response']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K]>
 } extends infer Result ? Result[keyof Result] : unknown
 
-// The target reply type. This type in inferenced on fastify 'replies' via generic argument assignment
+// The target reply type. This type is inferenced on fastify 'replies' via generic argument assignment
 export type FastifyReplyType<Reply = unknown> = Reply
 
 // Resolves the Reply type either via generic argument or from response schema. This type uses a different
@@ -83,7 +83,7 @@ UseReplyFromRouteGeneric<RouteGeneric> extends true ? ResolveReplyFromRouteGener
 // FastifyReplyReturnType
 // -----------------------------------------------------------------------------------------------
 
-// The target reply return type. This type in inferenced on fastify 'routes' via generic argument assignment
+// The target reply return type. This type is inferenced on fastify 'routes' via generic argument assignment
 export type ResolveFastifyReplyReturnType<
   TypeProvider extends FastifyTypeProvider,
   SchemaCompiler extends FastifySchema,

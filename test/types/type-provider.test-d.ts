@@ -305,7 +305,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       } as const
     }
   },
-  async (_, res) => {
+  (_, res) => {
     res.send('hello')
     res.send(42)
     res.send({ error: 'error' })

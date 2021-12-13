@@ -137,7 +137,6 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "eslint-plugin-standard": "^5.0.0",
     "fast-json-body": "^1.1.0",
     "fastify-plugin": "^3.0.0",
     "fluent-json-schema": "^3.0.1",

@@ -182,3 +182,223 @@ test('Should allow registering custom constrained routes', t => {
     t.equal(res.statusCode, 404)
   })
 })
+
+test('Should allow registering an unconstrained route after a constrained route', t => {
+  t.plan(6)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { host: 'fastify.io' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from fastify.io' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => {
+      reply.send({ hello: 'from any other domain' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      host: 'fastify.io'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'from fastify.io' })
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      host: 'example.com'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'from any other domain' })
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should allow registering constrained routes in a prefixed plugin', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.register(async (scope, opts) => {
+    scope.route({
+      method: 'GET',
+      constraints: { host: 'fastify.io' },
+      path: '/route',
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      }
+    })
+  }, { prefix: '/prefix' })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/prefix/route',
+    headers: {
+      host: 'fastify.io'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { ok: true })
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should allow registering a constrained GET route after a constrained HEAD route', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'HEAD',
+    url: '/',
+    constraints: { host: 'fastify.io' },
+    handler: (req, reply) => {
+      reply.header('content-type', 'text/plain')
+      reply.send('custom HEAD response')
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { host: 'fastify.io' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from any other domain' })
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/',
+    headers: {
+      host: 'fastify.io'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'custom HEAD response')
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Should allow registering a constrained GET route after an unconstrained HEAD route', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'HEAD',
+    url: '/',
+    handler: (req, reply) => {
+      reply.header('content-type', 'text/plain')
+      reply.send('custom HEAD response')
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { host: 'fastify.io' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from any other domain' })
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/',
+    headers: {
+      host: 'fastify.io'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'custom HEAD response')
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('Will not try to re-createprefixed HEAD route if it already exists and exposeHeadRoutes is true for constrained routes', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'HEAD',
+      path: '/route',
+      constraints: { host: 'fastify.io' },
+      handler: (req, reply) => {
+        reply.header('content-type', 'text/plain')
+        reply.send('custom HEAD response')
+      }
+    })
+    scope.route({
+      method: 'GET',
+      path: '/route',
+      constraints: { host: 'fastify.io' },
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  t.ok(true)
+})
+
+test('allows separate constrained and unconstrained HEAD routes', async (t) => {
+  t.plan(1)
+
+  const fastify = Fastify({ exposeHeadRoutes: true })
+
+  fastify.register((scope, opts, next) => {
+    scope.route({
+      method: 'HEAD',
+      path: '/route',
+      handler: (req, reply) => {
+        reply.header('content-type', 'text/plain')
+        reply.send('unconstrained HEAD response')
+      }
+    })
+
+    scope.route({
+      method: 'HEAD',
+      path: '/route',
+      constraints: { host: 'fastify.io' },
+      handler: (req, reply) => {
+        reply.header('content-type', 'text/plain')
+        reply.send('constrained HEAD response')
+      }
+    })
+
+    scope.route({
+      method: 'GET',
+      path: '/route',
+      constraints: { host: 'fastify.io' },
+      handler: (req, reply) => {
+        reply.send({ ok: true })
+      }
+    })
+
+    next()
+  }, { prefix: '/prefix' })
+
+  await fastify.ready()
+
+  t.ok(true)
+})

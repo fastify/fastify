@@ -883,7 +883,7 @@ test('pluginTimeout - named function', { only: true }, t => {
 
 test('pluginTimeout default', t => {
   t.plan(5)
-  const clock = fakeTimer.install()
+  const clock = fakeTimer.install({ shouldClearNativeTimers: true })
 
   const fastify = Fastify()
   fastify.register(function (app, opts, done) {

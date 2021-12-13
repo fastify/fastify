@@ -2,7 +2,7 @@ import { FastifyLoggerInstance } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, CallTypeProvider } from './type-provider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
 import { FastifySchema } from './schema'
 import { FastifyContext } from './context'
 
@@ -12,34 +12,6 @@ export interface RequestGenericInterface {
   Params?: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
-
-/** Request context target type. Undefined always resolve to unknown */
-export interface FastifyRequestContext<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {
-  params: Params,
-  query: Querystring,
-  headers: Headers,
-  body: Body
-}
-
-type UndefinedToUnknown<T> = T extends undefined ? unknown : T
-
-/**
- * This type handles request context resolution either via generic arguments
- * or type provider. If the user specifies both generic arguments as well as
- * a type provider, this type will override the type provider and use the
- * generic arguments. This enables users to override undesirable inference
- * behaviours in the type provider.
- */
-export type ResolveFastifyRequestContext<
-  TypeProvider extends FastifyTypeProvider,
-  SchemaCompiler extends FastifySchema,
-  RouteGeneric extends RouteGenericInterface
-> = FastifyRequestContext<
-UndefinedToUnknown<keyof RouteGeneric['Params'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['params']>: RouteGeneric['Params']>,
-UndefinedToUnknown<keyof RouteGeneric['Querystring'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>,
-UndefinedToUnknown<keyof RouteGeneric['Headers'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>,
-UndefinedToUnknown<keyof RouteGeneric['Body'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
->
 
 /**
  * FastifyRequest is an instance of the standard http or http2 request objects.
@@ -52,16 +24,16 @@ export interface FastifyRequest<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  Context extends FastifyRequestContext = ResolveFastifyRequestContext<TypeProvider, SchemaCompiler, RouteGeneric>
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   id: any;
-  params: Context['params'];
+  params: RequestType['params'];
   raw: RawRequest;
-  query: Context['query'];
-  headers: RawRequest['headers'] & Context['headers']; // this enables the developer to extend the existing http(s|2) headers list
+  query: RequestType['query'];
+  headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   server: FastifyInstance;
-  body: Context['body'];
+  body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

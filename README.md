@@ -251,6 +251,7 @@ Team members are listed in alphabetical order.
 * [__Rafael Gonzaga__](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 * [__Vincent Le Goff__](https://github.com/zekth)
 * [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+* [__Luis Orbaiceta__](https://github.com/luisorbaiceta), <https://twitter.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
 * [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__James Sumners__](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>

@@ -1,23 +1,26 @@
 <h1 align="center">Serverless</h1>
 
-Run serverless applications and REST APIs using your existing Fastify application.
-By default, Fastify will not work on your serverless platform of choice, you will need
-to make some small changes to fix this. This document contains a small guide for
-the most popular serverless providers and how to use Fastify with them.
+Run serverless applications and REST APIs using your existing Fastify
+application. By default, Fastify will not work on your serverless platform of
+choice, you will need to make some small changes to fix this. This document
+contains a small guide for the most popular serverless providers and how to use
+Fastify with them.
 
 #### Should you use Fastify in a serverless platform?
 
 That is up to you! Keep in mind that functions as a service should always use
-small and focused functions, but you can also run an entire web application with them.
-It is important to remember that the bigger the application the slower the initial boot will be.
-The best way to run Fastify applications in serverless environments
-is to use platforms like Google Cloud Run, AWS Fargate, and Azure Container Instances,
-where the server can handle multiple requests at the same time and make full use of Fastify's features.
+small and focused functions, but you can also run an entire web application with
+them. It is important to remember that the bigger the application the slower the
+initial boot will be. The best way to run Fastify applications in serverless
+environments is to use platforms like Google Cloud Run, AWS Fargate, and Azure
+Container Instances, where the server can handle multiple requests at the same
+time and make full use of Fastify's features.
 
-One of the best features of using Fastify in serverless applications is the ease of development.
-In your local environment, you will always run the Fastify application directly without the need
-for any additional tools, while the same code will be executed in your serverless platform of
-choice with an additional snippet of code.
+One of the best features of using Fastify in serverless applications is the ease
+of development. In your local environment, you will always run the Fastify
+application directly without the need for any additional tools, while the same
+code will be executed in your serverless platform of choice with an additional
+snippet of code.
 
 ### Contents
 
@@ -29,10 +32,12 @@ choice with an additional snippet of code.
 
 ## AWS Lambda
 
-The sample provided allows you to easily build serverless web applications/services
-and RESTful APIs using Fastify on top of AWS Lambda and Amazon API Gateway.
+The sample provided allows you to easily build serverless web
+applications/services and RESTful APIs using Fastify on top of AWS Lambda and
+Amazon API Gateway.
 
-*Note: Using [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) is just one possible way.*
+*Note: Using [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify)
+is just one possible way.*
 
 ### app.js
 
@@ -57,13 +62,14 @@ if (require.main === module) {
 }
 ```
 
-When executed in your lambda function we do not need to listen to a specific port,
-so we just export the wrapper function `init` in this case.
-The [`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file will use this export.
+When executed in your lambda function we do not need to listen to a specific
+port, so we just export the wrapper function `init` in this case. The
+[`lambda.js`](https://www.fastify.io/docs/latest/Serverless/#lambda-js) file
+will use this export.
 
-When you execute your Fastify application like always,
-i.e. `node app.js` *(the detection for this could be `require.main === module`)*,
-you can normally listen to your port, so you can still run your Fastify function locally.
+When you execute your Fastify application like always, i.e. `node app.js` *(the
+detection for this could be `require.main === module`)*, you can normally listen
+to your port, so you can still run your Fastify function locally.
 
 ### lambda.js
 
@@ -84,22 +90,30 @@ exports.handler = proxy;
 // exports.handler = async (event, context) => proxy(event, context);
 ```
 
-We just require [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify)
-(make sure you install the dependency `npm i --save aws-lambda-fastify`) and our
-[`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call the
-exported `awsLambdaFastify` function with the `app` as the only parameter.
-The resulting `proxy` function has the correct signature to be used as a lambda `handler` function.
-This way all the incoming events (API Gateway requests) are passed to the `proxy` function of [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
+We just require
+[aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) (make sure
+you install the dependency `npm i --save aws-lambda-fastify`) and our
+[`app.js`](https://www.fastify.io/docs/latest/Serverless/#app-js) file and call
+the exported `awsLambdaFastify` function with the `app` as the only parameter.
+The resulting `proxy` function has the correct signature to be used as a lambda
+`handler` function. This way all the incoming events (API Gateway requests) are
+passed to the `proxy` function of
+[aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
 
-An example deployable with [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be found [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
+An example deployable with
+[claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be
+found
+[here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
 
 
 ### Considerations
 
-- API Gateway does not support streams yet, so you are not able to handle [streams](https://www.fastify.io/docs/latest/Reply/#streams).
-- API Gateway has a timeout of 29 seconds, so it is important to provide a reply during this time.
+- API Gateway does not support streams yet, so you are not able to handle
+  [streams](https://www.fastify.io/docs/latest/Reply/#streams).
+- API Gateway has a timeout of 29 seconds, so it is important to provide a reply
+  during this time.
 
 ## Google Cloud Functions
 
@@ -112,7 +126,12 @@ const fastify = require("fastify")({
 
 ### Add Custom `contentTypeParser` to Fastify instance
 
-As explained [in issue #946](https://github.com/fastify/fastify/issues/946#issuecomment-766319521), since the Google Cloud Functions platform parses the body of the request before it arrives into Fastify instance, troubling the body request in case of `POST` and `PATCH` methods, you need to add a custom [`ContentTypeParser`](https://www.fastify.io/docs/latest/ContentTypeParser/) to mitigate this behavior.
+As explained [in issue
+#946](https://github.com/fastify/fastify/issues/946#issuecomment-766319521),
+since the Google Cloud Functions platform parses the body of the request before
+it arrives into Fastify instance, troubling the body request in case of `POST`
+and `PATCH` methods, you need to add a custom [`Content-Type
+Parser`](../Reference/ContentTypeParser.md) to mitigate this behavior.
 
 ```js
 fastify.addContentTypeParser('application/json', {}, (req, body, done) => {
@@ -129,7 +148,7 @@ fastify.get('/', async (request, reply) => {
 })
 ```
 
-Or a more complete `POST` endpoint with schema validation: 
+Or a more complete `POST` endpoint with schema validation:
 ```js
 fastify.route({
   method: 'POST',
@@ -144,7 +163,7 @@ fastify.route({
     },
     response: {
       200: {
-        type: 'object', 
+        type: 'object',
         properties: {
           message: {type: 'string'}
         }
@@ -162,7 +181,8 @@ fastify.route({
 
 ### Implement and export the function
 
-Final step, implement the function to handle the request and pass it to Fastify by emitting `request` event to `fastify.server`:
+Final step, implement the function to handle the request and pass it to Fastify
+by emitting `request` event to `fastify.server`:
 
 ```js
 const fastifyFunction = async (request, reply) => {
@@ -175,7 +195,8 @@ export.fastifyFunction = fastifyFunction;
 
 ### Local test
 
-Install [Google Functions Framework for Node.js](https://github.com/GoogleCloudPlatform/functions-framework-nodejs).
+Install [Google Functions Framework for
+Node.js](https://github.com/GoogleCloudPlatform/functions-framework-nodejs).
 
 You can install it globally:
 ```bash
@@ -188,7 +209,7 @@ npm i --save-dev @google-cloud/functions-framework
 ```
 
 Than you can run your function locally with Functions Framework:
-``` bash
+```bash
 npx @google-cloud/functions-framework --target=fastifyFunction
 ```
 
@@ -221,17 +242,25 @@ curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me -H "Co
 ```
 
 ### References
-- [Google Cloud Functions - Node.js Quickstart ](https://cloud.google.com/functions/docs/quickstart-nodejs)
+- [Google Cloud Functions - Node.js Quickstart
+  ](https://cloud.google.com/functions/docs/quickstart-nodejs)
 
 ## Google Cloud Run
 
-Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless **container** environment. Its primary purpose is to provide an infrastructure-abstracted environment to run arbitrary containers. As a result, Fastify can be deployed to Google Cloud Run with little-to-no code changes from the way you would write your Fastify app normally.
+Unlike AWS Lambda or Google Cloud Functions, Google Cloud Run is a serverless
+**container** environment. Its primary purpose is to provide an
+infrastructure-abstracted environment to run arbitrary containers. As a result,
+Fastify can be deployed to Google Cloud Run with little-to-no code changes from
+the way you would write your Fastify app normally.
 
-*Follow the steps below to deploy to Google Cloud Run if you are already familiar with gcloud or just follow their [quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
+*Follow the steps below to deploy to Google Cloud Run if you are already
+familiar with gcloud or just follow their
+[quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy)*.
 
 ### Adjust Fastify server
 
-In order for Fastify to properly listen for requests within the container, be sure to set the correct port and address:
+In order for Fastify to properly listen for requests within the container, be
+sure to set the correct port and address:
 
 ```js
 function build() {
@@ -269,7 +298,9 @@ if (require.main === module) {
 
 ### Add a Dockerfile
 
-You can add any valid `Dockerfile` that packages and runs a Node app. A basic `Dockerfile` can be found in the official [gcloud docs](https://github.com/knative/docs/blob/2d654d1fd6311750cc57187a86253c52f273d924/docs/serving/samples/hello-world/helloworld-nodejs/Dockerfile).
+You can add any valid `Dockerfile` that packages and runs a Node app. A basic
+`Dockerfile` can be found in the official [gcloud
+docs](https://github.com/knative/docs/blob/2d654d1fd6311750cc57187a86253c52f273d924/docs/serving/samples/hello-world/helloworld-nodejs/Dockerfile).
 
 ```Dockerfile
 # Use the official Node.js 10 image.
@@ -296,7 +327,8 @@ CMD [ "npm", "start" ]
 
 ### Add a .dockerignore
 
-To keep build artifacts out of your container (which keeps it small and improves build times) add a `.dockerignore` file like the one below:
+To keep build artifacts out of your container (which keeps it small and improves
+build times) add a `.dockerignore` file like the one below:
 
 ```.dockerignore
 Dockerfile
@@ -307,7 +339,9 @@ npm-debug.log
 
 ### Submit build
 
-Next, submit your app to be built into a Docker image by running the following command (replacing `PROJECT-ID` and `APP-NAME` with your GCP project id and an app name):
+Next, submit your app to be built into a Docker image by running the following
+command (replacing `PROJECT-ID` and `APP-NAME` with your GCP project id and an
+app name):
 
 ```bash
 gcloud builds submit --tag gcr.io/PROJECT-ID/APP-NAME
@@ -328,7 +362,8 @@ Your app will be accessible from the URL GCP provides.
 
 First, please perform all preparation steps related to **AWS Lambda**.
 
-Create a folder called `functions`,  then create `server.js` (and your endpoint path will be `server.js`) inside the `functions` folder.
+Create a folder called `functions`,  then create `server.js` (and your endpoint
+path will be `server.js`) inside the `functions` folder.
 
 ### functions/server.js
 
@@ -407,9 +442,9 @@ Then it should work fine
 
 ## Vercel
 
-[Vercel](https://vercel.com) provides zero-configuration deployment for
-Node.js applications. In order to use it now, it is as simple as
-configuring your `vercel.json` file like the following:
+[Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
+applications. In order to use it now, it is as simple as configuring your
+`vercel.json` file like the following:
 
 ```json
 {

@@ -34,9 +34,9 @@ fastify.use(require('cors')());
 
 ### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
 
-The logging [Serializers](Logging.md) have been updated to now Fastify
-[`Request`](Request.md) and [`Reply`](Reply.md) objects instead of
-native ones.
+The logging [Serializers](../Reference/Logging.md) have been updated to now
+Fastify [`Request`](../Reference/Request.md) and
+[`Reply`](../Reference/Reply.md) objects instead of native ones.
 
 Any custom serializers must be updated if they rely upon `request` or `reply`
 properties that are present on the native objects but not the Fastify objects.
@@ -79,8 +79,9 @@ const fastify = require('fastify')({
 
 The non-standard `replace-way` shared schema support has been removed. This
 feature has been replaced with JSON Schema specification compliant `$ref` based
-substitution. To help understand this change read
-[Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+substitution. To help understand this change read [Validation and Serialization
+in Fastify
+v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 
@@ -104,10 +105,10 @@ fastify.route({ method, url, schema, handler });
 
 ### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-The `setSchemaCompiler` and `setSchemaResolver` options have been replaced
-with the `setValidatorCompiler` to enable future tooling improvements.
-To help understand this change read
-[Validation and Serialization in Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+The `setSchemaCompiler` and `setSchemaResolver` options have been replaced with
+the `setValidatorCompiler` to enable future tooling improvements. To help
+understand this change read [Validation and Serialization in Fastify
+v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 
@@ -136,22 +137,23 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 
 ### Changed preParsing hook behavior ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-From Fastify v3, the behavior of the `preParsing` hook will change slightly
-in order to support request payload manipulation.
+From Fastify v3, the behavior of the `preParsing` hook will change slightly in
+order to support request payload manipulation.
 
 The hook now takes an additional argument, `payload`, and therefore the new hook
-signature is `fn(request, reply, payload, done)` or
-`async fn(request, reply, payload)`.
+signature is `fn(request, reply, payload, done)` or `async fn(request, reply,
+payload)`.
 
 The hook can optionally return a new stream via `done(null, stream)` or
 returning the stream in case of async functions.
 
-If the hook returns a new stream, it will be used instead of the original one in subsequent hooks. A sample use case for this is handling compressed requests.
+If the hook returns a new stream, it will be used instead of the original one in
+subsequent hooks. A sample use case for this is handling compressed requests.
 
 The new stream should add the `receivedEncodedLength` property to the stream
 that should reflect the actual data size received from the client. For instance,
-in a compressed request it should be the size of the compressed payload.
-This property can (and should) be dynamically updated during `data` events.
+in a compressed request it should be the size of the compressed payload. This
+property can (and should) be dynamically updated during `data` events.
 
 The old syntax of Fastify v2 without payload is supported but it is deprecated.
 
@@ -161,23 +163,24 @@ From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
 slightly in order to support hook encapsulation.
 
 - `onRoute` - The hook will be called asynchronously. The hook is now inherited
-when registering a new plugin within the same encapsulation scope. Thus, this
-hook should be registered _before_ registering any plugins.
+  when registering a new plugin within the same encapsulation scope. Thus, this
+  hook should be registered _before_ registering any plugins.
 - `onRegister` - Same as the onRoute hook. The only difference is that now the
-very first call will no longer be the framework itself, but the first registered
-plugin.
+  very first call will no longer be the framework itself, but the first
+  registered plugin.
 
 ### Changed Content Type Parser syntax ([#2286](https://github.com/fastify/fastify/pull/2286))
 
 In Fastify v3 the content type parsers now have a single signature for parsers.
 
-The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`.
-Note that `request` is now a Fastify request, not an `IncomingMessage`.
-The payload is by default a stream. If the `parseAs` option is used in
-`addContentTypeParser`, then `payload` reflects the option value (string or buffer).
+The new signatures are `fn(request, payload, done)` or `async fn(request,
+payload)`. Note that `request` is now a Fastify request, not an
+`IncomingMessage`. The payload is by default a stream. If the `parseAs` option
+is used in `addContentTypeParser`, then `payload` reflects the option value
+(string or buffer).
 
-The old signatures `fn(req, [done])` or `fn(req, payload, [done])`
-(where `req` is `IncomingMessage`) are still supported but are deprecated.
+The old signatures `fn(req, [done])` or `fn(req, payload, [done])` (where `req`
+is `IncomingMessage`) are still supported but are deprecated.
 
 ### Changed TypeScript support
 
@@ -267,15 +270,18 @@ fastify.get('/', (request, reply) => {
 ## Further additions and improvements
 
 - Hooks now have consistent context regardless of how they are registered
-([#2005](https://github.com/fastify/fastify/pull/2005))
-- Deprecated `request.req` and `reply.res` for [`request.raw`](Request.md) and
-[`reply.raw`](Reply.md) ([#2008](https://github.com/fastify/fastify/pull/2008))
-- Removed `modifyCoreObjects` option ([#2015](https://github.com/fastify/fastify/pull/2015))
-- Added [`connectionTimeout`](Server.md#factory-connection-timeout)
-option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added [`keepAliveTimeout`](Server.md#factory-keep-alive-timeout)
-option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added async-await support for [plugins](Plugins.md#async-await)
-([#2093](https://github.com/fastify/fastify/pull/2093))
+  ([#2005](https://github.com/fastify/fastify/pull/2005))
+- Deprecated `request.req` and `reply.res` for
+  [`request.raw`](../Reference/Request.md) and
+  [`reply.raw`](../Reference/Reply.md)
+  ([#2008](https://github.com/fastify/fastify/pull/2008))
+- Removed `modifyCoreObjects` option
+  ([#2015](https://github.com/fastify/fastify/pull/2015))
+- Added [`connectionTimeout`](../Reference/Server.md#factory-connection-timeout)
+  option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added [`keepAliveTimeout`](../Reference/Server.md#factory-keep-alive-timeout)
+  option ([#2086](https://github.com/fastify/fastify/pull/2086))
+- Added async-await support for [plugins](../Reference/Plugins.md#async-await)
+  ([#2093](https://github.com/fastify/fastify/pull/2093))
 - Added the feature to throw object as error
-([#2134](https://github.com/fastify/fastify/pull/2134))
+  ([#2134](https://github.com/fastify/fastify/pull/2134))

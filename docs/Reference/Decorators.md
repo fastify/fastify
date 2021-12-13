@@ -2,20 +2,19 @@
 
 ## Decorators
 
-The decorators API allows customization of the core Fastify objects, such as
-the server instance itself and any request and reply objects used during the
-HTTP request lifecycle. The decorators API can be used to attach any type of
-property to the core objects, e.g. functions, plain objects, or native types.
+The decorators API allows customization of the core Fastify objects, such as the
+server instance itself and any request and reply objects used during the HTTP
+request lifecycle. The decorators API can be used to attach any type of property
+to the core objects, e.g. functions, plain objects, or native types.
 
-This API is *synchronous*. Attempting to define a decoration
-asynchronously could result in the Fastify instance booting before the
-decoration completes its initialization. To avoid this issue, and register an
-asynchronous decoration, the `register` API, in combination with
-`fastify-plugin`, must be used instead. To learn more, see the
-[Plugins](Plugins.md) documentation.
+This API is *synchronous*. Attempting to define a decoration asynchronously
+could result in the Fastify instance booting before the decoration completes its
+initialization. To avoid this issue, and register an asynchronous decoration,
+the `register` API, in combination with `fastify-plugin`, must be used instead.
+To learn more, see the [Plugins](./Plugins.md) documentation.
 
-Decorating core objects with this API allows the underlying JavaScript engine
-to optimize the handling of server, request, and reply objects. This is
+Decorating core objects with this API allows the underlying JavaScript engine to
+optimize the handling of server, request, and reply objects. This is
 accomplished by defining the shape of all such object instances before they are
 instantiated and used. As an example, the following is not recommended because
 it will change the shape of objects during their lifecycle:
@@ -36,8 +35,8 @@ fastify.get('/', function (req, reply) {
 })
 ```
 
-Since the above example mutates the request object after it has already
-been instantiated, the JavaScript engine must deoptimize access to the request
+Since the above example mutates the request object after it has already been
+instantiated, the JavaScript engine must deoptimize access to the request
 object. By using the decoration API this deoptimization is avoided:
 
 ```js
@@ -55,22 +54,26 @@ fastify.get('/', (req, reply) => {
 })
 ```
 
-Note that it is important to keep the initial shape of a decorated field as close as possible to the value intended to be set dynamically in the future. Initialize a decorator as a `''` if the intended value is a string, and as `null` if it will be an object or a function.
+Note that it is important to keep the initial shape of a decorated field as
+close as possible to the value intended to be set dynamically in the future.
+Initialize a decorator as a `''` if the intended value is a string, and as
+`null` if it will be an object or a function.
 
-Remember this example works only with value types as reference types will be shared amongst all requests.
-See [decorateRequest](#decorate-request).
+Remember this example works only with value types as reference types will be
+shared amongst all requests. See [decorateRequest](#decorate-request).
 
-See
-[JavaScript engine fundamentals: Shapes and Inline Caches](https://mathiasbynens.be/notes/shapes-ics)
-for more information on this topic.
+See [JavaScript engine fundamentals: Shapes and Inline
+Caches](https://mathiasbynens.be/notes/shapes-ics) for more information on this
+topic.
 
 ### Usage
-<a name="usage"></a>
+<a id="usage"></a>
 
 #### `decorate(name, value, [dependencies])`
-<a name="decorate"></a>
+<a id="decorate"></a>
 
-This method is used to customize the Fastify [server](Server.md) instance.
+This method is used to customize the Fastify [server](./Reference/Server.md)
+instance.
 
 For example, to attach a new method to the server instance:
 
@@ -89,8 +92,7 @@ fastify.decorate('conf', {
 })
 ```
 
-To access decorated properties, use the name provided to the
-decoration API:
+To access decorated properties, use the name provided to the decoration API:
 
 ```js
 fastify.utility()
@@ -98,7 +100,8 @@ fastify.utility()
 console.log(fastify.conf.db)
 ```
 
-The decorated [Fastify server](Server.md) is bound to `this` in route [route](Routes.md) handlers:
+The decorated [Fastify server](./Reference/Server.md) is bound to `this` in
+route [route](Routes.md) handlers:
 
 ```js
 fastify.decorate('db', new DbConnection())
@@ -121,11 +124,11 @@ Note: using an arrow function will break the binding of `this` to the
 `FastifyInstance`.
 
 If a dependency is not satisfied, the `decorate` method will throw an exception.
-The dependency check is performed before the server instance is booted. Thus,
-it cannot occur during runtime.
+The dependency check is performed before the server instance is booted. Thus, it
+cannot occur during runtime.
 
 #### `decorateReply(name, value, [dependencies])`
-<a name="decorate-reply"></a>
+<a id="decorate-reply"></a>
 
 As the name suggests, this API is used to add new methods/properties to the core
 `Reply` object:
@@ -145,10 +148,11 @@ Note: using `decorateReply` will emit a warning if used with a reference type:
 // Don't do this
 fastify.decorateReply('foo', { bar: 'fizz'})
 ```
-In this example, the reference of the object is shared with all the requests: **any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**. 
-To achieve proper encapsulation across requests configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+In this example, the reference of the object is shared with all the requests:
+**any mutation will impact all requests, potentially creating security
+vulnerabilities or memory leaks**. To achieve proper encapsulation across
+requests configure a new value for each incoming request in the [`'onRequest'`
+hook](./Hooks.md#onrequest). Example:
 
 ```js
 const fp = require('fastify-plugin')
@@ -157,7 +161,7 @@ async function myPlugin (app) {
   app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
-  }) 
+  })
 }
 
 module.exports = fp(myPlugin)
@@ -166,7 +170,7 @@ module.exports = fp(myPlugin)
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
 #### `decorateRequest(name, value, [dependencies])`
-<a name="decorate-request"></a>
+<a id="decorate-request"></a>
 
 As above with [`decorateReply`](#decorate-reply), this API is used add new
 methods/properties to the core `Request` object:
@@ -186,11 +190,12 @@ Note: using `decorateRequest` will emit a warning if used with a reference type:
 // Don't do this
 fastify.decorateRequest('foo', { bar: 'fizz'})
 ```
-In this example, the reference of the object is shared with all the requests: **any
-mutation will impact all requests, potentially creating security vulnerabilities or memory leaks**.
+In this example, the reference of the object is shared with all the requests:
+**any mutation will impact all requests, potentially creating security
+vulnerabilities or memory leaks**.
 
-To achieve proper encapsulation across requests configure a new value for each incoming request
-in the [`'onRequest'` hook](Hooks.md#onrequest). Example:
+To achieve proper encapsulation across requests configure a new value for each
+incoming request in the [`'onRequest'` hook](./Hooks.md#onrequest). Example:
 
 ```js
 const fp = require('fastify-plugin')
@@ -199,7 +204,7 @@ async function myPlugin (app) {
   app.decorateRequest('foo', null)
   app.addHook('onRequest', async (req, reply) => {
     req.foo = { bar: 42 }
-  }) 
+  })
 }
 
 module.exports = fp(myPlugin)
@@ -208,7 +213,7 @@ module.exports = fp(myPlugin)
 See [`decorate`](#decorate) for information about the `dependencies` parameter.
 
 #### `hasDecorator(name)`
-<a name="has-decorator"></a>
+<a id="has-decorator"></a>
 
 Used to check for the existence of a server instance decoration:
 
@@ -217,7 +222,7 @@ fastify.hasDecorator('utility')
 ```
 
 #### hasRequestDecorator
-<a name="has-request-decorator"></a>
+<a id="has-request-decorator"></a>
 
 Used to check for the existence of a Request decoration:
 
@@ -226,7 +231,7 @@ fastify.hasRequestDecorator('utility')
 ```
 
 #### hasReplyDecorator
-<a name="has-reply-decorator"></a>
+<a id="has-reply-decorator"></a>
 
 Used to check for the existence of a Reply decoration:
 
@@ -235,7 +240,7 @@ fastify.hasReplyDecorator('utility')
 ```
 
 ### Decorators and Encapsulation
-<a name="decorators-encapsulation"></a>
+<a id="decorators-encapsulation"></a>
 
 Defining a decorator (using `decorate`, `decorateRequest`, or `decorateReply`)
 with the same name more than once in the same **encapsulated** context will
@@ -290,7 +295,7 @@ server.listen(3000)
 ```
 
 ### Getters and Setters
-<a name="getters-setters"></a>
+<a id="getters-setters"></a>
 
 Decorators accept special "getter/setter" objects. These objects have functions
 named `getter` and `setter` (though the `setter` function is optional). This

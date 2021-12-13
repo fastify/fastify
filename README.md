@@ -146,7 +146,7 @@ fastify.listen(3000, (err, address) => {
 })
 ```
 
-Do you want to know more? Head to the <a href="./docs/Getting-Started.md"><code><b>Getting Started</b></code></a>.
+Do you want to know more? Head to the <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 
 
 ### Fastify v1.x and v2.x
@@ -189,11 +189,11 @@ depends on your application, you should __always__ benchmark if performance
 matters to you.
 
 ## Documentation
-* <a href="./docs/Getting-Started.md"><code><b>Getting Started</b></code></a>
+* <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
-* <a href="./docs/Server.md"><code><b>Server</b></code></a>
+* <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
 * <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
-* <a href="./docs/Encapsulation.md"><code><b>Encapsulation</b></code></a>
+* <a href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
 * <a href="./docs/Logging.md"><code><b>Logging</b></code></a>
 * <a href="./docs/Middleware.md"><code><b>Middleware</b></code></a>
 * <a href="./docs/Hooks.md"><code><b>Hooks</b></code></a>

@@ -53,7 +53,7 @@ function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
 server.setErrorHandler(asyncNodeJSErrorHandler)
 
 class CustomError extends Error {
-  private __brand: any;
+  private __brand: any
 }
 interface ReplyPayload {
   Reply: {

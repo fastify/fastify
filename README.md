@@ -156,7 +156,7 @@ In a similar way, all Fastify **v2.x** related changes should be based on [**`br
 
 > ## Note
 > `.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration). If you are running Fastify in a container (Docker, [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
-> See [the documentation](./docs/Server.md#listen) for more information.
+> See [the documentation](./docs/Reference/Server.md#listen) for more information.
 
 ### Core features
 
@@ -192,29 +192,29 @@ matters to you.
 * <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>
 * <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
 * <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
-* <a href="./docs/Routes.md"><code><b>Routes</b></code></a>
+* <a href="./docs/Reference/Routes.md"><code><b>Routes</b></code></a>
 * <a href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
-* <a href="./docs/Logging.md"><code><b>Logging</b></code></a>
-* <a href="./docs/Middleware.md"><code><b>Middleware</b></code></a>
-* <a href="./docs/Hooks.md"><code><b>Hooks</b></code></a>
-* <a href="./docs/Decorators.md"><code><b>Decorators</b></code></a>
-* <a href="./docs/Validation-and-Serialization.md"><code><b>Validation and Serialization</b></code></a>
-* <a href="./docs/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
-* <a href="./docs/Lifecycle.md"><code><b>Lifecycle</b></code></a>
-* <a href="./docs/Reply.md"><code><b>Reply</b></code></a>
-* <a href="./docs/Request.md"><code><b>Request</b></code></a>
-* <a href="./docs/Errors.md"><code><b>Errors</b></code></a>
-* <a href="./docs/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
-* <a href="./docs/Plugins.md"><code><b>Plugins</b></code></a>
-* <a href="./docs/Testing.md"><code><b>Testing</b></code></a>
-* <a href="./docs/Benchmarking.md"><code><b>Benchmarking</b></code></a>
-* <a href="./docs/Write-Plugin.md"><code><b>How to write a good plugin</b></code></a>
-* <a href="./docs/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
-* <a href="./docs/HTTP2.md"><code><b>HTTP2</b></code></a>
-* <a href="./docs/LTS.md"><code><b>Long Term Support</b></code></a>
-* <a href="./docs/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
-* <a href="./docs/Serverless.md"><code><b>Serverless</b></code></a>
-* <a href="./docs/Recommendations.md"><code><b>Recommendations</b></code></a>
+* <a href="./docs/Reference/Logging.md"><code><b>Logging</b></code></a>
+* <a href="./docs/Reference/Middleware.md"><code><b>Middleware</b></code></a>
+* <a href="./docs/Reference/Hooks.md"><code><b>Hooks</b></code></a>
+* <a href="./docs/Reference/Decorators.md"><code><b>Decorators</b></code></a>
+* <a href="./docs/Reference/Validation-and-Serialization.md"><code><b>Validation and Serialization</b></code></a>
+* <a href="./docs/Guides/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
+* <a href="./docs/Reference/Lifecycle.md"><code><b>Lifecycle</b></code></a>
+* <a href="./docs/Reference/Reply.md"><code><b>Reply</b></code></a>
+* <a href="./docs/Reference/Request.md"><code><b>Request</b></code></a>
+* <a href="./docs/Reference/Errors.md"><code><b>Errors</b></code></a>
+* <a href="./docs/Reference/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
+* <a href="./docs/Reference/Plugins.md"><code><b>Plugins</b></code></a>
+* <a href="./docs/Guides/Testing.md"><code><b>Testing</b></code></a>
+* <a href="./docs/Guides/Benchmarking.md"><code><b>Benchmarking</b></code></a>
+* <a href="./docs/Guides/Write-Plugin.md"><code><b>How to write a good plugin</b></code></a>
+* <a href="./docs/Guides/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
+* <a href="./docs/Reference/HTTP2.md"><code><b>HTTP2</b></code></a>
+* <a href="./docs/Reference/LTS.md"><code><b>Long Term Support</b></code></a>
+* <a href="./docs/Reference/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
+* <a href="./docs/Guides/Serverless.md"><code><b>Serverless</b></code></a>
+* <a href="./docs/Guides/Recommendations.md"><code><b>Recommendations</b></code></a>
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
 

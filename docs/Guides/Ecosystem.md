@@ -440,6 +440,7 @@ section.
   client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
+- [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator) Small plugin to allow you use multiple validators in one route based on each HTTP part of the request.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide

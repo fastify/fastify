@@ -2,8 +2,8 @@
 
 The documentation for Fastify is split into two categories:
 
-- [Reference documentation](./Reference/index.md)
-- [Guides](./Guides/index.md)
+- [Reference documentation](./Reference/Index.md)
+- [Guides](./Guides/Index.md)
 
 The reference documenation utilizes a very formal style in an effort to document
 Fastify's API and implementation details thoroughly for the developer who needs

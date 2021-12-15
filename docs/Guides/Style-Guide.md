@@ -70,7 +70,7 @@ markdown.
 **Example**
 
 ```
-To learn more about hooks, see [Fastify hooks](https://www.fastify.io/docs/latest/Hooks).
+To learn more about hooks, see [Fastify hooks](../Reference/Hooks.md).
 ```
 
 Result:

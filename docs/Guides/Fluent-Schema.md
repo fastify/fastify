@@ -3,7 +3,7 @@
 ## Fluent Schema
 
 The [Validation and
-Serialization](/docs/Reference/Validation-and-Serialization.md) documentation
+Serialization](../Reference/Validation-and-Serialization.md) documentation
 outlines all parameters accepted by Fastify to set up JSON Schema Validation to
 validate the input, and JSON Schema Serialization to optimize the output.
 

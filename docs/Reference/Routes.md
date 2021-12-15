@@ -82,7 +82,7 @@ fastify.route(options)
   called. Note: using an arrow function will break the binding of `this`.
 * `errorHandler(error, request, reply)`: a custom error handler for the scope of
   the request. Overrides the default error global handler, and anything set by
-  [`setErrorHandler`](./Server.md#setErrorHandler), for requests to the route.
+  [`setErrorHandler`](./Server.md#seterrorhandler), for requests to the route.
   To access the default handler, you can access `instance.errorHandler`. Note
   that this will point to fastify's default `errorHandler` only if a plugin
   hasn't overridden it already.
@@ -107,7 +107,7 @@ fastify.route(options)
 * `logSerializers`: set serializers to log for this route.
 * `config`: object used to store custom configuration.
 * `version`: a [semver](https://semver.org/) compatible string that defined the
-  version of the endpoint. [Example](#version).
+  version of the endpoint. [Example](#version-constraints).
 * `prefixTrailingSlash`: string used to determine how to handle passing `/` as a
   route with a prefix.
   * `both` (default): Will register both `/prefix` and `/prefix/`.
@@ -437,7 +437,7 @@ the global Fastify Logger, accessible with `fastify.log`*
 
 In some context, you may need to log a large object but it could be a waste of
 resources for some routes. In this case, you can define some
-[`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#bindingsserializers-object)
+[`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
 and attach them in the right context!
 
 ```js

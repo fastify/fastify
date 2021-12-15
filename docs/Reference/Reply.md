@@ -67,7 +67,7 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](./Request.md#Request) property.
+- `.context` - Access the [Request's context](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {
@@ -510,7 +510,7 @@ fastify.setNotFoundHandler(function (request, reply) {
 <a id="payload-type"></a>
 
 The type of the sent payload (after serialization and going through any
-[`onSend` hooks](./Hooks.md#the-onsend-hook)) must be one of the following
+[`onSend` hooks](./Hooks.md#onsend)) must be one of the following
 types, otherwise, an error will be thrown:
 
 - `string`

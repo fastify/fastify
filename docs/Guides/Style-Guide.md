@@ -70,12 +70,12 @@ markdown.
 **Example**
 
 ```
-To learn more about hooks, see [Fastify hooks](../Reference/Hooks.md).
+To learn more about hooks, see [Fastify hooks](https://www.fastify.io/docs/latest/Reference/Hooks/).
 ```
 
 Result:
 >To learn more about hooks, see [Fastify
->hooks](https://www.fastify.io/docs/latest/Hooks/).
+>hooks](https://www.fastify.io/docs/latest/Reference/Hooks/).
 
 
 

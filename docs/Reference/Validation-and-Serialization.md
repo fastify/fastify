@@ -713,7 +713,7 @@ fastify.setSchemaErrorFormatter(function (errors, dataVar) {
 ```
 
 You can also use
-[setErrorHandler](https://www.fastify.io/docs/latest/Server/#seterrorhandler) to
+[setErrorHandler](./Server.md#seterrorhandler) to
 define a custom response for validation errors such as
 
 ```js

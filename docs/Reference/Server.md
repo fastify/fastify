@@ -1075,7 +1075,7 @@ used by plugins.
 #### inject
 <a id="inject"></a>
 
-Fake HTTP injection (for testing purposes) [here](../Guides/Testing.md#inject).
+Fake HTTP injection (for testing purposes) [here](../Guides/Testing.md#benefits-of-using-fastifyinject).
 
 #### addSchema
 <a id="add-schema"></a>
@@ -1291,8 +1291,8 @@ handler so requests will go through the full [Fastify
 lifecycle](./Lifecycle.md#lifecycle).
 
 You can also register
-[`preValidation`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) and
-[`preHandler`](https://www.fastify.io/docs/latest/Hooks/#route-hooks) hooks for
+[`preValidation`](./Hooks.md#route-hooks) and
+[`preHandler`](./Hooks.md#route-hooks) hooks for
 the 404 handler.
 
 _Note: The `preValidation` hook registered using this method will run for a
@@ -1402,7 +1402,7 @@ fastify.ready(() => {
 the `route.store` object for each displayed route. This can be an `array` of
 keys (e.g. `['onRequest', Symbol('key')]`), or `true` to display all properties.
 A shorthand option, `fastify.printRoutes({ includeHooks: true })` will include
-all [hooks](https://www.fastify.io/docs/latest/Hooks/).
+all [hooks](./Hooks.md).
 
 ```js
   console.log(fastify.printRoutes({ includeHooks: true, includeMeta: ['metaProperty'] }))

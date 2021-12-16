@@ -44,7 +44,7 @@ This table of contents is in alphabetical order.
   standard set of errors Fastify generates.
 + [Hooks](./Hooks.md): Details the API by which Fastify plugins can inject
   themselves into Fastify's handling of the request lifecycle.
-+ [HTTP2](/./HTTP2.md): Details Fastify's HTTP2 support.
++ [HTTP2](./HTTP2.md): Details Fastify's HTTP2 support.
 + [Lifecycle](./Lifecycle.md): Explains the Fastify request lifecycle and
   illustrates where [Hooks](./Hooks.md) are available for integrating with it.
 + [Logging](./Logging.md): Details Fastify's included logging and how to

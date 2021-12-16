@@ -12,7 +12,7 @@ feature allows us to achieve plugin *encapsulation* and *inheritance*, in this
 way we create a *direct acyclic graph* (DAG) and we will not have issues caused
 by cross dependencies.
 
-You already see in the [getting started](../Guides/Getting-Started.md#register)
+You already see in the [getting started](../Guides/Getting-Started.md#your-first-plugin)
 section how using this API is pretty straightforward.
 ```
 fastify.register(plugin, [options])
@@ -30,7 +30,7 @@ Fastify specific options is:
 
 + [`logLevel`](./Routes.md#custom-log-level)
 + [`logSerializers`](./Routes.md#custom-log-serializer)
-+ [`prefix`](#route-prefixing-options)
++ [`prefix`](#route-prefixing-option)
 
 **Note: Those options will be ignored when used with fastify-plugin**
 

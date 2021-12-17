@@ -220,8 +220,8 @@ matters to you.
 
 ## Ecosystem
 
-- [Core](./docs/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
-- [Community](./docs/Ecosystem.md#community) - Community supported plugins.
+- [Core](./docs/Guides/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
+- [Community](./docs/Guides/Ecosystem.md#community) - Community supported plugins.
 - [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
 - [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with the maintainers.
 

@@ -259,6 +259,8 @@ section.
 - [`fastify-get-head`](https://github.com/MetCoder95/fastify-get-head) Small
   plugin to set a new HEAD route handler for each GET route previously
   registered in Fastify.
+- [`fastify-get-only`](https://github.com/DanieleFedeli/fastify-get-only) Small
+  plugin used to make fastify accept only GET requests
 - [`fastify-good-sessions`](https://github.com/Phara0h/fastify-good-sessions) A
   good Fastify sessions plugin focused on speed.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage)

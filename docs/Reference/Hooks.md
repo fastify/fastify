@@ -397,11 +397,19 @@ Triggered when `fastify.close()` is invoked to stop the server. It is useful
 when [plugins](./Plugins.md) need a "shutdown" event, for example, to close an
 open connection to a database.
 
-The first argument is the Fastify instance, the second one the `done` callback.
+The hook function takes the Fastify instance as a first argument, 
+and a `done` callback for synchronous hook functions.
 ```js
+// callback style
 fastify.addHook('onClose', (instance, done) => {
   // Some code
   done()
+})
+
+// or async/await style
+fastify.addHook('onClose', async (instance) => {
+  // Some async code
+  await closeDatabaseConnections()
 })
 ```
 

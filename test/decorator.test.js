@@ -1039,12 +1039,14 @@ test('decorateRequest with dependencies', (t) => {
 
   app.decorate('decorator1', decorator1)
   app.decorateRequest('decorator1', decorator1)
+  app.decorateRequest('decoratorFn', function decoratorFn () {})
 
   if (
     app.hasDecorator('decorator1') &&
-    app.hasRequestDecorator('decorator1')
+    app.hasRequestDecorator('decorator1') &&
+    app.hasRequestDecorator('decoratorFn')
   ) {
-    t.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1']))
+    t.doesNotThrow(() => app.decorateRequest('decorator2', decorator2, ['decorator1', 'decoratorFn']))
     t.ok(app.hasRequestDecorator('decorator2'))
   }
 })

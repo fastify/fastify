@@ -242,6 +242,8 @@ section.
   Fastify feature flags plugin with multiple providers support (e.g. env,
   [config](https://lorenwest.github.io/node-config/),
   [unleash](https://unleash.github.io/)).
+- [`fastify-file-routes`](https://github.com/spa5k/fastify-file-routes)
+  Get Next.js based file system routing into fastify.
 - [`fastify-file-upload`](https://github.com/huangang/fastify-file-upload)
   Fastify plugin for uploading files.
 - [`fastify-firebase`](https://github.com/now-ims/fastify-firebase) Fastify

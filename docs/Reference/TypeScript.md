@@ -51,15 +51,15 @@ in a blank http Fastify server.
   }
   ```
 
-*Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
-[FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
-
 3. Initialize a TypeScript configuration file:
   ```bash
   npx tsc --init
   ```
   or use one of the [recommended
   ones](https://github.com/tsconfig/bases#node-10-tsconfigjson).
+
+*Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
+[FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
 
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
@@ -228,8 +228,8 @@ can do it as follows:
           },
         },
       },
-      (req, rep) => {
-        const { body: user } = req;
+      (request, reply) => {
+        const { body: user } = request;
         /* user has type
         * const user: StaticProperties<{
         *  name: TString;
@@ -237,7 +237,7 @@ can do it as follows:
         * }>
         */
         //...
-        rep.status(200).send(user);
+        reply.status(200).send(user);
       }
     );
     ```

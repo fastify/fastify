@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'docs/*'
+  release:
+    types:
+      - released
 
 jobs:
   build:

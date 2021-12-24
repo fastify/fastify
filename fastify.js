@@ -25,7 +25,8 @@ const {
   kOptions,
   kPluginNameChain,
   kSchemaErrorFormatter,
-  kErrorHandler
+  kErrorHandler,
+  kBindingServer
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -186,7 +187,8 @@ function fastify (options) {
     [kState]: {
       listening: false,
       closing: false,
-      started: false
+      started: false,
+      bindingListening: false
     },
     [kOptions]: options,
     [kChildren]: [],
@@ -210,6 +212,7 @@ function fastify (options) {
     [pluginUtils.registeredPlugins]: [],
     [kPluginNameChain]: [],
     [kAvvioBoot]: null,
+    [kBindingServer]: null,
     // routing method
     routing: httpHandler,
     getDefaultRoute: router.getDefaultRoute.bind(router),
@@ -358,6 +361,8 @@ function fastify (options) {
       if (fastify[kState].listening) {
         // No new TCP connections are accepted
         instance.server.close(done)
+      } if (fastify[kState].bindingListening) {
+        instance[kBindingServer].close(done)
       } else {
         done(null)
       }

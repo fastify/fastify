@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '3.25.2'
+const VERSION = '3.25.3'
 
 const Avvio = require('avvio')
 const http = require('http')

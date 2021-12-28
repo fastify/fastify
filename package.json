@@ -183,7 +183,7 @@
     "avvio": "^7.1.2",
     "fast-json-stringify": "^2.5.2",
     "fastify-error": "^0.3.0",
-    "fastify-warning": "^0.2.0",
+    "process-warning": "^1.0.0",
     "find-my-way": "^4.5.0",
     "flatstr": "^1.0.12",
     "light-my-request": "^4.2.0",

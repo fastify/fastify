@@ -155,7 +155,7 @@
     "helmet": "^4.0.0",
     "hide-powered-by": "^1.1.0",
     "hsts": "^2.2.0",
-    "http-errors": "^1.7.1",
+    "http-errors": "^2.0.0",
     "ienoopen": "^1.1.0",
     "JSONStream": "^1.3.5",
     "license-checker": "^25.0.1",

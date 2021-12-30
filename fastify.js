@@ -357,7 +357,6 @@ function fastify (options) {
     fastify.onClose((instance, done) => {
       fastify[kState].closing = true
       router.closeRoutes()
-      // TODO: binding server should also be closed
       if (fastify[kState].listening) {
         // No new TCP connections are accepted
         instance.server.close(done)

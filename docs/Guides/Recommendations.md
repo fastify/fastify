@@ -255,7 +255,7 @@ server {
   # group specified above. Note the additional headers that forward
   # information about the original request. You might want to set
   # trustProxy to the address of your NGINX server so the X-Forwarded
-  * fields are used by fastify.
+  # fields are used by fastify.
   location / {
     # more info: http://nginx.org/en/docs/http/ngx_http_proxy_module.html
     proxy_http_version 1.1;

@@ -250,9 +250,15 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
           throw new Error('This wil be skipped')
         })
       } else {
+        const error = new Error('This wil be skipped')
+
+        t.threw = (err) => {
+          t.equal(err, error)
+        }
+
         app.addHook(hookOrHandler, async (req, reply) => {
           reply.hijack()
-          throw new Error('This wil be skipped')
+          throw error
         })
         app.get('/', (req, reply) => t.fail('Handler should not be called'))
       }

@@ -1808,11 +1808,3 @@ test('reply.sent should read from response.writableEnded if it is defined', t =>
 
   t.equal(reply.sent, true)
 })
-
-test('reply.sent should read from response.headersSent and response.finished if response.writableEnded is not defined', t => {
-  t.plan(1)
-
-  const reply = new Reply({ headersSent: true, finished: true }, {}, {})
-
-  t.equal(reply.sent, true)
-})

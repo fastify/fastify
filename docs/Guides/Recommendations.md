@@ -4,8 +4,10 @@
 
 This document contains a set of recommendations when using Fastify.
 
-* [Use A Reverse Proxy](#reverseproxy)
-* [Kubernetes](#kubernetes)
+- [Use A Reverse Proxy](#use-a-reverse-proxy)
+  - [HAProxy](#haproxy)
+  - [Nginx](#nginx)
+- [Kubernetes](#kubernetes)
 
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
@@ -14,11 +16,11 @@ Node.js is an early adopter of frameworks shipping with an easy-to-use web
 server within the standard library. Previously, with languages like PHP or
 Python, one would need either a web server with specific support for the
 language or the ability to set up some sort of [CGI gateway][cgi] that works
-with the language. With Node.js, one can write an application that
-_directly_ handles HTTP requests. As a result, the temptation is to write
-applications that handle requests for multiple domains, listen on multiple
-ports (i.e. HTTP _and_ HTTPS), and then expose these applications directly
-to the Internet to handle requests.
+with the language. With Node.js, one can write an application that _directly_
+handles HTTP requests. As a result, the temptation is to write applications that
+handle requests for multiple domains, listen on multiple ports (i.e. HTTP _and_
+HTTPS), and then expose these applications directly to the Internet to handle
+requests.
 
 The Fastify team **strongly** considers this to be an anti-pattern and extremely
 bad practice:
@@ -178,7 +180,7 @@ upstream fastify_app {
 }
 
 # This server block asks NGINX to respond with a redirect when
-# an incoming request from port 80 (typically plain HTTP), to 
+# an incoming request from port 80 (typically plain HTTP), to
 # the same request URL but with HTTPS as protocol.
 # This block is optional, and usually used if you are handling
 # SSL termination in NGINX, like in the example here.
@@ -188,7 +190,7 @@ server {
   # which in this case is any address and port 80
   listen 80 default_server;
   listen [::]:80 default_server;
-  
+
   # With a server_name directive you can also ask NGINX to
   # use this server block only with matching server name(s)
   # listen 80;
@@ -279,7 +281,12 @@ server {
 ## Kubernetes
 <a id="kubernetes"></a>
 
-The `readinessProbe` uses [(by default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes)) the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe will not be able to reach the application in this case. In order to make it work, the application must listen on `0.0.0.0` or specify a custom hostname in the `readinessProbe.httpGet` spec, as per the following example:
+The `readinessProbe` uses [(by
+default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes))
+the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe
+will not be able to reach the application in this case. In order to make it
+work, the application must listen on `0.0.0.0` or specify a custom hostname in
+the `readinessProbe.httpGet` spec, as per the following example:
 
 ```yaml
 readinessProbe:

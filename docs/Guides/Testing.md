@@ -2,9 +2,13 @@
 
 ## Testing
 
-Testing is one of the most important parts of developing an application. Fastify is very flexible when it comes to testing and is compatible with most testing frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in the examples below).
+Testing is one of the most important parts of developing an application. Fastify
+is very flexible when it comes to testing and is compatible with most testing
+frameworks (such as [Tap](https://www.npmjs.com/package/tap), which is used in
+the examples below).
 
-Let's `cd` into a fresh directory called 'testing-example' and type `npm init -y` in our terminal.
+Let's `cd` into a fresh directory called 'testing-example' and type `npm init
+-y` in our terminal.
 
 Run `npm install fastify && npm install tap pino-pretty --save-dev`
 
@@ -45,7 +49,7 @@ const server = require('./app')({
 
 server.listen(3000, (err, address) => {
   if (err) {
-    console.log(err)
+    server.log.error(err)
     process.exit(1)
   }
 })
@@ -53,9 +57,11 @@ server.listen(3000, (err, address) => {
 
 ### Benefits of using fastify.inject()
 
-Fastify comes with built-in support for fake HTTP injection thanks to [`light-my-request`](https://github.com/fastify/light-my-request).
+Fastify comes with built-in support for fake HTTP injection thanks to
+[`light-my-request`](https://github.com/fastify/light-my-request).
 
-Before introducing any tests, we will use the `.inject` method to make a fake request to our route:
+Before introducing any tests, we will use the `.inject` method to make a fake
+request to our route:
 
 **app.test.js**:
 
@@ -78,9 +84,12 @@ const test = async () => {
 test()
 ```
 
-First, our code will run inside an asynchronous function, giving us access to async/await.
+First, our code will run inside an asynchronous function, giving us access to
+async/await.
 
-`.inject` ensures all registered plugins have booted up and our application is ready to test. Finally, we pass the request method we want to use and a route. Using await we can store the response without a callback.
+`.inject` ensures all registered plugins have booted up and our application is
+ready to test. Finally, we pass the request method we want to use and a route.
+Using await we can store the response without a callback.
 
 
 
@@ -225,13 +234,15 @@ tap.test('GET `/` route', t => {
 ```
 
 ### Testing with a running server
-Fastify can also be tested after starting the server with `fastify.listen()` or after initializing routes and plugins with `fastify.ready()`.
+Fastify can also be tested after starting the server with `fastify.listen()` or
+after initializing routes and plugins with `fastify.ready()`.
 
 #### Example:
 
 Uses **app.js** from the previous example.
 
-**test-listen.js** (testing with [`Request`](https://www.npmjs.com/package/request))
+**test-listen.js** (testing with
+[`Request`](https://www.npmjs.com/package/request))
 ```js
 const tap = require('tap')
 const request = require('request')
@@ -260,7 +271,8 @@ tap.test('GET `/` route', t => {
 })
 ```
 
-**test-ready.js** (testing with [`SuperTest`](https://www.npmjs.com/package/supertest))
+**test-ready.js** (testing with
+[`SuperTest`](https://www.npmjs.com/package/supertest))
 ```js
 const tap = require('tap')
 const supertest = require('supertest')
@@ -293,6 +305,8 @@ test('should ...', {only: true}, t => ...)
 - `-O` specifies to run tests with the `only` option enabled
 - `-T` specifies not to timeout (while you're debugging)
 - `--node-arg=--inspect-brk` will launch the node debugger
-3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No modification should be necessary.
+3. In VS Code, create and launch a `Node.js: Attach` debug configuration. No
+   modification should be necessary.
 
-Now you should be able to step through your test file (and the rest of `Fastify`) in your code editor.
+Now you should be able to step through your test file (and the rest of
+`Fastify`) in your code editor.

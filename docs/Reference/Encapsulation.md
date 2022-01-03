@@ -1,7 +1,7 @@
 <h1 align="center">Fastify</h1>
 
-<a id="encapsulation"></a>
 ## Encapsulation
+<a id="encapsulation"></a>
 
 A fundamental feature of Fastify is the "encapsulation context." The
 encapsulation context governs which [decorators](./Decorators.md), registered
@@ -9,7 +9,7 @@ encapsulation context governs which [decorators](./Decorators.md), registered
 [routes](./Routes.md). A visual representation of the encapsulation context
 is shown in the following figure:
 
-![Figure 1](./resources/encapsulation_context.svg)
+![Figure 1](../resources/encapsulation_context.svg)
 
 In the above figure, there are several entities:
 
@@ -122,8 +122,8 @@ To see this, start the server and issue requests:
 
 [bearer]: https://github.com/fastify/fastify-bearer-auth
 
-<a id="shared-context"></a>
 ## Sharing Between Contexts
+<a id="shared-context"></a>
 
 Notice that each context in the prior example inherits _only_ from the parent
 contexts. Parent contexts cannot access any entities within their descendent

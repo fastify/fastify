@@ -438,5 +438,16 @@ export interface onCloseHookHandler<
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
-  ): Promise<unknown> | void;
+  ): void;
+}
+
+export interface onCloseAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger = FastifyLoggerInstance
+> {
+  (
+    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>
+  ): Promise<unknown>;
 }

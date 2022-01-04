@@ -9,14 +9,14 @@ import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLog
 import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import { Options as AjvOptions } from '@fastify/ajv-compiler'
+import { Options as FJSOptions } from '@fastify/fast-json-stringify-compiler'
 import { FastifyError } from 'fastify-error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
-import { Options as FJSOptions } from 'fast-json-stringify'
 import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { FastifySerializerCompiler } from './types/schema';
+import { SerializerCompiler } from '@fastify/fast-json-stringify-compiler'
 import { FastifySchema } from './types/schema'
 import { FastifyContextConfig } from './types/context'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
@@ -149,7 +149,7 @@ export type FastifyServerOptions<
     };
     compilersFactory?: {
       buildValidator?: ValidatorCompiler;
-      buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions["serializerOpts"]) => FastifySerializerCompiler<unknown>;
+      buildSerializer?: SerializerCompiler;
     };
   };
   return503OnClosing?: boolean,

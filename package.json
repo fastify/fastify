@@ -143,6 +143,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
     "fast-json-body": "^1.1.0",
+    "fast-json-stringify": "^3.0.0",
     "fastify-plugin": "^3.0.0",
     "fluent-json-schema": "^3.0.1",
     "form-data": "^4.0.0",
@@ -176,9 +177,9 @@
   },
   "dependencies": {
     "@fastify/ajv-compiler": "^2.1.0",
+    "@fastify/fast-json-stringify-compiler": "^1.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.0",
-    "fast-json-stringify": "^2.7.12",
     "fastify-error": "^0.3.1",
     "find-my-way": "^5.1.0",
     "light-my-request": "^4.7.0",
@@ -194,6 +195,7 @@
   "standard": {
     "ignore": [
       "lib/configValidator.js",
+      "lib/error-serializer.js",
       "fastify.d.ts",
       "types/*",
       "test/types/*",

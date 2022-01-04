@@ -177,7 +177,7 @@
   },
   "dependencies": {
     "@fastify/ajv-compiler": "^2.1.0",
-    "@fastify/fast-json-stringify-compiler": "github:fastify/fast-json-stringify-compiler#first-impl",
+    "@fastify/fast-json-stringify-compiler": "^1.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.0",
     "fastify-error": "^0.3.1",

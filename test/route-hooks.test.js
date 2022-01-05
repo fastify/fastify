@@ -355,12 +355,10 @@ testExecutionHook('onSend')
 testExecutionHook('onRequest')
 testExecutionHook('onResponse')
 testExecutionHook('preValidation')
-testExecutionHook('preParsing')
 // hooks that comes before the handler
 testBeforeHandlerHook('preHandler')
 testBeforeHandlerHook('onRequest')
 testBeforeHandlerHook('preValidation')
-testBeforeHandlerHook('preParsing')
 
 test('preValidation option should be called before preHandler hook', t => {
   t.plan(3)

@@ -6,6 +6,8 @@ const test = t.test
 const { Hooks } = require('../../lib/hooks')
 const noop = () => {}
 
+process.removeAllListeners('warning')
+
 test('hooks should have 4 array with the registered hooks', t => {
   const hooks = new Hooks()
   t.equal(typeof hooks, 'object')

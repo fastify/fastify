@@ -123,6 +123,8 @@ fastify.get('/', async function (req, rep) {
 Sets a response header. If the value is omitted or undefined, it is coerced to
 `''`.
 
+> Note: the header's value must be properly encoded using [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) or similar modules such as [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters will result in a 500 `TypeError` response.
+
 For more information, see
 [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
 
@@ -202,6 +204,8 @@ Returns a boolean indicating if the specified header has been set.
 
 Redirects a request to the specified URL, the status code is optional, default
 to `302` (if status code is not already set by calling `code`).
+
+> Note: the input URL must be properly encoded using [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) or similar modules such as [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will result in a 500 `TypeError` response.
 
 Example (no `reply.code()` call) sets status code to `302` and redirects to
 `/home`

@@ -152,7 +152,7 @@
     "form-data": "^4.0.0",
     "frameguard": "^4.0.0",
     "h2url": "^0.2.0",
-    "helmet": "^4.0.0",
+    "helmet": "^5.0.1",
     "hide-powered-by": "^1.1.0",
     "hsts": "^2.2.0",
     "http-errors": "^2.0.0",

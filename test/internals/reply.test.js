@@ -1906,3 +1906,66 @@ test('invalid response headers should not crash the server', async t => {
 
   await fastify.close()
 })
+
+test('invalid response headers when sending back an error', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/bad-headers',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["smile"]', 'only the first invalid header is logged')
+      }
+
+      reply.header('smile', '😄')
+      reply.send(new Error('user land error'))
+    }
+  })
+
+  await fastify.listen(0)
+
+  const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
+  t.equal(response.statusCode, 500)
+  t.same(JSON.parse(body), {
+    statusCode: 500,
+    code: 'ERR_INVALID_CHAR',
+    error: 'Internal Server Error',
+    message: 'Invalid character in header content ["smile"]'
+  })
+
+  await fastify.close()
+})
+
+test('invalid response headers and custom error handler', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/bad-headers',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["smile"]', 'only the first invalid header is logged')
+      }
+
+      reply.header('smile', '😄')
+      reply.send(new Error('user land error'))
+    }
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    t.equal(error.message, 'user land error', 'custom error handler receives the error')
+    reply.status(500).send({ ops: true })
+  })
+
+  await fastify.listen(0)
+
+  const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
+  t.equal(response.statusCode, 500)
+  t.same(JSON.parse(body), {
+    statusCode: 500,
+    code: 'ERR_INVALID_CHAR',
+    error: 'Internal Server Error',
+    message: 'Invalid character in header content ["smile"]'
+  })
+
+  await fastify.close()
+})

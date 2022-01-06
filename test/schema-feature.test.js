@@ -1695,7 +1695,7 @@ test('Should throw if not default validator passed', async t => {
   }
 })
 
-test('Should throw if not default validator passed', async t => {
+test('Should coerce the array if the default validator is used', async t => {
   t.plan(2)
   const someSchema = {
     $id: 'some',
@@ -1733,7 +1733,7 @@ test('Should throw if not default validator passed', async t => {
         }
       },
       (req, reply) => {
-        reply.send({ noop: 'noop' })
+        reply.send(req.query)
       }
     )
 
@@ -1745,12 +1745,12 @@ test('Should throw if not default validator passed', async t => {
       method: 'POST',
       url: '/',
       query: {
-        msg: ['string']
+        msg: 'string'
       }
     })
 
-    t.equal(res.json().message, 'querystring/msg must be array')
-    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { msg: ['string'] }, 'Should coearce the string into array')
   } catch (err) {
     t.error(err)
   }

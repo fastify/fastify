@@ -235,10 +235,9 @@ fastify.post('/the/url', { schema }, handler)
 the types specified in your schema `type` keywords, both to pass the validation
 and to use the correctly typed data afterwards.*
 
-The Ajv default configuration in Fastify doesn't support coercing array
-parameters in querystring. However, Fastify allows
-[`customOptions`](./Server.md#ajv) in Ajv instance. The `coerceTypes: 'array'`
-will coerce one parameter to a single element in array. Example:
+The Ajv default configuration in Fastify supports coercing array
+parameters in `querystring`.  
+Example:
 
 ```js
 const opts = {
@@ -256,34 +255,11 @@ const opts = {
 }
 
 fastify.get('/', opts, (request, reply) => {
-  reply.send({ params: request.query })
+  reply.send({ params: request.query }) // echo the querystring
 })
 
 fastify.listen(3000, (err) => {
   if (err) throw err
-})
-```
-
-Using Fastify defaults the following request will result in `400` status code:
-
-```sh
-curl -X GET "http://localhost:3000/?ids=1
-
-{"statusCode":400,"error":"Bad Request","message":"querystring/hello should be array"}
-```
-
-Using `coerceTypes` as 'array' will fix it:
-
-```js
-const ajv = new Ajv({
-  removeAdditional: true,
-  useDefaults: true,
-  coerceTypes: 'array', // This line
-  allErrors: true
-})
-
-fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
-  return ajv.compile(schema)
 })
 ```
 

@@ -520,10 +520,8 @@ function fastify (options) {
     }
 
     if (name === 'onClose') {
-      this[kHooks].validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onReady') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {

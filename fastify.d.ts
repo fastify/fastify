@@ -144,7 +144,7 @@ export type FastifyServerOptions<
   return503OnClosing?: boolean,
   ajv?: {
     customOptions?: AjvOptions,
-    plugins?: Function[]
+    plugins?: (Function | [Function, string | string[]])[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(
     error: FastifyError,

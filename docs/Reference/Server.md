@@ -803,14 +803,25 @@ fastify.ready().then(() => {
 <a id="listen"></a>
 
 Starts the server on the given port after all the plugins are loaded, internally
-waits for the `.ready()` event. The callback is the same as the Node core. By
-default, the server will listen on the address resolved by `localhost` when no
-specific address is provided (`127.0.0.1` or `::1` depending on the operating
-system). If listening on any available interface is desired, then specifying
-`0.0.0.0` for the address will listen on all IPv4 addresses. Using `::` for the
-address will listen on all IPv6 addresses and, depending on OS, may also listen
-on all IPv4 addresses. Be careful when deciding to listen on all interfaces; it
-comes with inherent [security
+waits for the `.ready()` event. The callback is the same as the Node core.
+
+By default, the server will listen on the address resolved by `localhost` when no
+specific address is provided. If listening on any available interface is desired,
+then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
+
+ Host          | IPv4 | IPv6
+ --------------|------|-------
+ `::`            | ✅<sup>*</sup> | ✅
+ `::` + [`ipv6Only`](https://nodejs.org/api/net.html#serverlistenoptions-callback) | 🚫 | ✅
+ `0.0.0.0`       | ✅ | 🚫
+ `localhost`     | ✅ | ✅
+ `127.0.0.1`     | ✅ | 🚫
+ `::1`           | 🚫 | ✅
+
+<sup>*</sup> Using `::` for the address will listen on all IPv6 addresses and, depending on OS,
+may also listen on [all IPv4 addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callback).
+
+Be careful when deciding to listen on all interfaces; it comes with inherent [security
 risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 ```js

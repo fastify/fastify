@@ -41,6 +41,24 @@ test('plugin metadata - ignore prefix', t => {
   }
 })
 
+test('plugin metadata - naming plugins', async t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.register(require('./plugin.name.display'))
+  fastify.register(function (fastify, opts, done) {
+    // one line
+    t.equal(fastify.pluginName, 'function (fastify, opts, done) { -- // one line')
+    done()
+  })
+  fastify.register(function fooBar (fastify, opts, done) {
+    t.equal(fastify.pluginName, 'fooBar')
+    done()
+  })
+
+  await fastify.ready()
+})
+
 test('fastify.register with fastify-plugin should not encapsulate his code', t => {
   t.plan(10)
   const fastify = Fastify()

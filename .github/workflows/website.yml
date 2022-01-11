@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'docs/*'
+      - 'docs/**'
   release:
     types:
       - released

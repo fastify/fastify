@@ -179,7 +179,7 @@ We quickly confirmed node default query string parser was fine as well as its
 header parser. I identified one potential issue with base64-encoded JSON cookies
 as well as the usage of custom query string parsers. We also wrote some tests to
 confirm that the most popular third-party query string parser  —
-[qs ](https://www.npmjs.com/package/qs) —  was not vulnerable (it is not!).
+[qs](https://www.npmjs.com/package/qs) —  was not vulnerable (it is not!).
 
 ### A development
 <a id="pp-a-development"></a>

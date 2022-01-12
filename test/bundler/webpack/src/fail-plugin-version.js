@@ -1,7 +1,5 @@
 const fp = require('fastify-plugin')
-const fastify = require('../../../../')({
-  logger: true
-})
+const fastify = require('../../../../')()
 
 fastify.get('/', function (request, reply) {
   reply.send({ hello: 'world' })

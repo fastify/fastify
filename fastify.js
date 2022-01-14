@@ -26,7 +26,8 @@ const {
   kOptions,
   kPluginNameChain,
   kSchemaErrorFormatter,
-  kErrorHandler
+  kErrorHandler,
+  kKeepAliveConnections
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -45,6 +46,7 @@ const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
+const noopSet = require('./lib/noop-set')
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
@@ -133,6 +135,7 @@ function fastify (options) {
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
+  options.forceCloseConnections = typeof options.forceCloseConnections === 'boolean' ? options.forceCloseConnections : defaultInitOptions.forceCloseConnections
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
@@ -146,6 +149,7 @@ function fastify (options) {
   options.exposeHeadRoutes = exposeHeadRoutes
 
   const initialConfig = getSecuredInitialConfig(options)
+  const keepAliveConnections = options.forceCloseConnections === true ? new Set() : noopSet()
 
   let constraints = options.constraints
   if (options.versioning) {
@@ -176,7 +180,8 @@ function fastify (options) {
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
       buildPrettyMeta: defaultBuildPrettyMeta
-    }
+    },
+    keepAliveConnections
   })
 
   // 404 router, used for handling encapsulated 404 handlers
@@ -200,6 +205,7 @@ function fastify (options) {
       closing: false,
       started: false
     },
+    [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
     [kChildren]: [],
     [kBodyLimit]: bodyLimit,
@@ -375,6 +381,15 @@ function fastify (options) {
       if (fastify[kState].listening) {
         // No new TCP connections are accepted
         instance.server.close(done)
+
+        for (const conn of fastify[kKeepAliveConnections]) {
+          // We must invoke the destroy method instead of merely unreffing
+          // the sockets. If we only unref, then the callback passed to
+          // `fastify.close` will never be invoked; nor will any of the
+          // registered `onClose` hooks.
+          conn.destroy()
+          fastify[kKeepAliveConnections].delete(conn)
+        }
       } else {
         done(null)
       }

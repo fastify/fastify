@@ -13,6 +13,7 @@ describes the properties available in that options object.
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
   - [`keepAliveTimeout`](#keepalivetimeout)
+  - [`forceCloseConnections](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`ignoreTrailingSlash`](#ignoretrailingslash)
@@ -123,6 +124,19 @@ understand the effect of this option. This option only applies when HTTP/1 is in
 use. Also, when `serverFactory` option is specified, this option is ignored.
 
 + Default: `5000` (5 seconds)
+
+### `forceCloseConnections`
+<a id="forcecloseconnections"></a>
+
+When set to `true` requests with the header `connection: keep-alive` will be
+tracked by the server. Upon [`close`](#close), the server will iterate the
+current persistent connections and [destroy their
+sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
+This means the server will shutdown immediately instead of waiting for existing
+persistent connections to timeout first. Important: connections are not
+inspected to determine if requests have been completed.
+
++ Default: `false`
 
 ### `maxRequestsPerSocket`
 <a id="factory-max-requests-per-socket"></a>

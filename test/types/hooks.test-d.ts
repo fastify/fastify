@@ -202,10 +202,10 @@ server.addHook('onClose', async (instance) => {
 // Use case to monitor any regression on issue #3620
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<
-  RawServerBase,
-  RawRequestDefaultExpression<RawServerBase>,
-  RawReplyDefaultExpression<RawServerBase>,
-  Record<string, unknown>
+RawServerBase,
+RawRequestDefaultExpression<RawServerBase>,
+RawReplyDefaultExpression<RawServerBase>,
+Record<string, unknown>
 > = async function (_request, _reply) {
   expectType<FastifyInstance>(this)
 }

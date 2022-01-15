@@ -1,8 +1,8 @@
-import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from 'fastify-error'
-import { RequestPayload } from '../../types/hooks'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyReply, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RouteOptions } from '../../fastify'
+import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
+import { FastifyInstance } from '../../types/instance'
 
 const server = fastify()
 
@@ -197,4 +197,19 @@ server.addHook('onReady', async function () {
 
 server.addHook('onClose', async (instance) => {
   expectType<FastifyInstance>(instance)
+})
+
+// Use case to monitor any regression on issue #3620
+// ref.: https://github.com/fastify/fastify/issues/3620
+const customTypedHook: preHandlerAsyncHookHandler<
+  RawServerBase,
+  RawRequestDefaultExpression<RawServerBase>,
+  RawReplyDefaultExpression<RawServerBase>,
+  {}
+> = async function (_request, _reply) {
+  expectType<FastifyInstance>(this)
+}
+
+server.register(async (instance) => {
+  instance.addHook('preHandler', customTypedHook)
 })

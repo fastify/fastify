@@ -205,7 +205,7 @@ const customTypedHook: preHandlerAsyncHookHandler<
   RawServerBase,
   RawRequestDefaultExpression<RawServerBase>,
   RawReplyDefaultExpression<RawServerBase>,
-  unknown
+  Record<string, unknown>
 > = async function (_request, _reply) {
   expectType<FastifyInstance>(this)
 }

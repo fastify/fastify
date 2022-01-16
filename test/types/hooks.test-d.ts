@@ -210,11 +210,13 @@ server.addHook('onClose', async (instance) => {
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<
 RawServerBase,
-RawRequestDefaultExpression<RawServerBase>,
-RawReplyDefaultExpression<RawServerBase>,
+RawRequestDefaultExpression,
+RawReplyDefaultExpression,
 Record<string, unknown>
-> = async function (_request, _reply) {
+> = async function (request, reply) {
   expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
 }
 
 server.register(async (instance) => {

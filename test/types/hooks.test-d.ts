@@ -1,8 +1,15 @@
 import { FastifyError } from 'fastify-error'
 import { expectAssignable, expectError, expectType } from 'tsd'
-import fastify, { FastifyReply, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RouteOptions } from '../../fastify'
+import fastify, {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerBase,
+  RouteOptions
+} from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
-import { FastifyInstance } from '../../types/instance'
 
 const server = fastify()
 

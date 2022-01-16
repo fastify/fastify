@@ -215,8 +215,8 @@ RawReplyDefaultExpression,
 Record<string, unknown>
 > = async function (request, reply) {
   expectType<FastifyInstance>(this)
-  expectType<FastifyRequest>(request)
-  expectType<FastifyReply>(reply)
+  expectAssignable<FastifyRequest>(request)
+  expectAssignable<FastifyReply>(reply)
 }
 
 server.register(async (instance) => {

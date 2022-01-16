@@ -178,6 +178,22 @@ expectAssignable<FastifyInstance>(fastify({
     plugins: [() => { }]
   }
 }))
+expectAssignable<FastifyInstance>(fastify({
+  ajv: {
+    customOptions: {
+      nullable: false
+    },
+    plugins: [[() => { }, 'keyword']]
+  }
+}))
+expectAssignable<FastifyInstance>(fastify({
+  ajv: {
+    customOptions: {
+      nullable: false
+    },
+    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!

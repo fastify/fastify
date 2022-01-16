@@ -310,7 +310,7 @@ test('The not found handler should not use the Accept-Version header', t => {
   })
 
   fastify.setNotFoundHandler(function (req, reply) {
-    t.notOk(req.headers['accept-version'])
+    t.same(req.headers['accept-version'], '2.x')
     reply.code(404).send('not found handler')
   })
 

@@ -1341,7 +1341,7 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
     })
   })
 
-  await fastify.listen()
+  await fastify.ready()
 
   await fastify.inject({
     method: 'POST',

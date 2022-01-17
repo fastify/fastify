@@ -296,9 +296,24 @@ test('Shorthand route declaration', t => {
   })
 })
 
-test('The not found handler should not use the Accept-Version header', t => {
-  t.plan(4)
+test('The not found handler should not erase the Accept-Version header', t => {
+  t.plan(10)
   const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, reply, done) {
+    t.same(req.headers['accept-version'], '2.x')
+    done()
+  })
+
+  fastify.addHook('preValidation', function (req, reply, done) {
+    t.same(req.headers['accept-version'], '2.x')
+    done()
+  })
+
+  fastify.addHook('preHandler', function (req, reply, done) {
+    t.same(req.headers['accept-version'], '2.x')
+    done()
+  })
 
   fastify.route({
     method: 'GET',
@@ -311,6 +326,10 @@ test('The not found handler should not use the Accept-Version header', t => {
 
   fastify.setNotFoundHandler(function (req, reply) {
     t.same(req.headers['accept-version'], '2.x')
+    // we check if the symbol is exposed on key or not
+    for (const key in req.headers) {
+      t.same(typeof key, 'string')
+    }
     reply.code(404).send('not found handler')
   })
 

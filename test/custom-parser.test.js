@@ -1314,9 +1314,10 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
   })
 })
 
-test('contentTypeParser should add multiple custom parsers with RegExp values', t => {
-  t.plan(10)
+test('contentTypeParser should add multiple custom parsers with RegExp values', async t => {
+  t.plan(6)
   const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
 
   fastify.post('/', (req, reply) => {
     reply.send(req.body)
@@ -1340,48 +1341,46 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
     })
   })
 
-  fastify.listen(0, err => {
-    t.error(err)
+  await fastify.ready()
 
-    sget({
+  {
+    const response = await fastify.inject({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: '{"hello":"world"}',
+      path: '/',
+      payload: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/vnd.hello+json'
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), JSON.stringify({ hello: 'world' }))
     })
+    t.equal(response.statusCode, 200)
+    t.same(response.payload.toString(), '{"hello":"world"}')
+  }
 
-    sget({
+  {
+    const response = await fastify.inject({
       method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: '{"hello":"world"}',
+      path: '/',
+      payload: '{"hello":"world"}',
       headers: {
         'Content-Type': 'application/test+xml'
       }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'xml')
     })
+    t.equal(response.statusCode, 200)
+    t.same(response.payload.toString(), 'xml')
+  }
 
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port,
-      body: 'abcdefg',
-      headers: {
-        'Content-Type': 'application/+myExtension'
-      }
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.same(body.toString(), 'abcdefgmyExtension')
-      fastify.close()
-    })
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    payload: 'abcdefg',
+    headers: {
+      'Content-Type': 'application/+myExtension'
+    }
+  }).then((response) => {
+    t.equal(response.statusCode, 200)
+    t.same(response.payload.toString(), 'abcdefgmyExtension')
+  }).catch((err) => {
+    t.error(err)
   })
 })
 

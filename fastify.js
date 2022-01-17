@@ -16,6 +16,7 @@ const {
   kLogSerializers,
   kHooks,
   kSchemaController,
+  kRequestAcceptVersion,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -576,6 +577,10 @@ function fastify (options) {
   // req and res are Node.js core objects
   function defaultRoute (req, res) {
     if (req.headers['accept-version'] !== undefined) {
+      // we remove the accept-version header for performance result
+      // because we do not want to go through the constraint checking
+      // the usage of symbol here to prevent any colision on custom header name
+      req.headers[kRequestAcceptVersion] = req.headers['accept-version']
       req.headers['accept-version'] = undefined
     }
     fourOhFour.router.lookup(req, res)

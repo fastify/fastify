@@ -297,7 +297,7 @@ test('Shorthand route declaration', t => {
 })
 
 test('The not found handler should not erase the Accept-Version header', t => {
-  t.plan(10)
+  t.plan(13)
   const fastify = Fastify()
 
   fastify.addHook('onRequest', function (req, reply, done) {
@@ -330,6 +330,11 @@ test('The not found handler should not erase the Accept-Version header', t => {
     for (const key in req.headers) {
       t.same(typeof key, 'string')
     }
+
+    for (const key of Object.keys(req.headers)) {
+      t.same(typeof key, 'string')
+    }
+
     reply.code(404).send('not found handler')
   })
 

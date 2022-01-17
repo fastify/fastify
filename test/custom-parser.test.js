@@ -1343,33 +1343,31 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
 
   await fastify.ready()
 
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    payload: '{"hello":"world"}',
-    headers: {
-      'Content-Type': 'application/vnd.hello+json'
-    }
-  }).then((response) => {
+  {
+    const response = await fastify.inject({
+      method: 'POST',
+      path: '/',
+      payload: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/vnd.hello+json'
+      }
+    })
     t.equal(response.statusCode, 200)
-    t.same(response.payload.toString(), JSON.stringify({ hello: 'world' }))
-  }).catch((err) => {
-    t.error(err)
-  })
+    t.same(response.payload.toString(), '{"hello":"world"}')
+  }
 
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    payload: '{"hello":"world"}',
-    headers: {
-      'Content-Type': 'application/test+xml'
-    }
-  }).then((response) => {
+  {
+    const response = await fastify.inject({
+      method: 'POST',
+      path: '/',
+      payload: '{"hello":"world"}',
+      headers: {
+        'Content-Type': 'application/test+xml'
+      }
+    })
     t.equal(response.statusCode, 200)
     t.same(response.payload.toString(), 'xml')
-  }).catch((err) => {
-    t.error(err)
-  })
+  }
 
   await fastify.inject({
     method: 'POST',

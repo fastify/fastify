@@ -13,7 +13,7 @@ describes the properties available in that options object.
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
   - [`keepAliveTimeout`](#keepalivetimeout)
-  - [`forceCloseConnections](#forcecloseconnections)
+  - [`forceCloseConnections`](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`ignoreTrailingSlash`](#ignoretrailingslash)

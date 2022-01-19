@@ -383,9 +383,9 @@ Because this work is important, I decided to try and make it not just
 financially sustainable but to grow and expand it. There is so much to improve.
 This is exactly what motivates me to implement the new [commercial licensing
 plan](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898)
-coming in March. You can ready more about it
+coming in March. You can read more about it
 [here](https://web.archive.org/web/20190201220503/https://hueniverse.com/on-hapi-licensing-a-preview-f982662ee898).
 
 Of all the time consuming things, security is at the very top. I hope this story
-successful conveyed not just the technical details, but also the human drama and
+successfully conveyed not just the technical details, but also the human drama and
 what it takes to keep the web secure.

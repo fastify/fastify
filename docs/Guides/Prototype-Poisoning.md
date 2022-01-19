@@ -117,7 +117,7 @@ an `id` ), and then pass it to our validation library, anything passed through
 via `__proto__` would sneak in undetected.
 
 ### Oh joi!
-<a id="pp-oh-joi">
+<a id="pp-oh-joi"></a>
 
 The first question is, of course, why does the validation module **joi** ignore
 the prototype and let potentially harmful data through? We asked ourselves the

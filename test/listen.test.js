@@ -403,7 +403,6 @@ test('listen on localhost binds IPv4 and IPv6 promise interface', async t => {
   await app.listen(0, 'localhost')
 
   const lookups = await dns.lookup('localhost', { all: true })
-  console.log(lookups)
   t.plan(1 + (lookups.length * 2))
   t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
 

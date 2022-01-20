@@ -397,13 +397,13 @@ test('listen when firstArg is string(pipe) and with backlog', async t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
+  t.plan(1 + 2 + 2)
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
   t.teardown(app.close.bind(app))
   await app.listen(0, 'localhost')
 
   const lookups = await dns.lookup('localhost', { all: true })
-  t.plan(1 + (lookups.length * 2))
   t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
 
   for (const lookup of lookups) {
@@ -422,13 +422,13 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - callback interface', t => {
+  t.plan(3 + 3 + 3)
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
 
   app.listen(0, 'localhost', (err) => {
     t.error(err)
     dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
-      t.plan(3 + (lookups.length * 3))
       t.error(err)
       t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
       t.teardown(app.close.bind(app))

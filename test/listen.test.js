@@ -396,7 +396,7 @@ test('listen when firstArg is string(pipe) and with backlog', async t => {
   t.equal(address, '\\\\.\\pipe\\testPipe')
 })
 
-test('listen on localhost binds IPv4 and IPv6 promise interface', async t => {
+test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
   t.teardown(app.close.bind(app))
@@ -421,7 +421,7 @@ test('listen on localhost binds IPv4 and IPv6 promise interface', async t => {
   }
 })
 
-test('listen on localhost binds IPv4 and IPv6 callback interface', t => {
+test('listen on localhost binds IPv4 and IPv6 - callback interface', t => {
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
 

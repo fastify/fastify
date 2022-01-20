@@ -4,8 +4,10 @@ const os = require('os')
 const path = require('path')
 const fs = require('fs')
 const { test, before } = require('tap')
-const Fastify = require('..')
 const dns = require('dns').promises
+const dnsCb = require('dns')
+const sget = require('simple-get').concat
+const Fastify = require('..')
 
 let localhost
 let localhostForURL
@@ -393,3 +395,63 @@ test('listen when firstArg is string(pipe) and with backlog', async t => {
   const address = await fastify.listen('\\\\.\\pipe\\testPipe', 511)
   t.equal(address, '\\\\.\\pipe\\testPipe')
 })
+
+test('listen on localhost binds IPv4 and IPv6 promise interface', async t => {
+  const app = Fastify()
+  app.get('/', async () => 'hello localhost')
+  t.teardown(app.close.bind(app))
+  await app.listen(0, 'localhost')
+
+  const lookups = await dns.lookup('localhost', { all: true })
+  t.plan(1 + (lookups.length * 2))
+  t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
+
+  for (const lookup of lookups) {
+    await new Promise((resolve, reject) => {
+      sget({
+        method: 'GET',
+        url: getUrl(app, lookup)
+      }, (err, response, body) => {
+        if (err) { return reject(err) }
+        t.equal(response.statusCode, 200)
+        t.same(body.toString(), 'hello localhost')
+        resolve()
+      })
+    })
+  }
+})
+
+test('listen on localhost binds IPv4 and IPv6 callback interface', t => {
+  const app = Fastify()
+  app.get('/', async () => 'hello localhost')
+
+  app.listen(0, 'localhost', (err) => {
+    t.error(err)
+    dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
+      t.plan(3 + (lookups.length * 3))
+      t.error(err)
+      t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
+      t.teardown(app.close.bind(app))
+
+      for (const lookup of lookups) {
+        sget({
+          method: 'GET',
+          url: getUrl(app, lookup)
+        }, (err, response, body) => {
+          t.error(err)
+          t.equal(response.statusCode, 200)
+          t.same(body.toString(), 'hello localhost')
+        })
+      }
+    })
+  })
+})
+
+function getUrl (fastify, lookup) {
+  const { port } = fastify.server.address()
+  if (lookup.family === 6) {
+    return `http://[${lookup.address}]:${port}/`
+  } else {
+    return `http://${lookup.address}:${port}/`
+  }
+}

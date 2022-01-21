@@ -1,10 +1,10 @@
-import { FastifyLoggerInstance } from './logger'
-import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
-import { RouteGenericInterface } from './route'
-import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
-import { FastifySchema } from './schema'
 import { FastifyContext } from './context'
+import { FastifyInstance } from './instance'
+import { FastifyLoggerInstance } from './logger'
+import { RouteGenericInterface } from './route'
+import { FastifySchema } from './schema'
+import { FastifyRequestType, FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
+import { ContextConfigDefault, RawRequestDefaultExpression, RawServerBase, RawServerDefault, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
 
 export interface RequestGenericInterface {
   Body?: RequestBodyDefault;

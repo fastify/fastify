@@ -1,8 +1,8 @@
 import * as http2 from 'http2'
 import * as https from 'https'
 import { FastifyInstanceHttp2GenericInterface, FastifyInstanceHttp2SecureGenericInterface, FastifyInstanceHttpsGenericInterface } from './fastify'
+import { FastifyInstanceGenericInterface } from './instance'
 import { FastifyLoggerOptions, PinoLoggerOptions } from './logger'
-import { FastifyInstanceGenericInterface } from './utils'
 
 export interface FastifyServerOptions<Generic extends FastifyInstanceGenericInterface> {
   ignoreTrailingSlash?: boolean,
@@ -17,7 +17,7 @@ export interface FastifyServerOptions<Generic extends FastifyInstanceGenericInte
   exposeHeadRoutes?: boolean,
   // onProtoPoisoning?: ProtoAction,
   // onConstructorPoisoning?: ConstructorAction,
-  logger?: boolean | FastifyLoggerOptions<Generic> & PinoLoggerOptions | Generic["Logger"],
+  logger?: boolean | FastifyLoggerOptions<Generic> & PinoLoggerOptions | Generic['Logger'],
   // serializerOpts?: FJSOptions | Record<string, unknown>,
   // serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
@@ -83,4 +83,10 @@ export type FastifyHttp2Options<Generic extends FastifyInstanceHttp2GenericInter
 
 export type FastifyHttpsOptions<Generic extends FastifyInstanceHttpsGenericInterface> = FastifyServerOptions<Generic> & {
   https: https.ServerOptions
+}
+
+export interface PrintRoutesOptions {
+  includeMeta?: boolean | (string | symbol)[]
+  commonPrefix?: boolean
+  includeHooks?: boolean
 }

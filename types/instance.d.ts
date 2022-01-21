@@ -10,11 +10,11 @@ import { FastifyTypeProvider } from './type-provider'
 import { GetLogger, GetReply, GetRequest, GetServer } from './utils'
 
 export interface FastifyInstanceGenericInterface {
-  Server?: unknown
-  Request?: unknown
-  Reply?: unknown
+  Server?: http2.Http2SecureServer | http2.Http2Server | https.Server | http.Server
+  Request?: http2.Http2ServerRequest | http.IncomingMessage
+  Reply?: http2.Http2ServerResponse | http.ServerResponse
   Logger?: unknown
-  TypeProvider?: unknown
+  TypeProvider?: FastifyTypeProvider
 }
 
 export interface FastifyInstanceHttp2SecureGenericInterface extends FastifyInstanceGenericInterface {

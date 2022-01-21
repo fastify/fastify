@@ -7,10 +7,10 @@ const http = require('http')
 const sget = require('simple-get').concat
 
 test('Should support a custom http server', t => {
-  t.plan(6)
+  t.plan(7)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory)
+    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
 
     const server = http.createServer((req, res) => {
       req.custom = true

@@ -1,12 +1,5 @@
-import { FastifyError } from 'fastify-error'
-import { RouteGenericInterface } from './route'
-import { FastifyRequest } from './request'
-import { FastifyReply } from './reply'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
-import { FastifySchema } from './schema'
-
 import pino from 'pino'
+import { FastifyInstanceGenericInterface } from './utils'
 
 /**
  * Standard Fastify logging function
@@ -33,13 +26,9 @@ export type PinoLoggerOptions = pino.LoggerOptions
 /**
  * Fastify Custom Logger options.
  */
-export interface FastifyLoggerOptions<
-  RawServer extends RawServerBase = RawServerDefault,
-  RawRequest extends FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProvider> = FastifyRequest<RouteGenericInterface, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, FastifyTypeProviderDefault>,
-  RawReply extends FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProvider> = FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault>,
-> {
+export interface FastifyLoggerOptions<Generic extends FastifyInstanceGenericInterface> {
   serializers?: {
-    req?: (req: RawRequest) => {
+    req?: (req: Generic["Request"]) => {
       method?: string;
       url?: string;
       version?: string;
@@ -48,19 +37,19 @@ export interface FastifyLoggerOptions<
       remotePort?: number;
       [key: string]: unknown;
     };
-    err?: (err: FastifyError) => {
+    err?: (err: any) => {
       type: string;
       message: string;
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: RawReply) => {
+    res?: (res: Generic["Request"]) => {
       statusCode: string | number;
       [key: string]: unknown;
     };
   };
   level?: string;
   file?: string;
-  genReqId?: (req: RawRequest) => string;
+  genReqId?: (req: Generic["Request"]) => string;
   stream?: FastifyLoggerStreamDestination;
 }

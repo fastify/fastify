@@ -98,6 +98,7 @@ export type FastifyServerOptions<
   connectionTimeout?: number,
   keepAliveTimeout?: number,
   maxRequestsPerSocket?: number,
+  forceCloseConnections?: boolean,
   requestTimeout?: number,
   pluginTimeout?: number,
   bodyLimit?: number,

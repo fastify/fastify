@@ -285,16 +285,12 @@ section.
   Générez des types basés sur vos schémas de validation JSON/YAML afin qu'ils soient toujours synchronisés.
 - [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session)
   Créez une session de cookie sécurisée sans état pour Fastify.
-- [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
-  to add the Sentry SDK error handler to requests.
-- [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify
-  plugin work with Sequelize (adapter for NodeJS -> Sqlite, Mysql, Mssql,
-  Postgres).
+- [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Plugin Fastify pour ajouter le gestionnaire d'erreurs Sentry SDK aux requêtes.
+- [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Le plugin Fastify fonctionne avec Sequelize (adaptateur pour NodeJS -> Sqlite, Mysql, Mssql, Postgres).
 - [`fastify-server-session`](https://github.com/jsumners/fastify-server-session)
-  A session plugin with support for arbitrary backing caches via
+  Un plug-in de session prenant en charge les caches de sauvegarde arbitraires via
   `fastify-caching`.
-- [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
-  plugin, with this you can use slonik in every part of your server.
+- [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik plugin, avec cela, vous pouvez utiliser slonik dans chaque partie de votre serveur.
 - [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
   client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a

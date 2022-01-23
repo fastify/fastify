@@ -1,57 +1,57 @@
 <h1 align="center">Fastify</h1>
 
-## Benchmarking
-Benchmarking is important if you want to measure how a change can affect the
-performance of your application. We provide a simple way to benchmark your
-application from the point of view of a user and contributor. The setup allows
-you to automate benchmarks in different branches and on different Node.js
-versions.
+## Analyse comparative
 
-The modules we will use:
-- [Autocannon](https://github.com/mcollina/autocannon): A HTTP/1.1 benchmarking
-  tool written in node.
-- [Branch-comparer](https://github.com/StarpTech/branch-comparer): Checkout
-  multiple git branches, execute scripts and log the results.
-- [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands
-  concurrently.
-- [Npx](https://github.com/npm/npx): NPM package runner used to run scripts
-  against different Node.js Versions and to execute local binaries. Shipped with
-  npm@5.2.0.
+L'analyse comparative est importante si vous souhaitez mesurer comment un changement peut affecter les performances de votre application. Nous fournissons un moyen simple de comparer votre application du point de vue d'un utilisateur et d'un contributeur. La configuration vous permet d'automatiser les benchmarks dans différentes branches et sur différentes versions de Node.js.
+
+Les modules que nous utiliserons :
+
+- [Autocannon](https://github.com/mcollina/autocannon): Un outil de benchmarking HTTP/1.1 écrit en node.
+- [Branch-comparer](https://github.com/StarpTech/branch-comparer): vérifiez plusieurs branches git, exécutez des scripts et enregistrez les résultats.
+- [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Exécute les commandes simultanément.
+- [Npx](https://github.com/npm/npx): exécuteur de package NPM utilisé pour exécuter des scripts sur différentes versions de Node.js et pour exécuter des binaires locaux. Livré avec npm@5.2.0.
 
 ## Simple
 
-### Run the test in the current branch
+### Exécuter le test dans la branche actuelle
+
 ```sh
 npm run benchmark
 ```
 
-### Run the test against different Node.js versions ✨
+### Exécutez le test sur différentes versions de Node.js ✨
+
 ```sh
 npx -p node@10 -- npm run benchmark
 ```
 
-## Advanced
+## Avancée
 
-### Run the test in different branches
+### Exécutez le test dans différentes branches
+
 ```sh
 branchcmp --rounds 2 --script "npm run benchmark"
 ```
 
-### Run the test in different branches against different Node.js versions ✨
+### Exécutez le test dans différentes branches avec différentes versions de Node.js ✨
+
 ```sh
 branchcmp --rounds 2 --script "npm run benchmark"
 ```
 
-### Compare current branch with main (Gitflow)
+### Comparer la branche actuelle avec main (Gitflow)
+
 ```sh
 branchcmp --rounds 2 --gitflow --script "npm run benchmark"
 ```
-or
+
+ou
+
 ```sh
 npm run bench
 ```
 
-### Run different examples
+### Exécuter différents exemples
 
 ```sh
 branchcmp --rounds 2 -s "node ./node_modules/concurrently -k -s first \"node ./examples/asyncawait.js\" \"node ./node_modules/autocannon -c 100 -d 5 -p 10 localhost:3000/\""

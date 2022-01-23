@@ -383,7 +383,7 @@ Schema](https://json-schema.org/).
 
 (Les schémas JTD sont faiblement pris en charge, mais `jsonShorthand` doivent d'abord être désactivés)
 
-Let's look at an example demonstrating validation for routes:
+Regardons un exemple démontrant la validation des routes :
 
 ```js
 const opts = {
@@ -403,22 +403,20 @@ fastify.post('/', opts, async (request, reply) => {
 });
 ```
 
-This example shows how to pass an options object to the route, which accepts a
-`schema` key that contains all of the schemas for route, `body`, `querystring`,
-`params`, and `headers`.
+Cet exemple montre comment passer un objet options à la route, qui accepte un
+`schema` lé qui contient tous les schémas pour les routes `body`, `querystring`,
+`params`, et `headers`.
 
-Read [Validation and
-Serialization](../Reference/Validation-and-Serialization.md) to learn more.
+Lisez [Validation and
+Serialization](../Reference/Validation-and-Serialization.md) Pour en savoir plus.
 
-### Serialize your data
+### Sérialisez vos données
 
 <a id="serialize-data"></a>
 
-Fastify has first class support for JSON. It is extremely optimized to parse
-JSON bodies and to serialize JSON output.
+Fastify a un support de première classe pour JSON. Il est extrêmement optimisé pour analyser les corps JSON et sérialiser la sortie JSON.
 
-To speed up JSON serialization (yes, it is slow!) use the `response` key of the
-schema option as shown in the following example:
+Pour accélérer la sérialisation JSON (oui, c'est lent !), utilisez la `response` clé de l'option schema comme indiqué dans l'exemple suivant :
 
 ```js
 const opts = {
@@ -439,21 +437,16 @@ fastify.get('/', opts, async (request, reply) => {
 });
 ```
 
-By specifying a schema as shown, you can speed up serialization by a factor of
-2-3. This also helps to protect against leakage of potentially sensitive data,
-since Fastify will serialize only the data present in the response schema. Read
-[Validation and Serialization](../Reference/Validation-and-Serialization.md) to
-learn more.
+En spécifiant un schéma comme indiqué, vous pouvez accélérer la sérialisation d'un facteur 2-3. Cela permet également de se protéger contre les fuites de données potentiellement sensibles, puisque Fastify ne sérialisera que les données présentes dans le schéma de réponse. Lisez
+[Validation and Serialization](../Reference/Validation-and-Serialization.md) pour en savoir plus.
 
-### Parsing request payloads
+### Analyser les charges utiles des requêtes
 
 <a id="request-payload"></a>
 
-Fastify parses `'application/json'` and `'text/plain'` request payloads
-natively, with the result accessible from the [Fastify
-request](../Reference/Request.md) object at `request.body`.
+Fastify analyse `'application/json'` et `'text/plain'` demande les charges utiles de manière native, avec le résultat accessible à partir de l' objet de [requête Fastify](../Reference/Request.md) `request.body` à l'adresse.
 
-The following example returns the parsed body of a request back to the client:
+L'exemple suivant renvoie le corps analysé d'une requête au client :
 
 ```js
 const opts = {};
@@ -462,22 +455,17 @@ fastify.post('/', opts, async (request, reply) => {
 });
 ```
 
-Read [Content-Type Parser](../Reference/ContentTypeParser.md) to learn more
-about Fastify's default parsing functionality and how to support other content
-types.
+Lisez [Content-Type Parser](../Reference/ContentTypeParser.md) pour en savoir plus sur la fonctionnalité d'analyse par défaut de Fastify et sur la prise en charge d'autres types de contenu.
 
-### Extend your server
+### Étendez votre serveur
 
 <a id="extend-server"></a>
 
-Fastify is built to be extremely extensible and minimal, we believe that a
-bare-bones framework is all that is necessary to make great applications
-possible.
+Fastify est conçu pour être extrêmement extensible et minimal, nous pensons qu'un framework simple est tout ce qui est nécessaire pour rendre de grandes applications possibles.
 
-In other words, Fastify is not a "batteries included" framework, and relies on
-an amazing [ecosystem](./Ecosystem.md)!
+Autrement dit, Fastify n'est pas un framework "tout compris", et s'appuie sur un[ecosystem](./Ecosystem.md) incroyable !
 
-### Test your server
+### Testez votre serveur
 
 <a id="test-server"></a>
 

@@ -240,51 +240,36 @@ section.
 - [`fastify-openapi-glue`](https://github.com/seriousme/fastify-openapi-glue)
   Colle pour les spécifications OpenAPI dans Fastify, génère automatiquement des routes basées sur une spécification OpenAPI
 - [`fastify-opentelemetry`](https://github.com/autotelic/fastify-opentelemetry)
-  A Fastify plugin that uses the [OpenTelemetry
-  API](https://github.com/open-telemetry/opentelemetry-js-api) to provide
-  request tracing.
-- [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attaches an
-  [`oracledb`](https://github.com/oracle/node-oracledb) connection pool to a
-  Fastify server instance.
-- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
-  OrientDB connection plugin, with which you can share the OrientDB connection
-  across every part of your server.
-- [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
-  thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
+  Un plug-in Fastify qui utilise l' [OpenTelemetry
+  API](https://github.com/open-telemetry/opentelemetry-js-api) pour fournir un suivi des demandes.
+- [`fastify-oracle`](https://github.com/cemremengu/fastify-oracle) Attache un
+  [`oracledb`](https://github.com/oracle/node-oracledb) pool de connexion à une instance de serveur Fastify.
+- [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Plug-in de connexion Fastify OrientDB, avec lequel vous pouvez partager la connexion OrientDB sur chaque partie de votre serveur.
+- [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) Un plugin de pool de threads de travail utilisant [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
-  Fastify plugin for memoize responses by expressive settings.
-- [`fastify-polyglot`](https://github.com/heply/fastify-polyglot) A plugin to
-  handle i18n using
+  Plugin Fastify pour mémoriser les réponses par des paramètres expressifs.
+- [`fastify-polyglot`](https://github.com/heply/fastify-polyglot) Un plugin pour gérer i18n en utilisant
   [node-polyglot](https://www.npmjs.com/package/node-polyglot).
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
-  Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
-  a Fastify project.
-- [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify
-  plugin that uses [prettier](https://github.com/prettier/prettier) under the
-  hood to beautify outgoing responses and/or other things in the Fastify server.
+  Plugin pour intégrer [PostGraphile](https://www.graphile.org/postgraphile/) dans un projet Fastify.
+- [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) Un plugin Fastify qui utilise [prettier](https://github.com/prettier/prettier) sous le capot pour embellir les réponses sortantes et/ou d'autres choses dans le serveur Fastify.
 - [`fastify-print-routes`](https://github.com/ShogunPanda/fastify-print-routes)
-  A Fastify plugin that prints all available routes.
+  Un plugin Fastify qui imprime toutes les routes disponibles.
 - [`fastify-protobufjs`](https://github.com/kenriortega/fastify-protobufjs)
-  Fastify and protobufjs, together at last. Uses protobufjs by default.
-- [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin
-  utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
-- [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify
-  that adds support for parsing URL query parameters with
+  Fastify et protobufjs, enfin ensemble. Utilise protobufjs par défaut.
+- [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) Ce plugin utilise [qrcode](https://github.com/soldair/node-qrcode) pour générer un code QR.
+- [`fastify-qs`](https://github.com/webdevium/fastify-qs) Un plugin pour Fastify qui ajoute la prise en charge de l'analyse des paramètres de requête d'URL avec
   [qs](https://github.com/ljharb/qs).
-- [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the
-  `request.rawBody` field.
-- [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based
-  access control plugin.
+- [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Ajoutez le champ `request.rawBody`.
+- [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) plug-in de contrôle d'accès basé sur les rôles.
 - [`fastify-recaptcha`](https://github.com/qwertyforce/fastify-recaptcha)
-  Fastify plugin for recaptcha verification.
+  Plugin Fastify pour la vérification recaptcha.
 - [`fastify-redis-channels`](https://github.com/hearit-io/fastify-redis-channels)
-  A plugin for fast, reliable, and scalable channels implementation based on
-  Redis streams.
+  Un plugin pour une implémentation de canaux rapide, fiable et évolutive basée sur les flux Redis.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes)
-  Plugin to automatically load routes from a specified path and optionally limit
-  loaded file names by a regular expression.
-- [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add
-  `X-Response-Time` header at each request for Fastify, in milliseconds.
+  Plugin pour charger automatiquement les routes à partir d'un chemin spécifié et éventuellement limiter les noms de fichiers chargés par une expression régulière.
+- [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Ajouter
+  `X-Response-Time` un en-tête à chaque demande de Fastify, en millisecondes.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching)
   A Fastify plugin for caching the response.
 - [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based

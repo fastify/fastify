@@ -294,8 +294,7 @@ section.
 - [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) un plugin client SOAP pour Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) un plugin Socket.io pour Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator) Petit plugin pour vous permettre d'utiliser plusieurs validateurs dans une route en fonction de chaque partie HTTP de la requête.
-- [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
-  Events with `reply.sse( … )` to Fastify.
+- [`fastify-sse`](https://github.com/lolo32/fastify-sse) pour fournir des événements envoyés par le serveur `reply.sse( … )` à Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
   Server-Sent Events using Async Iterators (supports newer versions of Fastify).
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to

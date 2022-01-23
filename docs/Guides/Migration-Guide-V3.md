@@ -149,19 +149,15 @@ L'ancienne syntaxe de Fastify v2 sans charge utile est prise en charge mais elle
 
 Dans Fastify v3, les analyseurs de type de contenu ont désormais une seule signature pour les analyseurs.
 
-The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`. Note that `request` is now a Fastify request, not an
-`IncomingMessage`. The payload is by default a stream. If the `parseAs` option
-is used in `addContentTypeParser`, then `payload` reflects the option value
-(string or buffer).
+TLes nouvelles signatures sont `fn(request, payload, done)` ou `async fn(request, payload)`. Notez que `request` est maintenant une requête Fastify et non un fichier
+`IncomingMessage`. La charge utile est par défaut un flux si l'option `parseAs`  est utilisé `addContentTypeParser`, `payload` reflète alors la valeur de l'option (chaîne ou tampon).
 
-The old signatures `fn(req, [done])` or `fn(req, payload, [done])` (where `req`
-is `IncomingMessage`) are still supported but are deprecated.
+Les anciennes signatures `fn(req, [done])` ou `fn(req, payload, [done])` (ou `req`
+`IncomingMessage`) sont toujours prises en charge mais sont obsolètes.
 
-### Changed TypeScript support
+### Modification de la prise en charge de TypeScript
 
-The type system was changed in Fastify version 3. The new type system introduces
-generic constraining and defaulting, plus a new way to define schema types such
-as a request body, querystring, and more!
+Le système de type a été modifié dans la version 3 de Fastify. Le nouveau système de type introduit des contraintes et des valeurs par défaut génériques, ainsi qu'une nouvelle façon de définir les types de schéma tels qu'un corps de requête, une chaîne de requête, et plus encore !
 
 **v2:**
 

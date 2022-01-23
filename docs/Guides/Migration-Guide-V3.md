@@ -95,12 +95,9 @@ const schema = {
 fastify.route({ method, url, schema, handler });
 ```
 
-### Changed schema validation options ([#2023](https://github.com/fastify/fastify/pull/2023))
+### Modification des options de validation du schéma ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-The `setSchemaCompiler` and `setSchemaResolver` options have been replaced with
-the `setValidatorCompiler` to enable future tooling improvements. To help
-understand this change read [Validation and Serialization in Fastify
-v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+Les options `setSchemaCompiler` et `setSchemaResolver` ont été remplacées par les `setValidatorCompiler` pour permettre de futures améliorations de l'outillage. Pour vous aider à comprendre ce changement, lisez [Validation et sérialisation dans Fastify v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 

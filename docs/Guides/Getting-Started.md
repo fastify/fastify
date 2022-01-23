@@ -118,18 +118,15 @@ Fastify offre une plate-forme simple qui aide à résoudre tous les problèmes d
 > Lors du déploiement sur un conteneur Docker (ou un autre type de) conteneur, l'utilisation de `0.0.0.0` ou
 > `::` serait la méthode la plus simple pour exposer l'application.
 
-### Your first plugin
+### Votre premier plugin
 
 <a id="first-plugin"></a>
 
-As with JavaScript, where everything is an object, with Fastify everything is a
-plugin.
+Comme avec JavaScript, où tout est un objet, avec Fastify tout est un plugin.
 
-Before digging into it, let's see how it works!
+Avant de creuser dedans, voyons comment ça marche !
 
-Let's declare our basic server, but instead of declaring the route inside the
-entry point, we'll declare it in an external file (check out the [route
-declaration](../Reference/Routes.md) docs).
+Déclarons notre serveur de base, mais au lieu de déclarer la route à l'intérieur du point d'entrée, nous la déclarerons dans un fichier externe (consultez la documentation sur la [déclaration des routes](../Reference/Routes.md)).
 
 ```js
 // ESM
@@ -179,25 +176,19 @@ async function routes(fastify, options) {
 module.exports = routes;
 ```
 
-In this example, we used the `register` API, which is the core of the Fastify
-framework. It is the only way to add routes, plugins, et cetera.
+Dans cet exemple, nous avons utilisé l'API `register` API, qui est au cœur du framework Fastify. C'est le seul moyen d'ajouter des routes, des plugins, etc.
 
-At the beginning of this guide, we noted that Fastify provides a foundation that
-assists with asynchronous bootstrapping of your application. Why is this
-important?
+Au début de ce guide, nous avons noté que Fastify fournit une base qui aide au démarrage asynchrone de votre application. Pourquoi est-ce important?
 
-Consider the scenario where a database connection is needed to handle data
-storage. The database connection needs to be available before the server is
-accepting connections. How do we address this problem?
+Considérez le scénario dans lequel une connexion à la base de données est nécessaire pour gérer le stockage des données. La connexion à la base de données doit être disponible avant que le serveur n'accepte les connexions. Comment résoudre ce problème ?
 
-A typical solution is to use a complex callback, or promises - a system that
-will mix the framework API with other libraries and the application code.
+Une solution typique consiste à utiliser un rappel complexe, ou des promesses - un système qui mélangera l'API du framework avec d'autres bibliothèques et le code de l'application.
 
-Fastify handles this internally, with minimum effort!
+Fastify gère cela en interne, avec un minimum d'effort !
 
-Let's rewrite the above example with a database connection.
+Réécrivons l'exemple ci-dessus avec une connexion à la base de données.
 
-First, install `fastify-plugin` and `fastify-mongodb`:
+Tout d'abord, installez `fastify-plugin` et `fastify-mongodb`:
 
 ```
 npm i --save fastify-plugin fastify-mongodb
@@ -325,39 +316,27 @@ async function routes(fastify, options) {
 module.exports = routes;
 ```
 
-Wow, that was fast!
+Waouh, c'était rapide !
 
-Let's recap what we have done here since we've introduced some new concepts.
+Récapitulons ce que nous avons fait ici depuis que nous avons introduit de nouveaux concepts.
 
-As you can see, we used `register` for both the database connector and the
-registration of the routes.
+Comme vous pouvez le voir, nous avons utilisé `register` à la fois le connecteur de la base de données et l'enregistrement des itinéraires.
 
-This is one of the best features of Fastify, it will load your plugins in the
-same order you declare them, and it will load the next plugin only once the
-current one has been loaded. In this way, we can register the database connector
-in the first plugin and use it in the second _(read
-[here](../Reference/Plugins.md#handle-the-scope) to understand how to handle the
-scope of a plugin)_.
+C'est l'une des meilleures fonctionnalités de Fastify, il chargera vos plugins dans le même ordre que vous les déclarez, et il ne chargera le plugin suivant qu'une fois que l'actuel aura été chargé. De cette façon, nous pouvons enregistrer le connecteur de base de données dans le premier plugin et l'utiliser dans le second _(lire
+[ici](../Reference/Plugins.md#handle-the-scope) pour comprendre comment gérer la portée d'un plugin)_.
 
-Plugin loading starts when you call `fastify.listen()`, `fastify.inject()` or
+Le chargement du plugin commence lorsque vous appelez `fastify.listen()`, `fastify.inject()` ou
 `fastify.ready()`
 
-The MongoDB plugin uses the `decorate` API to add custom objects to the Fastify
-instance, making them available for use everywhere. Use of this API is
-encouraged to facilitate easy code reuse and to decrease code or logic
-duplication.
+Le plugin MongoDB utilise l'API `decorate` pour ajouter des objets personnalisés à l'instance Fastify, les rendant disponibles pour une utilisation partout. L'utilisation de cette API est encouragée pour faciliter la réutilisation du code et pour réduire la duplication de code ou de logique.
 
-To dig deeper into how Fastify plugins work, how to develop new plugins, and for
-details on how to use the whole Fastify API to deal with the complexity of
-asynchronously bootstrapping an application, read [the hitchhiker's guide to
-plugins](./Plugins-Guide.md).
+Pour approfondir le fonctionnement des plugins Fastify, comment développer de nouveaux plugins et pour plus de détails sur la façon d'utiliser l'ensemble de l'API Fastify pour faire face à la complexité du démarrage asynchrone d'une application, lisez [ le guide de l'auto-stoppeur sur les plugins](./Plugins-Guide.md).
 
-### Loading order of your plugins
+### Ordre de chargement de vos plugins
 
 <a id="plugin-loading-order"></a>
 
-To guarantee consistent and predictable behavior of your application, we highly
-recommend to always load your code as shown below:
+Pour garantir un comportement cohérent et prévisible de votre application, nous vous recommandons vivement de toujours charger votre code comme indiqué ci-dessous :
 
 ```
 └── plugins (from the Fastify ecosystem)
@@ -367,13 +346,9 @@ recommend to always load your code as shown below:
 └── your services
 ```
 
-In this way, you will always have access to all of the properties declared in
-the current scope.
+De cette façon, vous aurez toujours accès à toutes les propriétés déclarées dans la portée courante.
 
-As discussed previously, Fastify offers a solid encapsulation model, to help you
-build your application as single and independent services. If you want to
-register a plugin only for a subset of routes, you just have to replicate the
-above structure.
+Comme indiqué précédemment, Fastify propose un modèle d'encapsulation solide, pour vous aider à créer votre application en tant que services uniques et indépendants. Si vous souhaitez enregistrer un plugin uniquement pour un sous-ensemble de routes, il vous suffit de répliquer la structure ci-dessus.
 
 ```
 └── plugins (from the Fastify ecosystem)
@@ -397,16 +372,16 @@ above structure.
           └── your services
 ```
 
-### Validate your data
+### Validez vos données
 
 <a id="validate-data"></a>
 
-Data validation is extremely important and a core concept of the framework.
+La validation des données est extrêmement importante et constitue un concept central du cadre.
 
-To validate incoming requests, Fastify uses [JSON
+Pour valider les requêtes entrantes, Fastify utilise [JSON
 Schema](https://json-schema.org/).
 
-(JTD schemas are loosely supported, but `jsonShorthand` must be disabled first)
+(Les schémas JTD sont faiblement pris en charge, mais `jsonShorthand` doivent d'abord être désactivés)
 
 Let's look at an example demonstrating validation for routes:
 

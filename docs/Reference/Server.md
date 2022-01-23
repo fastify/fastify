@@ -805,7 +805,7 @@ fastify.ready().then(() => {
 Starts the server on the given port after all the plugins are loaded, internally
 waits for the `.ready()` event. The callback is the same as the Node core.
 
-By default, the server will listen on the address resolved by `localhost` when no
+By default, the server will listen on the address(es) resolved by `localhost` when no
 specific address is provided. If listening on any available interface is desired,
 then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
 

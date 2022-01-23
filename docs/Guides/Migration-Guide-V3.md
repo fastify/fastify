@@ -1,6 +1,6 @@
-# V3 Migration Guide
+# Guide de migration V3
 
-This guide is intended to help with migration from Fastify v2 to v3.
+Ce guide est destiné à aider à la migration de Fastify v2 vers v3.
 
 Before beginning please ensure that any deprecation warnings from v2 are fixed.
 All v2 deprecations have been removed and they will no longer work after
@@ -50,11 +50,11 @@ const fastify = require('fastify')({
       res(res) {
         return {
           statusCode: res.statusCode,
-          customProp: res.customProp
+          customProp: res.customProp,
         };
-      }
-    }
-  }
+      },
+    },
+  },
 });
 ```
 
@@ -67,11 +67,11 @@ const fastify = require('fastify')({
       res(reply) {
         return {
           statusCode: reply.statusCode, // No change required
-          customProp: reply.raw.customProp // Log custom property from res object
+          customProp: reply.raw.customProp, // Log custom property from res object
         };
-      }
-    }
-  }
+      },
+    },
+  },
 });
 ```
 
@@ -87,7 +87,7 @@ v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 ```js
 const schema = {
-  body: 'schemaId#'
+  body: 'schemaId#',
 };
 fastify.route({ method, url, schema, handler });
 ```
@@ -97,8 +97,8 @@ fastify.route({ method, url, schema, handler });
 ```js
 const schema = {
   body: {
-    $ref: 'schemaId#'
-  }
+    $ref: 'schemaId#',
+  },
 };
 fastify.route({ method, url, schema, handler });
 ```
@@ -118,8 +118,8 @@ const ajv = new AJV();
 ajv.addSchema(schemaA);
 ajv.addSchema(schemaB);
 
-fastify.setSchemaCompiler(schema => ajv.compile(schema));
-fastify.setSchemaResolver(ref => ajv.getSchema(ref).schema);
+fastify.setSchemaCompiler((schema) => ajv.compile(schema));
+fastify.setSchemaResolver((ref) => ajv.getSchema(ref).schema);
 ```
 
 **v3:**
@@ -141,8 +141,7 @@ From Fastify v3, the behavior of the `preParsing` hook will change slightly in
 order to support request payload manipulation.
 
 The hook now takes an additional argument, `payload`, and therefore the new hook
-signature is `fn(request, reply, payload, done)` or `async fn(request, reply,
-payload)`.
+signature is `fn(request, reply, payload, done)` or `async fn(request, reply, payload)`.
 
 The hook can optionally return a new stream via `done(null, stream)` or
 returning the stream in case of async functions.
@@ -173,8 +172,7 @@ slightly in order to support hook encapsulation.
 
 In Fastify v3 the content type parsers now have a single signature for parsers.
 
-The new signatures are `fn(request, payload, done)` or `async fn(request,
-payload)`. Note that `request` is now a Fastify request, not an
+The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`. Note that `request` is now a Fastify request, not an
 `IncomingMessage`. The payload is by default a stream. If the `parseAs` option
 is used in `addContentTypeParser`, then `payload` reflects the option value
 (string or buffer).
@@ -246,12 +244,12 @@ all unexpected errors in sync and async routes are managed.
 ```js
 fastify.setErrorHandler((error, request, reply) => {
   // this is NOT called
-  reply.send(error)
-})
+  reply.send(error);
+});
 fastify.get('/', (request, reply) => {
-  const maybeAnArray = request.body.something ? [] : 'I am a string'
-  maybeAnArray.substr() // Thrown: [].substr is not a function and crash the server
-})
+  const maybeAnArray = request.body.something ? [] : 'I am a string';
+  maybeAnArray.substr(); // Thrown: [].substr is not a function and crash the server
+});
 ```
 
 **v3:**
@@ -259,12 +257,12 @@ fastify.get('/', (request, reply) => {
 ```js
 fastify.setErrorHandler((error, request, reply) => {
   // this IS called
-  reply.send(error)
-})
+  reply.send(error);
+});
 fastify.get('/', (request, reply) => {
-  const maybeAnArray = request.body.something ? [] : 'I am a string'
-  maybeAnArray.substr() // Thrown: [].substr is not a function, but it is handled
-})
+  const maybeAnArray = request.body.something ? [] : 'I am a string';
+  maybeAnArray.substr(); // Thrown: [].substr is not a function, but it is handled
+});
 ```
 
 ## Further additions and improvements

@@ -206,11 +206,9 @@ server.get<{
 });
 ```
 
-### Manage uncaught exception ([#2073](https://github.com/fastify/fastify/pull/2073))
+### Gérer l'exception non interceptée ([#2073](https://github.com/fastify/fastify/pull/2073))
 
-In sync route handlers, if an error was thrown the server crashed by design
-without calling the configured `.setErrorHandler()`. This has changed and now
-all unexpected errors in sync and async routes are managed.
+Dans les gestionnaires de routage de synchronisation, si une erreur était générée, le serveur s'arrêtait de par sa conception sans appeler le fichier `.setErrorHandler()`. Cela a changé et maintenant toutes les erreurs inattendues dans les routes synchronisées et asynchrones sont gérées.
 
 **v2:**
 
@@ -238,21 +236,21 @@ fastify.get('/', (request, reply) => {
 });
 ```
 
-## Further additions and improvements
+## Autres ajouts et améliorations
 
-- Hooks now have consistent context regardless of how they are registered
+- Les hooks ont maintenant un contexte cohérent quelle que soit la façon dont ils sont enregistrés
   ([#2005](https://github.com/fastify/fastify/pull/2005))
-- Deprecated `request.req` and `reply.res` for
+- Obsolète `request.req` et `reply.res` pour
   [`request.raw`](../Reference/Request.md) and
   [`reply.raw`](../Reference/Reply.md)
   ([#2008](https://github.com/fastify/fastify/pull/2008))
-- Removed `modifyCoreObjects` option
+- Supprimé `modifyCoreObjects` option
   ([#2015](https://github.com/fastify/fastify/pull/2015))
-- Added [`connectionTimeout`](../Reference/Server.md#factory-connection-timeout)
+- Ajout [`connectionTimeout`](../Reference/Server.md#factory-connection-timeout)
   option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added [`keepAliveTimeout`](../Reference/Server.md#factory-keep-alive-timeout)
+- Ajout [`keepAliveTimeout`](../Reference/Server.md#factory-keep-alive-timeout)
   option ([#2086](https://github.com/fastify/fastify/pull/2086))
-- Added async-await support for [plugins](../Reference/Plugins.md#async-await)
+- Ajout async-await support pour les [plugins](../Reference/Plugins.md#async-await)
   ([#2093](https://github.com/fastify/fastify/pull/2093))
-- Added the feature to throw object as error
+- Ajout de la fonctionnalité pour le renvoi d'objet en tant qu'erreur
   ([#2134](https://github.com/fastify/fastify/pull/2134))

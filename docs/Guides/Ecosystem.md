@@ -318,23 +318,16 @@ section.
 - [`fast-water`](https://github.com/tswayne/fast-water)Un plugin Fastify pour la ligne de flottaison. Décore Fastify avec des modèles de lignes de flottaison.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Plug-in de rechargement de module Webpack pour Fastify.
-- [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for
-  Fastify — with support for WebSocket lifecycle hooks instead of a single
-  handler function. Built upon [ws](https://github.com/websockets/ws) and
+- [`fastify-ws`](https://github.com/gj/fastify-ws) Intégration WebSocket pour Fastify - avec prise en charge des crochets de cycle de vie WebSocket au lieu d'une fonction de gestionnaire unique. Construit sur [ws](https://github.com/websockets/ws) et
   [uws](https://github.com/uNetworking/uWebSockets).
 - [`fastify-xml-body-parser`](https://github.com/NaturalIntelligence/fastify-xml-body-parser)
-  Parse XML payload / request body into JS / JSON object.
-- [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
-  for AWS XRay recording.
+  Analysez la charge utile XML / le corps de la requête dans un objet JS / JSON.
+- [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Plug-in Fastify pour l'enregistrement AWS XRay.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
-  An [i18next](https://www.i18next.com) based i18n (internationalization)
-  middleware to be used with Node.js web frameworks like Express or Fastify and
-  also for Deno.
-- [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) API
-  Gateway plugin for Fastify, a low footprint implementation that uses the
-  `fastify-reply-from` HTTP proxy library.
-- [`mercurius`](https://mercurius.dev/) A fully-featured and performant GraphQL
-  server implementation for Fastify.
+  Un middleware i18n (internationalisation) basé sur [i18next](https://www.i18next.com) à utiliser avec les frameworks Web Node.js comme Express ou Fastify et aussi pour Deno.
+- [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) Plug-in API Gateway pour Fastify, une implémentation à faible encombrement qui utilise la
+  `fastify-reply-from` bibliothèque de proxy HTTP.
+- [`mercurius`](https://mercurius.dev/) Une implémentation de serveur GraphQL complète et performante pour Fastify.
 - [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get
   all your network and process stats for your node application. Websocket,
   HTTP/S, and prometheus compatible!

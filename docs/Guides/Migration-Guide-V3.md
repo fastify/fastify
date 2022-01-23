@@ -28,14 +28,14 @@ await fastify.register(require('fastify-express'));
 fastify.use(require('cors')());
 ```
 
-### Changed logging serialization ([#2017](https://github.com/fastify/fastify/pull/2017))
+### Modification de la sérialisation de journalisation ([#2017](https://github.com/fastify/fastify/pull/2017))
 
-The logging [Serializers](../Reference/Logging.md) have been updated to now
-Fastify [`Request`](../Reference/Request.md) and
-[`Reply`](../Reference/Reply.md) objects instead of native ones.
+[Les sérialiseurs](../Reference/Logging.md) de journalisation ont été mis à jour pour désormais Fastify
+Fastify [`Request`](../Reference/Request.md) et
+[`Reply`](../Reference/Reply.md) les objets au lieu des objets natifs.
 
-Any custom serializers must be updated if they rely upon `request` or `reply`
-properties that are present on the native objects but not the Fastify objects.
+Tous les sérialiseurs personnalisés doivent être mis à jour s'ils reposent sur des `request` ou `reply`
+présentes sur les objets natifs mais pas sur les objets Fastify.
 
 **v2:**
 
@@ -71,13 +71,9 @@ const fastify = require('fastify')({
 });
 ```
 
-### Changed schema substitution ([#2023](https://github.com/fastify/fastify/pull/2023))
+### Remplacement de schéma modifié ([#2023](https://github.com/fastify/fastify/pull/2023))
 
-The non-standard `replace-way` shared schema support has been removed. This
-feature has been replaced with JSON Schema specification compliant `$ref` based
-substitution. To help understand this change read [Validation and Serialization
-in Fastify
-v3](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
+`replace-way` La prise en charge des schémas partagés non standard a été supprimée `$ref` Cette fonctionnalité a été remplacée par une substitution basée sur la spécification JSON Schema . Pour vous aider à comprendre ce changement, lisez [Validation et sérialisation dans Fastify v3 .](https://dev.to/eomm/validation-and-serialization-in-fastify-v3-2e8l).
 
 **v2:**
 

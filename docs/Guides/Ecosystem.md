@@ -274,12 +274,11 @@ section.
   Un plugin Fastify pour mettre en cache la réponse.
 - [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Framework Web basé sur Fastify avec génération automatique de routes d'API REST pour les entités TypeORM à l'aide de DI et de décorateurs.
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes)
-  Fastify reverse routes plugin, allows to defined named routes and build path
-  using name and parameters.
+  Ce plug-in permet de définir des routes nommées et de créer un chemin en utilisant le nom et les paramètres.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config)
-  Fastify Rob-Config integration.
+  Accélérez l'intégration de Rob-Config.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
-  Convenient grouping and inheritance of routes
+  Regroupement pratique et héritage des itinéraires
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)
   Choose the JSON schema to use based on request parameters.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)

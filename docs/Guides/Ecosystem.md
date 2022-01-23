@@ -132,26 +132,19 @@ section.
   Plugin Fastify pour générer et transférer des événements Fastify au format Cloudevents.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Plugin Fastify pour se connecter à une instance CockroachDB PostgreSQL via l'ORM Sequelize.
-- [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify
-  plugin to add CouchDB support via [nano](https://github.com/apache/nano).
-- [`fastify-crud-generator`](https://github.com/heply/fastify-crud-generator) A
-  plugin to rapidly generate CRUD routes for any entity.
+- [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Plugin Fastify pour ajouter la prise en charge de CouchDB via [nano](https://github.com/apache/nano).
+- [`fastify-crud-generator`](https://github.com/heply/fastify-crud-generator) Un plugin pour générer rapidement des routes CRUD pour n'importe quelle entité.
 - [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck)
-  Fastify plugin to add health route in your server that asserts custom
-  functions.
-- [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify
-  plugin that provides the set of TypeScript decorators.
+  Plugin Fastify pour ajouter une route de santé dans votre serveur qui affirme des fonctions personnalisées.
+- [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Plugin Fastify qui fournit l'ensemble des décorateurs TypeScript.
 - [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache)
-  Fastify plugin to disable client-side caching, inspired by
+  Plugin Fastify pour désactiver la mise en cache côté client, inspiré de
   [nocache](https://github.com/helmetjs/nocache).
-- [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) AWS DynamoDB
-  plugin for Fastify. It exposes
-  [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html)
-  object.
-- [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Dynamic plugin
-  register for Fastify.
-- [`fastify-early-hints`](https://github.com/zekth/fastify-early-hints) Plugin
-  to add HTTP 103 feature based on [RFC
+- [`fastify-dynamodb`](https://github.com/matrus2/fastify-dynamodb) Plug-in AWS DynamoDB pour Fastify. Il expose l'objet
+  [AWS.DynamoDB.DocumentClient()](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html).
+
+- [`fastify-dynareg`](https://github.com/greguz/fastify-dynareg) Registre de plug-in dynamique pour Fastify.
+- [`fastify-early-hints`](https://github.com/zekth/fastify-early-hints) Plugin pour ajouter la fonctionnalité HTTP 103 basée sur [RFC
   8297](https://httpwg.org/specs/rfc8297.html)
 - [`fastify-envalid`](https://github.com/alemagio/fastify-envalid) Fastify
   plugin to integrate [envalid](https://github.com/af/envalid) in your Fastify

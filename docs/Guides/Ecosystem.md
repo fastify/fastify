@@ -271,10 +271,8 @@ section.
 - [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Ajouter
   `X-Response-Time` un en-tête à chaque demande de Fastify, en millisecondes.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching)
-  A Fastify plugin for caching the response.
-- [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based
-  web framework with REST API routes auto-generation for TypeORM entities using
-  DI and decorators.
+  Un plugin Fastify pour mettre en cache la réponse.
+- [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Framework Web basé sur Fastify avec génération automatique de routes d'API REST pour les entités TypeORM à l'aide de DI et de décorateurs.
 - [`fastify-reverse-routes`](https://github.com/dimonnwc3/fastify-reverse-routes)
   Fastify reverse routes plugin, allows to defined named routes and build path
   using name and parameters.

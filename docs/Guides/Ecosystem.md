@@ -295,42 +295,29 @@ section.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) un plugin Socket.io pour Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator) Petit plugin pour vous permettre d'utiliser plusieurs validateurs dans une route en fonction de chaque partie HTTP de la requête.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) pour fournir des événements envoyés par le serveur `reply.sse( … )` à Fastify.
-- [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
-  Server-Sent Events using Async Iterators (supports newer versions of Fastify).
-- [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to
-  initialize and encapsulate [Stripe
-  Node.js](https://github.com/stripe/stripe-node) instances in Fastify.
-- [`fastify-supabase`](https://github.com/coopflow/fastify-supabase) Plugin to
-  initialize and encapsulate [Supabase](https://github.com/supabase/supabase-js)
-  instances in Fastify.
+- [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) pour fournir des événements envoyés par le serveur à l'aide d'itérateurs asynchrones (prend en charge les nouvelles versions de Fastify)
+- [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin pour initialiser et encapsuler les instances [Stripe
+  Node.js](https://github.com/stripe/stripe-node) dans Fastify.
+- [`fastify-supabase`](https://github.com/coopflow/fastify-supabase) Plugin pour initialiser et encapsuler les instances [Supabase](https://github.com/supabase/supabase-js)
+  dans Fastify.
 - [`fastify-tls-keygen`](https://gitlab.com/sebdeckers/fastify-tls-keygen)
-  Automatically generate a browser-compatible, trusted, self-signed,
-  localhost-only, TLS certificate.
+  Générez automatiquement un certificat TLS compatible avec le navigateur, approuvé, auto-signé et réservé à l'hôte local.
 - [`fastify-tokenize`](https://github.com/Bowser65/fastify-tokenize)
-  [Tokenize](https://github.com/Bowser65/Tokenize) plugin for Fastify that
-  removes the pain of managing authentication tokens, with built-in integration
-  for `fastify-auth`.
-- [`fastify-totp`](https://github.com/heply/fastify-totp) A plugin to handle
-  TOTP (e.g. for 2FA).
+  [Tokenize](https://github.com/Bowser65/Tokenize) pour Fastify qui supprime la douleur de la gestion des jetons d'authentification, avec une intégration intégrée pour `fastify-auth`.
+- [`fastify-totp`](https://github.com/heply/fastify-totp) Un plugin pour gérer TOTP (par exemple pour 2FA).
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
-  Useful functions for Twitch Extension Backend Services (EBS).
+  Fonctions utiles pour Twitch Extension Backend Services (EBS).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
-  Fastify plugin to work with TypeORM.
-- [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
-  subdomain HTTP requests to another server (useful if you want to point
-  multiple subdomains to the same IP address, while running different servers on
-  the same machine).
+  Plugin Fastify pour fonctionner avec TypeORM.
+- [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Requêtes HTTP de sous-domaine proxy vers un autre serveur (utile si vous souhaitez faire pointer plusieurs sous-domaines vers la même adresse IP, tout en exécutant différents serveurs sur la même machine).
 - [`fastify-vite`](https://github.com/galvez/fastify-vite)
-  [Vite](https://vitejs.dev/) plugin for Fastify with SSR data support.
+  [Vite](https://vitejs.dev/) pour Fastify avec prise en charge des données SSR.
 - [`fastify-vue-plugin`](https://github.com/TheNoim/fastify-vue)
-  [Nuxt.js](https://nuxtjs.org) plugin for Fastify. Control the routes nuxt
-  should use.
-- [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
-  Application Messaging Protocol router for Fastify.
-- [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
-  waterline. Decorates Fastify with waterline models.
+  [Nuxt.js](https://nuxtjs.org) pour Fastify. Contrôlez les routes que nuxt doit utiliser.
+- [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Routeur Web Application Messaging Protocol pour Fastify.
+- [`fast-water`](https://github.com/tswayne/fast-water)Un plugin Fastify pour la ligne de flottaison. Décore Fastify avec des modèles de lignes de flottaison.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
-  Webpack hot module reloading plugin for Fastify.
+  Plug-in de rechargement de module Webpack pour Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for
   Fastify — with support for WebSocket lifecycle hooks instead of a single
   handler function. Built upon [ws](https://github.com/websockets/ws) and

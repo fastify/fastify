@@ -132,30 +132,22 @@ Le hook prend maintenant un argument supplémentaire, `payload`, et donc la nouv
 
 Le hook peut éventuellement renvoyer un nouveau flux via `done(null, stream)` ou renvoyer le flux en cas de fonctions asynchrones.
 
-Si le hook renvoie un nouveau flux, il sera utilisé à la place de celui d'origine dans les crochets suivants. Un exemple de cas d'utilisation pour cela est la gestion des requêtes compressées.
+Si le hook renvoie un nouveau flux, il sera utilisé à la place de celui d'origine dans les hooks suivants. Un exemple de cas d'utilisation pour cela est la gestion des requêtes compressées.
 
-The new stream should add the `receivedEncodedLength` property to the stream
-that should reflect the actual data size received from the client. For instance,
-in a compressed request it should be the size of the compressed payload. This
-property can (and should) be dynamically updated during `data` events.
+Le nouveau flux doit ajouter la `receivedEncodedLength` propriété au flux qui doit refléter la taille réelle des données reçues du client. Par exemple, dans une requête compressée, il doit s'agir de la taille de la charge utile compressée. Cette propriété peut (et doit) être mise à jour dynamiquement lors d'événements. `data`.
 
-The old syntax of Fastify v2 without payload is supported but it is deprecated.
+L'ancienne syntaxe de Fastify v2 sans charge utile est prise en charge mais elle est obsolète.
 
-### Changed hooks behavior ([#2004](https://github.com/fastify/fastify/pull/2004))
+### Modification du comportement des hooks ([#2004](https://github.com/fastify/fastify/pull/2004))
 
-From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
-slightly in order to support hook encapsulation.
+À partir de Fastify v3, le comportement de `onRoute` et `onRegister` changera légèrement afin de prendre en charge l'encapsulation des hooks.
 
-- `onRoute` - The hook will be called asynchronously. The hook is now inherited
-  when registering a new plugin within the same encapsulation scope. Thus, this
-  hook should be registered _before_ registering any plugins.
-- `onRegister` - Same as the onRoute hook. The only difference is that now the
-  very first call will no longer be the framework itself, but the first
-  registered plugin.
+- `onRoute` - Le hook sera appelé de manière asynchrone. Le hook est maintenant hérité lors de l'enregistrement d'un nouveau plugin dans la même portée d'encapsulation. Ainsi, ce hook doit être enregistré _avant_ d'enregistrer des plugins.
+- `onRegister` - Identique au hook onRoute. La seule différence est que désormais le tout premier appel ne sera plus le framework lui-même, mais le premier plugin enregistré.
 
-### Changed Content Type Parser syntax ([#2286](https://github.com/fastify/fastify/pull/2286))
+### Modification de la syntaxe de l'analyseur de type de contenu ( ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-In Fastify v3 the content type parsers now have a single signature for parsers.
+Dans Fastify v3, les analyseurs de type de contenu ont désormais une seule signature pour les analyseurs.
 
 The new signatures are `fn(request, payload, done)` or `async fn(request, payload)`. Note that `request` is now a Fastify request, not an
 `IncomingMessage`. The payload is by default a stream. If the `parseAs` option

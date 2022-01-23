@@ -71,97 +71,67 @@ section.
 - [`point-of-view`](https://github.com/fastify/point-of-view) Prise en charge du plugin de rendu de modèles (_ejs, pug, handlebars, marko_) pour Fastify.
 - [`under-pressure`](https://github.com/fastify/under-pressure) Mesurez la charge du processus avec la gestion automatique du plug-in _"Service Unavailable"_ pour Fastify.
 
-#### [Community](#community)
+#### [Communauté](#community)
 
 - [`@applicazza/fastify-nextjs`](https://github.com/applicazza/fastify-nextjs)
-  Alternate Fastify and Next.js integration.
-- [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Strongly
-  typed routes with a runtime validation using JSON schema generated from types.
-- [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) A plugin for
-  sampling process metrics.
-- [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to
-  close the server gracefully on `SIGINT` and `SIGTERM` signals.
+  Alternative d'intégration de Fastify et Next.js.
+- [`@coobaha/typed-fastify`](https://github.com/Coobaha/typed-fastify) Routes fortement typées avec une validation d'exécution utilisant le schéma JSON généré à partir des types.
+- [`@dnlup/fastify-doc`](https://github.com/dnlup/fastify-doc) Un plugin pour l'échantillonnage des métriques de processus.
+- [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) Un plugin pour fermer gracieusement le serveur `SIGINT` et `SIGTERM`.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
-  Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
-  Fastify API graceful.
+  Bibliothèque Node.JS minuscule (~ 5k), rapide, KISS et sans dépendance pour rendre votre API Fastify gracieuse.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
-  Minimalistic and opinionated plugin that collects usage/process metrics and
-  dispatches to [statsd](https://github.com/statsd/statsd).
+  Plugin minimaliste et opiniâtre qui collecte les métriques d'utilisation/processus et les envoie à [statsd](https://github.com/statsd/statsd).
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
-  A plugin to close the server gracefully
+  Un plugin pour fermer le serveur de manière élégante.
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
-  A plugin to enable compact request logging for Fastify
+  Un plugin pour activer la journalisation compacte des requêtes pour Fastify
 - [`@mgcrea/fastify-session-redis-store`](https://github.com/mgcrea/fastify-session-redis-store)
-  Redis store for @mgcrea/fastify-session using ioredis
+  Store Redis pour @mgcrea/fastify-session en utilisant ioredis
 - [`@mgcrea/fastify-session-sodium-crypto`](https://github.com/mgcrea/fastify-session-sodium-crypto)
-  Fast sodium-based crypto for @mgcrea/fastify-session
-- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session
-  plugin for Fastify that supports both stateless and stateful sessions
+  Crypto rapide à base de sodium pour @mgcrea/fastify-session
+- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Plugin de session pour Fastify qui prend en charge les sessions sans état et avec état
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
-  A custom compact pino-base prettifier
+  Un embellisseur compact personnalisé à base de pino
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
-  SeaweedFS for Fastify
+  SeaweedFS pour Fastify
 - [`apollo-server-fastify`](https://github.com/apollographql/apollo-server/tree/master/packages/apollo-server-fastify)
-  Run an [Apollo Server](https://github.com/apollographql/apollo-server) to
-  serve GraphQL with Fastify.
-- [`arecibo`](https://github.com/nucleode/arecibo) Fastify ping responder for
-  Kubernetes Liveness and Readiness Probes.
-- [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
-  for CLS-based request ID generation. An out-of-the-box solution for adding
-  request IDs into your logs.
-- [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds
-  405 HTTP status to your routes
-- [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin
-  that automatically adds an Allow header to responses with routes. Also sends
-  405 responses for routes that have a handler but not for the request's method.
-- [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Fastify AMQP
-  connection plugin, to use with RabbitMQ or another connector. Just a wrapper
-  to [`amqplib`](https://github.com/squaremo/amqp.node).
+  Exécutze un [Apollo Server](https://github.com/apollographql/apollo-server) pour servir GraphQL avec Fastify.
+- [`arecibo`](https://github.com/nucleode/arecibo) Fastify répondeur ping pour Kubernetes Liveness and Readiness Probes.
+- [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Middleware Fastify pour la génération d'ID de demande basée sur CLS. Une solution prête à l'emploi pour ajouter des ID de demande dans vos journaux.
+- [`fastify-405`](https://github.com/Eomm/fastify-405) Plugin Fastify qui ajoute le statut HTTP 405 à vos routes
+- [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Plugin Fastify qui ajoute automatiquement un en-tête Autoriser aux réponses avec des routes. Envoie également des réponses 405 pour les routes qui ont un gestionnaire mais pas pour la méthode de la requête.
+- [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Plugin de connexion Fastify AMQP, à utiliser avec RabbitMQ ou un autre connecteur. Juste un emballage pou [`amqplib`](https://github.com/squaremo/amqp.node).
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal)
-  Angular server-side rendering support using
+  Prise en charge du rendu angular côté serveur à l'aide
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)
-  for Fastify
-- [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Fastify
-  plugin to authenticate HTTP requests based on api key and signature
-- [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
-  Plugin for interacting with Appwrite server.
+  de Fastify
+- [`fastify-api-key`](https://github.com/arkerone/fastify-api-key) Plugin Fastify pour authentifier les requêtes HTTP basées sur la clé API et la signature
+- [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify Plugin pour interagir avec le serveur Appwrite.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
-  Auth0 verification plugin for Fastify, internally uses
-  [fastify-jwt](https://npm.im/fastify-jwt) and
+  plugin de vérification Auth0 pour Fastify, utilise en interne
+  [fastify-jwt](https://npm.im/fastify-jwt) et
   [jsonwebtoken](https://npm.im/jsonwebtoken).
 - [`fastify-autocrud`](https://github.com/paranoiasystem/fastify-autocrud)
-  Plugin to auto-generate CRUD routes as fast as possible.
+  Plugin pour générer automatiquement des routes CRUD aussi rapidement que possible.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
-  Plugin to scan and load routes based on filesystem path from a custom
-  directory.
-- [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
-  send HTTP requests via [axios](https://github.com/axios/axios).
-- [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for
-  development servers that require Babel transformations of JavaScript sources.
-- [`fastify-bcrypt`](https://github.com/heply/fastify-bcrypt) A Bcrypt hash
-  generator & checker.
-- [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Prints your
-  routes to the console, so you definitely know which endpoints are available.
-- [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Fastify
-  plugin to add [bookshelf.js](https://bookshelfjs.org/) ORM support.
-- [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Fastify plugin
-  to add [boom](https://github.com/hapijs/boom) support.
-- [`fastify-bree`](https://github.com/climba03003/fastify-bree) Fastify plugin
-  to add [bree](https://github.com/breejs/bree) support.
-- [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
-  for Fastify.
+  Plugin pour analyser et charger les routes en fonction du chemin du système de fichiers à partir d'un répertoire personnalisé.
+- [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin pour envoyer des requêtes HTTP via [axios](https://github.com/axios/axios).
+- [`fastify-babel`](https://github.com/cfware/fastify-babel) Plugin Fastify pour les serveurs de développement qui nécessitent des transformations Babel des sources JavaScript.
+- [`fastify-bcrypt`](https://github.com/heply/fastify-bcrypt) Un générateur et un vérificateur de hachage Bcrypt.
+- [`fastify-blipp`](https://github.com/PavelPolyakov/fastify-blipp) Imprime vos routes sur la console, afin que vous sachiez exactement quels points de terminaison sont disponibles.
+- [`fastify-bookshelf`](https://github.com/butlerx/fastify-bookshelfjs) Plugin Fastify pour ajouter le support ORM de [bookshelf.js](https://bookshelfjs.org/).
+- [`fastify-boom`](https://github.com/jeromemacias/fastify-boom) Plugin Fastify pour ajouter le support ded [boom](https://github.com/hapijs/boom).
+- [`fastify-bree`](https://github.com/climba03003/fastify-bree) Plugin Fastify pour ajouter le support de [bree](https://github.com/breejs/bree).
+- [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Prise en charge de Casbin pour Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)
-  Casbin support for Fastify based on a RESTful model.
-- [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Fastify
-  [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like
-  protection of endpoints via either a preSerialization & preHandler hook,
-  sanitizing the inputs and outputs of your application based on user rights.
+  Prise en charge de Casbin pour Fastify basée sur un modèle RESTful.
+- [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Plug-in Fastify
+  [CASL](https://github.com/stalniy/casl) qui prend en charge la protection des points de terminaison de type ACL via un crochet preSerialization & preHandler, en nettoyant les entrées et les sorties de votre application en fonction des droits de l'utilisateur.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
-  Fastify plugin to generate and forward Fastify events in the Cloudevents
-  format.
+  Plugin Fastify pour générer et transférer des événements Fastify au format Cloudevents.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
-  Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
-  Sequelize ORM.
+  Plugin Fastify pour se connecter à une instance CockroachDB PostgreSQL via l'ORM Sequelize.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify
   plugin to add CouchDB support via [nano](https://github.com/apache/nano).
 - [`fastify-crud-generator`](https://github.com/heply/fastify-crud-generator) A

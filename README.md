@@ -1,3 +1,5 @@
+# Documentation en français (FR)
+
 <div align="center">
   <a href="https://fastify.io/">
     <img src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg" width="650" height="auto"/>
@@ -27,278 +29,283 @@ Disclosure](https://img.shields.io/badge/Security-Responsible%20Disclosure-yello
 
 <br />
 
-An efficient server implies a lower cost of the infrastructure, a better responsiveness under load and happy users.
-How can you efficiently handle the resources of your server, knowing that you are serving the highest number of requests as possible, without sacrificing security validations and handy development?
+Un serveur performant implique un moindre coût d'infrastructure, une meilleure réactivité et des utilisateurs satisfaits. Comment gérer efficacement les ressources de votre serveur, sachant que vous traitez un plus grand nombre de requêtes, sans sacrifier les verfications de sécurité et le développement pratique ?
 
- - [Quick start](./README.md#quick-start)
- - [Install](./README.md#install)
- - [Example](./README.md#example)
- - [Fastify v1.x and v2.x](./README.md#fastify-v1x-and-v2x)
- - [Core features](./README.md#core-features)
- - [Benchmarks](./README.md#benchmarks)
- - [Documentation](./README.md#documentation)
- - [Ecosystem](./README.md#ecosystem)
- - [Support](./README.md#support)
- - [Team](./README.md#team)
- - [Hosted by](./README.md#hosted-by)
- - [License](./README.md#license)
+- [Quick start](./README.md#quick-start)
+- [Install](./README.md#install)
+- [Example](./README.md#example)
+- [Fastify v1.x and v2.x](./README.md#fastify-v1x-and-v2x)
+- [Core features](./README.md#core-features)
+- [Benchmarks](./README.md#benchmarks)
+- [Documentation](./README.md#documentation)
+- [Ecosystem](./README.md#ecosystem)
+- [Support](./README.md#support)
+- [Team](./README.md#team)
+- [Hosted by](./README.md#hosted-by)
+- [License](./README.md#license)
 
-Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
+Adoptez Fastify. Fastify est un framework Web hautement axé sur la fourniture de la meilleure expérience de développement avec le moins de frais généraux et une architecture de plug-in puissante. Il s'inspire de Hapi et d'Express et, à notre connaissance, il s'agit de l'un des frameworks Web les plus rapides.
 
-### Quick start
+### Démarrage rapide
 
-Create a folder and make it your current working directory:
+Créez un dossier et faites-en votre répertoire de travail actuel :
 
 ```sh
 mkdir my-app
 cd my-app
 ```
 
-Generate a fastify project with `npm init`:
+Générer un projet fastify avec `npm init`:
 
 ```sh
 npm init fastify
 ```
 
-Install dependencies:
+Installez les dépendances :
 
 ```sh
 npm install
 ```
 
-To start the app in dev mode:
+Pour démarrer l'application en mode développeur :
 
 ```sh
 npm run dev
 ```
 
-For production mode:
+Pour le mode production :
 
 ```sh
 npm start
 ```
 
-Under the hood `npm init` downloads and runs [Fastify Create](https://github.com/fastify/create-fastify),
-which in turn uses the generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
+Sous le capot `npm init` télécharge et exécute [Fastify Create](https://github.com/fastify/create-fastify),
+qui à son tour utilise la fonctionnalité de génération de [Fastify CLI](https://github.com/fastify/fastify-cli).
 
+### Installation
 
-### Install
+En cas d'installation dans un projet existant, Fastify peut être installé en tant que dépendance :
 
-If installing in an existing project, then Fastify can be installed into the project as a dependency:
+Installer with npm:
 
-Install with npm:
 ```sh
 npm i fastify --save
 ```
-Install with yarn:
+
+Installer with yarn:
+
 ```sh
 yarn add fastify
 ```
 
-### Example
+### Exemple
 
 ```js
 // Require the framework and instantiate it
 
 // ESM
-import Fastify from 'fastify'
+import Fastify from 'fastify';
 const fastify = Fastify({
-  logger: true
-})
+  logger: true,
+});
 // CommonJs
 const fastify = require('fastify')({
-  logger: true
-})
+  logger: true,
+});
 
 // Declare a route
 fastify.get('/', (request, reply) => {
-  reply.send({ hello: 'world' })
-})
+  reply.send({ hello: 'world' });
+});
 
 // Run the server!
 fastify.listen(3000, (err, address) => {
-  if (err) throw err
+  if (err) throw err;
   // Server is now listening on ${address}
-})
+});
 ```
 
-with async-await:
+Avec async-await:
 
 ```js
 // ESM
-import Fastify from 'fastify'
+import Fastify from 'fastify';
 const fastify = Fastify({
-  logger: true
-})
+  logger: true,
+});
 // CommonJs
 const fastify = require('fastify')({
-  logger: true
-})
+  logger: true,
+});
 
 fastify.get('/', async (request, reply) => {
-  reply.type('application/json').code(200)
-  return { hello: 'world' }
-})
+  reply.type('application/json').code(200);
+  return { hello: 'world' };
+});
 
 fastify.listen(3000, (err, address) => {
-  if (err) throw err
+  if (err) throw err;
   // Server is now listening on ${address}
-})
+});
 ```
 
-Do you want to know more? Head to the <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
-
+Vous voulez en savoir plus ? visitez <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>.
 
 ### Fastify v1.x and v2.x
 
-Code for Fastify's **v1.x** is in [**`branch 1.x`**](https://github.com/fastify/fastify/tree/1.x), so all Fastify 1.x related changes should be based on **`branch 1.x`**.
-In a similar way, all Fastify **v2.x** related changes should be based on [**`branch 2.x`**](https://github.com/fastify/fastify/tree/2.x).
+Le code de Fastify **v1.x** est dans [**`branch 1.x`**](https://github.com/fastify/fastify/tree/1.x), donc toutes les modifications liées à Fastify 1.x doivent être basées sur **`branch 1.x`**.
+De la même manière, toutes les modifications liées à Fastify v2.x doivent être basées sur [**`branch 2.x`**](https://github.com/fastify/fastify/tree/2.x).
 
 > ## Note
-> `.listen` binds to the local host, `localhost`, interface by default (`127.0.0.1` or `::1`, depending on the operating system configuration). If you are running Fastify in a container (Docker, [GCP](https://cloud.google.com/), etc.), you may need to bind to `0.0.0.0`. Be careful when deciding to listen on all interfaces; it comes with inherent [security risks](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
-> See [the documentation](./docs/Reference/Server.md#listen) for more information.
+>
+> `.listen` se lie a l'hôte local, `localhost`, interface par défaut(`127.0.0.1` or `::1`, selon la configuration du système d'exploitation). Si vous exécutez Fastify dans un conteneur (Docker, [GCP](https://cloud.google.com/), etc.), vous devrez peut-être vous lier à `0.0.0.0`. Soyez prudent lorsque vous décidez d'écouter sur toutes les interfaces ; Cela peut engendrer des [riques de sécutité](https://web.archive.org/web/20170711105010/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
+> Voir [the documentation](./docs/Reference/Server.md#listen) pour plus d'informations.
 
-### Core features
+### Caracteristiques de base
 
-- **Highly performant:** as far as we know, Fastify is one of the fastest web frameworks in town, depending on the code complexity we can serve up to 76+ thousand requests per second.
-- **Extendible:** Fastify is fully extensible via its hooks, plugins and decorators.
-- **Schema based:** even if it is not mandatory we recommend to use [JSON Schema](https://json-schema.org/) to validate your routes and serialize your outputs, internally Fastify compiles the schema in a highly performant function.
-- **Logging:** logs are extremely important but are costly; we chose the best logger to almost remove this cost, [Pino](https://github.com/pinojs/pino)!
-- **Developer friendly:** the framework is built to be very expressive and help the developer in their daily use, without sacrificing performance and security.
+- **Haute performance:** à notre connaissance, Fastify est l'un des frameworks Web les plus rapides. En fonction de la complexité du code, nous pouvons traiter jusqu'à 76 000 requêtes par seconde.
+- **Extensible:** Fastify est entièrement extensible via ses hooks, plugins et décorateurs.
+- **Basé sur schéma:** même si ce n'est pas obligatoire, nous vous recommandons d'utiliser [JSON Schema](https://json-schema.org/) pour valider vos routes et sérialiser vos sorties, Fastify compile en interne le schéma dans une fonction hautement performante.
+- **Logging:** les logs sont extrêmement importants mais coûteux ; nous avons choisi le meilleur logger pour quasiment supprimer ce coût, [Pino](https://github.com/pinojs/pino)!
+- **Developer friendly:** le framework est conçu pour être très expressif et aider le développeur dans son utilisation quotidienne, sans sacrifier les performances et la sécurité.
 
 ### Benchmarks
 
-__Machine:__ EX41S-SSD, Intel Core i7, 4Ghz, 64GB RAM, 4C/8T, SSD.
+**Machine:** EX41S-SSD, Intel Core i7, 4Ghz, 64GB RAM, 4C/8T, SSD.
 
-__Method:__: `autocannon -c 100 -d 40 -p 10 localhost:3000` * 2, taking the second average
+**Methode:**: `autocannon -c 100 -d 40 -p 10 localhost:3000` \* 2, en prenant la deuxième moyenne
 
-| Framework          | Version                    | Router?      |  Requests/sec |
-| :----------------- | :------------------------- | :----------: | ------------: |
-| Express            | 4.17.1                     | &#10003;     | 15,978        |
-| hapi               | 19.1.0                     | &#10003;     | 45,815        |
-| Restify            | 8.5.1                      | &#10003;     | 49,279        |
-| Koa                | 2.13.0                     | &#10007;     | 54,848        |
-| **Fastify**        | **3.0.0**                  | **&#10003;** | **78,956**    |
-| -                  |                            |              |               |
-| `http.Server`      | 12.18.2	                  | &#10007;     | 70,380        |
+| Framework     | Version   |   Router?    | Requests/sec |
+| :------------ | :-------- | :----------: | -----------: |
+| Express       | 4.17.1    |   &#10003;   |       15,978 |
+| hapi          | 19.1.0    |   &#10003;   |       45,815 |
+| Restify       | 8.5.1     |   &#10003;   |       49,279 |
+| Koa           | 2.13.0    |   &#10007;   |       54,848 |
+| **Fastify**   | **3.0.0** | **&#10003;** |   **78,956** |
+| -             |           |              |              |
+| `http.Server` | 12.18.2   |   &#10007;   |       70,380 |
 
-Benchmarks taken using https://github.com/fastify/benchmarks. This is a
-synthetic, "hello world" benchmark that aims to evaluate the framework
-overhead. The overhead that each framework has on your application
-depends on your application, you should __always__ benchmark if performance
-matters to you.
+Benchmarks pris à l'aide de https://github.com/fastify/benchmarks. Ceci est un benchmark synthétique "hello world" qui vise à évaluer la surcharge du framework. La surcharge que chaque framework a sur votre application dépend de votre application, vous devez toujours évaluer si les performances sont importantes pour vous.
 
 ## Documentation
-* <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>
-* <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
-* <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
-* <a href="./docs/Reference/Routes.md"><code><b>Routes</b></code></a>
-* <a href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
-* <a href="./docs/Reference/Logging.md"><code><b>Logging</b></code></a>
-* <a href="./docs/Reference/Middleware.md"><code><b>Middleware</b></code></a>
-* <a href="./docs/Reference/Hooks.md"><code><b>Hooks</b></code></a>
-* <a href="./docs/Reference/Decorators.md"><code><b>Decorators</b></code></a>
-* <a href="./docs/Reference/Validation-and-Serialization.md"><code><b>Validation and Serialization</b></code></a>
-* <a href="./docs/Guides/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
-* <a href="./docs/Reference/Lifecycle.md"><code><b>Lifecycle</b></code></a>
-* <a href="./docs/Reference/Reply.md"><code><b>Reply</b></code></a>
-* <a href="./docs/Reference/Request.md"><code><b>Request</b></code></a>
-* <a href="./docs/Reference/Errors.md"><code><b>Errors</b></code></a>
-* <a href="./docs/Reference/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
-* <a href="./docs/Reference/Plugins.md"><code><b>Plugins</b></code></a>
-* <a href="./docs/Guides/Testing.md"><code><b>Testing</b></code></a>
-* <a href="./docs/Guides/Benchmarking.md"><code><b>Benchmarking</b></code></a>
-* <a href="./docs/Guides/Write-Plugin.md"><code><b>How to write a good plugin</b></code></a>
-* <a href="./docs/Guides/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
-* <a href="./docs/Reference/HTTP2.md"><code><b>HTTP2</b></code></a>
-* <a href="./docs/Reference/LTS.md"><code><b>Long Term Support</b></code></a>
-* <a href="./docs/Reference/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
-* <a href="./docs/Guides/Serverless.md"><code><b>Serverless</b></code></a>
-* <a href="./docs/Guides/Recommendations.md"><code><b>Recommendations</b></code></a>
+
+- <a href="./docs/Guides/Getting-Started.md"><code><b>Getting Started</b></code></a>
+- <a href="./docs/Guides/Index.md"><code><b>Guides</b></code></a>
+- <a href="./docs/Reference/Server.md"><code><b>Server</b></code></a>
+- <a href="./docs/Reference/Routes.md"><code><b>Routes</b></code></a>
+- <a href="./docs/Reference/Encapsulation.md"><code><b>Encapsulation</b></code></a>
+- <a href="./docs/Reference/Logging.md"><code><b>Logging</b></code></a>
+- <a href="./docs/Reference/Middleware.md"><code><b>Middleware</b></code></a>
+- <a href="./docs/Reference/Hooks.md"><code><b>Hooks</b></code></a>
+- <a href="./docs/Reference/Decorators.md"><code><b>Decorators</b></code></a>
+- <a href="./docs/Reference/Validation-and-Serialization.md"><code><b>Validation and Serialization</b></code></a>
+- <a href="./docs/Guides/Fluent-Schema.md"><code><b>Fluent Schema</b></code></a>
+- <a href="./docs/Reference/Lifecycle.md"><code><b>Lifecycle</b></code></a>
+- <a href="./docs/Reference/Reply.md"><code><b>Reply</b></code></a>
+- <a href="./docs/Reference/Request.md"><code><b>Request</b></code></a>
+- <a href="./docs/Reference/Errors.md"><code><b>Errors</b></code></a>
+- <a href="./docs/Reference/ContentTypeParser.md"><code><b>Content Type Parser</b></code></a>
+- <a href="./docs/Reference/Plugins.md"><code><b>Plugins</b></code></a>
+- <a href="./docs/Guides/Testing.md"><code><b>Testing</b></code></a>
+- <a href="./docs/Guides/Benchmarking.md"><code><b>Benchmarking</b></code></a>
+- <a href="./docs/Guides/Write-Plugin.md"><code><b>How to write a good plugin</b></code></a>
+- <a href="./docs/Guides/Plugins-Guide.md"><code><b>Plugins Guide</b></code></a>
+- <a href="./docs/Reference/HTTP2.md"><code><b>HTTP2</b></code></a>
+- <a href="./docs/Reference/LTS.md"><code><b>Long Term Support</b></code></a>
+- <a href="./docs/Reference/TypeScript.md"><code><b>TypeScript and types support</b></code></a>
+- <a href="./docs/Guides/Serverless.md"><code><b>Serverless</b></code></a>
+- <a href="./docs/Guides/Recommendations.md"><code><b>Recommendations</b></code></a>
 
 中文文档[地址](https://github.com/fastify/docs-chinese/blob/HEAD/README.md)
 
 ## Ecosystem
 
-- [Core](./docs/Guides/Ecosystem.md#core) - Core plugins maintained by the _Fastify_ [team](#team).
-- [Community](./docs/Guides/Ecosystem.md#community) - Community supported plugins.
-- [Live Examples](https://github.com/fastify/example) - Multirepo with a broad set of real working examples.
-- [Discord](https://discord.gg/D3FZYPy) - Join our discord server and chat with the maintainers.
+- [Core](./docs/Guides/Ecosystem.md#core) - Core plugins maintenus par l'[équipe](#team) _Fastify_ .
+- [Community](./docs/Guides/Ecosystem.md#community) - Plugins pris en charge par la communauté.
+- [Live Examples](https://github.com/fastify/example) - Multirepo avec un large éventail d'exemples de travail réels.
+- [Discord](https://discord.gg/D3FZYPy) - Rejoignez notre serveur Discord et discutez avec les mainteneurs.
 
-## Support
-Please visit [Fastify help](https://github.com/fastify/help) to view prior
-support issues and to ask new support questions.
+## Soutien
 
-## Team
+Veuillez consulter [l'aide de Fastify](https://github.com/fastify/help) pour afficher les problèmes d'assistance antérieurs et poser de nouvelles questions d'assistance.
 
-_Fastify_ is the result of the work of a great community.
-Team members are listed in alphabetical order.
+## Équipe
 
-**Lead Maintainers:**
-* [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
-* [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+_Fastify_ est le résultat du travail d'une grande communauté. Les membres de l'équipe sont classés par ordre alphabétique.
 
-### Fastify Core team
-* [__Tommaso Allevi__](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
-* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/), <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
-* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
-* [__David Mark Clements__](https://github.com/davidmarkclements), <https://twitter.com/davidmarkclem>, <https://www.npmjs.com/~davidmarkclements>
-* [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
-* [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
-* [__Dustin Deus__](https://github.com/StarpTech), <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
-* [__Ayoub El Khattabi__](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
-* [__Denis Fäcke__](https://github.com/SerayaEryn), <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
-* [__Rafael Gonzaga__](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
-* [__Vincent Le Goff__](https://github.com/zekth)
-* [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
-* [__Luis Orbaiceta__](https://github.com/luisorbaiceta), <https://twitter.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
-* [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
-* [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
-* [__James Sumners__](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
+**Responsables de la maintenance :**
 
-### Fastify Plugins team
-* [__Matteo Collina__](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
-* [__Harry Brundage__](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
-* [__Tomas Della Vedova__](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
-* [__Ayoub El Khattabi__](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
-* [__Vincent Le Goff__](https://github.com/zekth)
-* [__Salman Mitha__](https://github.com/salmanm), <https://www.npmjs.com/~salmanm>
-* [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
-* [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
-* [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+- [**Matteo Collina**](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+- [**Tomas Della Vedova**](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
 
-### Great Contributors
-Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.
+### Équipe Fastify Core
 
-* [__dalisoft__](https://github.com/dalisoft), <https://twitter.com/dalisoft>, <https://www.npmjs.com/~dalisoft>
-* [__Luciano Mammino__](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
-* [__Evan Shortiss__](https://github.com/evanshortiss), <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
+- [**Tommaso Allevi**](https://github.com/allevo), <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
+- [**Ethan Arrowood**](https://github.com/Ethan-Arrowood/), <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
+- [**Harry Brundage**](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
+- [**David Mark Clements**](https://github.com/davidmarkclements), <https://twitter.com/davidmarkclem>, <https://www.npmjs.com/~davidmarkclements>
+- [**Matteo Collina**](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+- [**Tomas Della Vedova**](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+- [**Dustin Deus**](https://github.com/StarpTech), <https://twitter.com/dustindeus>, <https://www.npmjs.com/~starptech>
+- [**Ayoub El Khattabi**](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+- [**Denis Fäcke**](https://github.com/SerayaEryn), <https://twitter.com/serayaeryn>, <https://www.npmjs.com/~serayaeryn>
+- [**Rafael Gonzaga**](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+- [**Vincent Le Goff**](https://github.com/zekth)
+- [**Luciano Mammino**](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+- [**Luis Orbaiceta**](https://github.com/luisorbaiceta), <https://twitter.com/luisorbai>, <https://www.npmjs.com/~luisorbaiceta>
+- [**Maksim Sinik**](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
+- [**Manuel Spigolon**](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+- [**James Sumners**](https://github.com/jsumners), <https://twitter.com/jsumners79>, <https://www.npmjs.com/~jsumners>
 
-**Past Collaborators**
-* [__Çağatay Çalı__](https://github.com/cagataycali), <https://twitter.com/cagataycali>, <https://www.npmjs.com/~cagataycali>
-* [__Trivikram Kamat__](https://github.com/trivikr), <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
-* [__Cemre Mengu__](https://github.com/cemremengu), <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
-* [__Nathan Woltman__](https://github.com/nwoltman), <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+### Équipe Fastify Plugins
 
-## Hosted by
+- [**Matteo Collina**](https://github.com/mcollina), <https://twitter.com/matteocollina>, <https://www.npmjs.com/~matteo.collina>
+- [**Harry Brundage**](https://github.com/airhorns/), <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
+- [**Tomas Della Vedova**](https://github.com/delvedor), <https://twitter.com/delvedor>, <https://www.npmjs.com/~delvedor>
+- [**Ayoub El Khattabi**](https://github.com/AyoubElk), <https://twitter.com/ayoubelkh>, <https://www.npmjs.com/~ayoubelk>
+- [**Vincent Le Goff**](https://github.com/zekth)
+- [**Salman Mitha**](https://github.com/salmanm), <https://www.npmjs.com/~salmanm>
+- [**Maksim Sinik**](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
+- [**Frazer Smith**](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
+- [**Manuel Spigolon**](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+
+### Grands contributeurs
+
+Les grands contributeurs sur un domaine spécifique de l'écosystème Fastify seront invités à rejoindre ce groupe par les responsables de la maintenance.
+
+- [**dalisoft**](https://github.com/dalisoft), <https://twitter.com/dalisoft>, <https://www.npmjs.com/~dalisoft>
+- [**Luciano Mammino**](https://github.com/lmammino), <https://twitter.com/loige>, <https://www.npmjs.com/~lmammino>
+- [**Evan Shortiss**](https://github.com/evanshortiss), <https://twitter.com/evanshortiss>, <https://www.npmjs.com/~evanshortiss>
+
+**Anciens collaborateurs**
+
+- [**Çağatay Çalı**](https://github.com/cagataycali), <https://twitter.com/cagataycali>, <https://www.npmjs.com/~cagataycali>
+- [**Trivikram Kamat**](https://github.com/trivikr), <https://twitter.com/trivikram>, <https://www.npmjs.com/~trivikr>
+- [**Cemre Mengu**](https://github.com/cemremengu), <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
+- [**Nathan Woltman**](https://github.com/nwoltman), <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+
+## Hébergé par
 
 [<img src="https://github.com/openjs-foundation/cross-project-council/blob/HEAD/logos/openjsf-color.png?raw=true" width="250px;"/>](https://openjsf.org/projects/#growth)
 
-We are a [Growth Project](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#growth-stage) in the [OpenJS Foundation](https://openjsf.org/).
+Nous sommes un [projet de croissance](https://github.com/openjs-foundation/cross-project-council/blob/HEAD/PROJECT_PROGRESSION.md#growth-stage) dans la [OpenJS Foundation](https://openjsf.org/).
 
-## Acknowledgements
+## Remerciements
 
-This project is kindly sponsored by:
+Ce projet est aimablement sponsorisé par :
+
 - [nearForm](https://nearform.com)
 
-Past Sponsors:
+Anciens sponsors :
+
 - [LetzDoIt](http://www.letzdoitapp.com/)
 
-## License
+## Licence
 
-Licensed under [MIT](./LICENSE).
+Licence sous [MIT](./LICENSE).
 
-For your convenience, here is a list of all the licenses of our production dependencies:
+Pour votre commodité, voici une liste de toutes les licences de nos dépendances de production :
+
 - MIT
 - ISC
 - BSD-3-Clause

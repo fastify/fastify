@@ -291,11 +291,9 @@ section.
   Un plug-in de session prenant en charge les caches de sauvegarde arbitraires via
   `fastify-caching`.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik plugin, avec cela, vous pouvez utiliser slonik dans chaque partie de votre serveur.
-- [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
-  client plugin for Fastify.
-- [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
-  Socket.io plugin for Fastify.
-- [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator) Small plugin to allow you use multiple validators in one route based on each HTTP part of the request.
+- [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) un plugin client SOAP pour Fastify.
+- [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) un plugin Socket.io pour Fastify.
+- [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator) Petit plugin pour vous permettre d'utiliser plusieurs validateurs dans une route en fonction de chaque partie HTTP de la requête.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide

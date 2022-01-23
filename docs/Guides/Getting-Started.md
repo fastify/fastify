@@ -469,27 +469,26 @@ Autrement dit, Fastify n'est pas un framework "tout compris", et s'appuie sur un
 
 <a id="test-server"></a>
 
-Fastify does not offer a testing framework, but we do recommend a way to write
-your tests that uses the features and architecture of Fastify.
+Fastify n'offre pas de cadre de test, mais nous recommandons un moyen d'écrire vos tests qui utilise les fonctionnalités et l'architecture de Fastify.
 
-Read the [testing](./Testing.md) documentation to learn more!
+Lisez la documentation [testing](./Testing.md) pour en savoir plus !
 
-### Run your server from CLI
+### Exécutez votre serveur à partir de la CLI
 
 <a id="cli"></a>
 
-Fastify also has CLI integration thanks to
+Fastify a également une intégration CLI grâce à
 [fastify-cli](https://github.com/fastify/fastify-cli).
 
-First, install `fastify-cli`:
+Tout d'abord, installez `fastify-cli`:
 
 ```
 npm i fastify-cli
 ```
 
-You can also install it globally with `-g`.
+Vous pouvez également l'installer globalement avec `-g`.
 
-Then, add the following lines to `package.json`:
+Ensuite, ajoutez les lignes suivantes à `package.json`:
 
 ```json
 {
@@ -499,7 +498,7 @@ Then, add the following lines to `package.json`:
 }
 ```
 
-And create your server file(s):
+Et créez votre ou vos fichiers serveur :
 
 ```js
 // server.js
@@ -512,17 +511,17 @@ module.exports = async function (fastify, opts) {
 };
 ```
 
-Then run your server with:
+Exécutez ensuite votre serveur avec :
 
 ```bash
 npm start
 ```
 
-### Slides and Videos
+### Diapositives et vidéos
 
 <a id="slides"></a>
 
-- Slides
+- Diapositives
 
   - [Take your HTTP server to ludicrous
     speed](https://mcollina.github.io/take-your-http-server-to-ludicrous-speed)
@@ -531,7 +530,7 @@ npm start
     fast](https://delvedor.github.io/What-if-I-told-you-that-HTTP-can-be-fast)
     by [@delvedor](https://github.com/delvedor)
 
-- Videos
+- Vidéos
   - [Take your HTTP server to ludicrous
     speed](https://www.youtube.com/watch?v=5z46jJZNe8k) by
     [@mcollina](https://github.com/mcollina)

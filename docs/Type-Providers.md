@@ -189,10 +189,69 @@ function plugin2(fastify: FastifyInstance, _opts, done): void {
       })
     }
   }, (req) => {
-    // it doesn't works! in a new scope needs to call `withTypeProvider` again
+    // works
     const { x, y, z } = req.body
   });
   done()
 }
 ```
 
+### Type Definition of FastifyInstance + TypeProvider
+
+When working with modules one has to make use of `FastifyInstance` with Type Provider generics. See the example below:
+
+```ts
+// index.ts
+import Fastify from 'fastify'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { registerRoutes } from './routes'
+
+const server = Fastify({
+    ajv: {
+        customOptions: {
+            strict: 'log',
+            keywords: ['kind', 'modifier'],
+        },
+    },
+}).withTypeProvider<TypeBoxTypeProvider>()
+
+registerRoutes(server)
+
+server.listen(3000)
+```
+
+```ts
+// routes.ts
+import { Type } from '@sinclair/typebox'
+import {
+  FastifyInstance,
+  FastifyLoggerInstance,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerDefault
+} from 'fastify'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+
+type FastifyTypebox = FastifyInstance<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  FastifyLoggerInstance,
+  TypeBoxTypeProvider
+>;
+
+export function registerRoutes(fastify: FastifyTypebox): void {
+  fastify.get('/', {
+    schema: {
+      body: Type.Object({
+        x: Type.String(),
+        y: Type.Number(),
+        z: Type.Boolean()
+      })
+    }
+  }, (req) => {
+    // works
+    const { x, y, z } = req.body
+  });
+}
+```

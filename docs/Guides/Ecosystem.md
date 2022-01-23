@@ -328,14 +328,8 @@ section.
 - [`k-fastify-gateway`](https://github.com/jkyberneees/fastify-gateway) Plug-in API Gateway pour Fastify, une implémentation à faible encombrement qui utilise la
   `fastify-reply-from` bibliothèque de proxy HTTP.
 - [`mercurius`](https://mercurius.dev/) Une implémentation de serveur GraphQL complète et performante pour Fastify.
-- [`nstats`](https://github.com/Phara0h/nstats) A fast and compact way to get
-  all your network and process stats for your node application. Websocket,
-  HTTP/S, and prometheus compatible!
-- [`oas-fastify`](https://github.com/ahmadnassri/node-oas-fastify) OAS 3.x to
-  Fastify routes automation. Automatically generates route handlers with fastify
-  configuration and validation.
+- [`nstats`](https://github.com/Phara0h/nstats) Un moyen rapide et compact d'obtenir toutes vos statistiques de réseau et de processus pour votre application de nœud. Compatible Websocket, HTTP/S et prometheus !
+- [`oas-fastify`](https://github.com/ahmadnassri/node-oas-fastify) OAS 3.x pour Fastify, l'automatisation des routes. Génère automatiquement des gestionnaires de route avec une configuration et une validation rapides.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
-  Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
-  Fastify.
-- [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
-  and lightweight Sequelize plugin for Fastify.
+  Middleware de validation des demandes basé sur les spécifications Swagger et OpenAPI 3.0 qui prend en charge Fastify.
+- [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) Un plugin Sequelize simple et léger pour Fastify.

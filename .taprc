@@ -1,6 +1,0 @@
-ts: false
-jsx: false
-flow: false
-check-coverage: true
-coverage: true
-node-arg: --allow-natives-syntax

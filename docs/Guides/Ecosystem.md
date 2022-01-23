@@ -280,12 +280,11 @@ section.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
   Regroupement pratique et héritage des itinéraires
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)
-  Choose the JSON schema to use based on request parameters.
+  Choisissez le schéma JSON à utiliser en fonction des paramètres de la requête.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)
-  Generate typescript types based on your JSON/YAML validation schemas so they
-  are always in sync.
+  Générez des types basés sur vos schémas de validation JSON/YAML afin qu'ils soient toujours synchronisés.
 - [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session)
-  Create a secure stateless cookie session for Fastify.
+  Créez une session de cookie sécurisée sans état pour Fastify.
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
   to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify

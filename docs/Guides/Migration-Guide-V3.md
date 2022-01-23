@@ -124,19 +124,15 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 );
 ```
 
-### Changed preParsing hook behavior ([#2286](https://github.com/fastify/fastify/pull/2286))
+### Changement du comportement du hook preParsing ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-From Fastify v3, the behavior of the `preParsing` hook will change slightly in
-order to support request payload manipulation.
+À partir de Fastify v3, le comportement du `preParsing` crochet changera légèrement afin de prendre en charge la manipulation de la charge utile de la demande.
 
-The hook now takes an additional argument, `payload`, and therefore the new hook
-signature is `fn(request, reply, payload, done)` or `async fn(request, reply, payload)`.
+Le hook prend maintenant un argument supplémentaire, `payload`, et donc la nouvelle signature de hook est `fn(request, reply, payload, done)` ou `async fn(request, reply, payload)`.
 
-The hook can optionally return a new stream via `done(null, stream)` or
-returning the stream in case of async functions.
+Le hook peut éventuellement renvoyer un nouveau flux via `done(null, stream)` ou renvoyer le flux en cas de fonctions asynchrones.
 
-If the hook returns a new stream, it will be used instead of the original one in
-subsequent hooks. A sample use case for this is handling compressed requests.
+Si le hook renvoie un nouveau flux, il sera utilisé à la place de celui d'origine dans les crochets suivants. Un exemple de cas d'utilisation pour cela est la gestion des requêtes compressées.
 
 The new stream should add the `receivedEncodedLength` property to the stream
 that should reflect the actual data size received from the client. For instance,

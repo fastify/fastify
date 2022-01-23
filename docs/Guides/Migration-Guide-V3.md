@@ -2,20 +2,16 @@
 
 Ce guide est destiné à aider à la migration de Fastify v2 vers v3.
 
-Before beginning please ensure that any deprecation warnings from v2 are fixed.
-All v2 deprecations have been removed and they will no longer work after
-upgrading. ([#1750](https://github.com/fastify/fastify/pull/1750))
+Avant de commencer, assurez-vous que tous les avertissements d'obsolescence de la v2 sont corrigés. Toutes les dépréciations v2 ont été supprimées et elles ne fonctionneront plus après la mise à niveau. ([#1750](https://github.com/fastify/fastify/pull/1750))
 
-## Breaking changes
+## Changements récent
 
-### Changed middleware support ([#2014](https://github.com/fastify/fastify/pull/2014))
+### Modification de la prise en charge des middlewares ([#2014](https://github.com/fastify/fastify/pull/2014))
 
-From Fastify v3, middleware support does not come out-of-the-box with the
-framework itself.
+À partir de Fastify v3, la prise en charge des middlewares devient native.
 
-If you use Express middleware in your application, please install and register
-the [`fastify-express`](https://github.com/fastify/fastify-express) or
-[`middie`](https://github.com/fastify/middie) plugin before doing so.
+Si vous utilisez le middleware Express dans votre application, veuillez installer et enregistrer le plug-in [`fastify-express`](https://github.com/fastify/fastify-express) ou
+[`middie`](https://github.com/fastify/middie) avant de le faire.
 
 **v2:**
 

@@ -1268,3 +1268,17 @@ test('Correct error message is produced if "path" option is used', t => {
     })
   }, new Error('Error Handler for POST:/test route, if defined, must be a function'))
 })
+
+test('invalid url attribute - non string URL', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    const handler = async (request, reply) => {
+      return { hello: request.params.foo }
+    }
+    
+    fastify.get(/^\/(donations|skills|blogs)/, handler)
+  }, new Error('URL for method:GET must be a string'))
+})

@@ -1,31 +1,39 @@
 import { FastifyError } from 'fastify-error'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 import { onErrorHookHandler, onRequestHookHandler, onResponseHookHandler, onSendHookHandler, onTimeoutHookHandler, preHandlerHookHandler, preParsingHookHandler, preSerializationHookHandler, preValidationHookHandler } from './hooks'
 import { DefaultFastifyInstanceGenericInterface, FastifyInstance, FastifyInstanceGenericInterface } from './instance'
 import { LogLevel } from './logger'
 import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifyRequest, RequestGenericInterface } from './request'
-import { FastifySchemaValidationError, FastifySerializerCompiler, FastifyValidatorCompiler } from './schema'
+import { FastifySchema, FastifySchemaValidationError, FastifySerializerCompiler, FastifyValidatorCompiler } from './schema'
 import { ResolveFastifyReplyReturnType } from './type-provider'
-import { GetRouteContext, GetRouteReply, GetRouteSchema, HTTPMethods } from './utils'
+import { GetRouteContext, GetRouteReply, GetRouteSchema, HTTPMethods, OverrideRouteGeneric } from './utils'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
 
 export interface FastifyInstanceRouteGenericOnlyInterface {
   Route?: RouteGenericInterface
-  Context?: unknown
-  Schema?: unknown
+  Context?: FastifyContextConfig
+  Schema?: FastifySchema
 }
 
 export interface DefaultFastifyInstanceRouteGenericOnlyInterface {
-  Route?: RouteGenericInterface
-  Context?: unknown
-  Schema?: unknown
+  Route: RouteGenericInterface
+  Context: FastifyContextConfig
+  Schema: FastifySchema
 }
 
-export interface FastifyInstanceRouteGenericInterface extends FastifyInstanceGenericInterface, FastifyInstanceRouteGenericOnlyInterface {}
+export interface FastifyInstanceRouteGenericInterface extends FastifyInstanceGenericInterface {
+  Route?: RouteGenericInterface
+  Context?: FastifyContextConfig
+  Schema?: FastifySchema
+}
 
-export interface DefaultFastifyInstanceRouteGenericInterface extends DefaultFastifyInstanceRouteGenericOnlyInterface, DefaultFastifyInstanceGenericInterface {}
+export interface DefaultFastifyInstanceRouteGenericInterface extends DefaultFastifyInstanceGenericInterface {
+  Route: RouteGenericInterface
+  Context: FastifyContextConfig
+  Schema: FastifySchema
+}
 
 export type DefaultRoute<Request, Reply> = (
   request: Request,
@@ -36,7 +44,8 @@ export type DefaultRoute<Request, Reply> = (
  * Route shorthand options for the various shorthand methods
  */
 export interface RouteShorthandOptions<
-  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface
+  Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+  Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
 > {
   schema?: GetRouteSchema<Generic>, // originally FastifySchema
   attachValidation?: boolean;
@@ -70,7 +79,8 @@ export interface RouteShorthandOptions<
  * Route handler method declaration.
  */
 export type RouteHandlerMethod<
-  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
   ReturnType = ResolveFastifyReplyReturnType<Generic>
 > = (
   this: FastifyInstance<Generic>,
@@ -82,7 +92,8 @@ export type RouteHandlerMethod<
  * Shorthand options including the handler function property
  */
 export interface RouteShorthandOptionsWithHandler<
-  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
 > extends RouteShorthandOptions<Generic> {
   handler: RouteHandlerMethod<Generic>;
 }

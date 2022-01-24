@@ -1,27 +1,23 @@
-import { expectType } from 'tsd'
-import fastify, {
-  FastifyLogFn,
-  LogLevel,
-  FastifyLoggerInstance,
-  FastifyRequest,
-  FastifyReply,
-  FastifyBaseLogger
-} from '../../fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
+import { expectType } from 'tsd'
+import fastify, {
+  FastifyBaseLogger, FastifyLogFn, FastifyLoggerInstance, FastifyReply, FastifyRequest, LogLevel
+} from '../../fastify'
+import { DefaultFastifyInstanceGenericInterface } from '../../types/instance'
+import { OverrideInstanceGeneric } from '../../types/utils'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
 class Foo {}
 
 ['trace', 'debug', 'info', 'warn', 'error', 'fatal'].forEach(logLevel => {
-  expectType<FastifyLogFn>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel])
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](''))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({}))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel]({ foo: 'bar' }))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Error()))
-  expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
+  expectType<FastifyLogFn>(fastify().log[logLevel as LogLevel])
+  expectType<void>(fastify().log[logLevel as LogLevel](''))
+  expectType<void>(fastify().log[logLevel as LogLevel]({}))
+  expectType<void>(fastify().log[logLevel as LogLevel]({ foo: 'bar' }))
+  expectType<void>(fastify().log[logLevel as LogLevel](new Error()))
+  expectType<void>(fastify().log[logLevel as LogLevel](new Foo()))
 })
 
 /*
@@ -62,12 +58,7 @@ CustomLoggerImpl
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
 */
 
-const serverWithPino = fastify<
-Server,
-IncomingMessage,
-ServerResponse,
-P.Logger
->({
+const serverWithPino = fastify<OverrideInstanceGeneric<{ Logger: P.Logger }, DefaultFastifyInstanceGenericInterface>>({
   logger: P({
     level: 'info',
     redact: ['x-userinfo']
@@ -76,11 +67,7 @@ P.Logger
 
 expectType<P.Logger>(serverWithPino.log)
 
-const serverWithLogOptions = fastify<
-Server,
-IncomingMessage,
-ServerResponse
->({
+const serverWithLogOptions = fastify({
   logger: {
     level: 'info'
   }
@@ -88,11 +75,7 @@ ServerResponse
 
 expectType<FastifyLoggerInstance>(serverWithLogOptions.log)
 
-const serverWithFileOption = fastify<
-Server,
-IncomingMessage,
-ServerResponse
->({
+const serverWithFileOption = fastify({
   logger: {
     level: 'info',
     file: '/path/to/file'

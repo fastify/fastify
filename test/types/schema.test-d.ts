@@ -1,9 +1,6 @@
-import { expectAssignable, expectError } from 'tsd'
-import fastify, { FastifyInstance, FastifyRequest, FastifySchema } from '../../fastify'
-import { RouteGenericInterface } from '../../types/route'
-import { ContextConfigDefault } from '../../types/utils'
-import { FastifyReply } from '../../types/reply'
 import Ajv from 'ajv'
+import { expectAssignable } from 'tsd'
+import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
 
 const server = fastify()
 

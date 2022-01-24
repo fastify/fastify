@@ -3,7 +3,7 @@ import { FastifyInstance } from './instance'
 import { FastifyRequest } from './request'
 import { DefaultFastifyInstanceRouteGenericInterface, FastifyInstanceRouteGenericInterface } from './route'
 import { FastifyReplyType, ResolveFastifyReplyType } from './type-provider'
-import { GetLogger, GetReply, GetRouteContext, ReplyDefault } from './utils'
+import { GetLogger, GetReply, GetRouteContext, OverrideRouteGeneric, ReplyDefault } from './utils'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -14,7 +14,8 @@ export interface ReplyGenericInterface {
  * It defaults to http.ServerResponse, and it also extends the relative reply object.
  */
 export interface FastifyReply<
-  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+  Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+  Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>,
   ReplyType extends FastifyReplyType = ResolveFastifyReplyType<Generic>
 > {
   raw: GetReply<Generic>;

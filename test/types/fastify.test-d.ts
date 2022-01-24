@@ -1,33 +1,27 @@
+import * as http from 'http'
+import { Socket } from 'net'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
-  ConnectionError,
-  FastifyInstance,
+  ConnectionError, FastifyInstance,
   FastifyPlugin,
   FastifyPluginAsync,
-  FastifyPluginCallback,
-  LightMyRequestChain,
-  LightMyRequestResponse,
-  LightMyRequestCallback,
-  InjectOptions, FastifyBaseLogger
+  FastifyPluginCallback, InjectOptions, LightMyRequestCallback, LightMyRequestChain,
+  LightMyRequestResponse
 } from '../../fastify'
-import * as http from 'http'
-import * as https from 'https'
-import * as http2 from 'http2'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyLoggerInstance } from '../../types/logger'
-import { Socket } from 'net'
+import { FastifyInstanceHttp2GenericInterface, FastifyInstanceHttp2SecureGenericInterface, FastifyInstanceHttpGenericInterface, FastifyInstanceHttpsGenericInterface } from '../../types/instance'
 
 // FastifyInstance
 // http server
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify())
-expectType<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({}))
+expectType<FastifyInstance<FastifyInstanceHttpGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpGenericInterface>>>(fastify())
+expectType<FastifyInstance<FastifyInstanceHttpGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpGenericInterface>>>(fastify({}))
 // https server
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ https: {} }))
+expectType<FastifyInstance<FastifyInstanceHttpsGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpsGenericInterface>>>(fastify({ https: {} }))
 // http2 server
-expectType<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
-expectType<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse> & PromiseLike<FastifyInstance<http2.Http2SecureServer, http2.Http2ServerRequest, http2.Http2ServerResponse>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
+expectType<FastifyInstance<FastifyInstanceHttp2GenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttp2GenericInterface>>>(fastify({ http2: true, http2SessionTimeout: 1000 }))
+expectType<FastifyInstance<FastifyInstanceHttp2SecureGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttp2SecureGenericInterface>>>(fastify({ http2: true, https: {}, http2SessionTimeout: 1000 }))
 expectType<LightMyRequestChain>(fastify({ http2: true, https: {} }).inject())
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(fastify({ schemaController: {} }))
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(
+expectType<FastifyInstance<FastifyInstanceHttpGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpGenericInterface>>>(fastify({ schemaController: {} }))
+expectType<FastifyInstance<FastifyInstanceHttpGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpGenericInterface>>>(
   fastify({
     schemaController: {
       compilersFactory: {}
@@ -35,8 +29,8 @@ expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerRespon
   })
 )
 
-expectError(fastify<http2.Http2Server>({ http2: false })) // http2 option must be true
-expectError(fastify<http2.Http2SecureServer>({ http2: false })) // http2 option must be true
+expectError(fastify<FastifyInstanceHttp2GenericInterface>({ http2: false })) // http2 option must be true
+expectError(fastify<FastifyInstanceHttp2SecureGenericInterface>({ http2: false })) // http2 option must be true
 expectError(
   fastify({
     schemaController: {
@@ -54,7 +48,7 @@ const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: Li
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 
 // server options
-expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
+expectAssignable<FastifyInstance<FastifyInstanceHttp2GenericInterface>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
@@ -69,9 +63,9 @@ expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' }
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: { } } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: { } } }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
+expectAssignable<FastifyInstance>(fastify({ logger: true }))
+expectAssignable<FastifyInstance>(fastify({ logger: true }))
+expectAssignable<FastifyInstance>(fastify({
   logger: {
     level: 'info',
     genReqId: () => 'request-id',
@@ -111,7 +105,7 @@ const customLogger = {
   debug: () => { },
   child: () => customLogger
 }
-expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: customLogger }))
+expectAssignable<FastifyInstance>(fastify({ logger: customLogger }))
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))

@@ -1,9 +1,8 @@
-import fastify, { FastifyInstance, FastifyPluginOptions } from '../../fastify'
-import * as http from 'http'
-import * as https from 'https'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin'
 import { FastifyError } from 'fastify-error'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyInstance, FastifyPluginOptions } from '../../fastify'
+import { FastifyInstanceHttpsGenericInterface } from '../../types/instance'
+import { FastifyPluginAsync, FastifyPluginCallback } from '../../types/plugin'
 
 // FastifyPlugin & FastifyRegister
 interface TestOptions extends FastifyPluginOptions {
@@ -42,7 +41,7 @@ expectAssignable<FastifyInstance>(fastify().register(async function (instance, o
 expectError(fastify().register(function (instance, opts, done) { }, { logLevel: '' })) // must use a valid logLevel
 
 const httpsServer = fastify({ https: {} })
-expectType<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse> & PromiseLike<FastifyInstance<https.Server, http.IncomingMessage, http.ServerResponse>>>(httpsServer)
+expectType<FastifyInstance<FastifyInstanceHttpsGenericInterface> & PromiseLike<FastifyInstance<FastifyInstanceHttpsGenericInterface>>>(httpsServer)
 
 // Chainable
 httpsServer

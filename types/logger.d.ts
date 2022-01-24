@@ -1,5 +1,7 @@
 import pino from 'pino'
 import { DefaultFastifyInstanceGenericInterface, FastifyInstanceGenericInterface } from './instance'
+import { FastifyReply } from './reply'
+import { FastifyRequest } from './request'
 import { GetRequest } from './utils'
 
 /**
@@ -29,7 +31,7 @@ export type PinoLoggerOptions = pino.LoggerOptions
  */
 export interface FastifyLoggerOptions<Generic extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface> {
   serializers?: {
-    req?: (req: GetRequest<Generic>) => {
+    req?: (req: FastifyRequest<Generic>) => {
       method?: string;
       url?: string;
       version?: string;
@@ -44,7 +46,7 @@ export interface FastifyLoggerOptions<Generic extends FastifyInstanceGenericInte
       stack: string;
       [key: string]: unknown;
     };
-    res?: (res: GetRequest<Generic>) => {
+    res?: (res: FastifyReply<Generic>) => {
       statusCode: string | number;
       [key: string]: unknown;
     };

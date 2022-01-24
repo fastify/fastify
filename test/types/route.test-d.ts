@@ -1,9 +1,9 @@
-import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable, printType } from 'tsd'
-import { HTTPMethods } from '../../types/utils'
-import * as http from 'http'
-import { RequestPayload } from '../../types/hooks'
 import { FastifyError } from 'fastify-error'
+import * as http from 'http'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyInstance, FastifyReply, FastifyRequest, RouteHandlerMethod } from '../../fastify'
+import { RequestPayload } from '../../types/hooks'
+import { HTTPMethods } from '../../types/utils'
 
 /*
  * Testing Fastify HTTP Routes and Route Shorthands.
@@ -60,7 +60,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     Headers: HeadersInterface;
   }
 
-  fastify()[lowerCaseMethod]<RouteGeneric, RouteSpecificContextConfigType>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
+  fastify()[lowerCaseMethod]<{ Route: RouteGeneric, Context: RouteSpecificContextConfigType }>('/', { config: { foo: 'bar', bar: 100, extra: true } }, (req, res) => {
     expectType<BodyInterface>(req.body)
     expectType<QuerystringInterface>(req.query)
     expectType<ParamsInterface>(req.params)
@@ -73,7 +73,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
     expectType<boolean>(res.context.config.extra)
   })
 
-  fastify().route<RouteGeneric>({
+  fastify().route<{ Route: RouteGeneric }>({
     url: '/',
     method: method as HTTPMethods,
     config: { foo: 'bar', bar: 100 },

@@ -1,6 +1,6 @@
-import fastify, { FastifyServerFactory } from '../../fastify'
-import * as http from 'http'
-import { expectType } from 'tsd'
+import * as http from 'http';
+import { expectType } from 'tsd';
+import fastify, { FastifyServerFactory } from '../../fastify';
 
 // Custom Server
 type CustomType = void;
@@ -24,7 +24,7 @@ const serverFactory: FastifyServerFactory<http.Server> = (handler, opts) => {
 }
 
 // The request and reply objects should have the fakeMethods available (even though they may be undefined)
-const customServer = fastify<http.Server, CustomIncomingMessage, CustomServerResponse>({ serverFactory })
+const customServer = fastify<{ Server: http.Server, Request: CustomIncomingMessage, Reply: CustomServerResponse}>({ serverFactory })
 
 customServer.get('/', function (request, reply) {
   if (request.raw.fakeMethod) {

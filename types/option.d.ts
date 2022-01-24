@@ -13,7 +13,8 @@ import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
 import { DefaultFastifyInstanceRouteGenericOnlyInterface, FastifyInstanceRouteGenericOnlyInterface } from './route'
 import { FastifySchemaValidationError } from './schema'
-import { GetRequest, GetServer } from './utils'
+import { FastifyServerFactory } from './server-factory'
+import { GetLogger, GetRequest, GetServer } from './utils'
 
 type FindMyWayVersion<Generic extends FastifyInstanceGenericInterface, RawServer = GetServer<Generic>> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
@@ -41,9 +42,9 @@ export interface FastifyServerOptions<Generic extends FastifyInstanceGenericInte
   exposeHeadRoutes?: boolean,
   onProtoPoisoning?: ProtoAction,
   onConstructorPoisoning?: ConstructorAction,
-  logger?: boolean | FastifyLoggerOptions<Generic> & PinoLoggerOptions | Generic['Logger'],
+  logger?: boolean | FastifyLoggerOptions<Generic> & PinoLoggerOptions | GetLogger<Generic>,
   serializerOpts?: FJSOptions | Record<string, unknown>,
-  // serverFactory?: FastifyServerFactory<RawServer>,
+  serverFactory?: FastifyServerFactory<GetServer<Generic>>,
   caseSensitive?: boolean,
   requestIdHeader?: string,
   requestIdLogLabel?: string;

@@ -1,15 +1,13 @@
+import * as http from 'http'
+import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
   FastifyBodyParser,
   FastifyError,
-  FastifyInstance,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerDefault
+  FastifyInstance
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
-import { FastifyRequest } from '../../types/request'
-import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { FastifyReply } from '../../types/reply'
+import { FastifyRequest } from '../../types/request'
 
 const server = fastify()
 
@@ -61,37 +59,37 @@ interface ReplyPayload {
   };
 }
 // typed sync error handler
-server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+server.setErrorHandler<CustomError, { Route: ReplyPayload }>((error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<{ Route: ReplyPayload }>)>(reply.send)
 })
 // typed async error handler send
-server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, { Route: ReplyPayload }>(async (error, request, reply) => {
   expectType<CustomError>(error)
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<{ Route: ReplyPayload }>)>(reply.send)
 })
 // typed async error handler return
-server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, { Route: ReplyPayload }>(async (error, request, reply) => {
   expectType<CustomError>(error)
   return { test: true }
 })
 // typed sync error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+expectError(server.setErrorHandler<CustomError, { Route: ReplyPayload }>((error, request, reply) => {
   expectType<CustomError>(error)
   reply.send({ test: 'foo' })
 }))
 // typed sync error handler return error
-server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+server.setErrorHandler<CustomError, { Route: ReplyPayload }>((error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
 })
 // typed async error handler send error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+expectError(server.setErrorHandler<CustomError, { Route: ReplyPayload }>(async (error, request, reply) => {
   expectType<CustomError>(error)
   reply.send({ test: 'foo' })
 }))
 // typed async error handler return error
-server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, { Route: ReplyPayload }>(async (error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
 })
@@ -157,7 +155,7 @@ expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
 
-expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
+expectAssignable<void>(server.routing({} as http.IncomingMessage, {} as http.ServerResponse))
 
 expectType<FastifyInstance>(fastify().get('/', {
   handler: () => {},

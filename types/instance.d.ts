@@ -13,7 +13,7 @@ import { FastifyRequest } from './request'
 import { DefaultFastifyInstanceRouteGenericOnlyInterface, DefaultRoute, FastifyInstanceRouteGenericInterface, FastifyInstanceRouteGenericOnlyInterface, RouteOptions, RouteShorthandMethod } from './route'
 import { FastifySchema, FastifySchemaValidationError, FastifySerializerCompiler, FastifyValidatorCompiler } from './schema'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
-import { GetLogger, GetReply, GetRequest, GetServer } from './utils'
+import { GetLogger, GetReply, GetRequest, GetServer, OverrideInstanceGeneric, OverrideTypeProvider } from './utils'
 
 export interface FastifyInstanceGenericInterface {
   Server?: http2.Http2SecureServer | http2.Http2Server | https.Server | http.Server
@@ -55,13 +55,17 @@ export interface FastifyInstanceHttpGenericInterface extends FastifyInstanceGene
   Reply: http.ServerResponse
 }
 
-export interface FastifyInstance<Generic extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface> {
+export interface FastifyInstance<
+  Optional extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface,
+  // we merge the optional with default.
+  Generic extends FastifyInstanceGenericInterface = OverrideInstanceGeneric<Optional, DefaultFastifyInstanceGenericInterface>
+> {
   server: GetServer<Generic>
   prefix: string
   version: string
   log: GetLogger<Generic>
 
-  withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<Generic & { TypeProvider: Provider }>;
+  withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<OverrideTypeProvider<{ TypeProvider: Provider }, Generic>>;
 
   addSchema(schema: unknown): this;
   getSchema(schemaId: string): unknown;

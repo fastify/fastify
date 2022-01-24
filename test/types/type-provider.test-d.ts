@@ -1,8 +1,8 @@
-import fastify, { FastifyTypeProvider } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
+import { Static, TSchema, Type } from '@sinclair/typebox'
 import { IncomingHttpHeaders } from 'http'
-import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, { FastifyTypeProvider } from '../../fastify'
 
 const server = fastify()
 

@@ -3,7 +3,7 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
-import { ConstructorAction, GetDefaultJsonParser, HasContentTypeParser, ProtoAction, RemoveAllContentTypeParsers, RemoveContentTypeParser } from './content-type-parser'
+import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, GetDefaultJsonParser, HasContentTypeParser, ProtoAction, RemoveAllContentTypeParsers, RemoveContentTypeParser } from './content-type-parser'
 import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyLoggerInstance } from './logger'
 import { PrintRoutesOptions } from './option'
@@ -55,7 +55,7 @@ export interface FastifyInstanceHttpGenericInterface extends FastifyInstanceGene
   Reply: http.ServerResponse
 }
 
-export interface FastifyInstance<Generic extends FastifyInstanceGenericInterface = FastifyInstanceHttpsGenericInterface> {
+export interface FastifyInstance<Generic extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface> {
   server: GetServer<Generic>
   prefix: string
   version: string
@@ -426,7 +426,7 @@ export interface FastifyInstance<Generic extends FastifyInstanceGenericInterface
   /**
    * Add a content type parser
    */
-  // addContentTypeParser: AddContentTypeParser<RawServer, RawRequest, RouteGenericInterface, FastifySchema, TypeProvider>;
+  addContentTypeParser: AddContentTypeParser<Generic>;
 
   hasContentTypeParser: HasContentTypeParser;
 
@@ -445,10 +445,10 @@ export interface FastifyInstance<Generic extends FastifyInstanceGenericInterface
    */
   getDefaultJsonParser: GetDefaultJsonParser;
 
-  // /**
-  //  * Fastify default plain text parser
-  //  */
-  // defaultTextParser: FastifyBodyParser<string>;
+  /**
+   * Fastify default plain text parser
+   */
+  defaultTextParser: FastifyBodyParser<string>;
 
   /**
    * Prints the representation of the internal radix tree used by the router

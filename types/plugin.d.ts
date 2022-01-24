@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyInstanceGenericInterface, FastifyInstanceHttpGenericInterface } from './instance'
+import { DefaultFastifyInstanceGenericInterface, FastifyInstance, FastifyInstanceGenericInterface } from './instance'
 
 export type FastifyPluginOptions = Record<string, any>
 
@@ -9,7 +9,7 @@ export type FastifyPluginOptions = Record<string, any>
  */
 export type FastifyPluginCallback<
   Options extends FastifyPluginOptions = Record<never, never>,
-  Generic extends FastifyInstanceGenericInterface = FastifyInstanceHttpGenericInterface
+  Generic extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface
 > = (
   instance: FastifyInstance<Generic>,
   opts: Options,
@@ -23,7 +23,7 @@ export type FastifyPluginCallback<
  */
 export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
-  Generic extends FastifyInstanceGenericInterface = FastifyInstanceHttpGenericInterface
+  Generic extends FastifyInstanceGenericInterface = DefaultFastifyInstanceGenericInterface
 > = (
   instance: FastifyInstance<Generic>,
   opts: Options

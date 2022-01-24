@@ -5,7 +5,7 @@ import { FastifyHttp2Options, FastifyHttp2SecureOptions, FastifyHttpsOptions, Fa
 declare function fastify<Generic extends FastifyInstanceHttp2SecureGenericInterface>(options: FastifyHttp2SecureOptions<Generic>): FastifyInstance<Generic>
 declare function fastify<Generic extends FastifyInstanceHttp2GenericInterface>(options: FastifyHttp2Options<Generic>): FastifyInstance<Generic>
 declare function fastify<Generic extends FastifyInstanceHttpsGenericInterface>(options: FastifyHttpsOptions<Generic>): FastifyInstance<Generic>
-declare function fastify<Generic extends FastifyInstanceHttpGenericInterface>(options: FastifyServerOptions<Generic>): FastifyInstance<Generic>
+declare function fastify<Generic extends FastifyInstanceHttpGenericInterface>(options?: FastifyServerOptions<Generic>): FastifyInstance<Generic>
 export default fastify
 
 

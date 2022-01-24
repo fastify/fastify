@@ -23,9 +23,9 @@ export interface DefaultFastifyInstanceRouteGenericOnlyInterface {
   Schema?: unknown
 }
 
-export type FastifyInstanceRouteGenericInterface = FastifyInstanceRouteGenericOnlyInterface & FastifyInstanceGenericInterface
+export interface FastifyInstanceRouteGenericInterface extends FastifyInstanceGenericInterface, FastifyInstanceRouteGenericOnlyInterface {}
 
-export type DefaultFastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericOnlyInterface & DefaultFastifyInstanceGenericInterface
+export interface DefaultFastifyInstanceRouteGenericInterface extends DefaultFastifyInstanceRouteGenericOnlyInterface, DefaultFastifyInstanceGenericInterface {}
 
 export type DefaultRoute<Request, Reply> = (
   request: Request,

@@ -1280,5 +1280,5 @@ test('invalid url attribute - non string URL', t => {
     }
 
     fastify.get(/^\/(donations|skills|blogs)/, handler)
-  }, new Error('URL for method:GET must be a string'))
+  }, new Error('URL must be a string. Received object'))
 })

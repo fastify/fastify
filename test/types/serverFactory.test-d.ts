@@ -1,6 +1,6 @@
-import * as http from 'http';
-import { expectType } from 'tsd';
-import fastify, { FastifyServerFactory } from '../../fastify';
+import * as http from 'http'
+import { expectType } from 'tsd'
+import fastify, { FastifyServerFactory } from '../../fastify'
 
 // Custom Server
 type CustomType = void;

@@ -79,8 +79,8 @@ export interface RouteShorthandOptions<
  * Route handler method declaration.
  */
 export type RouteHandlerMethod<
-Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
-Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
+  Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+  Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>,
   ReturnType = ResolveFastifyReplyReturnType<Generic>
 > = (
   this: FastifyInstance<Generic>,
@@ -92,8 +92,8 @@ Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Opti
  * Shorthand options including the handler function property
  */
 export interface RouteShorthandOptionsWithHandler<
-Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
-Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
+  Optional extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
+  Generic extends FastifyInstanceRouteGenericInterface = OverrideRouteGeneric<Optional, DefaultFastifyInstanceRouteGenericInterface>
 > extends RouteShorthandOptions<Generic> {
   handler: RouteHandlerMethod<Generic>;
 }

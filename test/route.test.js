@@ -1278,7 +1278,7 @@ test('invalid url attribute - non string URL', t => {
     const handler = async (request, reply) => {
       return { hello: request.params.foo }
     }
-    
+
     fastify.get(/^\/(donations|skills|blogs)/, handler)
   }, new Error('URL for method:GET must be a string'))
 })

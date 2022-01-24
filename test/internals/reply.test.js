@@ -121,6 +121,19 @@ test('reply.serializer should set a custom serializer', t => {
   t.equal(reply[kReplySerializer], 'serializer')
 })
 
+test('reply.send handles aborted requests', t => {
+  t.plan(1)
+  const response = {
+    setHeader: () => {},
+    hasHeader: () => false,
+    getHeader: () => undefined,
+    writeHead: () => {},
+    end: () => {}
+  }
+  const reply = new Reply(response, { raw: { aborted: true } })
+  t.equal(reply.send('hello'), reply)
+})
+
 test('reply.serializer should support running preSerialization hooks', t => {
   t.plan(3)
   const fastify = require('../..')()

@@ -1,6 +1,6 @@
 import { FastifyContext } from './context'
 import { FastifyInstance } from './instance'
-import { FastifyInstanceRouteGenericInterface } from './route'
+import { DefaultFastifyInstanceRouteGenericInterface, FastifyInstanceRouteGenericInterface } from './route'
 import { FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
 import { GetLogger, GetProp, GetRequest, GetRoute, GetRouteContext, RequestBodyDefault, RequestHeadersDefault, RequestParamsDefault, RequestQuerystringDefault } from './utils'
 
@@ -16,7 +16,7 @@ export interface RequestGenericInterface {
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
  */
 export interface FastifyRequest<
-  Generic extends FastifyInstanceRouteGenericInterface,
+  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<Generic>
 > {
   id: any;

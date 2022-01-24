@@ -1,58 +1,49 @@
+import { FastifyRequest } from './request'
+import { DefaultFastifyInstanceRouteGenericInterface, FastifyInstanceRouteGenericInterface } from './route'
+import { GetRequest } from './utils'
 
 type ContentTypeParserDoneFunction = (err: Error | null, body?: any) => void
 
 /**
  * Body parser method that operators on request body
  */
-// export type FastifyBodyParser<
-//   RawBody extends string | Buffer,
-//   RawServer extends RawServerBase = RawServerDefault,
-//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-//   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-//   SchemaCompiler extends FastifySchema = FastifySchema,
-//   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-// > = ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, rawBody: RawBody, done: ContentTypeParserDoneFunction) => void)
-// | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, rawBody: RawBody) => Promise<any>)
+export type FastifyBodyParser<
+  RawBody extends string | Buffer,
+  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface
+> = ((request: FastifyRequest<Generic>, rawBody: RawBody, done: ContentTypeParserDoneFunction) => void)
+| ((request: FastifyRequest<Generic>, rawBody: RawBody) => Promise<any>)
 
-// /**
-//  * Content Type Parser method that operates on request content
-//  */
-// export type FastifyContentTypeParser<
-//   RawServer extends RawServerBase = RawServerDefault,
-//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-//   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-//   SchemaCompiler extends FastifySchema = FastifySchema,
-//   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-// > = ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, payload: RawRequest) => Promise<any>)
-// | ((request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, payload: RawRequest, done: ContentTypeParserDoneFunction) => void)
+/**
+ * Content Type Parser method that operates on request content
+ */
+export type FastifyContentTypeParser<
+  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface
+> = ((request: FastifyRequest<Generic>, payload: GetRequest<Generic>) => Promise<any>)
+| ((request: FastifyRequest<Generic>, payload: GetRequest<Generic>, done: ContentTypeParserDoneFunction) => void)
 
-// /**
-//  * Natively, Fastify only supports 'application/json' and 'text/plain' content types. The default charset is utf-8. If you need to support different content types, you can use the addContentTypeParser API. The default JSON and/or plain text parser can be changed.
-//  */
-// export interface AddContentTypeParser<
-//   RawServer extends RawServerBase = RawServerDefault,
-//   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
-//   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-//   SchemaCompiler extends FastifySchema = FastifySchema,
-//   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
-// > {
-//   (
-//     contentType: string | string[] | RegExp,
-//     opts: {
-//       bodyLimit?: number;
-//     },
-//     parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
-//   ): void;
-//   (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>): void;
-//   <parseAs extends string | Buffer>(
-//     contentType: string | string[] | RegExp,
-//     opts: {
-//       parseAs: parseAs extends Buffer ? 'buffer' : 'string';
-//       bodyLimit?: number;
-//     },
-//     parser: FastifyBodyParser<parseAs, RawServer, RawRequest, RouteGeneric, SchemaCompiler, TypeProvider>
-//   ): void;
-// }
+/**
+ * Natively, Fastify only supports 'application/json' and 'text/plain' content types. The default charset is utf-8. If you need to support different content types, you can use the addContentTypeParser API. The default JSON and/or plain text parser can be changed.
+ */
+export interface AddContentTypeParser<
+  Generic extends FastifyInstanceRouteGenericInterface = DefaultFastifyInstanceRouteGenericInterface
+> {
+  (
+    contentType: string | string[] | RegExp,
+    opts: {
+      bodyLimit?: number;
+    },
+    parser: FastifyContentTypeParser<Generic>
+  ): void;
+  (contentType: string | string[] | RegExp, parser: FastifyContentTypeParser<Generic>): void;
+  <ParseAs extends string | Buffer>(
+    contentType: string | string[] | RegExp,
+    opts: {
+      parseAs: ParseAs extends Buffer ? 'buffer' : 'string';
+      bodyLimit?: number;
+    },
+    parser: FastifyBodyParser<ParseAs, Generic>
+  ): void;
+}
 
 /**
  * Checks for a type parser of a content type

@@ -8,6 +8,7 @@ const sget = require('simple-get').concat
 const joi = require('@hapi/joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
+const { FST_ERR_INVALID_URL } = require('../lib/errors')
 
 test('route', t => {
   t.plan(9)
@@ -1271,14 +1272,12 @@ test('Correct error message is produced if "path" option is used', t => {
 
 test('invalid url attribute - non string URL', t => {
   t.plan(1)
-
   const fastify = Fastify()
 
-  t.throws(() => {
-    const handler = async (request, reply) => {
-      return { hello: request.params.foo }
-    }
-
-    fastify.get(/^\/(donations|skills|blogs)/, handler)
-  }, new Error('URL for method:GET must be a string'))
+  try {
+    fastify.get(/^\/(donations|skills|blogs)/, () => {})
+  } catch (error) {
+    console.log(error)
+    t.equal(error.code, FST_ERR_INVALID_URL().code)
+  }
 })

@@ -1277,7 +1277,6 @@ test('invalid url attribute - non string URL', t => {
   try {
     fastify.get(/^\/(donations|skills|blogs)/, () => {})
   } catch (error) {
-    console.log(error)
     t.equal(error.code, FST_ERR_INVALID_URL().code)
   }
 })

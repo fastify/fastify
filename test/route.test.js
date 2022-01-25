@@ -8,6 +8,7 @@ const sget = require('simple-get').concat
 const joi = require('@hapi/joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
+const { FST_ERR_INVALID_URL } = require('../lib/errors')
 
 test('route', t => {
   t.plan(9)
@@ -1267,4 +1268,15 @@ test('Correct error message is produced if "path" option is used', t => {
       errorHandler: ''
     })
   }, new Error('Error Handler for POST:/test route, if defined, must be a function'))
+})
+
+test('invalid url attribute - non string URL', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(/^\/(donations|skills|blogs)/, () => {})
+  } catch (error) {
+    t.equal(error.code, FST_ERR_INVALID_URL().code)
+  }
 })

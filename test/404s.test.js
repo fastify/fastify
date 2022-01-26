@@ -1060,7 +1060,7 @@ test('cannot set notFoundHandler after binding', t => {
     t.error(err)
 
     try {
-      fastify.setNotFoundHandler(() => {})
+      fastify.setNotFoundHandler(() => { })
       t.fail()
     } catch (e) {
       t.pass()
@@ -1777,13 +1777,8 @@ test('Should fail to invoke callNotFound inside a 404 handler', t => {
   t.plan(2)
 
   let fastify = null
-  const logStream = split(JSON.parse)
   try {
     fastify = Fastify({
-      logger: {
-        stream: logStream,
-        level: 'warn'
-      },
       frameworkErrors: (error, req, reply) => {
         return reply.callNotFound(error)
       }

@@ -182,10 +182,10 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     const fastify = Fastify()
 
-    fastify.setNotFoundHandler(() => {})
+    fastify.setNotFoundHandler(() => { })
 
     try {
-      fastify.setNotFoundHandler(() => {})
+      fastify.setNotFoundHandler(() => { })
       t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
     } catch (err) {
       t.type(err, Error)
@@ -199,10 +199,10 @@ test('setting a custom 404 handler multiple times is an error', t => {
     const fastify = Fastify()
 
     fastify.register((instance, options, done) => {
-      instance.setNotFoundHandler(() => {})
+      instance.setNotFoundHandler(() => { })
 
       try {
-        instance.setNotFoundHandler(() => {})
+        instance.setNotFoundHandler(() => { })
         t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
       } catch (err) {
         t.type(err, Error)
@@ -225,7 +225,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     fastify.register((instance, options, done) => {
       try {
-        instance.setNotFoundHandler(() => {})
+        instance.setNotFoundHandler(() => { })
         t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
       } catch (err) {
         t.type(err, Error)
@@ -234,7 +234,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
       done()
     })
 
-    fastify.setNotFoundHandler(() => {})
+    fastify.setNotFoundHandler(() => { })
 
     fastify.listen(0, err => {
       t.error(err)
@@ -248,11 +248,11 @@ test('setting a custom 404 handler multiple times is an error', t => {
     const fastify = Fastify()
 
     fastify.register((instance, options, done) => {
-      instance.setNotFoundHandler(() => {})
+      instance.setNotFoundHandler(() => { })
 
       instance.register((instance2, options, done) => {
         try {
-          instance2.setNotFoundHandler(() => {})
+          instance2.setNotFoundHandler(() => { })
           t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
         } catch (err) {
           t.type(err, Error)
@@ -264,7 +264,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
       done()
     }, { prefix: '/prefix' })
 
-    fastify.setNotFoundHandler(() => {})
+    fastify.setNotFoundHandler(() => { })
 
     fastify.listen(0, err => {
       t.error(err)
@@ -279,13 +279,13 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     fastify.register((instance, options, done) => {
       instance.register((instance2A, options, done) => {
-        instance2A.setNotFoundHandler(() => {})
+        instance2A.setNotFoundHandler(() => { })
         done()
       })
 
       instance.register((instance2B, options, done) => {
         try {
-          instance2B.setNotFoundHandler(() => {})
+          instance2B.setNotFoundHandler(() => { })
           t.fail('setting multiple 404 handlers at the same prefix encapsulation level should throw')
         } catch (err) {
           t.type(err, Error)
@@ -297,7 +297,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
       done()
     }, { prefix: '/prefix' })
 
-    fastify.setNotFoundHandler(() => {})
+    fastify.setNotFoundHandler(() => { })
 
     fastify.listen(0, err => {
       t.error(err)
@@ -905,7 +905,7 @@ test('Unknown method', t => {
   fastify.listen(0, err => {
     t.error(err)
 
-    const handler = () => {}
+    const handler = () => { }
     // See https://github.com/fastify/light-my-request/pull/20
     t.throws(() => fastify.inject({
       method: 'UNKNWON_METHOD',
@@ -1771,4 +1771,32 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
   })
 
   t.end()
+})
+
+test('Should fail to invoke callNotFound inside a 404 handler', t => {
+  t.plan(2)
+
+  let fastify = null
+  const logStream = split(JSON.parse)
+  try {
+    fastify = Fastify({
+      logger: {
+        stream: logStream,
+        level: 'warn'
+      },
+      frameworkErrors: (error, req, reply) => {
+        return reply.callNotFound();
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  fastify.inject({
+    url: '/%',
+    method: 'GET'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
 })

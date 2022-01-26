@@ -1773,7 +1773,7 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
   t.end()
 })
 
-test('Should fail to invoke callNotFound inside a 404 handler', t => {
+test('Should handle to invoke callNotFound inside a 404 handler', t => {
   t.plan(2)
 
   let fastify = null

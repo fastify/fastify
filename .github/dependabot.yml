@@ -10,14 +10,4 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    allow:
-      - dependency-type: "production"
-    open-pull-requests-limit: 10
-
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    allow:
-      - dependency-type: "development"
     open-pull-requests-limit: 10

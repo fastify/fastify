@@ -420,7 +420,7 @@ test('test log stream', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen(0, '127.0.0.1', err => {
     t.error(err)
     fastify.server.unref()
 

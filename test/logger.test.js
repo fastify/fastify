@@ -1188,7 +1188,7 @@ test('Do not wrap IPv4 address', t => {
       level: 'info'
     }
   })
-  fastify.listen(0, localhost, err => {
+  fastify.listen(0, '127.0.0.1', err => {
     t.error(err)
     stream.once('data', line => {
       const expected = 'Server listening at http://127.0.0.1:' +

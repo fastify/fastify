@@ -12,9 +12,8 @@ const proxyquire = require('proxyquire')
 process.removeAllListeners('warning')
 
 let localhost
-let localhostForURL
 before(async function () {
-  [localhost, localhostForURL] = await helper.getLoopbackHost()
+  [localhost] = await helper.getLoopbackHost()
 })
 
 test('Should register a versioned route', t => {
@@ -431,7 +430,7 @@ test('test log stream', t => {
     fastify.server.unref()
 
     http.get({
-      hostname: localhostForURL,
+      hostname: fastify.server.address().hostname,
       port: fastify.server.address().port,
       path: '/',
       method: 'GET',

@@ -458,7 +458,7 @@ test('addresses getter', async t => {
   t.same(app.addresses(), [], 'after ready')
   await app.listen(0, 'localhost')
   const { port } = app.server.address()
-  t.same(app.addresses().sort(), [
+  t.same(app.addresses().sort((a, b) => a.address.localeCompare(b.address)), [
     {
       address: '::1',
       family: 'IPv6',

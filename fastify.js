@@ -10,6 +10,7 @@ let lightMyRequest
 const {
   kAvvioBoot,
   kChildren,
+  kServerBindings,
   kBodyLimit,
   kRoutePrefix,
   kLogLevel,
@@ -190,6 +191,7 @@ function fastify (options) {
     },
     [kOptions]: options,
     [kChildren]: [],
+    [kServerBindings]: [],
     [kBodyLimit]: bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
@@ -277,6 +279,11 @@ function fastify (options) {
     // http server
     listen: listen,
     server: server,
+    addresses: function () {
+      const binded = this[kServerBindings].map(b => b.address())
+      binded.push(this.server.address())
+      return binded.filter(adr => adr)
+    },
     // extend fastify objects
     decorate: decorator.add,
     hasDecorator: decorator.exist,

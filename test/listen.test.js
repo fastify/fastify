@@ -447,6 +447,34 @@ test('listen on localhost binds IPv4 and IPv6 - callback interface', t => {
   })
 })
 
+test('addresses getter', async t => {
+  t.plan(4)
+  const app = Fastify()
+  app.get('/', async () => 'hello localhost')
+
+  t.same(app.addresses(), [], 'before ready')
+  await app.ready()
+
+  t.same(app.addresses(), [], 'after ready')
+  await app.listen(0, 'localhost')
+  const { port } = app.server.address()
+  t.same(app.addresses().sort(), [
+    {
+      address: '::1',
+      family: 'IPv6',
+      port
+    },
+    {
+      address: '127.0.0.1',
+      family: 'IPv4',
+      port
+    }
+  ], 'after listen')
+
+  await app.close()
+  t.same(app.addresses(), [], 'after close')
+})
+
 function getUrl (fastify, lookup) {
   const { port } = fastify.server.address()
   if (lookup.family === 6) {

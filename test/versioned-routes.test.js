@@ -1,7 +1,7 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test, before } = require('tap')
+const helper = require('./helper')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const http = require('http')
@@ -10,6 +10,12 @@ const append = require('vary').append
 const proxyquire = require('proxyquire')
 
 process.removeAllListeners('warning')
+
+let localhost
+let localhostForURL
+before(async function () {
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
+})
 
 test('Should register a versioned route', t => {
   t.plan(11)
@@ -420,12 +426,12 @@ test('test log stream', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, '127.0.0.1', err => {
+  fastify.listen(0, localhost, err => {
     t.error(err)
     fastify.server.unref()
 
     http.get({
-      hostname: 'localhost',
+      hostname: localhostForURL,
       port: fastify.server.address().port,
       path: '/',
       method: 'GET',

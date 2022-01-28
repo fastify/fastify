@@ -1775,11 +1775,12 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
 
 test('Send 404 when frameworkError calls reply.callNotFound', t => {
   t.test('Dynamic route', t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify({
       logger: true,
       frameworkErrors: (error, req, reply) => {
-        return reply.callNotFound(error)
+        t.equal(error.message, "'%world' is not a valid url component")
+        return reply.callNotFound()
       }
     })
     fastify.get('/hello/:id', () => t.fail('we should not be here'))
@@ -1798,11 +1799,12 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
 
 test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoundHandler', t => {
   t.test('Dynamic route', t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify({
       logger: true,
       frameworkErrors: (error, req, reply) => {
-        return reply.callNotFound(error)
+        t.equal(error.message, "'%world' is not a valid url component")
+        return reply.callNotFound()
       }
     })
 

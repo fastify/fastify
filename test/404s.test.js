@@ -1773,25 +1773,53 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
   t.end()
 })
 
-test('Should fail to invoke callNotFound inside a 404 handler', t => {
-  t.plan(2)
-
-  let fastify = null
-  try {
-    fastify = Fastify({
+test('Send 404 when frameworkError calls reply.callNotFound', t => {
+  t.test('Dynamic route', t => {
+    t.plan(3)
+    const fastify = Fastify({
+      logger: true,
       frameworkErrors: (error, req, reply) => {
         return reply.callNotFound(error)
       }
     })
-  } catch (e) {
-    t.fail()
-  }
-
-  fastify.inject({
-    url: '/%',
-    method: 'GET'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 404)
+    fastify.get('/hello/:id', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/hello/%world',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.equal(response.payload, '404 Not Found')
+    })
   })
+
+  t.end()
+})
+
+test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoundHandler', t => {
+  t.test('Dynamic route', t => {
+    t.plan(3)
+    const fastify = Fastify({
+      logger: true,
+      frameworkErrors: (error, req, reply) => {
+        return reply.callNotFound(error)
+      }
+    })
+
+    fastify.setNotFoundHandler(function (_req, reply) {
+      reply.code(404).send('This should not be sent')
+    })
+
+    fastify.get('/hello/:id', () => t.fail('we should not be here'))
+    fastify.inject({
+      url: '/hello/%world',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.equal(response.payload, '404 Not Found')
+    })
+  })
+
+  t.end()
 })

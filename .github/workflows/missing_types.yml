@@ -2,12 +2,14 @@ name: Missing Types
 
 on:
   pull_request:
-    types: [labeled]
+    types: [closed]
 
 jobs:
   create_issue:
     runs-on: ubuntu-latest
-    if: contains(github.event.pull_request.labels.*.name, 'missing-types')
+    if: |
+      github.event.pull_request.merged &&
+      contains(github.event.pull_request.labels.*.name, 'missing-types')
     steps:
       - name: Create an issue
         uses: octokit/request-action@v2.x
@@ -17,7 +19,7 @@ jobs:
           repo: ${{ github.event.repository.name }}
           title: add missing types to [${{ github.event.pull_request.title }}]
           body: |
-            PR [${{ github.event.pull_request.number }}](${{ github.event.pull_request.url }}) has introduced a new feature that requires updating Fastify's typings and tests.
+            PR [${{ github.event.pull_request.number }}](${{ github.event.pull_request.html_url }}) has introduced a new feature that requires updating Fastify's typings and tests.
 
 
             Learn how to [contribute](https://github.com/fastify/fastify/blob/main/CONTRIBUTING.md)

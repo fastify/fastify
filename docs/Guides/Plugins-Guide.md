@@ -67,17 +67,13 @@ module.exports = function (fastify, options, done) {
 };
 ```
 
-Well, now you know how to use the `register` API and how it works, but how do we
-add new functionality to Fastify and even better, share them with other
-developers?
+Bon, maintenant vous savez comment utiliser l'API `register` , vous vous demandez comment ajouter de nouvelles fonctionnalités à Fastify et encore mieux, les partager avec d'autres développeurs ?
 
-## Decorators
+## Décorateurs
 
 <a id="decorators"></a>
 
-Okay, let's say that you wrote a utility that is so good that you decided to
-make it available along with all your code. How would you do it? Probably
-something like the following:
+D'accord, disons que vous avez écrit un utilitaire qui est si bon que vous avez décidé de le rendre disponible avec tout votre code. Comment feriez-vous ? Probablement quelque chose comme ce qui suit :
 
 ```js
 // your-awesome-utility.js

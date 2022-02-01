@@ -96,12 +96,9 @@ Fastify vous offre un moyen plus élégant et confortable de le faire, décorate
 fastify.decorate('util', (a, b) => a + b);
 ```
 
-Now you can access your utility just by calling `fastify.util` whenever you need
-it - even inside your test.
+Vous pouvez désormais accéder à votre utilitaire simplement en appelant `fastify.util` chaque fois que vous en avez besoin, même pendant votre test.
 
-And here starts the magic; do you remember how just now we were talking about
-encapsulation? Well, using `register` and `decorate` in conjunction enable
-exactly that, let me show you an example to clarify this:
+Et ici commence la magie; vous souvenez-vous que nous parlions tout à l'heure d'encapsulation ? Eh bien, en utilisant `register` et `decorate` en conjonction permettent exactement cela, laissez-moi vous montrer un exemple pour clarifier cela :
 
 ```js
 fastify.register((instance, opts, done) => {

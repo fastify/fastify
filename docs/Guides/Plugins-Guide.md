@@ -87,12 +87,10 @@ const util = require('./your-awesome-utility');
 console.log(util('that is ', 'awesome'));
 ```
 
-Now you will import your utility in every file you need it in. (And do not
-forget that you will probably also need it in your tests).
+Maintenant, vous allez importer votre utilitaire dans chaque fichier dans lequel vous en avez besoin. (Et n'oubliez pas que vous en aurez probablement aussi besoin dans vos tests).
 
-Fastify offers you a more elegant and comfortable way to do this, _decorators_.
-Creating a decorator is extremely easy, just use the
-[`decorate`](../Reference/Decorators.md) API:
+Fastify vous offre un moyen plus élégant et confortable de le faire, décorateurs . Créer un décorateur est extrêmement simple, il suffit d'utiliser l'API
+[`decorate`](../Reference/Decorators.md) :
 
 ```js
 fastify.decorate('util', (a, b) => a + b);

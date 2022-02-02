@@ -10,10 +10,10 @@ const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
 test('Should support a custom https server', t => {
-  t.plan(6)
+  t.plan(7)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory)
+    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
 
     const options = {
       key: global.context.key,

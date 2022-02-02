@@ -2,6 +2,7 @@
 
 const { test, before } = require('tap')
 const Fastify = require('../..')
+const helper = require('../helper')
 const http = require('http')
 const pino = require('pino')
 const split = require('split2')
@@ -9,9 +10,16 @@ const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
 
 const { buildCertificate } = require('../build-certificate')
-before(buildCertificate)
 
 process.removeAllListeners('warning')
+
+let localhost
+let localhostForURL
+
+before(async function () {
+  await buildCertificate();
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
+})
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -298,11 +306,11 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen(0, localhost, err => {
     t.error(err)
     fastify.server.unref()
 
-    http.get('http://localhost:' + fastify.server.address().port)
+    http.get(`http://${localhostForURL}:${fastify.server.address().port}`)
   })
 })
 

@@ -1,6 +1,7 @@
 'use strict'
 
 const sget = require('simple-get').concat
+const dns = require('dns').promises
 const stream = require('stream')
 const symbols = require('../lib/symbols')
 
@@ -418,4 +419,18 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       })
     })
   })
+}
+
+module.exports.getLoopbackHost = async () => {
+  let localhostForURL
+
+  const lookup = await dns.lookup('localhost')
+  const localhost = lookup.address
+  if (lookup.family === 6) {
+    localhostForURL = `[${lookup.address}]`
+  } else {
+    localhostForURL = localhost
+  }
+
+  return [localhost, localhostForURL]
 }

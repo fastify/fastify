@@ -14,6 +14,7 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
+const semver = require('semver')
 const { kDisableRequestLogging } = require('../lib/symbols.js')
 
 function getUrl (app) {
@@ -592,7 +593,7 @@ test('return a 404 if the stream emits a 404 error', t => {
   })
 })
 
-test('should support send module 200 and 404', { only: true }, t => {
+test('should support send module 200 and 404', { skip: semver.gte(process.versions.node, '17.0.0') }, t => {
   t.plan(8)
   const fastify = Fastify()
 

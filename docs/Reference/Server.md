@@ -46,6 +46,7 @@ describes the properties available in that options object.
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
+    - [addresses](#addresses)
     - [getDefaultRoute](#getdefaultroute)
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
@@ -929,6 +930,24 @@ fastify.listen({
   ipv6Only: false
 }, (err) => {})
 ```
+
+#### addresses
+<a id="addresses"></a>
+
+This method returns an array of addresses that the server is listening on.
+If you call it before `listen()` is called or after the `close()` function,
+it will return an empty array.
+
+```js
+await fastify.listen(8080)
+const addresses = fastify.addresses()
+// [
+//   { port: 8080, family: 'IPv6', address: '::1' },
+//   { port: 8080, family: 'IPv4', address: '127.0.0.1' }
+// ]
+```
+
+Note that the array contains the `fastify.server.address()` too.
 
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>

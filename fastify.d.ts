@@ -113,6 +113,7 @@ export type FastifyServerOptions<
   caseSensitive?: boolean,
   requestIdHeader?: string,
   requestIdLogLabel?: string;
+  jsonShorthand?: boolean;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: unknown },

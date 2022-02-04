@@ -206,6 +206,7 @@ expectAssignable<FastifyInstance>(fastify({
     expectType<Socket>(socket)
   }
 }))
+expectAssignable<FastifyInstance>(fastify({ jsonShorthand: true }))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

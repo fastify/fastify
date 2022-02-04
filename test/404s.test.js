@@ -1775,7 +1775,7 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
 
 test('Send 404 when frameworkError calls reply.callNotFound', t => {
   t.test('Dynamic route', t => {
-    t.plan(4)
+    t.plan(3)
     const fastify = Fastify({
       logger: true,
       frameworkErrors: (error, req, reply) => {
@@ -1790,7 +1790,6 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 404)
-      t.equal(response.payload, '404 Not Found')
     })
   })
 
@@ -1799,7 +1798,7 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
 
 test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoundHandler', t => {
   t.test('Dynamic route', t => {
-    t.plan(4)
+    t.plan(5)
     const fastify = Fastify({
       logger: true,
       frameworkErrors: (error, req, reply) => {
@@ -1809,7 +1808,8 @@ test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoun
     })
 
     fastify.setNotFoundHandler(function (_req, reply) {
-      reply.code(404).send('This should not be sent')
+      t.pass('the custom 404 handler is called')
+      reply.code(404).send('This is from not found handler')
     })
 
     fastify.get('/hello/:id', () => t.fail('we should not be here'))
@@ -1819,7 +1819,7 @@ test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoun
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 404)
-      t.equal(response.payload, '404 Not Found')
+      t.equal(response.payload, 'This is from not found handler')
     })
   })
 

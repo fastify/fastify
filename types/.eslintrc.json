@@ -31,7 +31,7 @@
       "files": ["*.test-d.ts"],
       "rules": {
         "no-unused-vars": "off",
-        "node/handle-callback-err": "off",
+        "n/handle-callback-err": "off",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/no-unused-vars": "off",

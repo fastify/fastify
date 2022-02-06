@@ -1775,7 +1775,7 @@ test('setNotFoundHandler should be chaining fastify instance', t => {
 
 test('Send 404 when frameworkError calls reply.callNotFound', t => {
   t.test('Dynamic route', t => {
-    t.plan(3)
+    t.plan(4)
     const fastify = Fastify({
       logger: true,
       frameworkErrors: (error, req, reply) => {
@@ -1790,36 +1790,7 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
     }, (err, response) => {
       t.error(err)
       t.equal(response.statusCode, 404)
-    })
-  })
-
-  t.end()
-})
-
-test('Send 404 when frameworkError calls reply.callNotFound even with setNotFoundHandler', t => {
-  t.test('Dynamic route', t => {
-    t.plan(5)
-    const fastify = Fastify({
-      logger: true,
-      frameworkErrors: (error, req, reply) => {
-        t.equal(error.message, "'%world' is not a valid url component")
-        return reply.callNotFound()
-      }
-    })
-
-    fastify.setNotFoundHandler(function (_req, reply) {
-      t.pass('the custom 404 handler is called')
-      reply.code(404).send('This is from not found handler')
-    })
-
-    fastify.get('/hello/:id', () => t.fail('we should not be here'))
-    fastify.inject({
-      url: '/hello/%world',
-      method: 'GET'
-    }, (err, response) => {
-      t.error(err)
-      t.equal(response.statusCode, 404)
-      t.equal(response.payload, 'This is from not found handler')
+      t.equal(response.payload, '404 Not Found')
     })
   })
 

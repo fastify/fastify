@@ -186,7 +186,7 @@ test('inject post request', t => {
   fastify.inject({
     method: 'POST',
     url: '/',
-    payload: payload
+    payload
   }, (err, res) => {
     t.error(err)
     t.same(payload, JSON.parse(res.payload))

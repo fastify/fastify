@@ -29,7 +29,7 @@ test('config', t => {
     method: 'GET',
     url: '/route',
     schema: schema.schema,
-    handler: handler,
+    handler,
     config: Object.assign({}, schema.config)
   })
 
@@ -37,7 +37,7 @@ test('config', t => {
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler: handler
+    handler
   })
 
   fastify.inject({
@@ -81,7 +81,7 @@ test('config with exposeHeadRoutes', t => {
     method: 'GET',
     url: '/route',
     schema: schema.schema,
-    handler: handler,
+    handler,
     config: Object.assign({}, schema.config)
   })
 
@@ -89,7 +89,7 @@ test('config with exposeHeadRoutes', t => {
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler: handler
+    handler
   })
 
   fastify.inject({

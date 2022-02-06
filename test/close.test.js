@@ -215,7 +215,7 @@ t.test('Current opened connection should continue to work after closing and retu
     t.error(err)
 
     const port = fastify.server.address().port
-    const client = net.createConnection({ port: port }, () => {
+    const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\n\r\n')
 
       client.once('data', data => {

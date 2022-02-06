@@ -175,9 +175,9 @@ function fastify (options) {
   // Default router
   const router = buildRouting({
     config: {
-      defaultRoute: defaultRoute,
-      onBadUrl: onBadUrl,
-      constraints: constraints,
+      defaultRoute,
+      onBadUrl,
+      constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
@@ -268,16 +268,16 @@ function fastify (options) {
     // expose logger instance
     log: logger,
     // hooks
-    addHook: addHook,
+    addHook,
     // schemas
-    addSchema: addSchema,
+    addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
-    setValidatorCompiler: setValidatorCompiler,
-    setSerializerCompiler: setSerializerCompiler,
-    setSchemaController: setSchemaController,
-    setReplySerializer: setReplySerializer,
-    setSchemaErrorFormatter: setSchemaErrorFormatter,
+    setValidatorCompiler,
+    setSerializerCompiler,
+    setSchemaController,
+    setReplySerializer,
+    setSchemaErrorFormatter,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -293,8 +293,8 @@ function fastify (options) {
     close: null,
     printPlugins: null,
     // http server
-    listen: listen,
-    server: server,
+    listen,
+    server,
     // extend fastify objects
     decorate: decorator.add,
     hasDecorator: decorator.exist,
@@ -303,12 +303,12 @@ function fastify (options) {
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
     // fake http injection
-    inject: inject,
+    inject,
     // pretty print of the registered routes
     printRoutes,
     // custom error handling
-    setNotFoundHandler: setNotFoundHandler,
-    setErrorHandler: setErrorHandler,
+    setNotFoundHandler,
+    setErrorHandler,
     // Set fastify initial configuration options read-only object
     initialConfig
   }

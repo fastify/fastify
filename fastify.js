@@ -607,7 +607,9 @@ function fastify (options) {
     if (frameworkErrors) {
       const id = genReqId(req)
       const childLogger = logger.child({ reqId: id })
+
       childLogger.info({ req }, 'incoming request')
+
       const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
       const reply = new Reply(res, request, childLogger)
       return frameworkErrors(new FST_ERR_BAD_URL(path), request, reply)

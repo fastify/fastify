@@ -27,7 +27,8 @@ const {
   kPluginNameChain,
   kSchemaErrorFormatter,
   kErrorHandler,
-  kKeepAliveConnections
+  kKeepAliveConnections,
+  kFourOhFourContext
 } = require('./lib/symbols.js')
 
 const { createServer } = require('./lib/server')
@@ -58,7 +59,8 @@ const onBadUrlContext = {
   config: {
   },
   onSend: [],
-  onError: []
+  onError: [],
+  [kFourOhFourContext]: null
 }
 
 function defaultBuildPrettyMeta (route) {

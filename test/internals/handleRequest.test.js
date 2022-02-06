@@ -62,8 +62,8 @@ test('handler function - invalid schema', t => {
       }
     },
     handler: () => {},
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: [],
     preHandler: [],
     onSend: [],
@@ -93,8 +93,8 @@ test('handler function - reply', t => {
       reply.code(204)
       reply.send(undefined)
     },
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: [],
     preHandler: [],
     onSend: [],
@@ -123,8 +123,8 @@ test('handler function - preValidationCallback with finished response', t => {
       t.fail()
       reply.send(undefined)
     },
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: null,
     preHandler: [],
     onSend: [],
@@ -150,8 +150,8 @@ test('handler function - preValidationCallback with finished response (< v12.9.0
       t.fail()
       reply.send(undefined)
     },
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: null,
     preHandler: [],
     onSend: [],

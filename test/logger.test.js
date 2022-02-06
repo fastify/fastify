@@ -37,7 +37,7 @@ test('defaults to info level', t => {
   try {
     fastify = Fastify({
       logger: {
-        stream: stream
+        stream
       }
     })
   } catch (e) {
@@ -85,7 +85,7 @@ test('test log stream', t => {
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'info'
       }
     })
@@ -132,7 +132,7 @@ test('test error log stream', t => {
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'info'
       }
     })
@@ -182,7 +182,7 @@ test('can use external logger instance', t => {
 
   const logger = require('pino')(splitStream)
 
-  const localFastify = Fastify({ logger: logger })
+  const localFastify = Fastify({ logger })
 
   localFastify.get('/foo', function (req, reply) {
     t.ok(req.log)
@@ -226,7 +226,7 @@ test('can use external logger instance with custom serializer', t => {
   }, splitStream)
 
   const localFastify = Fastify({
-    logger: logger
+    logger
   })
 
   localFastify.get('/foo', function (req, reply) {
@@ -253,7 +253,7 @@ test('expose the logger', t => {
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'info'
       }
     })
@@ -271,7 +271,7 @@ test('The request id header key can be customized', t => {
 
   const stream = split(JSON.parse)
   const fastify = Fastify({
-    logger: { stream: stream, level: 'info' },
+    logger: { stream, level: 'info' },
     requestIdHeader: 'my-custom-request-id'
   })
   t.teardown(() => fastify.close())
@@ -316,7 +316,7 @@ test('The request id header key can be customized along with a custom id generat
 
   const stream = split(JSON.parse)
   const fastify = Fastify({
-    logger: { stream: stream, level: 'info' },
+    logger: { stream, level: 'info' },
     requestIdHeader: 'my-custom-request-id',
     genReqId (req) {
       return 'foo'
@@ -379,7 +379,7 @@ test('The request id log label can be changed', t => {
 
   const stream = split(JSON.parse)
   const fastify = Fastify({
-    logger: { stream: stream, level: 'info' },
+    logger: { stream, level: 'info' },
     requestIdHeader: 'my-custom-request-id',
     requestIdLogLabel: 'traceId'
   })
@@ -422,7 +422,7 @@ test('The logger should accept custom serializer', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info',
       serializers: {
         req: function (req) {
@@ -1151,7 +1151,7 @@ test('should serialize request and response', t => {
       const stream = split(JSON.parse)
       const fastify = Fastify({
         logger: {
-          stream: stream,
+          stream,
           level: 'info'
         }
       })
@@ -1173,7 +1173,7 @@ test('Do not wrap IPv4 address', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1241,7 +1241,7 @@ test('should log the error if no error handler is defined', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1275,7 +1275,7 @@ test('should log as info if error status code >= 400 and < 500 if no error handl
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1313,7 +1313,7 @@ test('should log as error if error status code >= 500 if no error handler is def
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1347,7 +1347,7 @@ test('should not log the error if error handler is defined', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1381,7 +1381,7 @@ test('should not rely on raw request to log errors', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })
@@ -1412,7 +1412,7 @@ test('should redact the authorization header if so specified', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       redact: ['req.headers.authorization'],
       level: 'info',
       serializers: {

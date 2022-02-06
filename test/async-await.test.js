@@ -407,7 +407,7 @@ test('error is logged because promise was fulfilled with undefined', t => {
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'error'
       }
     })
@@ -447,7 +447,7 @@ test('error is not logged because promise was fulfilled with undefined but statu
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'error'
       }
     })
@@ -488,7 +488,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'error'
       }
     })

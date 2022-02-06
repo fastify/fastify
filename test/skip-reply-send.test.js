@@ -23,7 +23,7 @@ test('skip automatic reply.send() with reply.sent = true and a body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream: stream
+      stream
     }
   })
 
@@ -52,7 +52,7 @@ test('skip automatic reply.send() with reply.sent = true and no body', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream: stream
+      stream
     }
   })
 
@@ -81,7 +81,7 @@ test('skip automatic reply.send() with reply.sent = true and an error', (t) => {
   const stream = split(JSON.parse)
   const app = Fastify({
     logger: {
-      stream: stream
+      stream
     }
   })
 
@@ -125,7 +125,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream: stream
+          stream
         }
       })
 
@@ -170,7 +170,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream: stream
+          stream
         }
       })
       t.teardown(() => app.close())
@@ -224,7 +224,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream: stream
+          stream
         }
       })
       t.teardown(() => app.close())
@@ -274,7 +274,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       const stream = split(JSON.parse)
       const app = Fastify({
         logger: {
-          stream: stream
+          stream
         }
       })
 

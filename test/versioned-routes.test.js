@@ -433,7 +433,7 @@ test('test log stream', t => {
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
-      stream: stream,
+      stream,
       level: 'info'
     }
   })

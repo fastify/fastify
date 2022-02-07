@@ -176,7 +176,7 @@
     "yup": "^0.32.11"
   },
   "dependencies": {
-    "@fastify/ajv-compiler": "^3.0.0",
+    "@fastify/ajv-compiler": "^3.1.0",
     "@fastify/fast-json-stringify-compiler": "^1.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.0",

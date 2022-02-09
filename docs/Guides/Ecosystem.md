@@ -130,6 +130,7 @@ section.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
+- [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry) Sentry errors handler that just works! Install, add your DSN and you're good to go!
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)

@@ -2,7 +2,7 @@ import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from 
 import { LogLevel } from './logger'
 import { FastifyInstance } from './instance'
 
-interface RegisterOptions {
+export interface RegisterOptions {
   prefix?: string;
   logLevel?: LogLevel;
   logSerializers?: Record<string, (value: any) => string>;

@@ -7,7 +7,9 @@ import fastify, {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerBase,
-  RouteOptions
+  RouteOptions,
+  RegisterOptions,
+  FastifyPluginOptions
 } from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
 
@@ -113,8 +115,9 @@ server.addHook('onRoute', function (opts) {
   expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
 })
 
-server.addHook('onRegister', (instance, done) => {
+server.addHook('onRegister', (instance, opts, done) => {
   expectType<FastifyInstance>(instance)
+  expectType<RegisterOptions & FastifyPluginOptions>(opts)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
@@ -194,8 +197,9 @@ server.addHook('onError', async function (request, reply, error) {
   expectType<FastifyError>(error)
 })
 
-server.addHook('onRegister', async (instance) => {
+server.addHook('onRegister', async (instance, opts) => {
   expectType<FastifyInstance>(instance)
+  expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
 
 server.addHook('onReady', async function () {

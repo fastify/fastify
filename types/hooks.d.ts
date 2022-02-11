@@ -6,6 +6,8 @@ import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
 import { FastifyError } from 'fastify-error'
 import { FastifyLoggerInstance } from './logger'
+import { RegisterOptions } from './register'
+import { FastifyPluginOptions } from './plugin'
 
 type HookHandlerDoneFunction = <TError extends Error = FastifyError>(err?: TError) => void
 
@@ -360,10 +362,12 @@ export interface onRegisterHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-  Logger = FastifyLoggerInstance
+  Logger = FastifyLoggerInstance,
+  Options extends FastifyPluginOptions = FastifyPluginOptions
 > {
   (
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
+    opts: RegisterOptions & Options,
     done: HookHandlerDoneFunction
   ): Promise<unknown> | void; // documentation is missing the `done` method
 }

@@ -1513,6 +1513,8 @@ The `fastify.removeAllContentTypeParsers()` method allows all content type parse
 A use case of this method is the implementation of catch-all content type parser. Before adding this parser with
 `fastify.addContentTypeParser()` one could call the `removeAllContentTypeParsers` method.
 
+For more details about the usage of the different content type parser APIs see [here](./ContentTypeParser.md#usage).
+
 #### getDefaultJsonParser
 <a id="getDefaultJsonParser"></a>
 

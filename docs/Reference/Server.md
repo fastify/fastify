@@ -77,6 +77,9 @@ describes the properties available in that options object.
     - [printRoutes](#printroutes)
     - [printPlugins](#printplugins)
     - [addContentTypeParser](#addcontenttypeparser)
+    - [hasContentTypeParser](#hasContentTypeParser)
+    - [removeContentTypeParser](#removeContentTypeParser)
+    - [removeAllContentTypeParsers](#removeAllContentTypeParsers)
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
@@ -1478,6 +1481,39 @@ content types, e.g. `text/json, application/vnd.oasis.opendocument.text`.
 
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 ```
+
+#### hasContentTypeParser
+<a id="hasContentTypeParser"></a>
+
+`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current 
+context for the specified content type.
+
+```js
+fastify.hasContentTypeParser('text/json')
+
+fastify.hasContentTypeParser(/^.+\/json$/)
+```
+
+#### removeContentTypeParser
+<a id="removeContentTypeParser"></a>
+
+`fastify.removeContentTypeParser(contentType)` is used to remove content type parsers in the current context. This
+method allows for example to remove the both built-in parsers for `application/json` and `text/plain`.
+
+```js
+fastify.removeContentTypeParser('application/json')
+
+fastify.removeContentTypeParser(['application/json', 'text/plain'])
+```
+
+#### removeAllContentTypeParsers
+<a id="removeAllContentTypeParsers"></a>
+
+The `fastify.removeAllContentTypeParsers()` method allows all content type parsers in the current context to be removed.
+A use case of this method is the implementation of catch-all content type parser. Before adding this parser with
+`fastify.addContentTypeParser()` one could call the `removeAllContentTypeParsers` method.
+
+For more details about the usage of the different content type parser APIs see [here](./ContentTypeParser.md#usage).
 
 #### getDefaultJsonParser
 <a id="getDefaultJsonParser"></a>

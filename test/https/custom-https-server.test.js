@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('../..')
 const https = require('https')
 const sget = require('simple-get').concat
-const dns = require('dns/promises')
+const dns = require('dns').promises
 
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)

@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('..')
 const http = require('http')
 const sget = require('simple-get').concat
-const dns = require('dns/promises')
+const dns = require('dns').promises
 
 test('Should support a custom http server', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })

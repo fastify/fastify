@@ -1,4 +1,4 @@
-'dduse strict'
+'use strict'
 
 const VERSION = '4.0.0-dev'
 

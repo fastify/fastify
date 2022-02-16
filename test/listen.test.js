@@ -461,6 +461,7 @@ test('addresses getter', async t => {
     address.port = port
     address.family = 'IPv' + address.family
   }
+  localAddresses.sort((a, b) => a.address.localeCompare(b.address))
   t.same(app.addresses().sort((a, b) => a.address.localeCompare(b.address)), localAddresses, 'after listen')
 
   await app.close()

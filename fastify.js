@@ -259,7 +259,7 @@ function fastify (options) {
     // expose logger instance
     log: logger,
     // type provider
-    withTypeProvider: withTypeProvider,
+    withTypeProvider,
     // hooks
     addHook,
     // schemas
@@ -286,8 +286,8 @@ function fastify (options) {
     close: null,
     printPlugins: null,
     // http server
-    listen: listen,
-    server: server,
+    listen,
+    server,
     addresses: function () {
       /* istanbul ignore next */
       const binded = this[kServerBindings].map(b => b.address())

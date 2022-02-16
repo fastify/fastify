@@ -133,7 +133,7 @@ test('config without exposeHeadRoutes', t => {
     method: 'GET',
     url: '/route',
     schema: schema.schema,
-    handler: handler,
+    handler,
     config: Object.assign({}, schema.config)
   })
 
@@ -141,7 +141,7 @@ test('config without exposeHeadRoutes', t => {
     method: 'GET',
     url: '/no-config',
     schema: schema.schema,
-    handler: handler
+    handler
   })
 
   fastify.inject({

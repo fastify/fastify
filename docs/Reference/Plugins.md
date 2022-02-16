@@ -181,7 +181,7 @@ callback.
 Example:
 ```js
 module.exports = function (fastify, opts, done) {
-  fastify.decorate('utility', () => {})
+  fastify.decorate('utility', function () {})
 
   fastify.get('/', handler)
 
@@ -191,7 +191,7 @@ module.exports = function (fastify, opts, done) {
 You can also use `register` inside another `register`:
 ```js
 module.exports = function (fastify, opts, done) {
-  fastify.decorate('utility', () => {})
+  fastify.decorate('utility', function () {})
 
   fastify.get('/', handler)
 
@@ -226,7 +226,7 @@ plugin will support.
 const fp = require('fastify-plugin')
 
 module.exports = fp(function (fastify, opts, done) {
-  fastify.decorate('utility', () => {})
+  fastify.decorate('utility', function () {})
   done()
 }, '0.x')
 ```
@@ -239,7 +239,7 @@ changes it will be your responsibility to update the module, while if you use
 `fastify-plugin`, you can be sure about backward compatibility.
 ```js
 function yourPlugin (fastify, opts, done) {
-  fastify.decorate('utility', () => {})
+  fastify.decorate('utility', function () {})
   done()
 }
 yourPlugin[Symbol.for('skip-override')] = true

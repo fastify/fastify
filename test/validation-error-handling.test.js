@@ -140,7 +140,7 @@ test('error inside custom error handler should have validationContext if specifi
       return function (data) {
         const error = new Error('this failed')
         error.validationContext = 'customContext'
-        return { error: error }
+        return { error }
       }
     }
   }, function (req, reply) {

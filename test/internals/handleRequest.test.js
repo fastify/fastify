@@ -57,8 +57,8 @@ test('handler function - invalid schema', t => {
     },
     errorHandler: { func: () => { t.pass('errorHandler called') } },
     handler: () => {},
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: [],
     preHandler: [],
     onSend: [],
@@ -88,8 +88,8 @@ test('handler function - reply', t => {
       reply.code(204)
       reply.send(undefined)
     },
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: [],
     preHandler: [],
     onSend: [],
@@ -104,7 +104,6 @@ test('handler function - preValidationCallback with finished response', t => {
   const res = {}
   // Be sure to check only `writableEnded` where is available
   res.writableEnded = true
-
   res.end = () => {
     t.fail()
   }
@@ -114,8 +113,8 @@ test('handler function - preValidationCallback with finished response', t => {
       t.fail()
       reply.send(undefined)
     },
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preValidation: null,
     preHandler: [],
     onSend: [],

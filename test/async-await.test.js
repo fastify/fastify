@@ -362,15 +362,36 @@ test('async await plugin', async t => {
   }
 })
 
-test('promise can be fulfilled with undefined', t => {
-  t.plan(3)
+test('does not call reply.send() twice if 204 response equal already sent', t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', async (req, reply) => {
+    reply.code(204).send()
+    reply.send = () => {
+      throw new Error('reply.send() was called twice')
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 204)
+  })
+})
+
+test('promise was fulfilled with undefined', t => {
+  t.plan(4)
 
   let fastify = null
   const stream = split(JSON.parse)
   try {
     fastify = Fastify({
       logger: {
-        stream: stream,
+        stream,
         level: 'error'
       }
     })
@@ -397,6 +418,52 @@ test('promise can be fulfilled with undefined', t => {
     }, (err, res, body) => {
       t.error(err)
       t.equal(res.body, undefined)
+      t.equal(res.statusCode, 200)
+    })
+  })
+})
+
+test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
+  t.plan(4)
+
+  let fastify = null
+  const stream = split(JSON.parse)
+  const payload = { hello: 'world' }
+  try {
+    fastify = Fastify({
+      logger: {
+        stream,
+        level: 'error'
+      }
+    })
+  } catch (e) {
+    t.fail()
+  }
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.get('/', async (req, reply) => {
+    reply.send(payload)
+  })
+
+  stream.once('data', line => {
+    t.fail('should not log an error')
+  })
+
+  fastify.listen(0, (err) => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port + '/'
+    }, (err, res, body) => {
+      t.error(err)
+      t.equal(res.statusCode, 200)
+      t.same(
+        payload,
+        JSON.parse(body)
+      )
     })
   })
 })

@@ -13,6 +13,7 @@ describes the properties available in that options object.
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
   - [`keepAliveTimeout`](#keepalivetimeout)
+  - [`forceCloseConnections`](#forcecloseconnections)
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`ignoreTrailingSlash`](#ignoretrailingslash)
@@ -77,6 +78,9 @@ describes the properties available in that options object.
     - [printRoutes](#printroutes)
     - [printPlugins](#printplugins)
     - [addContentTypeParser](#addcontenttypeparser)
+    - [hasContentTypeParser](#hasContentTypeParser)
+    - [removeContentTypeParser](#removeContentTypeParser)
+    - [removeAllContentTypeParsers](#removeAllContentTypeParsers)
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
@@ -124,6 +128,19 @@ understand the effect of this option. This option only applies when HTTP/1 is in
 use. Also, when `serverFactory` option is specified, this option is ignored.
 
 + Default: `72000` (72 seconds)
+
+### `forceCloseConnections`
+<a id="forcecloseconnections"></a>
+
+When set to `true` requests with the header `connection: keep-alive` will be
+tracked by the server. Upon [`close`](#close), the server will iterate the
+current persistent connections and [destroy their
+sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
+This means the server will shutdown immediately instead of waiting for existing
+persistent connections to timeout first. Important: connections are not
+inspected to determine if requests have been completed.
+
++ Default: `false`
 
 ### `maxRequestsPerSocket`
 <a id="factory-max-requests-per-socket"></a>
@@ -208,7 +225,7 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 Defines what action the framework must take when parsing a JSON object with
 `__proto__`. This functionality is provided by
 [secure-json-parse](https://github.com/fastify/secure-json-parse). See
-https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061 for more
+[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more
 details about prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
@@ -221,7 +238,7 @@ Possible values are `'error'`, `'remove'` and `'ignore'`.
 Defines what action the framework must take when parsing a JSON object with
 `constructor`. This functionality is provided by
 [secure-json-parse](https://github.com/fastify/secure-json-parse). See
-https://hueniverse.com/a-tale-of-prototype-poisoning-2610fa170061 for more
+[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more
 details about prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
@@ -1449,6 +1466,39 @@ content types, e.g. `text/json, application/vnd.oasis.opendocument.text`.
 
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 ```
+
+#### hasContentTypeParser
+<a id="hasContentTypeParser"></a>
+
+`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current 
+context for the specified content type.
+
+```js
+fastify.hasContentTypeParser('text/json')
+
+fastify.hasContentTypeParser(/^.+\/json$/)
+```
+
+#### removeContentTypeParser
+<a id="removeContentTypeParser"></a>
+
+`fastify.removeContentTypeParser(contentType)` is used to remove content type parsers in the current context. This
+method allows for example to remove the both built-in parsers for `application/json` and `text/plain`.
+
+```js
+fastify.removeContentTypeParser('application/json')
+
+fastify.removeContentTypeParser(['application/json', 'text/plain'])
+```
+
+#### removeAllContentTypeParsers
+<a id="removeAllContentTypeParsers"></a>
+
+The `fastify.removeAllContentTypeParsers()` method allows all content type parsers in the current context to be removed.
+A use case of this method is the implementation of catch-all content type parser. Before adding this parser with
+`fastify.addContentTypeParser()` one could call the `removeAllContentTypeParsers` method.
+
+For more details about the usage of the different content type parser APIs see [here](./ContentTypeParser.md#usage).
 
 #### getDefaultJsonParser
 <a id="getDefaultJsonParser"></a>

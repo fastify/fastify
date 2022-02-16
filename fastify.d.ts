@@ -109,6 +109,7 @@ export type FastifyServerOptions<
   connectionTimeout?: number,
   keepAliveTimeout?: number,
   maxRequestsPerSocket?: number,
+  forceCloseConnections?: boolean,
   requestTimeout?: number,
   pluginTimeout?: number,
   bodyLimit?: number,
@@ -123,6 +124,7 @@ export type FastifyServerOptions<
   caseSensitive?: boolean,
   requestIdHeader?: string,
   requestIdLogLabel?: string;
+  jsonShorthand?: boolean;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>) => string,
   trustProxy?: boolean | string | string[] | number | TrustProxyFunction,
   querystringParser?: (str: string) => { [key: string]: unknown },
@@ -155,7 +157,7 @@ export type FastifyServerOptions<
   return503OnClosing?: boolean,
   ajv?: {
     customOptions?: AjvOptions,
-    plugins?: Function[]
+    plugins?: (Function | [Function, unknown])[]
   },
   frameworkErrors?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
     error: FastifyError,

@@ -1382,7 +1382,7 @@ body parsing happens before the `preHandler` hook.
 
 [src](https://github.com/fastify/fastify/blob/main/types/hooks.d.ts#L35)
 
-preParsing` is the second hook to be executed in the request lifecycle. The
+`preParsing` is the second hook to be executed in the request lifecycle. The
 previous hook was `onRequest`, the next hook will be `preValidation`.
 
 Notice: in the `preParsing` hook, request.body will always be null, because the

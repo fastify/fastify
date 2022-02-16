@@ -17,6 +17,7 @@ const {
   kLogSerializers,
   kHooks,
   kSchemaController,
+  kRequestAcceptVersion,
   kReplySerializerDefault,
   kContentTypeParser,
   kReply,
@@ -26,7 +27,9 @@ const {
   kOptions,
   kPluginNameChain,
   kSchemaErrorFormatter,
-  kErrorHandler
+  kErrorHandler,
+  kKeepAliveConnections,
+  kFourOhFourContext
 } = require('./lib/symbols.js')
 
 const createServer = require('./lib/server')
@@ -45,6 +48,7 @@ const build404 = require('./lib/fourOhFour')
 const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
+const noopSet = require('./lib/noop-set')
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
@@ -59,7 +63,8 @@ const onBadUrlContext = {
   config: {
   },
   onSend: [],
-  onError: []
+  onError: [],
+  [kFourOhFourContext]: null
 }
 
 function defaultBuildPrettyMeta (route) {
@@ -120,6 +125,7 @@ function fastify (options) {
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
+  options.forceCloseConnections = typeof options.forceCloseConnections === 'boolean' ? options.forceCloseConnections : defaultInitOptions.forceCloseConnections
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
@@ -132,6 +138,7 @@ function fastify (options) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
 
   const initialConfig = getSecuredInitialConfig(options)
+  const keepAliveConnections = options.forceCloseConnections === true ? new Set() : noopSet()
 
   // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
@@ -158,14 +165,15 @@ function fastify (options) {
   // Default router
   const router = buildRouting({
     config: {
-      defaultRoute: defaultRoute,
-      onBadUrl: onBadUrl,
-      constraints: constraints,
+      defaultRoute,
+      onBadUrl,
+      constraints,
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
       buildPrettyMeta: defaultBuildPrettyMeta
-    }
+    },
+    keepAliveConnections
   })
 
   // 404 router, used for handling encapsulated 404 handlers
@@ -189,6 +197,7 @@ function fastify (options) {
       closing: false,
       started: false
     },
+    [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
     [kChildren]: [],
     [kServerBindings]: [],
@@ -252,16 +261,16 @@ function fastify (options) {
     // type provider
     withTypeProvider: withTypeProvider,
     // hooks
-    addHook: addHook,
+    addHook,
     // schemas
-    addSchema: addSchema,
+    addSchema,
     getSchema: schemaController.getSchema.bind(schemaController),
     getSchemas: schemaController.getSchemas.bind(schemaController),
-    setValidatorCompiler: setValidatorCompiler,
-    setSerializerCompiler: setSerializerCompiler,
-    setSchemaController: setSchemaController,
-    setReplySerializer: setReplySerializer,
-    setSchemaErrorFormatter: setSchemaErrorFormatter,
+    setValidatorCompiler,
+    setSerializerCompiler,
+    setSchemaController,
+    setReplySerializer,
+    setSchemaErrorFormatter,
     // custom parsers
     addContentTypeParser: ContentTypeParser.helpers.addContentTypeParser,
     hasContentTypeParser: ContentTypeParser.helpers.hasContentTypeParser,
@@ -293,12 +302,12 @@ function fastify (options) {
     hasRequestDecorator: decorator.existRequest,
     hasReplyDecorator: decorator.existReply,
     // fake http injection
-    inject: inject,
+    inject,
     // pretty print of the registered routes
     printRoutes,
     // custom error handling
-    setNotFoundHandler: setNotFoundHandler,
-    setErrorHandler: setErrorHandler,
+    setNotFoundHandler,
+    setErrorHandler,
     // Set fastify initial configuration options read-only object
     initialConfig
   }
@@ -365,6 +374,15 @@ function fastify (options) {
       if (fastify[kState].listening) {
         // No new TCP connections are accepted
         instance.server.close(done)
+
+        for (const conn of fastify[kKeepAliveConnections]) {
+          // We must invoke the destroy method instead of merely unreffing
+          // the sockets. If we only unref, then the callback passed to
+          // `fastify.close` will never be invoked; nor will any of the
+          // registered `onClose` hooks.
+          conn.destroy()
+          fastify[kKeepAliveConnections].delete(conn)
+        }
       } else {
         done(null)
       }
@@ -519,10 +537,8 @@ function fastify (options) {
     }
 
     if (name === 'onClose') {
-      this[kHooks].validate(name, fn)
       this.onClose(fn)
     } else if (name === 'onReady') {
-      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else if (name === 'onRoute') {
       this[kHooks].validate(name, fn)
@@ -580,6 +596,10 @@ function fastify (options) {
   // req and res are Node.js core objects
   function defaultRoute (req, res) {
     if (req.headers['accept-version'] !== undefined) {
+      // we remove the accept-version header for performance result
+      // because we do not want to go through the constraint checking
+      // the usage of symbol here to prevent any colision on custom header name
+      req.headers[kRequestAcceptVersion] = req.headers['accept-version']
       req.headers['accept-version'] = undefined
     }
     fourOhFour.router.lookup(req, res)

@@ -215,7 +215,7 @@ t.test('Current opened connection should continue to work after closing and retu
     t.error(err)
 
     const port = fastify.server.address().port
-    const client = net.createConnection({ port: port }, () => {
+    const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\n\r\n')
 
       client.once('data', data => {
@@ -289,5 +289,43 @@ test('Cannot be reopened the closed server has listen callback', async t => {
   }).catch(err => {
     t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
     t.ok(err)
+  })
+})
+
+test('shutsdown while keep-alive connections are active (non-async)', t => {
+  t.plan(5)
+
+  const timeoutTime = 2 * 60 * 1000
+  const fastify = Fastify({ forceCloseConnections: true })
+
+  fastify.server.setTimeout(timeoutTime)
+  fastify.server.keepAliveTimeout = timeoutTime
+
+  fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen(0, (err, address) => {
+    t.error(err)
+
+    const client = new Client(
+      'http://localhost:' + fastify.server.address().port,
+      { keepAliveTimeout: 1 * 60 * 1000 }
+    )
+    client.request({ path: '/', method: 'GET' }, (err, response) => {
+      t.error(err)
+      t.equal(client.closed, false)
+
+      fastify.close((err) => {
+        t.error(err)
+
+        // Due to the nature of the way we reap these keep-alive connections,
+        // there hasn't been enough time before the server fully closed in order
+        // for the client to have seen the socket get destroyed. The mere fact
+        // that we have reached this callback is enough indication that the
+        // feature being tested works as designed.
+        t.equal(client.closed, false)
+      })
+    })
   })
 })

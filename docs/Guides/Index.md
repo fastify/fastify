@@ -20,6 +20,8 @@ This table of contents is in alphabetical order.
   Fastify v3 from earlier versions.
 + [Plugins Guide](./Plugins-Guide.md): An informal introduction to writing
   Fastify plugins.
++ [Prototype Poisoning](./Prototype-Poisoning.md): A description of how the
+  prototype poisoning attack works and is mitigated.
 + [Recommendations](./Recommendations.md): Recommendations for how to deploy
   Fastify into production environments.
 + [Serverless](./Serverless.md): Details on how to deploy Fastify applications

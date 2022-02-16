@@ -50,13 +50,16 @@ expectAssignable<InjectOptions>({ query: '' })
 fastify({ http2: true, https: {} }).inject().then((resp) => {
   expectAssignable<LightMyRequestResponse>(resp)
 })
-const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {}
+const lightMyRequestCallback: LightMyRequestCallback = (err: Error, response: LightMyRequestResponse) => {
+  if (err) throw err
+}
 fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 
 // server options
 expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
+expectAssignable<FastifyInstance>(fastify({ forceCloseConnections: true }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ pluginTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ bodyLimit: 100 }))
@@ -179,6 +182,11 @@ expectAssignable<FastifyInstance>(fastify({
     plugins: [() => { }]
   }
 }))
+expectAssignable<FastifyInstance>(fastify({
+  ajv: {
+    plugins: [[() => { }, ['keyword1', 'keyword2']]]
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
@@ -190,6 +198,7 @@ expectAssignable<FastifyInstance>(fastify({
     expectType<Socket>(socket)
   }
 }))
+expectAssignable<FastifyInstance>(fastify({ jsonShorthand: true }))
 
 // Thenable
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))

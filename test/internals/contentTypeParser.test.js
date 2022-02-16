@@ -32,8 +32,8 @@ test('rawBody function', t => {
 
   res.log = { error: () => { }, info: () => { } }
   const context = {
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preHandler: [],
     onSend: [],
     _parserOptions: {
@@ -85,8 +85,8 @@ test('Should support Webpack and faux modules', t => {
 
   res.log = { error: () => { }, info: () => { } }
   const context = {
-    Reply: Reply,
-    Request: Request,
+    Reply,
+    Request,
     preHandler: [],
     onSend: [],
     _parserOptions: {

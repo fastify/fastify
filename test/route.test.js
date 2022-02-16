@@ -8,6 +8,7 @@ const sget = require('simple-get').concat
 const joi = require('joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
+const { FST_ERR_INVALID_URL } = require('../lib/errors')
 
 function getUrl (app) {
   const { address, port } = app.server.address()
@@ -1451,4 +1452,15 @@ test('route with non-english characters', t => {
       t.equal(body.toString(), 'here /föö')
     })
   })
+})
+
+test('invalid url attribute - non string URL', t => {
+  t.plan(1)
+  const fastify = Fastify()
+
+  try {
+    fastify.get(/^\/(donations|skills|blogs)/, () => {})
+  } catch (error) {
+    t.equal(error.code, FST_ERR_INVALID_URL().code)
+  }
 })

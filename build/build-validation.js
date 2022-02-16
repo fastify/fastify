@@ -24,6 +24,7 @@ module.exports.defaultInitOptions = ${JSON.stringify(defaultInitOptions)}
 const defaultInitOptions = {
   connectionTimeout: 0, // 0 sec
   keepAliveTimeout: 72000, // 72 seconds
+  forceCloseConnections: false, // keep-alive connections
   maxRequestsPerSocket: 0, // no limit
   requestTimeout: 0, // no limit
   bodyLimit: 1024 * 1024, // 1 MiB
@@ -47,6 +48,7 @@ const schema = {
   properties: {
     connectionTimeout: { type: 'integer', default: defaultInitOptions.connectionTimeout },
     keepAliveTimeout: { type: 'integer', default: defaultInitOptions.keepAliveTimeout },
+    forceCloseConnections: { type: 'boolean', default: defaultInitOptions.forceCloseConnections },
     maxRequestsPerSocket: { type: 'integer', default: defaultInitOptions.maxRequestsPerSocket, nullable: true },
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },

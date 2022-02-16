@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pnpm run test
+          pnpm run test:ci
 
   yarn:
     runs-on: ${{ matrix.os }}
@@ -56,4 +56,4 @@ jobs:
 
       - name: Run tests
         run: |
-          yarn run test
+          yarn run test:ci

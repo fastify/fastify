@@ -59,7 +59,7 @@ section.
 - [`fastify-http-proxy`](https://github.com/fastify/fastify-http-proxy) Proxy
   your HTTP requests to another server, with hooks.
 - [`fastify-jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify,
-  internally uses [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken).
+  internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
 - [`fastify-leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to
   share a common LevelDB connection across Fastify.
 - [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
@@ -130,6 +130,7 @@ section.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
+- [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry) Sentry errors handler that just works! Install, add your DSN and you're good to go!
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)

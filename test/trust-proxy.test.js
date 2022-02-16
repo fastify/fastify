@@ -16,7 +16,7 @@ const sgetForwardedRequest = (app, forHeader, path, protoHeader) => {
   }
   sget({
     method: 'GET',
-    headers: headers,
+    headers,
     url: 'http://localhost:' + app.server.address().port + path
   }, () => {})
 }

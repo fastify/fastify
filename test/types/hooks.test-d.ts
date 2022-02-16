@@ -1,8 +1,17 @@
-import fastify, { RouteOptions, FastifyReply, FastifyRequest } from '../../fastify'
-import { expectType, expectError, expectAssignable } from 'tsd'
-import { FastifyInstance } from '../../types/instance'
 import { FastifyError } from 'fastify-error'
-import { RequestPayload } from '../../types/hooks'
+import { expectAssignable, expectError, expectType } from 'tsd'
+import fastify, {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerBase,
+  RouteOptions,
+  RegisterOptions,
+  FastifyPluginOptions
+} from '../../fastify'
+import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
 
 const server = fastify()
 
@@ -106,8 +115,9 @@ server.addHook('onRoute', function (opts) {
   expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
 })
 
-server.addHook('onRegister', (instance, done) => {
+server.addHook('onRegister', (instance, opts, done) => {
   expectType<FastifyInstance>(instance)
+  expectType<RegisterOptions & FastifyPluginOptions>(opts)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
@@ -187,8 +197,9 @@ server.addHook('onError', async function (request, reply, error) {
   expectType<FastifyError>(error)
 })
 
-server.addHook('onRegister', async (instance) => {
+server.addHook('onRegister', async (instance, opts) => {
   expectType<FastifyInstance>(instance)
+  expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
 
 server.addHook('onReady', async function () {
@@ -197,4 +208,21 @@ server.addHook('onReady', async function () {
 
 server.addHook('onClose', async (instance) => {
   expectType<FastifyInstance>(instance)
+})
+
+// Use case to monitor any regression on issue #3620
+// ref.: https://github.com/fastify/fastify/issues/3620
+const customTypedHook: preHandlerAsyncHookHandler<
+RawServerBase,
+RawRequestDefaultExpression,
+RawReplyDefaultExpression,
+Record<string, unknown>
+> = async function (request, reply) {
+  expectType<FastifyInstance>(this)
+  expectAssignable<FastifyRequest>(request)
+  expectAssignable<FastifyReply>(reply)
+}
+
+server.register(async (instance) => {
+  instance.addHook('preHandler', customTypedHook)
 })

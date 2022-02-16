@@ -670,3 +670,44 @@ test('error in custom schema serialize compiler, throw FST_ERR_SCH_SERIALIZATION
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
   })
 })
+
+test('Errors in searilizer sended to errorHandler', async t => {
+  let savedError
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            power: { type: 'string' }
+          },
+          required: ['name']
+        }
+      }
+    }
+
+  }, function (req, reply) {
+    reply.code(200).send({ no: 'thing' })
+  })
+  fastify.setErrorHandler((error, request, reply) => {
+    savedError = error
+    reply.code(500).send(error)
+  })
+
+  const res = await fastify.inject('/')
+
+  t.equal(res.statusCode, 500)
+
+  // t.same(savedError, new Error('"name" is required!'));
+  t.same(res.json(), {
+    statusCode: 500,
+    error: 'Internal Server Error',
+    message: '"name" is required!'
+  })
+  t.ok(savedError, 'error presents')
+  t.ok(savedError.serialization, 'Serialization sign presents')
+  t.end()
+})

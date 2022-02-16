@@ -2,11 +2,18 @@
 
 ## Database
 
-Fastify's ecosystem provides a handful of plugins for connecting to various database engines. This guide covers engines which have Fastify plugins maintained within the Fastify organization.
+Fastify's ecosystem provides a handful of 
+plugins for connecting to various database engines. 
+This guide covers engines which have Fastify 
+plugins maintained within the Fastify organization.
 
-> If a plugin for your database of choice doesn't exist you can still use the database as Fastify is database agnostic. By following the examples of the database plugins listed in this guide, a plugin can be written for the missing database engine. 
+> If a plugin for your database of choice doesn't exist 
+> you can still use the database as Fastify is database agnostic. 
+> By following the examples of the database plugins listed in this guide, 
+> a plugin can be written for the missing database engine. 
 
-> If you would like to write your own Fastify plugin please take a look at the [plugins guide](./Plugins-Guide.md)
+> If you would like to write your own Fastify plugin 
+> please take a look at the [plugins guide](./Plugins-Guide.md)
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
 
@@ -97,7 +104,9 @@ fastify.listen(3000, err => {
 })
 ```
 
-By default `fastify-redis` doesn't close the client connection when Fastify server shuts down. To opt-in to this behavior, register the client like so:
+By default `fastify-redis` doesn't close 
+the client connection when Fastify server shuts down. 
+To opt-in to this behavior, register the client like so:
 
 ```javascript
 fastify.register(require('fastify-redis'), {
@@ -170,7 +179,9 @@ fastify.listen(3000, err => {
 ```
 
 ### Writing plugin for a database library
-We could write a plugin for a database library too (e.g Knex, Prisma, TypeORM, etc.). We will use [Knex](https://knexjs.org/) in our example.
+We could write a plugin for a database 
+library too (e.g Knex, Prisma, TypeORM, etc.). 
+We will use [Knex](https://knexjs.org/) in our example.
 
 ```javascript
 'use strict'
@@ -187,4 +198,28 @@ function knexPlugin(fastify, options, done) {
 }
 
 export default fp(plugin)
+```
+
+### Writing a plugin for a database engine
+
+In this example, we will create a basic Fastify MySQL plugin 
+from scratch (it's stripped example, please use the official plugin in production).
+
+```javascript
+const fp = require('fp')
+const mysql = require('mysql2/promise')
+
+function fastifyMysql(fastify, options, done) {
+  const connection = mysql.createConnection(options)
+
+  if (!fastify.mysql) {
+    fastify.decorate('mysql', connection)
+  }
+
+  fastify.addHook('onClose', (fastify, done) => connection.end().then(done).catch(done))
+
+  done()
+}
+
+export default fp(fastifyMysql, {name: 'fastify-simple-mysql'})
 ```

@@ -11,6 +11,7 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const sget = require('simple-get').concat
+const dns = require('dns')
 
 const files = []
 let count = 0
@@ -59,18 +60,21 @@ test('defaults to info level', t => {
     t.error(err)
     fastify.server.unref()
 
-    let toSkip = fastify.addresses().length
+    dns.lookup('localhost', { all: true }, function (err, addresses) {
+      t.error(err)
+      let toSkip = addresses.length
 
-    function skip (data) {
-      if (--toSkip === 0) {
-        stream.removeListener('data', skip)
-        check()
+      function skip (data) {
+        if (--toSkip === 0) {
+          stream.removeListener('data', skip)
+          check()
+        }
       }
-    }
 
-    stream.on('data', skip)
+      stream.on('data', skip)
 
-    http.get(`http://${localhostForURL}:` + fastify.server.address().port)
+      http.get(`http://${localhostForURL}:` + fastify.server.address().port)
+    })
   })
 
   function check () {

@@ -2,9 +2,9 @@
 
 ## Database
 
-Fastify ecosystem provides a handful of plugins for connecting to the desired database. We will cover official ones that reside in the Fastify's Github organization.
+Fastify's ecosystem provides a handful of plugins for connecting to various database engines. This guide covers engines which have Fastify plugins maintained within the Fastify organization.
 
-> If a plugin for your database of choice doesn't exist you can still use the database as Fastify is database agnostic. It's a matter of installing NodeJS database driver and connecting to your database. 
+> If a plugin for your database of choice doesn't exist you can still use the database as Fastify is database agnostic. By following the examples of the database plugins listed in this guide, a plugin can be written for the missing database engine. 
 
 > If you would like to write your own Fastify plugin please take a look at the [plugins guide](./Plugins-Guide.md)
 
@@ -21,7 +21,7 @@ fastify.register(require('fastify-mysql'), {
   connectionString: 'mysql://root@localhost/mysql'
 })
 
-fastify.get('/user/:id', (req, reply) => {
+fastify.get('/user/:id', function(req, reply) {
   fastify.mysql.query(
     'SELECT id, username, hash, salt FROM users WHERE id=?', [req.params.id],
     function onResult (err, result) {
@@ -48,7 +48,7 @@ fastify.register(require('fastify-postgres'), {
   connectionString: 'postgres://postgres@localhost/postgres'
 })
 
-fastify.get('/user/:id', (req, reply) => {
+fastify.get('/user/:id', function (req, reply) {
   fastify.pg.query(
     'SELECT id, username, hash, salt FROM users WHERE id=$1', [req.params.id],
     function onResult (err, result) {
@@ -77,14 +77,14 @@ fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
 // or
 fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
-fastify.get('/foo', (req, reply) => {
+fastify.get('/foo', function (req, reply) {
   const { redis } = fastify
   redis.get(req.query.key, (err, val) => {
     reply.send(err || val)
   })
 })
 
-fastify.post('/foo', (req, reply) => {
+fastify.post('/foo', function (req, reply) {
   const { redis } = fastify
   redis.set(req.body.key, req.body.value, (err) => {
     reply.send(err || { status: 'ok' })
@@ -169,3 +169,22 @@ fastify.listen(3000, err => {
 })
 ```
 
+### Writing plugin for a database library
+We could write a plugin for a database library too (e.g Knex, Prisma, TypeORM, etc.). We will use [Knex](https://knexjs.org/) in our example.
+
+```javascript
+'use strict'
+
+const fp = require('fastify-plugin')
+const knex = require('knex')
+
+function knexPlugin(fastify, options, done) {
+  if(!fastify.knex) {
+    fastify.decorate('knex', knex(options))
+  }
+
+  done()
+}
+
+export default fp(plugin)
+```

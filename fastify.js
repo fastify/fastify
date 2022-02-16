@@ -280,6 +280,7 @@ function fastify (options) {
     listen: listen,
     server: server,
     addresses: function () {
+      /* istanbul ignore next */
       const binded = this[kServerBindings].map(b => b.address())
       binded.push(this.server.address())
       return binded.filter(adr => adr)

@@ -5,9 +5,12 @@ const test = t.test
 const Fastify = require('..')
 const http = require('http')
 const sget = require('simple-get').concat
+const dns = require('dns').promises
 
-test('Should support a custom http server', t => {
-  t.plan(7)
+test('Should support a custom http server', async t => {
+  const localAddresses = await dns.lookup('localhost', { all: true })
+
+  t.plan(localAddresses.length + 3)
 
   const serverFactory = (handler, opts) => {
     t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
@@ -29,16 +32,20 @@ test('Should support a custom http server', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
-    t.error(err)
+  await fastify.listen(0)
 
+  await new Promise((resolve, reject) => {
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
+      url: 'http://localhost:' + fastify.server.address().port,
+      rejectUnauthorized: false
     }, (err, response, body) => {
-      t.error(err)
+      if (err) {
+        return reject(err)
+      }
       t.equal(response.statusCode, 200)
       t.same(JSON.parse(body), { hello: 'world' })
+      resolve()
     })
   })
 })

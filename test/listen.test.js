@@ -397,14 +397,13 @@ test('listen when firstArg is string(pipe) and with backlog', async t => {
 })
 
 test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
-  t.plan(1 + 2 + 2)
+  const lookups = await dns.lookup('localhost', { all: true })
+  t.plan(2 * lookups.length)
+
   const app = Fastify()
   app.get('/', async () => 'hello localhost')
   t.teardown(app.close.bind(app))
   await app.listen(0, 'localhost')
-
-  const lookups = await dns.lookup('localhost', { all: true })
-  t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
 
   for (const lookup of lookups) {
     await new Promise((resolve, reject) => {
@@ -421,16 +420,15 @@ test('listen on localhost binds IPv4 and IPv6 - promise interface', async t => {
   }
 })
 
-test('listen on localhost binds IPv4 and IPv6 - callback interface', t => {
-  t.plan(3 + 3 + 3)
-  const app = Fastify()
-  app.get('/', async () => 'hello localhost')
-
-  app.listen(0, 'localhost', (err) => {
+test('listen on localhost binds to all interfaces (both IPv4 and IPv6 if present) - callback interface', t => {
+  dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
+    t.plan(2 + (3 * lookups.length))
     t.error(err)
-    dnsCb.lookup('localhost', { all: true }, (err, lookups) => {
+
+    const app = Fastify()
+    app.get('/', async () => 'hello localhost')
+    app.listen(0, 'localhost', (err) => {
       t.error(err)
-      t.notSame(lookups.length, 1, 'localhost should resolve to multiple addresses')
       t.teardown(app.close.bind(app))
 
       for (const lookup of lookups) {
@@ -458,18 +456,13 @@ test('addresses getter', async t => {
   t.same(app.addresses(), [], 'after ready')
   await app.listen(0, 'localhost')
   const { port } = app.server.address()
-  t.same(app.addresses().sort((a, b) => a.address.localeCompare(b.address)), [
-    {
-      address: '::1',
-      family: 'IPv6',
-      port
-    },
-    {
-      address: '127.0.0.1',
-      family: 'IPv4',
-      port
-    }
-  ], 'after listen')
+  const localAddresses = await dns.lookup('localhost', { all: true })
+  for (const address of localAddresses) {
+    address.port = port
+    address.family = 'IPv' + address.family
+  }
+  localAddresses.sort((a, b) => a.address.localeCompare(b.address))
+  t.same(app.addresses().sort((a, b) => a.address.localeCompare(b.address)), localAddresses, 'after listen')
 
   await app.close()
   t.same(app.addresses(), [], 'after close')

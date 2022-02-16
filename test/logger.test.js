@@ -38,7 +38,6 @@ teardown(() => {
 })
 
 test('defaults to info level', t => {
-  t.plan(14)
   let fastify = null
   const stream = split(JSON.parse)
   try {
@@ -56,37 +55,43 @@ test('defaults to info level', t => {
     reply.send({ hello: 'world' })
   })
 
-  stream.once('data', listenAtLogLine => {
-    t.ok(listenAtLogLine, 'listen at log message is ok')
-
-    stream.once('data', listenAtLogLine => {
-      t.ok(listenAtLogLine, 'listen at log message is ok: localhost bind IPv4 and IPv6')
-
-      stream.once('data', line => {
-        const id = line.reqId
-        t.ok(line.reqId, 'reqId is defined')
-        t.ok(line.req, 'req is defined')
-        t.equal(line.msg, 'incoming request', 'message is set')
-        t.equal(line.req.method, 'GET', 'method is get')
-
-        stream.once('data', line => {
-          t.equal(line.reqId, id)
-          t.ok(line.reqId, 'reqId is defined')
-          t.ok(line.res, 'res is defined')
-          t.equal(line.msg, 'request completed', 'message is set')
-          t.equal(line.res.statusCode, 200, 'statusCode is 200')
-          t.ok(line.responseTime, 'responseTime is defined')
-        })
-      })
-    })
-  })
-
   fastify.listen(0, err => {
     t.error(err)
     fastify.server.unref()
 
+    let toSkip = fastify.addresses().length
+
+    function skip (data) {
+      if (--toSkip === 0) {
+        stream.removeListener('data', skip)
+        check()
+      }
+    }
+
+    stream.on('data', skip)
+
     http.get(`http://${localhostForURL}:` + fastify.server.address().port)
   })
+
+  function check () {
+    stream.once('data', line => {
+      const id = line.reqId
+      t.ok(line.reqId, 'reqId is defined')
+      t.ok(line.req, 'req is defined')
+      t.equal(line.msg, 'incoming request', 'message is set')
+      t.equal(line.req.method, 'GET', 'method is get')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, id)
+        t.ok(line.reqId, 'reqId is defined')
+        t.ok(line.res, 'res is defined')
+        t.equal(line.msg, 'request completed', 'message is set')
+        t.equal(line.res.statusCode, 200, 'statusCode is 200')
+        t.ok(line.responseTime, 'responseTime is defined')
+        t.end()
+      })
+    })
+  }
 })
 
 test('test log stream', t => {

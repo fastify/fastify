@@ -19,7 +19,7 @@ function getUrl (app) {
 }
 
 test('default 404', t => {
-  t.plan(3)
+  t.plan(4)
 
   const test = t.test
   const fastify = Fastify()
@@ -47,6 +47,21 @@ test('default 404', t => {
       })
     })
 
+    // Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
+    test('framework-unsupported method', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
+        url: getUrl(fastify),
+        body: {},
+        json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      })
+    })
+
     test('unsupported route', t => {
       t.plan(3)
       sget({
@@ -64,7 +79,7 @@ test('default 404', t => {
 })
 
 test('customized 404', t => {
-  t.plan(5)
+  t.plan(6)
 
   const test = t.test
   const fastify = Fastify()
@@ -96,6 +111,20 @@ test('customized 404', t => {
       t.plan(3)
       sget({
         method: 'PUT',
+        url: getUrl(fastify),
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(body.toString(), 'this was not found')
+      })
+    })
+
+    test('framework-unsupported method', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
         url: getUrl(fastify),
         body: JSON.stringify({ hello: 'world' }),
         headers: { 'Content-Type': 'application/json' }
@@ -316,7 +345,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 })
 
 test('encapsulated 404', t => {
-  t.plan(9)
+  t.plan(13)
 
   const test = t.test
   const fastify = Fastify()
@@ -369,7 +398,21 @@ test('encapsulated 404', t => {
       })
     })
 
-    test('root insupported route', t => {
+    test('root framework-unsupported method', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
+        url: getUrl(fastify),
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(body.toString(), 'this was not found')
+      })
+    })
+
+    test('root unsupported route', t => {
       t.plan(3)
       sget({
         method: 'GET',
@@ -395,6 +438,20 @@ test('encapsulated 404', t => {
       })
     })
 
+    test('framework-unsupported method', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
+        url: getUrl(fastify) + '/test',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(body.toString(), 'this was not found 2')
+      })
+    })
+
     test('unsupported route', t => {
       t.plan(3)
       sget({
@@ -407,7 +464,7 @@ test('encapsulated 404', t => {
       })
     })
 
-    test('unsupported method bis', t => {
+    test('unsupported method 2', t => {
       t.plan(3)
       sget({
         method: 'PUT',
@@ -421,7 +478,21 @@ test('encapsulated 404', t => {
       })
     })
 
-    test('unsupported route bis', t => {
+    test('framework-unsupported method 2', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
+        url: getUrl(fastify) + '/test2',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(body.toString(), 'this was not found 3')
+      })
+    })
+
+    test('unsupported route 2', t => {
       t.plan(3)
       sget({
         method: 'GET',
@@ -437,6 +508,20 @@ test('encapsulated 404', t => {
       t.plan(3)
       sget({
         method: 'PUT',
+        url: getUrl(fastify) + '/test3/',
+        body: JSON.stringify({ hello: 'world' }),
+        headers: { 'Content-Type': 'application/json' }
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(body.toString(), 'this was not found 4')
+      })
+    })
+
+    test('framework-unsupported method 3', t => {
+      t.plan(3)
+      sget({
+        method: 'PROPFIND',
         url: getUrl(fastify) + '/test3/',
         body: JSON.stringify({ hello: 'world' }),
         headers: { 'Content-Type': 'application/json' }
@@ -786,6 +871,76 @@ test('run hook with encapsulated 404', t => {
   })
 })
 
+test('run hook with encapsulated 404 and framework-unsupported method', t => {
+  t.plan(11)
+
+  const fastify = Fastify()
+
+  fastify.addHook('onRequest', function (req, res, done) {
+    t.pass('onRequest called')
+    done()
+  })
+
+  fastify.addHook('preHandler', function (request, reply, done) {
+    t.pass('preHandler called')
+    done()
+  })
+
+  fastify.addHook('onSend', function (request, reply, payload, done) {
+    t.pass('onSend called')
+    done()
+  })
+
+  fastify.addHook('onResponse', function (request, reply, done) {
+    t.pass('onResponse called')
+    done()
+  })
+
+  fastify.register(function (f, opts, done) {
+    f.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found 2')
+    })
+
+    f.addHook('onRequest', function (req, res, done) {
+      t.pass('onRequest 2 called')
+      done()
+    })
+
+    f.addHook('preHandler', function (request, reply, done) {
+      t.pass('preHandler 2 called')
+      done()
+    })
+
+    f.addHook('onSend', function (request, reply, payload, done) {
+      t.pass('onSend 2 called')
+      done()
+    })
+
+    f.addHook('onResponse', function (request, reply, done) {
+      t.pass('onResponse 2 called')
+      done()
+    })
+
+    done()
+  }, { prefix: '/test' })
+
+  t.teardown(fastify.close.bind(fastify))
+
+  fastify.listen(0, err => {
+    t.error(err)
+
+    sget({
+      method: 'PROPFIND',
+      url: getUrl(fastify) + '/test',
+      body: JSON.stringify({ hello: 'world' }),
+      headers: { 'Content-Type': 'application/json' }
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+    })
+  })
+})
+
 test('hooks check 404', t => {
   t.plan(13)
 
@@ -1108,71 +1263,6 @@ test('404 inside onSend', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 404)
-    })
-  })
-})
-
-test('Not found on supported method (should return a 404)', t => {
-  t.plan(5)
-
-  const fastify = Fastify()
-
-  fastify.get('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    fastify.inject({
-      method: 'POST',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 404)
-
-      sget({
-        method: 'POST',
-        url: getUrl(fastify)
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-      })
-    })
-  })
-})
-
-// Return 404 instead of 405 see https://github.com/fastify/fastify/pull/862 for discussion
-test('Not found on unsupported method (should return a 404)', t => {
-  t.plan(5)
-
-  const fastify = Fastify()
-
-  fastify.all('/', function (req, reply) {
-    reply.send({ hello: 'world' })
-  })
-
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.listen(0, err => {
-    t.error(err)
-
-    fastify.inject({
-      method: 'PROPFIND',
-      url: '/'
-    }, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 404)
-
-      sget({
-        method: 'PROPFIND',
-        url: getUrl(fastify)
-      }, (err, response, body) => {
-        t.error(err)
-        t.equal(response.statusCode, 404)
-      })
     })
   })
 })

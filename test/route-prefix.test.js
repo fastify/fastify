@@ -565,7 +565,8 @@ test('matches only /prefix/  with a / route - prefixTrailingSlash: "slash", igno
 test('calls onRoute only once when prefixing', async t => {
   t.plan(1)
   const fastify = Fastify({
-    ignoreTrailingSlash: false
+    ignoreTrailingSlash: false,
+    exposeHeadRoutes: false
   })
 
   let onRouteCalled = 0

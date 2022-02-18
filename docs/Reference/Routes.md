@@ -32,7 +32,7 @@ fastify.route(options)
 ### Routes options
 <a id="options"></a>
 
-* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
+*`method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
   `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
@@ -54,6 +54,7 @@ fastify.route(options)
   option, make sure to define it before the `GET` route.
 * `attachValidation`: attach `validationError` to request, if there is a schema
   validation error, instead of sending the error to the error handler.
+  The default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv one.
 * `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) as soon
   that a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
@@ -280,11 +281,14 @@ As you can see, we are not calling `reply.send` to send back the data to the
 user. You just need to return the body and you are done!
 
 If you need it you can also send back the data to the user with `reply.send`.
+In this case do not forget to `return reply` or `await reply` in your `async`
+handler or you will introduce a race condition in certain situations.
+
 ```js
 fastify.get('/', options, async function (request, reply) {
   var data = await getData()
   var processed = await processData(data)
-  reply.send(processed)
+  return reply.send(processed)
 })
 ```
 
@@ -316,24 +320,27 @@ fastify.get('/', options, async function (request, reply) {
   first one that happens takes precedence, the second value will be discarded,
   and a *warn* log will also be emitted because you tried to send a response
   twice.
+* Calling `reply.send()` outside of the promise is possible, but requires
+  special attention. For more details read
+  [promise-resolution](#promise-resolution).
 * You cannot return `undefined`. For more details read
   [promise-resolution](#promise-resolution).
 
 ### Promise resolution
 <a id="promise-resolution"></a>
 
-If your handler is an `async` function or returns a promise, you should be aware
-of a special behavior that is necessary to support the callback and promise
-control-flow. If the handler's promise is resolved with `undefined`, it will be
-ignored causing the request to hang and an *error* log to be emitted.
+If your handler is an `async` function or returns a promise, you should be aware of
+a special behaviour which is necessary to support the callback and promise
+control-flow. When the handler's promise is resolved, the reply will be
+automatically sent with its value unless you explicitly await or return `reply`
+in your handler.
 
-1. If you want to use `async/await` or promises but return a value with
-   `reply.send`:
-    - **Do not** `return` any value.
+1. If you want to use `async/await` or promises but respond a value with `reply.send`:
+    - **Do** `return reply` / `await reply`.
     - **Do not** forget to call `reply.send`.
 2. If you want to use `async/await` or promises:
     - **Do not** use `reply.send`.
-    - **Do not** return `undefined`.
+    - **Do** return the value that you want to send.
 
 In this way, we can support both `callback-style` and `async-await`, with the
 minimum trade-off. In spite of so much freedom we highly recommend to go with

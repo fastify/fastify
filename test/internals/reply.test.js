@@ -15,6 +15,21 @@ const {
   kReplyIsError,
   kReplySerializerDefault
 } = require('../../lib/symbols')
+const fs = require('fs')
+const path = require('path')
+const warning = require('../../lib/warnings')
+
+const doGet = function (url) {
+  return new Promise((resolve, reject) => {
+    sget({ method: 'GET', url, followRedirects: false }, (err, response, body) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve({ response, body })
+      }
+    })
+  })
+}
 
 test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
@@ -37,7 +52,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(reply.request, request)
 })
 
-test('reply.send will logStream error and destroy the stream', { only: true }, t => {
+test('reply.send will logStream error and destroy the stream', t => {
   t.plan(1)
   let destroyCalled
   const payload = new EventEmitter()
@@ -452,8 +467,6 @@ test('stream with content type should not send application/octet-stream', t => {
   t.plan(4)
 
   const fastify = require('../..')()
-  const fs = require('fs')
-  const path = require('path')
 
   const streamPath = path.join(__dirname, '..', '..', 'package.json')
   const stream = fs.createReadStream(streamPath)
@@ -472,6 +485,32 @@ test('stream with content type should not send application/octet-stream', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.headers['content-type'], 'text/plain')
+      t.same(body, buf)
+    })
+  })
+})
+
+test('stream without content type should not send application/octet-stream', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  const stream = fs.createReadStream(__filename)
+  const buf = fs.readFileSync(__filename)
+
+  fastify.get('/', function (req, reply) {
+    reply.send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], undefined)
       t.same(body, buf)
     })
   })
@@ -1301,6 +1340,34 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
   })
 })
 
+test('should emit deprecation warning when trying to modify the reply.sent property', t => {
+  t.plan(4)
+  const fastify = require('../..')()
+
+  const deprecationCode = 'FSTDEP010'
+  warning.emitted.delete(deprecationCode)
+
+  process.removeAllListeners('warning')
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, deprecationCode)
+  }
+
+  fastify.get('/', (req, reply) => {
+    reply.sent = true
+
+    reply.raw.end()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.pass()
+
+    process.removeListener('warning', onWarning)
+  })
+})
+
 test('should throw error when passing falsy value to reply.sent', t => {
   t.plan(4)
   const fastify = require('../..')()
@@ -1329,11 +1396,29 @@ test('should throw error when attempting to set reply.sent more than once', t =>
     reply.sent = true
     try {
       reply.sent = true
+      t.fail('must throw')
     } catch (err) {
       t.equal(err.code, 'FST_ERR_REP_ALREADY_SENT')
       t.equal(err.message, 'Reply was already sent.')
     }
     reply.raw.end()
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.pass()
+  })
+})
+
+test('should not throw error when attempting to set reply.sent if the underlining request was sent', t => {
+  t.plan(3)
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.raw.end()
+    t.doesNotThrow(() => {
+      reply.sent = true
+    })
   })
 
   fastify.inject('/', (err, res) => {
@@ -1726,4 +1811,161 @@ test('reply.then', t => {
 
     response.destroy(_err)
   })
+})
+
+test('reply.sent should read from response.writableEnded if it is defined', t => {
+  t.plan(1)
+
+  const reply = new Reply({ writableEnded: true }, {}, {})
+
+  t.equal(reply.sent, true)
+})
+
+test('redirect to an invalid URL should not crash the server', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/redirect',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["location"]')
+      }
+
+      switch (req.query.useCase) {
+        case '1':
+          reply.redirect('/?key=a’b')
+          break
+
+        case '2':
+          reply.redirect(encodeURI('/?key=a’b'))
+          break
+
+        default:
+          reply.redirect('/?key=ab')
+          break
+      }
+    }
+  })
+
+  await fastify.listen(0)
+
+  {
+    const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/redirect?useCase=1`)
+    t.equal(response.statusCode, 500)
+    t.same(JSON.parse(body), {
+      statusCode: 500,
+      code: 'ERR_INVALID_CHAR',
+      error: 'Internal Server Error',
+      message: 'Invalid character in header content ["location"]'
+    })
+  }
+  {
+    const { response } = await doGet(`http://localhost:${fastify.server.address().port}/redirect?useCase=2`)
+    t.equal(response.statusCode, 302)
+    t.equal(response.headers.location, '/?key=a%E2%80%99b')
+  }
+
+  {
+    const { response } = await doGet(`http://localhost:${fastify.server.address().port}/redirect?useCase=3`)
+    t.equal(response.statusCode, 302)
+    t.equal(response.headers.location, '/?key=ab')
+  }
+
+  await fastify.close()
+})
+
+test('invalid response headers should not crash the server', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/bad-headers',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["smile-encoded"]', 'only the first invalid header is logged')
+      }
+
+      reply.header('foo', '$')
+      reply.header('smile-encoded', '\uD83D\uDE00')
+      reply.header('smile', '😄')
+      reply.header('bar', 'ƒ∂å')
+
+      reply.send({})
+    }
+  })
+
+  await fastify.listen(0)
+
+  const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
+  t.equal(response.statusCode, 500)
+  t.same(JSON.parse(body), {
+    statusCode: 500,
+    code: 'ERR_INVALID_CHAR',
+    error: 'Internal Server Error',
+    message: 'Invalid character in header content ["smile-encoded"]'
+  })
+
+  await fastify.close()
+})
+
+test('invalid response headers when sending back an error', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/bad-headers',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["smile"]', 'only the first invalid header is logged')
+      }
+
+      reply.header('smile', '😄')
+      reply.send(new Error('user land error'))
+    }
+  })
+
+  await fastify.listen(0)
+
+  const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
+  t.equal(response.statusCode, 500)
+  t.same(JSON.parse(body), {
+    statusCode: 500,
+    code: 'ERR_INVALID_CHAR',
+    error: 'Internal Server Error',
+    message: 'Invalid character in header content ["smile"]'
+  })
+
+  await fastify.close()
+})
+
+test('invalid response headers and custom error handler', async t => {
+  const fastify = require('../..')()
+  fastify.route({
+    method: 'GET',
+    url: '/bad-headers',
+    handler: (req, reply) => {
+      reply.log.warn = function mockWarn (obj, message) {
+        t.equal(message, 'Invalid character in header content ["smile"]', 'only the first invalid header is logged')
+      }
+
+      reply.header('smile', '😄')
+      reply.send(new Error('user land error'))
+    }
+  })
+
+  fastify.setErrorHandler(function (error, request, reply) {
+    t.equal(error.message, 'user land error', 'custom error handler receives the error')
+    reply.status(500).send({ ops: true })
+  })
+
+  await fastify.listen(0)
+
+  const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
+  t.equal(response.statusCode, 500)
+  t.same(JSON.parse(body), {
+    statusCode: 500,
+    code: 'ERR_INVALID_CHAR',
+    error: 'Internal Server Error',
+    message: 'Invalid character in header content ["smile"]'
+  })
+
+  await fastify.close()
 })

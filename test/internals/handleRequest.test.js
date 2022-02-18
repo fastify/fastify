@@ -1,7 +1,6 @@
 'use strict'
 
 const { test } = require('tap')
-const semver = require('semver')
 const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
@@ -40,13 +39,8 @@ test('handleRequest function - invoke with error', t => {
 })
 
 test('handler function - invalid schema', t => {
-  t.plan(2)
+  t.plan(1)
   const res = {}
-  res.end = () => {
-    t.equal(res.statusCode, 400)
-    t.pass()
-  }
-  res.writeHead = () => {}
   res.log = { error: () => {}, info: () => {} }
   const context = {
     config: {
@@ -61,6 +55,7 @@ test('handler function - invalid schema', t => {
         }
       }
     },
+    errorHandler: { func: () => { t.pass('errorHandler called') } },
     handler: () => {},
     Reply,
     Request,
@@ -108,39 +103,7 @@ test('handler function - preValidationCallback with finished response', t => {
   t.plan(0)
   const res = {}
   // Be sure to check only `writableEnded` where is available
-  if (semver.gte(process.versions.node, '12.9.0')) {
-    res.writableEnded = true
-  } else {
-    res.writable = false
-    res.finished = true
-  }
-  res.end = () => {
-    t.fail()
-  }
-  res.writeHead = () => {}
-  const context = {
-    handler: (req, reply) => {
-      t.fail()
-      reply.send(undefined)
-    },
-    Reply,
-    Request,
-    preValidation: null,
-    preHandler: [],
-    onSend: [],
-    onError: []
-  }
-  buildSchema(context, schemaValidator)
-  internals.handler({}, new Reply(res, { context }))
-})
-
-test('handler function - preValidationCallback with finished response (< v12.9.0)', t => {
-  t.plan(0)
-  const res = {}
-  // Be sure to check only `writableEnded` where is available
-  res.writable = false
-  res.finished = true
-
+  res.writableEnded = true
   res.end = () => {
     t.fail()
   }

@@ -2,6 +2,8 @@ import { FastifyLoggerInstance } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
+import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
+import { FastifySchema } from './schema'
 import { FastifyContext } from './context'
 
 export interface RequestGenericInterface {
@@ -19,16 +21,19 @@ export interface FastifyRequest<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   id: any;
-  params: RouteGeneric['Params'];
+  params: RequestType['params'];
   raw: RawRequest;
-  query: RouteGeneric['Querystring'];
-  headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
+  query: RequestType['query'];
+  headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: FastifyLoggerInstance;
   server: FastifyInstance;
-  body: RouteGeneric['Body'];
+  body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
@@ -37,7 +42,7 @@ export interface FastifyRequest<
   /**
    * @deprecated Use `raw` property
    */
-  readonly req: RawRequest;
+  readonly req: RawRequest & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
   readonly ip: string;
   readonly ips?: string[];
   readonly hostname: string;

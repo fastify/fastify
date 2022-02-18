@@ -4,8 +4,9 @@ const { test } = require('tap')
 
 const Request = require('../../lib/request')
 
+process.removeAllListeners('warning')
+
 test('Regular request', t => {
-  t.plan(15)
   const headers = {
     host: 'hostname'
   }
@@ -15,22 +16,27 @@ test('Regular request', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  req.connection = req.socket
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
   t.equal(request.id, 'id')
   t.equal(request.params, 'params')
-  t.same(request.raw, req)
+  t.equal(request.raw, req)
   t.equal(request.query, 'query')
   t.equal(request.headers, headers)
   t.equal(request.log, 'log')
   t.equal(request.ip, 'ip')
   t.equal(request.ips, undefined)
   t.equal(request.hostname, 'hostname')
-  t.equal(request.body, null)
+  t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
-  t.same(request.socket, req.socket)
+
+  // This will be removed, it's deprecated
+  t.equal(request.connection, req.connection)
+  t.end()
 })
 
 test('Regular request - hostname from authority', t => {
@@ -92,11 +98,11 @@ test('Request with trust proxy', t => {
   t.equal(request.ip, '2.2.2.2')
   t.same(request.ips, ['ip', '1.1.1.1', '2.2.2.2'])
   t.equal(request.hostname, 'example.com')
-  t.equal(request.body, null)
+  t.equal(request.body, undefined)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
+  t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
-  t.same(request.socket, req.socket)
 })
 
 test('Request with trust proxy, encrypted', t => {
@@ -236,7 +242,7 @@ test('Request with undefined socket', t => {
   t.equal(request.ip, undefined)
   t.equal(request.ips, undefined)
   t.equal(request.hostname, 'hostname')
-  t.equal(request.body, null)
+  t.same(request.body, null)
   t.equal(request.method, 'GET')
   t.equal(request.url, '/')
   t.equal(request.protocol, undefined)

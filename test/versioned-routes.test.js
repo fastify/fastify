@@ -1,13 +1,20 @@
 'use strict'
 
-const t = require('tap')
-const test = t.test
+const { test, before } = require('tap')
+const helper = require('./helper')
 const Fastify = require('..')
 const sget = require('simple-get').concat
 const http = require('http')
 const split = require('split2')
 const append = require('vary').append
 const proxyquire = require('proxyquire')
+
+process.removeAllListeners('warning')
+
+let localhost
+before(async function () {
+  [localhost] = await helper.getLoopbackHost()
+})
 
 test('Should register a versioned route', t => {
   t.plan(11)
@@ -442,12 +449,12 @@ test('test log stream', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen(0, localhost, err => {
     t.error(err)
     fastify.server.unref()
 
     http.get({
-      hostname: 'localhost',
+      hostname: fastify.server.address().hostname,
       port: fastify.server.address().port,
       path: '/',
       method: 'GET',
@@ -549,7 +556,7 @@ test('Should register a versioned route with custom versioning strategy', t => {
 })
 
 test('Should get error using an invalid a versioned route, using default validation (deprecated versioning option)', t => {
-  t.plan(1)
+  t.plan(3)
 
   const fastify = Fastify({
     versioning: {
@@ -577,15 +584,19 @@ test('Should get error using an invalid a versioned route, using default validat
     }
   })
 
-  fastify.route({
-    method: 'GET',
-    url: '/',
-    // not a string version
-    constraints: { version: 2 },
-    handler: (req, reply) => {
-      reply.send({ hello: 'cant match route v2' })
-    }
-  })
+  try {
+    fastify.route({
+      method: 'GET',
+      url: '/',
+      // not a string version
+      constraints: { version: 2 },
+      handler: (req, reply) => {
+        reply.send({ hello: 'cant match route v2' })
+      }
+    })
+  } catch (err) {
+    t.equal(err.message, 'Version constraint should be a string.')
+  }
 
   fastify.inject({
     method: 'GET',
@@ -594,7 +605,8 @@ test('Should get error using an invalid a versioned route, using default validat
       Accept: 'application/vnd.example.api+json;version=2'
     }
   }, (err, res) => {
-    t.equal(err.message, 'Version constraint should be a string.')
+    t.error(err)
+    t.equal(res.statusCode, 404)
   })
 })
 
@@ -663,7 +675,7 @@ test('Should trigger a warning when a versioned route is registered via version 
   }
 
   const route = proxyquire('../lib/route', { './warnings': warning })
-  const fastify = proxyquire('..', { './lib/route.js': route })()
+  const fastify = proxyquire('..', { './lib/route.js': route })({ exposeHeadRoutes: false })
 
   fastify.route({
     method: 'GET',

@@ -65,7 +65,7 @@ fastify.addHook('onRequest', async (request, reply) => {
 ```
 
 **Notice:** in the [onRequest](#onrequest) hook, `request.body` will always be
-`null`, because the body parsing happens before the
+`undefined`, because the body parsing happens before the
 [preValidation](#prevalidation) hook.
 
 ### preParsing
@@ -95,17 +95,13 @@ fastify.addHook('preParsing', async (request, reply, payload) => {
 ```
 
 **Notice:** in the [preParsing](#preparsing) hook, `request.body` will always be
-`null`, because the body parsing happens before the
+`undefined`, because the body parsing happens before the
 [preValidation](#prevalidation) hook.
 
 **Notice:** you should also add a `receivedEncodedLength` property to the
 returned stream. This property is used to correctly match the request payload
 with the `Content-Length` header value. Ideally, this property should be updated
 on each received chunk.
-
-**Notice**: The old syntaxes `function(request, reply, done)` and `async
-function(request, reply)` for the parser are still supported but they are
-deprecated.
 
 ### preValidation
 
@@ -322,7 +318,7 @@ fastify.addHook('onRequest', (request, reply, done) => {
 fastify.addHook('preHandler', async (request, reply) => {
   await something()
   reply.send({ hello: 'world' })
-  return reply // optional in this case, but it is a good practice
+  return reply // mandatory, so the request is not executed further
 })
 ```
 
@@ -419,6 +415,7 @@ fastify.addHook('onClose', async (instance) => {
 Triggered when a new route is registered. Listeners are passed a `routeOptions`
 object as the sole parameter. The interface is synchronous, and, as such, the
 listeners are not passed a callback. This hook is encapsulated.
+
 ```js
 fastify.addHook('onRoute', (routeOptions) => {
   //Some code

@@ -31,6 +31,7 @@ expectType<string>(server.printPlugins())
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
+    expectType<FastifyError>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -47,10 +48,14 @@ server.setErrorHandler(fastifyErrorHandler)
 async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(asyncFastifyErrorHandler)
 
-function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+function nodeJSErrorHandler (error: NodeJS.ErrnoException) {
+  if (error) { throw error }
+}
 server.setErrorHandler(nodeJSErrorHandler)
 
-function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {
+  if (error) { throw error }
+}
 server.setErrorHandler(asyncNodeJSErrorHandler)
 
 class CustomError extends Error {
@@ -82,20 +87,20 @@ expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, r
   reply.send({ test: 'foo' })
 }))
 // typed sync error handler return error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
-}))
+})
 // typed async error handler send error
 expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
   reply.send({ test: 'foo' })
 }))
 // typed async error handler return error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
-}))
+})
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
@@ -110,7 +115,9 @@ server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFo
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
 
-function invalidErrorHandler (error: number) {}
+function invalidErrorHandler (error: number) {
+  if (error) throw error
+}
 expectError(server.setErrorHandler(invalidErrorHandler))
 
 server.setSchemaController({
@@ -148,16 +155,30 @@ expectError(server.setReplySerializer(invalidReplySerializer))
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
-function invalidSchemaErrorFormatter () {}
+function invalidSchemaErrorFormatter (err: Error) {
+  if (err) { throw err }
+}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
 // test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
-expectAssignable<void>(server.listen(3000, (err, address) => {}))
-expectAssignable<void>(server.listen('3000', (err, address) => {}))
+expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen(3000, '', (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', '', (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen(3000, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', (err, address) => {
+  expectType<Error | null>(err)
+}))
 
 // test listen method callback types
 expectAssignable<void>(server.listen('3000', (err, address) => {

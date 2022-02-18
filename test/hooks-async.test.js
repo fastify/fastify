@@ -13,7 +13,7 @@ process.removeAllListeners('warning')
 test('async hooks', t => {
   t.plan(21)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.addHook('onRequest', async function (request, reply) {
     await sleep(1)
     request.test = 'the request is coming'
@@ -132,7 +132,7 @@ test('onRequest hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('onRequest', async (req, reply) => {
@@ -194,37 +194,6 @@ test('preParsing hooks should be able to modify the payload', t => {
   })
 })
 
-test('preParsing hooks can completely ignore the payload - deprecated syntax', t => {
-  t.plan(5)
-  const fastify = Fastify()
-
-  process.on('warning', onWarning)
-  function onWarning (warning) {
-    t.equal(warning.name, 'FastifyDeprecation')
-    t.equal(warning.code, 'FSTDEP004')
-  }
-
-  fastify.addHook('preParsing', async (req, reply) => {
-
-  })
-
-  fastify.post('/', function (request, reply) {
-    reply.send(request.body)
-  })
-
-  fastify.inject({
-    method: 'POST',
-    url: '/',
-    payload: { hello: 'world' }
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 200)
-    t.same(JSON.parse(res.payload), { hello: 'world' })
-
-    process.removeListener('warning', onWarning)
-  })
-})
-
 test('preParsing hooks should handle errors', t => {
   t.plan(3)
   const fastify = Fastify()
@@ -255,7 +224,7 @@ test('preHandler hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('preHandler', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preHandler', async (req, reply) => {
@@ -289,7 +258,7 @@ test('preValidation hooks should be able to block a request', t => {
   const fastify = Fastify()
 
   fastify.addHook('preValidation', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preValidation', async (req, reply) => {
@@ -414,7 +383,7 @@ test('preValidation hooks should handle throwing null', t => {
 
   fastify.setErrorHandler(async (error, request, reply) => {
     t.ok(error instanceof Error)
-    reply.send(error)
+    await reply.send(error)
   })
 
   fastify.addHook('preValidation', async () => {
@@ -465,7 +434,7 @@ test('onRequest hooks should be able to block a request (last hook)', t => {
   const fastify = Fastify()
 
   fastify.addHook('onRequest', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('preHandler', async (req, reply) => {
@@ -499,7 +468,7 @@ test('preHandler hooks should be able to block a request (last hook)', t => {
   const fastify = Fastify()
 
   fastify.addHook('preHandler', async (req, reply) => {
-    reply.send('hello')
+    await reply.send('hello')
   })
 
   fastify.addHook('onSend', async (req, reply, payload) => {
@@ -533,8 +502,9 @@ test('onRequest respond with a stream', t => {
       const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
       // stream.pipe(res)
       // res.once('finish', resolve)
-      reply.send(stream)
-      reply.raw.once('finish', () => resolve())
+      reply.send(stream).then(() => {
+        reply.raw.once('finish', () => resolve())
+      })
     })
   })
 
@@ -580,14 +550,11 @@ test('preHandler respond with a stream', t => {
   const order = [1, 2]
 
   fastify.addHook('preHandler', async (req, reply) => {
-    return new Promise((resolve, reject) => {
-      const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
-      reply.send(stream)
-      reply.raw.once('finish', () => {
-        t.equal(order.shift(), 2)
-        resolve()
-      })
+    const stream = fs.createReadStream(process.cwd() + '/test/stream.test.js', 'utf8')
+    reply.raw.once('finish', () => {
+      t.equal(order.shift(), 2)
     })
+    return reply.send(stream)
   })
 
   fastify.addHook('preHandler', async (req, reply) => {

@@ -3,6 +3,7 @@
 const { test } = require('tap')
 const Fastify = require('..')
 const fp = require('fastify-plugin')
+const deepClone = require('rfdc')({ circles: true, proto: false })
 const Ajv = require('ajv')
 const { kSchemaController } = require('../lib/symbols.js')
 
@@ -287,7 +288,7 @@ test('First level $ref', t => {
 
 test('Customize validator compiler in instance and route', t => {
   t.plan(28)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
     t.equal(method, 'POST') // run 4 times
@@ -827,7 +828,7 @@ test('Validation context in validation result', t => {
     t.equal(err.validationContext, 'body')
     reply.send()
   })
-  fastify.get('/', {
+  fastify.post('/', {
     handler: echoParams,
     schema: {
       body: {
@@ -840,7 +841,7 @@ test('Validation context in validation result', t => {
     }
   })
   fastify.inject({
-    method: 'GET',
+    method: 'POST',
     url: '/',
     payload: {} // body lacks required field, will fail validation
   }, (err, res) => {
@@ -881,7 +882,7 @@ test('The schema build should not modify the input', t => {
     ]
   })
 
-  fastify.get('/', {
+  fastify.post('/', {
     schema: {
       description: 'get',
       body: { $ref: 'second#' },
@@ -918,7 +919,11 @@ test('Cross schema reference with encapsulation references', t => {
   t.plan(1)
 
   const fastify = Fastify()
-  fastify.addSchema({ $id: 'http://foo/item', type: 'object', properties: { foo: { type: 'string' } } })
+  fastify.addSchema({
+    $id: 'http://foo/item',
+    type: 'object',
+    properties: { foo: { type: 'string' } }
+  })
 
   const refItem = { $ref: 'http://foo/item#' }
 
@@ -949,15 +954,15 @@ test('Cross schema reference with encapsulation references', t => {
       }
     }
 
-    instance.get('/get', { schema: { response: { 200: multipleRef } } }, () => { })
-    instance.get('/double-get', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
+    instance.get('/get', { schema: { response: { 200: deepClone(multipleRef) } } }, () => { })
+    instance.get('/double-get', { schema: { querystring: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/post', { schema: { body: multipleRef, response: { 200: multipleRef } } }, () => { })
     instance.post('/double', { schema: { response: { 200: { $ref: 'encapsulation' } } } }, () => { })
     done()
   }, { prefix: '/foo' })
 
   fastify.post('/post', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
-  fastify.get('/get', { schema: { body: refItem, response: { 200: refItem } } }, () => { })
+  fastify.get('/get', { schema: { params: refItem, response: { 200: refItem } } }, () => { })
 
   fastify.ready(err => {
     t.error(err)
@@ -1009,7 +1014,7 @@ test('onReady hook has the compilers ready', t => {
   fastify.get(`/${Math.random()}`, {
     handler: (req, reply) => reply.send(),
     schema: {
-      body: { type: 'object' },
+      headers: { type: 'object' },
       response: { 200: { type: 'object' } }
     }
   })
@@ -1099,7 +1104,7 @@ test('Check how many AJV instances are built #2 - verify validatorPool', t => {
 })
 
 function addRandomRoute (server) {
-  server.get(`/${Math.random()}`,
+  server.post(`/${Math.random()}`,
     { schema: { body: { type: 'object' } } },
     (req, reply) => reply.send()
   )
@@ -1370,7 +1375,7 @@ test('setSchemaController: Inherits correctly parent schemas with a customized v
   })
   const json = res.json()
 
-  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(json.message, 'querystring/msg must be array')
   t.equal(json.statusCode, 400)
   t.equal(res.statusCode, 400, 'Should not coearce the string into array')
 })
@@ -1481,7 +1486,7 @@ test('setSchemaController: Inherits buildSerializer from parent if not present w
   const json = res.json()
 
   t.equal(json.statusCode, 400)
-  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(json.message, 'querystring/msg must be array')
   t.equal(rootSerializerCalled, 1, 'Should be called from the child')
   t.equal(rootValidatorCalled, 0, 'Should not be called from the child')
   t.equal(childValidatorCalled, 1, 'Should be called from the child')
@@ -1598,7 +1603,7 @@ test('setSchemaController: Inherits buildValidator from parent if not present wi
   const json = res.json()
 
   t.equal(json.statusCode, 400)
-  t.equal(json.message, 'querystring.msg should be array')
+  t.equal(json.message, 'querystring/msg must be array')
   t.equal(rootSerializerCalled, 0, 'Should be called from the child')
   t.equal(rootValidatorCalled, 1, 'Should not be called from the child')
   t.equal(childSerializerCalled, 1, 'Should be called from the child')
@@ -1683,14 +1688,14 @@ test('Should throw if not default validator passed', async t => {
       }
     })
 
-    t.equal(res.json().message, 'querystring.msg should be array')
+    t.equal(res.json().message, 'querystring/msg must be array')
     t.equal(res.statusCode, 400, 'Should not coearce the string into array')
   } catch (err) {
     t.error(err)
   }
 })
 
-test('Should throw if not default validator passed', async t => {
+test('Should coerce the array if the default validator is used', async t => {
   t.plan(2)
   const someSchema = {
     $id: 'some',
@@ -1728,7 +1733,7 @@ test('Should throw if not default validator passed', async t => {
         }
       },
       (req, reply) => {
-        reply.send({ noop: 'noop' })
+        reply.send(req.query)
       }
     )
 
@@ -1740,12 +1745,12 @@ test('Should throw if not default validator passed', async t => {
       method: 'POST',
       url: '/',
       query: {
-        msg: ['string']
+        msg: 'string'
       }
     })
 
-    t.equal(res.json().message, 'querystring.msg should be array')
-    t.equal(res.statusCode, 400, 'Should not coearce the string into array')
+    t.equal(res.statusCode, 200)
+    t.same(res.json(), { msg: ['string'] }, 'Should coearce the string into array')
   } catch (err) {
     t.error(err)
   }

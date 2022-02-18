@@ -24,7 +24,7 @@ export interface FastifyRouteSchemaDef<T> {
 
 export interface FastifySchemaValidationError {
   message?: string;
-  dataPath: string;
+  instancePath: string;
 }
 
 export interface FastifyValidationResult {

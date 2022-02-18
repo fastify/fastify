@@ -913,8 +913,7 @@ test('plugin required decorators', async t => {
       })
     },
     {
-      name: 'custom-plugin-one',
-      fastify: '3.x'
+      name: 'custom-plugin-one'
     }
   )
 
@@ -924,7 +923,6 @@ test('plugin required decorators', async t => {
     },
     {
       name: 'custom-plugin-two',
-      fastify: '3.x',
       dependencies: ['custom-plugin-one'],
       decorators: {
         request: ['someThing']

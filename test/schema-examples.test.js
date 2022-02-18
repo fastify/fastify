@@ -98,7 +98,13 @@ test('Example - get schema encapsulated', async t => {
 
 test('Example - validation', t => {
   t.plan(1)
-  const fastify = Fastify()
+  const fastify = Fastify({
+    ajv: {
+      customOptions: {
+        allowUnionTypes: true
+      }
+    }
+  })
   const handler = () => { }
 
   const bodyJsonSchema = {
@@ -224,7 +230,7 @@ test('Example Joi', t => {
   const fastify = Fastify()
   const handler = () => { }
 
-  const Joi = require('@hapi/joi')
+  const Joi = require('joi')
   fastify.post('/the/url', {
     schema: {
       body: Joi.object().keys({
@@ -431,7 +437,7 @@ test('Example - schemas examples', t => {
     }
   }
 
-  fastify.get('/', {
+  fastify.post('/', {
     handler,
     schema: {
       body: refToId,
@@ -450,7 +456,7 @@ test('should return custom error messages with ajv-errors', t => {
 
   const fastify = Fastify({
     ajv: {
-      customOptions: { allErrors: true, jsonPointers: true },
+      customOptions: { allErrors: true },
       plugins: [
         require('ajv-errors')
       ]
@@ -545,7 +551,7 @@ test('should return localized error messages with ajv-i18n', t => {
   }, (err, res) => {
     t.error(err)
     t.same(JSON.parse(res.payload), [{
-      dataPath: '',
+      instancePath: '',
       keyword: 'required',
       message: 'должно иметь обязательное поле work',
       params: { missingProperty: 'work' },

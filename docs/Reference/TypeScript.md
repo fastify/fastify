@@ -399,7 +399,7 @@ const todo = {
     done: { type: 'boolean' },
   },
   required: ['name'],
-} as const;
+} as const; // don't forget to use const !
 ```
 
 With the provided type `FromSchema` you can build a type from your schema and
@@ -487,6 +487,7 @@ Fastify Plugin in a TypeScript Project.
    import fp from 'fastify-plugin'
 
    // using declaration merging, add your plugin props to the appropriate fastify interfaces
+   // if prop type is defined here, the value will be typechecked when you call decorate{,Request,Reply}
    declare module 'fastify' {
      interface FastifyRequest {
        myPluginProp: string
@@ -877,26 +878,23 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Some
-of it's properties can be configured via `logger` field when constructing
-Fastify's instance. If properties you need aren't exposed, it's also possible to
-pass a preconfigured external instance of Pino (or any other compatible logger)
-to Fastify via the same field. This allows creating custom serializers as well,
-see the [Logging](./Logging.md) documentation for more info.
-
-To use an external instance of Pino, add `@types/pino` to devDependencies and
-pass the instance to `logger` field:
+Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Since
+`pino@7`, all of it's properties can be configured via `logger` field when
+constructing Fastify's instance. If properties you need aren't exposed, please
+open an Issue to [`Pino`](https://github.com/pinojs/pino/issues) or pass a
+preconfigured external instance of Pino (or any other compatible logger) as
+temporary fix to Fastify via the same field. This allows creating custom
+serializers as well, see the [Logging](Logging.md) documentation for more info.
 
 ```typescript
 import fastify from 'fastify'
-import pino from 'pino'
 
 const server = fastify({
-  logger: pino({
+  logger: {
     level: 'info',
     redact: ['x-userinfo'],
     messageKey: 'message'
-  })
+  }
 })
 
 server.get('/', async (request, reply) => {

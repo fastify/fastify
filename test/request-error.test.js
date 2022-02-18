@@ -43,7 +43,7 @@ test('default 400 on request error with custom error handler', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
-    t.type(request, fastify[kRequest])
+    t.type(request, fastify[kRequest].parent)
     reply
       .code(err.statusCode)
       .type('application/json; charset=utf-8')
@@ -132,10 +132,7 @@ test('default clientError handler ignores sockets in destroyed state', t => {
 
   const fastify = Fastify({
     bodyLimit: 1,
-    keepAliveTimeout: 100,
-    logger: {
-      level: 'trace'
-    }
+    keepAliveTimeout: 100
   })
   fastify.server.on('clientError', () => {
     // this handler is called after default handler, so we can make sure end was not called

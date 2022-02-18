@@ -6,15 +6,9 @@ const Fastify = require('../..')
 const h2url = require('h2url')
 const msg = { hello: 'world' }
 
-let fastify
-try {
-  fastify = Fastify({
-    http2: true
-  })
-  t.pass('http2 successfully loaded')
-} catch (e) {
-  t.fail('http2 loading failed', e)
-}
+const fastify = Fastify({
+  http2: true
+})
 
 fastify.get('/', function (req, reply) {
   reply.code(200).send(msg)

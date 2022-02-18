@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '3.27.2'
+const VERSION = '4.0.0-dev'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -10,6 +10,7 @@ let lightMyRequest
 const {
   kAvvioBoot,
   kChildren,
+  kServerBindings,
   kBodyLimit,
   kRoutePrefix,
   kLogLevel,
@@ -31,7 +32,7 @@ const {
   kFourOhFourContext
 } = require('./lib/symbols.js')
 
-const { createServer } = require('./lib/server')
+const createServer = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -52,8 +53,11 @@ const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_BAD_URL,
-  FST_ERR_MISSING_MIDDLEWARE
+  AVVIO_ERRORS_MAP,
+  appendStackTrace
 } = require('./lib/errors')
+
+const { buildErrorHandler } = require('./lib/error-handler.js')
 
 const onBadUrlContext = {
   config: {
@@ -74,21 +78,6 @@ function defaultBuildPrettyMeta (route) {
   })
 
   return Object.assign({}, cleanKeys)
-}
-
-function defaultErrorHandler (error, request, reply) {
-  if (reply.statusCode < 500) {
-    reply.log.info(
-      { res: reply, err: error },
-      error && error.message
-    )
-  } else {
-    reply.log.error(
-      { req: request, res: reply, err: error },
-      error && error.message
-    )
-  }
-  reply.send(error)
 }
 
 function fastify (options) {
@@ -115,7 +104,6 @@ function fastify (options) {
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
   const disableRequestLogging = options.disableRequestLogging || false
-  const exposeHeadRoutes = options.exposeHeadRoutes != null ? options.exposeHeadRoutes : false
 
   const ajvOptions = Object.assign({
     customOptions: {},
@@ -148,10 +136,12 @@ function fastify (options) {
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
-  options.exposeHeadRoutes = exposeHeadRoutes
 
   const initialConfig = getSecuredInitialConfig(options)
   const keepAliveConnections = options.forceCloseConnections === true ? new Set() : noopSet()
+
+  // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
+  options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
   let constraints = options.constraints
   if (options.versioning) {
@@ -210,6 +200,7 @@ function fastify (options) {
     [kKeepAliveConnections]: keepAliveConnections,
     [kOptions]: options,
     [kChildren]: [],
+    [kServerBindings]: [],
     [kBodyLimit]: bodyLimit,
     [kRoutePrefix]: '',
     [kLogLevel]: '',
@@ -217,7 +208,7 @@ function fastify (options) {
     [kHooks]: new Hooks(),
     [kSchemaController]: schemaController,
     [kSchemaErrorFormatter]: null,
-    [kErrorHandler]: defaultErrorHandler,
+    [kErrorHandler]: buildErrorHandler(),
     [kReplySerializerDefault]: null,
     [kContentTypeParser]: new ContentTypeParser(
       bodyLimit,
@@ -267,6 +258,8 @@ function fastify (options) {
     },
     // expose logger instance
     log: logger,
+    // type provider
+    withTypeProvider,
     // hooks
     addHook,
     // schemas
@@ -295,6 +288,12 @@ function fastify (options) {
     // http server
     listen,
     server,
+    addresses: function () {
+      /* istanbul ignore next */
+      const binded = this[kServerBindings].map(b => b.address())
+      binded.push(this.server.address())
+      return binded.filter(adr => adr)
+    },
     // extend fastify objects
     decorate: decorator.add,
     hasDecorator: decorator.exist,
@@ -312,9 +311,6 @@ function fastify (options) {
     // Set fastify initial configuration options read-only object
     initialConfig
   }
-
-  fastify[kReply].prototype.server = fastify
-  fastify[kRequest].prototype.server = fastify
 
   Object.defineProperties(fastify, {
     pluginName: {
@@ -339,15 +335,10 @@ function fastify (options) {
     },
     errorHandler: {
       get () {
-        return this[kErrorHandler]
+        return this[kErrorHandler].func
       }
     }
   })
-
-  // We are adding `use` to the fastify prototype so the user
-  // can still access it (and get the expected error), but `decorate`
-  // will not detect it, and allow the user to override it.
-  Object.setPrototypeOf(fastify, { use })
 
   if (options.schemaErrorFormatter) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)
@@ -500,6 +491,13 @@ function fastify (options) {
     }
 
     function manageErr (err) {
+      // If the error comes out of Avvio's Error codes
+      // We create a make and preserve the previous error
+      // as cause
+      err = err != null && AVVIO_ERRORS_MAP[err.code] != null
+        ? appendStackTrace(err, new AVVIO_ERRORS_MAP[err.code](err.message))
+        : err
+
       if (cb) {
         if (err) {
           cb(err)
@@ -515,15 +513,16 @@ function fastify (options) {
     }
   }
 
-  function use () {
-    throw new FST_ERR_MISSING_MIDDLEWARE()
+  // Used exclusively in TypeScript contexts to enable auto type inference from JSON schema.
+  function withTypeProvider () {
+    return this
   }
 
   // wrapper that we expose to the user for hooks handling
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
-    if (name === 'onSend' || name === 'preSerialization' || name === 'onError') {
+    if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
@@ -531,7 +530,7 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
-    } else if (name !== 'preParsing') {
+    } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
         throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
       }
@@ -540,6 +539,9 @@ function fastify (options) {
     if (name === 'onClose') {
       this.onClose(fn)
     } else if (name === 'onReady') {
+      this[kHooks].add(name, fn)
+    } else if (name === 'onRoute') {
+      this[kHooks].validate(name, fn)
       this[kHooks].add(name, fn)
     } else {
       this.after((err, done) => {
@@ -669,7 +671,7 @@ function fastify (options) {
   function setErrorHandler (func) {
     throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
 
-    this[kErrorHandler] = func.bind(this)
+    this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
   }
 

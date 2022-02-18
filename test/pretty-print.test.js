@@ -7,7 +7,7 @@ const Fastify = require('..')
 test('pretty print - static routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/hello', () => {})
   fastify.get('/hello/world', () => {})
@@ -29,7 +29,7 @@ test('pretty print - static routes', t => {
 test('pretty print - parametric routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/:hello', () => {})
   fastify.get('/hello/:world', () => {})
@@ -51,7 +51,7 @@ test('pretty print - parametric routes', t => {
 test('pretty print - mixed parametric routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/:hello', () => {})
   fastify.post('/test/:hello', () => {})
@@ -75,7 +75,7 @@ test('pretty print - mixed parametric routes', t => {
 test('pretty print - wildcard routes', t => {
   t.plan(2)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.get('/test', () => {})
   fastify.get('/test/*', () => {})
   fastify.get('/hello/*', () => {})
@@ -137,12 +137,14 @@ test('pretty print - commonPrefix', t => {
     const radixExpected = `└── /
     ├── hel
     │   ├── lo (GET)
+    │   │   lo (HEAD)
     │   └── icopter (GET)
+    │       icopter (HEAD)
     └── hello (PUT)
 `
     const flatExpected = `└── / (-)
-    ├── helicopter (GET)
-    └── hello (GET, PUT)
+    ├── helicopter (GET, HEAD)
+    └── hello (GET, PUT, HEAD)
 `
     t.equal(typeof radixTree, 'string')
     t.equal(typeof flatTree, 'string')
@@ -174,9 +176,19 @@ test('pretty print - includeMeta, includeHooks', t => {
     │   │   • (onTimeout) ["onTimeout()"]
     │   │   • (onRequest) ["anonymous()"]
     │   │   • (errorHandler) "defaultErrorHandler()"
+    │   │   lo (HEAD)
+    │   │   • (onTimeout) ["onTimeout()"]
+    │   │   • (onRequest) ["anonymous()"]
+    │   │   • (onSend) ["headRouteOnSendHandler()"]
+    │   │   • (errorHandler) "defaultErrorHandler()"
     │   └── icopter (GET)
     │       • (onTimeout) ["onTimeout()"]
     │       • (onRequest) ["anonymous()"]
+    │       • (errorHandler) "defaultErrorHandler()"
+    │       icopter (HEAD)
+    │       • (onTimeout) ["onTimeout()"]
+    │       • (onRequest) ["anonymous()"]
+    │       • (onSend) ["headRouteOnSendHandler()"]
     │       • (errorHandler) "defaultErrorHandler()"
     └── hello (PUT)
         • (onTimeout) ["onTimeout()"]
@@ -184,21 +196,21 @@ test('pretty print - includeMeta, includeHooks', t => {
         • (errorHandler) "defaultErrorHandler()"
 `
     const flatExpected = `└── / (-)
-    ├── helicopter (GET)
+    ├── helicopter (GET, HEAD)
     │   • (onTimeout) ["onTimeout()"]
     │   • (onRequest) ["anonymous()"]
     │   • (errorHandler) "defaultErrorHandler()"
-    └── hello (GET, PUT)
+    └── hello (GET, PUT, HEAD)
         • (onTimeout) ["onTimeout()"]
         • (onRequest) ["anonymous()"]
         • (errorHandler) "defaultErrorHandler()"
 `
 
     const hooksOnlyExpected = `└── / (-)
-    ├── helicopter (GET)
+    ├── helicopter (GET, HEAD)
     │   • (onTimeout) ["onTimeout()"]
     │   • (onRequest) ["anonymous()"]
-    └── hello (GET, PUT)
+    └── hello (GET, PUT, HEAD)
         • (onTimeout) ["onTimeout()"]
         • (onRequest) ["anonymous()"]
 `

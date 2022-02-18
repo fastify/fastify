@@ -2,6 +2,7 @@
 
 const { test, before } = require('tap')
 const Fastify = require('../..')
+const helper = require('../helper')
 const http = require('http')
 const pino = require('pino')
 const split = require('split2')
@@ -9,9 +10,16 @@ const deepClone = require('rfdc')({ circles: true, proto: false })
 const { deepFreezeObject } = require('../../lib/initialConfigValidation').utils
 
 const { buildCertificate } = require('../build-certificate')
-before(buildCertificate)
 
 process.removeAllListeners('warning')
+
+let localhost
+let localhostForURL
+
+before(async function () {
+  await buildCertificate();
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
+})
 
 test('Fastify.initialConfig is an object', t => {
   t.plan(1)
@@ -23,7 +31,8 @@ test('without options passed to Fastify, initialConfig should expose default val
 
   const fastifyDefaultOptions = {
     connectionTimeout: 0,
-    keepAliveTimeout: 5000,
+    keepAliveTimeout: 72000,
+    forceCloseConnections: false,
     maxRequestsPerSocket: 0,
     requestTimeout: 0,
     bodyLimit: 1024 * 1024,
@@ -37,7 +46,8 @@ test('without options passed to Fastify, initialConfig should expose default val
     pluginTimeout: 10000,
     requestIdHeader: 'request-id',
     requestIdLogLabel: 'reqId',
-    http2SessionTimeout: 5000
+    http2SessionTimeout: 72000,
+    exposeHeadRoutes: true
   }
 
   t.same(Fastify().initialConfig, fastifyDefaultOptions)
@@ -81,7 +91,7 @@ test('Fastify.initialConfig should expose all options', t => {
     ignoreTrailingSlash: true,
     maxParamLength: 200,
     connectionTimeout: 0,
-    keepAliveTimeout: 5000,
+    keepAliveTimeout: 72000,
     bodyLimit: 1049600,
     onProtoPoisoning: 'remove',
     serverFactory,
@@ -103,11 +113,11 @@ test('Fastify.initialConfig should expose all options', t => {
 
   const fastify = Fastify(options)
   t.equal(fastify.initialConfig.http2, true)
-  t.equal(fastify.initialConfig.https, true)
+  t.equal(fastify.initialConfig.https, true, 'for security reason the key cert is hidden')
   t.equal(fastify.initialConfig.ignoreTrailingSlash, true)
   t.equal(fastify.initialConfig.maxParamLength, 200)
   t.equal(fastify.initialConfig.connectionTimeout, 0)
-  t.equal(fastify.initialConfig.keepAliveTimeout, 5000)
+  t.equal(fastify.initialConfig.keepAliveTimeout, 72000)
   t.equal(fastify.initialConfig.bodyLimit, 1049600)
   t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.equal(fastify.initialConfig.caseSensitive, true)
@@ -157,8 +167,17 @@ test('We must avoid shallow freezing and ensure that the whole object is freezed
     t.type(error, TypeError)
     t.equal(error.message, "Cannot assign to read only property 'allowHTTP1' of object '#<Object>'")
     t.ok(error.stack)
-    t.pass()
+    t.same(fastify.initialConfig.https, {
+      allowHTTP1: true
+    }, 'key cert removed')
   }
+})
+
+test('https value check', t => {
+  t.plan(1)
+
+  const fastify = Fastify({})
+  t.notOk(fastify.initialConfig.https)
 })
 
 test('Return an error if options do not match the validation schema', t => {
@@ -171,7 +190,7 @@ test('Return an error if options do not match the validation schema', t => {
   } catch (error) {
     t.type(error, Error)
     t.equal(error.name, 'FastifyError')
-    t.equal(error.message, 'Invalid initialization options: \'["should be boolean"]\'')
+    t.equal(error.message, 'Invalid initialization options: \'["must be boolean"]\'')
     t.equal(error.code, 'FST_ERR_INIT_OPTS_INVALID')
     t.ok(error.stack)
     t.pass()
@@ -241,7 +260,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     t.type(fastify, 'object')
     t.same(fastify.initialConfig, {
       connectionTimeout: 0,
-      keepAliveTimeout: 5000,
+      keepAliveTimeout: 72000,
+      forceCloseConnections: false,
       maxRequestsPerSocket: 0,
       requestTimeout: 0,
       bodyLimit: 1024 * 1024,
@@ -255,7 +275,8 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       pluginTimeout: 10000,
       requestIdHeader: 'request-id',
       requestIdLogLabel: 'reqId',
-      http2SessionTimeout: 5000
+      http2SessionTimeout: 72000,
+      exposeHeadRoutes: true
     })
   } catch (error) {
     t.fail()
@@ -287,11 +308,11 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen(0, localhost, err => {
     t.error(err)
     fastify.server.unref()
 
-    http.get('http://localhost:' + fastify.server.address().port)
+    http.get(`http://${localhostForURL}:${fastify.server.address().port}`)
   })
 })
 

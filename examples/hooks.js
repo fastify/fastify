@@ -37,7 +37,7 @@ fastify
     console.log('onRequest')
     done()
   })
-  .addHook('preParsing', function (request, reply, done) {
+  .addHook('preParsing', function (request, reply, payload, done) {
     console.log('preParsing')
     done()
   })

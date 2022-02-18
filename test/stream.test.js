@@ -14,7 +14,8 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
-const { kDisableRequestLogging, kReplySent } = require('../lib/symbols.js')
+const semver = require('semver')
+const { kDisableRequestLogging } = require('../lib/symbols.js')
 
 function getUrl (app) {
   const { address, port } = app.server.address()
@@ -26,16 +27,11 @@ function getUrl (app) {
 }
 
 test('should respond with a stream', t => {
-  t.plan(8)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
     const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(stream)
-  })
-
-  fastify.get('/error', function (req, reply) {
-    const stream = fs.createReadStream('not-existing-file', 'utf8')
     reply.code(200).send(stream)
   })
 
@@ -45,7 +41,7 @@ test('should respond with a stream', t => {
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], undefined)
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
@@ -53,6 +49,21 @@ test('should respond with a stream', t => {
         t.equal(expected.toString(), data.toString())
       })
     })
+  })
+})
+
+test('should respond with a stream (error)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/error', function (req, reply) {
+    const stream = fs.createReadStream('not-existing-file', 'utf8')
+    reply.code(200).send(stream)
+  })
+
+  fastify.listen(0, err => {
+    t.error(err)
+    fastify.server.unref()
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -582,7 +593,7 @@ test('return a 404 if the stream emits a 404 error', t => {
   })
 })
 
-test('should support send module 200 and 404', { only: true }, t => {
+test('should support send module 200 and 404', { skip: semver.gte(process.versions.node, '17.0.0') }, t => {
   t.plan(8)
   const fastify = Fastify()
 
@@ -604,7 +615,7 @@ test('should support send module 200 and 404', { only: true }, t => {
 
     sget(url, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], 'application/javascript; charset=UTF-8')
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
@@ -654,7 +665,7 @@ test('should mark reply as sent before pumping the payload stream into response 
   const handleRequest = proxyquire('../lib/handleRequest', {
     './wrapThenable': (thenable, reply) => {
       thenable.then(function (payload) {
-        t.equal(reply[kReplySent], true)
+        t.equal(reply.sent, true)
       })
     }
   })
@@ -671,7 +682,7 @@ test('should mark reply as sent before pumping the payload stream into response 
 
   fastify.get('/', async function (req, reply) {
     const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(stream)
+    return reply.code(200).send(stream)
   })
 
   fastify.inject({

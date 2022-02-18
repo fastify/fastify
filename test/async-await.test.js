@@ -79,7 +79,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
   const payload = { hello: 'world' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
   })
 
   t.teardown(server.close.bind(server))
@@ -104,7 +104,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   const payload = { hello: 'world2' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
     return { hello: 'world' }
   })
 
@@ -139,7 +139,7 @@ test('server logs an error if reply.send is called and a value is returned via a
   })
 
   fastify.get('/', async (req, reply) => {
-    reply.send({ hello: 'world' })
+    await reply.send({ hello: 'world' })
     return { hello: 'world2' }
   })
 
@@ -160,7 +160,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
   const payload = { hello: 'world' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
   })
 
   t.teardown(server.close.bind(server))
@@ -185,7 +185,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
   const payload = { hello: 'world2' }
 
   server.get('/', async function awaitMyFunc (req, reply) {
-    reply.send(payload)
+    await reply.send(payload)
     return { hello: 'world' }
   })
 
@@ -279,11 +279,13 @@ test('support reply decorators with await', t => {
     setImmediate(() => {
       this.send({ hello: 'world' })
     })
+
+    return this
   })
 
   fastify.get('/', async (req, reply) => {
     await sleep(1)
-    reply.wow()
+    await reply.wow()
   })
 
   fastify.inject({
@@ -293,24 +295,6 @@ test('support reply decorators with await', t => {
     t.error(err)
     const payload = JSON.parse(res.payload)
     t.same(payload, { hello: 'world' })
-  })
-})
-
-test('support 204', t => {
-  t.plan(2)
-
-  const fastify = Fastify()
-
-  fastify.get('/', async (req, reply) => {
-    reply.code(204)
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (err, res) => {
-    t.error(err)
-    t.equal(res.statusCode, 204)
   })
 })
 
@@ -399,8 +383,8 @@ test('does not call reply.send() twice if 204 response equal already sent', t =>
   })
 })
 
-test('error is logged because promise was fulfilled with undefined', t => {
-  t.plan(3)
+test('promise was fulfilled with undefined', t => {
+  t.plan(4)
 
   let fastify = null
   const stream = split(JSON.parse)
@@ -418,47 +402,6 @@ test('error is logged because promise was fulfilled with undefined', t => {
   t.teardown(fastify.close.bind(fastify))
 
   fastify.get('/', async (req, reply) => {
-    reply.code(200)
-  })
-
-  stream.once('data', line => {
-    t.equal(line.msg, 'Promise may not be fulfilled with \'undefined\' when statusCode is not 204')
-  })
-
-  fastify.listen(0, (err) => {
-    t.error(err)
-    fastify.server.unref()
-
-    sget({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port + '/',
-      timeout: 500
-    }, (err, res, body) => {
-      t.equal(err.message, 'Request timed out')
-    })
-  })
-})
-
-test('error is not logged because promise was fulfilled with undefined but statusCode 204 was set', t => {
-  t.plan(3)
-
-  let fastify = null
-  const stream = split(JSON.parse)
-  try {
-    fastify = Fastify({
-      logger: {
-        stream,
-        level: 'error'
-      }
-    })
-  } catch (e) {
-    t.fail()
-  }
-
-  t.teardown(fastify.close.bind(fastify))
-
-  fastify.get('/', async (req, reply) => {
-    reply.code(204)
   })
 
   stream.once('data', line => {
@@ -474,7 +417,8 @@ test('error is not logged because promise was fulfilled with undefined but statu
       url: 'http://localhost:' + fastify.server.address().port + '/'
     }, (err, res, body) => {
       t.error(err)
-      t.equal(res.statusCode, 204)
+      t.equal(res.body, undefined)
+      t.equal(res.statusCode, 200)
     })
   })
 })
@@ -601,7 +545,7 @@ test('customErrorHandler support without throwing', t => {
 
   fastify.setErrorHandler(async (err, req, reply) => {
     t.equal(err.message, 'ouch')
-    reply.code(401).send('kaboom')
+    await reply.code(401).send('kaboom')
     reply.send = t.fail.bind(t, 'should not be called')
   })
 

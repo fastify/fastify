@@ -47,6 +47,7 @@ describes the properties available in that options object.
     - [after](#after)
     - [ready](#ready)
     - [listen](#listen)
+    - [addresses](#addresses)
     - [getDefaultRoute](#getdefaultroute)
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
@@ -126,7 +127,7 @@ property](https://nodejs.org/api/http.html#http_server_keepalivetimeout) to
 understand the effect of this option. This option only applies when HTTP/1 is in
 use. Also, when `serverFactory` option is specified, this option is ignored.
 
-+ Default: `5000` (5 seconds)
++ Default: `72000` (72 seconds)
 
 ### `forceCloseConnections`
 <a id="forcecloseconnections"></a>
@@ -553,7 +554,7 @@ Automatically creates a sibling `HEAD` route for each `GET` route defined. If
 you want a custom `HEAD` handler without disabling this option, make sure to
 define it before the `GET` route.
 
-+ Default: `false`
++ Default: `true`
 
 ### `constraints`
 <a id="constraints"></a>
@@ -599,28 +600,14 @@ the incoming request as usual.
 ### `ajv`
 <a id="factory-ajv"></a>
 
-Configure the Ajv v6 instance used by Fastify without providing a custom one.
-
-+ Default:
-
-```js
-{
-  customOptions: {
-    removeAdditional: true,
-    useDefaults: true,
-    coerceTypes: true,
-    allErrors: false,
-    nullable: true
-  },
-  plugins: []
-}
-```
+Configure the Ajv v8 instance used by Fastify without providing a custom one.
+The default configuration is explained in the [#schema-validator](Validation-and-Serialization.md#schema-validator) section.
 
 ```js
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      nullable: false // Refer to [ajv options](https://github.com/ajv-validator/ajv/tree/v6#options)
+      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/#options)
     },
     plugins: [
       require('ajv-merge-patch'),
@@ -653,7 +640,7 @@ const fastify = require('fastify')({
 Set a default
 [timeout](https://nodejs.org/api/http2.html#http2_http2session_settimeout_msecs_callback)
 to every incoming HTTP/2 session. The session will be closed on the timeout.
-Default: `5000` ms.
+Default: `72000` ms.
 
 Note that this is needed to offer the graceful "close" experience when using
 HTTP/2. The low default has been chosen to mitigate denial of service attacks.
@@ -834,14 +821,25 @@ fastify.ready().then(() => {
 <a id="listen"></a>
 
 Starts the server on the given port after all the plugins are loaded, internally
-waits for the `.ready()` event. The callback is the same as the Node core. By
-default, the server will listen on the address resolved by `localhost` when no
-specific address is provided (`127.0.0.1` or `::1` depending on the operating
-system). If listening on any available interface is desired, then specifying
-`0.0.0.0` for the address will listen on all IPv4 addresses. Using `::` for the
-address will listen on all IPv6 addresses and, depending on OS, may also listen
-on all IPv4 addresses. Be careful when deciding to listen on all interfaces; it
-comes with inherent [security
+waits for the `.ready()` event. The callback is the same as the Node core.
+
+By default, the server will listen on the address(es) resolved by `localhost` when no
+specific address is provided. If listening on any available interface is desired,
+then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
+
+ Host          | IPv4 | IPv6
+ --------------|------|-------
+ `::`            | ✅<sup>*</sup> | ✅
+ `::` + [`ipv6Only`](https://nodejs.org/api/net.html#serverlistenoptions-callback) | 🚫 | ✅
+ `0.0.0.0`       | ✅ | 🚫
+ `localhost`     | ✅ | ✅
+ `127.0.0.1`     | ✅ | 🚫
+ `::1`           | 🚫 | ✅
+
+<sup>*</sup> Using `::` for the address will listen on all IPv6 addresses and, depending on OS,
+may also listen on [all IPv4 addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callback).
+
+Be careful when deciding to listen on all interfaces; it comes with inherent [security
 risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
 ```js
@@ -949,6 +947,24 @@ fastify.listen({
   ipv6Only: false
 }, (err) => {})
 ```
+
+#### addresses
+<a id="addresses"></a>
+
+This method returns an array of addresses that the server is listening on.
+If you call it before `listen()` is called or after the `close()` function,
+it will return an empty array.
+
+```js
+await fastify.listen(8080)
+const addresses = fastify.addresses()
+// [
+//   { port: 8080, family: 'IPv6', address: '::1' },
+//   { port: 8080, family: 'IPv4', address: '127.0.0.1' }
+// ]
+```
+
+Note that the array contains the `fastify.server.address()` too.
 
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
@@ -1188,8 +1204,10 @@ unknown to Fastify. See [issue
 #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
 this property helps to resolve.
 
-Another use case is to tweak all the schemas processing. Doing so it is possible
-to use Ajv v8, instead of the default v6! We will see an example of this later.
+Another use case is to tweak all the schemas processing.
+Doing so it is possible to use Ajv v8 JTD or Standalone feature. To use such
+as JTD or the Standalone mode, refers to the
+[`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
 
 ```js
 const fastify = Fastify({
@@ -1262,39 +1280,6 @@ const fastify = Fastify({
     }
   }
 });
-```
-
-##### Ajv 8 as default schema validator
-
-Ajv 8 is the evolution of Ajv 6, and it has a lot of improvements and new
-features. To use the new Ajv 8 features such as JTD or the Standalone mode,
-refer to the [`@fastify/ajv-compiler`
-documentation](https://github.com/fastify/ajv-compiler#usage).
-
-To use Ajv 8 as default schema validator, you can use the following code:
-
-```js
-const AjvCompiler = require('@fastify/ajv-compiler') // It must be the v2.x.x version
-
-// Note that the `format` schema's keyword is no longer supported on Ajv 8 by default.
-// So you need to add it manually.
-const ajvFormats = require('ajv-formats')
-
-const app = fastify({
-  ajv: {
-    customOptions: {
-      validateFormats: true
-    },
-    plugins: [ajvFormats]
-  },
-  schemaController: {
-    compilersFactory: {
-      buildValidator: AjvCompiler()
-    }
-  }
-})
-
-// Done! You can now use Ajv 8 options and keywords in your schemas!
 ```
 
 #### setNotFoundHandler

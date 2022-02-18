@@ -243,7 +243,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: 'params.test should be integer',
+        message: 'params/test must be integer',
         statusCode: 400
       })
     })
@@ -280,7 +280,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: "headers['x-test'] should be number",
+        message: 'headers/x-test must be number',
         statusCode: 400
       })
     })
@@ -309,7 +309,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: 'querystring.hello should be integer',
+        message: 'querystring/hello must be integer',
         statusCode: 400
       })
     })

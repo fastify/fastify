@@ -47,7 +47,7 @@ const server = require('./app')({
   }
 })
 
-server.listen(3000, (err, address) => {
+server.listen({ port: 3000 }, (err, address) => {
   if (err) {
     server.log.error(err)
     process.exit(1)
@@ -255,7 +255,7 @@ tap.test('GET `/` route', t => {
 
   t.teardown(() => fastify.close())
 
-  fastify.listen(0, (err) => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
 
     request({

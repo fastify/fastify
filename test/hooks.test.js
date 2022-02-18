@@ -138,7 +138,7 @@ test('hooks', t => {
     reply.code(200).send(payload)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -261,7 +261,7 @@ test('onRequest hook should support encapsulation / 3', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -322,7 +322,7 @@ test('preHandler hook should support encapsulation / 5', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -733,7 +733,7 @@ test('onRoute hook should able to change the route url', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -918,7 +918,7 @@ test('onResponse hook should support encapsulation / 3', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -995,7 +995,7 @@ test('onSend hook should support encapsulation / 2', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -1259,7 +1259,7 @@ test('onSend hook throws', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1381,7 +1381,7 @@ test('cannot add hook after binding', t => {
     reply.send({ hello: 'world' })
   })
 
-  instance.listen(0, err => {
+  instance.listen({ port: 0 }, err => {
     t.error(err)
     t.teardown(instance.server.close.bind(instance.server))
 
@@ -2389,7 +2389,7 @@ test('preValidation hook should support encapsulation / 3', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2536,7 +2536,7 @@ test('preParsing hook should run before parsing and be able to modify the payloa
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2579,7 +2579,7 @@ test('preParsing hooks should run in the order in which they are defined', t => 
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2629,7 +2629,7 @@ test('preParsing hooks should support encapsulation', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2750,7 +2750,7 @@ test('preParsing hook should support encapsulation / 3', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2812,7 +2812,7 @@ test('preSerialization hook should run before serialization and be able to modif
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2863,7 +2863,7 @@ test('preSerialization hook should be able to throw errors which are validated a
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2897,7 +2897,7 @@ test('preSerialization hook which returned error should still run onError hooks'
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2931,7 +2931,7 @@ test('preSerialization hooks should run in the order in which they are defined',
     reply.send(payload)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -2975,7 +2975,7 @@ test('preSerialization hooks should support encapsulation', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -3162,7 +3162,7 @@ test('onTimeout should be triggered', t => {
     return reply
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
@@ -3201,7 +3201,7 @@ test('onTimeout should be triggered and socket _meta is set', t => {
     return reply
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 

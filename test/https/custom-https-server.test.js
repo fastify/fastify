@@ -40,7 +40,7 @@ test('Should support a custom https server', async t => {
     reply.send({ hello: 'world' })
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   await new Promise((resolve, reject) => {
     sget({

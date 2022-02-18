@@ -365,7 +365,7 @@ const fastify = require('fastify')()
 fastify.register(require('./routes/v1/users'), { prefix: '/v1' })
 fastify.register(require('./routes/v2/users'), { prefix: '/v2' })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 ```js
@@ -427,7 +427,7 @@ const fastify = require('fastify')({ logger: true })
 fastify.register(require('./routes/user'), { logLevel: 'warn' })
 fastify.register(require('./routes/events'), { logLevel: 'debug' })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 Or you can directly pass it to a route:
@@ -461,7 +461,7 @@ fastify.register(require('./routes/events'), {
   }
 })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 You can inherit serializers by context:
@@ -499,7 +499,7 @@ async function context1 (fastify, opts) {
   })
 }
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 ### Config
@@ -519,7 +519,7 @@ function handler (req, reply) {
 fastify.get('/en', { config: { output: 'hello world!' } }, handler)
 fastify.get('/it', { config: { output: 'ciao mondo!' } }, handler)
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 ### Constraints

@@ -31,7 +31,7 @@ fastify.register(function (instance, options, done) {
   done()
 }, { prefix: '/italian' })
 
-fastify.listen(8000, function (err) {
+fastify.listen({ port: 8000 }, function (err) {
   if (err) {
     throw err
   }

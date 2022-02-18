@@ -30,7 +30,7 @@ test('default 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     test('unsupported method', t => {
@@ -104,7 +104,7 @@ test('customized 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     test('unsupported method', t => {
@@ -194,7 +194,7 @@ test('custom header in notFound handler', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     test('not found with custom header', t => {
@@ -250,7 +250,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
       done()
     }, { prefix: '/prefix' })
 
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       t.error(err)
       fastify.close()
     })
@@ -274,7 +274,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     fastify.setNotFoundHandler(() => {})
 
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       t.error(err)
       fastify.close()
     })
@@ -304,7 +304,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     fastify.setNotFoundHandler(() => {})
 
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       t.error(err)
       fastify.close()
     })
@@ -337,7 +337,7 @@ test('setting a custom 404 handler multiple times is an error', t => {
 
     fastify.setNotFoundHandler(() => {})
 
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       t.error(err)
       fastify.close()
     })
@@ -381,7 +381,7 @@ test('encapsulated 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     test('root unsupported method', t => {
@@ -695,7 +695,7 @@ test('run hooks on default 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -856,7 +856,7 @@ test('run hook with encapsulated 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -926,7 +926,7 @@ test('run hook with encapsulated 404 and framework-unsupported method', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -966,7 +966,7 @@ test('hooks check 404', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1066,7 +1066,7 @@ test('Unknown method', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     const handler = () => {}
@@ -1102,7 +1102,7 @@ test('recognizes errors from the http-errors module', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.inject({
@@ -1220,7 +1220,7 @@ test('cannot set notFoundHandler after binding', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     try {
@@ -1254,7 +1254,7 @@ test('404 inside onSend', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({

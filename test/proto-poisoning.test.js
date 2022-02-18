@@ -15,7 +15,7 @@ test('proto-poisoning error', t => {
     t.fail('handler should not be called')
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -41,7 +41,7 @@ test('proto-poisoning remove', t => {
     reply.send({ ok: true })
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -67,7 +67,7 @@ test('proto-poisoning ignore', t => {
     reply.send({ ok: true })
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -92,7 +92,7 @@ test('constructor-poisoning error (default in v3)', t => {
     reply.send('ok')
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -117,7 +117,7 @@ test('constructor-poisoning error', t => {
     t.fail('handler should not be called')
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -143,7 +143,7 @@ test('constructor-poisoning remove', t => {
     reply.send({ ok: true })
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({

@@ -24,7 +24,7 @@ test('Should honor ignoreTrailingSlash option', t => {
     res.send('test')
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen({ port: 0 }, (err) => {
     fastify.server.unref()
     if (err) t.threw(err)
 

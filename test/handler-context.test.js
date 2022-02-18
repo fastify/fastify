@@ -32,7 +32,7 @@ test('handlers receive correct `this` context', (t) => {
     reply.send()
   })
 
-  instance.listen(0, (err) => {
+  instance.listen({ port: 0 }, (err) => {
     instance.server.unref()
     if (err) t.threw(err)
     t.ok(instance.foo)
@@ -55,7 +55,7 @@ test('handlers have access to the internal context', (t) => {
     reply.send()
   })
 
-  instance.listen(0, (err) => {
+  instance.listen({ port: 0 }, (err) => {
     instance.server.unref()
     if (err) t.threw(err)
     http.get(getUrl(instance), () => {}).on('error', t.threw)

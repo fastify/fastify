@@ -24,7 +24,7 @@ test('contentTypeParser should add a custom async parser', t => {
     return res
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     t.teardown(() => fastify.close())

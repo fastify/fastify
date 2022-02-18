@@ -353,7 +353,7 @@ fastify.get('/', (req, reply) => {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 Internally Fastify uses the API of Node core HTTP server, so if you are using a
@@ -820,12 +820,17 @@ fastify.ready().then(() => {
 #### listen
 <a id="listen"></a>
 
-Starts the server on the given port after all the plugins are loaded, internally
-waits for the `.ready()` event. The callback is the same as the Node core.
+Starts the server and internally waits for the the `.ready()` event. The
+signature is `.listen([options][, callback])`. Both the `options` object and the
+`callback` parameters follow the [Node.js
+core][https://nodejs.org/api/net.html#serverlistenoptions-callback] parameter
+definitions.
 
 By default, the server will listen on the address(es) resolved by `localhost` when no
-specific address is provided. If listening on any available interface is desired,
+specific host is provided. If listening on any available interface is desired,
 then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
+The following table details the possible values for `host` when targeting
+`localhost`, and what the result of those values for `host` will be.
 
  Host          | IPv4 | IPv6
  --------------|------|-------
@@ -836,14 +841,19 @@ then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
  `127.0.0.1`     | ✅ | 🚫
  `::1`           | 🚫 | ✅
 
-<sup>*</sup> Using `::` for the address will listen on all IPv6 addresses and, depending on OS,
-may also listen on [all IPv4 addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callback).
+<sup>*</sup> Using `::` for the address will listen on all IPv6 addresses and,
+depending on OS, may also listen on [all IPv4
+addresses](https://nodejs.org/api/net.html#serverlistenport-host-backlog-callback).
 
-Be careful when deciding to listen on all interfaces; it comes with inherent [security
+Be careful when deciding to listen on all interfaces; it comes with inherent
+[security
 risks](https://web.archive.org/web/20170831174611/https://snyk.io/blog/mongodb-hack-and-secure-defaults/).
 
+The default is to listen on `port: 0` (which picks the first available open
+port) and `host: 'localhost'`:
+
 ```js
-fastify.listen(3000, (err, address) => {
+fastify.listen((err, address) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
@@ -854,31 +864,7 @@ fastify.listen(3000, (err, address) => {
 Specifying an address is also supported:
 
 ```js
-fastify.listen(3000, '127.0.0.1', (err, address) => {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-})
-```
-
-Specifying a backlog queue size is also supported:
-
-```js
-fastify.listen(3000, '127.0.0.1', 511, (err, address) => {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-})
-```
-
-Specifying options is also supported; the object is same as
-[options](https://nodejs.org/api/net.html#net_server_listen_options_callback) in
-the Node.js server listen:
-
-```js
-fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {
+fastify.listen({ port: 3000, host: '127.0.0.1' }, (err, address) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
@@ -889,29 +875,7 @@ fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 }, (err) => {
 If no callback is provided a Promise is returned:
 
 ```js
-fastify.listen(3000)
-  .then((address) => console.log(`server listening on ${address}`))
-  .catch(err => {
-    console.log('Error starting server:', err)
-    process.exit(1)
-  })
-```
-
-Specifying an address without a callback is also supported:
-
-```js
-fastify.listen(3000, '127.0.0.1')
-  .then((address) => console.log(`server listening on ${address}`))
-  .catch(err => {
-    console.log('Error starting server:', err)
-    process.exit(1)
-  })
-```
-
-Specifying options without a callback is also supported:
-
-```js
-fastify.listen({ port: 3000, host: '127.0.0.1', backlog: 511 })
+fastify.listen({ port: 3000 })
   .then((address) => console.log(`server listening on ${address}`))
   .catch(err => {
     console.log('Error starting server:', err)
@@ -924,7 +888,7 @@ to listen on `0.0.0.0` because they do not default to exposing mapped ports to
 `localhost`:
 
 ```js
-fastify.listen(3000, '0.0.0.0', (err, address) => {
+fastify.listen({ port: 3000, host: '0.0.0.0' }, (err, address) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)
@@ -933,7 +897,7 @@ fastify.listen(3000, '0.0.0.0', (err, address) => {
 ```
 
 If the `port` is omitted (or is set to zero), a random available port is
-automatically chosen (later available via `fastify.server.address().port`).
+automatically chosen (available via `fastify.server.address().port`).
 
 The default options of listen are:
 
@@ -956,7 +920,7 @@ If you call it before `listen()` is called or after the `close()` function,
 it will return an empty array.
 
 ```js
-await fastify.listen(8080)
+await fastify.listen({ port: 8080 })
 const addresses = fastify.addresses()
 // [
 //   { port: 8080, family: 'IPv6', address: '::1' },
@@ -1470,7 +1434,7 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 #### hasContentTypeParser
 <a id="hasContentTypeParser"></a>
 
-`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current 
+`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current
 context for the specified content type.
 
 ```js
@@ -1614,7 +1578,7 @@ fastify.register(async (instance, opts) => {
 })
 
 // Start listening.
-fastify.listen(3000, (err) => {
+fastify.listen({ port: 3000 }, (err) => {
   if (err) {
     fastify.log.error(err)
     process.exit(1)

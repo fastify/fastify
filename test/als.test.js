@@ -31,7 +31,7 @@ app.post('/', function (request, reply) {
   reply.send({ id })
 })
 
-app.listen(3000, function (err, address) {
+app.listen({ port: 3000 }, function (err, address) {
   t.error(err)
 
   sget({

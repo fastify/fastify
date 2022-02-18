@@ -31,6 +31,6 @@ fastify
     reply.send({ hello: 'world' })
   })
 
-fastify.listen(3000, err => {
+fastify.listen({ port: 3000 }, err => {
   if (err) throw err
 })

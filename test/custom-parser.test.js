@@ -60,7 +60,7 @@ test('contentTypeParser should add a custom parser', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     t.teardown(() => fastify.close())
@@ -122,7 +122,7 @@ test('contentTypeParser should handle multiple custom parsers', t => {
   fastify.addContentTypeParser('application/jsoff', customParser)
   fastify.addContentTypeParser('application/ffosj', customParser)
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -174,7 +174,7 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
 
   fastify.addContentTypeParser(['application/jsoff', 'application/ffosj'], customParser)
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -218,7 +218,7 @@ test('contentTypeParser should handle errors', t => {
     done(new Error('kaboom!'), {})
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -279,7 +279,7 @@ test('contentTypeParser should support encapsulation, second try', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -312,7 +312,7 @@ test('contentTypeParser shouldn\'t support request with undefined "Content-Type"
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -385,7 +385,7 @@ test('catch all content type parser', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -439,7 +439,7 @@ test('catch all content type parser should not interfere with other conte type p
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -492,7 +492,7 @@ test('\'*\' catch undefined Content-Type requests', t => {
     res.type('text/plain').send(req.body)
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     const fileStream = fs.createReadStream(__filename)
@@ -520,7 +520,7 @@ test('cannot add custom parser after binding', t => {
     res.type('text/plain').send(req.body)
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     try {
@@ -547,7 +547,7 @@ test('Can override the default json parser', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -581,7 +581,7 @@ test('Can override the default plain text parser', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -619,7 +619,7 @@ test('Can override the default json parser in a plugin', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -704,7 +704,7 @@ test('Should get the body as string', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -731,7 +731,7 @@ test('Should return defined body with no custom parser defined and content type 
     reply.send(req.body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -758,7 +758,7 @@ test('Should have typeof body object with no custom parser defined, no body defi
     reply.send(req.body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -784,7 +784,7 @@ test('Should have typeof body object with no custom parser defined, null body an
     reply.send(req.body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -811,7 +811,7 @@ test('Should have typeof body object with no custom parser defined, undefined bo
     reply.send(req.body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -850,7 +850,7 @@ test('Should get the body as string', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -889,7 +889,7 @@ test('Should get the body as buffer', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -928,7 +928,7 @@ test('Should get the body as buffer', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -964,7 +964,7 @@ test('Should parse empty bodies as a string', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -1011,7 +1011,7 @@ test('Should parse empty bodies as a buffer', t => {
     done(null, body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1045,7 +1045,7 @@ test('The charset should not interfere with the content type handling', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1095,7 +1095,7 @@ test('Should allow defining the bodyLimit per parser', t => {
     }
   )
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1136,7 +1136,7 @@ test('route bodyLimit should take precedence over a custom parser bodyLimit', t 
     }
   )
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1168,7 +1168,7 @@ test('should be able to use default parser for extra content type', t => {
 
   fastify.addContentTypeParser('text/json', { parseAs: 'string' }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1206,7 +1206,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     t.teardown(() => fastify.close())
@@ -1348,7 +1348,7 @@ test('catch all content type parser should not interfere with content type parse
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1415,7 +1415,7 @@ test('should prefer string content types over RegExp ones', t => {
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1472,7 +1472,7 @@ test('removeContentTypeParser should support arrays of content types to remove',
     reply.send(req.body)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1540,7 +1540,7 @@ test('removeContentTypeParser should support encapsulation', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1590,7 +1590,7 @@ test('removeAllContentTypeParsers should support encapsulation', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1628,7 +1628,7 @@ test('cannot remove all content type parsers after binding', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     t.throws(() => fastify.removeAllContentTypeParsers())
@@ -1642,7 +1642,7 @@ test('cannot remove content type parsers after binding', t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     t.throws(() => fastify.removeContentTypeParser('application/json'))
@@ -1667,7 +1667,7 @@ test('should be able to override the default json parser after removeAllContentT
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1704,7 +1704,7 @@ test('should be able to override the default plain text parser after removeAllCo
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -1741,7 +1741,7 @@ test('should be able to add a custom content type parser after removeAllContentT
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({

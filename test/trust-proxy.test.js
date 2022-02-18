@@ -63,7 +63,7 @@ test('trust proxy, not add properties to node req', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxy')
@@ -84,7 +84,7 @@ test('trust proxy chain', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '192.168.1.1, 1.1.1.1', '/trustproxychain')
@@ -103,7 +103,7 @@ test('trust proxy function', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxyfunc')
@@ -122,7 +122,7 @@ test('trust proxy number', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '2.2.2.2, 1.1.1.1', '/trustproxynumber')
@@ -141,7 +141,7 @@ test('trust proxy IP addresses', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '3.3.3.3, 2.2.2.2, 1.1.1.1', '/trustproxyipaddrs')
@@ -168,7 +168,7 @@ test('trust proxy protocol', (t) => {
 
   t.teardown(app.close.bind(app))
 
-  app.listen(0, (err) => {
+  app.listen({ port: 0 }, (err) => {
     app.server.unref()
     t.error(err)
     sgetForwardedRequest(app, '1.1.1.1', '/trustproxyprotocol', 'lorem')

@@ -132,7 +132,7 @@ test('decorateReply inside register', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -180,7 +180,7 @@ test('decorateReply as plugin (inside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -228,7 +228,7 @@ test('decorateReply as plugin (outside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -274,7 +274,7 @@ test('decorateRequest inside register', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -322,7 +322,7 @@ test('decorateRequest as plugin (inside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -370,7 +370,7 @@ test('decorateRequest as plugin (outside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -764,7 +764,7 @@ test('decorate* should throw if called after ready', async t => {
     })
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   try {
     fastify.decorate('test', true)
     t.fail('should not decorate')
@@ -949,7 +949,7 @@ test('decorateRequest/decorateReply empty string', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -978,7 +978,7 @@ test('decorateRequest/decorateReply is undefined', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -1007,7 +1007,7 @@ test('decorateRequest/decorateReply is not set to a value', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 

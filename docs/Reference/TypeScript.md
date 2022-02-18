@@ -72,7 +72,7 @@ in a blank http Fastify server.
      return 'pong\n'
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(1)
@@ -360,7 +360,7 @@ into TypeScript interfaces!
      }
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(0)
@@ -681,21 +681,21 @@ There are a couple supported import methods with the Fastify type system.
      import fastify from 'fastify'
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Gain access to types with destructuring:
      ```typescript
      import fastify, { FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Destructuring also works for the main API method:
      ```typescript
      import { fastify, FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 2. `import * as Fastify from 'fastify'`
    - Types are resolved and accessible using dot notation
@@ -706,7 +706,7 @@ There are a couple supported import methods with the Fastify type system.
      import * as Fastify from 'fastify'
 
      const f: Fastify.FastifyInstance = Fastify.fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 3. `const fastify = require('fastify')`
    - This syntax is valid and will import fastify as expected; however, types
@@ -716,14 +716,14 @@ There are a couple supported import methods with the Fastify type system.
      const fastify = require('fastify')
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Destructuring is supported and will resolve types properly
      ```typescript
      const { fastify } = require('fastify')
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 
 #### Generics
@@ -825,7 +825,7 @@ a more detailed http server walkthrough.
      return { hello: 'world' }
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(0)

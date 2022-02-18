@@ -155,7 +155,7 @@ test('cannot set errorHandler after binding', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     try {

@@ -263,7 +263,7 @@ test('within an instance', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -423,7 +423,7 @@ test('buffer without content type should send a application/octet-stream and raw
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -448,7 +448,7 @@ test('buffer with content type should not send application/octet-stream', t => {
     reply.send(Buffer.alloc(1024))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -476,7 +476,7 @@ test('stream with content type should not send application/octet-stream', t => {
     reply.header('Content-Type', 'text/plain').send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -502,7 +502,7 @@ test('stream without content type should not send application/octet-stream', t =
     reply.send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -537,7 +537,7 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
     reply.send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -561,7 +561,7 @@ test('plain string without content type should send a text/plain', t => {
     reply.send('hello world!')
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -585,7 +585,7 @@ test('plain string with content type should be sent unmodified', t => {
     reply.type('text/css').send('hello world!')
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -612,7 +612,7 @@ test('plain string with content type and custom serializer should be serialized'
       .send('hello world!')
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -636,7 +636,7 @@ test('plain string with content type application/json should NOT be serialized a
     reply.type('application/json').send('{"key": "hello world!"}')
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -689,7 +689,7 @@ test('plain string with custom json content type should NOT be serialized as jso
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -715,7 +715,7 @@ test('non-string with content type application/json SHOULD be serialized as json
     reply.type('application/json').send({ key: 'hello world!' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -764,7 +764,7 @@ test('non-string with custom json content type SHOULD be serialized as json', t 
     })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -829,7 +829,7 @@ test('undefined payload should be sent as-is', t => {
     reply.code(204).send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -874,7 +874,7 @@ test('for HEAD method, no body should be sent but content-length should be', t =
     reply.code(200).send(null)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -921,7 +921,7 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
     done()
   }, { prefix: '/prefixed' })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.server.unref()
@@ -968,7 +968,7 @@ test('reply can set multiple instances of same header', t => {
       .send({})
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -995,7 +995,7 @@ test('reply.hasHeader returns correct values', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1024,7 +1024,7 @@ test('reply.getHeader returns correct values', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1094,7 +1094,7 @@ test('reply.removeHeader can remove the value', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1121,7 +1121,7 @@ test('reply.header can reset the value', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1150,7 +1150,7 @@ test('reply.hasHeader computes raw and fastify headers', t => {
     reply.send()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
     sget({
@@ -1319,7 +1319,7 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
       .send({})
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -1692,7 +1692,7 @@ test('cannot set the replySerializer when the server is running', t => {
   const fastify = require('../..')()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     try {
       fastify.setReplySerializer(() => {})
@@ -1847,7 +1847,7 @@ test('redirect to an invalid URL should not crash the server', async t => {
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   {
     const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/redirect?useCase=1`)
@@ -1893,7 +1893,7 @@ test('invalid response headers should not crash the server', async t => {
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)
@@ -1922,7 +1922,7 @@ test('invalid response headers when sending back an error', async t => {
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)
@@ -1956,7 +1956,7 @@ test('invalid response headers and custom error handler', async t => {
     reply.status(500).send({ ops: true })
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const { response, body } = await doGet(`http://localhost:${fastify.server.address().port}/bad-headers`)
   t.equal(response.statusCode, 500)

@@ -113,7 +113,7 @@ test('route', t => {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     if (err) t.error(err)
     fastify.server.unref()
 
@@ -1005,7 +1005,7 @@ test('no warning for exposeHeadRoute', async t => {
 
   process.on('warning', listener)
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   process.removeListener('warning', listener)
 
@@ -1439,7 +1439,7 @@ test('route with non-english characters', t => {
     reply.send('here /föö')
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 

@@ -23,7 +23,7 @@ const echoBody = (req, reply) => { reply.send(req.body) }
     t.plan(2)
     const fastify = Fastify()
     t.teardown(fastify.close.bind(fastify))
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       t.error(err)
       try {
         fastify[f](() => { })

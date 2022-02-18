@@ -105,7 +105,7 @@ test('default clientError handler ignores ECONNRESET', t => {
     })
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
     fastify.server.unref()
 

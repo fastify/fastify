@@ -107,7 +107,7 @@ test('Should reply 400 on client error', t => {
   t.plan(2)
 
   const fastify = Fastify()
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     const client = net.connect(fastify.server.address().port)
@@ -156,7 +156,7 @@ test('Should set the response from client error handler', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     const client = net.connect(fastify.server.address().port)
@@ -671,7 +671,7 @@ test('setting content-type on reply object should not hang the server case 2', a
   })
 
   try {
-    await fastify.listen(0)
+    await fastify.listen({ port: 0 })
     const res = await fastify.inject({
       url: '/',
       method: 'GET'

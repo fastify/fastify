@@ -4,7 +4,7 @@
 Fastify uses a schema-based approach, and even if it is not mandatory we
 recommend using [JSON Schema](https://json-schema.org/) to validate your routes
 and serialize your outputs. Internally, Fastify compiles the schema into a
-highly performant function. 
+highly performant function.
 
 Validation will only be attempted if the content type is `application-json`,
 as described in the documentation for the [content type parser](./ContentTypeParser.md).
@@ -239,7 +239,7 @@ the types specified in your schema `type` keywords, both to pass the validation
 and to use the correctly typed data afterwards.*
 
 The Ajv default configuration in Fastify supports coercing array
-parameters in `querystring`.  
+parameters in `querystring`.
 Example:
 
 ```js
@@ -261,7 +261,7 @@ fastify.get('/', opts, (request, reply) => {
   reply.send({ params: request.query }) // echo the querystring
 })
 
-fastify.listen(3000, (err) => {
+fastify.listen({ port: 3000 }, (err) => {
   if (err) throw err
 })
 ```
@@ -319,7 +319,7 @@ For further information see [here](https://ajv.js.org/coercion.html)
 #### Ajv Plugins
 <a id="ajv-plugins"></a>
 
-You can provide a list of plugins you want to use with the default `ajv` instance.  
+You can provide a list of plugins you want to use with the default `ajv` instance.
 Note that the plugin must be **compatible with the Ajv version shipped within Fastify**.
 
 > Refer to [`ajv options`](./Server.md#ajv) to check plugins format

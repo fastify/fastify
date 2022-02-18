@@ -60,7 +60,7 @@ fastify.get('/return-reply', opts, function (req, reply) {
   return reply.send({ hello: 'world' })
 })
 
-fastify.listen(0, err => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
   fastify.server.unref()
 

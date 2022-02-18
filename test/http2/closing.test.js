@@ -32,7 +32,7 @@ t.test('http/2 request while fastify closing', t => {
 
   fastify.get('/', () => Promise.resolve({}))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -79,7 +79,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 
   fastify.get('/', () => Promise.resolve({}))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -118,7 +118,7 @@ t.test('http/2 closes successfully with async await', async t => {
     http2: true
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -137,7 +137,7 @@ t.test('https/2 closes successfully with async await', async t => {
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -160,7 +160,7 @@ t.test('http/2 server side session emits a timeout event', async t => {
     return {}
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)

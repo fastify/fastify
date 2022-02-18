@@ -20,7 +20,7 @@ test('The logger should add a unique id for every request', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     const queue = new Queue()
     for (let i = 0; i < 10; i++) {
@@ -53,7 +53,7 @@ test('The logger should reuse request id header for req.id', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.inject({

@@ -134,7 +134,7 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     if (err) {
       t.error(err)
     }

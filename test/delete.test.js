@@ -157,7 +157,7 @@ test('body - delete', t => {
   }
 })
 
-fastify.listen(0, err => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
   fastify.server.unref()
 

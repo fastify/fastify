@@ -1,4 +1,4 @@
-name: Code Coverage (*nix)
+name: Code Coverage (win)
 
 on:
   workflow_call:

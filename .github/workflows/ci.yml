@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
-  pull_request:
+  pull_request_target:
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -19,18 +19,23 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: 'lts/*'
 
       - name: Install
         run: |
           npm install --ignore-scripts
-      
+
       - name: Lint code
         run: |
           npm run lint
 
+  coverage-nix:
+    uses: ./.github/workflows/coverage-nix.yml
+  coverage-win:
+    uses: ./.github/workflows/coverage-win.yml
+
   test:
-    needs: linter
+    needs: [linter, coverage-nix, coverage-win]
     runs-on: ${{ matrix.os }}
     outputs:
       COVERALLS: ${{ steps.coveralls-trigger.outputs.COVERALLS_TRIGGER }}
@@ -47,6 +52,14 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
+      - uses: actions/cache@v2
+        id: check-cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
 
       - name: Install
         run: |
@@ -76,9 +89,9 @@ jobs:
         if: steps.coveralls-parallel.conclusion == 'success' && steps.coveralls-parallel.outcome != 'success'
         run: |
           echo "::set-output name=COVERALLS_TRIGGER::failure"
-          
 
-  coverage:
+
+  coveralls-coverage:
     needs: test
     runs-on: ubuntu-latest
     if: needs.test.outputs.COVERALLS != 'failure'
@@ -109,7 +122,14 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 14
+          node-version: 'lts/*'
+      - uses: actions/cache@v2
+        id: check-cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
       - name: install fastify
         run: |
           npm install --ignore-scripts

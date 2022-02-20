@@ -4,3 +4,6 @@ flow: false
 check-coverage: true
 coverage: true
 node-arg: --allow-natives-syntax
+
+files:
+  - 'test/**/*.test.js'

@@ -7,7 +7,7 @@ plugins for connecting to various database engines.
 This guide covers engines that have Fastify 
 plugins maintained within the Fastify organization.
 
-> If a plugin for your database of choice doesn't exist 
+> If a plugin for your database of choice does not exist 
 > you can still use the database as Fastify is database agnostic. 
 > By following the examples of the database plugins listed in this guide, 
 > a plugin can be written for the missing database engine. 
@@ -210,7 +210,7 @@ export default fp(plugin, { name: 'fastify-knex-example' })
 ### Writing a plugin for a database engine
 
 In this example, we will create a basic Fastify MySQL plugin 
-from scratch (it's stripped example, please use the official plugin in production).
+from scratch (it is a stripped-down example, please use the official plugin in production).
 
 ```javascript
 const fp = require('fp')

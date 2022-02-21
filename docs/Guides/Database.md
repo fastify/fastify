@@ -191,13 +191,20 @@ const knex = require('knex')
 
 function knexPlugin(fastify, options, done) {
   if(!fastify.knex) {
-    fastify.decorate('knex', knex(options))
+    const knex = knex(options)
+    fastify.decorate('knex', knex)
+
+    fastify.addHook('onClose', (fastify, done) => {
+      if (fastify.knex === knex) {
+        fastify.knex.destroy(done)
+      }
+    })
   }
 
   done()
 }
 
-export default fp(plugin)
+export default fp(plugin, { name: 'fastify-knex-example' })
 ```
 
 ### Writing a plugin for a database engine
@@ -221,5 +228,5 @@ function fastifyMysql(fastify, options, done) {
   done()
 }
 
-export default fp(fastifyMysql, {name: 'fastify-simple-mysql'})
+export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 ```

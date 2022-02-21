@@ -136,7 +136,6 @@
     "ajv-merge-patch": "^5.0.1",
     "branch-comparer": "^1.1.0",
     "cors": "^2.8.5",
-    "coveralls": "^3.1.1",
     "dns-prefetch-control": "^0.3.0",
     "eslint": "^8.0.1",
     "eslint-config-standard": "^17.0.0-1",

@@ -4,7 +4,7 @@
 
 Fastify's ecosystem provides a handful of 
 plugins for connecting to various database engines. 
-This guide covers engines which have Fastify 
+This guide covers engines that have Fastify 
 plugins maintained within the Fastify organization.
 
 > If a plugin for your database of choice doesn't exist 
@@ -229,4 +229,79 @@ function fastifyMysql(fastify, options, done) {
 }
 
 export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
+```
+
+### Migrations
+
+Database schema migrations are an integral part of database management and development. Migrations provide repeatable and testable way to modify database's schema and to prevent data loss.
+
+As stated in the beginning of the guide, Fastify is database agnostic and any NodeJS database migration tool can be used with it. We will give an example of using [Postgrator](https://www.npmjs.com/package/postgrator) which has support for Postgres, MySQL and SQL Server. For MongoDB migrations, please check [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
+
+#### [Postgrator](https://www.npmjs.com/package/postgrator)
+
+Postgrator is NodeJS SQL migration tool that uses a directory of SQL scripts to alter the database schema. Each file an migrations folder need to follow the pattern: ` [version].[action].[optional-description].sql`.
+
+**version:** must be an incrementing number (e.g. `001` or a timestamp).
+
+**action:** should be `do` or `undo`. `do` implements the version, `undo` reverts it. Think about it like `up` and `down` in other migration tools.
+
+**optional-description** describes which changes migration makes. Altough optional, it should be used for all migrations as it makes it easier for everyone to know which changes are made in a migration.
+
+In our example we are going to have a single migration that creates a `users` table and we are going to use `Postgrator` to run the migration.
+
+> Run `npm install pg postgrator` to install dependencies needed for the example.
+
+```sql
+// 001.do.create-users-table.sql
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY NOT NULL,
+  created_at DATE NOT NULL DEFAULT CURRENT_DATE,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL
+);
+```
+```javascript
+const pg = require('pg')
+const Postgrator = require('postgrator')
+const path = require('path')
+
+async function migrate() {
+  const client = new pg.Client({
+    host: 'localhost',
+    port: 5432,
+    database: 'example', 
+    user: 'example',
+    password: 'example',
+  });
+
+  try {
+    const postgrator = new Postgrator({
+      migrationPattern: path.join(__dirname, '/migrations/*'),
+      driver: 'pg',
+      database: 'example',
+      schemaTable: 'migrations',
+      currentSchema: 'public', // Postgres and MS SQL Server only
+      execQuery: (query) => client.query(query),
+    });
+
+    const result = await postgrator.migrate()
+
+    if (result.length === 0) {
+      console.log(
+        'No migrations run for schema "public". Already at the latest one.'
+      )
+    }
+
+    console.log('Migration done.')
+
+    process.exitCode = 0
+  } catch(err) {
+    console.error(error)
+    process.exitCode = 1
+  }
+  
+  await client.end()
+}
+
+migrate()
 ```

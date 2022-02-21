@@ -25,6 +25,8 @@ jobs:
         run: |
           npm install --ignore-scripts
 
+      # We do not check coverage requirements here because the goal is to
+      # generate a report to upload as an artifact.
       - name: Generate coverage report
         run: |
           npm run coverage:ci
@@ -34,3 +36,9 @@ jobs:
         with:
           name: coverage-report-nix
           path: ./coverage/lcov-report/
+
+      # Here, we verify the coverage thresholds so that this workflow can pass
+      # or fail and stop further workflows if this one fails.
+      - name: Verify coverage meets thresholds
+        run: |
+          npm run coverage:ci-check-coverage

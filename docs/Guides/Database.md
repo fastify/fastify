@@ -209,8 +209,8 @@ export default fp(plugin, { name: 'fastify-knex-example' })
 
 ### Writing a plugin for a database engine
 
-In this example, we will create a basic Fastify MySQL plugin 
-from scratch (it is a stripped-down example, please use the official plugin in production).
+In this example, we will create a basic Fastify MySQL plugin from scratch (it is
+a stripped-down example, please use the official plugin in production).
 
 ```javascript
 const fp = require('fp')
@@ -233,23 +233,36 @@ export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 
 ### Migrations
 
-Database schema migrations are an integral part of database management and development. Migrations provide a repeatable and testable way to modify a database's schema and to prevent data loss.
+Database schema migrations are an integral part of database management and
+development. Migrations provide a repeatable and testable way to modify a
+database's schema and to prevent data loss.
 
-As stated at the beginning of the guide, Fastify is database agnostic and any NodeJS database migration tool can be used with it. We will give an example of using [Postgrator](https://www.npmjs.com/package/postgrator) which has support for Postgres, MySQL and SQL Server. For MongoDB migrations, please check [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
+As stated at the beginning of the guide, Fastify is database agnostic and any
+NodeJS database migration tool can be used with it. We will give an example of
+using [Postgrator](https://www.npmjs.com/package/postgrator) which has support
+for Postgres, MySQL and SQL Server. For MongoDB migrations, please check
+[migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
 
 #### [Postgrator](https://www.npmjs.com/package/postgrator)
 
-Postgrator is NodeJS SQL migration tool that uses a directory of SQL scripts to alter the database schema. Each file an migrations folder need to follow the pattern: ` [version].[action].[optional-description].sql`.
+Postgrator is NodeJS SQL migration tool that uses a directory of SQL scripts to
+alter the database schema. Each file an migrations folder need to follow the
+pattern: ` [version].[action].[optional-description].sql`.
 
 **version:** must be an incrementing number (e.g. `001` or a timestamp).
 
-**action:** should be `do` or `undo`. `do` implements the version, `undo` reverts it. Think about it like `up` and `down` in other migration tools.
+**action:** should be `do` or `undo`. `do` implements the version, `undo`
+reverts it. Think about it like `up` and `down` in other migration tools.
 
-**optional-description** describes which changes migration makes. Although optional, it should be used for all migrations as it makes it easier for everyone to know which changes are made in a migration.
+**optional-description** describes which changes migration makes. Although
+optional, it should be used for all migrations as it makes it easier for
+everyone to know which changes are made in a migration.
 
-In our example we are going to have a single migration that creates a `users` table and we are going to use `Postgrator` to run the migration.
+In our example we are going to have a single migration that creates a `users`
+table and we are going to use `Postgrator` to run the migration.
 
-> Run `npm install pg postgrator` to install dependencies needed for the example.
+> Run `npm install pg postgrator` to install dependencies needed for the
+> example.
 
 ```sql
 // 001.do.create-users-table.sql

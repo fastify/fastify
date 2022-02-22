@@ -180,7 +180,7 @@ fastify.listen(3000, err => {
 
 ### Writing plugin for a database library
 We could write a plugin for a database 
-library too (e.g Knex, Prisma, TypeORM, etc.). 
+library too (e.g. Knex, Prisma, or TypeORM). 
 We will use [Knex](https://knexjs.org/) in our example.
 
 ```javascript
@@ -233,9 +233,9 @@ export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 
 ### Migrations
 
-Database schema migrations are an integral part of database management and development. Migrations provide repeatable and testable way to modify database's schema and to prevent data loss.
+Database schema migrations are an integral part of database management and development. Migrations provide a repeatable and testable way to modify a database's schema and to prevent data loss.
 
-As stated in the beginning of the guide, Fastify is database agnostic and any NodeJS database migration tool can be used with it. We will give an example of using [Postgrator](https://www.npmjs.com/package/postgrator) which has support for Postgres, MySQL and SQL Server. For MongoDB migrations, please check [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
+As stated at the beginning of the guide, Fastify is database agnostic and any NodeJS database migration tool can be used with it. We will give an example of using [Postgrator](https://www.npmjs.com/package/postgrator) which has support for Postgres, MySQL and SQL Server. For MongoDB migrations, please check [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
 
 #### [Postgrator](https://www.npmjs.com/package/postgrator)
 
@@ -245,7 +245,7 @@ Postgrator is NodeJS SQL migration tool that uses a directory of SQL scripts to 
 
 **action:** should be `do` or `undo`. `do` implements the version, `undo` reverts it. Think about it like `up` and `down` in other migration tools.
 
-**optional-description** describes which changes migration makes. Altough optional, it should be used for all migrations as it makes it easier for everyone to know which changes are made in a migration.
+**optional-description** describes which changes migration makes. Although optional, it should be used for all migrations as it makes it easier for everyone to know which changes are made in a migration.
 
 In our example we are going to have a single migration that creates a `users` table and we are going to use `Postgrator` to run the migration.
 

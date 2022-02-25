@@ -725,7 +725,7 @@ test('reply.send handles aborted requests', t => {
     }, 6)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 

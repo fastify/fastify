@@ -683,3 +683,51 @@ test('should mark reply as sent before pumping the payload stream into response 
     fastify.close()
   })
 })
+
+test('reply.send handles aborted requests', t => {
+  t.plan(2)
+
+  const spyLogger = {
+    level: 'error',
+    fatal: () => { },
+    error: () => {
+      t.fail('should not log an error')
+    },
+    warn: () => { },
+    info: () => { },
+    debug: () => { },
+    trace: () => { },
+    child: () => { return spyLogger }
+  }
+  const fastify = Fastify({
+    logger: spyLogger
+  })
+
+  fastify.get('/', (req, reply) => {
+    setTimeout(() => {
+      const stream = new Readable({
+        read: function () {
+          this.push(null)
+        }
+      })
+      reply.send(stream)
+    }, 6)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    const port = fastify.server.address().port
+    const http = require('http')
+    const req = http.get(`http://localhost:${port}`)
+      .on('error', (err) => {
+        t.equal(err.code, 'ECONNRESET')
+        fastify.close()
+      })
+
+    setTimeout(() => {
+      req.abort()
+    }, 1)
+  })
+})

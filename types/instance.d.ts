@@ -17,7 +17,6 @@ import {
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
-
 export interface PrintRoutesOptions {
   includeMeta?: boolean | (string | symbol)[]
   commonPrefix?: boolean

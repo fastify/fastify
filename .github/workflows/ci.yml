@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
-  pull_request_target:
+  pull_request:
     paths-ignore:
       - 'docs/**'
       - '*.md'
@@ -14,10 +14,10 @@ jobs:
   linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
 
@@ -27,6 +27,7 @@ jobs:
 
       - name: Lint code
         run: |
+          echo 'this is an update'
           npm run lint
 
   coverage-nix:
@@ -44,10 +45,10 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -87,9 +88,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
       - uses: actions/cache@v2

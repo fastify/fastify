@@ -27,7 +27,6 @@ jobs:
 
       - name: Lint code
         run: |
-          echo 'this is an update'
           npm run lint
 
   coverage-nix:

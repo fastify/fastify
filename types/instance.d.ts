@@ -103,7 +103,6 @@ export interface FastifyInstance<
    */
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
   listen(callback: (err: Error | null, address: string) => void): void;
-  // listen(): Promise<string>;
   listen(opts: {
     /**
      * Default to `0` (picks the first available open port).

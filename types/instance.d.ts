@@ -82,32 +82,11 @@ export interface FastifyInstance<
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
   inject(): LightMyRequestChain;
 
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
-  /**
-   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
-   * @see https://github.com/fastify/fastify/pull/3712
-   */
-  listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-  listen(callback: (err: Error | null, address: string) => void): void;
   listen(opts: {
     /**
      * Default to `0` (picks the first available open port).
      */
-    port: number;
+    port?: number;
     /**
      * Default to `localhost`.
      */
@@ -193,6 +172,28 @@ export interface FastifyInstance<
      */
     signal?: AbortSignal;
   }): Promise<string>;
+  listen(callback: (err: Error | null, address: string) => void): void;
+
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
+  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
+  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
+  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
+  listen(port: number | string, address?: string, backlog?: number): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

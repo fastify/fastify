@@ -102,11 +102,13 @@ export interface FastifyInstance<
    * @see https://github.com/fastify/fastify/pull/3712
    */
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
+  listen(callback: (err: Error | null, address: string) => void): void;
+  // listen(): Promise<string>;
   listen(opts: {
     /**
      * Default to `0` (picks the first available open port).
      */
-    port?: number;
+    port: number;
     /**
      * Default to `localhost`.
      */
@@ -147,7 +149,7 @@ export interface FastifyInstance<
      */
     signal?: AbortSignal;
   }, callback: (err: Error|null, address: string) => void): void;
-  listen(opts: {
+  listen(opts?: {
     /**
      * Default to `0` (picks the first available open port).
      */

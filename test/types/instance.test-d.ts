@@ -203,12 +203,14 @@ expectDeprecated(server.listen(3000, ''))
 expectDeprecated(server.listen('3000', ''))
 
 // test listen opts objects
+expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
 
+expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
@@ -216,12 +218,14 @@ expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42,
 expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
 // test listen opts objects Typescript deprectation exclusion
+expectNotDeprecated(server.listen())
 expectNotDeprecated(server.listen({ port: 3000 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
 expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
 
+expectNotDeprecated(server.listen(() => {}))
 expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))

@@ -103,13 +103,24 @@ export interface FastifyInstance<
    */
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
   listen(opts: {
+    /**
+     * Default to `0` (picks the first available open port).
+     */
     port?: number;
+    /**
+     * Default to `localhost`.
+     */
     host?: string;
     /**
      * Will be ignored if `port` is specified.
      * @see [Identifying paths for IPC connections](https://nodejs.org/api/net.html#identifying-paths-for-ipc-connections).
     */
     path?: string;
+    /**
+     * Specify the maximum length of the queue of pending connections.
+     * The actual length will be determined by the OS through sysctl settings such as `tcp_max_syn_backlog` and `somaxconn` on Linux.
+     * Default to `511`.
+     */
     backlog?: number;
     /**
      * Default to `false`.
@@ -137,13 +148,24 @@ export interface FastifyInstance<
     signal?: AbortSignal;
   }, callback: (err: Error|null, address: string) => void): void;
   listen(opts: {
+    /**
+     * Default to `0` (picks the first available open port).
+     */
     port?: number;
+    /**
+     * Default to `localhost`.
+     */
     host?: string;
     /**
      * Will be ignored if `port` is specified.
      * @see [Identifying paths for IPC connections](https://nodejs.org/api/net.html#identifying-paths-for-ipc-connections).
     */
     path?: string;
+    /**
+     * Specify the maximum length of the queue of pending connections.
+     * The actual length will be determined by the OS through sysctl settings such as `tcp_max_syn_backlog` and `somaxconn` on Linux.
+     * Default to `511`.
+     */
     backlog?: number;
     /**
      * Default to `false`.

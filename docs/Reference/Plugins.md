@@ -124,7 +124,7 @@ fastify.ready(err => console.log(err))
 
 // `listen` is a special ready,
 // so it behaves in the same way
-fastify.listen(3000, (err, address) => {
+fastify.listen({ port: 3000 }, (err, address) => {
   if (err) console.log(err)
 })
 ```
@@ -142,7 +142,7 @@ await fastify.after()
 
 await fastify.ready()
 
-await fastify.listen(3000)
+await fastify.listen({ port: 3000 })
 ```
 
 #### ESM support
@@ -158,7 +158,7 @@ const fastify = Fastify()
 
 fastify.register(import('./plugin.mjs'))
 
-fastify.listen(3000, console.log)
+fastify.listen({ port: 3000 }, console.log)
 
 
 // plugin.mjs

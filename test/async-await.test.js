@@ -46,7 +46,7 @@ test('async await', t => {
     t.fail()
   }
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -84,7 +84,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
 
   t.teardown(server.close.bind(server))
 
-  server.listen(0, (err) => {
+  server.listen({ port: 0 }, (err) => {
     t.error(err)
     sget({
       method: 'GET',
@@ -110,7 +110,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
 
   t.teardown(server.close.bind(server))
 
-  server.listen(0, (err) => {
+  server.listen({ port: 0 }, (err) => {
     t.error(err)
     sget({
       method: 'GET',
@@ -165,7 +165,7 @@ test('ignore the result of the promise if reply.send is called beforehand (undef
 
   t.teardown(server.close.bind(server))
 
-  server.listen(0, (err) => {
+  server.listen({ port: 0 }, (err) => {
     t.error(err)
     sget({
       method: 'GET',
@@ -191,7 +191,7 @@ test('ignore the result of the promise if reply.send is called beforehand (objec
 
   t.teardown(server.close.bind(server))
 
-  server.listen(0, (err) => {
+  server.listen({ port: 0 }, (err) => {
     t.error(err)
     sget({
       method: 'GET',
@@ -408,7 +408,7 @@ test('promise was fulfilled with undefined', t => {
     t.fail('should not log an error')
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
     fastify.server.unref()
 
@@ -450,7 +450,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
     t.fail('should not log an error')
   })
 
-  fastify.listen(0, (err) => {
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
     fastify.server.unref()
 

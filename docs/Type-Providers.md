@@ -6,7 +6,7 @@ Type Providers are a TypeScript only feature that enables Fastify to statically 
 
 ### Providers
 
-Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `fastify-type-provider-{provider-name}` naming convention. 
+Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `fastify-type-provider-{provider-name}` naming convention.
 
 The following inference packages are supported:
 
@@ -217,7 +217,7 @@ const server = Fastify({
 
 registerRoutes(server)
 
-server.listen(3000)
+server.listen({ port: 3000 })
 ```
 
 ```ts

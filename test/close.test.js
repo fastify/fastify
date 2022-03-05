@@ -15,7 +15,7 @@ test('close callback', t => {
     done()
   }
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.close((err) => {
@@ -39,7 +39,7 @@ test('inside register', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.close((err) => {
@@ -68,7 +68,7 @@ test('close order', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.close((err) => {
@@ -95,7 +95,7 @@ test('close order - async', async t => {
     t.equal(order.shift(), 2)
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   await fastify.close()
 
   t.equal(order.shift(), 3)
@@ -211,7 +211,7 @@ t.test('Current opened connection should continue to work after closing and retu
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     const port = fastify.server.address().port
@@ -248,7 +248,7 @@ t.test('Current opened connection should not accept new incoming connections', t
     }, 250)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     const instance = new Client('http://localhost:' + fastify.server.address().port)
     instance.request({ path: '/', method: 'GET' }).then(data => {
@@ -264,11 +264,11 @@ test('Cannot be reopened the closed server without listen callback', async t => 
   t.plan(2)
   const fastify = Fastify()
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   await fastify.close()
 
   try {
-    await fastify.listen(0)
+    await fastify.listen({ port: 0 })
   } catch (err) {
     t.ok(err)
     t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
@@ -279,11 +279,11 @@ test('Cannot be reopened the closed server has listen callback', async t => {
   t.plan(2)
   const fastify = Fastify()
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   await fastify.close()
 
   await new Promise((resolve, reject) => {
-    fastify.listen(0, err => {
+    fastify.listen({ port: 0 }, err => {
       reject(err)
     })
   }).catch(err => {
@@ -305,7 +305,7 @@ test('shutsdown while keep-alive connections are active (non-async)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
 
     const client = new Client(

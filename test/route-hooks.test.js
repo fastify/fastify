@@ -510,7 +510,7 @@ test('onTimeout on route', t => {
     }
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 

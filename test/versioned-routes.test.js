@@ -242,7 +242,7 @@ test('Should register a versioned route', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -407,7 +407,7 @@ test('Bas accept version (server)', t => {
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -449,7 +449,7 @@ test('test log stream', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, localhost, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
     fastify.server.unref()
 

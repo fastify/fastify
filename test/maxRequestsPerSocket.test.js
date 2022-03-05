@@ -17,7 +17,7 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     const port = fastify.server.address().port
@@ -58,7 +58,7 @@ test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     const port = fastify.server.address().port

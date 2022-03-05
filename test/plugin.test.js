@@ -89,7 +89,7 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -168,7 +168,7 @@ test('fastify.register with fastify-plugin should provide access to external fas
     t.notOk(fastify.global)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -223,7 +223,7 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
     reply.send({ test: fastify.test })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -285,7 +285,7 @@ test('check dependencies - should not throw', t => {
     t.notOk(fastify.otherTest)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -337,7 +337,7 @@ test('check dependencies - should throw', t => {
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -375,7 +375,7 @@ test('set the plugin name based on the plugin displayName symbol', t => {
     done()
   }, { name: 'plugin-B' }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -405,7 +405,7 @@ test('plugin name will change when using no encapsulation', t => {
     done()
   }, { name: 'plugin-A' }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -417,7 +417,7 @@ test('plugin name is undefined when accessing in no plugin context', t => {
 
   t.equal(fastify.pluginName, undefined)
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -445,7 +445,7 @@ test('set the plugin name based on the plugin function name', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -472,7 +472,7 @@ test('approximate a plugin name when no meta data is available', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -495,7 +495,7 @@ test('approximate a plugin name also when fastify-plugin has no meta data', t =>
     done()
   }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -535,7 +535,7 @@ test('plugin encapsulation', t => {
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -569,7 +569,7 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
     done(new Error('err'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.ok(err instanceof Error)
     t.equal(err.message, 'err')
   })
@@ -612,7 +612,7 @@ test('add hooks after route declaration', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -651,7 +651,7 @@ test('nested plugins', t => {
     done()
   }, { prefix: '/parent' })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -693,7 +693,7 @@ test('nested plugins awaited', t => {
     }, { prefix: '/child2' })
   }, { prefix: '/parent' })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({

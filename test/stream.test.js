@@ -35,7 +35,7 @@ test('should respond with a stream', t => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -61,7 +61,7 @@ test('should respond with a stream (error)', t => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -116,7 +116,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.server.unref()
@@ -279,7 +279,7 @@ test('Destroying streams prematurely', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -342,7 +342,7 @@ test('Destroying streams prematurely should call close method', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -404,7 +404,7 @@ test('Destroying streams prematurely should call close method when destroy is no
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -467,7 +467,7 @@ test('Destroying streams prematurely should call abort method', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -517,7 +517,7 @@ test('Destroying streams prematurely, log is disabled', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -547,7 +547,7 @@ test('should respond with a stream1', t => {
     stream.end({ a: 42 })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -579,7 +579,7 @@ test('return a 404 if the stream emits a 404 error', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -607,7 +607,7 @@ test('should support send module 200 and 404', { skip: semver.gte(process.versio
     reply.code(200).send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 
@@ -648,7 +648,7 @@ test('should destroy stream when response is ended', t => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.server.unref()
 

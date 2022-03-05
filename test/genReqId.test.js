@@ -17,7 +17,7 @@ test('Should accept a custom genReqId function', t => {
     reply.send({ id: req.id })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.inject({
       method: 'GET',

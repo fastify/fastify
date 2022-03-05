@@ -24,4 +24,4 @@ app.get('/', schema, async function (req, reply) {
   return { hello: 'world' }
 })
 
-app.listen(3000).catch(console.error)
+app.listen({ port: 3000 }).catch(console.error)

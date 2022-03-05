@@ -24,7 +24,7 @@ test('Custom querystring parser', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
@@ -61,7 +61,7 @@ test('Custom querystring parser should be called also if there is nothing to par
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 
@@ -98,7 +98,7 @@ test('Querystring without value', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 

@@ -265,7 +265,7 @@ server.decorateReply('view', function (template, args) {
   // Another rendering engine
 })
 
-server.listen(3000)
+server.listen({ port: 3000 })
 ```
 
 
@@ -291,7 +291,7 @@ server.register(async function (server, opts) {
   })
 }, { prefix: '/bar' })
 
-server.listen(3000)
+server.listen({ port: 3000 })
 ```
 
 ### Getters and Setters

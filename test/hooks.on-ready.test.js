@@ -112,7 +112,7 @@ t.test('listen and onReady order', async t => {
 
   await fastify.ready()
   t.pass('trigger the onReady')
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   t.pass('do not trigger the onReady')
 
   await fastify.close()

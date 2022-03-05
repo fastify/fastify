@@ -17,7 +17,7 @@ test('case insensitive', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -45,7 +45,7 @@ test('case insensitive inject', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     fastify.inject({
@@ -74,7 +74,7 @@ test('case insensitive (parametric)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -103,7 +103,7 @@ test('case insensitive (wildcard)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({

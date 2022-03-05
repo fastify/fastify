@@ -201,7 +201,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
 
       nextHooks.forEach(h => app.addHook(h, async (req, reply) => t.fail(`${h} should not be called`)))
 
-      app.listen(0, err => {
+      app.listen({ port: 0 }, err => {
         t.error(err)
         const client = net.createConnection({ port: (app.server.address()).port }, () => {
           client.write('GET / HTTP/1.1\r\n\r\n')

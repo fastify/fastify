@@ -1,3 +1,4 @@
+import { expectAssignable, expectDeprecated, expectError, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBodyParser,
   FastifyError,
@@ -6,10 +7,9 @@ import fastify, {
   RawRequestDefaultExpression,
   RawServerDefault
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
-import { FastifyRequest } from '../../types/request'
-import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { FastifyReply } from '../../types/reply'
+import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions } from '../../types/schema'
 
 const server = fastify()
@@ -194,13 +194,43 @@ expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
 expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
 expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
 
+// Test variadic listen signatures Typescript deprecation
+expectDeprecated(server.listen(3000))
+expectDeprecated(server.listen('3000'))
+expectDeprecated(server.listen(3000, '', 0))
+expectDeprecated(server.listen('3000', '', 0))
+expectDeprecated(server.listen(3000, ''))
+expectDeprecated(server.listen('3000', ''))
+
 // test listen opts objects
+expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
+
+expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
+
+// test listen opts objects Typescript deprectation exclusion
+expectNotDeprecated(server.listen())
+expectNotDeprecated(server.listen({ port: 3000 }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
+expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
+
+expectNotDeprecated(server.listen(() => {}))
+expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 

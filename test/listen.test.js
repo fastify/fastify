@@ -22,7 +22,24 @@ before(async function () {
   }
 })
 
+test('listen works without arguments', async t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  await fastify.listen()
+  const address = fastify.server.address()
+  t.equal(address.address, localhost)
+  t.ok(address.port > 0)
+})
+
 test('listen accepts a callback', t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
   t.plan(2)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
@@ -33,6 +50,10 @@ test('listen accepts a callback', t => {
 })
 
 test('listen accepts options and a callback', t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
   t.plan(1)
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))

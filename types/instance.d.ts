@@ -1,21 +1,21 @@
-import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
-import { RouteOptions, RouteShorthandMethod, RouteGenericInterface, DefaultRoute } from './route'
+import { FastifyError } from 'fastify-error'
+import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
+import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
+import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
+import { FastifyLoggerInstance } from './logger'
+import { FastifyRegister } from './register'
+import { FastifyReply } from './reply'
+import { FastifyRequest } from './request'
+import { DefaultRoute, RouteGenericInterface, RouteOptions, RouteShorthandMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
+  FastifySchemaControllerOptions,
   FastifySchemaValidationError,
-  FastifySerializerCompiler,
-  FastifySchemaControllerOptions
+  FastifySerializerCompiler
 } from './schema'
-import { RawServerBase, RawRequestDefaultExpression, RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
-import { FastifyLoggerInstance } from './logger'
-import { FastifyRegister } from './register'
-import { onRequestHookHandler, preParsingHookHandler, onSendHookHandler, preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onResponseHookHandler, onErrorHookHandler, onRouteHookHandler, onRegisterHookHandler, onCloseHookHandler, onCloseAsyncHookHandler, onReadyHookHandler, onTimeoutHookHandler, preParsingAsyncHookHandler, preValidationAsyncHookHandler, preHandlerAsyncHookHandler, preSerializationAsyncHookHandler, onSendAsyncHookHandler, onResponseAsyncHookHandler, onTimeoutAsyncHookHandler, onErrorAsyncHookHandler, onReadyAsyncHookHandler, onRequestAsyncHookHandler } from './hooks'
-import { FastifyRequest } from './request'
-import { FastifyReply } from './reply'
-import { FastifyError } from 'fastify-error'
-import { AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, FastifyBodyParser, removeContentTypeParser, removeAllContentTypeParsers } from './content-type-parser'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 
 export interface PrintRoutesOptions {
   includeMeta?: boolean | (string | symbol)[]
@@ -82,12 +82,118 @@ export interface FastifyInstance<
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;
   inject(): LightMyRequestChain;
 
+  listen(opts: {
+    /**
+     * Default to `0` (picks the first available open port).
+     */
+    port?: number;
+    /**
+     * Default to `localhost`.
+     */
+    host?: string;
+    /**
+     * Will be ignored if `port` is specified.
+     * @see [Identifying paths for IPC connections](https://nodejs.org/api/net.html#identifying-paths-for-ipc-connections).
+    */
+    path?: string;
+    /**
+     * Specify the maximum length of the queue of pending connections.
+     * The actual length will be determined by the OS through sysctl settings such as `tcp_max_syn_backlog` and `somaxconn` on Linux.
+     * Default to `511`.
+     */
+    backlog?: number;
+    /**
+     * Default to `false`.
+     */
+    exclusive?: boolean;
+    /**
+     * For IPC servers makes the pipe readable for all users.
+     * Default to `false`.
+     */
+    readableAll?: boolean;
+    /**
+     * For IPC servers makes the pipe writable for all users.
+     * Default to `false`.
+     */
+    writableAll?: boolean;
+    /**
+     * For TCP servers, setting `ipv6Only` to `true` will disable dual-stack support, i.e., binding to host `::` won't make `0.0.0.0` be bound.
+     * Default to `false`.
+     */
+    ipv6Only?: boolean;
+    /**
+     * An AbortSignal that may be used to close a listening server.
+     * @since This option is available only in Node.js v15.6.0 and greater
+     */
+    signal?: AbortSignal;
+  }, callback: (err: Error|null, address: string) => void): void;
+  listen(opts?: {
+    /**
+     * Default to `0` (picks the first available open port).
+     */
+    port?: number;
+    /**
+     * Default to `localhost`.
+     */
+    host?: string;
+    /**
+     * Will be ignored if `port` is specified.
+     * @see [Identifying paths for IPC connections](https://nodejs.org/api/net.html#identifying-paths-for-ipc-connections).
+    */
+    path?: string;
+    /**
+     * Specify the maximum length of the queue of pending connections.
+     * The actual length will be determined by the OS through sysctl settings such as `tcp_max_syn_backlog` and `somaxconn` on Linux.
+     * Default to `511`.
+     */
+    backlog?: number;
+    /**
+     * Default to `false`.
+     */
+    exclusive?: boolean;
+    /**
+     * For IPC servers makes the pipe readable for all users.
+     * Default to `false`.
+     */
+    readableAll?: boolean;
+    /**
+     * For IPC servers makes the pipe writable for all users.
+     * Default to `false`.
+     */
+    writableAll?: boolean;
+    /**
+     * For TCP servers, setting `ipv6Only` to `true` will disable dual-stack support, i.e., binding to host `::` won't make `0.0.0.0` be bound.
+     * Default to `false`.
+     */
+    ipv6Only?: boolean;
+    /**
+     * An AbortSignal that may be used to close a listening server.
+     * @since This option is available only in Node.js v15.6.0 and greater
+     */
+    signal?: AbortSignal;
+  }): Promise<string>;
+  listen(callback: (err: Error | null, address: string) => void): void;
+
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
   listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
   listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
   listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
+  /**
+   * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
+   * @see https://github.com/fastify/fastify/pull/3712
+   */
   listen(port: number | string, address?: string, backlog?: number): Promise<string>;
-  listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error|null, address: string) => void): void;
-  listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
   ready(): FastifyInstance<RawServer, RawRequest, RawReply, FastifyLoggerInstance, TypeProvider> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

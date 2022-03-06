@@ -4,6 +4,7 @@ import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } fro
 import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 import { FastifyInstance } from '../../types/instance'
+import { Buffer } from 'buffer'
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
@@ -28,7 +29,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<() => number>(reply.getResponseTime)
   expectType<(contentType: string) => FastifyReply>(reply.type)
   expectType<(fn: (payload: any) => string) => FastifyReply>(reply.serializer)
-  expectType<(payload: any) => string>(reply.serialize)
+  expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)
   expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
   expectType<FastifyInstance>(reply.server)
 }

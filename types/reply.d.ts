@@ -6,6 +6,7 @@ import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
 import { FastifySchema } from './schema'
+import { Buffer } from 'buffer'
 
 export interface ReplyGenericInterface {
   Reply?: ReplyDefault;
@@ -52,6 +53,6 @@ export interface FastifyReply<
   getResponseTime(): number;
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  serialize(payload: any): string;
+  serialize(payload: any): string | ArrayBuffer | Buffer;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
 }

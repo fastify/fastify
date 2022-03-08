@@ -377,3 +377,11 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
     t.end()
   })
 })
+
+test('pluginTimeout should be parsed correctly', t => {
+  const withDisabledTimeout = Fastify({ pluginTimeout: '0' })
+  t.equal(withDisabledTimeout.initialConfig.pluginTimeout, 0)
+  const withInvalidTimeout = Fastify({ pluginTimeout: undefined })
+  t.equal(withInvalidTimeout.initialConfig.pluginTimeout, 10000)
+  t.end()
+})

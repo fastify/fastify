@@ -352,9 +352,11 @@ function fastify (options) {
   // - ready
   // - onClose
   // - close
+
+  const avvioPluginTimeout = Number(options.pluginTimeout)
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
+    timeout: isNaN(avvioPluginTimeout) === false ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
     expose: {
       use: 'register'
     }

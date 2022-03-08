@@ -5,9 +5,8 @@ const test = t.test
 const sget = require('simple-get').concat
 const http = require('http')
 const NotFound = require('http-errors').NotFound
-const EventEmitter = require('events').EventEmitter
 const Reply = require('../../lib/reply')
-const { Writable } = require('stream')
+const { Readable, Writable } = require('stream')
 const {
   kReplyErrorHandlerCalled,
   kReplyHeaders,
@@ -40,30 +39,30 @@ test('Once called, Reply should return an object with methods', t => {
 test('reply.send will logStream error and destroy the stream', { only: true }, t => {
   t.plan(1)
   let destroyCalled
-  const payload = new EventEmitter()
+  const payload = new Readable({
+    read () {},
+    destroy (err, cb) {
+      destroyCalled = true
+      cb(err)
+    }
+  })
 
-  const response = {
+  const response = new Writable()
+  Object.assign(response, {
     setHeader: () => {},
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {},
-    end: () => {},
-    headersSent: true,
-    destroy: () => (destroyCalled = true),
-    on: () => {}
-  }
+    headersSent: true
+  })
 
   const log = {
     warn: () => {}
   }
 
-  Object.assign(payload, {
-    pipe: () => {},
-    destroy: () => {}
-  })
   const reply = new Reply(response, { context: { onSend: null } }, log)
   reply.send(payload)
-  payload.emit('error', new Error('stream error'))
+  payload.destroy(new Error('stream error'))
 
   t.equal(destroyCalled, true, 'Error not logged and not streamed')
 })

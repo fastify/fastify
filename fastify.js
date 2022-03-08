@@ -353,7 +353,8 @@ function fastify (options) {
     validateSchemaErrorFormatter(options.schemaErrorFormatter)
     fastify[kSchemaErrorFormatter] = options.schemaErrorFormatter.bind(fastify)
   }
-
+  
+  const avvioPluginTimeout = Number(options.pluginTimeout);
   // Install and configure Avvio
   // Avvio will update the following Fastify methods:
   // - register
@@ -363,7 +364,7 @@ function fastify (options) {
   // - close
   const avvio = Avvio(fastify, {
     autostart: false,
-    timeout: Number(options.pluginTimeout) || defaultInitOptions.pluginTimeout,
+    timeout: !isNaN(avvioPluginTimeout) ? avvioPluginTimeout : defaultInitOptions.pluginTimeout,
     expose: {
       use: 'register'
     }

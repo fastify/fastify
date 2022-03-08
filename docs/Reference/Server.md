@@ -514,7 +514,8 @@ derive <code>request.hostname</code> and <code>request.protocol</code>**
 
 The maximum amount of time in *milliseconds* in which a plugin can load. If not,
 [`ready`](#ready) will complete with an `Error` with code
-`'ERR_AVVIO_PLUGIN_TIMEOUT'`.
+`'ERR_AVVIO_PLUGIN_TIMEOUT'`. When set to `0`, disables this check. This controls 
+[avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 
 + Default: `10000`
 

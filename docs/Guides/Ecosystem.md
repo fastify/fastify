@@ -298,6 +298,8 @@ section.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
   package.
+- [`fatify-impressions`](https://github.com/manju4ever/fastify-impressions) Fastify
+  plugin to track impressions of all the routes.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT
   user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT

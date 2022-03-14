@@ -8,6 +8,9 @@ section.
 
 #### [Core](#core)
 
+- [`aws-lambda-fastify`](https://github.com/fastify/aws-lambda-fastify) allows you to
+  easily build serverless web applications/services and RESTful APIs using Fastify
+  on top of AWS Lambda and Amazon API Gateway.
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)

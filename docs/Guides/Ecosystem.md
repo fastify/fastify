@@ -298,6 +298,8 @@ section.
   An error handling plugin for Fastify that uses enhanced HTTP errors.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
+- [`fatify-impressions`](https://github.com/manju4ever/fastify-impressions) Fastify
+  plugin to track impressions of all the routes.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
   package.

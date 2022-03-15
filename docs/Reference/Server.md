@@ -821,7 +821,7 @@ fastify.ready().then(() => {
 #### listen
 <a id="listen"></a>
 
-Starts the server and internally waits for the the `.ready()` event. The
+Starts the server and internally waits for the `.ready()` event. The
 signature is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters follow the [Node.js
 core][https://nodejs.org/api/net.html#serverlistenoptions-callback] parameter

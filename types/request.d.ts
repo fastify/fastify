@@ -24,14 +24,15 @@ export interface FastifyRequest<
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
-> {
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  > {
   id: any;
   params: RequestType['params'];
   raw: RawRequest;
   query: RequestType['query'];
   headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
-  log: FastifyLoggerInstance;
+  log: Logger;
   server: FastifyInstance;
   body: RequestType['body'];
   context: FastifyContext<ContextConfig>;

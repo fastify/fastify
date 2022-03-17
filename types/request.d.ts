@@ -20,13 +20,14 @@ export interface FastifyRequest<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   ContextConfig = ContextConfigDefault,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   id: any;
   params: RouteGeneric['Params'];
   raw: RawRequest;
   query: RouteGeneric['Querystring'];
   headers: RawRequest['headers'] & RouteGeneric['Headers']; // this enables the developer to extend the existing http(s|2) headers list
-  log: FastifyLoggerInstance;
+  log: Logger;
   server: FastifyInstance;
   body: RouteGeneric['Body'];
   context: FastifyContext<ContextConfig>;

@@ -1,5 +1,14 @@
 import { expectType } from 'tsd'
-import fastify, { RouteHandler, RawRequestDefaultExpression, RequestBodyDefault, RequestGenericInterface, FastifyContext, ContextConfigDefault, FastifyContextConfig } from '../../fastify'
+import fastify, {
+  RouteHandler,
+  RawRequestDefaultExpression,
+  RequestBodyDefault,
+  RequestGenericInterface,
+  FastifyContext,
+  ContextConfigDefault,
+  FastifyContextConfig,
+  FastifyLogFn
+} from '../../fastify'
 import { RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyRequest } from '../../types/request'
@@ -64,6 +73,11 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyInstance>(request.server)
 }
 
+const getHandlerWithCustomLogger: RouteHandler = function (request, _reply) {
+  expectType<FastifyLoggerInstance>(request.log)
+  expectType<FastifyLogFn>((request.log as FastifyLoggerInstance & { foo: FastifyLogFn }).foo)
+}
+
 const postHandler: Handler = function (request) {
   expectType<RequestBody>(request.body)
   expectType<RequestParams>(request.params)
@@ -96,3 +110,17 @@ const server = fastify()
 server.get('/get', getHandler)
 server.post('/post', postHandler)
 server.put('/put', putHandler)
+
+const customLogger = {
+  info: () => { },
+  warn: () => { },
+  error: () => { },
+  fatal: () => { },
+  trace: () => { },
+  debug: () => { },
+  foo: () => { }, // custom severity logger method
+  child: () => customLogger
+}
+
+const serverWithCustomLogger = fastify({ logger: customLogger })
+serverWithCustomLogger.get('/get', getHandlerWithCustomLogger)

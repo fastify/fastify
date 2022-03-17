@@ -2,7 +2,7 @@
 
 const fastify = require('../fastify')({ logger: true })
 const jsonParser = require('fast-json-body')
-const qs = require('qs')
+const querystring = require('querystring')
 
 // Handled by fastify
 // curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/
@@ -22,7 +22,7 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (requ
   })
   payload.on('end', function () {
     try {
-      const parsed = qs.parse(body)
+      const parsed = querystring.parse(body)
       done(null, parsed)
     } catch (e) {
       done(e)

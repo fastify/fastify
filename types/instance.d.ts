@@ -321,7 +321,7 @@ export interface FastifyInstance<
     Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
   >(
     name: 'onRoute',
-    hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>
+    hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

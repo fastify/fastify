@@ -31,6 +31,16 @@ fastify.addContentTypeParser('application/x-www-form-urlencoded', function (requ
   payload.on('error', done)
 })
 
+// curl -X POST -d '{"hello":"world"}' -H'Content-type: application/vnd.custom+json' http://localhost:3000/
+fastify.addContentTypeParser(/^application\/.+\+json$/, { parseAs: 'string' }, fastify.getDefaultJsonParser('error', 'ignore'))
+
+// remove default json parser
+// curl -X POST -d '{"hello":"world"}' -H'Content-type: application/json' http://localhost:3000/ is now no longer handled by fastify
+fastify.removeContentTypeParser('application/json')
+
+// This call would remove any content type parser
+// fastify.removeAllContentTypeParsers()
+
 fastify
   .post('/', function (req, reply) {
     reply.send(req.body)

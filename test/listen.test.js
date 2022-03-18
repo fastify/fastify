@@ -35,6 +35,33 @@ test('listen works without arguments', async t => {
   t.ok(address.port > 0)
 })
 
+test('Async/await listen with arguments', async t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  const addr = await fastify.listen({ port: 0, host: '0.0.0.0' })
+  const address = fastify.server.address()
+  t.equal(addr, `http://${address.address}:${address.port}`)
+})
+
+test('Promise listen with arguments', t => {
+  process.on('warning', () => {
+    t.fail('should not be deprecated')
+  })
+
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen({ port: 0, host: '0.0.0.0' }).then(addr => {
+    const address = fastify.server.address()
+    t.equal(addr, `http://${address.address}:${address.port}`)
+  })
+})
+
 test('listen accepts a callback', t => {
   process.on('warning', () => {
     t.fail('should not be deprecated')

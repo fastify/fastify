@@ -47,6 +47,10 @@ type CustomRequest = FastifyRequest<{
   Headers: RequestHeaders;
 }>
 
+interface CustomLoggerInterface extends FastifyLoggerInstance {
+  foo: FastifyLogFn; // custom severity logger method
+}
+
 const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.url)
   expectType<string>(request.method)
@@ -75,7 +79,6 @@ const getHandler: RouteHandler = function (request, _reply) {
 
 const getHandlerWithCustomLogger: RouteHandler = function (request, _reply) {
   expectType<FastifyLoggerInstance>(request.log)
-  expectType<FastifyLogFn>((request.log as FastifyLoggerInstance & { foo: FastifyLogFn }).foo)
 }
 
 const postHandler: Handler = function (request) {
@@ -111,7 +114,7 @@ server.get('/get', getHandler)
 server.post('/post', postHandler)
 server.put('/put', putHandler)
 
-const customLogger = {
+const customLogger: CustomLoggerInterface = {
   info: () => { },
   warn: () => { },
   error: () => { },

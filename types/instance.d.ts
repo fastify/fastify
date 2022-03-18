@@ -83,7 +83,7 @@ export interface FastifyInstance<
   listen(opts: { port: number; host?: string; backlog?: number }, callback: (err: Error|null, address: string) => void): void;
   listen(opts: { port: number; host?: string; backlog?: number }): Promise<string>;
 
-  ready(): FastifyInstance<RawServer, RawRequest, RawReply> & PromiseLike<undefined>;
+  ready(): FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>;
   ready(readyListener: (err: Error) => void): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger> & PromiseLike<undefined>>;
@@ -96,7 +96,7 @@ export interface FastifyInstance<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
     ContextConfig = ContextConfigDefault,
     SchemaCompiler = FastifySchema,
-  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, Logger>): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply>;
@@ -321,7 +321,7 @@ export interface FastifyInstance<
     Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
   >(
     name: 'onRoute',
-    hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
+    hook: onRouteHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   /**

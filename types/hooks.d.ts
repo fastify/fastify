@@ -363,10 +363,11 @@ export interface onRouteHookHandler<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
-  ContextConfig = ContextConfigDefault
+  ContextConfig = ContextConfigDefault,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> & { routePath: string; path: string; prefix: string }
   ): Promise<unknown> | void;
 }

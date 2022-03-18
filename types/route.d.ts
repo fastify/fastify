@@ -60,7 +60,7 @@ export type RouteHandlerMethod<
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
+  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
 ) => void | Promise<RouteGeneric['Reply'] | void>
@@ -76,7 +76,7 @@ export interface RouteShorthandOptionsWithHandler<
   ContextConfig = ContextConfigDefault,
   SchemaCompiler = FastifySchema,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
-> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler> {
+> extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, Logger> {
   handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>;
 }
 
@@ -88,19 +88,19 @@ export interface RouteShorthandMethod<
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
 > {
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema>(
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema, Logger extends FastifyLoggerInstance = FastifyLoggerInstance>(
     path: string,
-    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault>(
+    opts: RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, Logger>,
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, Logger extends FastifyLoggerInstance = FastifyLoggerInstance>(
     path: string,
-    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
-  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema>(
+    handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
+  <RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler = FastifySchema, Logger extends FastifyLoggerInstance = FastifyLoggerInstance>(
     path: string,
-    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler>
-  ): FastifyInstance<RawServer, RawRequest, RawReply>;
+    opts: RouteShorthandOptionsWithHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, Logger>
+  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface RouteOptions<
 > extends RouteShorthandOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, Logger> {
   method: HTTPMethods | HTTPMethods[];
   url: string;
-  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>;
+  handler: RouteHandlerMethod<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, Logger>;
 }
 
 export type RouteHandler<
@@ -128,7 +128,7 @@ export type RouteHandler<
   ContextConfig = ContextConfigDefault,
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > = (
-  this: FastifyInstance<RawServer, RawRequest, RawReply>,
+  this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
 ) => void | Promise<RouteGeneric['Reply'] | void>

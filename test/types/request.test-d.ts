@@ -7,13 +7,17 @@ import fastify, {
   FastifyContext,
   ContextConfigDefault,
   FastifyContextConfig,
-  FastifyLogFn
+  FastifyLogFn,
+  RawServerDefault,
+  RawReplyDefaultExpression,
+  RouteHandlerMethod
 } from '../../fastify'
 import { RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { FastifyInstance } from '../../types/instance'
+import { RouteGenericInterface } from '../../types/route'
 
 interface RequestBody {
   content: string;
@@ -77,8 +81,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyInstance>(request.server)
 }
 
-const getHandlerWithCustomLogger: RouteHandler = function (request, _reply) {
-  expectType<FastifyLoggerInstance>(request.log)
+const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, CustomLoggerInterface> = function (request: FastifyRequest<RouteGenericInterface, RawServerDefault, RawRequestDefaultExpression, ContextConfigDefault, CustomLoggerInterface>, _reply) {
+  expectType<CustomLoggerInterface>(request.log)
 }
 
 const postHandler: Handler = function (request) {
@@ -126,4 +130,9 @@ const customLogger: CustomLoggerInterface = {
 }
 
 const serverWithCustomLogger = fastify({ logger: customLogger })
+expectType<
+FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>
+& PromiseLike<FastifyInstance<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, CustomLoggerInterface>>
+>(serverWithCustomLogger)
+
 serverWithCustomLogger.get('/get', getHandlerWithCustomLogger)

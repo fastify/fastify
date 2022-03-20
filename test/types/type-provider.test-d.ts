@@ -286,7 +286,7 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
     }
   },
   async (_, res) => {
-    return false
+    res.send(false)
   }
 ))
 
@@ -372,7 +372,7 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     }
   },
   async (_, res) => {
-    return false
+    res.send(false)
   }
 ))
 

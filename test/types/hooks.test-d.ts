@@ -1,17 +1,23 @@
 import { FastifyError } from 'fastify-error'
 import { expectAssignable, expectError, expectType } from 'tsd'
+import * as http from 'http'
 import fastify, {
   FastifyInstance,
   FastifyReply,
   FastifyRequest,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerBase,
   RouteOptions,
   RegisterOptions,
-  FastifyPluginOptions
+  FastifyPluginOptions,
+  HookHandlerDoneFunction,
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  ContextConfigDefault
 } from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
+import { RouteGenericInterface } from '../../types/route'
+import { ResolveFastifyRequestType } from '../../types/type-provider'
 
 const server = fastify()
 
@@ -123,8 +129,8 @@ server.addHook('onRegister', (instance, opts, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('onReady', function (done) {
-  expectType<FastifyInstance>(this)
+server.addHook('onReady', function (instance, done: HookHandlerDoneFunction) {
+  expectType<FastifyInstance>(instance)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
@@ -202,8 +208,8 @@ server.addHook('onRegister', async (instance, opts) => {
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
 
-server.addHook('onReady', async function () {
-  expectType<FastifyInstance>(this)
+server.addHook('onReady', async function (instance) {
+  expectType<FastifyInstance>(instance)
 })
 
 server.addHook('onClose', async (instance) => {
@@ -213,11 +219,15 @@ server.addHook('onClose', async (instance) => {
 // Use case to monitor any regression on issue #3620
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<
-RawServerBase,
+http.Server,
 RawRequestDefaultExpression,
 RawReplyDefaultExpression,
-Record<string, unknown>
-> = async function (request, reply) {
+RouteGenericInterface,
+ContextConfigDefault,
+FastifySchema,
+FastifyTypeProviderDefault,
+ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>
+> = async function (request, reply): Promise<void> {
   expectType<FastifyInstance>(this)
   expectAssignable<FastifyRequest>(request)
   expectAssignable<FastifyReply>(reply)

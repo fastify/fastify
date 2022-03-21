@@ -13,7 +13,7 @@ import fastify, {
   HookHandlerDoneFunction,
   FastifySchema,
   FastifyTypeProviderDefault,
-  ContextConfigDefault
+  ContextConfigDefault, RawServerBase, RawServerDefault
 } from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
 import { RouteGenericInterface } from '../../types/route'
@@ -129,8 +129,8 @@ server.addHook('onRegister', (instance, opts, done) => {
   expectType<void>(done(new Error()))
 })
 
-server.addHook('onReady', function (instance, done: HookHandlerDoneFunction) {
-  expectType<FastifyInstance>(instance)
+server.addHook('onReady', function (done: HookHandlerDoneFunction) {
+  expectType<FastifyInstance>(this)
   expectAssignable<(err?: FastifyError) => void>(done)
   expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
   expectType<void>(done(new Error()))
@@ -208,8 +208,8 @@ server.addHook('onRegister', async (instance, opts) => {
   expectType<RegisterOptions & FastifyPluginOptions>(opts)
 })
 
-server.addHook('onReady', async function (instance) {
-  expectType<FastifyInstance>(instance)
+server.addHook('onReady', async function () {
+  expectType<FastifyInstance>(this)
 })
 
 server.addHook('onClose', async (instance) => {
@@ -219,7 +219,7 @@ server.addHook('onClose', async (instance) => {
 // Use case to monitor any regression on issue #3620
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<
-http.Server,
+RawServerDefault,
 RawRequestDefaultExpression,
 RawReplyDefaultExpression,
 RouteGenericInterface,

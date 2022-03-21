@@ -466,7 +466,7 @@ export interface onReadyHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
     done: HookHandlerDoneFunction
   ): void;
 }
@@ -479,7 +479,7 @@ export interface onReadyAsyncHookHandler<
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 > {
   (
-    instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): Promise<unknown>;
 }
 /**

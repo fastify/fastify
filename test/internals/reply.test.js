@@ -264,7 +264,7 @@ test('within an instance', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     test('custom serializer should be used', t => {
       t.plan(3)
@@ -424,7 +424,7 @@ test('buffer without content type should send a application/octet-stream and raw
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -449,7 +449,7 @@ test('buffer with content type should not send application/octet-stream', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -477,7 +477,7 @@ test('stream with content type should not send application/octet-stream', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
@@ -503,7 +503,7 @@ test('stream without content type should not send application/octet-stream', t =
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
@@ -538,7 +538,7 @@ test('stream using reply.raw.writeHead should return customize headers', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
@@ -562,7 +562,7 @@ test('plain string without content type should send a text/plain', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -586,7 +586,7 @@ test('plain string with content type should be sent unmodified', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -613,7 +613,7 @@ test('plain string with content type and custom serializer should be serialized'
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -637,7 +637,7 @@ test('plain string with content type application/json should NOT be serialized a
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -690,7 +690,7 @@ test('plain string with custom json content type should NOT be serialized as jso
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     Object.keys(customSamples).forEach((path) => {
       sget({
@@ -716,7 +716,7 @@ test('non-string with content type application/json SHOULD be serialized as json
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -724,6 +724,30 @@ test('non-string with content type application/json SHOULD be serialized as json
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.same(body.toString(), JSON.stringify({ key: 'hello world!' }))
+    })
+  })
+})
+
+test('non-string with custom json\'s content-type SHOULD be serialized as json', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('application/json; version=2; ').send({ key: 'hello world!' })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(fastify.close.bind(fastify))
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/json; version=2; charset=utf-8')
       t.same(body.toString(), JSON.stringify({ key: 'hello world!' }))
     })
   })
@@ -765,7 +789,7 @@ test('non-string with custom json content type SHOULD be serialized as json', t 
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     Object.keys(customSamples).forEach((path) => {
       sget({
@@ -830,7 +854,7 @@ test('undefined payload should be sent as-is', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -875,7 +899,7 @@ test('for HEAD method, no body should be sent but content-length should be', t =
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'HEAD',
@@ -923,7 +947,7 @@ test('reply.send(new NotFound()) should not invoke the 404 handler', t => {
   fastify.listen({ port: 0 }, err => {
     t.error(err)
 
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -969,7 +993,7 @@ test('reply can set multiple instances of same header', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',
@@ -996,7 +1020,7 @@ test('reply.hasHeader returns correct values', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
@@ -1025,7 +1049,7 @@ test('reply.getHeader returns correct values', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
@@ -1095,7 +1119,7 @@ test('reply.removeHeader can remove the value', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
@@ -1122,7 +1146,7 @@ test('reply.header can reset the value', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
@@ -1151,7 +1175,7 @@ test('reply.hasHeader computes raw and fastify headers', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port + '/headers'
@@ -1320,7 +1344,7 @@ test('reply.header setting multiple cookies as multiple Set-Cookie headers', t =
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(fastify.close.bind(fastify))
 
     sget({
       method: 'GET',

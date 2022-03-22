@@ -729,6 +729,30 @@ test('non-string with content type application/json SHOULD be serialized as json
   })
 })
 
+test('non-string with custom json\'s content-type SHOULD be serialized as json', t => {
+  t.plan(4)
+
+  const fastify = require('../..')()
+
+  fastify.get('/', function (req, reply) {
+    reply.type('application/json; version=2; ').send({ key: 'hello world!' })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    fastify.server.unref()
+
+    sget({
+      method: 'GET',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.headers['content-type'], 'application/json; version=2; charset=utf-8')
+      t.same(body.toString(), JSON.stringify({ key: 'hello world!' }))
+    })
+  })
+})
+
 test('non-string with custom json content type SHOULD be serialized as json', t => {
   t.plan(16)
 

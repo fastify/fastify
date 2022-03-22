@@ -261,6 +261,7 @@ Sets the content type for the response. This is a shortcut for
 ```js
 reply.type('text/html')
 ```
+When set `Content-Type` with json type, if you don't set `charset`, it will use `utf-8` by default.
 
 ### .serializer(func)
 <a id="serializer"></a>

@@ -10,7 +10,7 @@ import fastify, {
   RouteOptions,
   RegisterOptions,
   FastifyPluginOptions,
-  FastifyContextConfig
+  FastifyContextConfig, RawServerDefault
 } from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
 import { RouteGenericInterface } from '../../types/route'
@@ -215,7 +215,7 @@ server.addHook('onClose', async (instance) => {
 // Use case to monitor any regression on issue #3620
 // ref.: https://github.com/fastify/fastify/issues/3620
 const customTypedHook: preHandlerAsyncHookHandler<
-RawServerBase,
+RawServerDefault,
 RawRequestDefaultExpression,
 RawReplyDefaultExpression,
 Record<string, unknown>

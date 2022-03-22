@@ -30,7 +30,7 @@ export interface onRequestHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -46,7 +46,7 @@ export interface onRequestAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -65,7 +65,7 @@ export interface preParsingHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: RequestPayload,
@@ -82,7 +82,7 @@ export interface preParsingAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: RequestPayload,
@@ -101,7 +101,7 @@ export interface preValidationHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -117,7 +117,7 @@ export interface preValidationAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -135,7 +135,7 @@ export interface preHandlerHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -151,7 +151,7 @@ export interface preHandlerAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
   ): Promise<unknown>;
@@ -178,7 +178,7 @@ export interface preSerializationHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: PreSerializationPayload,
@@ -196,7 +196,7 @@ export interface preSerializationAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: PreSerializationPayload
@@ -217,7 +217,7 @@ export interface onSendHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: OnSendPayload,
@@ -235,7 +235,7 @@ export interface onSendAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     payload: OnSendPayload,
@@ -255,7 +255,7 @@ export interface onResponseHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -271,7 +271,7 @@ export interface onResponseAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): Promise<unknown>;
@@ -290,7 +290,7 @@ export interface onTimeoutHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     done: HookHandlerDoneFunction
@@ -306,7 +306,7 @@ export interface onTimeoutAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>
   ): Promise<unknown>;
@@ -328,7 +328,7 @@ export interface onErrorHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     error: TError,
@@ -346,7 +346,7 @@ export interface onErrorAsyncHookHandler<
   Logger extends FastifyLoggerInstance = FastifyLoggerInstance
 > {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     request: FastifyRequest<RouteGeneric, RawServer, RawRequest, ContextConfig, Logger>,
     reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>,
     error: TError
@@ -394,9 +394,14 @@ export interface onRegisterHookHandler<
 /**
  * Triggered when fastify.listen() or fastify.ready() is invoked to start the server. It is useful when plugins need a "ready" event, for example to load data before the server start listening for requests.
  */
-export interface onReadyHookHandler {
+export interface onReadyHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+> {
   (
-    this: FastifyInstance,
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger>,
     done: HookHandlerDoneFunction
   ): void;
 }

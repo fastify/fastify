@@ -1,8 +1,15 @@
-import fastify, { FastifyTypeProvider } from '../../fastify'
+import fastify, {
+  ContextConfigDefault, FastifySchema,
+  FastifyTypeProvider, RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerDefault,
+  RouteHandlerMethod
+} from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
+import { RouteGenericInterface } from '../../types/route'
 
 const server = fastify()
 
@@ -285,7 +292,7 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       }
     }
   },
-  async (_, res) => {
+  async (_, res): Promise<RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, TypeBoxProvider>> => {
     return false
   }
 ))
@@ -371,7 +378,7 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       } as const
     }
   },
-  async (_, res) => {
+  async (_, res): Promise<RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, TypeBoxProvider>> => {
     return false
   }
 ))

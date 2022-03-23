@@ -489,10 +489,10 @@ section.
   Application Messaging Protocol router for Fastify.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
-- [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot)
-  Webpack Hot Module Replacement for Fastify.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.
+- [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot)
+  Webpack Hot Module Replacement for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for
   Fastify — with support for WebSocket lifecycle hooks instead of a single
   handler function. Built upon [ws](https://github.com/websockets/ws) and

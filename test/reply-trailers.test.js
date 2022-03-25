@@ -29,7 +29,7 @@ test('do not send trailers when request do not contain correct te', t => {
   })
 })
 
-test('do not send trailers when payload is empty', t => {
+test('do not send trailers when payload is empty string', t => {
   t.plan(4)
 
   const fastify = Fastify()
@@ -40,6 +40,60 @@ test('do not send trailers when payload is empty', t => {
       return 'custom-etag'
     })
     reply.send('')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      TE: 'trailers'
+    }
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.notOk(res.headers.trailer)
+    t.notOk(res.trailers.etag)
+  })
+})
+
+test('do not send trailers when payload is empty buffer', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.addTrailer('ETag', function (reply, payload) {
+      t.fail('trailer should not be called.')
+      return 'custom-etag'
+    })
+    reply.send(Buffer.alloc(0))
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      TE: 'trailers'
+    }
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.notOk(res.headers.trailer)
+    t.notOk(res.trailers.etag)
+  })
+})
+
+test('do not send trailers when payload is undefined', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.addTrailer('ETag', function (reply, payload) {
+      t.fail('trailer should not be called.')
+      return 'custom-etag'
+    })
+    reply.send(undefined)
   })
 
   fastify.inject({

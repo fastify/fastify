@@ -212,7 +212,7 @@ Sets a response trailer. Trailer usually used when you want some header that req
 
 *Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.*
 
-*Note: Currently, the computation function only support synchronous function. That means `async-await` and `promise` is not supported.*
+*Note: Currently, the computation function only supports synchronous function. That means `async-await` and `promise` are not supported.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -225,12 +225,10 @@ const { createHash } = require('crypto')
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
 reply.trailer('content-md5', function(reply, payload) {
   const hash = createHash('md5')
-  hash.update(payload);
+  hash.update(payload)
   return hash.disgest('hex')
 })
 ```
-
-
 
 ### .hasTrailer(key)
 <a id="hasTrailer"></a>

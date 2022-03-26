@@ -155,6 +155,38 @@ test('removeTrailer', t => {
   })
 })
 
+test('hasTrailer', t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function (reply, payload) {
+      return 'custom-etag'
+    })
+    t.equal(reply.hasTrailer('ETag'), true)
+    reply.trailer('Should-Not-Call', function (reply, payload) {
+      t.fail('it should not called as this trailer is removed')
+      return 'should-not-call'
+    })
+    t.equal(reply.hasTrailer('Should-Not-Call'), true)
+    reply.removeTrailer('Should-Not-Call')
+    t.equal(reply.hasTrailer('Should-Not-Call'), false)
+    reply.send(undefined)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers.trailer, 'etag')
+    t.equal(res.trailers.etag, 'custom-etag')
+    t.notOk(res.trailers['should-not-call'])
+  })
+})
+
 test('throw error when trailer header name is not allowed', t => {
   const INVALID_TRAILERS = [
     'transfer-encoding',

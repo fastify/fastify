@@ -138,6 +138,7 @@ test('removeTrailer', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
+    reply.removeTrailer('ETag') // remove nothing
     reply.trailer('ETag', function (reply, payload) {
       return 'custom-etag'
     })
@@ -162,11 +163,12 @@ test('removeTrailer', t => {
 })
 
 test('hasTrailer', t => {
-  t.plan(8)
+  t.plan(9)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
+    t.equal(reply.hasTrailer('ETag'), false)
     reply.trailer('ETag', function (reply, payload) {
       return 'custom-etag'
     })

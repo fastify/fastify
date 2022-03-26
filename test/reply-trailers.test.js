@@ -5,17 +5,16 @@ const test = t.test
 const Fastify = require('..')
 const { Readable } = require('stream')
 
-test('do not send trailers when request do not contain correct te', t => {
+test('send trailers when payload is empty string', t => {
   t.plan(4)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
-      t.fail('trailer should not be called.')
+    reply.trailer('ETag', function (reply, payload) {
       return 'custom-etag'
     })
-    reply.send(JSON.stringify({ hello: 'world' }))
+    reply.send('')
   })
 
   fastify.inject({
@@ -24,46 +23,18 @@ test('do not send trailers when request do not contain correct te', t => {
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.notOk(res.headers.trailer)
-    t.notOk(res.trailers.etag)
+    t.equal(res.headers.trailer, 'etag')
+    t.equal(res.trailers.etag, 'custom-etag')
   })
 })
 
-test('do not send trailers when payload is empty string', t => {
+test('send trailers when payload is empty buffer', t => {
   t.plan(4)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
-      t.fail('trailer should not be called.')
-      return 'custom-etag'
-    })
-    reply.send('')
-  })
-
-  fastify.inject({
-    method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
-    }
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.notOk(res.headers.trailer)
-    t.notOk(res.trailers.etag)
-  })
-})
-
-test('do not send trailers when payload is empty buffer', t => {
-  t.plan(4)
-
-  const fastify = Fastify()
-
-  fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
-      t.fail('trailer should not be called.')
+    reply.trailer('ETag', function (reply, payload) {
       return 'custom-etag'
     })
     reply.send(Buffer.alloc(0))
@@ -71,26 +42,22 @@ test('do not send trailers when payload is empty buffer', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
-    }
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.notOk(res.headers.trailer)
-    t.notOk(res.trailers.etag)
+    t.equal(res.headers.trailer, 'etag')
+    t.equal(res.trailers.etag, 'custom-etag')
   })
 })
 
-test('do not send trailers when payload is undefined', t => {
+test('send trailers when payload is undefined', t => {
   t.plan(4)
 
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
-      t.fail('trailer should not be called.')
+    reply.trailer('ETag', function (reply, payload) {
       return 'custom-etag'
     })
     reply.send(undefined)
@@ -98,15 +65,12 @@ test('do not send trailers when payload is undefined', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
-    }
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.notOk(res.headers.trailer)
-    t.notOk(res.trailers.etag)
+    t.equal(res.headers.trailer, 'etag')
+    t.equal(res.trailers.etag, 'custom-etag')
   })
 })
 
@@ -117,7 +81,7 @@ test('send trailers when payload is json', t => {
   const data = JSON.stringify({ hello: 'world' })
 
   fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', function (reply, payload) {
       t.equal(data, payload)
       return 'custom-etag'
     })
@@ -126,10 +90,7 @@ test('send trailers when payload is json', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
-    }
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
@@ -145,7 +106,7 @@ test('send trailers when payload is stream', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (request, reply) {
-    reply.addTrailer('ETag', function (reply, payload) {
+    reply.trailer('ETag', function (reply, payload) {
       t.same(payload, null)
       return 'custom-etag'
     })
@@ -155,16 +116,42 @@ test('send trailers when payload is stream', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
-    }
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
     t.equal(res.headers['transfer-encoding'], 'chunked')
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
+  })
+})
+
+test('removeTrailer', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function (reply, payload) {
+      return 'custom-etag'
+    })
+    reply.trailer('Should-Not-Call', function (reply, payload) {
+      t.fail('it should not called as this trailer is removed')
+      return 'should-not-call'
+    })
+    reply.removeTrailer('Should-Not-Call')
+    reply.send(undefined)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers.trailer, 'etag')
+    t.equal(res.trailers.etag, 'custom-etag')
+    t.notOk(res.trailers['should-not-call'])
   })
 })
 
@@ -190,9 +177,9 @@ test('throw error when trailer header name is not allowed', t => {
   fastify.get('/', function (request, reply) {
     for (const key of INVALID_TRAILERS) {
       try {
-        reply.addTrailer(key, () => {})
+        reply.trailer(key, () => {})
       } catch (err) {
-        t.equal(err.message, `Called reply.addTrailer with an invalid header name: ${key}`)
+        t.equal(err.message, `Called reply.trailer with an invalid header name: ${key}`)
       }
     }
     reply.send('')
@@ -200,10 +187,42 @@ test('throw error when trailer header name is not allowed', t => {
 
   fastify.inject({
     method: 'GET',
-    url: '/',
-    headers: {
-      TE: 'trailers'
+    url: '/'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+  })
+})
+
+test('throw error when trailer header value is not function', t => {
+  const INVALID_TRAILERS_VALUE = [
+    undefined,
+    null,
+    true,
+    false,
+    'invalid',
+    [],
+    new Date(),
+    {}
+  ]
+  t.plan(INVALID_TRAILERS_VALUE.length + 2)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    for (const value of INVALID_TRAILERS_VALUE) {
+      try {
+        reply.trailer('invalid', value)
+      } catch (err) {
+        t.equal(err.message, `Called reply.trailer('invalid', fn) with an invalid type: ${typeof value}. Expected a function.`)
+      }
     }
+    reply.send('')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)

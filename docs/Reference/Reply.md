@@ -208,8 +208,7 @@ Returns a boolean indicating if the specified header has been set.
 ### .trailer(key, function)
 <a id="trailer"></a>
 
-Sets a response trailer. Trailer usually used when you want some header that require heavy resources to be sent after the `data`,
-for example `Server-Timing`, `Etag`. It can ensure the client get the response data as soon as possible.
+Sets a response trailer. Trailer usually used when you want some header that require heavy resources to be sent after the `data`, for example `Server-Timing`, `Etag`. It can ensure the client get the response data as soon as possible.
 
 *Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.*
 

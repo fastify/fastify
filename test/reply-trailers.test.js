@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const { Readable } = require('stream')
+const { createHash } = require('crypto')
 
 test('send trailers when payload is empty string', t => {
   t.plan(4)
@@ -79,11 +80,16 @@ test('send trailers when payload is json', t => {
 
   const fastify = Fastify()
   const data = JSON.stringify({ hello: 'world' })
+  const hash = createHash('md5')
+  hash.update(data)
+  const md5 = hash.digest('hex')
 
   fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload) {
+    reply.trailer('Content-MD5', function (reply, payload) {
       t.equal(data, payload)
-      return 'custom-etag'
+      const hash = createHash('md5')
+      hash.update(payload)
+      return hash.digest('hex')
     })
     reply.send(data)
   })
@@ -95,8 +101,8 @@ test('send trailers when payload is json', t => {
     t.error(error)
     t.equal(res.statusCode, 200)
     t.equal(res.headers['transfer-encoding'], 'chunked')
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
+    t.equal(res.headers.trailer, 'content-md5')
+    t.equal(res.trailers['content-md5'], md5)
   })
 })
 

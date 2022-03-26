@@ -213,6 +213,16 @@ Sets a response trailer.
 reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'
 })
+
+const { createHash } = require('crypto')
+// trailer function also recieve two argument
+// @param {object} reply fastify reply
+// @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
+reply.trailer('content-md5', function(reply, payload) {
+  const hash = createHash('md5')
+  hash.update(payload);
+  return hash.disgest('hex')
+})
 ```
 
 ### .hasTrailer(key)

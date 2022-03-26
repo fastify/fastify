@@ -50,6 +50,9 @@ object that exposes the following functions and properties:
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
+- `.trailer(key, function)` - Sets a response trailer.
+- `.hasTrailer(key)` - Determine if a trailer has been set.
+- `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] dest)` - Redirect to the specified url, the status code is
   optional (default to `302`).
@@ -205,9 +208,12 @@ Returns a boolean indicating if the specified header has been set.
 ### .trailer(key, function)
 <a id="trailer"></a>
 
-Sets a response trailer.
+Sets a response trailer. Trailer usually used when you want some header that require heavy resources to be sent after the `data`,
+for example `Server-Timing`, `Etag`. It can ensure the client get the response data as soon as possible.
 
-> Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.
+*Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.*
+
+*Note: Currently, the computation function only support synchronous function. That means `async-await` and `promise` is not supported.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -224,6 +230,8 @@ reply.trailer('content-md5', function(reply, payload) {
   return hash.disgest('hex')
 })
 ```
+
+
 
 ### .hasTrailer(key)
 <a id="hasTrailer"></a>

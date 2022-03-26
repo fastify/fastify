@@ -13,6 +13,9 @@
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
+  - [.trailer(key, function)](#trailerkey-function)
+  - [.hasTrailer(key)](#hastrailerkey)
+  - [.removeTrailer(key)](#removetrailerkey)
   - [.redirect([code,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
@@ -198,6 +201,37 @@ reply.getHeader('x-foo') // undefined
 <a id="hasHeader"></a>
 
 Returns a boolean indicating if the specified header has been set.
+
+### .trailer(key, function)
+<a id="trailer"></a>
+
+Sets a response trailer.
+
+> Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.
+
+```js
+reply.trailer('server-timing', function() {
+  return 'db;dur=53, app;dur=47.2'
+})
+```
+
+### .hasTrailer(key)
+<a id="hasTrailer"></a>
+
+Returns a boolean indicating if the specified trailer has been set.
+
+### .removeTrailer(key)
+<a id="removeTrailer"></a>
+
+Remove the value of a previously set trailer.
+```js
+reply.trailer('server-timing', function() {
+  return 'db;dur=53, app;dur=47.2'
+})
+reply.removeTrailer('server-timing')
+reply.getTrailer('server-timing') // undefined
+```
+
 
 ### .redirect([code ,] dest)
 <a id="redirect"></a>

@@ -13,6 +13,9 @@
   - [.getHeaders()](#getheaders)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
+  - [.trailer(key, function)](#trailerkey-function)
+  - [.hasTrailer(key)](#hastrailerkey)
+  - [.removeTrailer(key)](#removetrailerkey)
   - [.redirect([code,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
@@ -47,6 +50,9 @@ object that exposes the following functions and properties:
 - `.getHeaders()` - Gets a shallow copy of all current response headers.
 - `.removeHeader(key)` - Remove the value of a previously set header.
 - `.hasHeader(name)` - Determine if a header has been set.
+- `.trailer(key, function)` - Sets a response trailer.
+- `.hasTrailer(key)` - Determine if a trailer has been set.
+- `.removeTrailer(key)` - Remove the value of a previously set trailer.
 - `.type(value)` - Sets the header `Content-Type`.
 - `.redirect([code,] dest)` - Redirect to the specified url, the status code is
   optional (default to `302`).
@@ -198,6 +204,49 @@ reply.getHeader('x-foo') // undefined
 <a id="hasHeader"></a>
 
 Returns a boolean indicating if the specified header has been set.
+
+### .trailer(key, function)
+<a id="trailer"></a>
+
+Sets a response trailer. Trailer usually used when you want some header that require heavy resources to be sent after the `data`, for example `Server-Timing`, `Etag`. It can ensure the client get the response data as soon as possible.
+
+*Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.*
+
+*Note: Currently, the computation function only supports synchronous function. That means `async-await` and `promise` are not supported.*
+
+```js
+reply.trailer('server-timing', function() {
+  return 'db;dur=53, app;dur=47.2'
+})
+
+const { createHash } = require('crypto')
+// trailer function also recieve two argument
+// @param {object} reply fastify reply
+// @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
+reply.trailer('content-md5', function(reply, payload) {
+  const hash = createHash('md5')
+  hash.update(payload)
+  return hash.disgest('hex')
+})
+```
+
+### .hasTrailer(key)
+<a id="hasTrailer"></a>
+
+Returns a boolean indicating if the specified trailer has been set.
+
+### .removeTrailer(key)
+<a id="removeTrailer"></a>
+
+Remove the value of a previously set trailer.
+```js
+reply.trailer('server-timing', function() {
+  return 'db;dur=53, app;dur=47.2'
+})
+reply.removeTrailer('server-timing')
+reply.getTrailer('server-timing') // undefined
+```
+
 
 ### .redirect([code ,] dest)
 <a id="redirect"></a>

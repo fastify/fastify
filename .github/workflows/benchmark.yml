@@ -19,7 +19,7 @@ jobs:
       matrix:
         node-version: [14, 16, 17]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
@@ -40,7 +40,7 @@ jobs:
           echo "::set-output name=BENCH_RESULT${{matrix.node-version}}::$result"
 
       # main benchmark
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: 'main'
 

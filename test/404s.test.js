@@ -1872,6 +1872,22 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
     })
   })
 
+  t.test('customized 404', t => {
+    t.plan(3)
+    const fastify = Fastify({ logger: true })
+    fastify.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found')
+    })
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.same(response.payload, 'this was not found')
+    })
+  })
+
   t.end()
 })
 

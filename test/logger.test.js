@@ -1517,7 +1517,8 @@ test('should not log incoming request and outgoing response for 404 onBadUrl whe
     url: '/%c0',
     method: 'GET'
   }, (e, res) => {
-    t.same(lines.length, 0)
+    // it will log 1 line only because of basic404
+    t.same(lines.length, 1)
   })
 })
 

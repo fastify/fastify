@@ -1,5 +1,6 @@
 
 import { RouteGenericInterface } from './route'
+import { FastifyReply } from '../'
 import { FastifySchema } from './schema'
 
 // -----------------------------------------------------------------------------------------------
@@ -93,7 +94,7 @@ TypeProvider,
 SchemaCompiler,
 RouteGeneric
 > extends infer Return ?
-  (void | Promise<Return | void>)
+  (FastifyReply | Return | Promise<Return | FastifyReply>)
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown

@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable, printType } from 'tsd'
+import { expectType, expectError, expectAssignable } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
 import { RequestPayload } from '../../types/hooks'
@@ -21,10 +21,18 @@ declare module '../../fastify' {
   }
 }
 
-const routeHandler: RouteHandlerMethod = function (request, reply) {
+const routeHandlerPayload: RouteHandlerMethod = function (request, reply) {
   expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
+  return { something: 'returned' }
+}
+
+const routeHandlerReply: RouteHandlerMethod = function (request, reply) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  return reply.send({ something: 'returned' })
 }
 
 type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options'
@@ -34,18 +42,34 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify().route({
     method: method as HTTPMethods,
     url: '/',
-    handler: routeHandler
+    handler: routeHandlerReply
+  }))
+  expectType<FastifyInstance>(fastify().route({
+    method: method as HTTPMethods,
+    url: '/',
+    handler: routeHandlerPayload
   }))
 
   const lowerCaseMethod: LowerCaseHTTPMethods = method.toLowerCase() as LowerCaseHTTPMethods
 
   // method as method
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandlerReply))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandlerReply))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandlerReply }))
+
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', routeHandlerPayload))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandlerPayload))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandlerPayload }))
 
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
-    handler: routeHandler,
+    handler: routeHandlerReply,
+    errorHandler: (error, request, reply) => {
+      expectType<FastifyError>(error)
+      reply.send('error')
+    }
+  }))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
+    handler: routeHandlerPayload,
     errorHandler: (error, request, reply) => {
       expectType<FastifyError>(error)
       reply.send('error')
@@ -177,6 +201,7 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
       expectType<number>(req.context.config.bar)
       expectType<string>(res.context.config.foo)
       expectType<number>(res.context.config.bar)
+      return 'something'
     }
   })
 })
@@ -184,35 +209,67 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
 expectError(fastify().route({
   url: '/',
   method: 'CONNECT', // not a valid method
-  handler: routeHandler
+  handler: routeHandlerPayload
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: ['GET', 'POST'],
-  handler: routeHandler
+  handler: routeHandlerPayload
 }))
 
 expectError(fastify().route({
   url: '/',
   method: ['GET', 'POST', 'OPTION'], // OPTION is a typo for OPTIONS
-  handler: routeHandler
+  handler: routeHandlerPayload
 }))
 
 expectError(fastify().route({
   url: '/',
   method: 'GET',
-  handler: routeHandler,
+  handler: routeHandlerPayload,
   schemaErrorFormatter: 500 // Not a valid formatter
 }))
 
 expectType<FastifyInstance>(fastify().route({
   url: '/',
   method: 'GET',
-  handler: routeHandler,
+  handler: routeHandlerPayload,
   schemaErrorFormatter: (errors, dataVar) => new Error('')
 }))
 
 expectError(fastify().route({
   prefixTrailingSlash: true // Not a valid value
+}))
+
+expectError(fastify().route({
+  url:'/',
+  method:'GET',
+  handler: (req,reply)=>{
+    return
+  }
+}))
+
+expectError(fastify().route({
+  url:'/',
+  method:'GET',
+  handler: async (req,reply) => {
+    return
+  }
+}))
+
+expectError(fastify().route({
+  url:'/',
+  method:'GET',
+  handler: (req,reply) => {
+    return undefined
+  }
+}))
+
+expectError(fastify().route({
+  url:'/',
+  method:'GET',
+  handler: async (req,reply) => {
+    return undefined
+  }
 }))

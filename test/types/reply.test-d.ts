@@ -31,6 +31,7 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(payload: any) => string>(reply.serialize)
   expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
   expectType<FastifyInstance>(reply.server)
+  return 'something'
 }
 
 interface ReplyPayload {
@@ -41,19 +42,20 @@ interface ReplyPayload {
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  return { test: true }
 }
 
 const server = fastify()
 server.get('/get', getHandler)
 server.get('/typed', typedHandler)
 server.get<ReplyPayload>('/get-generic-send', async function handler (request, reply) {
-  reply.send({ test: true })
+  return reply.send({ test: true })
 })
 server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
   return { test: false }
 })
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
-  reply.send({ foo: 'bar' })
+  return reply.send({ foo: 'bar' })
 }))
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
   return { foo: 'bar' }

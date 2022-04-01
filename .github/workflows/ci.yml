@@ -51,7 +51,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3.0.1
         id: check-cache
         with:
           path: ~/.npm
@@ -91,7 +91,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3.0.1
         id: check-cache
         with:
           path: ~/.npm

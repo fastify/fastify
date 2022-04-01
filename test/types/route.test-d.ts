@@ -243,33 +243,33 @@ expectError(fastify().route({
 }))
 
 expectError(fastify().route({
-  url:'/',
-  method:'GET',
-  handler: (req,reply)=>{
-    return
+  url: '/',
+  method: 'GET',
+  handler: (req, reply) => {
+
   }
 }))
 
 expectError(fastify().route({
-  url:'/',
-  method:'GET',
-  handler: async (req,reply) => {
-    return
+  url: '/',
+  method: 'GET',
+  handler: async (req, reply) => {
+
   }
 }))
 
 expectError(fastify().route({
-  url:'/',
-  method:'GET',
-  handler: (req,reply) => {
+  url: '/',
+  method: 'GET',
+  handler: (req, reply) => {
     return undefined
   }
 }))
 
 expectError(fastify().route({
-  url:'/',
-  method:'GET',
-  handler: async (req,reply) => {
+  url: '/',
+  method: 'GET',
+  handler: async (req, reply) => {
     return undefined
   }
 }))

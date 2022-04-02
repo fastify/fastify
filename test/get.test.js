@@ -205,7 +205,7 @@ test('send a falsy boolean', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - request get', t => {
     t.plan(4)

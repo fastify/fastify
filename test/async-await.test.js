@@ -48,7 +48,7 @@ test('async await', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -410,7 +410,7 @@ test('promise was fulfilled with undefined', t => {
 
   fastify.listen({ port: 0 }, (err) => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -452,7 +452,7 @@ test('error is not logged because promise was fulfilled with undefined but respo
 
   fastify.listen({ port: 0 }, (err) => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

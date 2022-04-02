@@ -30,7 +30,7 @@ test('bodyLimit', t => {
 
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',

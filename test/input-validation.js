@@ -139,7 +139,7 @@ module.exports.payloadMethod = function (method, t) {
       t.error(err)
     }
 
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test(`${upMethod} - correctly replies`, t => {
       if (upMethod === 'HEAD') {

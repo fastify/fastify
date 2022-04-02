@@ -98,7 +98,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       return
     }
 
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test(`${upMethod} - correctly replies`, t => {
       t.plan(3)

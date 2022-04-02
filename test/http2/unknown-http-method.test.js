@@ -16,7 +16,7 @@ fastify.get('/', function (req, reply) {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('http UNKNOWN_METHOD request', async (t) => {
     t.plan(2)

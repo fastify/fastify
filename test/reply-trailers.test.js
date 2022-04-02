@@ -7,7 +7,7 @@ const { Readable } = require('stream')
 const { createHash } = require('crypto')
 
 test('send trailers when payload is empty string', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -26,11 +26,12 @@ test('send trailers when payload is empty string', t => {
     t.equal(res.statusCode, 200)
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('send trailers when payload is empty buffer', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -49,11 +50,12 @@ test('send trailers when payload is empty buffer', t => {
     t.equal(res.statusCode, 200)
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('send trailers when payload is undefined', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = Fastify()
 
@@ -72,11 +74,12 @@ test('send trailers when payload is undefined', t => {
     t.equal(res.statusCode, 200)
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('send trailers when payload is json', t => {
-  t.plan(6)
+  t.plan(7)
 
   const fastify = Fastify()
   const data = JSON.stringify({ hello: 'world' })
@@ -103,11 +106,12 @@ test('send trailers when payload is json', t => {
     t.equal(res.headers['transfer-encoding'], 'chunked')
     t.equal(res.headers.trailer, 'content-md5')
     t.equal(res.trailers['content-md5'], md5)
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('send trailers when payload is stream', t => {
-  t.plan(6)
+  t.plan(7)
 
   const fastify = Fastify()
 
@@ -129,11 +133,12 @@ test('send trailers when payload is stream', t => {
     t.equal(res.headers['transfer-encoding'], 'chunked')
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('removeTrailer', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
 
@@ -159,11 +164,12 @@ test('removeTrailer', t => {
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
     t.notOk(res.trailers['should-not-call'])
+    t.notHas(res.headers, 'content-length')
   })
 })
 
 test('hasTrailer', t => {
-  t.plan(9)
+  t.plan(10)
 
   const fastify = Fastify()
 
@@ -192,6 +198,7 @@ test('hasTrailer', t => {
     t.equal(res.headers.trailer, 'etag')
     t.equal(res.trailers.etag, 'custom-etag')
     t.notOk(res.trailers['should-not-call'])
+    t.notHas(res.headers, 'content-length')
   })
 })
 

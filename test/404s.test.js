@@ -3,7 +3,6 @@
 const t = require('tap')
 const test = t.test
 const fp = require('fastify-plugin')
-const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
@@ -1097,7 +1096,7 @@ test('recognizes errors from the http-errors module', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    reply.send(httpErrors.NotFound())
+    reply.send(new errors.NotFound())
   })
 
   t.teardown(fastify.close.bind(fastify))
@@ -1132,7 +1131,7 @@ test('the default 404 handler can be invoked inside a prefixed plugin', t => {
 
   fastify.register(function (instance, opts, done) {
     instance.get('/path', function (request, reply) {
-      reply.send(httpErrors.NotFound())
+      reply.send(new errors.NotFound())
     })
 
     done()
@@ -1160,7 +1159,7 @@ test('an inherited custom 404 handler can be invoked inside a prefixed plugin', 
 
   fastify.register(function (instance, opts, done) {
     instance.get('/path', function (request, reply) {
-      reply.send(httpErrors.NotFound())
+      reply.send(new errors.NotFound())
     })
 
     done()

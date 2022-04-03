@@ -26,7 +26,7 @@ fastify.get('/hostname', function (req, reply) {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('http get request', async (t) => {
     t.plan(3)

@@ -310,7 +310,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
   fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     http.get(`http://${localhostForURL}:${fastify.server.address().port}`)
   })

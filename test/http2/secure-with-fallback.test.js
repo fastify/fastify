@@ -42,7 +42,7 @@ test('secure with fallback', (t) => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     t.test('https get error', async (t) => {
       t.plan(1)

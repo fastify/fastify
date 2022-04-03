@@ -244,7 +244,7 @@ test('Should register a versioned route', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -409,7 +409,7 @@ test('Bas accept version (server)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -451,7 +451,7 @@ test('test log stream', t => {
 
   fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     http.get({
       hostname: fastify.server.address().hostname,

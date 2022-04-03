@@ -40,7 +40,7 @@ test('register', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     makeRequest('first')
     makeRequest('second')

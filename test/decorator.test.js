@@ -134,7 +134,7 @@ test('decorateReply inside register', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -182,7 +182,7 @@ test('decorateReply as plugin (inside .after)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -230,7 +230,7 @@ test('decorateReply as plugin (outside .after)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -276,7 +276,7 @@ test('decorateRequest inside register', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -324,7 +324,7 @@ test('decorateRequest as plugin (inside .after)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -372,7 +372,7 @@ test('decorateRequest as plugin (outside .after)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -951,7 +951,7 @@ test('decorateRequest/decorateReply empty string', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -980,7 +980,7 @@ test('decorateRequest/decorateReply is undefined', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -1009,7 +1009,7 @@ test('decorateRequest/decorateReply is not set to a value', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

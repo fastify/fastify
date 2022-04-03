@@ -94,7 +94,7 @@ test('missing schema - head', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - request head', t => {
     t.plan(2)

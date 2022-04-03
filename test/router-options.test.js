@@ -25,7 +25,7 @@ test('Should honor ignoreTrailingSlash option', t => {
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
     if (err) t.threw(err)
 
     const baseUrl = getUrl(fastify)

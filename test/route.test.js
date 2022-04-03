@@ -115,7 +115,7 @@ test('route', t => {
 
   fastify.listen({ port: 0 }, function (err) {
     if (err) t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test('cannot add another route after binding', t => {
       t.plan(1)
@@ -1441,7 +1441,7 @@ test('route with non-english characters', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

@@ -58,7 +58,7 @@ test('async hooks', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

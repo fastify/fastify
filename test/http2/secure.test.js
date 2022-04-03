@@ -35,7 +35,7 @@ test('secure', (t) => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     t.test('https get request', async (t) => {
       t.plan(3)

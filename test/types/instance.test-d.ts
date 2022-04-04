@@ -246,6 +246,7 @@ type InitialConfig = Readonly<{
   keepAliveTimeout?: number,
   bodyLimit?: number,
   caseSensitive?: boolean,
+  allowUnsafeRegex?: boolean,
   forceCloseConnections?: boolean,
   http2?: boolean,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,

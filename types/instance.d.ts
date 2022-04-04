@@ -609,6 +609,7 @@ export interface FastifyInstance<
     forceCloseConnections?: boolean,
     bodyLimit?: number,
     caseSensitive?: boolean,
+    allowUnsafeRegex?: boolean,
     http2?: boolean,
     https?: boolean | Readonly<{ allowHTTP1: boolean }>,
     ignoreTrailingSlash?: boolean,

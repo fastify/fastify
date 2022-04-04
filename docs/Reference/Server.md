@@ -26,6 +26,7 @@ describes the properties available in that options object.
   - [`serverFactory`](#serverfactory)
   - [`jsonShorthand`](#jsonshorthand)
   - [`caseSensitive`](#casesensitive)
+  - [`allowUnsafeRegex`](#allowunsaferegex)
   - [`requestIdHeader`](#requestidheader)
   - [`requestIdLogLabel`](#requestidloglabel)
   - [`genReqId`](#genreqid)
@@ -425,6 +426,22 @@ Please note that setting this option to `false` goes against
 Also note, this setting will not affect query strings. If you want to change the
 way query strings are handled take a look at
 [`querystringParser`](#querystringparser).
+
+
+### `allowUnsafeRegex`
+<a id="factory-allow-unsafe-regex"></a>
+
+The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressionss. To use unsafe expressions, set allowUnsafeRegex to true.
+
+```js
+fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
+  // Throws an error without allowUnsafeRegex = true
+})
+```
+
+Under the hood: [FindMyWay](https://github.com/delvedor/find-my-way)
+More info about safe regexp: [Safe-regex2](https://www.npmjs.com/package/safe-regex2)
+
 
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
@@ -1514,6 +1531,7 @@ Currently the properties that can be exposed are:
 - keepAliveTimeout
 - bodyLimit
 - caseSensitive
+- allowUnsafeRegex
 - http2
 - https (it will return `false`/`true` or `{ allowHTTP1: true/false }` if
   explicitly passed)

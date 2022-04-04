@@ -171,6 +171,7 @@ function fastify (options) {
       ignoreTrailingSlash: options.ignoreTrailingSlash || defaultInitOptions.ignoreTrailingSlash,
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
+      allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta
     },
     keepAliveConnections

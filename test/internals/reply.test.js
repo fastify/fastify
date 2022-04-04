@@ -53,6 +53,7 @@ test('reply.send will logStream error and destroy the stream', { only: true }, t
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {},
+    write: () => {},
     headersSent: true
   })
 
@@ -74,6 +75,7 @@ test('reply.send throw with circular JSON', t => {
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {},
+    write: () => {},
     end: () => {}
   }
   const reply = new Reply(response, { context: { onSend: [] } })
@@ -91,6 +93,7 @@ test('reply.send returns itself', t => {
     hasHeader: () => false,
     getHeader: () => undefined,
     writeHead: () => {},
+    write: () => {},
     end: () => {}
   }
   const reply = new Reply(response, { context: { onSend: [] } })

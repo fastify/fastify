@@ -1,5 +1,6 @@
 .editorconfig
 .eslintrc
+.eslintrc.json
 .gitattributes
 .gitignore
 .github

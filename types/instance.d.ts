@@ -364,7 +364,7 @@ export interface FastifyInstance<
    * Set the 404 handler
    */
   setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface> (
-    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void | Promise<RouteGeneric['Reply'] | void>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>;
 
   setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault> (
@@ -372,7 +372,7 @@ export interface FastifyInstance<
       preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
       preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig>[];
     },
-    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void
+    handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric>) => void | Promise<RouteGeneric['Reply'] | void>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger>
 
   /**

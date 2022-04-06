@@ -98,6 +98,7 @@ expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, requ
 }))
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
+async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreHandlerHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
 async function notFoundpreHandlerAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
 function notFoundpreValidationHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) { done() }
@@ -109,6 +110,13 @@ server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFou
 server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundHandler)
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundHandler)
+
+server.setNotFoundHandler(notFoundAsyncHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerAsyncHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
+server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 
 function invalidErrorHandler (error: number) {}
 expectError(server.setErrorHandler(invalidErrorHandler))

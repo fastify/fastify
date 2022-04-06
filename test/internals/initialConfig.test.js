@@ -37,6 +37,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     requestTimeout: 0,
     bodyLimit: 1024 * 1024,
     caseSensitive: true,
+    allowUnsafeRegex: false,
     disableRequestLogging: false,
     jsonShorthand: true,
     ignoreTrailingSlash: false,
@@ -54,7 +55,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(18)
+  t.plan(19)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -96,6 +97,7 @@ test('Fastify.initialConfig should expose all options', t => {
     onProtoPoisoning: 'remove',
     serverFactory,
     caseSensitive: true,
+    allowUnsafeRegex: false,
     requestIdHeader: 'request-id-alt',
     pluginTimeout: 20000,
     querystringParser: str => str,
@@ -121,6 +123,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.bodyLimit, 1049600)
   t.equal(fastify.initialConfig.onProtoPoisoning, 'remove')
   t.equal(fastify.initialConfig.caseSensitive, true)
+  t.equal(fastify.initialConfig.allowUnsafeRegex, false)
   t.equal(fastify.initialConfig.requestIdHeader, 'request-id-alt')
   t.equal(fastify.initialConfig.pluginTimeout, 20000)
   t.ok(fastify.initialConfig.constraints.version)
@@ -266,6 +269,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       requestTimeout: 0,
       bodyLimit: 1024 * 1024,
       caseSensitive: true,
+      allowUnsafeRegex: false,
       disableRequestLogging: false,
       jsonShorthand: true,
       ignoreTrailingSlash: true,
@@ -310,7 +314,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
 
   fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     http.get(`http://${localhostForURL}:${fastify.server.address().port}`)
   })

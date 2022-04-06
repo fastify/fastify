@@ -89,8 +89,8 @@ test('object or null body', t => {
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    fastify.server.unref()
     t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -141,8 +141,8 @@ test('nullable body', t => {
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    fastify.server.unref()
     t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -182,8 +182,8 @@ test('Nullable body with 204', t => {
   })
 
   fastify.listen({ port: 0 }, (err) => {
-    fastify.server.unref()
     t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',

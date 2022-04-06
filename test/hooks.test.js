@@ -140,7 +140,7 @@ test('hooks', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -263,7 +263,7 @@ test('onRequest hook should support encapsulation / 3', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -324,7 +324,7 @@ test('preHandler hook should support encapsulation / 5', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -735,7 +735,7 @@ test('onRoute hook should able to change the route url', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -920,7 +920,7 @@ test('onResponse hook should support encapsulation / 3', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -997,7 +997,7 @@ test('onSend hook should support encapsulation / 2', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -1261,7 +1261,8 @@ test('onSend hook throws', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
+
     sget({
       method: 'GET',
       url: 'http://localhost:' + fastify.server.address().port
@@ -2391,7 +2392,7 @@ test('preValidation hook should support encapsulation / 3', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2538,7 +2539,7 @@ test('preParsing hook should run before parsing and be able to modify the payloa
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -2581,7 +2582,7 @@ test('preParsing hooks should run in the order in which they are defined', t => 
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -2631,7 +2632,7 @@ test('preParsing hooks should support encapsulation', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -2752,7 +2753,7 @@ test('preParsing hook should support encapsulation / 3', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2814,7 +2815,7 @@ test('preSerialization hook should run before serialization and be able to modif
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2865,7 +2866,7 @@ test('preSerialization hook should be able to throw errors which are validated a
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2899,7 +2900,7 @@ test('preSerialization hook which returned error should still run onError hooks'
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2933,7 +2934,7 @@ test('preSerialization hooks should run in the order in which they are defined',
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -2977,7 +2978,7 @@ test('preSerialization hooks should support encapsulation', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

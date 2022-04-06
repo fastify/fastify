@@ -159,7 +159,7 @@ test('body - delete', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - request delete', t => {
     t.plan(4)

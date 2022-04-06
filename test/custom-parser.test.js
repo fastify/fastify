@@ -124,7 +124,7 @@ test('contentTypeParser should handle multiple custom parsers', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -176,7 +176,7 @@ test('contentTypeParser should handle an array of custom contentTypes', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -966,7 +966,7 @@ test('Should parse empty bodies as a string', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',

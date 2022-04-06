@@ -34,7 +34,7 @@ t.test('http/2 request while fastify closing', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     t.test('return 200', t => {
       const url = getUrl(fastify)
@@ -81,7 +81,7 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     t.test('return 200', t => {
       const url = getUrl(fastify)

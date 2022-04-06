@@ -37,7 +37,7 @@ test('should respond with a stream', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
@@ -63,7 +63,7 @@ test('should respond with a stream (error)', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -118,8 +118,7 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.error(err)
@@ -281,7 +280,7 @@ test('Destroying streams prematurely', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -344,7 +343,7 @@ test('Destroying streams prematurely should call close method', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -406,7 +405,7 @@ test('Destroying streams prematurely should call close method when destroy is no
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -469,7 +468,7 @@ test('Destroying streams prematurely should call abort method', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -519,7 +518,7 @@ test('Destroying streams prematurely, log is disabled', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -549,7 +548,7 @@ test('should respond with a stream1', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.error(err)
@@ -581,7 +580,7 @@ test('return a 404 if the stream emits a 404 error', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -609,7 +608,7 @@ test('should support send module 200 and 404', { skip: semver.gte(process.versio
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const url = getUrl(fastify)
 
@@ -650,7 +649,7 @@ test('should destroy stream when response is ended', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -727,7 +726,7 @@ test('reply.send handles aborted requests', t => {
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
     const http = require('http')

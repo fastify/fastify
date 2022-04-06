@@ -29,6 +29,7 @@ const defaultInitOptions = {
   requestTimeout: 0, // no limit
   bodyLimit: 1024 * 1024, // 1 MiB
   caseSensitive: true,
+  allowUnsafeRegex: false,
   disableRequestLogging: false,
   jsonShorthand: true,
   ignoreTrailingSlash: false,
@@ -53,6 +54,7 @@ const schema = {
     requestTimeout: { type: 'integer', default: defaultInitOptions.requestTimeout },
     bodyLimit: { type: 'integer', default: defaultInitOptions.bodyLimit },
     caseSensitive: { type: 'boolean', default: defaultInitOptions.caseSensitive },
+    allowUnsafeRegex: { type: 'boolean', default: defaultInitOptions.allowUnsafeRegex },
     http2: { type: 'boolean' },
     https: {
       if: {

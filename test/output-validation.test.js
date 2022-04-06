@@ -92,7 +92,7 @@ test('unlisted response code', t => {
 
 fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - string get ok', t => {
     t.plan(4)

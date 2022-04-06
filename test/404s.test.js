@@ -3,7 +3,6 @@
 const t = require('tap')
 const test = t.test
 const fp = require('fastify-plugin')
-const httpErrors = require('http-errors')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
@@ -1097,7 +1096,7 @@ test('recognizes errors from the http-errors module', t => {
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
-    reply.send(httpErrors.NotFound())
+    reply.send(new errors.NotFound())
   })
 
   t.teardown(fastify.close.bind(fastify))
@@ -1132,7 +1131,7 @@ test('the default 404 handler can be invoked inside a prefixed plugin', t => {
 
   fastify.register(function (instance, opts, done) {
     instance.get('/path', function (request, reply) {
-      reply.send(httpErrors.NotFound())
+      reply.send(new errors.NotFound())
     })
 
     done()
@@ -1160,7 +1159,7 @@ test('an inherited custom 404 handler can be invoked inside a prefixed plugin', 
 
   fastify.register(function (instance, opts, done) {
     instance.get('/path', function (request, reply) {
-      reply.send(httpErrors.NotFound())
+      reply.send(new errors.NotFound())
     })
 
     done()
@@ -1869,6 +1868,22 @@ test('400 in case of bad url (pre find-my-way v2.2.0 was a 404)', t => {
         message: 'Route GET:/non-existing not found',
         statusCode: 404
       })
+    })
+  })
+
+  t.test('customized 404', t => {
+    t.plan(3)
+    const fastify = Fastify({ logger: true })
+    fastify.setNotFoundHandler(function (req, reply) {
+      reply.code(404).send('this was not found')
+    })
+    fastify.inject({
+      url: '/%c0',
+      method: 'GET'
+    }, (err, response) => {
+      t.error(err)
+      t.equal(response.statusCode, 404)
+      t.same(response.payload, 'this was not found')
     })
   })
 

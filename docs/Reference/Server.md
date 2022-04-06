@@ -1305,7 +1305,7 @@ call is encapsulated by prefix, so different plugins can set different not found
 handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option)
 is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
-lifecycle](./Lifecycle.md#lifecycle).
+lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 
 You can also register
 [`preValidation`](./Hooks.md#route-hooks) and
@@ -1485,7 +1485,7 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 #### hasContentTypeParser
 <a id="hasContentTypeParser"></a>
 
-`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current 
+`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current
 context for the specified content type.
 
 ```js

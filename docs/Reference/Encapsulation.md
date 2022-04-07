@@ -94,7 +94,7 @@ fastify.register(async function publicContext (childServer) {
   })
 })
 
-fastify.listen(8000)
+fastify.listen({ port: 8000 })
 ```
 
 The above server example shows all of the encapsulation concepts outlined in the
@@ -180,7 +180,7 @@ fastify.register(async function publicContext (childServer) {
   }
 })
 
-fastify.listen(8000)
+fastify.listen({ port: 8000 })
 ```
 
 Restarting the server and re-issuing the requests for `/two` and `/three`:

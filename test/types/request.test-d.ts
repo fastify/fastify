@@ -1,4 +1,5 @@
 import { expectType } from 'tsd'
+import pino from 'pino'
 import fastify, {
   RouteHandler,
   RawRequestDefaultExpression,
@@ -8,9 +9,11 @@ import fastify, {
   ContextConfigDefault,
   FastifyContextConfig,
   FastifyLogFn,
+  RouteHandlerMethod,
   RawServerDefault,
   RawReplyDefaultExpression,
-  RouteHandlerMethod
+  FastifySchema,
+  FastifyTypeProviderDefault
 } from '../../fastify'
 import { RequestParamsDefault, RequestHeadersDefault, RequestQuerystringDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
@@ -18,6 +21,7 @@ import { FastifyRequest } from '../../types/request'
 import { FastifyReply } from '../../types/reply'
 import { FastifyInstance } from '../../types/instance'
 import { RouteGenericInterface } from '../../types/route'
+import { ResolveFastifyReplyReturnType, ResolveFastifyRequestType } from '../../types/type-provider'
 
 interface RequestBody {
   content: string;
@@ -81,7 +85,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyInstance>(request.server)
 }
 
-const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, CustomLoggerInterface> = function (request, _reply) {
+const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveFastifyReplyReturnType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>, CustomLoggerInterface> = function (request, _reply) {
   expectType<CustomLoggerInterface>(request.log)
 }
 
@@ -119,6 +123,19 @@ server.post('/post', postHandler)
 server.put('/put', putHandler)
 
 const customLogger: CustomLoggerInterface = {
+  level: 'info',
+  version: '5.0',
+  useOnlyCustomLevels: false,
+  useLevelLabels: false,
+  levels: { labels: [], values: {} },
+  eventNames: () => [],
+  listenerCount: (eventName: string | symbol) => 0,
+  bindings: () => ({}),
+  flush: () => () => {},
+  customLevels: { foo: 1 },
+  isLevelEnabled: () => false,
+  levelVal: 0,
+  silent: () => { },
   info: () => { },
   warn: () => { },
   error: () => { },
@@ -126,7 +143,20 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger
+  on: (event, listener) => customLogger,
+  emit: (event, listener) => false,
+  off: (event, listener) => customLogger,
+  addListener: (event, listener) => customLogger,
+  prependListener: (event, listener) => customLogger,
+  prependOnceListener: (event, listener) => customLogger,
+  removeListener: (event, listener) => customLogger,
+  removeAllListeners: (event) => customLogger,
+  setMaxListeners: (n) => customLogger,
+  getMaxListeners: () => 0,
+  listeners: () => [],
+  rawListeners: () => [],
+  once: (event, listener) => customLogger,
+  child: () => customLogger as pino.Logger<never>
 }
 
 const serverWithCustomLogger = fastify({ logger: customLogger })

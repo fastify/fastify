@@ -17,12 +17,15 @@ test('Fastify should throw on wrong options', t => {
 test('Fastify should throw on multiple assignment to the same route', t => {
   t.plan(1)
   const fastify = Fastify()
-  fastify.get('/', () => {})
+
   fastify.get('/', () => {})
 
-  fastify.ready(err => {
-    t.equal(err.message, "Method 'GET' already declared for route '/' with constraints '{}'")
-  })
+  try {
+    fastify.get('/', () => {})
+    t.fail('Should throw on duplicated route declaration')
+  } catch (error) {
+    t.equal(error.message, "Method 'GET' already declared for route '/'")
+  }
 })
 
 test('Fastify should throw for an invalid schema, printing the error route - headers', t => {
@@ -78,7 +81,7 @@ test('Fastify should throw for an invalid shorthand option type', t => {
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_INIT_OPTS_INVALID')
-    t.match(e.message, /should be boolean/)
+    t.match(e.message, /must be boolean/)
     t.pass()
   }
 })

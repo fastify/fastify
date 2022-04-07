@@ -72,7 +72,7 @@ in a blank http Fastify server.
      return 'pong\n'
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(1)
@@ -360,7 +360,7 @@ into TypeScript interfaces!
      }
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(0)
@@ -399,7 +399,7 @@ const todo = {
     done: { type: 'boolean' },
   },
   required: ['name'],
-} as const;
+} as const; // don't forget to use const !
 ```
 
 With the provided type `FromSchema` you can build a type from your schema and
@@ -487,6 +487,7 @@ Fastify Plugin in a TypeScript Project.
    import fp from 'fastify-plugin'
 
    // using declaration merging, add your plugin props to the appropriate fastify interfaces
+   // if prop type is defined here, the value will be typechecked when you call decorate{,Request,Reply}
    declare module 'fastify' {
      interface FastifyRequest {
        myPluginProp: string
@@ -680,21 +681,21 @@ There are a couple supported import methods with the Fastify type system.
      import fastify from 'fastify'
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Gain access to types with destructuring:
      ```typescript
      import fastify, { FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Destructuring also works for the main API method:
      ```typescript
      import { fastify, FastifyInstance } from 'fastify'
 
      const f: FastifyInstance = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 2. `import * as Fastify from 'fastify'`
    - Types are resolved and accessible using dot notation
@@ -705,7 +706,7 @@ There are a couple supported import methods with the Fastify type system.
      import * as Fastify from 'fastify'
 
      const f: Fastify.FastifyInstance = Fastify.fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 3. `const fastify = require('fastify')`
    - This syntax is valid and will import fastify as expected; however, types
@@ -715,14 +716,14 @@ There are a couple supported import methods with the Fastify type system.
      const fastify = require('fastify')
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
    - Destructuring is supported and will resolve types properly
      ```typescript
      const { fastify } = require('fastify')
 
      const f = fastify()
-     f.listen(8080, () => { console.log('running') })
+     f.listen({ port: 8080 }, () => { console.log('running') })
      ```
 
 #### Generics
@@ -824,7 +825,7 @@ a more detailed http server walkthrough.
      return { hello: 'world' }
    })
 
-   server.listen(8080, (err, address) => {
+   server.listen({ port: 8080 }, (err, address) => {
      if (err) {
        console.error(err)
        process.exit(0)
@@ -877,26 +878,23 @@ server.get('/', async (request, reply) => {
 
 ###### Example 5: Specifying logger types
 
-Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Some
-of it's properties can be configured via `logger` field when constructing
-Fastify's instance. If properties you need aren't exposed, it's also possible to
-pass a preconfigured external instance of Pino (or any other compatible logger)
-to Fastify via the same field. This allows creating custom serializers as well,
-see the [Logging](./Logging.md) documentation for more info.
-
-To use an external instance of Pino, add `@types/pino` to devDependencies and
-pass the instance to `logger` field:
+Fastify uses [Pino](https://getpino.io/#/) logging library under the hood. Since
+`pino@7`, all of it's properties can be configured via `logger` field when
+constructing Fastify's instance. If properties you need aren't exposed, please
+open an Issue to [`Pino`](https://github.com/pinojs/pino/issues) or pass a
+preconfigured external instance of Pino (or any other compatible logger) as
+temporary fix to Fastify via the same field. This allows creating custom
+serializers as well, see the [Logging](Logging.md) documentation for more info.
 
 ```typescript
 import fastify from 'fastify'
-import pino from 'pino'
 
 const server = fastify({
-  logger: pino({
+  logger: {
     level: 'info',
     redact: ['x-userinfo'],
     messageKey: 'message'
-  })
+  }
 })
 
 server.get('/', async (request, reply) => {

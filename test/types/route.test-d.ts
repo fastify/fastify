@@ -1,5 +1,5 @@
 import fastify, { FastifyInstance, FastifyRequest, FastifyReply, RouteHandlerMethod } from '../../fastify'
-import { expectType, expectError, expectAssignable } from 'tsd'
+import { expectType, expectError, expectAssignable, printType } from 'tsd'
 import { HTTPMethods } from '../../types/utils'
 import * as http from 'http'
 import { RequestPayload } from '../../types/hooks'
@@ -44,7 +44,13 @@ type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete'
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {}, routeHandler))
   expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler }))
 
-  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', { handler: routeHandler, errorHandler: (error, request, reply) => reply.send('error') }))
+  expectType<FastifyInstance>(fastify()[lowerCaseMethod]('/', {
+    handler: routeHandler,
+    errorHandler: (error, request, reply) => {
+      expectType<FastifyError>(error)
+      reply.send('error')
+    }
+  }))
 
   interface BodyInterface { prop: string }
   interface QuerystringInterface { prop: number }

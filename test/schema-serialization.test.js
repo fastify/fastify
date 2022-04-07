@@ -163,7 +163,7 @@ test('Use shared schema and $ref with $id in response ($ref to $id)', t => {
     t.equal(res.statusCode, 400)
     t.same(res.json(), {
       error: 'Bad Request',
-      message: "body should have required property 'address'",
+      message: "body must have required property 'address'",
       statusCode: 400
     })
   })
@@ -236,8 +236,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
     $schema: 'http://json-schema.org/draft-07/schema#',
     title: 'List of Asset locations',
     type: 'array',
-    items: { $ref: 'http://example.com/asset.json#' },
-    default: []
+    items: { $ref: 'http://example.com/asset.json#' }
   }
 
   fastify.post('/', {
@@ -273,7 +272,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
       t.equal(res.statusCode, 400)
       t.same(res.json(), {
         error: 'Bad Request',
-        message: 'body[0].location.email should match format "email"',
+        message: 'body/0/location/email must match format "email"',
         statusCode: 400
       })
     })
@@ -282,7 +281,7 @@ test('Shared schema should be pass to serializer and validator ($ref to shared s
 
 test('Custom setSerializerCompiler', t => {
   t.plan(7)
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   const outSchema = {
     $id: 'test',
@@ -355,7 +354,6 @@ test('Custom setSerializerCompiler returns bad serialized output', t => {
     t.error(err)
     t.equal(res.statusCode, 500)
     t.strictSame(res.json(), {
-      error: 'Internal Server Error',
       code: 'FST_ERR_REP_INVALID_PAYLOAD_TYPE',
       message: 'Attempted to send payload of invalid type \'object\'. Expected a string or Buffer.',
       statusCode: 500
@@ -410,11 +408,11 @@ test('Custom serializer per route', async t => {
   res = await fastify.inject('/route')
   t.equal(res.json().mean, 'route')
 
-  t.equal(hit, 2, 'the custom and route serializer has been called')
+  t.equal(hit, 4, 'the custom and route serializer has been called')
 })
 
 test('Reply serializer win over serializer ', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
@@ -453,7 +451,7 @@ test('Reply serializer win over serializer ', t => {
 })
 
 test('Reply serializer win over serializer ', t => {
-  t.plan(5)
+  t.plan(6)
 
   const fastify = Fastify()
   fastify.setReplySerializer(function (payload, statusCode) {
@@ -570,11 +568,13 @@ test('do not crash if status code serializer errors', async t => {
   const fastify = Fastify()
 
   const requiresFoo = {
+    type: 'object',
     properties: { foo: { type: 'string' } },
     required: ['foo']
   }
 
   const someUserErrorType2 = {
+    type: 'object',
     properties: {
       code: { type: 'number' }
     },

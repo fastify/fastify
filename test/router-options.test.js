@@ -24,8 +24,8 @@ test('Should honor ignoreTrailingSlash option', t => {
     res.send('test')
   })
 
-  fastify.listen(0, (err) => {
-    fastify.server.unref()
+  fastify.listen({ port: 0 }, (err) => {
+    t.teardown(() => { fastify.close() })
     if (err) t.threw(err)
 
     const baseUrl = getUrl(fastify)
@@ -133,7 +133,7 @@ test('Should honor frameworkErrors option', t => {
     },
     (err, res) => {
       t.error(err)
-      t.equal(res.body, '\'%world\' is not a valid url component - FST_ERR_BAD_URL')
+      t.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
     }
   )
 })

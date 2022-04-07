@@ -61,8 +61,8 @@ test('object or null body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.equal(req.body, null)
-      reply.code(200).send({ requestBody: req.body })
+      t.equal(req.body, undefined)
+      reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
       body: {
@@ -79,10 +79,8 @@ test('object or null body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            requestBody: {
-              type: 'string',
-              format: 'email',
-              nullable: true
+            isUndefinedBody: {
+              type: 'boolean'
             }
           }
         }
@@ -90,9 +88,9 @@ test('object or null body', t => {
     }
   })
 
-  fastify.listen(0, (err) => {
-    fastify.server.unref()
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -100,7 +98,7 @@ test('object or null body', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { requestBody: null })
+      t.same(JSON.parse(body), { isUndefinedBody: true })
     })
   })
 })
@@ -114,8 +112,8 @@ test('nullable body', t => {
     method: 'POST',
     url: '/',
     handler: (req, reply) => {
-      t.equal(req.body, null)
-      reply.code(200).send({ requestBody: req.body })
+      t.equal(req.body, undefined)
+      reply.code(200).send({ isUndefinedBody: req.body === undefined })
     },
     schema: {
       body: {
@@ -133,10 +131,8 @@ test('nullable body', t => {
           type: 'object',
           nullable: true,
           properties: {
-            requestBody: {
-              type: 'string',
-              format: 'email',
-              nullable: true
+            isUndefinedBody: {
+              type: 'boolean'
             }
           }
         }
@@ -144,9 +140,9 @@ test('nullable body', t => {
     }
   })
 
-  fastify.listen(0, (err) => {
-    fastify.server.unref()
+  fastify.listen({ port: 0 }, (err) => {
     t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',
@@ -154,7 +150,48 @@ test('nullable body', t => {
     }, (err, response, body) => {
       t.error(err)
       t.equal(response.statusCode, 200)
-      t.same(JSON.parse(body), { requestBody: null })
+      t.same(JSON.parse(body), { isUndefinedBody: true })
+    })
+  })
+})
+
+test('Nullable body with 204', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/',
+    handler: (req, reply) => {
+      t.equal(req.body, undefined)
+      reply.code(204).send()
+    },
+    schema: {
+      body: {
+        type: 'object',
+        nullable: true,
+        properties: {
+          hello: {
+            type: 'string',
+            format: 'email'
+          }
+        }
+      }
+    }
+  })
+
+  fastify.listen({ port: 0 }, (err) => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 204)
+      t.equal(body.length, 0)
     })
   })
 })

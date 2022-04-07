@@ -28,9 +28,9 @@ test('bodyLimit', t => {
     reply.send({ error: 'handler should not be called' })
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'POST',

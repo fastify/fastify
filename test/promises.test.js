@@ -60,9 +60,9 @@ fastify.get('/return-reply', opts, function (req, reply) {
   return reply.send({ hello: 'world' })
 })
 
-fastify.listen(0, err => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - sget return promise es6 get', t => {
     t.plan(4)

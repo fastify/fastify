@@ -3,7 +3,6 @@
 const t = require('tap')
 const Fastify = require('../..')
 const http2 = require('http2')
-const semver = require('semver')
 const { promisify } = require('util')
 const connect = promisify(http2.connect)
 const { once } = require('events')
@@ -33,12 +32,11 @@ t.test('http/2 request while fastify closing', t => {
 
   fastify.get('/', () => Promise.resolve({}))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    // Skipped because there is likely a bug on Node 8.
-    t.test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
+    t.test('return 200', t => {
       const url = getUrl(fastify)
       const session = http2.connect(url, function () {
         this.request({
@@ -81,12 +79,11 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
 
   fastify.get('/', () => Promise.resolve({}))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    // Skipped because there is likely a bug on Node 8.
-    t.test('return 200', { skip: semver.lt(process.versions.node, '10.15.0') }, t => {
+    t.test('return 200', t => {
       const url = getUrl(fastify)
       const session = http2.connect(url, function () {
         this.request({
@@ -115,14 +112,13 @@ t.test('http/2 request while fastify closing - return503OnClosing: false', t => 
   })
 })
 
-// Skipped because there is likely a bug on Node 8.
-t.test('http/2 closes successfully with async await', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+t.test('http/2 closes successfully with async await', async t => {
   const fastify = Fastify({
     http2SessionTimeout: 100,
     http2: true
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -131,8 +127,7 @@ t.test('http/2 closes successfully with async await', { skip: semver.lt(process.
   await fastify.close()
 })
 
-// Skipped because there is likely a bug on Node 8.
-t.test('https/2 closes successfully with async await', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+t.test('https/2 closes successfully with async await', async t => {
   const fastify = Fastify({
     http2SessionTimeout: 100,
     http2: true,
@@ -142,7 +137,7 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
     }
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)
@@ -151,8 +146,7 @@ t.test('https/2 closes successfully with async await', { skip: semver.lt(process
   await fastify.close()
 })
 
-// Skipped because there is likely a bug on Node 8.
-t.test('http/2 server side session emits a timeout event', { skip: semver.lt(process.versions.node, '10.15.0') }, async t => {
+t.test('http/2 server side session emits a timeout event', async t => {
   let _resolve
   const p = new Promise((resolve) => { _resolve = resolve })
 
@@ -166,7 +160,7 @@ t.test('http/2 server side session emits a timeout event', { skip: semver.lt(pro
     return {}
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   const url = getUrl(fastify)
   const session = await connect(url)

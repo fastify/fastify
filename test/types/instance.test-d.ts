@@ -1,3 +1,4 @@
+import { expectAssignable, expectDeprecated, expectError, expectNotDeprecated, expectType } from 'tsd'
 import fastify, {
   FastifyBodyParser,
   FastifyError,
@@ -6,10 +7,9 @@ import fastify, {
   RawRequestDefaultExpression,
   RawServerDefault
 } from '../../fastify'
-import { expectAssignable, expectError, expectType } from 'tsd'
-import { FastifyRequest } from '../../types/request'
-import { FastifyReply } from '../../types/reply'
 import { HookHandlerDoneFunction } from '../../types/hooks'
+import { FastifyReply } from '../../types/reply'
+import { FastifyRequest } from '../../types/request'
 import { FastifySchemaControllerOptions } from '../../types/schema'
 
 const server = fastify()
@@ -31,6 +31,7 @@ expectType<string>(server.printPlugins())
 
 expectAssignable<FastifyInstance>(
   server.setErrorHandler(function (error, request, reply) {
+    expectType<FastifyError>(error)
     expectAssignable<FastifyInstance>(this)
   })
 )
@@ -47,10 +48,14 @@ server.setErrorHandler(fastifyErrorHandler)
 async function asyncFastifyErrorHandler (this: FastifyInstance, error: FastifyError) {}
 server.setErrorHandler(asyncFastifyErrorHandler)
 
-function nodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+function nodeJSErrorHandler (error: NodeJS.ErrnoException) {
+  if (error) { throw error }
+}
 server.setErrorHandler(nodeJSErrorHandler)
 
-function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {}
+function asyncNodeJSErrorHandler (error: NodeJS.ErrnoException) {
+  if (error) { throw error }
+}
 server.setErrorHandler(asyncNodeJSErrorHandler)
 
 class CustomError extends Error {
@@ -82,20 +87,20 @@ expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, r
   reply.send({ test: 'foo' })
 }))
 // typed sync error handler return error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>((error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
-}))
+})
 // typed async error handler send error
 expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
   reply.send({ test: 'foo' })
 }))
 // typed async error handler return error
-expectError(server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
+server.setErrorHandler<CustomError, ReplyPayload>(async (error, request, reply) => {
   expectType<CustomError>(error)
   return { test: 'foo' }
-}))
+})
 
 function notFoundHandler (request: FastifyRequest, reply: FastifyReply) {}
 async function notFoundAsyncHandler (request: FastifyRequest, reply: FastifyReply) {}
@@ -118,7 +123,10 @@ server.setNotFoundHandler({ preValidation: notFoundpreValidationHandler }, notFo
 server.setNotFoundHandler({ preValidation: notFoundpreValidationAsyncHandler }, notFoundAsyncHandler)
 server.setNotFoundHandler({ preHandler: notFoundpreHandlerHandler, preValidation: notFoundpreValidationHandler }, notFoundAsyncHandler)
 
-function invalidErrorHandler (error: number) {}
+function invalidErrorHandler (error: number) {
+  if (error) throw error
+}
+
 expectError(server.setErrorHandler(invalidErrorHandler))
 
 server.setSchemaController({
@@ -156,16 +164,30 @@ expectError(server.setReplySerializer(invalidReplySerializer))
 function serializerWithInvalidReturn (payload: unknown, statusCode: number) {}
 expectError(server.setReplySerializer(serializerWithInvalidReturn))
 
-function invalidSchemaErrorFormatter () {}
+function invalidSchemaErrorFormatter (err: Error) {
+  if (err) { throw err }
+}
 expectError(server.setSchemaErrorFormatter(invalidSchemaErrorFormatter))
 
 // test listen method callback
-expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {}))
-expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {}))
-expectAssignable<void>(server.listen(3000, '', (err, address) => {}))
-expectAssignable<void>(server.listen('3000', '', (err, address) => {}))
-expectAssignable<void>(server.listen(3000, (err, address) => {}))
-expectAssignable<void>(server.listen('3000', (err, address) => {}))
+expectAssignable<void>(server.listen(3000, '', 0, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', '', 0, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen(3000, '', (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', '', (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen(3000, (err, address) => {
+  expectType<Error | null>(err)
+}))
+expectAssignable<void>(server.listen('3000', (err, address) => {
+  expectType<Error | null>(err)
+}))
 
 // test listen method callback types
 expectAssignable<void>(server.listen('3000', (err, address) => {
@@ -181,13 +203,43 @@ expectAssignable<PromiseLike<string>>(server.listen('3000', '', 0))
 expectAssignable<PromiseLike<string>>(server.listen(3000, ''))
 expectAssignable<PromiseLike<string>>(server.listen('3000', ''))
 
+// Test variadic listen signatures Typescript deprecation
+expectDeprecated(server.listen(3000))
+expectDeprecated(server.listen('3000'))
+expectDeprecated(server.listen(3000, '', 0))
+expectDeprecated(server.listen('3000', '', 0))
+expectDeprecated(server.listen(3000, ''))
+expectDeprecated(server.listen('3000', ''))
+
 // test listen opts objects
+expectAssignable<PromiseLike<string>>(server.listen())
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000 }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0' }))
 expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
+expectAssignable<PromiseLike<string>>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
+
+expectAssignable<void>(server.listen(() => {}))
 expectAssignable<void>(server.listen({ port: 3000 }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
 expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
+expectAssignable<void>(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
+
+// test listen opts objects Typescript deprectation exclusion
+expectNotDeprecated(server.listen())
+expectNotDeprecated(server.listen({ port: 3000 }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }))
+expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }))
+
+expectNotDeprecated(server.listen(() => {}))
+expectNotDeprecated(server.listen({ port: 3000 }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0' }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42 }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '0.0.0.0', backlog: 42, exclusive: true }, () => {}))
+expectNotDeprecated(server.listen({ port: 3000, host: '::/0', ipv6Only: true }, () => {}))
 
 expectAssignable<void>(server.routing({} as RawRequestDefaultExpression, {} as RawReplyDefaultExpression))
 
@@ -203,6 +255,7 @@ type InitialConfig = Readonly<{
   keepAliveTimeout?: number,
   bodyLimit?: number,
   caseSensitive?: boolean,
+  allowUnsafeRegex?: boolean,
   forceCloseConnections?: boolean,
   http2?: boolean,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,

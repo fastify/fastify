@@ -5,15 +5,18 @@ const test = t.test
 const Fastify = require('../..')
 const https = require('https')
 const sget = require('simple-get').concat
+const dns = require('dns').promises
 
 const { buildCertificate } = require('../build-certificate')
 t.before(buildCertificate)
 
-test('Should support a custom https server', t => {
-  t.plan(6)
+test('Should support a custom https server', async t => {
+  const localAddresses = await dns.lookup('localhost', { all: true })
+
+  t.plan(localAddresses.length + 3)
 
   const serverFactory = (handler, opts) => {
-    t.ok(opts.serverFactory)
+    t.ok(opts.serverFactory, 'it is called twice for every HOST interface')
 
     const options = {
       key: global.context.key,
@@ -37,17 +40,20 @@ test('Should support a custom https server', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
-    t.error(err)
+  await fastify.listen({ port: 0 })
 
+  await new Promise((resolve, reject) => {
     sget({
       method: 'GET',
       url: 'https://localhost:' + fastify.server.address().port,
       rejectUnauthorized: false
     }, (err, response, body) => {
-      t.error(err)
+      if (err) {
+        return reject(err)
+      }
       t.equal(response.statusCode, 200)
       t.same(JSON.parse(body), { hello: 'world' })
+      resolve()
     })
   })
 })

@@ -112,7 +112,7 @@ t.test('listen and onReady order', async t => {
 
   await fastify.ready()
   t.pass('trigger the onReady')
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   t.pass('do not trigger the onReady')
 
   await fastify.close()
@@ -268,7 +268,7 @@ t.test('onReady can not add decorators or application hooks', t => {
 })
 
 t.test('onReady cannot add lifecycle hooks', t => {
-  t.plan(4)
+  t.plan(5)
   const fastify = Fastify()
 
   fastify.addHook('onReady', function (done) {
@@ -277,7 +277,9 @@ t.test('onReady cannot add lifecycle hooks', t => {
       fastify.addHook('onRequest', (request, reply, done) => {})
     } catch (error) {
       t.ok(error)
-      t.equal(error.message, 'root plugin has already booted')
+      t.equal(error.message, 'Root plugin has already booted')
+      // TODO: look where the error pops up
+      t.equal(error.code, 'AVV_ERR_PLUGIN_NOT_VALID')
       done(error)
     }
   })
@@ -300,7 +302,7 @@ t.test('onReady throw loading error', t => {
 })
 
 t.test('onReady does not call done', t => {
-  t.plan(3)
+  t.plan(6)
   const fastify = Fastify({ pluginTimeout: 500 })
 
   fastify.addHook('onReady', function (done) {
@@ -310,7 +312,10 @@ t.test('onReady does not call done', t => {
 
   fastify.ready(err => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_READY_TIMEOUT')
+    t.equal(err.message, "A callback for 'onReady' hook timed out. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_HOOK_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 })
 

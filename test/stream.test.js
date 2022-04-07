@@ -14,7 +14,8 @@ const JSONStream = require('JSONStream')
 const send = require('send')
 const Readable = require('stream').Readable
 const split = require('split2')
-const { kDisableRequestLogging, kReplySent } = require('../lib/symbols.js')
+const semver = require('semver')
+const { kDisableRequestLogging } = require('../lib/symbols.js')
 
 function getUrl (app) {
   const { address, port } = app.server.address()
@@ -26,7 +27,7 @@ function getUrl (app) {
 }
 
 test('should respond with a stream', t => {
-  t.plan(8)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.get('/', function (req, reply) {
@@ -34,18 +35,13 @@ test('should respond with a stream', t => {
     reply.code(200).send(stream)
   })
 
-  fastify.get('/error', function (req, reply) {
-    const stream = fs.createReadStream('not-existing-file', 'utf8')
-    reply.code(200).send(stream)
-  })
-
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], undefined)
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
@@ -53,6 +49,21 @@ test('should respond with a stream', t => {
         t.equal(expected.toString(), data.toString())
       })
     })
+  })
+})
+
+test('should respond with a stream (error)', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/error', function (req, reply) {
+    const stream = fs.createReadStream('not-existing-file', 'utf8')
+    reply.code(200).send(stream)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -105,10 +116,9 @@ test('should trigger the onSend hook only twice if pumping the stream fails, fir
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response) {
       t.error(err)
@@ -268,9 +278,9 @@ test('Destroying streams prematurely', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -331,9 +341,9 @@ test('Destroying streams prematurely should call close method', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -393,9 +403,9 @@ test('Destroying streams prematurely should call close method when destroy is no
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -456,9 +466,9 @@ test('Destroying streams prematurely should call abort method', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -506,9 +516,9 @@ test('Destroying streams prematurely, log is disabled', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -536,9 +546,9 @@ test('should respond with a stream1', t => {
     stream.end({ a: 42 })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}`, function (err, response, body) {
       t.error(err)
@@ -568,9 +578,9 @@ test('return a 404 if the stream emits a 404 error', t => {
     reply.send(reallyLongStream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const port = fastify.server.address().port
 
@@ -582,7 +592,7 @@ test('return a 404 if the stream emits a 404 error', t => {
   })
 })
 
-test('should support send module 200 and 404', { only: true }, t => {
+test('should support send module 200 and 404', { skip: semver.gte(process.versions.node, '17.0.0') }, t => {
   t.plan(8)
   const fastify = Fastify()
 
@@ -596,15 +606,15 @@ test('should support send module 200 and 404', { only: true }, t => {
     reply.code(200).send(stream)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     const url = getUrl(fastify)
 
     sget(url, function (err, response, data) {
       t.error(err)
-      t.equal(response.headers['content-type'], 'application/octet-stream')
+      t.equal(response.headers['content-type'], 'application/javascript; charset=UTF-8')
       t.equal(response.statusCode, 200)
 
       fs.readFile(__filename, (err, expected) => {
@@ -637,9 +647,9 @@ test('should destroy stream when response is ended', t => {
     reply.raw.end(Buffer.from('hello\n'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget(`http://localhost:${fastify.server.address().port}/error`, function (err, response) {
       t.error(err)
@@ -654,7 +664,7 @@ test('should mark reply as sent before pumping the payload stream into response 
   const handleRequest = proxyquire('../lib/handleRequest', {
     './wrapThenable': (thenable, reply) => {
       thenable.then(function (payload) {
-        t.equal(reply[kReplySent], true)
+        t.equal(reply.sent, true)
       })
     }
   })
@@ -671,7 +681,7 @@ test('should mark reply as sent before pumping the payload stream into response 
 
   fastify.get('/', async function (req, reply) {
     const stream = fs.createReadStream(__filename, 'utf8')
-    reply.code(200).send(stream)
+    return reply.code(200).send(stream)
   })
 
   fastify.inject({
@@ -681,5 +691,53 @@ test('should mark reply as sent before pumping the payload stream into response 
     t.error(err)
     t.equal(res.payload, fs.readFileSync(__filename, 'utf8'))
     fastify.close()
+  })
+})
+
+test('reply.send handles aborted requests', t => {
+  t.plan(2)
+
+  const spyLogger = {
+    level: 'error',
+    fatal: () => { },
+    error: () => {
+      t.fail('should not log an error')
+    },
+    warn: () => { },
+    info: () => { },
+    debug: () => { },
+    trace: () => { },
+    child: () => { return spyLogger }
+  }
+  const fastify = Fastify({
+    logger: spyLogger
+  })
+
+  fastify.get('/', (req, reply) => {
+    setTimeout(() => {
+      const stream = new Readable({
+        read: function () {
+          this.push(null)
+        }
+      })
+      reply.send(stream)
+    }, 6)
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    const port = fastify.server.address().port
+    const http = require('http')
+    const req = http.get(`http://localhost:${port}`)
+      .on('error', (err) => {
+        t.equal(err.code, 'ECONNRESET')
+        fastify.close()
+      })
+
+    setTimeout(() => {
+      req.abort()
+    }, 1)
   })
 })

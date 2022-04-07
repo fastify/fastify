@@ -1,5 +1,7 @@
 import { FastifyInstance } from './instance'
 import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './utils'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { FastifyLoggerInstance } from './logger'
 
 export type FastifyPluginOptions = Record<string, any>
 
@@ -8,8 +10,8 @@ export type FastifyPluginOptions = Record<string, any>
  *
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
-export type FastifyPluginCallback<Options extends FastifyPluginOptions = Record<never, never>, Server extends RawServerBase = RawServerDefault> = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>>,
+export type FastifyPluginCallback<Options extends FastifyPluginOptions = Record<never, never>, Server extends RawServerBase = RawServerDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> = (
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, TypeProvider>,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -19,8 +21,12 @@ export type FastifyPluginCallback<Options extends FastifyPluginOptions = Record<
  *
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
-export type FastifyPluginAsync<Options extends FastifyPluginOptions = Record<never, never>, Server extends RawServerBase = RawServerDefault> = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>>,
+export type FastifyPluginAsync<
+  Options extends FastifyPluginOptions = Record<never, never>,
+  Server extends RawServerBase = RawServerDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+> = (
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyLoggerInstance, TypeProvider>,
   opts: Options
 ) => Promise<void>;
 

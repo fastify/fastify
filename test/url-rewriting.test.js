@@ -22,7 +22,7 @@ test('Should rewrite url', t => {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -55,7 +55,7 @@ test('Should not rewrite if the url is the same', t => {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({
@@ -86,7 +86,7 @@ test('Should throw an error', t => {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     sget({

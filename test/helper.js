@@ -1,6 +1,7 @@
 'use strict'
 
 const sget = require('simple-get').concat
+const dns = require('dns').promises
 const stream = require('stream')
 const symbols = require('../lib/symbols')
 
@@ -16,7 +17,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
   if (isSetErrorHandler) {
     fastify.setErrorHandler(function (err, request, reply) {
       t.type(request, 'object')
-      t.type(request, fastify[symbols.kRequest])
+      t.type(request, fastify[symbols.kRequest].parent)
       reply
         .code(err.statusCode)
         .type('application/json; charset=utf-8')
@@ -91,13 +92,13 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     if (err) {
       t.error(err)
       return
     }
 
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test(`${upMethod} - correctly replies`, t => {
       t.plan(3)
@@ -189,7 +190,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 200)
-        t.equal(JSON.parse(body.toString()), null)
+        t.equal(body.toString(), '')
       })
 
       // Must use inject to make a request without a Content-Length header
@@ -199,7 +200,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       }, (err, res) => {
         t.error(err)
         t.equal(res.statusCode, 200)
-        t.equal(JSON.parse(res.payload), null)
+        t.equal(res.payload.toString(), '')
       })
     })
 
@@ -418,4 +419,18 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       })
     })
   })
+}
+
+module.exports.getLoopbackHost = async () => {
+  let localhostForURL
+
+  const lookup = await dns.lookup('localhost')
+  const localhost = lookup.address
+  if (lookup.family === 6) {
+    localhostForURL = `[${lookup.address}]`
+  } else {
+    localhostForURL = localhost
+  }
+
+  return [localhost, localhostForURL]
 }

@@ -46,9 +46,9 @@ test('A route supports host constraints under http2 protocol and secure connecti
     }
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     t.test('https get request - no constrain', async (t) => {
       t.plan(3)

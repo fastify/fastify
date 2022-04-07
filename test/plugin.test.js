@@ -89,9 +89,9 @@ test('fastify.register with fastify-plugin should not encapsulate his code', t =
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -168,9 +168,9 @@ test('fastify.register with fastify-plugin should provide access to external fas
     t.notOk(fastify.global)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -223,9 +223,9 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
     reply.send({ test: fastify.test })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -285,9 +285,9 @@ test('check dependencies - should not throw', t => {
     t.notOk(fastify.otherTest)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -337,9 +337,9 @@ test('check dependencies - should throw', t => {
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -375,7 +375,7 @@ test('set the plugin name based on the plugin displayName symbol', t => {
     done()
   }, { name: 'plugin-B' }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -405,7 +405,7 @@ test('plugin name will change when using no encapsulation', t => {
     done()
   }, { name: 'plugin-A' }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -417,7 +417,7 @@ test('plugin name is undefined when accessing in no plugin context', t => {
 
   t.equal(fastify.pluginName, undefined)
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -445,7 +445,7 @@ test('set the plugin name based on the plugin function name', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -472,7 +472,7 @@ test('approximate a plugin name when no meta data is available', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -495,7 +495,7 @@ test('approximate a plugin name also when fastify-plugin has no meta data', t =>
     done()
   }))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
     fastify.close()
   })
@@ -535,9 +535,9 @@ test('plugin encapsulation', t => {
     t.notOk(fastify.test)
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -569,7 +569,7 @@ test('if a plugin raises an error and there is not a callback to handle it, the 
     done(new Error('err'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.ok(err instanceof Error)
     t.equal(err.message, 'err')
   })
@@ -612,7 +612,7 @@ test('add hooks after route declaration', t => {
     done()
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -651,7 +651,7 @@ test('nested plugins', t => {
     done()
   }, { prefix: '/parent' })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -693,7 +693,7 @@ test('nested plugins awaited', t => {
     }, { prefix: '/child2' })
   }, { prefix: '/parent' })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     sget({
@@ -864,7 +864,7 @@ test('plugin metadata - dependencies (nested)', t => {
 })
 
 test('pluginTimeout', t => {
-  t.plan(2)
+  t.plan(5)
   const fastify = Fastify({
     pluginTimeout: 10
   })
@@ -873,13 +873,35 @@ test('pluginTimeout', t => {
   })
   fastify.ready((err) => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // to no call done on purpose'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
+  })
+})
+
+test('pluginTimeout - named function', { only: true }, t => {
+  t.plan(5)
+  const fastify = Fastify({
+    pluginTimeout: 10
+  })
+  fastify.register(function nameFunction (app, opts, done) {
+    // to no call done on purpose
+  })
+  fastify.ready((err) => {
+    t.ok(err)
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'nameFunction'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 })
 
 test('pluginTimeout default', t => {
-  t.plan(2)
-  const clock = fakeTimer.install()
+  t.plan(5)
+  const clock = fakeTimer.install({ shouldClearNativeTimers: true })
 
   const fastify = Fastify()
   fastify.register(function (app, opts, done) {
@@ -889,7 +911,11 @@ test('pluginTimeout default', t => {
 
   fastify.ready((err) => {
     t.ok(err)
-    t.equal(err.code, 'ERR_AVVIO_PLUGIN_TIMEOUT')
+    t.equal(err.message,
+      "fastify-plugin: Plugin did not start in time: 'function (app, opts, done) { -- // default time elapsed without calling done'. You may have forgotten to call 'done' function or to resolve a Promise")
+    t.equal(err.code, 'FST_ERR_PLUGIN_TIMEOUT')
+    t.ok(err.cause)
+    t.equal(err.cause.code, 'AVV_ERR_READY_TIMEOUT')
   })
 
   t.teardown(clock.uninstall)

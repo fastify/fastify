@@ -1,167 +1,18 @@
 'use strict'
 
 const { test } = require('tap')
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const AJV = require('ajv')
 const S = require('fluent-json-schema')
 const Fastify = require('..')
 const ajvMergePatch = require('ajv-merge-patch')
 const ajvErrors = require('ajv-errors')
 
-const buildValidatorAJV8 = require('@fastify/ajv-compiler-8')
-
-test('Ajv8 usage instead of the bundle one', t => {
-  t.plan(2)
-
-  t.test('use new ajv8 option', t => {
-    t.plan(2)
-    const fastify = Fastify({
-      ajv: {
-        customOptions: { strictRequired: true }
-      },
-      schemaController: {
-        compilersFactory: {
-          buildValidator: buildValidatorAJV8()
-        }
-      }
-    })
-
-    fastify.post('/', {
-      schema: {
-        body: {
-          type: 'object',
-          required: ['missing'],
-          properties: {
-            foo: {
-              type: 'string'
-            }
-          }
-        }
-      },
-      handler (req, reply) { reply.send({ ok: 1 }) }
-    })
-
-    fastify.ready(err => {
-      t.ok(err)
-      t.match(err.message, 'strictRequired', 'the new ajv8 option trigger a startup error')
-    })
-  })
-
-  t.test('use new ajv8 option within a response schema', t => {
-    t.plan(2)
-    const fastify = Fastify({
-      schemaController: {
-        compilersFactory: {
-          buildValidator: buildValidatorAJV8()
-        }
-      }
-    })
-
-    fastify.post('/', {
-      schema: {
-        body: {
-          type: 'object',
-          required: ['missing'],
-          properties: {
-            foo: {
-              type: 'string'
-            }
-          }
-        },
-        response: {
-          '2xx': {
-            type: 'object',
-            properties: {
-              ok: {
-                type: 'integer'
-              }
-            }
-          }
-        }
-      },
-      handler (req, reply) { reply.send({ ok: 1 }) }
-    })
-
-    fastify.ready(err => {
-      t.error(err)
-      t.pass('startup successful')
-    })
-  })
-})
-
-test('Ajv8 usage with plugins', t => {
-  t.plan(2)
-
-  t.test('use new ajv8 option', t => {
-    t.plan(3)
-    const fastify = Fastify({
-      ajv: {
-        customOptions: { validateFormats: true },
-        plugins: [require('ajv-formats')]
-      },
-      schemaController: {
-        compilersFactory: {
-          buildValidator: buildValidatorAJV8()
-        }
-      }
-    })
-
-    callIt(fastify, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 400)
-      t.equal(res.json().message, 'body must match format "date"')
-    })
-  })
-
-  t.test('use new ajv8 option - avoid check', t => {
-    t.plan(2)
-    const fastify = Fastify({
-      ajv: {
-        customOptions: { validateFormats: false }
-      },
-      schemaController: {
-        compilersFactory: {
-          buildValidator: buildValidatorAJV8()
-        }
-      }
-    })
-
-    callIt(fastify, (err, res) => {
-      t.error(err)
-      t.equal(res.statusCode, 200)
-    })
-  })
-
-  function callIt (fastify, cb) {
-    fastify.post('/', {
-      schema: {
-        body: {
-          type: 'object',
-          properties: {
-            foo: {
-              type: 'string',
-              format: 'date'
-            }
-          }
-        }
-      },
-      handler (req, reply) { reply.send({ ok: 1 }) }
-    })
-
-    fastify.inject({
-      method: 'POST',
-      url: '/',
-      payload: { foo: '99' }
-    }, cb)
-  }
-})
-
 test('Ajv plugins array parameter', t => {
   t.plan(3)
   const fastify = Fastify({
     ajv: {
       customOptions: {
-        jsonPointers: true,
         allErrors: true
       },
       plugins: [
@@ -509,7 +360,7 @@ test('setSchemaController in a plugin', t => {
   ajvInstance.addSchema(baseSchema)
   ajvInstance.addSchema(refSchema)
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
   fastify.register(schemaPlugin)
   fastify.get('/', {
     schema: {
@@ -760,7 +611,8 @@ test('multiple refs with the same ids', t => {
 
   fastify.addSchema(baseSchema)
   fastify.addSchema(refSchema)
-  fastify.get('/', {
+
+  fastify.head('/', {
     schema: {
       query: refSchema,
       response: {
@@ -772,7 +624,7 @@ test('multiple refs with the same ids', t => {
     }
   })
 
-  fastify.head('/', {
+  fastify.get('/', {
     schema: {
       query: refSchema,
       response: {

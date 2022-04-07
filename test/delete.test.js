@@ -157,9 +157,9 @@ test('body - delete', t => {
   }
 })
 
-fastify.listen(0, err => {
+fastify.listen({ port: 0 }, err => {
   t.error(err)
-  fastify.server.unref()
+  t.teardown(() => { fastify.close() })
 
   test('shorthand - request delete', t => {
     t.plan(4)
@@ -197,7 +197,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: 'params.test should be integer',
+        message: 'params/test must be integer',
         statusCode: 400
       })
     })
@@ -232,7 +232,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: "headers['x-test'] should be number",
+        message: 'headers/x-test must be number',
         statusCode: 400
       })
     })
@@ -261,7 +261,7 @@ fastify.listen(0, err => {
       t.equal(response.statusCode, 400)
       t.same(JSON.parse(body), {
         error: 'Bad Request',
-        message: 'querystring.hello should be integer',
+        message: 'querystring/hello must be integer',
         statusCode: 400
       })
     })
@@ -302,7 +302,7 @@ test('shorthand - delete with application/json Content-Type header and without b
   t.plan(4)
   const fastify = require('..')()
   fastify.delete('/', {}, (req, reply) => {
-    t.equal(req.body, null)
+    t.equal(req.body, undefined)
     reply.send(req.body)
   })
   fastify.inject({
@@ -313,6 +313,6 @@ test('shorthand - delete with application/json Content-Type header and without b
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), null)
+    t.same(response.payload.toString(), '')
   })
 })

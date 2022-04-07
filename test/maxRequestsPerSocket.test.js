@@ -17,7 +17,7 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     const port = fastify.server.address().port
@@ -26,7 +26,7 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+        t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\n\r\n')
@@ -40,6 +40,7 @@ test('maxRequestsPerSocket on node version >= 16.10.0', { skip }, t => {
           client.once('data', data => {
             t.match(data.toString(), /Connection:\s*close/i)
             t.match(data.toString(), /503 Service Unavailable/i)
+            client.end()
           })
         })
       })
@@ -57,7 +58,7 @@ test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
 
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
 
     const port = fastify.server.address().port
@@ -66,22 +67,23 @@ test('maxRequestsPerSocket zero should behave same as null', { skip }, t => {
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
-        t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+        t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
         t.match(data.toString(), /200 OK/i)
 
         client.write('GET / HTTP/1.1\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*keep-alive/i)
-          t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+          t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
           t.match(data.toString(), /200 OK/i)
 
           client.write('GET / HTTP/1.1\r\n\r\n')
 
           client.once('data', data => {
             t.match(data.toString(), /Connection:\s*keep-alive/i)
-            t.match(data.toString(), /Keep-Alive:\s*timeout=5/i)
+            t.match(data.toString(), /Keep-Alive:\s*timeout=\d+/i)
             t.match(data.toString(), /200 OK/i)
+            client.end()
           })
         })
       })

@@ -31,7 +31,7 @@ fastify.get('/', function (request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 ALPN negotiation allows support for both HTTPS and HTTP/2 over the same socket.
@@ -59,7 +59,7 @@ fastify.get('/', function (request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 You can test your new server with:
@@ -84,7 +84,7 @@ fastify.get('/', function (request, reply) {
   reply.code(200).send({ hello: 'world' })
 })
 
-fastify.listen(3000)
+fastify.listen({ port: 3000 })
 ```
 
 You can test your new server with:

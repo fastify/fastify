@@ -8,6 +8,9 @@ section.
 
 #### [Core](#core)
 
+- [`aws-lambda-fastify`](https://github.com/fastify/aws-lambda-fastify) allows you to
+  easily build serverless web applications/services and RESTful APIs using Fastify
+  on top of AWS Lambda and Amazon API Gateway.
 - [`fastify-accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`fastify-accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
@@ -295,6 +298,8 @@ section.
   An error handling plugin for Fastify that uses enhanced HTTP errors.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
+- [`fatify-impressions`](https://github.com/manju4ever/fastify-impressions) Fastify
+  plugin to track impressions of all the routes.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
   package.
@@ -334,6 +339,8 @@ section.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose)
   Fastify Mongoose plugin that connects to a MongoDB via the Mongoose plugin
   with support for Models.
+- [`fastify-mqtt`](https://github.com/love-lena/fastify-mqtt) Plugin to share
+  [mqtt](https://www.npmjs.com/package/mqtt) client across Fastify.
 - [`fastify-msgpack`](https://github.com/kenriortega/fastify-msgpack) Fastify
   and MessagePack, together at last. Uses @msgpack/msgpack by default.
 - [`fastify-multer`](https://github.com/fox1t/fastify-multer) Multer is a plugin
@@ -484,6 +491,8 @@ section.
   waterline. Decorates Fastify with waterline models.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.
+- [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot)
+  Webpack Hot Module Replacement for Fastify.
 - [`fastify-ws`](https://github.com/gj/fastify-ws) WebSocket integration for
   Fastify — with support for WebSocket lifecycle hooks instead of a single
   handler function. Built upon [ws](https://github.com/websockets/ws) and

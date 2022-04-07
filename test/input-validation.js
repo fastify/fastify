@@ -3,7 +3,7 @@
 
 const sget = require('simple-get').concat
 const Ajv = require('ajv')
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const yup = require('yup')
 
 module.exports.payloadMethod = function (method, t) {
@@ -134,12 +134,12 @@ module.exports.payloadMethod = function (method, t) {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     if (err) {
       t.error(err)
     }
 
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test(`${upMethod} - correctly replies`, t => {
       if (upMethod === 'HEAD') {
@@ -182,7 +182,7 @@ module.exports.payloadMethod = function (method, t) {
         t.equal(response.statusCode, 400)
         t.same(body, {
           error: 'Bad Request',
-          message: 'body.hello should be integer',
+          message: 'body/hello must be integer',
           statusCode: 400
         })
       })

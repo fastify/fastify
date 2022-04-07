@@ -40,7 +40,7 @@ test('custom 500', t => {
 
   fastify.setErrorHandler(function (err, request, reply) {
     t.type(request, 'object')
-    t.type(request, fastify[symbols.kRequest])
+    t.type(request, fastify[symbols.kRequest].parent)
     reply
       .code(500)
       .type('text/plain')
@@ -74,7 +74,7 @@ test('encapsulated 500', t => {
 
     f.setErrorHandler(function (err, request, reply) {
       t.type(request, 'object')
-      t.type(request, f[symbols.kRequest])
+      t.type(request, fastify[symbols.kRequest].parent)
       reply
         .code(500)
         .type('text/plain')
@@ -155,7 +155,7 @@ test('cannot set errorHandler after binding', t => {
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
 
     try {

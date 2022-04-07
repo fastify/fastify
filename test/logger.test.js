@@ -1,6 +1,7 @@
 'use strict'
 
-const { test, teardown } = require('tap')
+const { test, teardown, before } = require('tap')
+const helper = require('./helper')
 const http = require('http')
 const stream = require('stream')
 const split = require('split2')
@@ -10,15 +11,22 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const sget = require('simple-get').concat
+const dns = require('dns')
 
 const files = []
 let count = 0
+let localhost
+let localhostForURL
 
 function file () {
   const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${process.hrtime().toString()}-${count++}`)
   files.push(file)
   return file
 }
+
+before(async function () {
+  [localhost, localhostForURL] = await helper.getLoopbackHost()
+})
 
 teardown(() => {
   files.forEach((file) => {
@@ -31,7 +39,6 @@ teardown(() => {
 })
 
 test('defaults to info level', t => {
-  t.plan(13)
   let fastify = null
   const stream = split(JSON.parse)
   try {
@@ -49,9 +56,28 @@ test('defaults to info level', t => {
     reply.send({ hello: 'world' })
   })
 
-  stream.once('data', listenAtLogLine => {
-    t.ok(listenAtLogLine, 'listen at log message is ok')
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
 
+    dns.lookup('localhost', { all: true }, function (err, addresses) {
+      t.error(err)
+      let toSkip = addresses.length
+
+      function skip (data) {
+        if (--toSkip === 0) {
+          stream.removeListener('data', skip)
+          check()
+        }
+      }
+
+      stream.on('data', skip)
+
+      http.get(`http://${localhostForURL}:` + fastify.server.address().port)
+    })
+  })
+
+  function check () {
     stream.once('data', line => {
       const id = line.reqId
       t.ok(line.reqId, 'reqId is defined')
@@ -66,16 +92,10 @@ test('defaults to info level', t => {
         t.equal(line.msg, 'request completed', 'message is set')
         t.equal(line.res.statusCode, 200, 'statusCode is 200')
         t.ok(line.responseTime, 'responseTime is defined')
+        t.end()
       })
     })
-  })
-
-  fastify.listen(0, err => {
-    t.error(err)
-    fastify.server.unref()
-
-    http.get('http://localhost:' + fastify.server.address().port)
-  })
+  }
 })
 
 test('test log stream', t => {
@@ -98,11 +118,11 @@ test('test log stream', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    http.get('http://localhost:' + fastify.server.address().port)
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port)
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
 
@@ -145,11 +165,11 @@ test('test error log stream', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
 
@@ -190,9 +210,9 @@ test('can use external logger instance', t => {
     reply.send({ hello: 'world' })
   })
 
-  localFastify.listen(0, err => {
+  localFastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    http.get('http://localhost:' + localFastify.server.address().port + '/foo', (res) => {
+    http.get(`http://${localhostForURL}:` + localFastify.server.address().port + '/foo', (res) => {
       res.resume()
       res.on('end', () => {
         localFastify.server.close()
@@ -235,9 +255,9 @@ test('can use external logger instance with custom serializer', t => {
     reply.send({ hello: 'world' })
   })
 
-  localFastify.listen(0, err => {
+  localFastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    http.get('http://localhost:' + localFastify.server.address().port + '/foo', (res) => {
+    http.get(`http://${localhostForURL}:` + localFastify.server.address().port + '/foo', (res) => {
       res.resume()
       res.on('end', () => {
         localFastify.server.close()
@@ -439,11 +459,11 @@ test('The logger should accept custom serializer', t => {
     reply.send(new Error('kaboom'))
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    http.get('http://localhost:' + fastify.server.address().port + '/custom')
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/custom')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
 
@@ -1155,7 +1175,7 @@ test('should serialize request and response', t => {
           level: 'info'
         }
       })
-      fastify.listen(0, ipv6, err => {
+      fastify.listen({ port: 0, host: ipv6 }, err => {
         t.error(err)
         stream.once('data', line => {
           const expected = 'Server listening at http://[' + ipv6 + ']:' +
@@ -1177,7 +1197,7 @@ test('Do not wrap IPv4 address', t => {
       level: 'info'
     }
   })
-  fastify.listen(0, '127.0.0.1', err => {
+  fastify.listen({ port: 0, host: '127.0.0.1' }, err => {
     t.error(err)
     stream.once('data', line => {
       const expected = 'Server listening at http://127.0.0.1:' +
@@ -1204,11 +1224,11 @@ test('file option', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
-    http.get('http://localhost:' + fastify.server.address().port, () => {
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port, () => {
       const stream = fs.createReadStream(dest).pipe(split(JSON.parse))
 
       stream.once('data', listenAtLogLine => {
@@ -1249,10 +1269,11 @@ test('should log the error if no error handler is defined', t => {
     t.ok(req.log)
     reply.send(new Error('a generic error'))
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    t.teardown(() => { fastify.close() })
+
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
       stream.once('data', line => {
@@ -1287,10 +1308,11 @@ test('should log as info if error status code >= 400 and < 500 if no error handl
     t.ok(req.log)
     reply.send(Object.assign(new Error('a 503 error'), { statusCode: 503 }))
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
-    http.get('http://localhost:' + fastify.server.address().port + '/400')
+    t.teardown(() => { fastify.close() })
+
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/400')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
       stream.once('data', line => {
@@ -1321,10 +1343,11 @@ test('should log as error if error status code >= 500 if no error handler is def
     t.ok(req.log)
     reply.send(Object.assign(new Error('a 503 error'), { statusCode: 503 }))
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
-    http.get('http://localhost:' + fastify.server.address().port + '/503')
+    t.teardown(() => { fastify.close() })
+
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/503')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
       stream.once('data', line => {
@@ -1342,8 +1365,8 @@ test('should log as error if error status code >= 500 if no error handler is def
   })
 })
 
-test('should not log the error if error handler is defined', t => {
-  t.plan(7)
+test('should not log the error if error handler is defined and it does not error', t => {
+  t.plan(8)
   const stream = split(JSON.parse)
   const fastify = Fastify({
     logger: {
@@ -1356,12 +1379,14 @@ test('should not log the error if error handler is defined', t => {
     reply.send(new Error('something happened'))
   })
   fastify.setErrorHandler((err, req, reply) => {
-    reply.send(err)
+    t.ok(err)
+    reply.send('something bad happened')
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    t.teardown(() => { fastify.close() })
+
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
       stream.once('data', line => {
@@ -1369,7 +1394,7 @@ test('should not log the error if error handler is defined', t => {
         stream.once('data', line => {
           t.equal(line.level, 30, 'level is correct')
           t.equal(line.msg, 'request completed', 'message is set')
-          t.same(line.res, { statusCode: 500 }, 'status code is set')
+          t.same(line.res, { statusCode: 200 }, 'status code is set')
         })
       })
     })
@@ -1389,10 +1414,11 @@ test('should not rely on raw request to log errors', t => {
     t.ok(req.log)
     reply.status(415).send(new Error('something happened'))
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
-    http.get('http://localhost:' + fastify.server.address().port + '/error')
+    t.teardown(() => { fastify.close() })
+
+    http.get(`http://${localhostForURL}:` + fastify.server.address().port + '/error')
     stream.once('data', listenAtLogLine => {
       t.ok(listenAtLogLine, 'listen at log message is ok')
       stream.once('data', line => {
@@ -1439,12 +1465,13 @@ test('should redact the authorization header if so specified', t => {
       t.equal(line.req.headers.authorization, '[Redacted]', 'authorization is redacted')
     })
   })
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0, host: localhost }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
+
     sget({
       method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port,
+      url: `http://${localhostForURL}:` + fastify.server.address().port,
       headers: {
         authorization: 'Bearer abcde'
       }

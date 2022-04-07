@@ -1,5 +1,4 @@
-<div align="center">
-  <a href="https://fastify.io/">
+<div align="center"> <a href="https://fastify.io/">
     <img src="https://github.com/fastify/graphics/raw/HEAD/fastify-landscape-outlined.svg" width="650" height="auto"/>
   </a>
 </div>
@@ -10,7 +9,6 @@
 [![Package Manager CI](https://github.com/fastify/fastify/workflows/package-manager-ci/badge.svg)](https://github.com/fastify/fastify/actions/workflows/package-manager-ci.yml)
 [![Web SIte](https://github.com/fastify/fastify/workflows/website/badge.svg)](https://github.com/fastify/fastify/actions/workflows/website.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/fastify/fastify/badge.svg)](https://snyk.io/test/github/fastify/fastify)
-[![Coverage Status](https://coveralls.io/repos/github/fastify/fastify/badge.svg?branch=main)](https://coveralls.io/github/fastify/fastify?branch=main)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
 </div>
@@ -44,6 +42,8 @@ How can you efficiently handle the resources of your server, knowing that you ar
  - [License](./README.md#license)
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture. It is inspired by Hapi and Express and as far as we know, it is one of the fastest web frameworks in town.
+
+This branch refers to the upcoming Fastify v4 release. Check out the [v3.x](https://github.com/fastify/fastify/tree/v3.x) branch for v3.
 
 ### Quick start
 
@@ -88,11 +88,11 @@ If installing in an existing project, then Fastify can be installed into the pro
 
 Install with npm:
 ```sh
-npm i fastify --save
+npm i fastify@next --save
 ```
 Install with yarn:
 ```sh
-yarn add fastify
+yarn add fastify@next
 ```
 
 ### Example
@@ -116,7 +116,7 @@ fastify.get('/', (request, reply) => {
 })
 
 // Run the server!
-fastify.listen(3000, (err, address) => {
+fastify.listen({ port: 3000 }, (err, address) => {
   if (err) throw err
   // Server is now listening on ${address}
 })
@@ -140,7 +140,7 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
-fastify.listen(3000, (err, address) => {
+fastify.listen({ port: 3000 }, (err, address) => {
   if (err) throw err
   // Server is now listening on ${address}
 })

@@ -37,7 +37,7 @@ fastify
     console.log('onRequest')
     done()
   })
-  .addHook('preParsing', function (request, reply, done) {
+  .addHook('preParsing', function (request, reply, payload, done) {
     console.log('preParsing')
     done()
   })
@@ -81,7 +81,7 @@ fastify.post('/', optsPost, function (req, reply) {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen({ port: 3000 }, function (err) {
   if (err) {
     throw err
   }

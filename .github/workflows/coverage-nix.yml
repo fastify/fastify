@@ -1,0 +1,44 @@
+name: Code Coverage (*nix)
+
+on:
+  workflow_call:
+
+jobs:
+  check-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      - uses: actions/cache@v2
+        id: check-cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install
+        run: |
+          npm install --ignore-scripts
+
+      # We do not check coverage requirements here because the goal is to
+      # generate a report to upload as an artifact.
+      - name: Generate coverage report
+        run: |
+          npm run coverage:ci
+
+      - uses: actions/upload-artifact@v2
+        if: ${{ success() }}
+        with:
+          name: coverage-report-nix
+          path: ./coverage/lcov-report/
+
+      # Here, we verify the coverage thresholds so that this workflow can pass
+      # or fail and stop further workflows if this one fails.
+      - name: Verify coverage meets thresholds
+        run: |
+          npm run coverage:ci-check-coverage

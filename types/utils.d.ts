@@ -21,7 +21,7 @@ export type RawServerDefault = http.Server
  * The default request type based on the server type. Utilizes generic constraining.
  */
 export type RawRequestDefaultExpression<
-  RawServer extends RawServerBase = RawServerDefault
+  RawServer extends RawServerBase = RawServerDefault,
 > = RawServer extends http.Server | https.Server ? http.IncomingMessage
   : RawServer extends http2.Http2Server | http2.Http2SecureServer ? http2.Http2ServerRequest
     : never

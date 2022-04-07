@@ -6,14 +6,16 @@ import fastify, {
   FastifyRequest,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
-  RawServerBase,
   RouteOptions,
   RegisterOptions,
   FastifyPluginOptions,
-  FastifyContextConfig, RawServerDefault
+  FastifySchema,
+  FastifyTypeProviderDefault,
+  ContextConfigDefault, FastifyContextConfig, RawServerDefault
 } from '../../fastify'
 import { preHandlerAsyncHookHandler, RequestPayload } from '../../types/hooks'
 import { RouteGenericInterface } from '../../types/route'
+import { ResolveFastifyRequestType } from '../../types/type-provider'
 
 const server = fastify()
 
@@ -218,8 +220,12 @@ const customTypedHook: preHandlerAsyncHookHandler<
 RawServerDefault,
 RawRequestDefaultExpression,
 RawReplyDefaultExpression,
-Record<string, unknown>
-> = async function (request, reply) {
+RouteGenericInterface,
+ContextConfigDefault,
+FastifySchema,
+FastifyTypeProviderDefault,
+ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>
+> = async function (request, reply): Promise<void> {
   expectType<FastifyInstance>(this)
   expectAssignable<FastifyRequest>(request)
   expectAssignable<FastifyReply>(reply)

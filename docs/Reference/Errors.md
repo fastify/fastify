@@ -56,9 +56,19 @@ From the [Hooks documentation](./Hooks.md#manage-errors-from-a-hook):
 > `done()` and Fastify will automatically close the request and send the
 > appropriate error code to the user.
 
-If you have defined a custom error handler for using `setErrorHandler` the error
-will be routed there. otherwise, it will be routed to Fastify’s generic error
-handler.
+When a custom error handler has been defined through
+[`setErrorHandler`](./Server.md#seterrorhandler), the custom error handler will
+receive the error passed to the `done()` callback (or through other supported
+automatic error handling mechanisms). If `setErrorHandler` has been used
+multiple times to define multiple handlers, the error will be routed to the most
+precedent handler defined within the error [encapsulation context](./Encapsulation.md).
+Error handlers are fully encapsulated, so a `setErrorHandler` call within a
+plugin will limit the error handler to that plugin's context.
+
+The root error handler is Fastify's generic error handler. This error handler
+will use the headers and status code in the `Error` object, if they exist. The
+headers and status code will not be automatically set if a custom error handler
+is provided.
 
 Some things to consider in your custom error handler:
 
@@ -70,12 +80,11 @@ Some things to consider in your custom error handler:
     headers (no serialization)
 
 - You can throw a new error in your custom error handler
-  - errors (new error or the received error parameter re-thrown) - will trigger
-    the `onError` lifecycle hook and send the error to the user
+	- errors (new error or the received error parameter re-thrown) - will call the parent `errorHandler`.
+  - `onError` hook will be triggered once only for the first error being thrown.
   - an error will not be triggered twice from a lifecycle hook - Fastify
     internally monitors the error invocation to avoid infinite loops for errors
     thrown in the reply phases of the lifecycle. (those after the route handler)
-
 
 ### Fastify Error Codes
 <a id="fastify-error-codes"></a>
@@ -85,6 +94,12 @@ Some things to consider in your custom error handler:
 
 The router received an invalid url.
 
+<a name="FST_ERR_DUPLICATED_ROUTE"></a>
+#### FST_ERR_DUPLICATED_ROUTE
+
+The HTTP method already has a registered controller for that URL
+
+<a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>
 
@@ -199,3 +214,33 @@ You cannot use `send` inside the `onError` hook.
 <a id="FST_ERR_SEND_UNDEFINED_ERR"></a>
 
 Undefined error has occurred.
+
+<a name="FST_ERR_PLUGIN_NOT_VALID"></a>
+#### FST_ERR_PLUGIN_NOT_VALID
+
+Plugin must be a function or a promise.
+
+<a name="FST_ERR_PLUGIN_TIMEOUT"></a>
+#### FST_ERR_PLUGIN_TIMEOUT
+
+Plugin did not start in time. Default timeout (in millis): `10000`
+
+<a name="FST_ERR_HOOK_TIMEOUT"></a>
+#### FST_ERR_HOOK_TIMEOUT
+
+A callback for a hook timed out
+
+<a name="FST_ERR_ROOT_PLG_BOOTED"></a>
+#### FST_ERR_ROOT_PLG_BOOTED
+
+Root plugin has already booted (mapped directly from `avvio`)
+
+<a name="FST_ERR_PARENT_PLUGIN_BOOTED"></a>
+#### FST_ERR_PARENT_PLUGIN_BOOTED
+
+Impossible to load plugin because the parent (mapped directly from `avvio`)
+
+<a name="FST_ERR_PLUGIN_CALLBACK_NOT_FN"></a>
+#### FST_ERR_PLUGIN_CALLBACK_NOT_FN
+
+Callback for a hook is not a function (mapped directly from `avvio`)

@@ -45,7 +45,7 @@ fastify.get('/', opts, function (request, reply) {
   reply.send({ hello: 'world' })
 })
 
-fastify.listen(3000, function (err) {
+fastify.listen({ port: 3000 }, function (err) {
   if (err) {
     throw err
   }

@@ -181,12 +181,8 @@ into this document, overwriting any text already present, and save it:
 }
 ```
 
-Next, from the menu bar, select "Terminal > New Terminal" to open a new terminal
-in the editor. Run `npm install` to install the Fastify dependencies. Finally,
-we need to tell the eslint plugin to use the Fastify local install of eslint.
-Press `cmd+shift+p` to bring up the VSCode command input, type `eslint: manage
-library execution` and select it from the filtered menu. On the prompt, click
-the "Allow" button.
+Finally, from the menu bar, select "Terminal > New Terminal" to open a new terminal
+in the editor. Run `npm install` to install the Fastify dependencies.
 
 At this point, you are all setup with a custom VSCode instance that can be used
 to work on Fastify contributions. As you edit and save JavaScript files, the

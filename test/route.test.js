@@ -5,10 +5,19 @@ const split = require('split2')
 const t = require('tap')
 const test = t.test
 const sget = require('simple-get').concat
-const joi = require('@hapi/joi')
+const joi = require('joi')
 const Fastify = require('..')
 const proxyquire = require('proxyquire')
 const { FST_ERR_INVALID_URL } = require('../lib/errors')
+
+function getUrl (app) {
+  const { address, port } = app.server.address()
+  if (address === '::1') {
+    return `http://[${address}]:${port}`
+  } else {
+    return `http://${address}:${port}`
+  }
+}
 
 test('route', t => {
   t.plan(9)
@@ -104,9 +113,9 @@ test('route', t => {
     }
   })
 
-  fastify.listen(0, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     if (err) t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     test('cannot add another route after binding', t => {
       t.plan(1)
@@ -203,7 +212,7 @@ test('same route definition object on multiple prefixes', async t => {
     url: '/simple'
   }
 
-  const fastify = Fastify()
+  const fastify = Fastify({ exposeHeadRoutes: false })
 
   fastify.register(async function (f) {
     f.addHook('onRoute', (routeOptions) => {
@@ -536,15 +545,15 @@ test('throws when route with empty url', async t => {
 
   const fastify = Fastify()
   try {
-    await fastify.route({
+    fastify.route({
       method: 'GET',
       url: '',
       handler: (req, res) => {
         res.send('hi!')
       }
-    }).ready()
+    })
   } catch (err) {
-    t.equal(err.message, 'The first character of a path should be `/` or `*`')
+    t.equal(err.message, 'The path could not be empty')
   }
 })
 
@@ -553,10 +562,10 @@ test('throws when route with empty url in shorthand declaration', async t => {
 
   const fastify = Fastify()
   try {
-    await fastify.get(
+    fastify.get(
       '',
       async function handler () { return {} }
-    ).ready()
+    )
   } catch (err) {
     t.equal(err.message, 'The path could not be empty')
   }
@@ -579,6 +588,86 @@ test('throws when route-level error handler is not a function', t => {
   } catch (err) {
     t.equal(err.message, 'Error Handler for GET:/tea route, if defined, must be a function')
   }
+})
+
+test('Creates a HEAD route for each GET one (default)', t => {
+  t.plan(8)
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'application/json; charset=utf-8')
+    t.same(res.body, '')
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers['content-type'], 'text/plain; charset=utf-8')
+    t.equal(res.body, '')
+  })
+})
+
+test('Do not create a HEAD route for each GET one (exposeHeadRoutes: false)', t => {
+  t.plan(4)
+
+  const fastify = Fastify({ exposeHeadRoutes: false })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    handler: (req, reply) => {
+      reply.send({ here: 'is coffee' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/some-light',
+    handler: (req, reply) => {
+      reply.send('Get some light!')
+    }
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/more-coffee'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 404)
+  })
+
+  fastify.inject({
+    method: 'HEAD',
+    url: '/some-light'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 404)
+  })
 })
 
 test('Creates a HEAD route for each GET one', t => {
@@ -811,7 +900,7 @@ test('HEAD route should handle properly each response type', t => {
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-type'], undefined)
     t.equal(res.headers['content-length'], undefined)
     t.equal(res.body, '')
   })
@@ -916,7 +1005,7 @@ test('no warning for exposeHeadRoute', async t => {
 
   process.on('warning', listener)
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
 
   process.removeListener('warning', listener)
 
@@ -959,11 +1048,11 @@ test("HEAD route should handle stream.on('error')", t => {
   }, (error, res) => {
     t.error(error)
     t.equal(res.statusCode, 200)
-    t.equal(res.headers['content-type'], 'application/octet-stream')
+    t.equal(res.headers['content-type'], undefined)
   })
 })
 
-test('HEAD route should not be exposed by default', t => {
+test('HEAD route should be exposed by default', t => {
   t.plan(7)
 
   const resStream = stream.Readable.from('Hello with error!')
@@ -992,7 +1081,7 @@ test('HEAD route should not be exposed by default', t => {
     url: '/without-flag'
   }, (error, res) => {
     t.error(error)
-    t.equal(res.statusCode, 404)
+    t.equal(res.statusCode, 200)
   })
 
   fastify.inject({
@@ -1248,26 +1337,121 @@ test('Will not try to re-createprefixed HEAD route if it already exists and expo
   t.ok(true)
 })
 
-test('Correct error message is produced if "path" option is used', t => {
-  t.plan(2)
+test('GET route with body schema should throw', t => {
+  t.plan(1)
 
   const fastify = Fastify()
 
   t.throws(() => {
     fastify.route({
       method: 'GET',
-      path: '/test'
+      path: '/get',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
     })
-  }, new Error('Missing handler function for GET:/test route.'))
+  }, new Error('Body validation schema for GET:/get route is not supported!'))
+})
+
+test('HEAD route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
 
   t.throws(() => {
     fastify.route({
-      method: 'POST',
-      url: '/test',
-      handler: function () {},
-      errorHandler: ''
+      method: 'HEAD',
+      path: '/shouldThrow',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
     })
-  }, new Error('Error Handler for POST:/test route, if defined, must be a function'))
+  }, new Error('Body validation schema for HEAD:/shouldThrow route is not supported!'))
+})
+
+test('[HEAD, GET] route with body schema should throw', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: ['HEAD', 'GET'],
+      path: '/shouldThrowHead',
+      schema: {
+        body: {}
+      },
+      handler: function (req, reply) {
+        reply.send({ hello: 'world' })
+      }
+    })
+  }, new Error('Body validation schema for HEAD:/shouldThrowHead route is not supported!'))
+})
+
+test('GET route with body schema should throw - shorthand', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.get('/shouldThrow', {
+      schema: {
+        body: {}
+      }
+    },
+    function (req, reply) {
+      reply.send({ hello: 'world' })
+    }
+    )
+  }, new Error('Body validation schema for GET:/shouldThrow route is not supported!'))
+})
+
+test('HEAD route with body schema should throw - shorthand', t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.head('/shouldThrow2', {
+      schema: {
+        body: {}
+      }
+    },
+    function (req, reply) {
+      reply.send({ hello: 'world' })
+    }
+    )
+  }, new Error('Body validation schema for HEAD:/shouldThrow2 route is not supported!'))
+})
+
+test('route with non-english characters', t => {
+  t.plan(4)
+
+  const fastify = Fastify()
+
+  fastify.get('/föö', (request, reply) => {
+    reply.send('here /föö')
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'GET',
+      url: getUrl(fastify) + encodeURI('/föö')
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+      t.equal(body.toString(), 'here /föö')
+    })
+  })
 })
 
 test('invalid url attribute - non string URL', t => {

@@ -132,9 +132,9 @@ test('decorateReply inside register', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -180,9 +180,9 @@ test('decorateReply as plugin (inside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -228,9 +228,9 @@ test('decorateReply as plugin (outside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -274,9 +274,9 @@ test('decorateRequest inside register', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -322,9 +322,9 @@ test('decorateRequest as plugin (inside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -370,9 +370,9 @@ test('decorateRequest as plugin (outside .after)', t => {
     reply.send({ hello: 'world' })
   })
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -764,7 +764,7 @@ test('decorate* should throw if called after ready', async t => {
     })
   })
 
-  await fastify.listen(0)
+  await fastify.listen({ port: 0 })
   try {
     fastify.decorate('test', true)
     t.fail('should not decorate')
@@ -913,8 +913,7 @@ test('plugin required decorators', async t => {
       })
     },
     {
-      name: 'custom-plugin-one',
-      fastify: '3.x'
+      name: 'custom-plugin-one'
     }
   )
 
@@ -924,7 +923,6 @@ test('plugin required decorators', async t => {
     },
     {
       name: 'custom-plugin-two',
-      fastify: '3.x',
       dependencies: ['custom-plugin-one'],
       decorators: {
         request: ['someThing']
@@ -951,9 +949,9 @@ test('decorateRequest/decorateReply empty string', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -980,9 +978,9 @@ test('decorateRequest/decorateReply is undefined', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',
@@ -1009,9 +1007,9 @@ test('decorateRequest/decorateReply is not set to a value', t => {
   })
   t.teardown(fastify.close.bind(fastify))
 
-  fastify.listen(0, err => {
+  fastify.listen({ port: 0 }, err => {
     t.error(err)
-    fastify.server.unref()
+    t.teardown(() => { fastify.close() })
 
     sget({
       method: 'GET',

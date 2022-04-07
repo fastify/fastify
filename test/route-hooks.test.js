@@ -7,11 +7,11 @@ const Fastify = require('../')
 
 process.removeAllListeners('warning')
 
-function endRouteHook (doneOrPayload, done) {
+function endRouteHook (doneOrPayload, done, doneValue) {
   if (typeof doneOrPayload === 'function') {
-    doneOrPayload()
+    doneOrPayload(doneValue)
   } else {
-    done()
+    done(doneValue)
   }
 }
 
@@ -152,9 +152,9 @@ function testBeforeHandlerHook (hook) {
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
+      [hook]: (req, reply, doneOrPayload, done) => {
         req.hello = 'earth'
-        done()
+        endRouteHook(doneOrPayload, done)
       }
     }, (req, reply) => {
       reply.send({ hello: req.hello })
@@ -190,8 +190,8 @@ function testBeforeHandlerHook (hook) {
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
-        done(new Error('kaboom'))
+      [hook]: (req, reply, doneOrPayload, done) => {
+        endRouteHook(doneOrPayload, done, new Error('kaboom'))
       }
     }, (req, reply) => {
       reply.send(req.body)
@@ -221,7 +221,7 @@ function testBeforeHandlerHook (hook) {
 
     fastify.setErrorHandler(async (error, request, reply) => {
       t.same(error, myError, 'the error object throws by the user')
-      reply.send({ this: 'is', my: 'error' })
+      return reply.code(500).send({ this: 'is', my: 'error' })
     })
 
     fastify.get('/', {
@@ -271,9 +271,9 @@ function testBeforeHandlerHook (hook) {
     const fastify = Fastify()
 
     fastify.post('/', {
-      [hook]: (req, reply, done) => {
+      [hook]: (req, reply, doneOrPayload, done) => {
         reply.code(401)
-        done(new Error('go away'))
+        endRouteHook(doneOrPayload, done, new Error('go away'))
       }
     }, (req, reply) => {
       reply.send(req.body)
@@ -302,10 +302,10 @@ function testBeforeHandlerHook (hook) {
     fastify.decorate('foo', 42)
 
     fastify.post('/', {
-      [hook]: function (req, reply, done) {
+      [hook]: function (req, reply, doneOrPayload, done) {
         t.equal(this.foo, 42)
         this.foo += 1
-        done()
+        endRouteHook(doneOrPayload, done)
       }
     }, function (req, reply) {
       reply.send({ foo: this.foo })
@@ -329,10 +329,10 @@ function testBeforeHandlerHook (hook) {
     fastify.decorate('foo', 42)
 
     fastify.post('/', {
-      [hook]: [function (req, reply, done) {
+      [hook]: [function (req, reply, doneOrPayload, done) {
         t.equal(this.foo, 42)
         this.foo += 1
-        done()
+        endRouteHook(doneOrPayload, done)
       }]
     }, function (req, reply) {
       reply.send({ foo: this.foo })
@@ -423,7 +423,7 @@ test('preParsing option should be called before preValidation hook', t => {
   })
 
   fastify.post('/', {
-    preParsing: (req, reply, done) => {
+    preParsing: (req, reply, payload, done) => {
       req.called = true
       done()
     }
@@ -473,7 +473,7 @@ test('onRequest option should be called before preParsing', t => {
   t.plan(3)
   const fastify = Fastify()
 
-  fastify.addHook('preParsing', (req, reply, done) => {
+  fastify.addHook('preParsing', (req, reply, payload, done) => {
     t.ok(req.called)
     done()
   })
@@ -503,14 +503,14 @@ test('onTimeout on route', t => {
   const fastify = Fastify({ connectionTimeout: 500 })
 
   fastify.get('/timeout', {
-    async  handler (request, reply) { },
+    handler (request, reply) { },
     onTimeout (request, reply, done) {
       t.pass('onTimeout called')
       done()
     }
   })
 
-  fastify.listen(0, (err, address) => {
+  fastify.listen({ port: 0 }, (err, address) => {
     t.error(err)
     t.teardown(() => fastify.close())
 

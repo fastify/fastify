@@ -4,7 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const keys = require('../lib/symbols')
-const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE } = require('../lib/errors')
+const { FST_ERR_CTP_ALREADY_PRESENT, FST_ERR_CTP_INVALID_TYPE, FST_ERR_CTP_INVALID_MEDIA_TYPE } = require('../lib/errors')
 
 const first = function (req, payload, done) {}
 const second = function (req, payload, done) {}
@@ -216,6 +216,26 @@ test('non-Error thrown from content parser is properly handled', t => {
   }, (err, res) => {
     t.error(err)
     t.equal(res.payload, payload)
+  })
+})
+
+test('Error thrown 415 from content type is null and make post request to server', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  const errMsg = new FST_ERR_CTP_INVALID_MEDIA_TYPE(undefined).message
+
+  fastify.post('/', (req, reply) => {
+  })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/',
+    body: 'some text'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 415)
+    t.equal(JSON.parse(res.body).message, errMsg)
   })
 })
 

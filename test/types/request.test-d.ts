@@ -157,7 +157,7 @@ const customLogger: CustomLoggerInterface = {
   rawListeners: () => [],
   once: (event, listener) => customLogger,
   child: () => customLogger as pino.Logger<never>,
-  setBindings: (bindings) => {} 
+  setBindings: (bindings) => { }
 }
 
 const serverWithCustomLogger = fastify({ logger: customLogger })

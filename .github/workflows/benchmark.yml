@@ -1,7 +1,7 @@
 name: Benchmark
 
 on:
-  pull_request:
+  pull_request_target:
     types: [labeled]
 
 jobs:
@@ -23,7 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{github.event.pull_request.head.ref}}
+          persist-credentials: false
+          ref: ${{github.event.pull_request.head.sha}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - uses: actions/setup-node@v3

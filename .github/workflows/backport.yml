@@ -5,6 +5,10 @@ on:
       - closed
       - labeled
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   backport:
     runs-on: ubuntu-latest

@@ -6,6 +6,8 @@ on:
 jobs:
   check-coverage:
     runs-on: windows-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v3
 

@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   pnpm:
     runs-on: ${{ matrix.os }}

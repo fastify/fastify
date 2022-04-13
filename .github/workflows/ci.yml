@@ -13,6 +13,8 @@ on:
 jobs:
   linter:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v3
 
@@ -30,13 +32,19 @@ jobs:
           npm run lint
 
   coverage-nix:
+    permissions:
+      contents: read
     uses: ./.github/workflows/coverage-nix.yml
   coverage-win:
+    permissions:
+      contents: read
     uses: ./.github/workflows/coverage-win.yml
 
   test:
     needs: [linter, coverage-nix, coverage-win]
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
 
     strategy:
       matrix:
@@ -85,6 +93,8 @@ jobs:
   package:
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js

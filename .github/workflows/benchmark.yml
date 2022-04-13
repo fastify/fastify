@@ -1,13 +1,15 @@
 name: Benchmark
 
 on:
-  pull_request_target:
+  pull_request:
     types: [labeled]
 
 jobs:
   benchmark:
     if: ${{ github.event.label.name == 'benchmark' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       PR-BENCH-14: ${{ steps.benchmark-pr.outputs.BENCH_RESULT14 }}
       PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
@@ -58,6 +60,8 @@ jobs:
   output-benchmark:
     needs: [benchmark]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1

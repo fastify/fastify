@@ -6,7 +6,7 @@ Type Providers are a TypeScript only feature that enables Fastify to statically 
 
 ### Providers
 
-Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `fastify-type-provider-{provider-name}` naming convention.
+Type Providers are offered as additional packages you will need to install into your project. Each provider uses a different inference library under the hood; allowing you to select the library most appropriate for your needs. Type Provider packages follow a `@fastify/type-provider-{provider-name}` naming convention.
 
 The following inference packages are supported:
 
@@ -18,11 +18,11 @@ The following inference packages are supported:
 The following sets up a `json-schema-to-ts` Type Provider
 
 ```bash
-$ npm install fastify-type-provider-json-schema-to-ts --save
+$ npm install @fastify/type-provider-json-schema-to-ts --save
 ```
 
 ```typescript
-import { JsonSchemaToTsTypeProvider } from 'fastify-type-provider-json-schema-to-ts'
+import { JsonSchemaToTsTypeProvider } from '@fastify/type-provider-json-schema-to-ts'
 
 import fastify from 'fastify'
 
@@ -53,11 +53,11 @@ server.get('/route', {
 The following sets up a TypeBox Type Provider
 
 ```bash
-$ npm install fastify-type-provider-typebox --save
+$ npm install @fastify/type-provider-typebox --save
 ```
 
 ```typescript
-import { TypeBoxTypeProvider, Type } from 'fastify-type-provider-typebox'
+import { TypeBoxTypeProvider, Type } from '@fastify/type-provider-typebox'
 
 import fastify from 'fastify'
 

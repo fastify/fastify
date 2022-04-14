@@ -222,6 +222,13 @@ export interface FastifyInstance<
   delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
 
   // addHook: overloads

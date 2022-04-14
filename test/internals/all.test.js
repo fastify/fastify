@@ -3,7 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
+const { supportedMethods } = require('../../lib/httpMethods')
 
 test('fastify.all should add all the methods to the same url', t => {
   t.plan(supportedMethods.length * 2)

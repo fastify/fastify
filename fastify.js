@@ -248,27 +248,6 @@ function fastify (options) {
     options: function _options (url, opts, handler) {
       return router.prepareRoute.call(this, 'OPTIONS', url, opts, handler)
     },
-    propfind: function _propfind (url, opts, handler) {
-      return router.prepareRoute.call(this, 'PROPFIND', url, opts, handler)
-    },
-    proppatch: function _proppatch (url, opts, handler) {
-      return router.prepareRoute.call(this, 'PROPPATCH', url, opts, handler)
-    },
-    mkcol: function _mkcol (url, opts, handler) {
-      return router.prepareRoute.call(this, 'MKCOL', url, opts, handler)
-    },
-    copy: function _copy (url, opts, handler) {
-      return router.prepareRoute.call(this, 'COPY', url, opts, handler)
-    },
-    move: function _move (url, opts, handler) {
-      return router.prepareRoute.call(this, 'MOVE', url, opts, handler)
-    },
-    lock: function _lock (url, opts, handler) {
-      return router.prepareRoute.call(this, 'LOCK', url, opts, handler)
-    },
-    unlock: function _unlock (url, opts, handler) {
-      return router.prepareRoute.call(this, 'UNLOCK', url, opts, handler)
-    },
     all: function _all (url, opts, handler) {
       return router.prepareRoute.call(this, supportedMethods, url, opts, handler)
     },

@@ -81,7 +81,7 @@ server.post('/webhook', (request, reply) => {
   // whoever you expect. This is skipped in this sample for the sake
   // of simplicity
 
-  const { magicKey } = JSON.parse(request.body)
+  const { magicKey } = request.body
   request.server.magicKey = magicKey
   request.log.info('Ready for customer requests!')
 
@@ -151,6 +151,9 @@ exports.thirdPartyMagicKeyGenerator = async (ms) => {
     {
       body: JSON.stringify({ magicKey: MAGIC_KEY }),
       method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
     },
   )
 
@@ -227,7 +230,7 @@ server.post('/webhook', (request, reply) => {
   // whoever you expect. This is skipped in this sample for the sake
   // of simplicity
 
-  const { magicKey } = JSON.parse(request.body)
+  const { magicKey } = request.body
   request.server.magicKey = magicKey
   request.log.info('Ready for customer requests!')
 
@@ -273,6 +276,9 @@ exports.thirdPartyMagicKeyGenerator = async (ms) => {
     {
       body: JSON.stringify({ magicKey: MAGIC_KEY }),
       method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
     },
   )
 

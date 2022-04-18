@@ -135,11 +135,11 @@ follows:
 
 ```js
 const { fetch } = require('undici')
+const { setTimeout } = require('timers/promises')
 
 const MAGIC_KEY = '12345'
 
-const delay = (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms))
+const delay = setTimeout
 
 exports.thirdPartyMagicKeyGenerator = async (ms) => {
   // Simulate processing delay
@@ -257,11 +257,11 @@ server.listen({ port: '1234' })
 
 ```js
 const { fetch } = require('undici')
+const { setTimeout } = require('timers/promises')
 
 const MAGIC_KEY = '12345'
 
-const delay = (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms))
+const delay = setTimeout
 
 exports.thirdPartyMagicKeyGenerator = async (ms) => {
   // Simulate processing delay

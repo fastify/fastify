@@ -72,11 +72,11 @@ const provider = require('./provider')
 const server = Fastify({ logger: true })
 const USUAL_WAIT_TIME_MS = 5000
 
-server.get('/ping', (request, reply) => {
+server.get('/ping', function (request, reply) {
   reply.send({ error: false, ready: request.server.magicKey !== null })
 })
 
-server.post('/webhook', (request, reply) => {
+server.post('/webhook', function (request, reply) {
   // It's good practice to validate webhook requests really come from
   // whoever you expect. This is skipped in this sample for the sake
   // of simplicity
@@ -88,7 +88,7 @@ server.post('/webhook', (request, reply) => {
   reply.send({ error: false })
 })
 
-server.get('/v1*', async (request, reply) => {
+server.get('/v1*', async function (request, reply) {
   try {
     const data = await provider.fetchSensitiveData(request.server.magicKey)
     return { customer: true, error: false }
@@ -220,12 +220,12 @@ const server = new Fastify({ logger: true })
 server.register(setup)
 
 // Non-blocked URL
-server.get('/ping', (request, reply) => {
+server.get('/ping', function (request, reply) {
   reply.send({ error: false, ready: request.server.magicKey !== null })
 })
 
 // Webhook to handle the provider's response - also non-blocked
-server.post('/webhook', (request, reply) => {
+server.post('/webhook', function (request, reply) {
   // It's good practice to validate webhook requests really come from
   // whoever you expect. This is skipped in this sample for the sake
   // of simplicity
@@ -330,7 +330,7 @@ const delay = (routes) =>
   function (fastify, opts, done) {
     // Make sure customer requests won't be accepted if the magicKey is not
     // available
-    fastify.addHook('onRequest', (request, reply, next) => {
+    fastify.addHook('onRequest', function (request, reply, next) {
       if (!request.server.magicKey) {
         reply.statusCode = 503
         reply.header('Retry-After', USUAL_WAIT_TIME_MS)
@@ -360,7 +360,7 @@ const fp = require('fastify-plugin')
 const provider = require('./provider')
 
 module.exports = fp(async function (fastify) {
-  fastify.get('*', async (request ,reply) => {
+  fastify.get('*', async function (request ,reply) {
     try {
       const data = await provider.fetchSensitiveData(request.server.magicKey)
       return { customer: true, error: false }
@@ -424,7 +424,7 @@ const delay = (routes) =>
   function (fastify, opts, done) {
     // Make sure customer requests won't be accepted if the magicKey is not
     // available
-    fastify.addHook('onRequest', (request, reply, next) => {
+    fastify.addHook('onRequest', function (request, reply, next) {
       if (!request.server.magicKey) {
         reply.statusCode = 503
         reply.header('Retry-After', USUAL_WAIT_TIME_MS)

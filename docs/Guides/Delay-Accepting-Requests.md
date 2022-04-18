@@ -173,7 +173,7 @@ exports.fetchSensitiveData = async (key) => {
 }
 ```
 
-The most important snipped here is the `thirdPartyMagicKeyGenerator` function,
+The most important snippet here is the `thirdPartyMagicKeyGenerator` function,
 which will wait for 5 seconds and, then, make the POST request to our `/webhook`
 endpoint.
 
@@ -194,7 +194,7 @@ we repeatedly add that check in all of them? That's error-prone and there are
 more elegant solutions.
 
 What we'll do to improve this setup overall is create a
-[`Plugin`](../Reference/Plugins.md) that'll be the sole responsible for making
+[`Plugin`](../Reference/Plugins.md) that'll be solely responsible for making
 sure we both:
 
 - do not accept requests that would otherwise fail until we're ready for them

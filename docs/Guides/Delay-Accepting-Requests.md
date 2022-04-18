@@ -122,12 +122,12 @@ server.listen({ port: '1234' }, () => {
 
 Our code is simply setting up a Fastify server with a few routes:
 
-- we're setting a `/ping` route that specifies whether the service is ready or
+- a `/ping` route that specifies whether the service is ready or
 not to serve requests by checking if the `magicKey` has been set up
-- we're setting a `/webhook endpoint for our provider to reach back to us when
+- a `/webhook` endpoint for our provider to reach back to us when
 they're ready to share the `magicKey`. The `magicKey` is, then, saved into the
 previously set decorator on the `fastify` object
-- we're, finally, a catchall `/v1*` route to simulate what would have been
+- a catchall `/v1*` route to simulate what would have been
 customer-initiated requests. These requests rely on us having a valid `magicKey`
 
 The `provider.js` file, simulating actions of an external provider, is as

@@ -66,11 +66,11 @@ environment running the `5.17.1-arch1-1` Kernel version:
 Say we have the following base server set up at first:
 
 ```js
-const fastify = require('fastify')
+const Fastify = require('fastify')
 
 const provider = require('./provider')
 
-const server = new fastify({ logger: true })
+const server = Fastify({ logger: true })
 const USUAL_WAIT_TIME_MS = 5000
 
 server.get('/ping', (request, reply) => {
@@ -92,7 +92,7 @@ server.post('/webhook', (request, reply) => {
 server.get('/v1*', async (request, reply) => {
   try {
     const data = await provider.fetchSensitiveData(request.server.magicKey)
-    reply.send({ customer: true, error: false })
+   return { customer: true, error: false }
   } catch (error) {
     request.log.error({
       error,
@@ -100,13 +100,13 @@ server.get('/v1*', async (request, reply) => {
     })
     
     reply.statusCode = 500
-    reply.send({ customer: null, error: true })
+   return { customer: null, error: true }
   }
 })
 
 server.decorate('magicKey', null)
 
-server.listen('1234', () => {
+server.listen({ port: '1234' }, () => {
   provider.thirdPartyMagicKeyGenerator(USUAL_WAIT_TIME_MS)
     .catch((error) => {
       server.log.error({
@@ -125,7 +125,7 @@ Our code is simply setting up a Fastify server with a few routes:
 
 - we're setting a `/ping` route that specifies whether the service is ready or
 not to serve requests by checking if the `magicKey` has been set up
-- we're setting a `/webook` endpoint for our provider to reach back to us when
+- we're setting a `/webhook endpoint for our provider to reach back to us when
 they're ready to share the `magicKey`. The `magicKey` is, then, saved into the
 previously set decorator on the `fastify` object
 - we're, finally, a catchall `/v1*` route to simulate what would have been
@@ -239,7 +239,7 @@ server.post('/webhook', (request, reply) => {
 server.get('/v1*', async (request, reply) => {
   try {
     const data = await provider.fetchSensitiveData(request.server.magicKey)
-    reply.send({ customer: true, error: false })
+   return { customer: true, error: false }
   } catch (error) {
     request.log.error({
       error,
@@ -247,11 +247,11 @@ server.get('/v1*', async (request, reply) => {
     })
     
     reply.statusCode = 500
-    reply.send({ customer: null, error: true })
+    return { customer: null, error: true }
   }
 })
 
-server.listen('1234')
+server.listen({ port: '1234' })
 ```
 
 ##### provider.js

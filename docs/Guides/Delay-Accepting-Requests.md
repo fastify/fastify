@@ -54,12 +54,11 @@ authentication key (`magicKey` from here onwards)
 
 ### Hands-on
 
-For this sample solution we'll be using the following tools on a Linux
-environment running the `5.17.1-arch1-1` Kernel version:
+For this sample solution we'll be using the following:
 
 - `node.js v16.14.2`
 - `npm 8.5.0`
-- `fastify 3.28.0`
+- `fastify 4.0.0-rc.1`
 - `fastify-plugin 3.0.1`
 - `undici 5.0.0`
 
@@ -92,7 +91,7 @@ server.post('/webhook', (request, reply) => {
 server.get('/v1*', async (request, reply) => {
   try {
     const data = await provider.fetchSensitiveData(request.server.magicKey)
-   return { customer: true, error: false }
+    return { customer: true, error: false }
   } catch (error) {
     request.log.error({
       error,
@@ -100,7 +99,7 @@ server.get('/v1*', async (request, reply) => {
     })
     
     reply.statusCode = 500
-   return { customer: null, error: true }
+    return { customer: null, error: true }
   }
 })
 

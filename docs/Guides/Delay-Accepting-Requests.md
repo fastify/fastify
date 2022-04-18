@@ -210,14 +210,14 @@ With the changes to improve this behavior, the code will look like this:
 ##### index.js
 
 ```js
-const fastify = require('fastify')
+const Fastify = require('fastify')
 
-const provider = require('./provider')
-const delayIncomingRequests = require('./delay-incoming-requests')
+const customerRoutes = require('./customer-routes')
+const { setup, delay } = require('./delay-incoming-requests')
 
-const server = new fastify({ logger: true })
+const server = new Fastify({ logger: true })
 
-server.register(delayIncomingRequests)
+server.register(setup)
 
 // Non-blocked URL
 server.get('/ping', (request, reply) => {
@@ -238,20 +238,9 @@ server.post('/webhook', (request, reply) => {
 })
 
 // Blocked URLs
-server.get('/v1*', async (request, reply) => {
-  try {
-    const data = await provider.fetchSensitiveData(request.server.magicKey)
-   return { customer: true, error: false }
-  } catch (error) {
-    request.log.error({
-      error,
-      message: 'Failed at fetching sensitive data from provider',
-    })
-    
-    reply.statusCode = 500
-    return { customer: null, error: true }
-  }
-})
+// Mind we're building a new plugin by calling the `delay` factory with our
+// customerRoutes plugin
+server.register(delay(customerRoutes), { prefix: '/v1' })
 
 server.listen({ port: '1234' })
 ```
@@ -309,25 +298,12 @@ const provider = require('./provider')
 
 const USUAL_WAIT_TIME_MS = 5000
 
-async function delayIncomingRequests(fastify) {
+async function setup(fastify) {
   // As soon as we're listening for requests, let's work our magic
   fastify.server.on('listening', doMagic)
 
   // Set up the placeholder for the magicKey
   fastify.decorate('magicKey', null)
-
-  // Make sure customer requests won't be accepted if the magicKey is not
-  // available
-  // For this example, say our customer requests are all under a `/v1` path
-  fastify.addHook('onRequest', (request, reply, next) => {
-    if (!request.server.magicKey && request.url.startsWith('/v1')) {
-      reply.statusCode = 503
-      reply.send({ error: true, retryInMs: USUAL_WAIT_TIME_MS })
-      return
-    }
-
-    next()
-  })
 
   // Our magic -- important to make sure errors are handled. Beware of async
   // functions outside `try/catch` blocks
@@ -350,7 +326,55 @@ async function delayIncomingRequests(fastify) {
   }
 }
 
-module.exports = fp(delayIncomingRequests)
+const delay = (routes) =>
+  function (fastify, opts, done) {
+    // Make sure customer requests won't be accepted if the magicKey is not
+    // available
+    fastify.addHook('onRequest', (request, reply, next) => {
+      if (!request.server.magicKey) {
+        reply.statusCode = 503
+        reply.header('Retry-After', USUAL_WAIT_TIME_MS)
+        reply.send({ error: true, retryInMs: USUAL_WAIT_TIME_MS })
+      }
+
+      next()
+    })
+
+    // Register to-be-delayed routes
+    fastify.register(routes, opts)
+
+    done()
+  }
+
+module.exports = {
+  setup: fp(setup),
+  delay,
+}
+```
+
+##### customer-routes.js
+
+```js
+const fp = require('fastify-plugin')
+
+const provider = require('./provider')
+
+module.exports = fp(async function (fastify) {
+  fastify.get('*', async (request ,reply) => {
+    try {
+      const data = await provider.fetchSensitiveData(request.server.magicKey)
+      return { customer: true, error: false }
+    } catch (error) {
+      request.log.error({
+        error,
+        message: 'Failed at fetching sensitive data from provider',
+      })
+
+      reply.statusCode = 500
+      return { customer: null, error: true }
+    }
+  })
+})
 ```
 
 There is a very specific change on the previously existing files that is worth
@@ -362,8 +386,14 @@ do with starting the Fastify server. It was a business logic that didn't have
 its specific place in the code base.
 
 Now we've implemented the `delayIncomingRequests` plugin in the
-`delay-incoming-requests.js` file. That's the brains of our operation. Let's
-walk through what the plugin does:
+`delay-incoming-requests.js` file. That's, in truth, a module split into two
+different plugins that will build up to a single use-case. That's the brains of
+our operation. Let's walk through what the plugins do:
+
+##### setup
+
+The `setup` plugin is responsible for making sure we reach out to our provider
+asap and store the `magicKey` somewhere available to all our handlers.
 
 ```js
   fastify.server.on('listening', doMagic)
@@ -382,21 +412,37 @@ function.
 The `magicKey` decoration is also part of the plugin now. We initialize it with
 a placeholder, waiting for the valid value to be retrieved.
 
-```js
-  fastify.addHook('onRequest', (request, reply, next) => {
-    if (!request.server.magicKey && request.url.startsWith('/v1')) {
-      reply.statusCode = 503
-      reply.header('Retry-After', USUAL_WAIT_TIME_MS)
-      reply.send({ error: true, retryInMs: USUAL_WAIT_TIME_MS })
-      return
-    }
+##### delay
 
-    next()
-  })
+`delay` is not a plugin itself. It's actually a plugin *factory*. It expects
+a Fastify plugin with `routes` and exports the actual plugin that'll handle
+enveloping those routes with an `onRequest` hook that will make sure no
+requests are handled until we're ready for them.
+
+```js
+const delay = (routes) =>
+  function (fastify, opts, done) {
+    // Make sure customer requests won't be accepted if the magicKey is not
+    // available
+    fastify.addHook('onRequest', (request, reply, next) => {
+      if (!request.server.magicKey) {
+        reply.statusCode = 503
+        reply.header('Retry-After', USUAL_WAIT_TIME_MS)
+        reply.send({ error: true, retryInMs: USUAL_WAIT_TIME_MS })
+      }
+
+      next()
+    })
+
+    // Register to-be-delayed routes
+    fastify.register(routes, opts)
+
+    done()
+  }
 ```
 
 Instead of updating each and every single controller that might use the
-`magicKey`, we simply make sure that no path that's related to customer requests
+`magicKey`, we simply make sure that no route that's related to customer requests
 will be served until we have everything ready. And there's more: we fail
 **FAST** and have the possibility of giving the customer meaningful information,
 like how long they should wait before retrying the request. Going even further,
@@ -407,7 +453,17 @@ still not ready to take incoming requests and they should redirect traffic
 to other instances, if available, besides in how long we estimate that will be
 solved. All of that in a few simple lines!
 
-Let's see how that behaves in action. If we fire our server up with
+It's noteworthy that we didn't use the `fastify-plugin` wrapper in the `delay`
+factory. That's because we wanted the `onRequest` hook to only be set within
+that specific scope and not to the scope that called it (in our case, the
+main `server` object defined in `index.js`). `fastify-plugin` sets the
+`skip-override` hidden property, which has a practical effect of making
+whatever changes we make to our `fastify` object available to the upper scope.
+That's also why we used it with the `customerRoutes` plugin: we wanted those
+routes to be available to its calling scope, the `delay` plugin. For more info
+on that subject refer to [Plugins](../Reference/Plugins.md#handle-the-scope).
+
+Let's see how that behaves in action. If we fired our server up with
 `node index.js` and made a few requests to test things out. These were the logs
 we'd see (some bloat was removed to ease things up):
 

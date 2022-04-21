@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [closed]
 
+permissions:
+  issues: write
+  pull-requests: read
+
 jobs:
   create_issue:
     runs-on: ubuntu-latest

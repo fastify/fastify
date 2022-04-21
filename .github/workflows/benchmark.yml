@@ -8,6 +8,8 @@ jobs:
   benchmark:
     if: ${{ github.event.label.name == 'benchmark' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       PR-BENCH-14: ${{ steps.benchmark-pr.outputs.BENCH_RESULT14 }}
       PR-BENCH-16: ${{ steps.benchmark-pr.outputs.BENCH_RESULT16 }}
@@ -21,7 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{github.event.pull_request.head.ref}}
+          persist-credentials: false
+          ref: ${{github.event.pull_request.head.sha}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
       - uses: actions/setup-node@v3
@@ -58,6 +61,8 @@ jobs:
   output-benchmark:
     needs: [benchmark]
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@v1

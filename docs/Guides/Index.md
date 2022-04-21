@@ -13,7 +13,7 @@ This table of contents is in alphabetical order.
 + [`Delay Accepting Requests`](./Delay-Accepting-Requests.md): A practical guide
   on how to delay serving requests to specific routes until some condition is
   met in your application. This guide focuses on solving the problem using
-  [`Hooks`](../Reference/Hooks.md), [`Decorators`](../Reference/Decorators.md)
+  [`Hooks`](../Reference/Hooks.md), [`Decorators`](../Reference/Decorators.md),
   and [`Plugins`](../Reference/Plugins.md).
 + [Ecosystem](./Ecosystem.md): Lists all core plugins and many known community
   plugins.

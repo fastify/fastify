@@ -31,18 +31,18 @@ rolling asap!
 
 ### Overview
 
-The proposed solution is one of many possible ways for dealing with the
-proposed scenario and many similar to it. It relies solely on Fastify, so no
+The proposed solution is one of many possible ways of dealing with this
+scenario and many similar to it. It relies solely on Fastify, so no
 fancy infrastructure tricks or third-party libraries will be necessary.
 
-In order to simplify things we won't be dealing with a precise OAuth flow but,
-instead, simulate a scenario in which some key is needed in order to serve
+To simplify things we won't be dealing with a precise OAuth flow but,
+instead, simulate a scenario in which some key is needed to serve
 a request and that key can only be retrieved in runtime by authenticating with
 an external provider.
 
 The main goal here is to deny requests that would otherwise fail **as early as
 possible** and with some **meaningful context**. That's both useful for the
-server (less resources allocated into a bound-to-fail task) and for the client
+server (fewer resources allocated to a bound-to-fail task) and for the client
 (they get some meaningful information and don't need to wait long for it).
 
 That will be achieved by wrapping into a custom plugin two main features:
@@ -184,15 +184,15 @@ our `magicKey` set up. Until we receive the webhook request from our external
 provider (in this example we're simulating a 5 second delay) all our requests
 under the `/v1*` path (customer requests) will fail. Worse than that: they'll
 fail after we've reached out to our provider with an invalid key and got an
-error from them. That wasted time and resources, both from us and from our
+error from them. That wasted time and resources for us and our
 customers. Depending on the kind of application we're running and on the request
 rate we're expecting this delay is not acceptable or, at least, very annoying.
 
 Of course, that could be simply mitigated by checking whether or not the
 `magicKey` has been set up before hitting the provider in the `/v1*` handler.
-Sure, but that would lead to bloat on the code. And imagine we have dozens of
+Sure, but that would lead to bloat in the code. And imagine we have dozens of
 different routes, with different controllers, that require that key. Should
-we repeatedly add that check in all of them? That's error-prone and there are
+we repeatedly add that check to all of them? That's error-prone and there are
 more elegant solutions.
 
 What we'll do to improve this setup overall is create a
@@ -381,7 +381,7 @@ There is a very specific change on the previously existing files that is worth
 mentioning: Beforehand we were using the `server.listen` callback to start the
 authentication process with the external provider and we were decorating the
 `server` object right before initializing the server. That was bloating our
-server initialization setup with unnecessary code and didn't really have much to
+server initialization setup with unnecessary code and didn't have much to
 do with starting the Fastify server. It was a business logic that didn't have
 its specific place in the code base.
 
@@ -399,9 +399,9 @@ asap and store the `magicKey` somewhere available to all our handlers.
   fastify.server.on('listening', doMagic)
 ```
 
-As soon as the server starts listening (very similar behavior as to adding a
+As soon as the server starts listening (very similar behavior to adding a
 piece of code to the `server.listen`'s callback function) a `listening` event
-is emitted (fore more info refer to https://nodejs.org/api/net.html#event-listening).
+is emitted (for more info refer to https://nodejs.org/api/net.html#event-listening).
 We use that to reach out to our provider as soon as possible, with the `doMagic`
 function.
 
@@ -441,7 +441,7 @@ const delay = (routes) =>
   }
 ```
 
-Instead of updating each and every single controller that might use the
+Instead of updating every single controller that might use the
 `magicKey`, we simply make sure that no route that's related to customer requests
 will be served until we have everything ready. And there's more: we fail
 **FAST** and have the possibility of giving the customer meaningful information,
@@ -580,11 +580,11 @@ Keep-Alive: timeout=5
 
 ## Conclusion
 
-This is the gist of it. Of course the specifics of the implementation will vary
-from a problem to another, but the main goal of this guide was to show a very
+Specifics of the implementation will vary
+from one problem to another, but the main goal of this guide was to show a very
 specific use case of an issue that could be solved within Fastify's ecosystem.
 
-This guide is a tutorial ont he use of plugins, decorators and hooks to solve
+This guide is a tutorial on the use of plugins, decorators, and hooks to solve
 the problem of delaying serving specific requests on our application. It's not
 production-ready, as it keeps local state (the `magicKey`) and it's not
 horizontally scalable (we don't want to flood our provider, right?). One way
@@ -592,6 +592,6 @@ of improving it would be storing the `magicKey` somewhere else (perhaps a
 cache database?).
 
 The keywords here were [Decorators](../Reference/Decorators.md),
-[Hooks](../Reference/Hooks.md) and [Plugins](../Reference/Plugins.md). Combining
-what Fastify has to offer can lead to very ingenuous and creative solution to a
+[Hooks](../Reference/Hooks.md), and [Plugins](../Reference/Plugins.md). Combining
+what Fastify has to offer can lead to very ingenious and creative solutions to a
 wide variety of problems. Let's be creative! :)

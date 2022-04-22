@@ -73,15 +73,14 @@ describes the properties available in that options object.
     - [serializerCompiler](#serializercompiler)
     - [schemaErrorFormatter](#schemaerrorformatter)
     - [schemaController](#schemacontroller)
-      - [Ajv 8 as default schema validator](#ajv-8-as-default-schema-validator)
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [printRoutes](#printroutes)
     - [printPlugins](#printplugins)
     - [addContentTypeParser](#addcontenttypeparser)
-    - [hasContentTypeParser](#hasContentTypeParser)
-    - [removeContentTypeParser](#removeContentTypeParser)
-    - [removeAllContentTypeParsers](#removeAllContentTypeParsers)
+    - [hasContentTypeParser](#hascontenttypeparser)
+    - [removeContentTypeParser](#removecontenttypeparser)
+    - [removeAllContentTypeParsers](#removeallcontenttypeparsers)
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
@@ -178,9 +177,11 @@ server is deployed without a reverse proxy in front.
 <a id="factory-ignore-slash"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. This option may be set to `true` to ignore trailing slashes in routes.
-This option applies to *all* route registrations for the resulting server
-instance.
+routing. By default, Fastify is set to take into account the trailing slashes. 
+Paths like `/foo` and `/foo/` will be treated as different paths. If you want 
+to change this, set this flag to `true`. That way, both `/foo` and `/foo/` will 
+point to the same route. This option applies to *all* route registrations for 
+the resulting server instance.
 
 + Default: `false`
 

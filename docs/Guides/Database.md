@@ -240,7 +240,7 @@ database's schema and to prevent data loss.
 As stated at the beginning of the guide, Fastify is database agnostic and any
 NodeJS database migration tool can be used with it. We will give an example of
 using [Postgrator](https://www.npmjs.com/package/postgrator) which has support
-for Postgres, MySQL and SQL Server. For MongoDB migrations, please check
+for Postgres, MySQL, SQL Server and SQLite. For MongoDB migrations, please check
 [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
 
 #### [Postgrator](https://www.npmjs.com/package/postgrator)

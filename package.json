@@ -142,7 +142,7 @@
     "eslint-config-standard": "^17.0.0-1",
     "eslint-import-resolver-node": "^0.3.2",
     "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-n": "^14.0.0",
+    "eslint-plugin-n": "^15.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "fast-json-body": "^1.1.0",
     "fast-json-stringify": "^3.0.0",

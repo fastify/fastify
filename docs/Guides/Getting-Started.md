@@ -74,6 +74,9 @@ fastify.get('/', async (request, reply) => {
   return { hello: 'world' }
 })
 
+/**
+ * Run the server!
+ * */
 const start = async () => {
   try {
     await fastify.listen({ port: 3000 })
@@ -168,6 +171,10 @@ fastify.listen({ port: 3000 }, function (err, address) {
 ```js
 // our-first-route.js
 
+/**
+ * @param {FastifyInstance} fastify 
+ * @param {Object} options 
+ * */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }
@@ -248,6 +255,11 @@ fastify.listen({ port: 3000 }, function (err, address) {
 import fastifyPlugin from 'fastify-plugin'
 import fastifyMongo from 'fastify-mongodb'
 
+/**
+ * 
+ * @param {FastifyInstance} fastify
+ * @param {Object} options
+ * */
 async function dbConnector (fastify, options) {
   fastify.register(fastifyMongo, {
     url: 'mongodb://localhost:27017/test_database'
@@ -264,6 +276,12 @@ module.exports = fastifyPlugin(dbConnector)
 // CommonJs
 const fastifyPlugin = require('fastify-plugin')
 
+
+/**
+ * 
+ * @param {FastifyInstance} fastify
+ * @param {Object} options
+ * */
 async function dbConnector (fastify, options) {
   fastify.register(require('fastify-mongodb'), {
     url: 'mongodb://localhost:27017/test_database'
@@ -278,6 +296,11 @@ module.exports = fastifyPlugin(dbConnector)
 
 **our-first-route.js**
 ```js
+/**
+ * 
+ * @param {FastifyInstance} fastify
+ * @param {Object} options
+ * */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
 

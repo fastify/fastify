@@ -190,7 +190,7 @@ Fastify offers two packages wrapping `json-schema-to-ts` and `typebox`:
 - `@fastify/type-provider-json-schema-to-ts`
 - `@fastify/type-provider-typebox`
 
-They simplify schema validation setup and you can read more about them in [Type Providers](../Type-Providers.md) page.
+They simplify schema validation setup and you can read more about them in [Type Providers](./Type-Providers.md) page.
 
 Below is how to setup schema validation using vanilla `typebox` and `json-schema-to-ts` packages.
 

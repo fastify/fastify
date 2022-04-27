@@ -234,8 +234,7 @@ fastify.get('/example/:userId/:secretToken', (request, reply) => {})
 fastify.get('/example/*', (request, reply) => {})
 ```
 
-Regular expression routes are supported as well, but pay attention, RegExp are
-very expensive in term of performance!
+Regular expression routes are supported as well, but be aware that you have to escape slashes. Take note that RegExp is also very expensive in terms of performance!
 ```js
 // parametric with regexp
 fastify.get('/example/:file(^\\d+).png', (request, reply) => {})

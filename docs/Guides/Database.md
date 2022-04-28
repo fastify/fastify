@@ -158,7 +158,7 @@ Install the plugin by running `https://github.com/fastify/fastify-leveldb`
 const fastify = require('fastify')()
 
 fastify.register(
-  require('fastify@leveldb'),
+  require('@fastify/leveldb'),
   { name: 'db' }
 )
 

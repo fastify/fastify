@@ -1,4 +1,4 @@
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { RouteGenericInterface } from './route'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'

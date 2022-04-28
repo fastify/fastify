@@ -1,4 +1,4 @@
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import fastify, {
   FastifyInstance,

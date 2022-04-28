@@ -18,7 +18,7 @@
  * https://github.com/fastify/fastify/issues/649
  */
 
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyRequest } from './request'

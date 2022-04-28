@@ -5,7 +5,7 @@ import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, Fas
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyLoggerInstance, LogLevel } from './logger'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { FastifyContext } from './context'
 
 export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}

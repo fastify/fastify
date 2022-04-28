@@ -17,14 +17,14 @@ plugins maintained within the Fastify organization.
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
 
-Install the plugin by running `npm i fastify-mysql --save`.
+Install the plugin by running `npm i @fastify/mysql --save`.
 
 *Usage:*
 
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-mysql'), {
+fastify.register(require('@fastify/mysql'), {
   connectionString: 'mysql://root@localhost/mysql'
 })
 
@@ -44,14 +44,14 @@ fastify.listen(3000, err => {
 ```
 
 ### [Postgres](https://github.com/fastify/fastify-postgres)
-Install the plugin by running `npm i pg fastify-postgres --save`.
+Install the plugin by running `npm i pg @fastify/postgres --save`.
 
 *Example*:
 
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-postgres'), {
+fastify.register(require('@fastify/postgres'), {
   connectionString: 'postgres://postgres@localhost/postgres'
 })
 
@@ -71,7 +71,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [Redis](https://github.com/fastify/fastify-redis)
-Install the plugin by running `npm i fastify-redis --save`
+Install the plugin by running `npm i @fastify/redis --save`
 
 *Usage:*
 
@@ -80,9 +80,9 @@ Install the plugin by running `npm i fastify-redis --save`
 
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
+fastify.register(require('@fastify/redis'), { host: '127.0.0.1' })
 // or
-fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
+fastify.register(require('@fastify/redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 fastify.get('/foo', function (req, reply) {
   const { redis } = fastify
@@ -104,25 +104,25 @@ fastify.listen(3000, err => {
 })
 ```
 
-By default `fastify-redis` doesn't close 
+By default `@fastify/redis` doesn't close 
 the client connection when Fastify server shuts down. 
 To opt-in to this behavior, register the client like so:
 
 ```javascript
-fastify.register(require('fastify-redis'), {
+fastify.register(require('@fastify/redis'), {
   client: redis,
   closeClient: true
 })
 ```
 
 ### [Mongo](https://github.com/fastify/fastify-mongodb)
-Install the plugin by running `npm i fastify-mongodb --save`
+Install the plugin by running `npm i @fastify/mongodb --save`
 
 *Usage:*
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-mongodb'), {
+fastify.register(require('@fastify/mongodb'), {
   // force to close the mongodb connection when app stopped
   // the default value is false
   forceClose: true,
@@ -158,7 +158,7 @@ Install the plugin by running `https://github.com/fastify/fastify-leveldb`
 const fastify = require('fastify')()
 
 fastify.register(
-  require('fastify-leveldb'),
+  require('@fastify/leveldb'),
   { name: 'db' }
 )
 

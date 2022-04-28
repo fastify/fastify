@@ -10,7 +10,7 @@ import { FastifyInstance } from './types/instance'
 import { FastifyServerFactory } from './types/serverFactory'
 import { Options as AjvOptions } from '@fastify/ajv-compiler'
 import { Options as FJSOptions } from '@fastify/fast-json-stringify-compiler'
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { FastifyReply } from './types/reply'
 import { FastifySchemaValidationError } from './types/schema'
 import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
@@ -174,7 +174,7 @@ export type FastifyServerOptions<
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
-declare module 'fastify-error' {
+declare module '@fastify/error' {
   interface FastifyError {
     validation?: ValidationResult[];
   }
@@ -199,7 +199,7 @@ export { FastifyContext, FastifyContextConfig } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
 export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
-export { FastifyError } from 'fastify-error'
+export { FastifyError } from '@fastify/error'
 export { FastifySchema, FastifySchemaCompiler } from './types/schema'
 export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 export * from './types/hooks'

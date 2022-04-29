@@ -483,7 +483,7 @@ be used to enhance the HTTP response.
 
 Tip: you can simplify errors by using the
 [`http-errors`](https://npm.im/http-errors) module or
-[`fastify-sensible`](https://github.com/fastify/fastify-sensible) plugin to
+[`@fastify/sensible`](https://github.com/fastify/fastify-sensible) plugin to
 generate errors:
 
 ```js

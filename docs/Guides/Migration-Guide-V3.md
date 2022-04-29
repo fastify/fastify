@@ -14,7 +14,7 @@ From Fastify v3, middleware support does not come out-of-the-box with the
 framework itself.
 
 If you use Express middleware in your application, please install and register
-the [`fastify-express`](https://github.com/fastify/fastify-express) or
+the [`@fastify/express`](https://github.com/fastify/fastify-express) or
 [`middie`](https://github.com/fastify/middie) plugin before doing so.
 
 **v2:**
@@ -28,7 +28,7 @@ fastify.use(require('cors')());
 
 ```js
 // Using the Express `cors` middleware in Fastify v3.
-await fastify.register(require('fastify-express'));
+await fastify.register(require('@fastify/express'));
 fastify.use(require('cors')());
 ```
 

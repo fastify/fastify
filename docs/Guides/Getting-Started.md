@@ -195,10 +195,10 @@ Fastify handles this internally, with minimum effort!
 Let's rewrite the above example with a database connection.
 
 
-First, install `fastify-plugin` and `fastify-mongodb`:
+First, install `fastify-plugin` and `@fastify/mongodb`:
 
 ```
-npm i --save fastify-plugin fastify-mongodb
+npm i --save fastify-plugin @fastify/mongodb
 ```
 
 **server.js**
@@ -246,7 +246,7 @@ fastify.listen(3000, function (err, address) {
 ```js
 // ESM
 import fastifyPlugin from 'fastify-plugin'
-import fastifyMongo from 'fastify-mongodb'
+import fastifyMongo from '@fastify/mongodb'
 
 async function dbConnector (fastify, options) {
   fastify.register(fastifyMongo, {
@@ -265,7 +265,7 @@ module.exports = fastifyPlugin(dbConnector)
 const fastifyPlugin = require('fastify-plugin')
 
 async function dbConnector (fastify, options) {
-  fastify.register(require('fastify-mongodb'), {
+  fastify.register(require('@fastify/mongodb'), {
     url: 'mongodb://localhost:27017/test_database'
   })
 }

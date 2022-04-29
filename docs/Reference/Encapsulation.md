@@ -33,7 +33,7 @@ this example into concrete terms, consider a basic scenario of a REST API
 server that has three routes: the first route (`/one`) requires authentication,
 the second route (`/two`) does not, and the third route (`/three`) has
 access to the same context as the second route. Using
-[fastify-bearer-auth][bearer] to provide the authentication, the code for this
+[@fastify/bearer-auth][bearer] to provide the authentication, the code for this
 example is as follows:
 
 ```js
@@ -44,7 +44,7 @@ const fastify = require('fastify')()
 fastify.decorateRequest('answer', 42)
 
 fastify.register(async function authenticatedContext (childServer) {
-  childServer.register(require('fastify-bearer-auth'), { keys: ['abc123'] })
+  childServer.register(require('@fastify/bearer-auth'), { keys: ['abc123'] })
 
   childServer.route({
     path: '/one',
@@ -103,7 +103,7 @@ original diagram:
 1. Each _child context_ (`authenticatedContext`, `publicContext`, and
 `grandchildContext`) has access to the `answer` request decorator defined in
 the _root context_.
-2. Only the `authenticatedContext` has access to the `fastify-bearer-auth`
+2. Only the `authenticatedContext` has access to the `@fastify/bearer-auth`
 plugin.
 3. Both the `publicContext` and `grandchildContext` have access to the `foo`
 request decorator.

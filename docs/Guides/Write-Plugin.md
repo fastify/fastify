@@ -33,9 +33,9 @@ unused.
 
 If you want to see some good examples on how to document a plugin take a look
 at:
-- [`fastify-caching`](https://github.com/fastify/fastify-caching)
-- [`fastify-compress`](https://github.com/fastify/fastify-compress)
-- [`fastify-cookie`](https://github.com/fastify/fastify-cookie)
+- [`@fastify/caching`](https://github.com/fastify/fastify-caching)
+- [`@fastify/compress`](https://github.com/fastify/fastify-compress)
+- [`@fastify/cookie`](https://github.com/fastify/fastify-cookie)
 - [`point-of-view`](https://github.com/fastify/point-of-view)
 - [`under-pressure`](https://github.com/fastify/under-pressure)
 
@@ -93,10 +93,10 @@ our documentation!
 If you want to see some real world examples, check out:
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates
   rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
+- [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with this you can share the same MongoDB connection
   pool in every part of your server.
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart
+- [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify.
-- [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important
+- [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) Important
   security headers for Fastify.

@@ -4,7 +4,7 @@ import { RouteOptions, RouteGenericInterface } from './route'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { FastifyRequest } from './request'
 import { FastifyReply } from './reply'
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { FastifyLoggerInstance } from './logger'
 import {
   FastifyRequestType,

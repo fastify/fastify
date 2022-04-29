@@ -4,7 +4,7 @@ import { FastifyReply, ReplyGenericInterface } from './reply'
 import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, FastifySerializerCompiler } from './schema'
 import { HTTPMethods, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, ContextConfigDefault } from './utils'
 import { preValidationHookHandler, preHandlerHookHandler, preSerializationHookHandler, onRequestHookHandler, preParsingHookHandler, onResponseHookHandler, onSendHookHandler, onErrorHookHandler, onTimeoutHookHandler } from './hooks'
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 import { FastifyContext } from './context'
 import {
   FastifyRequestType,

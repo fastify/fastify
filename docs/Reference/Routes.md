@@ -13,8 +13,7 @@ declaration.
 - [Async Await](#async-await)
 - [Promise resolution](#promise-resolution)
 - [Route Prefixing](#route-prefixing)
-  - [Handling of / route inside prefixed
-    plugins](#handling-of--route-inside-prefixed-plugins)
+  - [Handling of / route inside prefixed plugins](#handling-of--route-inside-prefixed-plugins)
 - [Custom Log Level](#custom-log-level)
 - [Custom Log Serializer](#custom-log-serializer)
 - [Config](#config)
@@ -115,9 +114,11 @@ fastify.route(options)
   * `slash`: Will register only `/prefix/`.
   * `no-slash`: Will register only `/prefix`.
 
-  `request` is defined in [Request](./Request.md).
+  Note: this option does not override `ignoreTrailingSlashes` in [Server](./Server.md) configuration.
 
-  `reply` is defined in [Reply](./Reply.md).
+* `request` is defined in [Request](./Request.md).
+
+* `reply` is defined in [Reply](./Reply.md).
 
 **Notice:** The documentation of `onRequest`, `preParsing`, `preValidation`,
 `preHandler`, `preSerialization`, `onSend`, and `onResponse` are described in
@@ -233,8 +234,7 @@ fastify.get('/example/:userId/:secretToken', (request, reply) => {})
 fastify.get('/example/*', (request, reply) => {})
 ```
 
-Regular expression routes are supported as well, but pay attention, RegExp are
-very expensive in term of performance!
+Regular expression routes are supported as well, but be aware that you have to escape slashes. Take note that RegExp is also very expensive in terms of performance!
 ```js
 // parametric with regexp
 fastify.get('/example/:file(^\\d+).png', (request, reply) => {})

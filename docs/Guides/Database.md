@@ -235,7 +235,7 @@ export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 
 Database schema migrations are an integral part of database management and
 development. Migrations provide a repeatable and testable way to modify a
-database's schema and to prevent data loss.
+database's schema and prevent data loss.
 
 As stated at the beginning of the guide, Fastify is database agnostic and any
 NodeJS database migration tool can be used with it. We will give an example of

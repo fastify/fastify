@@ -151,7 +151,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [LevelDB](https://github.com/fastify/fastify-leveldb)
-Install the plugin by running `https://github.com/fastify/fastify-leveldb`
+Install the plugin by running `npm i @fastify/leveldb`
 
 *Usage:*
 ```javascript

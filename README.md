@@ -63,7 +63,7 @@ npm init fastify
 Install dependencies:
 
 ```sh
-npm install
+npm i
 ```
 
 To start the app in dev mode:

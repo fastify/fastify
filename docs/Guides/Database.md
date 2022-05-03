@@ -261,7 +261,7 @@ everyone to know which changes are made in a migration.
 In our example we are going to have a single migration that creates a `users`
 table and we are going to use `Postgrator` to run the migration.
 
-> Run `npm install pg postgrator` to install dependencies needed for the
+> Run `npm i pg postgrator` to install dependencies needed for the
 > example.
 
 ```sql

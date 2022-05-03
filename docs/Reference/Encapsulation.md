@@ -134,7 +134,7 @@ context is available to the containing parent context.
 
 Assuming the `publicContext` needs access to the `bar` decorator defined
 within the `grandchildContext` in the previous example, the code can be
-rewritten to:
+rewritten as:
 
 ```js
 'use strict'

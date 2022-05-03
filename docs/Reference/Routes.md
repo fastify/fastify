@@ -2,8 +2,8 @@
 
 ## Routes
 
-The routes methods will configure the endpoints of your application. You have
-two ways to declare a route with Fastify, the shorthand method and the full
+The route methods will configure the endpoints of your application. You have
+two ways to declare a route with Fastify: the shorthand method and the full
 declaration.
 
 - [Full declaration](#full-declaration)
@@ -54,8 +54,8 @@ fastify.route(options)
 * `attachValidation`: attach `validationError` to request, if there is a schema
   validation error, instead of sending the error to the error handler.
   The default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv one.
-* `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) as soon
-  that a request is received, it could also be an array of functions.
+* `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) called
+  as soon as a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
   before parsing the request, it could also be an array of functions.
 * `preValidation(request, reply, done)`: a [function](./Hooks.md#prevalidation)
@@ -76,7 +76,7 @@ fastify.route(options)
 * `onTimeout(request, reply, done)`: a [function](./Hooks.md#ontimeout) called
   when a request is timed out and the HTTP socket has been hanged up.
 * `onError(request, reply, error, done)`: a [function](./Hooks.md#onerror)
-  called when an Error is thrown or send to the client by the route handler.
+  called when an Error is thrown or sent to the client by the route handler.
 * `handler(request, reply)`: the function that will handle this request. The
   [Fastify server](./Server.md) will be bound to `this` when the handler is
   called. Note: using an arrow function will break the binding of `this`.
@@ -247,15 +247,15 @@ fastify.get('/example/near/:lat-:lng/radius/:r', (request, reply) => {})
 ```
 *Remember in this case to use the dash ("-") as parameters separator.*
 
-Finally it is possible to have multiple parameters with RegExp.
+Finally, it is possible to have multiple parameters with RegExp:
 ```js
 fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (request, reply) => {})
 ```
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
 
-Having a route with multiple parameters may affect negatively the performance,
-so prefer single parameter approach whenever possible, especially on routes that
+Having a route with multiple parameters may negatively affect performance,
+so prefer a single parameter approach whenever possible, especially on routes that
 are on the hot path of your application. If you are interested in how we handle
 the routing, check out [find-my-way](https://github.com/delvedor/find-my-way).
 
@@ -320,7 +320,7 @@ fastify.get('/', options, async function (request, reply) {
   first one that happens takes precedence, the second value will be discarded,
   and a *warn* log will also be emitted because you tried to send a response
   twice.
-* Calling `reply.send()` outside of the promise is possible, but requires
+* Calling `reply.send()` outside of the promise is possible but requires
   special attention. For more details read
   [promise-resolution](#promise-resolution).
 * You cannot return `undefined`. For more details read
@@ -330,12 +330,12 @@ fastify.get('/', options, async function (request, reply) {
 <a id="promise-resolution"></a>
 
 If your handler is an `async` function or returns a promise, you should be aware of
-a special behaviour which is necessary to support the callback and promise
+the special behavior that is necessary to support the callback and promise
 control-flow. When the handler's promise is resolved, the reply will be
 automatically sent with its value unless you explicitly await or return `reply`
 in your handler.
 
-1. If you want to use `async/await` or promises but respond a value with `reply.send`:
+1. If you want to use `async/await` or promises but respond with a value with `reply.send`:
     - **Do** `return reply` / `await reply`.
     - **Do not** forget to call `reply.send`.
 2. If you want to use `async/await` or promises:
@@ -343,7 +343,7 @@ in your handler.
     - **Do** return the value that you want to send.
 
 In this way, we can support both `callback-style` and `async-await`, with the
-minimum trade-off. In spite of so much freedom we highly recommend to go with
+minimum trade-off. Despite so much freedom we highly recommend going with
 only one style because error handling should be handled in a consistent way
 within your application.
 
@@ -391,14 +391,14 @@ Now your clients will have access to the following routes:
 - `/v1/user`
 - `/v2/user`
 
-You can do this as many times as you want, it works also for nested `register`
-and routes parameter are supported as well. Be aware that if you use
+You can do this as many times as you want, it also works for nested `register`,
+and route parameters are supported as well. Be aware that if you use
 [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will
 not work.
 
 #### Handling of / route inside prefixed plugins
 
-The `/` route has a different behavior depending on if the prefix ends with `/`
+The `/` route has different behavior depending on if the prefix ends with `/`
 or not. As an example, if we consider a prefix `/something/`, adding a `/` route
 will only match `/something/`. If we consider a prefix `/something`, adding a
 `/` route will match both `/something` and `/something/`.
@@ -408,7 +408,7 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 ### Custom Log Level
 <a id="custom-log-level"></a>
 
-It could happen that you need different log levels in your routes; Fastify
+You might need different log levels in your routes; Fastify
 achieves this in a very straightforward way.
 
 You just need to pass the option `logLevel` to the plugin option or the route
@@ -442,9 +442,9 @@ the global Fastify Logger, accessible with `fastify.log`*
 ### Custom Log Serializer
 <a id="custom-log-serializer"></a>
 
-In some context, you may need to log a large object but it could be a waste of
-resources for some routes. In this case, you can define some
-[`serializer`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
+In some contexts, you may need to log a large object but it could be a waste of
+resources for some routes. In this case, you can define custom
+[`serializers`](https://github.com/pinojs/pino/blob/master/docs/api.md#serializers-object)
 and attach them in the right context!
 
 ```js

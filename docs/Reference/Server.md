@@ -208,7 +208,7 @@ You can set a custom length for parameters in parametric (standard, regex, and
 multi) routes by using `maxParamLength` option; the default value is 100
 characters.
 
-This can be useful especially if you have some regex based route, protecting you
+This can be useful especially if you have a regex-based route, protecting you
 against [DoS
 attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 
@@ -432,7 +432,7 @@ way query strings are handled take a look at
 ### `allowUnsafeRegex`
 <a id="factory-allow-unsafe-regex"></a>
 
-The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressionss. To use unsafe expressions, set allowUnsafeRegex to true.
+The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressions. To use unsafe expressions, set allowUnsafeRegex to true.
 
 ```js
 fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {

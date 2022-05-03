@@ -34,7 +34,7 @@ Remember that middleware can be encapsulated; this means that you can decide
 where your middleware should run by using `register` as explained in the
 [plugins guide](../Guides/Plugins-Guide.md).
 
-Fastify middleware do not expose the `send` method or other methods specific to
+Fastify middleware does not expose the `send` method or other methods specific to
 the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps
 the incoming `req` and `res` Node instances using the
 [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects

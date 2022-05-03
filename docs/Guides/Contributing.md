@@ -182,7 +182,7 @@ into this document, overwriting any text already present, and save it:
 ```
 
 Finally, from the menu bar, select "Terminal > New Terminal" to open a new terminal
-in the editor. Run `npm install` to install the Fastify dependencies.
+in the editor. Run `npm i` to install the Fastify dependencies.
 
 At this point, you are all setup with a custom VSCode instance that can be used
 to work on Fastify contributions. As you edit and save JavaScript files, the

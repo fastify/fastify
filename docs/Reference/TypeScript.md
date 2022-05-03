@@ -384,7 +384,7 @@ diretly from your code, you can use the package
 You can install it as dev-dependency.
 
 ```bash
-npm install -D json-schema-to-ts
+npm i -D json-schema-to-ts
 ```
 
 In your code you can define your schema like a normal object. But be aware of

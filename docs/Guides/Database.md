@@ -17,7 +17,7 @@ plugins maintained within the Fastify organization.
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
 
-Install the plugin by running `npm i @fastify/mysql --save`.
+Install the plugin by running `npm i @fastify/mysql`.
 
 *Usage:*
 
@@ -44,7 +44,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [Postgres](https://github.com/fastify/fastify-postgres)
-Install the plugin by running `npm i pg @fastify/postgres --save`.
+Install the plugin by running `npm i pg @fastify/postgres`.
 
 *Example*:
 
@@ -71,7 +71,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [Redis](https://github.com/fastify/fastify-redis)
-Install the plugin by running `npm i @fastify/redis --save`
+Install the plugin by running `npm i @fastify/redis`
 
 *Usage:*
 
@@ -116,7 +116,7 @@ fastify.register(require('@fastify/redis'), {
 ```
 
 ### [Mongo](https://github.com/fastify/fastify-mongodb)
-Install the plugin by running `npm i @fastify/mongodb --save`
+Install the plugin by running `npm i @fastify/mongodb`
 
 *Usage:*
 ```javascript
@@ -261,7 +261,7 @@ everyone to know which changes are made in a migration.
 In our example, we are going to have a single migration that creates a `users`
 table and we are going to use `Postgrator` to run the migration.
 
-> Run `npm install pg postgrator` to install dependencies needed for the
+> Run `npm i pg postgrator` to install dependencies needed for the
 > example.
 
 ```sql

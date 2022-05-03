@@ -10,7 +10,7 @@ the examples below).
 Let's `cd` into a fresh directory called 'testing-example' and type `npm init
 -y` in our terminal.
 
-Run `npm install fastify && npm install tap pino-pretty --save-dev`
+Run `npm i fastify && npm i tap pino-pretty -D`
 
 ### Separating concerns makes testing easy
 

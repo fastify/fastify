@@ -18,7 +18,7 @@ The following inference packages are supported:
 The following sets up a `json-schema-to-ts` Type Provider
 
 ```bash
-$ npm install @fastify/type-provider-json-schema-to-ts --save
+$ npm i @fastify/type-provider-json-schema-to-ts
 ```
 
 ```typescript
@@ -53,7 +53,7 @@ server.get('/route', {
 The following sets up a TypeBox Type Provider
 
 ```bash
-$ npm install @fastify/type-provider-typebox --save
+$ npm i @fastify/type-provider-typebox
 ```
 
 ```typescript

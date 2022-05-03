@@ -92,7 +92,7 @@ exports.handler = proxy;
 
 We just require
 [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) (make sure
-you install the dependency `npm i --save aws-lambda-fastify`) and our
+you install the dependency `npm i aws-lambda-fastify`) and our
 [`app.js`](#appjs) file and call
 the exported `awsLambdaFastify` function with the `app` as the only parameter.
 The resulting `proxy` function has the correct signature to be used as a lambda
@@ -205,7 +205,7 @@ npm i -g @google-cloud/functions-framework
 
 Or as a development library:
 ```bash
-npm i --save-dev @google-cloud/functions-framework
+npm i -D @google-cloud/functions-framework
 ```
 
 Then you can run your function locally with Functions Framework:
@@ -316,7 +316,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install production dependencies.
-RUN npm install --only=production
+RUN npm i --production
 
 # Copy local code to the container image.
 COPY . .

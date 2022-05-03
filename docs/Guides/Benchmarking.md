@@ -15,7 +15,7 @@ The modules we will use:
 - [Concurrently](https://github.com/kimmobrunfeldt/concurrently): Run commands
   concurrently.
 - [Npx](https://github.com/npm/npx): NPM package runner used to run scripts
-  against different Node.js Versions and to execute local binaries. Shipped with
+  against different Node.js Versions and execute local binaries. Shipped with
   npm@5.2.0.
 
 ## Simple

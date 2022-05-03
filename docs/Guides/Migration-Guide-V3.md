@@ -137,8 +137,8 @@ fastify.setValidatorCompiler(({ schema, method, url, httpPart }) =>
 
 ### Changed preParsing hook behavior ([#2286](https://github.com/fastify/fastify/pull/2286))
 
-From Fastify v3, the behavior of the `preParsing` hook will change slightly in
-order to support request payload manipulation.
+From Fastify v3, the behavior of the `preParsing` hook will change slightly
+to support request payload manipulation.
 
 The hook now takes an additional argument, `payload`, and therefore the new hook
 signature is `fn(request, reply, payload, done)` or `async fn(request, reply,
@@ -160,7 +160,7 @@ The old syntax of Fastify v2 without payload is supported but it is deprecated.
 ### Changed hooks behavior ([#2004](https://github.com/fastify/fastify/pull/2004))
 
 From Fastify v3, the behavior of `onRoute` and `onRegister` hooks will change
-slightly in order to support hook encapsulation.
+slightly to support hook encapsulation.
 
 - `onRoute` - The hook will be called asynchronously. The hook is now inherited
   when registering a new plugin within the same encapsulation scope. Thus, this
@@ -175,7 +175,7 @@ In Fastify v3 the content type parsers now have a single signature for parsers.
 
 The new signatures are `fn(request, payload, done)` or `async fn(request,
 payload)`. Note that `request` is now a Fastify request, not an
-`IncomingMessage`. The payload is by default a stream. If the `parseAs` option
+`IncomingMessage`. The payload is, by default, a stream. If the `parseAs` option
 is used in `addContentTypeParser`, then `payload` reflects the option value
 (string or buffer).
 

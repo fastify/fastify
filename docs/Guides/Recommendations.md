@@ -70,7 +70,7 @@ defaults
   option        dontlognull
   retries       3
   option redispatch
-  # The following option make haproxy close connections to backend servers
+  # The following option makes haproxy close connections to backend servers
   # instead of keeping them open. This can alleviate unexpected connection
   # reset errors in the Node process.
   option http-server-close
@@ -284,8 +284,8 @@ server {
 The `readinessProbe` uses [(by
 default](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#configure-probes))
 the pod IP as the hostname. Fastify listens on `127.0.0.1` by default. The probe
-will not be able to reach the application in this case. In order to make it
-work, the application must listen on `0.0.0.0` or specify a custom hostname in
+will not be able to reach the application in this case. To make it work,
+the application must listen on `0.0.0.0` or specify a custom hostname in
 the `readinessProbe.httpGet` spec, as per the following example:
 
 ```yaml

@@ -429,8 +429,8 @@ Serialization](../Reference/Validation-and-Serialization.md) to learn more.
 ### Serialize your data
 <a id="serialize-data"></a>
 
-Fastify has first class support for JSON. It is extremely optimized to parse
-JSON bodies and to serialize JSON output.
+Fastify has first-class support for JSON. It is extremely optimized to parse
+JSON bodies and serialize JSON output.
 
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the
 schema option as shown in the following example:

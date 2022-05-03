@@ -31,7 +31,7 @@ will not accept it to the ecosystem list. Lack of quality documentation makes it
 more difficult for people to use your plugin, and will likely result in it going
 unused.
 
-If you want to see some good examples on how to document a plugin take a look
+If you want to see some good examples of how to document a plugin take a look
 at:
 - [`@fastify/caching`](https://github.com/fastify/fastify-caching)
 - [`@fastify/compress`](https://github.com/fastify/fastify-compress)

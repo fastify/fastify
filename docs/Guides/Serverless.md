@@ -205,7 +205,7 @@ npm i -g @google-cloud/functions-framework
 
 Or as a development library:
 ```bash
-npm i --save-dev @google-cloud/functions-framework
+npm i -D @google-cloud/functions-framework
 ```
 
 Than you can run your function locally with Functions Framework:

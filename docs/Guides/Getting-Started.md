@@ -136,6 +136,9 @@ declaration](../Reference/Routes.md) docs).
 // ESM
 import Fastify from 'fastify'
 import firstRoute from './our-first-route'
+/**
+ * @type {import('fastify').FastifyInstance}
+ * */
 const fastify = Fastify({
   logger: true
 })
@@ -153,6 +156,9 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 ```js
 // CommonJs
+/**
+ * @type {import('fastify').FastifyInstance}
+ * */
 const fastify = require('fastify')({
   logger: true
 })
@@ -215,6 +221,9 @@ import Fastify from 'fastify'
 import dbConnector from './our-db-connector'
 import firstRoute from './our-first-route'
 
+/**
+ * @type {import('fastify').FastifyInstance}
+ * */
 const fastify = Fastify({
   logger: true
 })
@@ -232,6 +241,9 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 ```js
 // CommonJs
+/**
+ * @type {import('fastify').FastifyInstance}
+ * */
 const fastify = require('fastify')({
   logger: true
 })
@@ -274,6 +286,9 @@ module.exports = fastifyPlugin(dbConnector)
 
 ```js
 // CommonJs
+/**
+ * @type {import('fastify-plugin').FastifyPlugin}
+ * */
 const fastifyPlugin = require('fastify-plugin')
 
 
@@ -426,6 +441,10 @@ Schema](https://json-schema.org/).
 
 Let's look at an example demonstrating validation for routes:
 ```js
+/** 
+ * @type {Object}
+ * @const
+ *  */
 const opts = {
   schema: {
     body: {
@@ -458,6 +477,10 @@ JSON bodies and to serialize JSON output.
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the
 schema option as shown in the following example:
 ```js
+/** 
+ * @type {Object} 
+ * @const
+ *  */
 const opts = {
   schema: {
     response: {
@@ -491,7 +514,7 @@ request](../Reference/Request.md) object at `request.body`.
 The following example returns the parsed body of a request back to the client:
 
 ```js
-const opts = {}
+{Object} const opts = {}
 fastify.post('/', opts, async (request, reply) => {
   return request.body
 })

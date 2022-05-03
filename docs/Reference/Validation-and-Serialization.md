@@ -166,8 +166,7 @@ variation in which the `type` and `properties` attributes are forgone and the
 parameters are listed at the top level (see the example below).
 
 > ℹ If you need to use the latest version of Ajv (v8) you should read how to do
-> it in the [`schemaController`](./Server.md#schema-controller) section. It is
-> explained the easier way to avoid to implement a custom validator.
+> it in the [`schemaController`](./Server.md#schema-controller) section.
 
 Example:
 ```js

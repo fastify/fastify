@@ -15,7 +15,7 @@ Let's start!
 
 Install with npm:
 ```
-npm i fastify --save
+npm i fastify
 ```
 Install with yarn:
 ```
@@ -198,7 +198,7 @@ Let's rewrite the above example with a database connection.
 First, install `fastify-plugin` and `@fastify/mongodb`:
 
 ```
-npm i --save fastify-plugin @fastify/mongodb
+npm i fastify-plugin @fastify/mongodb
 ```
 
 **server.js**

@@ -92,7 +92,7 @@ exports.handler = proxy;
 
 We just require
 [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) (make sure
-you install the dependency `npm i --save aws-lambda-fastify`) and our
+you install the dependency `npm i aws-lambda-fastify`) and our
 [`app.js`](#appjs) file and call
 the exported `awsLambdaFastify` function with the `app` as the only parameter.
 The resulting `proxy` function has the correct signature to be used as a lambda

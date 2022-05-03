@@ -151,7 +151,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [LevelDB](https://github.com/fastify/fastify-leveldb)
-Install the plugin by running `https://github.com/fastify/fastify-leveldb`
+Install the plugin by running `npm i @fastify/leveldb`
 
 *Usage:*
 ```javascript
@@ -235,7 +235,7 @@ export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 
 Database schema migrations are an integral part of database management and
 development. Migrations provide a repeatable and testable way to modify a
-database's schema and to prevent data loss.
+database's schema and prevent data loss.
 
 As stated at the beginning of the guide, Fastify is database agnostic and any
 NodeJS database migration tool can be used with it. We will give an example of
@@ -258,7 +258,7 @@ reverts it. Think about it like `up` and `down` in other migration tools.
 optional, it should be used for all migrations as it makes it easier for
 everyone to know which changes are made in a migration.
 
-In our example we are going to have a single migration that creates a `users`
+In our example, we are going to have a single migration that creates a `users`
 table and we are going to use `Postgrator` to run the migration.
 
 > Run `npm install pg postgrator` to install dependencies needed for the

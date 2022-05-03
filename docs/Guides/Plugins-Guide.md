@@ -232,7 +232,7 @@ fastify.get('/happiness', (request, reply) => {
 
 We have seen how to extend server functionality and how to handle the
 encapsulation system, but what if you need to add a function that must be
-executed every time when the server "[emits](../Reference/Lifecycle.md)" an
+executed whenever the server "[emits](../Reference/Lifecycle.md)" an
 event?
 
 ## Hooks
@@ -370,7 +370,7 @@ fastify.register(require('your-plugin'), parent => {
 ```
 In the above example, the `parent` variable of the function passed in as the
 second argument of `register` is a copy of the **external Fastify instance**
-that the plugin was registered at. This means that we are able to access any
+that the plugin was registered at. This means that we can access any
 variables that were injected by preceding plugins in the order of declaration.
 
 ## ESM support
@@ -412,7 +412,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 ## Handle errors
 <a id="handle-errors"></a>
 
-It can happen that one of your plugins fails during startup. Maybe you expect it
+One of your plugins may fail during startup. Maybe you expect it
 and you have a custom logic that will be triggered in that case. How can you
 implement this? The `after` API is what you need. `after` simply registers a
 callback that will be executed just after a register, and it can take up to

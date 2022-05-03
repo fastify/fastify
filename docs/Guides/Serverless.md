@@ -129,7 +129,7 @@ const fastify = require("fastify")({
 As explained [in issue
 #946](https://github.com/fastify/fastify/issues/946#issuecomment-766319521),
 since the Google Cloud Functions platform parses the body of the request before
-it arrives into Fastify instance, troubling the body request in case of `POST`
+it arrives at the Fastify instance, troubling the body request in case of `POST`
 and `PATCH` methods, you need to add a custom [`Content-Type
 Parser`](../Reference/ContentTypeParser.md) to mitigate this behavior.
 
@@ -208,7 +208,7 @@ Or as a development library:
 npm i --save-dev @google-cloud/functions-framework
 ```
 
-Than you can run your function locally with Functions Framework:
+Then you can run your function locally with Functions Framework:
 ```bash
 npx @google-cloud/functions-framework --target=fastifyFunction
 ```
@@ -443,7 +443,7 @@ Then it should work fine
 ## Vercel
 
 [Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications. In order to use it now, it is as simple as configuring your
+applications. To use it now, it is as simple as configuring your
 `vercel.json` file like the following:
 
 ```json

@@ -11,8 +11,8 @@ requests. There isn't, though, a direct mechanism to handle scenarios in which
 you'd like the server to start accepting **specific** requests and denying all
 others, at least up to some point.
 
-Say, for instance, your server needs to authenticate with an OAuth provider in
-order to start serving requests. To do that it'd need to engage in the
+Say, for instance, your server needs to authenticate with an OAuth provider
+to start serving requests. To do that it'd need to engage in the
 [OAuth Authorization Code Flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow),
 which would require it to listen to two requests from the authentication
 provider:

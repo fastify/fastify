@@ -258,7 +258,7 @@ reverts it. Think about it like `up` and `down` in other migration tools.
 optional, it should be used for all migrations as it makes it easier for
 everyone to know which changes are made in a migration.
 
-In our example we are going to have a single migration that creates a `users`
+In our example, we are going to have a single migration that creates a `users`
 table and we are going to use `Postgrator` to run the migration.
 
 > Run `npm install pg postgrator` to install dependencies needed for the

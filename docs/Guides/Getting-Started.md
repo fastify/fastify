@@ -137,7 +137,7 @@ declaration](../Reference/Routes.md) docs).
 import Fastify from 'fastify'
 import firstRoute from './our-first-route'
 /**
- * @type {import('fastify').FastifyInstance}
+ * @type {import('fastify').FastifyInstance} Instance of Fastify
  * */
 const fastify = Fastify({
   logger: true
@@ -157,7 +157,8 @@ fastify.listen({ port: 3000 }, function (err, address) {
 ```js
 // CommonJs
 /**
- * @type {import('fastify').FastifyInstance}
+ * 
+ * @type {import('fastify').FastifyInstance} Instance of Fastify
  * */
 const fastify = require('fastify')({
   logger: true
@@ -178,8 +179,10 @@ fastify.listen({ port: 3000 }, function (err, address) {
 // our-first-route.js
 
 /**
- * @param {FastifyInstance} fastify 
- * @param {Object} options 
+ * Encapsulates the routes
+ * @param {FastifyInstance} fastify  Encapsulated Fastify Instance
+ * @param {Object} options plugin options, may refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+
  * */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
@@ -222,7 +225,7 @@ import dbConnector from './our-db-connector'
 import firstRoute from './our-first-route'
 
 /**
- * @type {import('fastify').FastifyInstance}
+ * @type {import('fastify').FastifyInstance} Instance of Fastify
  * */
 const fastify = Fastify({
   logger: true
@@ -242,7 +245,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 ```js
 // CommonJs
 /**
- * @type {import('fastify').FastifyInstance}
+ * @type {import('fastify').FastifyInstance} Instance of Fastify
  * */
 const fastify = require('fastify')({
   logger: true
@@ -293,9 +296,9 @@ const fastifyPlugin = require('fastify-plugin')
 
 
 /**
- * 
- * @param {FastifyInstance} fastify
- * @param {Object} options
+ * Connects to a MongoDB database
+ * @param {FastifyInstance} fastify Encapsulated Fastify Instance
+ * @param {Object} options plugin options, may refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
  * */
 async function dbConnector (fastify, options) {
   fastify.register(require('fastify-mongodb'), {
@@ -312,9 +315,10 @@ module.exports = fastifyPlugin(dbConnector)
 **our-first-route.js**
 ```js
 /**
- * 
- * @param {FastifyInstance} fastify
- * @param {Object} options
+ *  a plugin that provide encapsulated routes 
+ * @param {FastifyInstance} fastify encapsulated fastify instance
+ * @param {Object} options plugin options, may refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+
  * */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
@@ -437,7 +441,7 @@ Schema](https://json-schema.org/).
 Let's look at an example demonstrating validation for routes:
 ```js
 /** 
- * @type {Object}
+ * @type {Object} 
  * @const
  *  */
 const opts = {
@@ -509,7 +513,10 @@ request](../Reference/Request.md) object at `request.body`.
 The following example returns the parsed body of a request back to the client:
 
 ```js
-{Object} const opts = {}
+/**
+ * @type {Object}
+ * */
+const opts = {}
 fastify.post('/', opts, async (request, reply) => {
   return request.body
 })

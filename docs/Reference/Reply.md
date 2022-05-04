@@ -208,9 +208,9 @@ Returns a boolean indicating if the specified header has been set.
 ### .trailer(key, function)
 <a id="trailer"></a>
 
-Sets a response trailer. Trailer usually used when you want some header that require heavy resources to be sent after the `data`, for example `Server-Timing`, `Etag`. It can ensure the client get the response data as soon as possible.
+Sets a response trailer. Trailer is usually used when you need a header that requires heavy resources to be sent after the `data`, for example, `Server-Timing` and `Etag`. It can ensure the client receives the response data as soon as possible.
 
-*Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requipment for using trailer in Node.js.*
+*Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requirement for using trailer in Node.js.*
 
 *Note: Currently, the computation function only supports synchronous function. That means `async-await` and `promise` are not supported.*
 
@@ -315,8 +315,8 @@ If the `Content-Type` has a JSON subtype, and the charset parameter is not set, 
 ### .serializer(func)
 <a id="serializer"></a>
 
-`.send()` will by default JSON-serialize any value that is not one of: `Buffer`,
-`stream`, `string`, `undefined`, `Error`. If you need to replace the default
+By default, `.send()` will JSON-serialize any value that is not one of `Buffer`,
+`stream`, `string`, `undefined`, or `Error`. If you need to replace the default
 serializer with a custom serializer for a particular request, you can do so with
 the `.serializer()` utility. Be aware that if you are using a custom serializer,
 you must set a custom `'Content-Type'` header.
@@ -375,7 +375,7 @@ invocation of `reply.send()` once the handler promise resolve should be skipped.
 By calling `reply.hijack()`, an application claims full responsibility for
 the low-level request and response. Moreover, hooks will not be invoked.
 
-*Modifying the `.sent` property directly is deprecated. Please use the aformentioned
+*Modifying the `.sent` property directly is deprecated. Please use the aforementioned
 `.hijack()` method to achieve the same effect.*
 
 <a name="hijack"></a>

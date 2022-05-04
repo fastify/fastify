@@ -183,7 +183,7 @@ executed, and only if the `customErrorHandler` sends an error back to the user
 *(Note that the default `customErrorHandler` always sends the error back to the
 user)*.
 
-**Notice:** unlike the other hooks, pass an error to the `done` function is not
+**Notice:** unlike the other hooks, passing an error to the `done` function is not
 supported.
 
 ### onSend
@@ -656,13 +656,13 @@ fastify.route({
 > versions of Node.js supported by Fastify where `diagnostics_channel` is
 > unavailable, the hook will use the
 > [polyfill](https://www.npmjs.com/package/diagnostics_channel) if it is
-> available. Otherwise this feature will not be present.
+> available. Otherwise, this feature will not be present.
 
 Currently, one
 [`diagnostics_channel`](https://nodejs.org/api/diagnostics_channel.html) publish
 event, `'fastify.initialization'`, happens at initialization time. The Fastify
 instance is passed into the hook as a property of the object passed in. At this
-point, the instance can be interacted with to add hooks, plugins, routes or any
+point, the instance can be interacted with to add hooks, plugins, routes, or any
 other sort of modification.
 
 For example, a tracing package might do something like the following (which is,

@@ -2,7 +2,7 @@
 
 ## `Content-Type` Parser
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content
-types. If the content type is not one of these, a `FST_ERR_CTP_INVALID_MEDIA_TYPE` 
+types. If the content type is not one of these, an `FST_ERR_CTP_INVALID_MEDIA_TYPE` 
 error will be thrown.
 
 The default charset is `utf-8`. If you need to support different content
@@ -115,7 +115,7 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 In the example from just above, it is noticeable that we need to specify each
 content type that we want to remove. To solve this problem Fastify provides the
 `removeAllContentTypeParsers` API. This can be used to remove all currently
-existing content type parsers. In the example below we achieve exactly the same
+existing content type parsers. In the example below we achieve the same
 as in the example above except that we do not need to specify each content type
 to delete. Just like `removeContentTypeParser`, this API supports encapsulation.
 The API is especially useful if you want to register a [catch-all content type
@@ -223,12 +223,12 @@ fastify.route({
 For piping file uploads you may want to check out [this
 plugin](https://github.com/fastify/fastify-multipart).
 
-If you really want the content type parser to be executed on all content types
+If you want the content type parser to be executed on all content types
 and not only on those that don't have a specific one, you should call the
 `removeAllContentTypeParsers` method first.
 
 ```js
-// Without this call, the request body with the content type application/json would be processed by the built in json parser
+// Without this call, the request body with the content type application/json would be processed by the built-in JSON parser
 fastify.removeAllContentTypeParsers()
 
 fastify.addContentTypeParser('*', function (request, payload, done) {

@@ -1028,3 +1028,27 @@ test('plugin metadata - version not matching requirement 3', t => {
     done()
   }
 })
+
+test('plugin metadata - release candidate', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  Object.defineProperty(fastify, 'version', {
+    value: '99.0.0-rc.1'
+  })
+
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '99.x'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready((err) => {
+    t.error(err)
+    t.pass('everything right')
+  })
+
+  function plugin (instance, opts, done) {
+    done()
+  }
+})

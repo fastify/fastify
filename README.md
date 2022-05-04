@@ -63,7 +63,7 @@ npm init fastify
 Install dependencies:
 
 ```sh
-npm install
+npm i
 ```
 
 To start the app in dev mode:
@@ -88,7 +88,7 @@ If installing in an existing project, then Fastify can be installed into the pro
 
 Install with npm:
 ```sh
-npm i fastify@next --save
+npm i fastify@next
 ```
 Install with yarn:
 ```sh

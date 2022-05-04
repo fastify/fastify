@@ -9,4 +9,4 @@ All v3 deprecations have been removed and they will no longer work after upgradi
 
 ### Deprecation of `app.use()`
 
-Starting this version of Fastify, we have deprecated the use of `app.use()`. We have decided not to support the use of middlewares. Both [`middie`](https://github.com/fastify/middie) and [`fastify-express`](https://github.com/fastify/fastify-express) will still be there and maintained. Use Fastify's [hooks](./Hooks.md) instead.
+Starting this version of Fastify, we have deprecated the use of `app.use()`. We have decided not to support the use of middlewares. Both [`middie`](https://github.com/fastify/middie) and [`@fastify/express`](https://github.com/fastify/fastify-express) will still be there and maintained. Use Fastify's [hooks](./Hooks.md) instead.

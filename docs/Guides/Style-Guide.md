@@ -61,7 +61,7 @@ static path.
 ### Avoid adding video or image content
 
 
-Do not add videos or screenshots in the documentation. It is easier to keep
+Do not add videos or screenshots to the documentation. It is easier to keep
 under version control. Videos and images will eventually end up becoming
 outdated as new updates keep developing. Instead, make a referral link or a
 YouTube video. You can add links by using `[Title](www.websitename.com)` in the

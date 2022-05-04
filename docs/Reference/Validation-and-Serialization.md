@@ -44,7 +44,7 @@ this API is encapsulated.
 
 The shared schemas can be reused through the JSON Schema
 [**`$ref`**](https://tools.ietf.org/html/draft-handrews-json-schema-01#section-8)
-keyword. Here an overview of _how_ references work:
+keyword. Here is an overview of _how_ references work:
 
 + `myField: { $ref: '#foo'}` will search for field with `$id: '#foo'` inside the
   current schema
@@ -165,9 +165,8 @@ of `'object'` and a `'properties'` object containing parameters) or a simpler
 variation in which the `type` and `properties` attributes are forgone and the
 parameters are listed at the top level (see the example below).
 
-> ℹ If you need to use the lastest version of Ajv (v8) you should read how to do
-> it in the [`schemaController`](./Server.md#schema-controller) section. It is
-> explained the easier way to avoid to implement a custom validator.
+> ℹ If you need to use the latest version of Ajv (v8) you should read how to do
+> it in the [`schemaController`](./Server.md#schema-controller) section.
 
 Example:
 ```js
@@ -489,13 +488,13 @@ Fastify's validation error messages are tightly coupled to the default
 validation engine: errors returned from `ajv` are eventually run through the
 `schemaErrorFormatter` function which is responsible for building human-friendly
 error messages. However, the `schemaErrorFormatter` function is written with `ajv`
-in mind : as a result, you may run into odd or incomplete error messages when
+in mind. As a result, you may run into odd or incomplete error messages when
 using other validation libraries.
 
 To circumvent this issue, you have 2 main options :
 
 1. make sure your validation function (returned by your custom `schemaCompiler`)
-   returns errors in the exact same structure and format as `ajv` (although this
+   returns errors in the same structure and format as `ajv` (although this
    could prove to be difficult and tricky due to differences between validation
    engines)
 2. or use a custom `errorHandler` to intercept and format your 'custom'
@@ -702,8 +701,8 @@ fastify.setErrorHandler(function (error, request, reply) {
 })
 ```
 
-If you want custom error response in schema without headaches and quickly, you
-can take a look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors).
+If you want a custom error response in the schema without headaches, and quickly, take a
+look at [`ajv-errors`](https://github.com/epoberezkin/ajv-errors).
 Check out the
 [example](https://github.com/fastify/example/blob/HEAD/validation-messages/custom-errors-messages.js)
 usage.
@@ -798,7 +797,7 @@ fastify.setErrorHandler(function (error, request, reply) {
 
 ### JSON Schema support
 
-JSON Schema has some type of utilities in order to optimize your schemas that,
+JSON Schema provides utilities to optimize your schemas that,
 in conjunction with Fastify's shared schema, let you reuse all your schemas
 easily.
 

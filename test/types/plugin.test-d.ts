@@ -3,7 +3,7 @@ import * as http from 'http'
 import * as https from 'https'
 import { expectType, expectError, expectAssignable } from 'tsd'
 import { FastifyPluginCallback, FastifyPluginAsync } from '../../types/plugin'
-import { FastifyError } from 'fastify-error'
+import { FastifyError } from '@fastify/error'
 
 // FastifyPlugin & FastifyRegister
 interface TestOptions extends FastifyPluginOptions {

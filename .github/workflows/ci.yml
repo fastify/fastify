@@ -48,7 +48,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14, 16, 17]
+        node-version: [14, 16, 18]
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:

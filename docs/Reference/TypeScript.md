@@ -394,7 +394,7 @@ diretly from your code, you can use the package
 You can install it as dev-dependency.
 
 ```bash
-npm install -D json-schema-to-ts
+npm i -D json-schema-to-ts
 ```
 
 In your code you can define your schema like a normal object. But be aware of
@@ -615,7 +615,7 @@ newer, automatically adds `.default` property and a named export to the exported
 plugin. Be sure to `export default` and `export const myPlugin` in your typings
 to provide the best developer experience. For a complete example you can check
 out
-[fastify-swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
+[@fastify/swagger](https://github.com/fastify/fastify-swagger/blob/master/index.d.ts).
 
 With those files completed, the plugin is now ready to be consumed by any
 TypeScript project!

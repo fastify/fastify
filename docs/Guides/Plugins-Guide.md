@@ -232,7 +232,7 @@ fastify.get('/happiness', (request, reply) => {
 
 We have seen how to extend server functionality and how to handle the
 encapsulation system, but what if you need to add a function that must be
-executed every time when the server "[emits](../Reference/Lifecycle.md)" an
+executed whenever the server "[emits](../Reference/Lifecycle.md)" an
 event?
 
 ## Hooks
@@ -370,7 +370,7 @@ fastify.register(require('your-plugin'), parent => {
 ```
 In the above example, the `parent` variable of the function passed in as the
 second argument of `register` is a copy of the **external Fastify instance**
-that the plugin was registered at. This means that we are able to access any
+that the plugin was registered at. This means that we can access any
 variables that were injected by preceding plugins in the order of declaration.
 
 ## ESM support
@@ -412,7 +412,7 @@ fastify.listen({ port: 3000 }, (err, address) => {
 ## Handle errors
 <a id="handle-errors"></a>
 
-It can happen that one of your plugins fails during startup. Maybe you expect it
+One of your plugins may fail during startup. Maybe you expect it
 and you have a custom logic that will be triggered in that case. How can you
 implement this? The `after` API is what you need. `after` simply registers a
 callback that will be executed just after a register, and it can take up to
@@ -445,10 +445,10 @@ fastify
 
 If your plugin needs to expose custom errors, you can easily generate consistent
 error objects across your codebase and plugins with the
-[`fastify-error`](https://github.com/fastify/fastify-error) module.
+[`@fastify/error`](https://github.com/fastify/fastify-error) module.
 
 ```js
-const createError = require('fastify-error')
+const createError = require('@fastify/error')
 const CustomError = createError('ERROR_CODE', 'message')
 console.log(new CustomError())
 ```
@@ -477,12 +477,12 @@ section of our documentation!
 If you want to see some real-world examples, check out:
 - [`point-of-view`](https://github.com/fastify/point-of-view) Templates
   rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
-- [`fastify-mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
+- [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with this you can share the same MongoDB connection
   pool in every part of your server.
-- [`fastify-multipart`](https://github.com/fastify/fastify-multipart) Multipart
+- [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify
-- [`fastify-helmet`](https://github.com/fastify/fastify-helmet) Important
+- [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) Important
   security headers for Fastify
 
 

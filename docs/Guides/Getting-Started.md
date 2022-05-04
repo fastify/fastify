@@ -15,7 +15,7 @@ Let's start!
 
 Install with npm:
 ```
-npm i fastify --save
+npm i fastify
 ```
 Install with yarn:
 ```
@@ -195,10 +195,10 @@ Fastify handles this internally, with minimum effort!
 Let's rewrite the above example with a database connection.
 
 
-First, install `fastify-plugin` and `fastify-mongodb`:
+First, install `fastify-plugin` and `@fastify/mongodb`:
 
 ```
-npm i --save fastify-plugin fastify-mongodb
+npm i fastify-plugin @fastify/mongodb
 ```
 
 **server.js**
@@ -246,7 +246,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 ```js
 // ESM
 import fastifyPlugin from 'fastify-plugin'
-import fastifyMongo from 'fastify-mongodb'
+import fastifyMongo from '@fastify/mongodb'
 
 async function dbConnector (fastify, options) {
   fastify.register(fastifyMongo, {
@@ -265,7 +265,7 @@ module.exports = fastifyPlugin(dbConnector)
 const fastifyPlugin = require('fastify-plugin')
 
 async function dbConnector (fastify, options) {
-  fastify.register(require('fastify-mongodb'), {
+  fastify.register(require('@fastify/mongodb'), {
     url: 'mongodb://localhost:27017/test_database'
   })
 }
@@ -429,8 +429,8 @@ Serialization](../Reference/Validation-and-Serialization.md) to learn more.
 ### Serialize your data
 <a id="serialize-data"></a>
 
-Fastify has first class support for JSON. It is extremely optimized to parse
-JSON bodies and to serialize JSON output.
+Fastify has first-class support for JSON. It is extremely optimized to parse
+JSON bodies and serialize JSON output.
 
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the
 schema option as shown in the following example:

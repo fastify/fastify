@@ -33,7 +33,7 @@ jobs:
         run: |
           npm run coverage:ci
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ success() }}
         with:
           name: coverage-report-win

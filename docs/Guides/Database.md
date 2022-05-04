@@ -17,14 +17,14 @@ plugins maintained within the Fastify organization.
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
 
-Install the plugin by running `npm i fastify-mysql --save`.
+Install the plugin by running `npm i @fastify/mysql`.
 
 *Usage:*
 
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-mysql'), {
+fastify.register(require('@fastify/mysql'), {
   connectionString: 'mysql://root@localhost/mysql'
 })
 
@@ -44,14 +44,14 @@ fastify.listen(3000, err => {
 ```
 
 ### [Postgres](https://github.com/fastify/fastify-postgres)
-Install the plugin by running `npm i pg fastify-postgres --save`.
+Install the plugin by running `npm i pg @fastify/postgres`.
 
 *Example*:
 
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-postgres'), {
+fastify.register(require('@fastify/postgres'), {
   connectionString: 'postgres://postgres@localhost/postgres'
 })
 
@@ -71,7 +71,7 @@ fastify.listen(3000, err => {
 ```
 
 ### [Redis](https://github.com/fastify/fastify-redis)
-Install the plugin by running `npm i fastify-redis --save`
+Install the plugin by running `npm i @fastify/redis`
 
 *Usage:*
 
@@ -80,9 +80,9 @@ Install the plugin by running `npm i fastify-redis --save`
 
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-redis'), { host: '127.0.0.1' })
+fastify.register(require('@fastify/redis'), { host: '127.0.0.1' })
 // or
-fastify.register(require('fastify-redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
+fastify.register(require('@fastify/redis'), { url: 'redis://127.0.0.1', /* other redis options */ })
 
 fastify.get('/foo', function (req, reply) {
   const { redis } = fastify
@@ -104,25 +104,25 @@ fastify.listen(3000, err => {
 })
 ```
 
-By default `fastify-redis` doesn't close 
+By default `@fastify/redis` doesn't close 
 the client connection when Fastify server shuts down. 
 To opt-in to this behavior, register the client like so:
 
 ```javascript
-fastify.register(require('fastify-redis'), {
+fastify.register(require('@fastify/redis'), {
   client: redis,
   closeClient: true
 })
 ```
 
 ### [Mongo](https://github.com/fastify/fastify-mongodb)
-Install the plugin by running `npm i fastify-mongodb --save`
+Install the plugin by running `npm i @fastify/mongodb`
 
 *Usage:*
 ```javascript
 const fastify = require('fastify')()
 
-fastify.register(require('fastify-mongodb'), {
+fastify.register(require('@fastify/mongodb'), {
   // force to close the mongodb connection when app stopped
   // the default value is false
   forceClose: true,
@@ -151,14 +151,14 @@ fastify.listen(3000, err => {
 ```
 
 ### [LevelDB](https://github.com/fastify/fastify-leveldb)
-Install the plugin by running `https://github.com/fastify/fastify-leveldb`
+Install the plugin by running `npm i @fastify/leveldb`
 
 *Usage:*
 ```javascript
 const fastify = require('fastify')()
 
 fastify.register(
-  require('fastify-leveldb'),
+  require('@fastify/leveldb'),
   { name: 'db' }
 )
 
@@ -235,12 +235,12 @@ export default fp(fastifyMysql, { name: 'fastify-mysql-example' })
 
 Database schema migrations are an integral part of database management and
 development. Migrations provide a repeatable and testable way to modify a
-database's schema and to prevent data loss.
+database's schema and prevent data loss.
 
 As stated at the beginning of the guide, Fastify is database agnostic and any
 NodeJS database migration tool can be used with it. We will give an example of
 using [Postgrator](https://www.npmjs.com/package/postgrator) which has support
-for Postgres, MySQL and SQL Server. For MongoDB migrations, please check
+for Postgres, MySQL, SQL Server and SQLite. For MongoDB migrations, please check
 [migrate-mongo](https://www.npmjs.com/package/migrate-mongo).
 
 #### [Postgrator](https://www.npmjs.com/package/postgrator)
@@ -258,10 +258,10 @@ reverts it. Think about it like `up` and `down` in other migration tools.
 optional, it should be used for all migrations as it makes it easier for
 everyone to know which changes are made in a migration.
 
-In our example we are going to have a single migration that creates a `users`
+In our example, we are going to have a single migration that creates a `users`
 table and we are going to use `Postgrator` to run the migration.
 
-> Run `npm install pg postgrator` to install dependencies needed for the
+> Run `npm i pg postgrator` to install dependencies needed for the
 > example.
 
 ```sql

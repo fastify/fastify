@@ -73,15 +73,14 @@ describes the properties available in that options object.
     - [serializerCompiler](#serializercompiler)
     - [schemaErrorFormatter](#schemaerrorformatter)
     - [schemaController](#schemacontroller)
-      - [Ajv 8 as default schema validator](#ajv-8-as-default-schema-validator)
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
     - [printRoutes](#printroutes)
     - [printPlugins](#printplugins)
     - [addContentTypeParser](#addcontenttypeparser)
-    - [hasContentTypeParser](#hasContentTypeParser)
-    - [removeContentTypeParser](#removeContentTypeParser)
-    - [removeAllContentTypeParsers](#removeAllContentTypeParsers)
+    - [hasContentTypeParser](#hascontenttypeparser)
+    - [removeContentTypeParser](#removecontenttypeparser)
+    - [removeAllContentTypeParsers](#removeallcontenttypeparsers)
     - [getDefaultJsonParser](#getdefaultjsonparser)
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
@@ -178,9 +177,11 @@ server is deployed without a reverse proxy in front.
 <a id="factory-ignore-slash"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. This option may be set to `true` to ignore trailing slashes in routes.
-This option applies to *all* route registrations for the resulting server
-instance.
+routing. By default, Fastify is set to take into account the trailing slashes. 
+Paths like `/foo` and `/foo/` will be treated as different paths. If you want 
+to change this, set this flag to `true`. That way, both `/foo` and `/foo/` will 
+point to the same route. This option applies to *all* route registrations for 
+the resulting server instance.
 
 + Default: `false`
 
@@ -207,7 +208,7 @@ You can set a custom length for parameters in parametric (standard, regex, and
 multi) routes by using `maxParamLength` option; the default value is 100
 characters.
 
-This can be useful especially if you have some regex based route, protecting you
+This can be useful especially if you have a regex-based route, protecting you
 against [DoS
 attacks](https://www.owasp.org/index.php/Regular_expression_Denial_of_Service_-_ReDoS).
 
@@ -431,7 +432,7 @@ way query strings are handled take a look at
 ### `allowUnsafeRegex`
 <a id="factory-allow-unsafe-regex"></a>
 
-The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressionss. To use unsafe expressions, set allowUnsafeRegex to true.
+The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressions. To use unsafe expressions, set allowUnsafeRegex to true.
 
 ```js
 fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
@@ -1272,7 +1273,7 @@ call is encapsulated by prefix, so different plugins can set different not found
 handlers if a different [`prefix` option](./Plugins.md#route-prefixing-option)
 is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
-lifecycle](./Lifecycle.md#lifecycle).
+lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 
 You can also register
 [`preValidation`](./Hooks.md#route-hooks) and

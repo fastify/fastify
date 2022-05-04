@@ -6,7 +6,7 @@
 This table of contents is in alphabetical order.
 
 + [Benchmarking](./Benchmarking.md): This guide introduces how to benchmark
-  applications based upon Fastify.
+  applications based on Fastify.
 + [Contributing](./Contributing.md): Details how to participate in the
   development of Fastify, and shows how to setup an environment compatible with
   the project's code style.

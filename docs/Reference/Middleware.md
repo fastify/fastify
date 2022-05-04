@@ -4,16 +4,16 @@
 
 Starting with Fastify v3.0.0, middleware is not supported out of the box and
 requires an external plugin such as
-[`fastify-express`](https://github.com/fastify/fastify-express) or
+[`@fastify/express`](https://github.com/fastify/fastify-express) or
 [`middie`](https://github.com/fastify/middie).
 
 
 An example of registering the
-[`fastify-express`](https://github.com/fastify/fastify-express) plugin to `use`
+[`@fastify/express`](https://github.com/fastify/fastify-express) plugin to `use`
 Express middleware:
 
 ```js
-await fastify.register(require('fastify-express'))
+await fastify.register(require('@fastify/express'))
 fastify.use(require('cors')())
 fastify.use(require('dns-prefetch-control')())
 fastify.use(require('frameguard')())
@@ -34,7 +34,7 @@ Remember that middleware can be encapsulated; this means that you can decide
 where your middleware should run by using `register` as explained in the
 [plugins guide](../Guides/Plugins-Guide.md).
 
-Fastify middleware do not expose the `send` method or other methods specific to
+Fastify middleware does not expose the `send` method or other methods specific to
 the Fastify [Reply](./Reply.md#reply) instance. This is because Fastify wraps
 the incoming `req` and `res` Node instances using the
 [Request](./Request.md#request) and [Reply](./Reply.md#reply) objects
@@ -70,9 +70,9 @@ fastify.use(['/css', '/js'], serveStatic(path.join(__dirname, '/assets')))
 ### Alternatives
 
 Fastify offers some alternatives to the most commonly used middleware, such as
-[`fastify-helmet`](https://github.com/fastify/fastify-helmet) in case of
+[`@fastify/helmet`](https://github.com/fastify/fastify-helmet) in case of
 [`helmet`](https://github.com/helmetjs/helmet),
-[`fastify-cors`](https://github.com/fastify/fastify-cors) for
+[`@fastify/cors`](https://github.com/fastify/fastify-cors) for
 [`cors`](https://github.com/expressjs/cors), and
-[`fastify-static`](https://github.com/fastify/fastify-static) for
+[`@fastify/static`](https://github.com/fastify/fastify-static) for
 [`serve-static`](https://github.com/expressjs/serve-static).

@@ -315,6 +315,7 @@ function fastify (options) {
 
   Object.defineProperties(fastify, {
     pluginName: {
+      configurable: true,
       get () {
         if (this[kPluginNameChain].length > 1) {
           return this[kPluginNameChain].join(' -> ')
@@ -323,18 +324,23 @@ function fastify (options) {
       }
     },
     prefix: {
+      configurable: true,
       get () { return this[kRoutePrefix] }
     },
     validatorCompiler: {
+      configurable: true,
       get () { return this[kSchemaController].getValidatorCompiler() }
     },
     serializerCompiler: {
+      configurable: true,
       get () { return this[kSchemaController].getSerializerCompiler() }
     },
     version: {
+      configurable: true,
       get () { return VERSION }
     },
     errorHandler: {
+      configurable: true,
       get () {
         return this[kErrorHandler].func
       }

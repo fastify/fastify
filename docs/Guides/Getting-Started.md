@@ -312,11 +312,10 @@ module.exports = fastifyPlugin(dbConnector)
 **our-first-route.js**
 ```js
 /**
- *  a plugin that provide encapsulated routes 
+ * A plugin that provide encapsulated routes 
  * @param {FastifyInstance} fastify encapsulated fastify instance
- * @param {Object} options plugin options, may refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
-
- * */
+ * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
+ */
 async function routes (fastify, options) {
   const collection = fastify.mongo.db.collection('test_collection')
 

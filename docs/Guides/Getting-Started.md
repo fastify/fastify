@@ -480,7 +480,7 @@ schema option as shown in the following example:
 /** 
  * @type {import('fastify').RouteShorthandOptions}
  * @const
- *  */
+ */
 const opts = {
   schema: {
     response: {

@@ -514,7 +514,7 @@ The following example returns the parsed body of a request back to the client:
 
 ```js
 /**
- * @type {Object}
+ * @type {import('fastify').RouteShorthandOptions}
  * */
 const opts = {}
 fastify.post('/', opts, async (request, reply) => {

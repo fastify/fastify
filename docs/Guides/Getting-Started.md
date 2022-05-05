@@ -444,7 +444,7 @@ Let's look at an example demonstrating validation for routes:
 /** 
  * @type {import('fastify').RouteShorthandOptions}
  * @const
- *  */
+ */
 const opts = {
   schema: {
     body: {

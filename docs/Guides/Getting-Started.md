@@ -477,7 +477,7 @@ To speed up JSON serialization (yes, it is slow!) use the `response` key of the
 schema option as shown in the following example:
 ```js
 /** 
- * @type {Object} 
+ * @type {import('fastify').RouteShorthandOptions}
  * @const
  *  */
 const opts = {

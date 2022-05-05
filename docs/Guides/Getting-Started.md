@@ -158,7 +158,7 @@ fastify.listen({ port: 3000 }, function (err, address) {
 // CommonJs
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
- * */
+ */
 const fastify = require('fastify')({
   logger: true
 })

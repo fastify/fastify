@@ -224,7 +224,7 @@ import firstRoute from './our-first-route'
 
 /**
  * @type {import('fastify').FastifyInstance} Instance of Fastify
- * */
+ */
 const fastify = Fastify({
   logger: true
 })

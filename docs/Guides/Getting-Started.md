@@ -289,7 +289,7 @@ module.exports = fastifyPlugin(dbConnector)
 // CommonJs
 /**
  * @type {import('fastify-plugin').FastifyPlugin}
- * */
+ */
 const fastifyPlugin = require('fastify-plugin')
 
 

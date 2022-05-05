@@ -332,7 +332,12 @@ async function routes (fastify, options) {
   })
 
   fastify.get('/animals/:animal', async (request, reply) => {
-    const rer
+    const result = await collection.findOne({ animal: request.params.animal })
+    if (!result) {
+      throw new Error('Invalid value')
+    }
+    return result
+  })
 
   const animalBodyJsonSchema = {
     type: 'object',

@@ -80,9 +80,9 @@ to show that the plugin works as intended. Both
 Actions](https://github.com/features/actions) are free for open source projects
 and easy to set up.
 
-In addition, you can enable services like [Dependabot](https://dependabot.com/)
-or [Snyk](https://snyk.io/), which will help you keep your dependencies up to
-date and discover if a new release of Fastify has some issues with your plugin.
+In addition, you can enable services like [Dependabot](https://dependabot.com/),
+which will help you keep your dependencies up to date and discover if a new
+release of Fastify has some issues with your plugin.
 
 ## Let's start!
 Awesome, now you know everything you need to know about how to write a good

@@ -80,6 +80,7 @@ jobs:
           npm run test:ci
 
   automerge:
+    if: ${{ github.event_name == 'pull_request' || github.event.inputs.pr-number != '' }}
     needs: test
     runs-on: ubuntu-latest
     permissions:

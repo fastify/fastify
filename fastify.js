@@ -140,7 +140,7 @@ function fastify (options) {
   const initialConfig = getSecuredInitialConfig(options)
   const keepAliveConnections = options.forceCloseConnections === true ? new Set() : noopSet()
 
-  // exposeHeadRoutes have its defult set from the validatorfrom the validatorfrom the validatorfrom the validator
+  // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
 
   let constraints = options.constraints

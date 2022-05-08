@@ -607,7 +607,7 @@ function fastify (options) {
     if (req.headers['accept-version'] !== undefined) {
       // we remove the accept-version header for performance result
       // because we do not want to go through the constraint checking
-      // the usage of symbol here to prevent any colision on custom header name
+      // the usage of symbol here to prevent any collision on custom header name
       req.headers[kRequestAcceptVersion] = req.headers['accept-version']
       req.headers['accept-version'] = undefined
     }

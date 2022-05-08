@@ -340,7 +340,7 @@ into TypeScript interfaces!
      //  or if using async
      //  preValidation: async (request, reply) => {
      //    const { username, password } = request.query
-     //    return username !== "admin" ? new Error("Must be admin") : undefined;
+     //    if (username !== "admin") throw new Error("Must be admin");
      //  }
    }, async (request, reply) => {
      const customerHeader = request.headers['h-Custom']

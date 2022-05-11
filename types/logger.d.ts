@@ -36,10 +36,21 @@ export type LogLevel = 'info' | 'error' | 'debug' | 'fatal' | 'warn' | 'trace'
 
 export type SerializerFn = (value: unknown) => unknown;
 
+export interface redactOptions {
+  paths: string[];
+  censor?: string | ((v: any) => any) | undefined;
+  remove?: boolean | undefined;
+}
 export interface Bindings {
   level?: LogLevel | string;
   serializers?: { [key: string]: SerializerFn };
   [key: string]: unknown;
+}
+
+export interface ChildLoggerOptions {
+  level?: LogLevel | string;
+  redact?: string[] | redactOptions | undefined;
+  serializers?: { [key: string]: SerializerFn } | undefined;
 }
 
 export interface FastifyLoggerInstance {
@@ -49,7 +60,7 @@ export interface FastifyLoggerInstance {
   fatal: FastifyLogFn;
   trace: FastifyLogFn;
   debug: FastifyLogFn;
-  child(bindings: Bindings): FastifyLoggerInstance;
+  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyLoggerInstance;
 }
 
 // This interface is accurate for pino 6.3 and was copied from the following permalink:

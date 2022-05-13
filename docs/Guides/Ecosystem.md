@@ -22,8 +22,6 @@ section.
 - [`fastify-awilix`](https://github.com/fastify/fastify-awilix) Dependency
   injection support for Fastify, based on
   [awilix](https://github.com/jeffijoe/awilix).
-- [`@fastify/bankai`](https://github.com/fastify/fastify-bankai)
-  [Bankai](https://github.com/yoshuawuyts/bankai) assets compiler for Fastify.
 - [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic
   auth plugin for Fastify.
 - [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer
@@ -38,7 +36,7 @@ section.
   cookie headers.
 - [`@fastify/cors`](https://github.com/fastify/fastify-cors) Enables the use of
   CORS in a Fastify application.
-- [`fastify-csrf`](https://github.com/fastify/fastify-csrf) A plugin for adding
+- [`@fastify/csrf-protection`](https://github.com/fastify/csrf-protection) A plugin for adding
   [CSRF](https://en.wikipedia.org/wiki/Cross-site_request_forgery) protection to
   Fastify.
 - [`@fastify/diagnostics-channel`](https://github.com/fastify/fastify-diagnostics-channel)
@@ -59,6 +57,7 @@ section.
   function.
 - [`@fastify/helmet`](https://github.com/fastify/fastify-helmet) Important
   security headers for Fastify.
+- [`@fastify/hotwire`](https://github.com/fastify/fastify-hotwire) Use the Hotwire pattern with Fastify.
 - [`@fastify/http-proxy`](https://github.com/fastify/fastify-http-proxy) Proxy
   your HTTP requests to another server, with hooks.
 - [`@fastify/jwt`](https://github.com/fastify/fastify-jwt) JWT utils for Fastify,

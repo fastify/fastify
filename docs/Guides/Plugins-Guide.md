@@ -60,6 +60,11 @@ cohesive blocks.
 As you probably know, the required plugins must expose a single function with
 the following signature
 ```js
+/**
+ * @param {FastifyInstance} fastify - Fastify server options 
+ * @param {object} options - Fastify server instance (see routes-options for more informations)
+ * @param {function} done - The callback that must be called when the plugin is ready to be used
+ */
 module.exports = function (fastify, options, done) {}
 ```
 Where `fastify` is the encapsulated Fastify instance, `options` is the options
@@ -96,6 +101,10 @@ make it available along with all your code. How would you do it? Probably
 something like the following:
 ```js
 // your-awesome-utility.js
+/**
+ * @param {number} a - number to add 
+ * @param {number} b - number to add
+ */
 module.exports = function (a, b) {
   return a + b
 }
@@ -111,6 +120,10 @@ Fastify offers you a more elegant and comfortable way to do this, *decorators*.
 Creating a decorator is extremely easy, just use the
 [`decorate`](../Reference/Decorators.md) API:
 ```js
+/**
+ * @param {string} name - The name of the decorator
+ * @param {function} decorator - The decorator function
+*/
 fastify.decorate('util', (a, b) => a + b)
 ```
 Now you can access your utility just by calling `fastify.util` whenever you need

@@ -167,7 +167,10 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 ```js
 // our-first-route.js
-
+/**
+ * @param {FastifyInstance} fastify - Fastify server options 
+ * @param {object} options - Fastify server instance (see routes-options for more informations)
+ */
 async function routes (fastify, options) {
   fastify.get('/', async (request, reply) => {
     return { hello: 'world' }

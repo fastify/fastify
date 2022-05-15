@@ -4,7 +4,6 @@ const VERSION = '4.0.0-rc.2'
 
 const Avvio = require('avvio')
 const http = require('http')
-const querystring = require('querystring')
 let lightMyRequest
 
 const {
@@ -99,7 +98,6 @@ function fastify (options) {
   validateBodyLimitOption(options.bodyLimit)
 
   const requestIdHeader = options.requestIdHeader || defaultInitOptions.requestIdHeader
-  const querystringParser = options.querystringParser || querystring.parse
   const genReqId = options.genReqId || reqIdGenFactory()
   const requestIdLogLabel = options.requestIdLogLabel || 'reqId'
   const bodyLimit = options.bodyLimit || defaultInitOptions.bodyLimit
@@ -131,7 +129,6 @@ function fastify (options) {
   options.logger = logger
   options.genReqId = genReqId
   options.requestIdHeader = requestIdHeader
-  options.querystringParser = querystringParser
   options.requestIdLogLabel = requestIdLogLabel
   options.disableRequestLogging = disableRequestLogging
   options.ajv = ajvOptions
@@ -172,7 +169,8 @@ function fastify (options) {
       maxParamLength: options.maxParamLength || defaultInitOptions.maxParamLength,
       caseSensitive: options.caseSensitive,
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
-      buildPrettyMeta: defaultBuildPrettyMeta
+      buildPrettyMeta: defaultBuildPrettyMeta,
+      querystringParser: options.querystringParser
     },
     keepAliveConnections
   })

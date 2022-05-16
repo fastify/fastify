@@ -463,7 +463,7 @@ Defines the label used for the request identifier when logging the request.
 <a id="factory-gen-request-id"></a>
 
 Function for generating the request-id. It will receive the incoming request as
-a parameter and it needs to return an unique id for a single request. Server will be crashed if this method throw any errors out.
+a parameter. Fastify won't verify this function executes correctly, and we expect this function to be error free.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
   integers`

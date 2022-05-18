@@ -7,7 +7,6 @@ const { test, before } = require('tap')
 const dns = require('dns').promises
 const dnsCb = require('dns')
 const sget = require('simple-get').concat
-const semver = require('semver')
 const Fastify = require('..')
 
 let localhost

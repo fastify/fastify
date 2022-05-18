@@ -7,7 +7,6 @@ const { test, before } = require('tap')
 const dns = require('dns').promises
 const dnsCb = require('dns')
 const sget = require('simple-get').concat
-const semver = require('semver')
 const Fastify = require('..')
 
 let localhost
@@ -372,12 +371,19 @@ test('addresses getter', async t => {
   const localAddresses = await dns.lookup('localhost', { all: true })
   for (const address of localAddresses) {
     address.port = port
-    if (semver.lt(process.versions.node, '18.0.0')) {
+    if (typeof address.family === 'number') {
+      address.family = 'IPv' + address.family
+    }
+  }
+  const appAddresses = app.addresses()
+  for (const address of appAddresses) {
+    if (typeof address.family === 'number') {
       address.family = 'IPv' + address.family
     }
   }
   localAddresses.sort((a, b) => a.address.localeCompare(b.address))
-  t.same(app.addresses().sort((a, b) => a.address.localeCompare(b.address)), localAddresses, 'after listen')
+  appAddresses.sort((a, b) => a.address.localeCompare(b.address))
+  t.same(appAddresses, localAddresses, 'after listen')
 
   await app.close()
   t.same(app.addresses(), [], 'after close')

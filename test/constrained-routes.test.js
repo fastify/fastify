@@ -183,6 +183,278 @@ test('Should allow registering custom constrained routes', t => {
   })
 })
 
+test('Should allow registering custom constrained routes outside constructor', t => {
+  t.plan(8)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+  fastify.addConstraintStrategy(constraint)
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'beta' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from beta' })
+    }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'X-Secret': 'alpha'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'from alpha' })
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'X-Secret': 'beta'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.same(JSON.parse(res.payload), { hello: 'from beta' })
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'X-Secret': 'gamma'
+    }
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+})
+
+test('Add a constraint strategy after fastify instance was started', t => {
+  t.plan(4)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    handler: (req, reply) => { reply.send('ok') }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'ok')
+    t.equal(res.statusCode, 200)
+
+    t.throws(
+      () => fastify.addConstraintStrategy(constraint),
+      'Cannot add constraint strategy when fastify instance is already started!'
+    )
+  })
+})
+
+test('Add a constraint strategy should throw an error if there already exist custom strategy with the same name', t => {
+  t.plan(1)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+
+  fastify.addConstraintStrategy(constraint)
+  t.throws(
+    () => fastify.addConstraintStrategy(constraint),
+    'There already exists a custom constraint with the name secret.'
+  )
+})
+
+test('Add a constraint strategy shouldn\'t throw an error if default constraint with the same name isn\'t used', t => {
+  t.plan(1)
+
+  const constraint = {
+    name: 'version',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+  fastify.addConstraintStrategy(constraint)
+
+  t.pass()
+})
+
+test('Add a constraint strategy should throw an error if default constraint with the same name is used', t => {
+  t.plan(1)
+
+  const constraint = {
+    name: 'version',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { version: '1.0.0' },
+    handler: (req, reply) => {
+      reply.send('ok')
+    }
+  })
+
+  t.throws(
+    () => fastify.addConstraintStrategy(constraint),
+    'There already exists a route with version constraint.'
+  )
+})
+
+test('The hasConstraintStrategy should return false for default constraints until they are used', t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  t.equal(fastify.hasConstraintStrategy('version'), false)
+  t.equal(fastify.hasConstraintStrategy('host'), false)
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { host: 'fastify.io' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from any other domain' })
+    }
+  })
+
+  t.equal(fastify.hasConstraintStrategy('version'), false)
+  t.equal(fastify.hasConstraintStrategy('host'), true)
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { version: '1.0.0' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from any other domain' })
+    }
+  })
+
+  t.equal(fastify.hasConstraintStrategy('version'), true)
+  t.equal(fastify.hasConstraintStrategy('host'), true)
+})
+
+test('The hasConstraintStrategy should return true if there already exist a custom constraint with the same name', t => {
+  t.plan(2)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      let secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store },
+        del: (secret) => { delete secrets[secret] },
+        empty: () => { secrets = {} }
+      }
+    },
+    deriveConstraint: (req, ctx) => {
+      return req.headers['x-secret']
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify()
+
+  t.equal(fastify.hasConstraintStrategy('secret'), false)
+  fastify.addConstraintStrategy(constraint)
+  t.equal(fastify.hasConstraintStrategy('secret'), true)
+})
+
 test('Should allow registering an unconstrained route after a constrained route', t => {
   t.plan(6)
   const fastify = Fastify()

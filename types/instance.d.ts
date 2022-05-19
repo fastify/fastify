@@ -1,4 +1,6 @@
+import * as http from 'http'
 import { FastifyError } from '@fastify/error'
+import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
 import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
@@ -29,6 +31,7 @@ export interface PrintRoutesOptions {
 }
 
 type NotInInterface<Key, _Interface> = Key extends keyof _Interface ? never : Key
+type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
 /**
  * Fastify server instance. Returned by the core `fastify()` method.
@@ -82,6 +85,9 @@ export interface FastifyInstance<
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
+
+  addConstraintStrategy(strategy: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>): void;
+  hasConstraintStrategy(strategyName: string): boolean;
 
   inject(opts: InjectOptions | string, cb: LightMyRequestCallback): void;
   inject(opts: InjectOptions | string): Promise<LightMyRequestResponse>;

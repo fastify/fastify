@@ -185,7 +185,7 @@ function fastify (options) {
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
-  const { server, listen } = createServer(options, httpHandler)
+  const { server, listen, validate } = createServer(options, httpHandler)
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
@@ -408,7 +408,8 @@ function fastify (options) {
     logger,
     hasLogger,
     setupResponseListeners,
-    throwIfAlreadyStarted
+    throwIfAlreadyStarted,
+    validateHTTPVersion: validate
   })
 
   // Delay configuring clientError handler so that it can access fastify state.

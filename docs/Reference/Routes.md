@@ -656,4 +656,4 @@ fastify.route({
 
 ### ⚠  HTTP version check
 
-Fastify will check the HTTP version of every request and, based on [configuration options](./Server.md#http2), will check against one or all of the following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a different HTTP version in the request it will return a `505 HTTP Version Not Supported` error.
+Fastify will check the HTTP version of every request, based on [configuration options](./Server.md#http2), to determine if it matches one or all of the following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a different HTTP version in the request it will return a `505 HTTP Version Not Supported` error.

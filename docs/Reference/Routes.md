@@ -672,5 +672,5 @@ a different HTTP version in the request it will return a
 | http                     |     | ✓   | ✓   |      |
 | serverFactory            |     |     |     | ✓    |
 
- Note: The internal HTTP version check will be removed in future when the Node.js
- implemented this [feature](https://github.com/nodejs/node/issues/43115).
+ Note: The internal HTTP version check will be removed in the future when Node
+ implements [this feature](https://github.com/nodejs/node/issues/43115).

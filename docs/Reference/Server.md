@@ -54,7 +54,7 @@ describes the properties available in that options object.
     - [routing](#routing)
     - [route](#route)
     - [close](#close)
-    - [decorate*](#decorate)
+    - [decorate\*](#decorate)
     - [register](#register)
     - [addHook](#addhook)
     - [prefix](#prefix)
@@ -952,7 +952,8 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
-The `defaultRoute` handler handles requests that do not match any URL specified by your Fastify application. This defaults to the 404 handler, but can be overridden with [setDefaultRoute](#setdefaultroute).
+The `defaultRoute` handler handles requests that do not match any URL specified by your Fastify application.
+This defaults to the 404 handler, but can be overridden with [setDefaultRoute](#setdefaultroute).
 Method to get the `defaultRoute` for the server:
 
 ```js
@@ -962,7 +963,8 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will never trigger if the default route is overridden. Use [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling instead.
+**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will never trigger if the default route is overridden.
+Use [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling instead.
 Method to set the `defaultRoute` for the server:
 
 ```js

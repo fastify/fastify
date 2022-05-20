@@ -952,7 +952,7 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
-`defaultRoute` is a handler that handles the requests that do not match any url specified inside your application which defaults to 404 router but can be overriden with [setDefaultRoute](#setdefaultroute)
+`defaultRoute` is a handler that handles the requests that do not match any URL specified inside your application which defaults to 404 router but can be overridden with [setDefaultRoute](#setdefaultroute)
 
 Method to get the `defaultRoute` for the server:
 
@@ -963,7 +963,7 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Important Note**: If you override the default route, it means that the 404 router will never triggered. That also means `setNotFoundHandler` will not works, no hooks fired.thus, if you want to customize handling 404s you can use `setNotFoundHandler` instead
+**Important Note**: If you override the default route, it means that the 404 router will never be triggered. That also means `setNotFoundHandler` will not work, and no hooks fired. thus, if you want to customize handling 404s you can use `setNotFoundHandler` instead
 
 Method to set the `defaultRoute` for the server:
 

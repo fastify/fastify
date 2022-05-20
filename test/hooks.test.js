@@ -3146,6 +3146,64 @@ test('reply.send should throw if undefined error is thrown', t => {
   })
 })
 
+test('reply.send should throw if undefined error is thrown at preParsing hook', t => {
+  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
+
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('preParsing', function (req, reply, done) {
+    return Promise.reject()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 500)
+    t.same(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'Undefined error has occurred',
+      statusCode: 500
+    })
+  })
+})
+
+test('reply.send should throw if undefined error is thrown at onSend hook', t => {
+  /* eslint prefer-promise-reject-errors: ["error", {"allowEmptyReject": true}] */
+
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onSend', function (req, reply, done) {
+    return Promise.reject()
+  })
+
+  fastify.get('/', (req, reply) => {
+    reply.send('hello')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 500)
+    t.same(JSON.parse(res.payload), {
+      error: 'Internal Server Error',
+      code: 'FST_ERR_SEND_UNDEFINED_ERR',
+      message: 'Undefined error has occurred',
+      statusCode: 500
+    })
+  })
+})
+
 test('onTimeout should be triggered', t => {
   t.plan(6)
   const fastify = Fastify({ connectionTimeout: 500 })

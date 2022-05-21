@@ -31,7 +31,7 @@ const {
   kFourOhFourContext
 } = require('./lib/symbols.js')
 
-const createServer = require('./lib/server')
+const { createServer, compileValidateHTTPVersion } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
 const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
@@ -409,7 +409,8 @@ function fastify (options) {
     logger,
     hasLogger,
     setupResponseListeners,
-    throwIfAlreadyStarted
+    throwIfAlreadyStarted,
+    validateHTTPVersion: compileValidateHTTPVersion(options)
   })
 
   // Delay configuring clientError handler so that it can access fastify state.

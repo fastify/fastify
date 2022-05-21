@@ -404,6 +404,7 @@ section.
 - [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify
   that adds support for parsing URL query parameters with
   [qs](https://github.com/ljharb/qs).
+- [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's plugin that adds support to handle an aborted request asynchronous.
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the
   `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based

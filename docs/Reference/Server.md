@@ -75,6 +75,8 @@ describes the properties available in that options object.
     - [schemaController](#schemacontroller)
     - [setNotFoundHandler](#setnotfoundhandler)
     - [setErrorHandler](#seterrorhandler)
+    - [addConstraintStrategy](#addconstraintstrategy)
+    - [hasConstraintStrategy](#hasconstraintstrategy)
     - [printRoutes](#printroutes)
     - [printPlugins](#printplugins)
     - [addContentTypeParser](#addcontenttypeparser)
@@ -1348,6 +1350,42 @@ if (statusCode >= 500) {
   log.error(error)
 }
 ```
+
+#### addConstraintStrategy
+<a id="addConstraintStrategy"></a>
+
+Function to add a custom constraint strategy. To register a new type of constraint, you must add a new constraint strategy that knows how to match values to handlers, and that knows how to get the constraint value from a request.
+
+Add a custom constraint strategy using the `fastify.addConstraintStrategy` method:
+
+```js
+const customResponseTypeStrategy = {
+  // strategy name for referencing in the route handler `constraints` options
+  name: 'accept',
+  // storage factory for storing routes in the find-my-way route tree
+  storage: function () {
+    let handlers = {}
+    return {
+      get: (type) => { return handlers[type] || null },
+      set: (type, store) => { handlers[type] = store }
+    }
+  },
+  // function to get the value of the constraint from each incoming request
+  deriveConstraint: (req, ctx) => {
+    return req.headers['accept']
+  },
+  // optional flag marking if handlers without constraints can match requests that have a value for this constraint
+  mustMatchWhenDerived: true
+}
+
+const router = Fastify();
+router.addConstraintStrategy(customResponseTypeStrategy);
+```
+
+#### hasConstraintStrategy
+<a id="hasConstraintStrategy"></a>
+
+The `fastify.hasConstraintStrategy(strategyName)` checks if there already exists a custom constraint strategy with the same name.
 
 #### printRoutes
 <a id="print-routes"></a>

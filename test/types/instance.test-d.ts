@@ -307,3 +307,17 @@ expectError(server.decorate<string>('test', true))
 expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
 }))
+
+const versionConstraintStrategy = {
+  name: 'version',
+  storage: () => ({
+    get: () => () => {},
+    set: () => { },
+    del: () => { },
+    empty: () => { }
+  }),
+  validate () {},
+  deriveConstraint: () => 'foo'
+}
+expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
+expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))

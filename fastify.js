@@ -308,7 +308,10 @@ function fastify (options) {
     setNotFoundHandler,
     setErrorHandler,
     // Set fastify initial configuration options read-only object
-    initialConfig
+    initialConfig,
+    // constraint strategies
+    addConstraintStrategy: router.addConstraintStrategy.bind(router),
+    hasConstraintStrategy: router.hasConstraintStrategy.bind(router)
   }
 
   Object.defineProperties(fastify, {

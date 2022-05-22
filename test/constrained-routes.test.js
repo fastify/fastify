@@ -113,12 +113,10 @@ test('Should allow registering custom constrained routes', t => {
   const constraint = {
     name: 'secret',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -189,12 +187,10 @@ test('Should allow registering custom constrained routes outside constructor', t
   const constraint = {
     name: 'secret',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -266,12 +262,10 @@ test('Add a constraint strategy after fastify instance was started', t => {
   const constraint = {
     name: 'secret',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -309,12 +303,10 @@ test('Add a constraint strategy should throw an error if there already exist cus
   const constraint = {
     name: 'secret',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -338,12 +330,10 @@ test('Add a constraint strategy shouldn\'t throw an error if default constraint 
   const constraint = {
     name: 'version',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -364,12 +354,10 @@ test('Add a constraint strategy should throw an error if default constraint with
   const constraint = {
     name: 'version',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -434,12 +422,10 @@ test('The hasConstraintStrategy should return true if there already exist a cust
   const constraint = {
     name: 'secret',
     storage: function () {
-      let secrets = {}
+      const secrets = {}
       return {
         get: (secret) => { return secrets[secret] || null },
-        set: (secret, store) => { secrets[secret] = store },
-        del: (secret) => { delete secrets[secret] },
-        empty: () => { secrets = {} }
+        set: (secret, store) => { secrets[secret] = store }
       }
     },
     deriveConstraint: (req, ctx) => {

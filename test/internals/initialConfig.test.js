@@ -68,12 +68,10 @@ test('Fastify.initialConfig should expose all options', t => {
   const versionStrategy = {
     name: 'version',
     storage: function () {
-      let versions = {}
+      const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store },
-        del: (version) => { delete versions[version] },
-        empty: () => { versions = {} }
+        set: (version, store) => { versions[version] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -362,12 +360,10 @@ test('Fastify.initialConfig should accept the deprecated versioning option', t =
 
   const versioning = {
     storage: function () {
-      let versions = {}
+      const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store },
-        del: (version) => { delete versions[version] },
-        empty: () => { versions = {} }
+        set: (version, store) => { versions[version] = store }
       }
     },
     deriveVersion: (req, ctx) => {

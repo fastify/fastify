@@ -56,9 +56,6 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 Do you prefer to use `async/await`? Fastify supports it out-of-the-box.
 
-*(We also suggest using
-[make-promises-safe](https://github.com/mcollina/make-promises-safe) to avoid
-file descriptor and memory leaks.)*
 ```js
 // ESM
 import Fastify from 'fastify'
@@ -312,7 +309,7 @@ module.exports = fastifyPlugin(dbConnector)
 **our-first-route.js**
 ```js
 /**
- * A plugin that provide encapsulated routes 
+ * A plugin that provide encapsulated routes
  * @param {FastifyInstance} fastify encapsulated fastify instance
  * @param {Object} options plugin options, refer to https://www.fastify.io/docs/latest/Reference/Plugins/#plugin-options
  */
@@ -441,7 +438,7 @@ Schema](https://json-schema.org/).
 
 Let's look at an example demonstrating validation for routes:
 ```js
-/** 
+/**
  * @type {import('fastify').RouteShorthandOptions}
  * @const
  */
@@ -477,7 +474,7 @@ JSON bodies and serialize JSON output.
 To speed up JSON serialization (yes, it is slow!) use the `response` key of the
 schema option as shown in the following example:
 ```js
-/** 
+/**
  * @type {import('fastify').RouteShorthandOptions}
  * @const
  */

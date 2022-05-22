@@ -17,13 +17,6 @@ way to deal with them is to
 [crash](https://nodejs.org/api/process.html#process_warning_using_uncaughtexception_correctly).
 
 #### Catching Errors In Promises
-In Node.js, unhandled promise rejections (that is, without a `.catch()` handler)
-can also cause memory and file descriptor leaks. While `unhandledRejection` is
-deprecated in Node.js, unhandled rejections will not throw, and still
-potentially leak. You should use a module like
-[`make-promises-safe`](https://github.com/mcollina/make-promises-safe) to ensure
-unhandled rejections _always_ throw.
-
 If you are using promises, you should attach a `.catch()` handler synchronously.
 
 ### Errors In Fastify

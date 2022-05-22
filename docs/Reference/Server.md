@@ -590,12 +590,10 @@ constraint strategies in the
 ```js
 const customVersionStrategy = {
   storage: function () {
-    let versions = {}
+    const versions = {}
     return {
       get: (version) => { return versions[version] || null },
-      set: (version, store) => { versions[version] = store },
-      del: (version) => { delete versions[version] },
-      empty: () => { versions = {} }
+      set: (version, store) => { versions[version] = store }
     }
   },
   deriveVersion: (req, ctx) => {

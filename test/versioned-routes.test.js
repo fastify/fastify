@@ -480,12 +480,10 @@ test('Should register a versioned route with custom versioning strategy', t => {
   const customVersioning = {
     name: 'version',
     storage: function () {
-      let versions = {}
+      const versions = {}
       return {
         get: (version) => { return versions[version] || null },
-        set: (version, store) => { versions[version] = store },
-        del: (version) => { delete versions[version] },
-        empty: () => { versions = {} }
+        set: (version, store) => { versions[version] = store }
       }
     },
     deriveConstraint: (req, ctx) => {
@@ -561,12 +559,10 @@ test('Should get error using an invalid a versioned route, using default validat
   const fastify = Fastify({
     versioning: {
       storage: function () {
-        let versions = {}
+        const versions = {}
         return {
           get: (version) => { return versions[version] || null },
-          set: (version, store) => { versions[version] = store },
-          del: (version) => { delete versions[version] },
-          empty: () => { versions = {} }
+          set: (version, store) => { versions[version] = store }
         }
       },
       deriveVersion: (req, ctx) => {

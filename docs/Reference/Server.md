@@ -465,7 +465,7 @@ Defines the label used for the request identifier when logging the request.
 <a id="factory-gen-request-id"></a>
 
 Function for generating the request-id. It will receive the incoming request as
-a parameter.
+a parameter. This function is expected to be error-free.
 
 + Default: `value of 'request-id' header if provided or monotonically increasing
   integers`

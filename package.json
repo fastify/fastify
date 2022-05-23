@@ -181,7 +181,7 @@
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.0",
     "find-my-way": "^6.0.0",
-    "light-my-request": "^4.7.0",
+    "light-my-request": "^5.0.0",
     "pino": "^7.5.1",
     "process-warning": "^2.0.0",
     "proxy-addr": "^2.0.7",

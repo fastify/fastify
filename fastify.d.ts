@@ -106,6 +106,7 @@ export type FastifyServerOptions<
   Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = {
   ignoreTrailingSlash?: boolean,
+  ignoreDuplicateSlashes?: boolean,
   connectionTimeout?: number,
   keepAliveTimeout?: number,
   maxRequestsPerSocket?: number,

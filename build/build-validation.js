@@ -33,6 +33,7 @@ const defaultInitOptions = {
   disableRequestLogging: false,
   jsonShorthand: true,
   ignoreTrailingSlash: false,
+  ignoreDuplicateSlashes: false,
   maxParamLength: 100,
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
@@ -76,6 +77,7 @@ const schema = {
       then: { setDefaultValue: true }
     },
     ignoreTrailingSlash: { type: 'boolean', default: defaultInitOptions.ignoreTrailingSlash },
+    ignoreDuplicateSlashes: { type: 'boolean', default: defaultInitOptions.ignoreDuplicateSlashes },
     disableRequestLogging: {
       type: 'boolean',
       default: false

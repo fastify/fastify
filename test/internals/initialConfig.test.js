@@ -41,6 +41,7 @@ test('without options passed to Fastify, initialConfig should expose default val
     disableRequestLogging: false,
     jsonShorthand: true,
     ignoreTrailingSlash: false,
+    ignoreDuplicateSlashes: false,
     maxParamLength: 100,
     onProtoPoisoning: 'error',
     onConstructorPoisoning: 'error',
@@ -55,7 +56,7 @@ test('without options passed to Fastify, initialConfig should expose default val
 })
 
 test('Fastify.initialConfig should expose all options', t => {
-  t.plan(19)
+  t.plan(20)
 
   const serverFactory = (handler, opts) => {
     const server = http.createServer((req, res) => {
@@ -88,6 +89,7 @@ test('Fastify.initialConfig should expose all options', t => {
       cert: global.context.cert
     },
     ignoreTrailingSlash: true,
+    ignoreDuplicateSlashes: true,
     maxParamLength: 200,
     connectionTimeout: 0,
     keepAliveTimeout: 72000,
@@ -115,6 +117,7 @@ test('Fastify.initialConfig should expose all options', t => {
   t.equal(fastify.initialConfig.http2, true)
   t.equal(fastify.initialConfig.https, true, 'for security reason the key cert is hidden')
   t.equal(fastify.initialConfig.ignoreTrailingSlash, true)
+  t.equal(fastify.initialConfig.ignoreDuplicateSlashes, true)
   t.equal(fastify.initialConfig.maxParamLength, 200)
   t.equal(fastify.initialConfig.connectionTimeout, 0)
   t.equal(fastify.initialConfig.keepAliveTimeout, 72000)
@@ -271,6 +274,7 @@ test('Should not have issues when passing stream options to Pino.js', t => {
       disableRequestLogging: false,
       jsonShorthand: true,
       ignoreTrailingSlash: true,
+      ignoreDuplicateSlashes: false,
       maxParamLength: 100,
       onProtoPoisoning: 'error',
       onConstructorPoisoning: 'error',

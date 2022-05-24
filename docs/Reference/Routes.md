@@ -114,7 +114,7 @@ fastify.route(options)
   * `slash`: Will register only `/prefix/`.
   * `no-slash`: Will register only `/prefix`.
 
-  Note: this option does not override `ignoreTrailingSlashes` in [Server](./Server.md) configuration.
+  Note: this option does not override `ignoreTrailingSlash` in [Server](./Server.md) configuration.
 
 * `request` is defined in [Request](./Request.md).
 

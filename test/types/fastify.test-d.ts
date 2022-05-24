@@ -58,6 +58,7 @@ fastify({ http2: true, https: {} }).inject({}, lightMyRequestCallback)
 // server options
 expectAssignable<FastifyInstance<http2.Http2Server, http2.Http2ServerRequest, http2.Http2ServerResponse>>(fastify({ http2: true }))
 expectAssignable<FastifyInstance>(fastify({ ignoreTrailingSlash: true }))
+expectAssignable<FastifyInstance>(fastify({ ignoreDuplicateSlashes: true }))
 expectAssignable<FastifyInstance>(fastify({ connectionTimeout: 1000 }))
 expectAssignable<FastifyInstance>(fastify({ forceCloseConnections: true }))
 expectAssignable<FastifyInstance>(fastify({ keepAliveTimeout: 1000 }))

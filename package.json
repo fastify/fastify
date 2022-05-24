@@ -180,7 +180,7 @@
     "@fastify/fast-json-stringify-compiler": "^2.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.0",
-    "find-my-way": "^6.0.0",
+    "find-my-way": "v6.1.0",
     "light-my-request": "^5.0.0",
     "pino": "^7.5.1",
     "process-warning": "^2.0.0",

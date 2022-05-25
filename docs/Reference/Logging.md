@@ -26,13 +26,16 @@ and production environment requires bit more configuration:
 ```js
 const fastify = require('fastify')({
   logger: {
-      prettyPrint:
+      transport:
         environment === 'development'
           ? {
-              translateTime: 'HH:MM:ss Z',
-              ignore: 'pid,hostname'
+              target: 'pino-pretty',
+              options: {
+                translateTime: 'HH:MM:ss Z',
+                ignore: 'pid,hostname'
+              }
             }
-          : false
+          : undefined
     }
 })
 ```
@@ -119,7 +122,9 @@ below (even if it is *not recommended*):
 ```js
 const fastify = require('fastify')({
   logger: {
-    prettyPrint: true,
+    transport: {
+      target: 'pino-pretty'
+    },
     serializers: {
       res (reply) {
         // The default

@@ -43,7 +43,9 @@ module.exports = build
 const server = require('./app')({
   logger: {
     level: 'info',
-    prettyPrint: true
+    transport: {
+      target: 'pino-pretty'
+    }
   }
 })
 

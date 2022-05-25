@@ -122,7 +122,9 @@ below (even if it is *not recommended*):
 ```js
 const fastify = require('fastify')({
   logger: {
-    prettyPrint: true,
+    transport: {
+      target: 'pino-pretty'
+    },
     serializers: {
       res (reply) {
         // The default

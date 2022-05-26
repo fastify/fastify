@@ -45,6 +45,7 @@ jobs:
       # main benchmark
       - uses: actions/checkout@v3
         with:
+          persist-credentials: false
           ref: 'main'
 
       - name: Install

@@ -20,6 +20,8 @@ jobs:
       steps:
           - name: Check out repo
             uses: actions/checkout@v3
+            with:
+              persist-credentials: false
 
           - name: Dependency review
             uses: actions/dependency-review-action@v1
@@ -30,6 +32,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -66,6 +70,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -113,6 +119,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+        with:
+          persist-credentials: false
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:

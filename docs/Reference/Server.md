@@ -17,6 +17,7 @@ describes the properties available in that options object.
   - [`maxRequestsPerSocket`](#maxrequestspersocket)
   - [`requestTimeout`](#requesttimeout)
   - [`ignoreTrailingSlash`](#ignoretrailingslash)
+  - [`ignoreDuplicateSlashes`](#ignoreduplicateslashes)
   - [`maxParamLength`](#maxparamlength)
   - [`bodyLimit`](#bodylimit)
   - [`onProtoPoisoning`](#onprotopoisoning)
@@ -200,6 +201,29 @@ fastify.get('/foo/', function (req, reply) {
 // registers both "/bar" and "/bar/"
 fastify.get('/bar', function (req, reply) {
   reply.send('bar')
+})
+```
+
+### `ignoreDuplicateSlashes`
+<a id="factory-ignore-duplicate-slashes"></a>
+
+Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
+routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
+from the path. It removes duplicate slashes in the route path and in the request
+URL. This option applies to *all* route registrations for the resulting server instance.
+
+Note that when `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set to true, Fastify will remove duplicate slashes, and then trailing slashes, meaning //a//b//c// will be converted to /a/b/c.
+
++ Default: `false`
+
+```js
+const fastify = require('fastify')({
+  ignoreDuplicateSlashes: true
+})
+
+// registers "/foo/bar/"
+fastify.get('///foo//bar//', function (req, reply) {
+  reply.send('foo')
 })
 ```
 

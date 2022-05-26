@@ -44,6 +44,67 @@ test('Should honor ignoreTrailingSlash option', t => {
   })
 })
 
+test('Should honor ignoreDuplicateSlashes option', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreDuplicateSlashes: true
+  })
+
+  fastify.get('/test//test///test', (req, res) => {
+    res.send('test')
+  })
+
+  fastify.listen({ port: 0 }, (err) => {
+    t.teardown(() => { fastify.close() })
+    if (err) t.threw(err)
+
+    const baseUrl = getUrl(fastify)
+
+    sget.concat(baseUrl + '/test/test/test', (err, res, data) => {
+      if (err) t.threw(err)
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
+    })
+
+    sget.concat(baseUrl + '/test//test///test', (err, res, data) => {
+      if (err) t.threw(err)
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
+    })
+  })
+})
+
+test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', t => {
+  t.plan(4)
+  const fastify = Fastify({
+    ignoreTrailingSlash: true,
+    ignoreDuplicateSlashes: true
+  })
+
+  fastify.get('/test//test///test', (req, res) => {
+    res.send('test')
+  })
+
+  fastify.listen({ port: 0 }, (err) => {
+    t.teardown(() => { fastify.close() })
+    if (err) t.threw(err)
+
+    const baseUrl = getUrl(fastify)
+
+    sget.concat(baseUrl + '/test/test/test/', (err, res, data) => {
+      if (err) t.threw(err)
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
+    })
+
+    sget.concat(baseUrl + '/test//test///test//', (err, res, data) => {
+      if (err) t.threw(err)
+      t.equal(res.statusCode, 200)
+      t.equal(data.toString(), 'test')
+    })
+  })
+})
+
 test('Should honor maxParamLength option', t => {
   t.plan(4)
   const fastify = Fastify({ maxParamLength: 10 })

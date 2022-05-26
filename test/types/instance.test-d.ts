@@ -261,6 +261,7 @@ type InitialConfig = Readonly<{
   http2?: boolean,
   https?: boolean | Readonly<{ allowHTTP1: boolean }>,
   ignoreTrailingSlash?: boolean,
+  ignoreDuplicateSlashes?: boolean,
   disableRequestLogging?: boolean,
   maxParamLength?: number,
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',

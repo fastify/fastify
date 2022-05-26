@@ -165,6 +165,9 @@ section.
 - [`fastify-amqp`](https://github.com/RafaelGSS/fastify-amqp) Fastify AMQP
   connection plugin, to use with RabbitMQ or another connector. Just a wrapper
   to [`amqplib`](https://github.com/squaremo/amqp.node).
+- [`fastify-amqp-async`](https://github.com/kffl/fastify-amqp-async) Fastify
+  AMQP plugin with a Promise-based API provided by
+  [`amqplib-as-promised`](https://github.com/twawszczak/amqplib-as-promised).
 - [`fastify-angular-universal`](https://github.com/exequiel09/fastify-angular-universal)
   Angular server-side rendering support using
   [`@angular/platform-server`](https://github.com/angular/angular/tree/master/packages/platform-server)

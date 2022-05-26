@@ -1776,6 +1776,6 @@ test('Should return a human-friendly error if response status codes are not spec
 
   fastify.ready(err => {
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.match(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a status code, e.g { 2xx: { type: "object" } }')
+    t.match(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
   })
 })

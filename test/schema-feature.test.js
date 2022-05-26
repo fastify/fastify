@@ -1755,3 +1755,27 @@ test('Should coerce the array if the default validator is used', async t => {
     t.error(err)
   }
 })
+
+test('Should return a human-friendly error if response status codes are not specified', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.route({
+    url: '/',
+    method: 'GET',
+    schema: {
+      response: {
+        // This should be nested under a status code key, e.g { 200: { type: 'array' } }
+        type: 'array'
+      }
+    },
+    handler: (req, reply) => {
+      reply.send([])
+    }
+  })
+
+  fastify.ready(err => {
+    t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
+    t.match(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
+  })
+})

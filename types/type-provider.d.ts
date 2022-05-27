@@ -93,7 +93,7 @@ TypeProvider,
 SchemaCompiler,
 RouteGeneric
 > extends infer Return ?
-  (void | Promise<Return | void>)
+  (Return | void | Promise<Return | void>)
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown

@@ -526,3 +526,7 @@ section.
   Fastify.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
+
+#### [Community Tools](#community-tools)
+- [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration generator by 
+  directory structure.

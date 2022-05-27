@@ -265,6 +265,7 @@ Team members are listed in alphabetical order.
 * [__Maksim Sinik__](https://github.com/fox1t), <https://twitter.com/maksimsinik>, <https://www.npmjs.com/~fox1t>
 * [__Frazer Smith__](https://github.com/Fdawgs), <https://www.npmjs.com/~fdawgs>
 * [__Manuel Spigolon__](https://github.com/eomm), <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
+* [__Rafael Gonzaga__](https://github.com/rafaelgss), <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited to join this group by Lead Maintainers.

@@ -27,6 +27,14 @@ const routeHandler: RouteHandlerMethod = function (request, reply) {
   expectType<FastifyReply>(reply)
 }
 
+const routeHandlerWithReturnValue: RouteHandlerMethod = function (request, reply) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+
+  return reply.send()
+}
+
 type LowerCaseHTTPMethods = 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options'
 
 ;['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE', 'OPTIONS'].forEach(method => {
@@ -215,4 +223,10 @@ expectType<FastifyInstance>(fastify().route({
 
 expectError(fastify().route({
   prefixTrailingSlash: true // Not a valid value
+}))
+
+expectType<FastifyInstance>(fastify().route({
+  url: '/',
+  method: 'GET',
+  handler: routeHandlerWithReturnValue
 }))

@@ -184,11 +184,11 @@ test('fastify.register with fastify-plugin should provide access to external fas
   })
 })
 
-test('fastify.register with fastify-plugin registers root level plugins', t => {
+test('fastify.register with fastify-plugin registers fastify level plugins', t => {
   t.plan(15)
   const fastify = Fastify()
 
-  function rootPlugin (instance, opts, done) {
+  function fastifyPlugin (instance, opts, done) {
     instance.decorate('test', 'first')
     t.ok(instance.test)
     done()
@@ -199,7 +199,7 @@ test('fastify.register with fastify-plugin registers root level plugins', t => {
     done()
   }
 
-  fastify.register(fp(rootPlugin))
+  fastify.register(fp(fastifyPlugin))
 
   fastify.register((instance, opts, done) => {
     t.ok(instance.test)
@@ -354,26 +354,28 @@ test('check dependencies - should throw', t => {
 })
 
 test('set the plugin name based on the plugin displayName symbol', t => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
-    t.equal(fastify.pluginName, 'plugin-A')
+    t.equal(fastify.pluginName, 'fastify -> plugin-A')
     fastify.register(fp((fastify, opts, done) => {
-      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB')
+      t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
-      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
       done()
     }, { name: 'plugin-AC' }))
     done()
   }, { name: 'plugin-A' }))
 
   fastify.register(fp((fastify, opts, done) => {
-    t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
+    t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
     done()
   }, { name: 'plugin-B' }))
+
+  t.equal(fastify.pluginName, 'fastify')
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
@@ -382,28 +384,30 @@ test('set the plugin name based on the plugin displayName symbol', t => {
 })
 
 test('plugin name will change when using no encapsulation', t => {
-  t.plan(5)
+  t.plan(6)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
     // store it in a different variable will hold the correct name
     const pluginName = fastify.pluginName
     fastify.register(fp((fastify, opts, done) => {
-      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB')
+      t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
-      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
       done()
     }, { name: 'plugin-AC' }))
     setImmediate(() => {
       // normally we would expect the name plugin-A
       // but we operate on the same instance in each plugin
-      t.equal(fastify.pluginName, 'plugin-A -> plugin-AB -> plugin-AC')
-      t.equal(pluginName, 'plugin-A')
+      t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
+      t.equal(pluginName, 'fastify -> plugin-A')
     })
     done()
   }, { name: 'plugin-A' }))
+
+  t.equal(fastify.pluginName, 'fastify')
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)
@@ -415,7 +419,7 @@ test('plugin name is undefined when accessing in no plugin context', t => {
   t.plan(2)
   const fastify = Fastify()
 
-  t.equal(fastify.pluginName, undefined)
+  t.equal(fastify.pluginName, 'fastify')
 
   fastify.listen({ port: 0 }, err => {
     t.error(err)

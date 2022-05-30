@@ -219,7 +219,7 @@ function fastify (options) {
     [kRequest]: Request.buildRequest(Request, options.trustProxy),
     [kFourOhFour]: fourOhFour,
     [pluginUtils.registeredPlugins]: [],
-    [kPluginNameChain]: [],
+    [kPluginNameChain]: ['fastify'],
     [kAvvioBoot]: null,
     // routing method
     routing: httpHandler,

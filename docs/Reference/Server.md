@@ -1085,7 +1085,8 @@ fastify.register(function (instance, opts, done) {
 #### pluginName
 <a id="pluginName"></a>
 
-Name of the current plugin. There are three ways to define a name (in order).
+Name of the current plugin. The root plugin is called `'fastify'`.
+There are three ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the
    metadata `name` is used.
@@ -1102,7 +1103,7 @@ Important: If you have to deal with nested plugins, the name differs with the
 usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because
 no new scope is created and therefore we have no place to attach contextual
 data. In that case, the plugin name will represent the boot order of all
-involved plugins in the format of `plugin-A -> plugin-B`.
+involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
 
 #### log
 <a id="log"></a>

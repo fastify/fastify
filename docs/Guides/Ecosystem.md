@@ -311,6 +311,8 @@ section.
   user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT
   authentication for Fastify-based web apps.
+- [`fastify-kafkajs`](https://github.com/kffl/fastify-kafkajs) Fastify plugin
+  that adds support for KafkaJS - a modern Apache Kafka client library.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
   plugin for support KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)

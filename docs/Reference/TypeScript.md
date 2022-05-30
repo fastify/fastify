@@ -1284,7 +1284,7 @@ handlers respectfully.
 
 [src](https://github.com/fastify/fastify/blob/main/types/route.d.ts#L78)
 
-An interface than extends RouteShorthandOptions and adds the follow three
+An interface that extends RouteShorthandOptions and adds the following three
 required properties:
 1. `method` which corresponds to a singular [HTTPMethod][HTTPMethods] or a list
    of [HTTPMethods][HTTPMethods]

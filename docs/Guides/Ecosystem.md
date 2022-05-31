@@ -353,6 +353,7 @@ section.
   for handling multipart/form-data, which is primarily used for uploading files.
 - [`fastify-nats`](https://github.com/mahmed8003/fastify-nats) Plugin to share
   [NATS](https://nats.io) client across Fastify.
+- [`fastify-next-auth`](https://github.com/wobsoriano/fastify-next-auth) NextAuth.js plugin for Fastify.
 - [`fastify-no-additional-properties`](https://github.com/greguz/fastify-no-additional-properties)
   Add `additionalProperties: false` by default to your JSON Schemas.
 - [`fastify-no-icon`](https://github.com/jsumners/fastify-no-icon) Plugin to

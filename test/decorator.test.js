@@ -1060,3 +1060,149 @@ test('decorateRequest with dependencies (functions)', (t) => {
     t.ok(app.hasRequestDecorator('decorator2'))
   }
 })
+
+test('chain of decorators on Request', async (t) => {
+  const fastify = Fastify()
+  fastify.register(fp(async function (fastify) {
+    fastify.decorateRequest('foo', 'toto')
+    fastify.decorateRequest('bar', () => 'tata')
+  }, {
+    name: 'first'
+  }))
+
+  fastify.get('/foo', async function (request, reply) {
+    return request.foo
+  })
+  fastify.get('/bar', function (request, reply) {
+    return request.bar()
+  })
+  fastify.register(async function second (fastify) {
+    fastify.get('/foo', async function (request, reply) {
+      return request.foo
+    })
+    fastify.get('/bar', async function (request, reply) {
+      return request.bar()
+    })
+    fastify.register(async function fourth (fastify) {
+      fastify.get('/plugin3/foo', async function (request, reply) {
+        return request.foo
+      })
+      fastify.get('/plugin3/bar', function (request, reply) {
+        return request.bar()
+      })
+    })
+    fastify.register(fp(async function (fastify) {
+      fastify.decorateRequest('fooB', 'toto')
+      fastify.decorateRequest('barB', () => 'tata')
+    }, {
+      name: 'third'
+    }))
+  },
+  { prefix: '/plugin2', name: 'plugin2' }
+  )
+
+  await fastify.ready()
+
+  {
+    const response = await fastify.inject('/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/bar')
+    t.equal(response.body, 'tata')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/bar')
+    t.equal(response.body, 'tata')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/plugin3/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/plugin3/bar')
+    t.equal(response.body, 'tata')
+  }
+})
+
+test('chain of decorators on Reply', async (t) => {
+  const fastify = Fastify()
+  fastify.register(fp(async function (fastify) {
+    fastify.decorateReply('foo', 'toto')
+    fastify.decorateReply('bar', () => 'tata')
+  }, {
+    name: 'first'
+  }))
+
+  fastify.get('/foo', async function (request, reply) {
+    return reply.foo
+  })
+  fastify.get('/bar', function (request, reply) {
+    return reply.bar()
+  })
+  fastify.register(async function second (fastify) {
+    fastify.get('/foo', async function (request, reply) {
+      return reply.foo
+    })
+    fastify.get('/bar', async function (request, reply) {
+      return reply.bar()
+    })
+    fastify.register(async function fourth (fastify) {
+      fastify.get('/plugin3/foo', async function (request, reply) {
+        return reply.foo
+      })
+      fastify.get('/plugin3/bar', function (request, reply) {
+        return reply.bar()
+      })
+    })
+    fastify.register(fp(async function (fastify) {
+      fastify.decorateReply('fooB', 'toto')
+      fastify.decorateReply('barB', () => 'tata')
+    }, {
+      name: 'third'
+    }))
+  },
+  { prefix: '/plugin2', name: 'plugin2' }
+  )
+
+  await fastify.ready()
+
+  {
+    const response = await fastify.inject('/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/bar')
+    t.equal(response.body, 'tata')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/bar')
+    t.equal(response.body, 'tata')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/plugin3/foo')
+    t.equal(response.body, 'toto')
+  }
+
+  {
+    const response = await fastify.inject('/plugin2/plugin3/bar')
+    t.equal(response.body, 'tata')
+  }
+})

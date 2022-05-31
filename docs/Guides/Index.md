@@ -10,7 +10,7 @@ This table of contents is in alphabetical order.
 + [Contributing](./Contributing.md): Details how to participate in the
   development of Fastify, and shows how to setup an environment compatible with
   the project's code style.
-+ [`Delay Accepting Requests`](./Delay-Accepting-Requests.md): A practical guide
++ [Delay Accepting Requests](./Delay-Accepting-Requests.md): A practical guide
   on how to delay serving requests to specific routes until some condition is
   met in your application. This guide focuses on solving the problem using
   [`Hooks`](../Reference/Hooks.md), [`Decorators`](../Reference/Decorators.md),

@@ -23,7 +23,7 @@ export type FastifyLoggerInstance = pino.Logger
 // TODO make pino export BaseLogger again
 // export type FastifyBaseLogger = pino.BaseLogger & {
 export type FastifyBaseLogger = pino.Logger & {
-  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyLoggerInstance;
+  child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger;
 }
 
 export interface FastifyLoggerStreamDestination {

@@ -1,4 +1,4 @@
-import {expectError, expectType} from 'tsd'
+import { expectError, expectType } from 'tsd'
 import fastify, { FastifyLogFn, LogLevel, FastifyLoggerInstance, FastifyError, FastifyRequest, FastifyReply } from '../../fastify'
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import pino from 'pino'
@@ -189,7 +189,7 @@ const childParent = fastify().log
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
 expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
-expectType<FastifyLoggerInstance>(childParent.child({}, { level:  'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
 
 // no option pass
 expectError(childParent.child())

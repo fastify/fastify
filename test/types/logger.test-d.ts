@@ -213,7 +213,6 @@ const passPinoOption = fastify({
 
 expectType<FastifyBaseLogger>(passPinoOption.log)
 
-
 const childParent = fastify().log
 // we test different option variant here
 expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))

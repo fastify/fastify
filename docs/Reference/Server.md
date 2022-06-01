@@ -60,6 +60,7 @@ describes the properties available in that options object.
     - [addHook](#addhook)
     - [prefix](#prefix)
     - [pluginName](#pluginname)
+    - [hasPlugin](#hasplugin)
     - [log](#log)
     - [version](#version)
     - [inject](#inject)
@@ -1104,6 +1105,15 @@ usage of the [fastify-plugin](https://github.com/fastify/fastify-plugin) because
 no new scope is created and therefore we have no place to attach contextual
 data. In that case, the plugin name will represent the boot order of all
 involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
+
+#### hasPlugin
+<a id="hasPlugin"></a>
+
+Method to check if the plugin is registered.
+
+```js
+fastify.hasPlugin('your-plugin-name')
+```
 
 #### log
 <a id="log"></a>

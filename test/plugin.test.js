@@ -42,17 +42,19 @@ test('plugin metadata - ignore prefix', t => {
 })
 
 test('plugin metadata - naming plugins', async t => {
-  t.plan(2)
+  t.plan(4)
   const fastify = Fastify()
 
   fastify.register(require('./plugin.name.display'))
   fastify.register(function (fastify, opts, done) {
     // one line
     t.equal(fastify.pluginName, 'function (fastify, opts, done) { -- // one line')
+    t.ok(fastify.hasPlugin('function (fastify, opts, done) { -- // one line'))
     done()
   })
   fastify.register(function fooBar (fastify, opts, done) {
     t.equal(fastify.pluginName, 'fooBar')
+    t.ok(fastify.hasPlugin('fooBar'))
     done()
   })
 
@@ -354,17 +356,23 @@ test('check dependencies - should throw', t => {
 })
 
 test('set the plugin name based on the plugin displayName symbol', t => {
-  t.plan(6)
+  t.plan(16)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
     t.equal(fastify.pluginName, 'fastify -> plugin-A')
+    t.ok(fastify.hasPlugin('plugin-A'))
     fastify.register(fp((fastify, opts, done) => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
+      t.ok(fastify.hasPlugin('plugin-A'))
+      t.ok(fastify.hasPlugin('plugin-AB'))
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
+      t.ok(fastify.hasPlugin('plugin-A'))
+      t.ok(fastify.hasPlugin('plugin-AB'))
+      t.ok(fastify.hasPlugin('plugin-AC'))
       done()
     }, { name: 'plugin-AC' }))
     done()
@@ -372,6 +380,10 @@ test('set the plugin name based on the plugin displayName symbol', t => {
 
   fastify.register(fp((fastify, opts, done) => {
     t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC -> plugin-B')
+    t.ok(fastify.hasPlugin('plugin-A'))
+    t.ok(fastify.hasPlugin('plugin-AB'))
+    t.ok(fastify.hasPlugin('plugin-AC'))
+    t.ok(fastify.hasPlugin('plugin-B'))
     done()
   }, { name: 'plugin-B' }))
 
@@ -384,7 +396,7 @@ test('set the plugin name based on the plugin displayName symbol', t => {
 })
 
 test('plugin name will change when using no encapsulation', t => {
-  t.plan(6)
+  t.plan(14)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
@@ -392,16 +404,24 @@ test('plugin name will change when using no encapsulation', t => {
     const pluginName = fastify.pluginName
     fastify.register(fp((fastify, opts, done) => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
+      t.ok(fastify.hasPlugin('plugin-A'))
+      t.ok(fastify.hasPlugin('plugin-AB'))
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
+      t.ok(fastify.hasPlugin('plugin-A'))
+      t.ok(fastify.hasPlugin('plugin-AB'))
+      t.ok(fastify.hasPlugin('plugin-AC'))
       done()
     }, { name: 'plugin-AC' }))
     setImmediate(() => {
       // normally we would expect the name plugin-A
       // but we operate on the same instance in each plugin
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB -> plugin-AC')
+      t.ok(fastify.hasPlugin('plugin-A'))
+      t.ok(fastify.hasPlugin('plugin-AB'))
+      t.ok(fastify.hasPlugin('plugin-AC'))
       t.equal(pluginName, 'fastify -> plugin-A')
     })
     done()
@@ -428,24 +448,28 @@ test('plugin name is undefined when accessing in no plugin context', t => {
 })
 
 test('set the plugin name based on the plugin function name', t => {
-  t.plan(5)
+  t.plan(9)
   const fastify = Fastify()
 
   fastify.register(function myPluginA (fastify, opts, done) {
     t.equal(fastify.pluginName, 'myPluginA')
+    t.ok(fastify.hasPlugin('myPluginA'))
     fastify.register(function myPluginAB (fastify, opts, done) {
       t.equal(fastify.pluginName, 'myPluginAB')
+      t.ok(fastify.hasPlugin('myPluginAB'))
       done()
     })
     setImmediate(() => {
       // exact name due to encapsulation
       t.equal(fastify.pluginName, 'myPluginA')
+      t.ok(fastify.hasPlugin('myPluginA'))
     })
     done()
   })
 
   fastify.register(function myPluginB (fastify, opts, done) {
     t.equal(fastify.pluginName, 'myPluginB')
+    t.ok(fastify.hasPlugin('myPluginB'))
     done()
   })
 

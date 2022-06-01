@@ -1,4 +1,4 @@
-import { expectType } from 'tsd'
+import { expectError, expectType } from 'tsd'
 import fastify, {
   FastifyLogFn,
   LogLevel,
@@ -212,3 +212,15 @@ const passPinoOption = fastify({
 })
 
 expectType<FastifyBaseLogger>(passPinoOption.log)
+
+const childParent = fastify().log
+// we test different option variant here
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info' }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { redact: ['pass', 'pin'] }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { serializers: { key: () => {} } }))
+expectType<FastifyLoggerInstance>(childParent.child({}, { level: 'info', redact: ['pass', 'pin'], serializers: { key: () => {} } }))
+
+// no option pass
+expectError(childParent.child())
+// wrong option
+expectError(childParent.child({}, { nonExist: true }))

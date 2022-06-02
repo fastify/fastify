@@ -285,7 +285,6 @@ function fastify (options) {
     onClose: null,
     close: null,
     printPlugins: null,
-    // check existence of the plugin
     hasPlugin: function (name) {
       return this[kPluginNameChain].includes(name)
     },

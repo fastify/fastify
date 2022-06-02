@@ -5,7 +5,7 @@ const Fastify = require('../fastify')
 const immediate = require('util').promisify(setImmediate)
 
 t.test('onReady should be called in order', t => {
-  t.plan(10)
+  t.plan(7)
   const fastify = Fastify()
 
   let order = 0
@@ -13,7 +13,6 @@ t.test('onReady should be called in order', t => {
   fastify.addHook('onReady', function (done) {
     t.equal(order++, 0, 'called in root')
     t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
-    t.ok(this.hasPlugin, fastify.pluginName)
     done()
   })
 
@@ -21,7 +20,6 @@ t.test('onReady should be called in order', t => {
     childOne.addHook('onReady', function (done) {
       t.equal(order++, 1, 'called in childOne')
       t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
-      t.ok(this.hasPlugin, childOne.pluginName)
       done()
     })
 
@@ -30,7 +28,6 @@ t.test('onReady should be called in order', t => {
         await immediate()
         t.equal(order++, 2, 'called in childTwo')
         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
-        t.ok(this.pluginName, childTwo.pluginName)
       })
     })
   })
@@ -39,7 +36,7 @@ t.test('onReady should be called in order', t => {
 })
 
 t.test('async onReady should be called in order', async t => {
-  t.plan(10)
+  t.plan(7)
   const fastify = Fastify()
 
   let order = 0
@@ -48,7 +45,6 @@ t.test('async onReady should be called in order', async t => {
     await immediate()
     t.equal(order++, 0, 'called in root')
     t.equal(this.pluginName, fastify.pluginName, 'the this binding is the right instance')
-    t.ok(this.hasPlugin, fastify.pluginName)
   })
 
   fastify.register(async (childOne, o) => {
@@ -56,7 +52,6 @@ t.test('async onReady should be called in order', async t => {
       await immediate()
       t.equal(order++, 1, 'called in childOne')
       t.equal(this.pluginName, childOne.pluginName, 'the this binding is the right instance')
-      t.ok(this.hasPlugin, childOne.pluginName)
     })
 
     childOne.register(async (childTwo, o) => {
@@ -64,7 +59,6 @@ t.test('async onReady should be called in order', async t => {
         await immediate()
         t.equal(order++, 2, 'called in childTwo')
         t.equal(this.pluginName, childTwo.pluginName, 'the this binding is the right instance')
-        t.ok(this.hasPlugin, childTwo.pluginName)
       })
     })
   })

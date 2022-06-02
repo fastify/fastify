@@ -1109,7 +1109,7 @@ involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
 #### hasPlugin
 <a id="hasPlugin"></a>
 
-Method to check if the plugin is registered.
+Method to check if a specific plugin has been registered.
 
 ```js
 fastify.hasPlugin('your-plugin-name')

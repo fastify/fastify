@@ -356,16 +356,21 @@ test('check dependencies - should throw', t => {
 })
 
 test('set the plugin name based on the plugin displayName symbol', t => {
-  t.plan(16)
+  t.plan(22)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
     t.equal(fastify.pluginName, 'fastify -> plugin-A')
     t.ok(fastify.hasPlugin('plugin-A'))
+    t.notOk(fastify.hasPlugin('plugin-AB'))
+    t.notOk(fastify.hasPlugin('plugin-AC'))
+    t.notOk(fastify.hasPlugin('plugin-B'))
     fastify.register(fp((fastify, opts, done) => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
       t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AB'))
+      t.notOk(fastify.hasPlugin('plugin-AC'))
+      t.notOk(fastify.hasPlugin('plugin-B'))
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {
@@ -373,6 +378,7 @@ test('set the plugin name based on the plugin displayName symbol', t => {
       t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AB'))
       t.ok(fastify.hasPlugin('plugin-AC'))
+      t.notOk(fastify.hasPlugin('plugin-B'))
       done()
     }, { name: 'plugin-AC' }))
     done()
@@ -396,7 +402,7 @@ test('set the plugin name based on the plugin displayName symbol', t => {
 })
 
 test('plugin name will change when using no encapsulation', t => {
-  t.plan(14)
+  t.plan(15)
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
@@ -406,6 +412,7 @@ test('plugin name will change when using no encapsulation', t => {
       t.equal(fastify.pluginName, 'fastify -> plugin-A -> plugin-AB')
       t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AB'))
+      t.notOk(fastify.hasPlugin('plugin-AC'))
       done()
     }, { name: 'plugin-AB' }))
     fastify.register(fp((fastify, opts, done) => {

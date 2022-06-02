@@ -1158,27 +1158,28 @@ test('hasPlugin returns false when using encapsulation', async t => {
 })
 
 test('hasPlugin returns true when using no encapsulation', async t => {
-  t.plan(25)
+  t.plan(26)
 
   const fastify = Fastify()
 
   fastify.register(fp((fastify, opts, done) => {
-    t.ok(fastify.hasPlugin('plugin-A'))
-    t.notOk(fastify.hasPlugin('plugin-AA'))
+    t.equal(fastify.pluginName, 'fastify -> plugin-AA')
+    t.ok(fastify.hasPlugin('plugin-AA'))
+    t.notOk(fastify.hasPlugin('plugin-A'))
     t.notOk(fastify.hasPlugin('plugin-AAA'))
     t.notOk(fastify.hasPlugin('plugin-AB'))
     t.notOk(fastify.hasPlugin('plugin-B'))
 
     fastify.register(fp((fastify, opts, done) => {
-      t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AA'))
+      t.ok(fastify.hasPlugin('plugin-A'))
       t.notOk(fastify.hasPlugin('plugin-AAA'))
       t.notOk(fastify.hasPlugin('plugin-AB'))
       t.notOk(fastify.hasPlugin('plugin-B'))
 
       fastify.register(fp((fastify, opts, done) => {
-        t.ok(fastify.hasPlugin('plugin-A'))
         t.ok(fastify.hasPlugin('plugin-AA'))
+        t.ok(fastify.hasPlugin('plugin-A'))
         t.ok(fastify.hasPlugin('plugin-AAA'))
         t.notOk(fastify.hasPlugin('plugin-AB'))
         t.notOk(fastify.hasPlugin('plugin-B'))
@@ -1187,11 +1188,11 @@ test('hasPlugin returns true when using no encapsulation', async t => {
       }, { name: 'plugin-AAA' }))
 
       done()
-    }, { name: 'plugin-AA' }))
+    }, { name: 'plugin-A' }))
 
     fastify.register(fp((fastify, opts, done) => {
-      t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AA'))
+      t.ok(fastify.hasPlugin('plugin-A'))
       t.ok(fastify.hasPlugin('plugin-AAA'))
       t.ok(fastify.hasPlugin('plugin-AB'))
       t.notOk(fastify.hasPlugin('plugin-B'))
@@ -1200,11 +1201,11 @@ test('hasPlugin returns true when using no encapsulation', async t => {
     }, { name: 'plugin-AB' }))
 
     done()
-  }, { name: 'plugin-A' }))
+  }, { name: 'plugin-AA' }))
 
   fastify.register(fp((fastify, opts, done) => {
-    t.ok(fastify.hasPlugin('plugin-A'))
     t.ok(fastify.hasPlugin('plugin-AA'))
+    t.ok(fastify.hasPlugin('plugin-A'))
     t.ok(fastify.hasPlugin('plugin-AAA'))
     t.ok(fastify.hasPlugin('plugin-AB'))
     t.ok(fastify.hasPlugin('plugin-B'))

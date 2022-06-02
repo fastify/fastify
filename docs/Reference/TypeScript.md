@@ -56,7 +56,7 @@ in a blank http Fastify server.
   npx tsc --init
   ```
   or use one of the [recommended
-  ones](https://github.com/tsconfig/bases#node-10-tsconfigjson).
+  ones](https://github.com/tsconfig/bases#node-14-tsconfigjson).
 
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*

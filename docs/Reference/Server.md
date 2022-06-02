@@ -1110,6 +1110,9 @@ involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
 <a id="hasPlugin"></a>
 
 Method to check if a specific plugin has been registered.
+Relies on the plugin metadata name.
+Returns `true` if the plugin is registered.
+Otherwise, returns `false`.
 
 ```js
 const fastify = require('fastify')()

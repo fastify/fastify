@@ -1112,7 +1112,15 @@ involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
 Method to check if a specific plugin has been registered.
 
 ```js
-fastify.hasPlugin('your-plugin-name')
+const fastify = require('fastify')()
+fastify.register(require('@fastify/cookie'), {
+  secret: 'my-secret',
+  parseOptions: {}
+})
+
+fastify.ready(() => {
+  fastify.hasPlugin('@fastify/cookie') // true
+})
 ```
 
 #### log

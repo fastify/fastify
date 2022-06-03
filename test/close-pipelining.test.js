@@ -7,7 +7,8 @@ const { Client } = require('undici')
 
 test('Should return 503 while closing - pipelining', t => {
   const fastify = Fastify({
-    return503OnClosing: true
+    return503OnClosing: true,
+    forceCloseConnections: false
   })
 
   fastify.get('/', (req, reply) => {
@@ -40,7 +41,8 @@ test('Should return 503 while closing - pipelining', t => {
 
 test('Should not return 503 while closing - pipelining - return503OnClosing', t => {
   const fastify = Fastify({
-    return503OnClosing: false
+    return503OnClosing: false,
+    forceCloseConnections: false
   })
 
   fastify.get('/', (req, reply) => {

@@ -32,7 +32,6 @@ test('without options passed to Fastify, initialConfig should expose default val
   const fastifyDefaultOptions = {
     connectionTimeout: 0,
     keepAliveTimeout: 72000,
-    forceCloseConnections: false,
     maxRequestsPerSocket: 0,
     requestTimeout: 0,
     bodyLimit: 1024 * 1024,
@@ -265,7 +264,6 @@ test('Should not have issues when passing stream options to Pino.js', t => {
     t.same(fastify.initialConfig, {
       connectionTimeout: 0,
       keepAliveTimeout: 72000,
-      forceCloseConnections: false,
       maxRequestsPerSocket: 0,
       requestTimeout: 0,
       bodyLimit: 1024 * 1024,

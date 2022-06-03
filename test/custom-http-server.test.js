@@ -4,6 +4,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const http = require('http')
+const { FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE } = require('../lib/errors')
 const sget = require('simple-get').concat
 const dns = require('dns').promises
 
@@ -48,4 +49,25 @@ test('Should support a custom http server', async t => {
       resolve()
     })
   })
+})
+
+test('Should not allow forceCloseConnection=idle if the server does not support closeIdleConnections', t => {
+  t.plan(1)
+
+  t.throws(
+    () => {
+      Fastify({
+        forceCloseConnections: 'idle',
+        serverFactory (handler, opts) {
+          return {
+            on () {
+
+            }
+          }
+        }
+      })
+    },
+    FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
+    "Cannot set forceCloseConnections to 'idle' as your HTTP server does not support closeIdleConnections method"
+  )
 })

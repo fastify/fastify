@@ -110,7 +110,7 @@ export type FastifyServerOptions<
   connectionTimeout?: number,
   keepAliveTimeout?: number,
   maxRequestsPerSocket?: number,
-  forceCloseConnections?: boolean,
+  forceCloseConnections?: boolean | 'idle',
   requestTimeout?: number,
   pluginTimeout?: number,
   bodyLimit?: number,

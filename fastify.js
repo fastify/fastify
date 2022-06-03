@@ -52,6 +52,7 @@ const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_BAD_URL,
+  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
   AVVIO_ERRORS_MAP,
   appendStackTrace
 } = require('./lib/errors')
@@ -123,7 +124,6 @@ function fastify (options) {
   // Update the options with the fixed values
   options.connectionTimeout = options.connectionTimeout || defaultInitOptions.connectionTimeout
   options.keepAliveTimeout = options.keepAliveTimeout || defaultInitOptions.keepAliveTimeout
-  options.forceCloseConnections = typeof options.forceCloseConnections === 'boolean' ? options.forceCloseConnections : defaultInitOptions.forceCloseConnections
   options.maxRequestsPerSocket = options.maxRequestsPerSocket || defaultInitOptions.maxRequestsPerSocket
   options.requestTimeout = options.requestTimeout || defaultInitOptions.requestTimeout
   options.logger = logger
@@ -135,7 +135,6 @@ function fastify (options) {
   options.clientErrorHandler = options.clientErrorHandler || defaultClientErrorHandler
 
   const initialConfig = getSecuredInitialConfig(options)
-  const keepAliveConnections = options.forceCloseConnections === true ? new Set() : noopSet()
 
   // exposeHeadRoutes have its default set from the validator
   options.exposeHeadRoutes = initialConfig.exposeHeadRoutes
@@ -172,8 +171,7 @@ function fastify (options) {
       allowUnsafeRegex: options.allowUnsafeRegex || defaultInitOptions.allowUnsafeRegex,
       buildPrettyMeta: defaultBuildPrettyMeta,
       querystringParser: options.querystringParser
-    },
-    keepAliveConnections
+    }
   })
 
   // 404 router, used for handling encapsulated 404 handlers
@@ -185,6 +183,19 @@ function fastify (options) {
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
   const { server, listen } = createServer(options, httpHandler)
+
+  const serverHasCloseAllConnections = typeof server.closeAllConnections === 'function'
+  const serverHasCloseIdleConnections = typeof server.closeIdleConnections === 'function'
+
+  let forceCloseConnections = options.forceCloseConnections
+  if (forceCloseConnections === 'idle' && !serverHasCloseIdleConnections) {
+    throw new FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE()
+  } else if (typeof forceCloseConnections !== 'boolean') {
+    /* istanbul ignore next: only one branch can be valid in a given Node.js version */
+    forceCloseConnections = serverHasCloseIdleConnections ? 'idle' : false
+  }
+
+  const keepAliveConnections = !serverHasCloseAllConnections && forceCloseConnections === true ? new Set() : noopSet()
 
   const setupResponseListeners = Reply.setupResponseListeners
   const schemaController = SchemaController.buildSchemaController(null, options.schemaController)
@@ -389,13 +400,21 @@ function fastify (options) {
         // No new TCP connections are accepted
         instance.server.close(done)
 
-        for (const conn of fastify[kKeepAliveConnections]) {
-          // We must invoke the destroy method instead of merely unreffing
-          // the sockets. If we only unref, then the callback passed to
-          // `fastify.close` will never be invoked; nor will any of the
-          // registered `onClose` hooks.
-          conn.destroy()
-          fastify[kKeepAliveConnections].delete(conn)
+        /* istanbul ignore next: Cannot test this without Node.js core support */
+        if (forceCloseConnections === 'idle') {
+          instance.server.closeIdleConnections()
+        /* istanbul ignore next: Cannot test this without Node.js core support */
+        } else if (serverHasCloseAllConnections && forceCloseConnections) {
+          instance.server.closeAllConnections()
+        } else {
+          for (const conn of fastify[kKeepAliveConnections]) {
+            // We must invoke the destroy method instead of merely unreffing
+            // the sockets. If we only unref, then the callback passed to
+            // `fastify.close` will never be invoked; nor will any of the
+            // registered `onClose` hooks.
+            conn.destroy()
+            fastify[kKeepAliveConnections].delete(conn)
+          }
         }
       } else {
         done(null)
@@ -414,7 +433,8 @@ function fastify (options) {
     hasLogger,
     setupResponseListeners,
     throwIfAlreadyStarted,
-    validateHTTPVersion: compileValidateHTTPVersion(options)
+    validateHTTPVersion: compileValidateHTTPVersion(options),
+    keepAliveConnections
   })
 
   // Delay configuring clientError handler so that it can access fastify state.

@@ -136,15 +136,18 @@ use. Also, when `serverFactory` option is specified, this option is ignored.
 ### `forceCloseConnections`
 <a id="forcecloseconnections"></a>
 
-When set to `true` requests with the header `connection: keep-alive` will be
-tracked by the server. Upon [`close`](#close), the server will iterate the
-current persistent connections and [destroy their
-sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
-This means the server will shutdown immediately instead of waiting for existing
-persistent connections to timeout first. Important: connections are not
-inspected to determine if requests have been completed.
+When set to `true`, upon [`close`](#close) the server will iterate the
+current persistent connections and [destroy their sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
-+ Default: `false`
+> Important: connections are not inspected to determine if requests have been completed.
+
+Fastify will prefer the HTTP server's [`closeAllConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseallconnections) method if supported, otherwise it will use internal connection tracking.
+
+When set to `"idle"`, upon [`close`](#close) the server will iterate the
+current persistent connections which are not sending a request or waiting for a response and destroy their sockets.
+The value is supported only if the HTTP server supports the [`closeIdleConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseidleconnections) method, otherwise attempting to set it will throw an exception.
+
++ Default: `"idle"` if the HTTP server allows it, `false` otherwise
 
 ### `maxRequestsPerSocket`
 <a id="factory-max-requests-per-socket"></a>

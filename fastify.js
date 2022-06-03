@@ -285,6 +285,9 @@ function fastify (options) {
     onClose: null,
     close: null,
     printPlugins: null,
+    hasPlugin: function (name) {
+      return this[kPluginNameChain].includes(name)
+    },
     // http server
     listen,
     server,

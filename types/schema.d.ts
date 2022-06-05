@@ -4,7 +4,7 @@ import { FastifyInstance, FastifyServerOptions } from '../fastify'
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
  * we have opted to not ship strict schema based types. Instead we provide
  * an example in our documentation on how to solve this problem. Check it
- * out here: https://github.com/fastify/fastify/blob/main/docs/TypeScript.md#json-schema
+ * out here: https://github.com/fastify/fastify/blob/main/docs/Reference/TypeScript.md#json-schema
  */
 export interface FastifySchema {
   body?: unknown;

@@ -97,3 +97,11 @@ test('errorHandler in plugin should be separate from the external one', async t 
   t.ok(fastify[kErrorHandler].func instanceof Function)
   t.same(fastify.errorHandler, fastify[kErrorHandler].func)
 })
+
+test('fastify instance should contain errors', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.ok(fastify.errors)
+  t.ok(typeof fastify.errors === 'object')
+  t.ok(fastify.errors.FST_ERR_NOT_FOUND instanceof Function)
+})

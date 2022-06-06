@@ -711,3 +711,30 @@ test('Errors in searilizer sended to errorHandler', async t => {
   t.ok(savedError.serialization, 'Serialization sign presents')
   t.end()
 })
+
+test('capital X', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+  fastify.get('/', {
+    schema: {
+      response: {
+        '2XX': {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            work: { type: 'string' }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.code(200).send({ name: 'Foo', work: 'Bar', nick: 'Boo' })
+  })
+
+  fastify.inject('/', (err, res) => {
+    t.error(err)
+    t.same(res.json(), { name: 'Foo', work: 'Bar' })
+    t.equal(res.statusCode, 200)
+  })
+})

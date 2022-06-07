@@ -575,7 +575,10 @@ const schema = {
     default: {
       type: 'object',
       properties: {
-        isError: { type: 'boolean' }
+        error: { 
+          type: 'boolean', 
+          default: true 
+        }
       }
     },
     '2xx': {

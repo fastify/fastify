@@ -292,7 +292,7 @@ This project is kindly sponsored by:
 - [nearForm](https://nearform.com)
 
 Past Sponsors:
-- [LetzDoIt](http://www.letzdoitapp.com/)
+- [LetzDoIt](https://www.letzdoitapp.com/)
 
 ## License
 

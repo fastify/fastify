@@ -172,7 +172,7 @@ backend static-backend
 # with 2 primary servers distributed via round-robin
 # and one backup which is used when the first 2 are not reachable
 # This also assumes your fastify servers are listening on port 80.
-# more info: http://nginx.org/en/docs/http/ngx_http_upstream_module.html
+# more info: https://nginx.org/en/docs/http/ngx_http_upstream_module.html
 upstream fastify_app {
   server 10.10.11.1:80;
   server 10.10.11.2:80;
@@ -257,7 +257,7 @@ server {
   # trustProxy to the address of your NGINX server so the X-Forwarded
   # fields are used by fastify.
   location / {
-    # more info: http://nginx.org/en/docs/http/ngx_http_proxy_module.html
+    # more info: https://nginx.org/en/docs/http/ngx_http_proxy_module.html
     proxy_http_version 1.1;
     proxy_cache_bypass $http_upgrade;
     proxy_set_header Upgrade $http_upgrade;

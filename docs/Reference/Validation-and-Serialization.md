@@ -567,10 +567,20 @@ fastify.post('/the/url', { schema }, handler)
 ```
 
 As you can see, the response schema is based on the status code. If you want to
-use the same schema for multiple status codes, you can use `'2xx'`, for example:
+use the same schema for multiple status codes, you can use `'2xx'` or `default`,
+for example:
 ```js
 const schema = {
   response: {
+    default: {
+      type: 'object',
+      properties: {
+        error: { 
+          type: 'boolean', 
+          default: true 
+        }
+      }
+    },
     '2xx': {
       type: 'object',
       properties: {

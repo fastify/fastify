@@ -5,7 +5,7 @@
 Starting with Fastify v3.0.0, middleware is not supported out of the box and
 requires an external plugin such as
 [`@fastify/express`](https://github.com/fastify/fastify-express) or
-[`middie`](https://github.com/fastify/middie).
+[`@fastify/middie`](https://github.com/fastify/middie).
 
 
 An example of registering the
@@ -22,7 +22,7 @@ fastify.use(require('ienoopen')())
 fastify.use(require('x-xss-protection')())
 ```
 
-You can also use [`middie`](https://github.com/fastify/middie), which provides
+You can also use [`@fastify/middie`](https://github.com/fastify/middie), which provides
 support for simple Express-style middleware but with improved performance:
 
 ```js

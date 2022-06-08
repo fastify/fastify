@@ -15,7 +15,7 @@ framework itself.
 
 If you use Express middleware in your application, please install and register
 the [`@fastify/express`](https://github.com/fastify/fastify-express) or
-[`middie`](https://github.com/fastify/middie) plugin before doing so.
+[`@fastify/middie`](https://github.com/fastify/middie) plugin before doing so.
 
 **v2:**
 

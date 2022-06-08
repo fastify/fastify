@@ -11,7 +11,7 @@ section.
 - [`@fastify/accepts`](https://github.com/fastify/fastify-accepts) to have
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
-  to serialize to output according to `Accept` header
+  to serialize to output according to `Accept` header.
 - [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save multiple
   schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth

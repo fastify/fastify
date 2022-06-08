@@ -36,8 +36,8 @@ at:
 - [`@fastify/caching`](https://github.com/fastify/fastify-caching)
 - [`@fastify/compress`](https://github.com/fastify/fastify-compress)
 - [`@fastify/cookie`](https://github.com/fastify/fastify-cookie)
-- [`point-of-view`](https://github.com/fastify/point-of-view)
-- [`under-pressure`](https://github.com/fastify/under-pressure)
+- [`@fastify/under-pressure`](https://github.com/fastify/under-pressure)
+- [`@fastify/view`](https://github.com/fastify/point-of-view)
 
 ## License
 You can license your plugin as you prefer, we do not enforce any kind of
@@ -91,7 +91,7 @@ it to the [ecosystem](https://github.com/fastify/fastify#ecosystem) section of
 our documentation!
 
 If you want to see some real world examples, check out:
-- [`point-of-view`](https://github.com/fastify/point-of-view) Templates
+- [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with this you can share the same MongoDB connection

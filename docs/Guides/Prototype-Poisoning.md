@@ -359,7 +359,7 @@ address.
 We also got lucky by having full access to mitigate it at the source — didn't
 need to send emails to some unknown framework maintainer and hope for a quick
 answer. hapi's total control over all of its dependencies proved its usefulness
-and security again. Not using [hapi](http://hapijs.com)? [Maybe you
+and security again. Not using [hapi](https://hapi.dev)? [Maybe you
 should](https://hueniverse.com/why-you-should-consider-hapi-6163689bd7c2).
 
 ### The after in happy ever-after

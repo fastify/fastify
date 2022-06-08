@@ -540,7 +540,7 @@ You can provide a `version` key in the `constraints` option to a route.
 Versioned routes allow you to declare multiple handlers for the same HTTP route
 path, which will then be matched according to each request's `Accept-Version`
 header. The `Accept-Version` header value should follow the
-[semver](http://semver.org/) specification, and routes should be declared with
+[semver](https://semver.org/) specification, and routes should be declared with
 exact semver versions for matching.
 
 Fastify will require a request `Accept-Version` header to be set if the route

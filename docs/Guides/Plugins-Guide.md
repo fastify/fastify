@@ -458,10 +458,10 @@ console.log(new CustomError())
 
 If you want to deprecate an API, or you want to warn the user about a specific
 use case, you can use the
-[`fastify-warning`](https://github.com/fastify/fastify-warning) module.
+[`process-warning`](https://github.com/fastify/process-warning) module.
 
 ```js
-const warning = require('fastify-warning')()
+const warning = require('process-warning')()
 warning.create('FastifyDeprecation', 'FST_ERROR_CODE', 'message')
 warning.emit('FST_ERROR_CODE')
 ```
@@ -475,7 +475,7 @@ will add it to the [*ecosystem*](https://github.com/fastify/fastify#ecosystem)
 section of our documentation!
 
 If you want to see some real-world examples, check out:
-- [`point-of-view`](https://github.com/fastify/point-of-view) Templates
+- [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (*ejs, pug, handlebars, marko*) plugin support for Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with this you can share the same MongoDB connection

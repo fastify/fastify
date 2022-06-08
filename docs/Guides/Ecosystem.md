@@ -12,10 +12,18 @@ section.
   [accepts](https://www.npmjs.com/package/accepts) in your request object.
 - [`@fastify/accepts-serializer`](https://github.com/fastify/fastify-accepts-serializer)
   to serialize to output according to `Accept` header.
+- [`@fastify/any-schema`](https://github.com/fastify/any-schema-you-like) Save multiple
+  schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
 - [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
   plugins in a directory.
+- [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency
+  injection support for Fastify, based on
+  [awilix](https://github.com/jeffijoe/awilix).
+- [`@fastify/aws-lambda`](https://github.com/fastify/aws-lambda-fastify) allows you to
+  easily build serverless web applications/services and RESTful APIs using Fastify
+  on top of AWS Lambda and Amazon API Gateway.
 - [`@fastify/basic-auth`](https://github.com/fastify/fastify-basic-auth) Basic
   auth plugin for Fastify.
 - [`@fastify/bearer-auth`](https://github.com/fastify/fastify-bearer-auth) Bearer
@@ -58,6 +66,7 @@ section.
   internally uses [fast-jwt](https://github.com/nearform/fast-jwt).
 - [`@fastify/leveldb`](https://github.com/fastify/fastify-leveldb) Plugin to
   share a common LevelDB connection across Fastify.
+- [`@fastify/middie`](https://github.com/fastify/middie) Middleware engine for Fastify.
 - [`@fastify/mongodb`](https://github.com/fastify/fastify-mongodb) Fastify
   MongoDB connection plugin, with which you can share the same MongoDB
   connection pool across every part of your server.
@@ -87,6 +96,9 @@ section.
   to forward the current HTTP request to another server.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
+- [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
+  scheduling periodic jobs, based on
+  [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
 - [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) Defaults for
   Fastify that everyone can agree on. It adds some useful decorators such as
   HTTP errors and assertions, but also more request and reply methods.
@@ -97,26 +109,14 @@ section.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
-- [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
-  support for Fastify. Built upon [ws](https://github.com/websockets/ws).
+- [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure process
+  load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
 - [`@fastify/url-data`](https://github.com/fastify/fastify-url-data) Decorate the
   `Request` object with a method to access raw URL components.
-- [`any-schema-you-like`](https://github.com/fastify/any-schema-you-like) Save multiple
-  schemas and decide which one to use to serialize the payload 
-- [`aws-lambda-fastify`](https://github.com/fastify/aws-lambda-fastify) allows you to
-  easily build serverless web applications/services and RESTful APIs using Fastify
-  on top of AWS Lambda and Amazon API Gateway.
-- [`fastify-awilix`](https://github.com/fastify/fastify-awilix) Dependency
-  injection support for Fastify, based on
-  [awilix](https://github.com/jeffijoe/awilix).
-- [`fastify-schedule`](https://github.com/fastify/fastify-schedule) Plugin for
-  scheduling periodic jobs, based on
-  [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
-- [`middie`](https://github.com/fastify/middie) Middleware engine for Fastify.
-- [`point-of-view`](https://github.com/fastify/point-of-view) Templates
+- [`@fastify/view`](https://github.com/fastify/point-of-view) Templates
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
-- [`under-pressure`](https://github.com/fastify/under-pressure) Measure process
-  load with automatic handling of _"Service Unavailable"_ plugin for Fastify.
+- [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
+  support for Fastify. Built upon [ws](https://github.com/websockets/ws).
 
 #### [Community](#community)
 

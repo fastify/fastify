@@ -36,7 +36,7 @@ The sample provided allows you to easily build serverless web
 applications/services and RESTful APIs using Fastify on top of AWS Lambda and
 Amazon API Gateway.
 
-*Note: Using [aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify)
+*Note: Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify)
 is just one possible way.*
 
 ### app.js
@@ -74,7 +74,7 @@ to your port, so you can still run your Fastify function locally.
 ### lambda.js
 
 ```js
-const awsLambdaFastify = require('aws-lambda-fastify')
+const awsLambdaFastify = require('@fastify/aws-lambda')
 const init = require('./app');
 
 const proxy = awsLambdaFastify(init())
@@ -91,14 +91,14 @@ exports.handler = proxy;
 ```
 
 We just require
-[aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify) (make sure
-you install the dependency `npm i aws-lambda-fastify`) and our
+[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) (make sure
+you install the dependency `npm i @fastify/aws-lambda`) and our
 [`app.js`](#appjs) file and call
 the exported `awsLambdaFastify` function with the `app` as the only parameter.
 The resulting `proxy` function has the correct signature to be used as a lambda
 `handler` function. This way all the incoming events (API Gateway requests) are
 passed to the `proxy` function of
-[aws-lambda-fastify](https://github.com/fastify/aws-lambda-fastify).
+[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
 

@@ -26,7 +26,7 @@ You can also use [`@fastify/middie`](https://github.com/fastify/middie), which p
 support for simple Express-style middleware but with improved performance:
 
 ```js
-await fastify.register(require('middie'))
+await fastify.register(require('@fastify/middie'))
 fastify.use(require('cors')())
 ```
 

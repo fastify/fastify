@@ -3,6 +3,7 @@
 const { test } = require('tap')
 
 const Request = require('../../lib/request')
+const Fastify = require('../../fastify')
 
 process.removeAllListeners('warning')
 
@@ -19,6 +20,8 @@ test('Regular request', t => {
   req.connection = req.socket
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
+  t.type(request.validate, Function)
+  t.type(request.serialize, Function)
   t.equal(request.id, 'id')
   t.equal(request.params, 'params')
   t.equal(request.raw, req)
@@ -74,7 +77,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(15)
+  t.plan(17)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -103,6 +106,8 @@ test('Request with trust proxy', t => {
   t.equal(request.url, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
+  t.type(request.validate, Function)
+  t.type(request.serialize, Function)
 })
 
 test('Request with trust proxy, encrypted', t => {
@@ -221,7 +226,7 @@ test('Request with trust proxy - plain', t => {
 })
 
 test('Request with undefined socket', t => {
-  t.plan(15)
+  t.plan(17)
   const headers = {
     host: 'hostname'
   }
@@ -247,6 +252,8 @@ test('Request with undefined socket', t => {
   t.equal(request.url, '/')
   t.equal(request.protocol, undefined)
   t.same(request.socket, req.socket)
+  t.type(request.validate, Function)
+  t.type(request.serialize, Function)
 })
 
 test('Request with trust proxy and undefined socket', t => {
@@ -266,3 +273,83 @@ test('Request with trust proxy and undefined socket', t => {
   const request = new TpRequest('id', 'params', req, 'query', 'log')
   t.same(request.protocol, undefined)
 })
+
+test('Request#validate', subtest => {
+  const defaultSchema = {
+    type: 'object',
+    required: ['hello'],
+    properties: {
+      hello: { type: 'string' },
+      world: { type: 'string' }
+    }
+  }
+
+  subtest.plan(2)
+
+  subtest.test('Should return a function when empty input - Route without schema', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      const validate = req.validate(defaultSchema)
+
+      t.type(validate, Function)
+      t.ok(validate({ hello: 'world' }))
+      t.notOk(validate({ world: 'foo' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should reuse the validate fn across multiple usages - Route without schema', async t => {
+    const fastify = Fastify()
+    let validate = null
+    let counter = 0
+
+    t.plan(16)
+
+    fastify.get('/', (req, reply) => {
+      counter++
+      if (counter > 1) {
+        const newValidate = req.validate(defaultSchema)
+        t.equal(validate, newValidate, 'Are the same validate function')
+        validate = newValidate
+      } else { validate = req.validate(defaultSchema) }
+
+      t.type(validate, Function)
+      t.ok(validate({ hello: 'world' }))
+      t.notOk(validate({ world: 'foo' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await Promise.all([
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    ])
+
+    t.equal(counter, 4)
+  })
+})
+
+// test('Request#serialize')

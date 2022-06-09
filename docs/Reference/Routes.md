@@ -396,6 +396,29 @@ and route parameters are supported as well. Be aware that if you use
 [`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will
 not work.
 
+In case you want to use prefix for all of your routes, you can put them inside a plugin:
+
+```js
+import Fastify from 'fastify'
+const fastify = Fastify()
+
+const route = {
+    method: 'POST',
+    url: '/login',
+    handler: () => {},
+    schema: {}, 
+}
+
+fastify.register(function(fastify, _, done) {
+  fastify.get('/users', () => {})
+  fastify.route(route)
+  
+  done()
+}, { prefix: '/v1' }) // global route prefix
+
+await fastify.listen({ port: 0 })
+```
+
 #### Handling of / route inside prefixed plugins
 
 The `/` route has different behavior depending on if the prefix ends with `/`

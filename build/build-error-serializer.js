@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 'use strict'
 
 const FJS = require('fast-json-stringify')

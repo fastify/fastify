@@ -4,7 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const t = require('tap')
 const test = t.test
-const fastify = require('../..')()
+const fastify = require('../../fastify')()
 
 test('should be the same as package.json', t => {
   t.plan(1)

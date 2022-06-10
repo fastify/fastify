@@ -283,8 +283,28 @@ test('Request#validate', subtest => {
       world: { type: 'string' }
     }
   }
+  const requestSchema = {
+    params: {
+      id: {
+        type: 'integer',
+        minimum: 1
+      }
+    },
+    querystring: {
+      foo: {
+        type: 'string',
+        enum: ['bar']
+      }
+    },
+    body: defaultSchema,
+    headers: {
+      'x-foo': {
+        type: 'string'
+      }
+    }
+  }
 
-  subtest.plan(2)
+  subtest.plan(6)
 
   subtest.test('Should return a function when empty input - Route without schema', async t => {
     const fastify = Fastify()
@@ -307,7 +327,28 @@ test('Request#validate', subtest => {
     })
   })
 
-  subtest.test('Should reuse the validate fn across multiple usages - Route without schema', async t => {
+  subtest.test('Should return true/false if input valid - Route without schema', async t => {
+    const fastify = Fastify()
+
+    t.plan(2)
+
+    fastify.get('/', (req, reply) => {
+      const isNotValid = req.validate(defaultSchema, { world: 'string' })
+      const isValid = req.validate(defaultSchema, { hello: 'string' })
+
+      t.notOk(isNotValid)
+      t.ok(isValid)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should reuse the validate fn across multiple invocations - Route without schema', async t => {
     const fastify = Fastify()
     let validate = null
     let counter = 0
@@ -349,6 +390,121 @@ test('Request#validate', subtest => {
     ])
 
     t.equal(counter, 4)
+  })
+
+  subtest.test('Should return a function when empty input - Route without schema', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      const validate = req.validate(defaultSchema)
+
+      t.type(validate, Function)
+      t.ok(validate({ hello: 'world' }))
+      t.notOk(validate({ world: 'foo' }))
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should use the custom validator compiler for the route', { only: true }, async t => {
+    const fastify = Fastify()
+    let called = 0
+    const custom = ({ schema, httpPart, url, method }) => {
+      t.equal(schema, defaultSchema)
+      t.equal(url, '/')
+      t.equal(method, 'GET')
+      t.equal(httpPart, 'querystring')
+
+      return (input) => {
+        called++
+        t.same(input, { hello: 'world' })
+        return true
+      }
+    }
+
+    t.plan(10)
+
+    fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
+      const first = req.validate(defaultSchema, null, 'querystring')
+      const second = req.validate(defaultSchema, null, 'querystring')
+
+      t.equal(first, second)
+      t.ok(first({ hello: 'world' }))
+      t.ok(second({ hello: 'world' }))
+      t.equal(called, 2)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should return true/false if input valid - With Schema for Route defined', async t => {
+    const fastify = Fastify()
+    let validate = null
+
+    t.plan(9)
+
+    fastify.post('/:id', {
+      schema: requestSchema
+    }, (req, reply) => {
+      const { params } = req
+
+      switch (params.id) {
+        case 1:
+          validate = req.validate(null, null, 'body')
+          t.ok(validate({ hello: 'world' }))
+          t.notOk(validate({ hello: [], world: 'foo' }))
+          break
+        case 2:
+          t.notOk(req.validate(null, { foo: 'something' }, 'querystring'))
+          t.ok(req.validate(null, { foo: 'bar' }, 'querystring'))
+          break
+        case 3:
+          t.notOk(req.validate(null, { 'x-foo': [] }, 'headers'))
+          t.ok(req.validate(null, { 'x-foo': 'something' }, 'headers'))
+          break
+        case 4:
+          t.ok(req.validate(null, { id: params.id }, 'params'))
+          t.notOk(req.validate(null, { id: 0 }, 'params'))
+          break
+        case 5:
+          t.equal(validate, req.validate(null, null, 'body'))
+          break
+        default:
+          t.fail('Invalid id')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    const promises = []
+
+    for (let i = 1; i < 6; i++) {
+      promises.push(fastify.inject({
+        path: `/${i}`,
+        method: 'post',
+        query: { foo: 'bar' },
+        payload: {
+          hello: 'world'
+        },
+        headers: {
+          'x-foo': 'x-bar'
+        }
+      }))
+    }
+
+    await Promise.all(promises)
   })
 })
 

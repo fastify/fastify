@@ -1057,6 +1057,38 @@ test('plugin metadata - release candidate', t => {
   }
 })
 
+test('fastify-rc loads prior version plugins', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  Object.defineProperty(fastify, 'version', {
+    value: '99.0.0-rc.1'
+  })
+
+  plugin[Symbol.for('plugin-meta')] = {
+    name: 'plugin',
+    fastify: '^98.1.0'
+  }
+  plugin2[Symbol.for('plugin-meta')] = {
+    name: 'plugin2',
+    fastify: '98.x'
+  }
+
+  fastify.register(plugin)
+
+  fastify.ready((err) => {
+    t.error(err)
+    t.pass('everything right')
+  })
+
+  function plugin (instance, opts, done) {
+    done()
+  }
+
+  function plugin2 (instance, opts, done) {
+    done()
+  }
+})
+
 test('hasPlugin method exists as a function', t => {
   t.plan(1)
 

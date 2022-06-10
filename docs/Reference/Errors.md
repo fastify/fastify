@@ -54,9 +54,10 @@ When a custom error handler has been defined through
 receive the error passed to the `done()` callback (or through other supported
 automatic error handling mechanisms). If `setErrorHandler` has been used
 multiple times to define multiple handlers, the error will be routed to the most
-precedent handler defined within the error [encapsulation context](./Encapsulation.md).
-Error handlers are fully encapsulated, so a `setErrorHandler` call within a
-plugin will limit the error handler to that plugin's context.
+precedent handler defined within the error [encapsulation
+context](./Encapsulation.md). Error handlers are fully encapsulated, so a
+`setErrorHandler` call within a plugin will limit the error handler to that
+plugin's context.
 
 The root error handler is Fastify's generic error handler. This error handler
 will use the headers and status code in the `Error` object, if they exist. The
@@ -72,8 +73,8 @@ Some things to consider in your custom error handler:
   - strings, buffers, and streams are sent to the client, with appropriate
     headers (no serialization)
 
-- You can throw a new error in your custom error handler
-	- errors (new error or the received error parameter re-thrown) - will call the parent `errorHandler`.
+- You can throw a new error in your custom error handler - errors (new error or
+	the received error parameter re-thrown) - will call the parent `errorHandler`.
   - `onError` hook will be triggered once only for the first error being thrown.
   - an error will not be triggered twice from a lifecycle hook - Fastify
     internally monitors the error invocation to avoid infinite loops for errors

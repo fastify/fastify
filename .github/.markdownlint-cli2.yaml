@@ -7,8 +7,10 @@ config:
   MD013:
     line_length: 80
     code_block_line_length: 120
-    strict: true
-    stern: true
+    headers: false
+    tables: false
+    strict: false
+    stern: false
 
 globs:
   - '**/*.md'

@@ -36,8 +36,9 @@ The sample provided allows you to easily build serverless web
 applications/services and RESTful APIs using Fastify on top of AWS Lambda and
 Amazon API Gateway.
 
-*Note: Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify)
-is just one possible way.*
+*Note: Using
+[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) is just one
+possible way.*
 
 ### app.js
 
@@ -64,8 +65,7 @@ if (require.main === module) {
 
 When executed in your lambda function we do not need to listen to a specific
 port, so we just export the wrapper function `init` in this case. The
-[`lambda.js`](#lambdajs) file
-will use this export.
+[`lambda.js`](#lambdajs) file will use this export.
 
 When you execute your Fastify application like always, i.e. `node app.js` *(the
 detection for this could be `require.main === module`)*, you can normally listen
@@ -93,11 +93,10 @@ exports.handler = proxy;
 We just require
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) (make sure
 you install the dependency `npm i @fastify/aws-lambda`) and our
-[`app.js`](#appjs) file and call
-the exported `awsLambdaFastify` function with the `app` as the only parameter.
-The resulting `proxy` function has the correct signature to be used as a lambda
-`handler` function. This way all the incoming events (API Gateway requests) are
-passed to the `proxy` function of
+[`app.js`](#appjs) file and call the exported `awsLambdaFastify` function with
+the `app` as the only parameter. The resulting `proxy` function has the correct
+signature to be used as a lambda `handler` function. This way all the incoming
+events (API Gateway requests) are passed to the `proxy` function of
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
 ### Example
@@ -237,7 +236,9 @@ gcloud functions logs read
 
 #### Example request to `/hello` endpoint
 ```bash
-curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me -H "Content-Type: application/json" -d '{ "name": "Fastify" }'
+curl -X POST https://$GOOGLE_REGION-$GOOGLE_PROJECT.cloudfunctions.net/me \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Fastify" }'
 {"message":"Hello Fastify!"}
 ```
 
@@ -443,8 +444,8 @@ Then it should work fine
 ## Vercel
 
 [Vercel](https://vercel.com) provides zero-configuration deployment for Node.js
-applications. To use it now, it is as simple as configuring your
-`vercel.json` file like the following:
+applications. To use it now, it is as simple as configuring your `vercel.json`
+file like the following:
 
 ```json
 {

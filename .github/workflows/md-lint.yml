@@ -31,7 +31,7 @@ jobs:
           node-version: 'lts/*'
 
       - name: Install Linter
-        run: npm install
+        run: npm install --ignore-scripts
 
       - name: Add Matcher
         uses: xt0rted/markdownlint-problem-matcher@b643b0751c371f357690337d4549221347c0e1bc

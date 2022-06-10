@@ -2,8 +2,8 @@
 
 ## Routes
 
-The route methods will configure the endpoints of your application. You have
-two ways to declare a route with Fastify: the shorthand method and the full
+The route methods will configure the endpoints of your application. You have two
+ways to declare a route with Fastify: the shorthand method and the full
 declaration.
 
 - [Full declaration](#full-declaration)
@@ -13,7 +13,8 @@ declaration.
 - [Async Await](#async-await)
 - [Promise resolution](#promise-resolution)
 - [Route Prefixing](#route-prefixing)
-  - [Handling of / route inside prefixed plugins](#handling-of--route-inside-prefixed-plugins)
+  - [Handling of / route inside prefixed
+    plugins](#handling-of--route-inside-prefixed-plugins)
 - [Custom Log Level](#custom-log-level)
 - [Custom Log Serializer](#custom-log-serializer)
 - [Config](#config)
@@ -52,8 +53,9 @@ fastify.route(options)
   instance option. If you want a custom `HEAD` handler without disabling this
   option, make sure to define it before the `GET` route.
 * `attachValidation`: attach `validationError` to request, if there is a schema
-  validation error, instead of sending the error to the error handler.
-  The default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv one.
+  validation error, instead of sending the error to the error handler. The
+  default [error format](https://ajv.js.org/api.html#error-objects) is the Ajv
+  one.
 * `onRequest(request, reply, done)`: a [function](./Hooks.md#onrequest) called
   as soon as a request is received, it could also be an array of functions.
 * `preParsing(request, reply, done)`: a [function](./Hooks.md#preparsing) called
@@ -114,7 +116,8 @@ fastify.route(options)
   * `slash`: Will register only `/prefix/`.
   * `no-slash`: Will register only `/prefix`.
 
-  Note: this option does not override `ignoreTrailingSlash` in [Server](./Server.md) configuration.
+  Note: this option does not override `ignoreTrailingSlash` in
+  [Server](./Server.md) configuration.
 
 * `request` is defined in [Request](./Request.md).
 
@@ -245,7 +248,9 @@ fastify.get('/example/:userId/:secretToken', function (request, reply) {
 fastify.get('/example/*', function (request, reply) {})
 ```
 
-Regular expression routes are supported as well, but be aware that you have to escape slashes. Take note that RegExp is also very expensive in terms of performance!
+Regular expression routes are supported as well, but be aware that you have to
+escape slashes. Take note that RegExp is also very expensive in terms of
+performance!
 ```js
 // parametric with regexp
 fastify.get('/example/:file(^\\d+).png', function (request, reply) {
@@ -283,8 +288,8 @@ fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, r
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.
 
-Having a route with multiple parameters may negatively affect performance,
-so prefer a single parameter approach whenever possible, especially on routes that
+Having a route with multiple parameters may negatively affect performance, so
+prefer a single parameter approach whenever possible, especially on routes that
 are on the hot path of your application. If you are interested in how we handle
 the routing, check out [find-my-way](https://github.com/delvedor/find-my-way).
 
@@ -309,8 +314,8 @@ fastify.get('/', options, async function (request, reply) {
 As you can see, we are not calling `reply.send` to send back the data to the
 user. You just need to return the body and you are done!
 
-If you need it you can also send back the data to the user with `reply.send`.
-In this case do not forget to `return reply` or `await reply` in your `async`
+If you need it you can also send back the data to the user with `reply.send`. In
+this case do not forget to `return reply` or `await reply` in your `async`
 handler or you will introduce a race condition in certain situations.
 
 ```js
@@ -349,22 +354,22 @@ fastify.get('/', options, async function (request, reply) {
   first one that happens takes precedence, the second value will be discarded,
   and a *warn* log will also be emitted because you tried to send a response
   twice.
-* Calling `reply.send()` outside of the promise is possible but requires
-  special attention. For more details read
-  [promise-resolution](#promise-resolution).
+* Calling `reply.send()` outside of the promise is possible but requires special
+  attention. For more details read [promise-resolution](#promise-resolution).
 * You cannot return `undefined`. For more details read
   [promise-resolution](#promise-resolution).
 
 ### Promise resolution
 <a id="promise-resolution"></a>
 
-If your handler is an `async` function or returns a promise, you should be aware of
-the special behavior that is necessary to support the callback and promise
+If your handler is an `async` function or returns a promise, you should be aware
+of the special behavior that is necessary to support the callback and promise
 control-flow. When the handler's promise is resolved, the reply will be
 automatically sent with its value unless you explicitly await or return `reply`
 in your handler.
 
-1. If you want to use `async/await` or promises but respond with a value with `reply.send`:
+1. If you want to use `async/await` or promises but respond with a value with
+   `reply.send`:
     - **Do** `return reply` / `await reply`.
     - **Do not** forget to call `reply.send`.
 2. If you want to use `async/await` or promises:
@@ -372,9 +377,9 @@ in your handler.
     - **Do** return the value that you want to send.
 
 In this way, we can support both `callback-style` and `async-await`, with the
-minimum trade-off. Despite so much freedom we highly recommend going with
-only one style because error handling should be handled in a consistent way
-within your application.
+minimum trade-off. Despite so much freedom we highly recommend going with only
+one style because error handling should be handled in a consistent way within
+your application.
 
 **Notice**: Every async function returns a promise by itself.
 
@@ -421,9 +426,10 @@ Now your clients will have access to the following routes:
 - `/v2/user`
 
 You can do this as many times as you want, it also works for nested `register`,
-and route parameters are supported as well. 
+and route parameters are supported as well.
 
-In case you want to use prefix for all of your routes, you can put them inside a plugin:
+In case you want to use prefix for all of your routes, you can put them inside a
+plugin:
 
 ```js
 const fastify = require('fastify')()
@@ -432,13 +438,13 @@ const route = {
     method: 'POST',
     url: '/login',
     handler: () => {},
-    schema: {}, 
+    schema: {},
 }
 
 fastify.register(function(app, _, done) {
   app.get('/users', () => {})
   app.route(route)
-  
+
   done()
 }, { prefix: '/v1' }) // global route prefix
 
@@ -449,8 +455,9 @@ await fastify.listen({ port: 0 })
 <a id="fastify-plugin"></a>
 
 Be aware that if you use
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your routes, this option will
-not work. You can still make it work by wrapping a plugin in a plugin, e. g.:
+[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your
+routes, this option will not work. You can still make it work by wrapping a
+plugin in a plugin, e. g.:
 ```js
 const fp = require('fastify-plugin')
 const routes = require('./lib/routes')
@@ -466,8 +473,8 @@ module.exports = fp(async function (app, opts) {
 
 #### Handling of / route inside prefixed plugins
 
-The `/` route has different behavior depending on if the prefix ends with `/`
-or not. As an example, if we consider a prefix `/something/`, adding a `/` route
+The `/` route has different behavior depending on if the prefix ends with `/` or
+not. As an example, if we consider a prefix `/something/`, adding a `/` route
 will only match `/something/`. If we consider a prefix `/something`, adding a
 `/` route will match both `/something` and `/something/`.
 
@@ -476,8 +483,8 @@ See the `prefixTrailingSlash` route option above to change this behavior.
 ### Custom Log Level
 <a id="custom-log-level"></a>
 
-You might need different log levels in your routes; Fastify
-achieves this in a very straightforward way.
+You might need different log levels in your routes; Fastify achieves this in a
+very straightforward way.
 
 You just need to pass the option `logLevel` to the plugin option or the route
 option with the
@@ -727,9 +734,9 @@ fastify.route({
 Fastify will check the HTTP version of every request, based on configuration
 options ([http2](./Server.md#http2), [https](./Server.md#https), and
 [serverFactory](./Server.md#serverfactory)), to determine if it matches one or
-all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives
-a different HTTP version in the request it will return a
-`505 HTTP Version Not Supported` error.
+all of the > following versions: `2.0`, `1.1`, and `1.0`. If Fastify receives a
+different HTTP version in the request it will return a `505 HTTP Version Not
+Supported` error.
 
 |                          | 2.0 | 1.1 | 1.0 | skip |
 |:------------------------:|:---:|:---:|:---:|:----:|

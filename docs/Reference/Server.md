@@ -136,16 +136,23 @@ use. Also, when `serverFactory` option is specified, this option is ignored.
 ### `forceCloseConnections`
 <a id="forcecloseconnections"></a>
 
-When set to `true`, upon [`close`](#close) the server will iterate the
-current persistent connections and [destroy their sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
+When set to `true`, upon [`close`](#close) the server will iterate the current
+persistent connections and [destroy their
+sockets](https://nodejs.org/dist/latest-v16.x/docs/api/net.html#socketdestroyerror).
 
-> Important: connections are not inspected to determine if requests have been completed.
+> Important: connections are not inspected to determine if requests have been
+> completed.
 
-Fastify will prefer the HTTP server's [`closeAllConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseallconnections) method if supported, otherwise it will use internal connection tracking.
+Fastify will prefer the HTTP server's
+[`closeAllConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseallconnections)
+method if supported, otherwise it will use internal connection tracking.
 
-When set to `"idle"`, upon [`close`](#close) the server will iterate the
-current persistent connections which are not sending a request or waiting for a response and destroy their sockets.
-The value is supported only if the HTTP server supports the [`closeIdleConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseidleconnections) method, otherwise attempting to set it will throw an exception.
+When set to `"idle"`, upon [`close`](#close) the server will iterate the current
+persistent connections which are not sending a request or waiting for a response
+and destroy their sockets. The value is supported only if the HTTP server
+supports the
+[`closeIdleConnections`](https://nodejs.org/dist/latest-v18.x/docs/api/http.html#servercloseidleconnections)
+method, otherwise attempting to set it will throw an exception.
 
 + Default: `"idle"` if the HTTP server allows it, `false` otherwise
 
@@ -184,10 +191,10 @@ server is deployed without a reverse proxy in front.
 <a id="factory-ignore-slash"></a>
 
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
-routing. By default, Fastify is set to take into account the trailing slashes. 
-Paths like `/foo` and `/foo/` will be treated as different paths. If you want 
-to change this, set this flag to `true`. That way, both `/foo` and `/foo/` will 
-point to the same route. This option applies to *all* route registrations for 
+routing. By default, Fastify is set to take into account the trailing slashes.
+Paths like `/foo` and `/foo/` will be treated as different paths. If you want to
+change this, set this flag to `true`. That way, both `/foo` and `/foo/` will
+point to the same route. This option applies to *all* route registrations for
 the resulting server instance.
 
 + Default: `false`
@@ -214,9 +221,12 @@ fastify.get('/bar', function (req, reply) {
 Fastify uses [find-my-way](https://github.com/delvedor/find-my-way) to handle
 routing. You can use `ignoreDuplicateSlashes` option to remove duplicate slashes
 from the path. It removes duplicate slashes in the route path and in the request
-URL. This option applies to *all* route registrations for the resulting server instance.
+URL. This option applies to *all* route registrations for the resulting server
+instance.
 
-Note that when `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set to true, Fastify will remove duplicate slashes, and then trailing slashes, meaning //a//b//c// will be converted to /a/b/c.
+Note that when `ignoreTrailingSlash` and `ignoreDuplicateSlashes` are both set
+to true, Fastify will remove duplicate slashes, and then trailing slashes,
+meaning //a//b//c// will be converted to /a/b/c.
 
 + Default: `false`
 
@@ -257,8 +267,8 @@ Defines the maximum payload, in bytes, the server is allowed to accept.
 Defines what action the framework must take when parsing a JSON object with
 `__proto__`. This functionality is provided by
 [secure-json-parse](https://github.com/fastify/secure-json-parse). See
-[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more
-details about prototype poisoning attacks.
+[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more details about
+prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
 
@@ -270,8 +280,8 @@ Possible values are `'error'`, `'remove'` and `'ignore'`.
 Defines what action the framework must take when parsing a JSON object with
 `constructor`. This functionality is provided by
 [secure-json-parse](https://github.com/fastify/secure-json-parse). See
-[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more
-details about prototype poisoning attacks.
+[Prototype Poisoning](../Guides/Prototype-Poisoning.md) for more details about
+prototype poisoning attacks.
 
 Possible values are `'error'`, `'remove'` and `'ignore'`.
 
@@ -462,7 +472,8 @@ way query strings are handled take a look at
 ### `allowUnsafeRegex`
 <a id="factory-allow-unsafe-regex"></a>
 
-The allowUnsafeRegex setting is false by default, so routes only allow safe regular expressions. To use unsafe expressions, set allowUnsafeRegex to true.
+The allowUnsafeRegex setting is false by default, so routes only allow safe
+regular expressions. To use unsafe expressions, set allowUnsafeRegex to true.
 
 ```js
 fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
@@ -470,8 +481,8 @@ fastify.get('/user/:id(^([0-9]+){4}$)', (request, reply) => {
 })
 ```
 
-Under the hood: [FindMyWay](https://github.com/delvedor/find-my-way)
-More info about safe regexp: [Safe-regex2](https://www.npmjs.com/package/safe-regex2)
+Under the hood: [FindMyWay](https://github.com/delvedor/find-my-way) More info
+about safe regexp: [Safe-regex2](https://www.npmjs.com/package/safe-regex2)
 
 
 ### `requestIdHeader`
@@ -562,8 +573,8 @@ derive <code>request.hostname</code> and <code>request.protocol</code>**
 
 The maximum amount of time in *milliseconds* in which a plugin can load. If not,
 [`ready`](#ready) will complete with an `Error` with code
-`'ERR_AVVIO_PLUGIN_TIMEOUT'`. When set to `0`, disables this check. This controls 
-[avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
+`'ERR_AVVIO_PLUGIN_TIMEOUT'`. When set to `0`, disables this check. This
+controls [avvio](https://www.npmjs.com/package/avvio) 's `timeout` parameter.
 
 + Default: `10000`
 
@@ -648,7 +659,8 @@ the incoming request as usual.
 <a id="factory-ajv"></a>
 
 Configure the Ajv v8 instance used by Fastify without providing a custom one.
-The default configuration is explained in the [#schema-validator](Validation-and-Serialization.md#schema-validator) section.
+The default configuration is explained in the
+[#schema-validator](Validation-and-Serialization.md#schema-validator) section.
 
 ```js
 const fastify = require('fastify')({
@@ -743,7 +755,11 @@ function defaultClientErrorHandler (err, socket) {
   this.log.trace({ err }, 'client error')
 
   if (socket.writable) {
-    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+    socket.end([
+      'HTTP/1.1 400 Bad Request',
+      `Content-Length: ${body.length}`,
+      `Content-Type: application/json\r\n\r\n${body}`
+    ].join('\r\n'))
   }
 }
 ```
@@ -767,7 +783,11 @@ const fastify = require('fastify')({
     this.log.trace({ err }, 'client error')
 
     // the handler is responsible for generating a valid HTTP response
-    socket.end(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+    socket.end([
+      'HTTP/1.1 400 Bad Request',
+      `Content-Length: ${body.length}`,
+      `Content-Type: application/json\r\n\r\n${body}`
+    ].join('\r\n'))
   }
 })
 ```
@@ -867,17 +887,17 @@ fastify.ready().then(() => {
 #### listen
 <a id="listen"></a>
 
-Starts the server and internally waits for the `.ready()` event. The
-signature is `.listen([options][, callback])`. Both the `options` object and the
+Starts the server and internally waits for the `.ready()` event. The signature
+is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters follow the [Node.js
 core][https://nodejs.org/api/net.html#serverlistenoptions-callback] parameter
 definitions.
 
-By default, the server will listen on the address(es) resolved by `localhost` when no
-specific host is provided. If listening on any available interface is desired,
-then specifying `0.0.0.0` for the address will listen on all IPv4 addresses.
-The following table details the possible values for `host` when targeting
-`localhost`, and what the result of those values for `host` will be.
+By default, the server will listen on the address(es) resolved by `localhost`
+when no specific host is provided. If listening on any available interface is
+desired, then specifying `0.0.0.0` for the address will listen on all IPv4
+addresses. The following table details the possible values for `host` when
+targeting `localhost`, and what the result of those values for `host` will be.
 
  Host          | IPv4 | IPv6
  --------------|------|-------
@@ -962,9 +982,9 @@ fastify.listen({
 #### addresses
 <a id="addresses"></a>
 
-This method returns an array of addresses that the server is listening on.
-If you call it before `listen()` is called or after the `close()` function,
-it will return an empty array.
+This method returns an array of addresses that the server is listening on. If
+you call it before `listen()` is called or after the `close()` function, it will
+return an empty array.
 
 ```js
 await fastify.listen({ port: 8080 })
@@ -980,9 +1000,10 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
-The `defaultRoute` handler handles requests that do not match any URL specified by your Fastify application.
-This defaults to the 404 handler, but can be overridden with [setDefaultRoute](#setdefaultroute).
-Method to get the `defaultRoute` for the server:
+The `defaultRoute` handler handles requests that do not match any URL specified
+by your Fastify application. This defaults to the 404 handler, but can be
+overridden with [setDefaultRoute](#setdefaultroute). Method to get the
+`defaultRoute` for the server:
 
 ```js
 const defaultRoute = fastify.getDefaultRoute()
@@ -991,9 +1012,10 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will never trigger if the default route is overridden.
-Use [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling instead.
-Method to set the `defaultRoute` for the server:
+**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will
+never trigger if the default route is overridden. Use
+[setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
+instead. Method to set the `defaultRoute` for the server:
 
 ```js
 const defaultRoute = function (req, res) {
@@ -1089,8 +1111,8 @@ fastify.register(function (instance, opts, done) {
 #### pluginName
 <a id="pluginName"></a>
 
-Name of the current plugin. The root plugin is called `'fastify'`.
-There are three ways to define a name (in order).
+Name of the current plugin. The root plugin is called `'fastify'`. There are
+three ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the
    metadata `name` is used.
@@ -1112,10 +1134,9 @@ involved plugins in the format of `fastify -> plugin-A -> plugin-B`.
 #### hasPlugin
 <a id="hasPlugin"></a>
 
-Method to check if a specific plugin has been registered.
-Relies on the plugin metadata name.
-Returns `true` if the plugin is registered.
-Otherwise, returns `false`.
+Method to check if a specific plugin has been registered. Relies on the plugin
+metadata name. Returns `true` if the plugin is registered. Otherwise, returns
+`false`.
 
 ```js
 const fastify = require('fastify')()
@@ -1144,7 +1165,8 @@ used by plugins.
 #### inject
 <a id="inject"></a>
 
-Fake HTTP injection (for testing purposes) [here](../Guides/Testing.md#benefits-of-using-fastifyinject).
+Fake HTTP injection (for testing purposes)
+[here](../Guides/Testing.md#benefits-of-using-fastifyinject).
 
 #### addSchema
 <a id="add-schema"></a>
@@ -1240,10 +1262,10 @@ unknown to Fastify. See [issue
 #2446](https://github.com/fastify/fastify/issues/2446) for an example of what
 this property helps to resolve.
 
-Another use case is to tweak all the schemas processing.
-Doing so it is possible to use Ajv v8 JTD or Standalone feature. To use such
-as JTD or the Standalone mode, refers to the
-[`@fastify/ajv-compiler` documentation](https://github.com/fastify/ajv-compiler#usage).
+Another use case is to tweak all the schemas processing. Doing so it is possible
+to use Ajv v8 JTD or Standalone feature. To use such as JTD or the Standalone
+mode, refers to the [`@fastify/ajv-compiler`
+documentation](https://github.com/fastify/ajv-compiler#usage).
 
 ```js
 const fastify = Fastify({
@@ -1251,7 +1273,8 @@ const fastify = Fastify({
     /**
      * This factory is called whenever `fastify.register()` is called.
      * It may receive as input the schemas of the parent context if some schemas have been added.
-     * @param {object} parentSchemas these schemas will be returned by the `getSchemas()` method function of the returned `bucket`.
+     * @param {object} parentSchemas these schemas will be returned by the
+     * `getSchemas()` method function of the returned `bucket`.
      */
     bucket: function factory (parentSchemas) {
       return {
@@ -1286,7 +1309,8 @@ const fastify = Fastify({
        * It may be called whenever `fastify.register()` is called only if new schemas have been added to the
        * encapsulation context.
        * It may receive as input the schemas of the parent context if some schemas have been added.
-       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} externalSchemas these schemas will be returned by the
+       * `bucket.getSchemas()`. Needed to resolve the external references $ref.
        * @param {object} ajvServerOption the server `ajv` options to build your compilers accordingly
        */
       buildValidator: function factory (externalSchemas, ajvServerOption) {
@@ -1303,8 +1327,10 @@ const fastify = Fastify({
        * It may be called whenever `fastify.register()` is called only if new schemas have been added to the
        * encapsulation context.
        * It may receive as input the schemas of the parent context if some schemas have been added.
-       * @param {object} externalSchemas these schemas will be returned by the `bucket.getSchemas()`. Needed to resolve the external references $ref.
-       * @param {object} serializerOptsServerOption the server `serializerOpts` options to build your compilers accordingly
+       * @param {object} externalSchemas these schemas will be returned by the
+       * `bucket.getSchemas()`. Needed to resolve the external references $ref.
+       * @param {object} serializerOptsServerOption the server `serializerOpts`
+       * options to build your compilers accordingly
        */
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
@@ -1328,10 +1354,8 @@ is passed to `fastify.register()`. The handler is treated as a regular route
 handler so requests will go through the full [Fastify
 lifecycle](./Lifecycle.md#lifecycle). *async-await* is supported as well.
 
-You can also register
-[`preValidation`](./Hooks.md#route-hooks) and
-[`preHandler`](./Hooks.md#route-hooks) hooks for
-the 404 handler.
+You can also register [`preValidation`](./Hooks.md#route-hooks) and
+[`preHandler`](./Hooks.md#route-hooks) hooks for the 404 handler.
 
 _Note: The `preValidation` hook registered using this method will run for a
 route that Fastify does not recognize and **not** when a route handler manually
@@ -1405,9 +1429,13 @@ if (statusCode >= 500) {
 #### addConstraintStrategy
 <a id="addConstraintStrategy"></a>
 
-Function to add a custom constraint strategy. To register a new type of constraint, you must add a new constraint strategy that knows how to match values to handlers, and that knows how to get the constraint value from a request.
+Function to add a custom constraint strategy. To register a new type of
+constraint, you must add a new constraint strategy that knows how to match
+values to handlers, and that knows how to get the constraint value from a
+request.
 
-Add a custom constraint strategy using the `fastify.addConstraintStrategy` method:
+Add a custom constraint strategy using the `fastify.addConstraintStrategy`
+method:
 
 ```js
 const customResponseTypeStrategy = {
@@ -1436,7 +1464,8 @@ router.addConstraintStrategy(customResponseTypeStrategy);
 #### hasConstraintStrategy
 <a id="hasConstraintStrategy"></a>
 
-The `fastify.hasConstraintStrategy(strategyName)` checks if there already exists a custom constraint strategy with the same name.
+The `fastify.hasConstraintStrategy(strategyName)` checks if there already exists
+a custom constraint strategy with the same name.
 
 #### printRoutes
 <a id="print-routes"></a>
@@ -1534,7 +1563,11 @@ content types, e.g. `text/json, application/vnd.oasis.opendocument.text`.
 `content-type` can be a string, string array or RegExp.
 
 ```js
-// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning and Constructor Poisoning configuration respectively. The possible values are 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar to calling JSON.parse() directly. See the [`secure-json-parse` documentation](https://github.com/fastify/secure-json-parse#api) for more information.
+// The two arguments passed to getDefaultJsonParser are for ProtoType poisoning
+// and Constructor Poisoning configuration respectively. The possible values are
+// 'ignore', 'remove', 'error'. ignore  skips all validations and it is similar
+// to calling JSON.parse() directly. See the
+// [`secure-json-parse` documentation](https://github.com/fastify/secure-json-parse#api) for more information.
 
 fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefaultJsonParser('ignore', 'ignore'))
 ```
@@ -1542,8 +1575,8 @@ fastify.addContentTypeParser('text/json', { asString: true }, fastify.getDefault
 #### hasContentTypeParser
 <a id="hasContentTypeParser"></a>
 
-`fastify.hasContentTypeParser(contentType)` is used to check whether there is a content type parser in the current
-context for the specified content type.
+`fastify.hasContentTypeParser(contentType)` is used to check whether there is a
+content type parser in the current context for the specified content type.
 
 ```js
 fastify.hasContentTypeParser('text/json')
@@ -1554,8 +1587,9 @@ fastify.hasContentTypeParser(/^.+\/json$/)
 #### removeContentTypeParser
 <a id="removeContentTypeParser"></a>
 
-`fastify.removeContentTypeParser(contentType)` is used to remove content type parsers in the current context. This
-method allows for example to remove the both built-in parsers for `application/json` and `text/plain`.
+`fastify.removeContentTypeParser(contentType)` is used to remove content type
+parsers in the current context. This method allows for example to remove the
+both built-in parsers for `application/json` and `text/plain`.
 
 ```js
 fastify.removeContentTypeParser('application/json')
@@ -1566,11 +1600,14 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 #### removeAllContentTypeParsers
 <a id="removeAllContentTypeParsers"></a>
 
-The `fastify.removeAllContentTypeParsers()` method allows all content type parsers in the current context to be removed.
-A use case of this method is the implementation of catch-all content type parser. Before adding this parser with
-`fastify.addContentTypeParser()` one could call the `removeAllContentTypeParsers` method.
+The `fastify.removeAllContentTypeParsers()` method allows all content type
+parsers in the current context to be removed. A use case of this method is the
+implementation of catch-all content type parser. Before adding this parser with
+`fastify.addContentTypeParser()` one could call the
+`removeAllContentTypeParsers` method.
 
-For more details about the usage of the different content type parser APIs see [here](./ContentTypeParser.md#usage).
+For more details about the usage of the different content type parser APIs see
+[here](./ContentTypeParser.md#usage).
 
 #### getDefaultJsonParser
 <a id="getDefaultJsonParser"></a>

@@ -2,12 +2,12 @@
 
 ## `Content-Type` Parser
 Natively, Fastify only supports `'application/json'` and `'text/plain'` content
-types. If the content type is not one of these, an `FST_ERR_CTP_INVALID_MEDIA_TYPE` 
-error will be thrown.
+types. If the content type is not one of these, an
+`FST_ERR_CTP_INVALID_MEDIA_TYPE` error will be thrown.
 
-The default charset is `utf-8`. If you need to support different content
-types, you can use the `addContentTypeParser` API. *The default JSON and/or
-plain text parser can be changed or removed.*
+The default charset is `utf-8`. If you need to support different content types,
+you can use the `addContentTypeParser` API. *The default JSON and/or plain text
+parser can be changed or removed.*
 
 *Note: If you decide to specify your own content type with the `Content-Type`
 header, UTF-8 will not be the default. Be sure to include UTF-8 like this
@@ -21,8 +21,11 @@ available only in that scope and its children.
 Fastify automatically adds the parsed request payload to the [Fastify
 request](./Request.md) object which you can access with `request.body`.
 
-Note that for `GET` and `HEAD` requests the payload is never parsed. For `OPTIONS` and `DELETE` requests the payload is only parsed if 
-the content type is given in the content-type header. If it is not given, the [catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and `PATCH`, but the payload is simply not parsed.
+Note that for `GET` and `HEAD` requests the payload is never parsed. For
+`OPTIONS` and `DELETE` requests the payload is only parsed if the content type
+is given in the content-type header. If it is not given, the
+[catch-all](#catch-all) parser is not executed as with `POST`, `PUT` and
+`PATCH`, but the payload is simply not parsed.
 
 ### Usage
 ```js
@@ -69,7 +72,8 @@ more specific one, like in the example below.
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 
-// Here the desired behavior is achieved because fastify first tries to match the `application/vnd.custom+xml` content type parser
+// Here the desired behavior is achieved because fastify first tries to match the
+// `application/vnd.custom+xml` content type parser
 fastify.addContentTypeParser('application/vnd.custom', (request, body, done) => {} )
 fastify.addContentTypeParser('application/vnd.custom+xml', (request, body, done) => {} )
 ```
@@ -115,9 +119,9 @@ fastify.removeContentTypeParser(['application/json', 'text/plain'])
 In the example from just above, it is noticeable that we need to specify each
 content type that we want to remove. To solve this problem Fastify provides the
 `removeAllContentTypeParsers` API. This can be used to remove all currently
-existing content type parsers. In the example below we achieve the same
-as in the example above except that we do not need to specify each content type
-to delete. Just like `removeContentTypeParser`, this API supports encapsulation.
+existing content type parsers. In the example below we achieve the same as in
+the example above except that we do not need to specify each content type to
+delete. Just like `removeContentTypeParser`, this API supports encapsulation.
 The API is especially useful if you want to register a [catch-all content type
 parser](#catch-all) that should be executed for every content type and the
 built-in parsers should be ignored as well.
@@ -223,8 +227,8 @@ fastify.route({
 For piping file uploads you may want to check out [this
 plugin](https://github.com/fastify/fastify-multipart).
 
-If you want the content type parser to be executed on all content types
-and not only on those that don't have a specific one, you should call the
+If you want the content type parser to be executed on all content types and not
+only on those that don't have a specific one, you should call the
 `removeAllContentTypeParsers` method first.
 
 ```js

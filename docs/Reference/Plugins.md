@@ -9,10 +9,12 @@ By default, `register` creates a *new scope*, this means that if you make some
 changes to the Fastify instance (via `decorate`), this change will not be
 reflected by the current context ancestors, but only by its descendants. This
 feature allows us to achieve plugin *encapsulation* and *inheritance*, in this
-way we create a *directed acyclic graph* (DAG) and we will not have issues caused
-by cross dependencies.
+way we create a *directed acyclic graph* (DAG) and we will not have issues
+caused by cross dependencies.
 
-You may have already seen in the [Getting Started]((../Guides/Getting-Started.md#your-first-plugin)) guide how easy it is to use this API:
+You may have already seen in the [Getting
+Started]((../Guides/Getting-Started.md#your-first-plugin)) guide how easy it is
+to use this API:
 ```
 fastify.register(plugin, [options])
 ```

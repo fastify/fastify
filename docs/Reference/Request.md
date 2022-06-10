@@ -55,8 +55,8 @@ This operation will add to the request headers the new values that can be read
 calling `request.headers.bar`. Moreover, you can still access the standard
 request's headers with the `request.raw.headers` property.
 
-> Note: For performance reason on `not found` route, you may see that we will add
-an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
+> Note: For performance reason on `not found` route, you may see that we will
+add an extra property `Symbol('fastify.RequestAcceptVersion')` on the headers.
 
 ```js
 fastify.post('/:params', options, function (request, reply) {

@@ -129,7 +129,11 @@ fastify.get('/', async function (req, rep) {
 Sets a response header. If the value is omitted or undefined, it is coerced to
 `''`.
 
-> Note: the header's value must be properly encoded using [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) or similar modules such as [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters will result in a 500 `TypeError` response.
+> Note: the header's value must be properly encoded using
+> [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+> or similar modules such as
+> [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid characters
+> will result in a 500 `TypeError` response.
 
 For more information, see
 [`http.ServerResponse#setHeader`](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_response_setheader_name_value).
@@ -208,11 +212,16 @@ Returns a boolean indicating if the specified header has been set.
 ### .trailer(key, function)
 <a id="trailer"></a>
 
-Sets a response trailer. Trailer is usually used when you need a header that requires heavy resources to be sent after the `data`, for example, `Server-Timing` and `Etag`. It can ensure the client receives the response data as soon as possible.
+Sets a response trailer. Trailer is usually used when you need a header that
+requires heavy resources to be sent after the `data`, for example,
+`Server-Timing` and `Etag`. It can ensure the client receives the response data
+as soon as possible.
 
-*Note: The header `Transfer-Encoding: chunked` will be added once you use the trailer. It is a hard requirement for using trailer in Node.js.*
+*Note: The header `Transfer-Encoding: chunked` will be added once you use the
+trailer. It is a hard requirement for using trailer in Node.js.*
 
-*Note: Currently, the computation function only supports synchronous function. That means `async-await` and `promise` are not supported.*
+*Note: Currently, the computation function only supports synchronous function.
+That means `async-await` and `promise` are not supported.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -254,7 +263,11 @@ reply.getTrailer('server-timing') // undefined
 Redirects a request to the specified URL, the status code is optional, default
 to `302` (if status code is not already set by calling `code`).
 
-> Note: the input URL must be properly encoded using [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) or similar modules such as [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will result in a 500 `TypeError` response.
+> Note: the input URL must be properly encoded using
+> [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
+> or similar modules such as
+> [`encodeurl`](https://www.npmjs.com/package/encodeurl). Invalid URLs will
+> result in a 500 `TypeError` response.
 
 Example (no `reply.code()` call) sets status code to `302` and redirects to
 `/home`
@@ -310,7 +323,8 @@ Sets the content type for the response. This is a shortcut for
 ```js
 reply.type('text/html')
 ```
-If the `Content-Type` has a JSON subtype, and the charset parameter is not set, `utf-8` will be used as the charset by default.
+If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
+`utf-8` will be used as the charset by default.
 
 ### .serializer(func)
 <a id="serializer"></a>
@@ -366,22 +380,22 @@ Another example of the misuse of `Reply.raw` is explained in
 <a id="sent"></a>
 
 As the name suggests, `.sent` is a property to indicate if a response has been
-sent via `reply.send()`.
-It will also be `true` in case `reply.hijack()` was used.
+sent via `reply.send()`. It will also be `true` in case `reply.hijack()` was
+used.
 
 In case a route handler is defined as an async function or it returns a promise,
 it is possible to call `reply.hijack()` to indicate that the automatic
 invocation of `reply.send()` once the handler promise resolve should be skipped.
-By calling `reply.hijack()`, an application claims full responsibility for
-the low-level request and response. Moreover, hooks will not be invoked.
+By calling `reply.hijack()`, an application claims full responsibility for the
+low-level request and response. Moreover, hooks will not be invoked.
 
-*Modifying the `.sent` property directly is deprecated. Please use the aforementioned
-`.hijack()` method to achieve the same effect.*
+*Modifying the `.sent` property directly is deprecated. Please use the
+aforementioned `.hijack()` method to achieve the same effect.*
 
 <a name="hijack"></a>
 ### .hijack()
-Sometimes you might need to halt the execution of the normal request lifecycle and
-handle sending the response manually.
+Sometimes you might need to halt the execution of the normal request lifecycle
+and handle sending the response manually.
 
 To achieve this, Fastify provides the `reply.hijack()` method that can be called
 during the request lifecycle (At any point before `reply.send()` is called), and
@@ -561,8 +575,8 @@ fastify.setNotFoundHandler(function (request, reply) {
 <a id="payload-type"></a>
 
 The type of the sent payload (after serialization and going through any
-[`onSend` hooks](./Hooks.md#onsend)) must be one of the following
-types, otherwise, an error will be thrown:
+[`onSend` hooks](./Hooks.md#onsend)) must be one of the following types,
+otherwise, an error will be thrown:
 
 - `string`
 - `Buffer`

@@ -13,7 +13,7 @@ Request is a core Fastify object containing the following fields:
 - [`headers`](#headers) - the headers getter and setter
 - `raw` - the incoming HTTP request from Node core
 - `server` - The Fastify server instance, scoped to the current [encapsulation
->>>>>>> main:docs/Reference/Request.md
+  context](./Encapsulation.md)
 - `id` - the request ID
 - `log` - the logger instance of the incoming request
 - `ip` - the IP address of the incoming request

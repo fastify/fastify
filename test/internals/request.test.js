@@ -413,7 +413,7 @@ test('Request#validate', subtest => {
     })
   })
 
-  subtest.test('Should use the custom validator compiler for the route', { only: true }, async t => {
+  subtest.test('Should use the custom validator compiler for the route', async t => {
     const fastify = Fastify()
     let called = 0
     const custom = ({ schema, httpPart, url, method }) => {
@@ -508,4 +508,235 @@ test('Request#validate', subtest => {
   })
 })
 
-// test('Request#serialize')
+test('Request#serialize', subtest => {
+  const defaultSchema = {
+    type: 'object',
+    required: ['hello'],
+    properties: {
+      hello: { type: 'string' },
+      world: { type: 'string' }
+    }
+  }
+  const responseSchema = {
+    201: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: ['ok']
+        },
+        message: {
+          type: 'string'
+        }
+      }
+    },
+    '4xx': {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: ['error']
+        },
+        code: {
+          type: 'integer',
+          minimum: 1
+        },
+        message: {
+          type: 'string'
+        }
+      }
+    }
+  }
+
+  subtest.plan(5)
+
+  subtest.test('Should return a function when empty input - Route without schema', async t => {
+    const fastify = Fastify()
+
+    t.plan(4)
+
+    fastify.get('/', (req, reply) => {
+      const serialize = req.serialize(defaultSchema)
+      const input = { hello: 'world' }
+
+      t.type(serialize, Function)
+      t.type(serialize(input), 'string')
+      t.equal(serialize(input), JSON.stringify(input))
+
+      try {
+        serialize({ world: 'foo' })
+      } catch (err) {
+        t.equal(err.message, '"hello" is required!')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should return the serialized input if valid - Route without schema', async t => {
+    const fastify = Fastify()
+
+    fastify.get('/', (req, reply) => {
+      const input = { hello: 'world' }
+      const result = req.serialize(defaultSchema, input)
+
+      t.type(result(input), 'string')
+      t.equal(result(input), JSON.stringify(input))
+
+      try {
+        req.serialize(defaultSchema, { world: 'foo' })
+      } catch (err) {
+        t.equal(err.message, '"hello" is required!')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.ready()
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should reuse the serialize fn across multiple invocations - Route without schema', async t => {
+    const fastify = Fastify()
+    let serialize = null
+    let counter = 0
+
+    t.plan(16)
+
+    fastify.get('/', (req, reply) => {
+      const input = { hello: 'world' }
+      counter++
+      if (counter > 1) {
+        const newSerialize = req.serialize(defaultSchema)
+        t.equal(serialize, newSerialize, 'Are the same validate function')
+        serialize = newSerialize
+      } else { serialize = req.serialize(defaultSchema) }
+
+      t.type(serialize, Function)
+      t.equal(serialize(input), JSON.stringify(input))
+
+      try {
+        serialize({ world: 'foo' })
+      } catch (err) {
+        t.equal(err.message, '"hello" is required!')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    await Promise.all([
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      }),
+      fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    ])
+
+    t.equal(counter, 4)
+  })
+
+  subtest.test('Should use the custom serializer compiler for the route', async t => {
+    const fastify = Fastify()
+    let called = 0
+    const custom = ({ schema, httpStatus, url, method }) => {
+      t.equal(schema, defaultSchema)
+      t.equal(url, '/')
+      t.equal(method, 'GET')
+      t.equal(httpStatus, '201')
+
+      return (input) => {
+        called++
+        t.same(input, { hello: 'world' })
+        return JSON.stringify(input)
+      }
+    }
+
+    t.plan(10)
+
+    fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
+      const input = { hello: 'world' }
+      const first = req.serialize(defaultSchema, null, '201')
+      const second = req.serialize(defaultSchema, null, '201')
+
+      t.equal(first, second)
+      t.ok(first(input), JSON.stringify(input))
+      t.ok(second(input), JSON.stringify(input))
+      t.equal(called, 2)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  subtest.test('Should return serialized input if valid - With Schema for Route defined', async t => {
+    const fastify = Fastify()
+    let serialize = null
+
+    t.plan(3)
+
+    fastify.get('/:id', {
+      schema: {
+        params: {
+          id: { type: 'integer' }
+        },
+        response: responseSchema
+      }
+    }, (req, reply) => {
+      const { params } = req
+      const input201 = { status: 'ok', message: 'done' }
+      const input4xx = { status: 'error', code: 4, message: 'not-done' }
+
+      switch (params.id) {
+        case 1:
+          serialize = req.serialize(null, null, '201')
+          t.equal(serialize(input201), JSON.stringify(input201))
+          break
+        case 2:
+          t.equal(req.serialize(null, input4xx, '4xx'), JSON.stringify(input4xx))
+          break
+        case 3:
+          t.equal(serialize, req.serialize(null, null, '201'))
+          break
+        default:
+          t.fail('Invalid id')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    const promises = []
+
+    for (let i = 1; i < 4; i++) {
+      promises.push(fastify.inject({
+        path: `/${i}`,
+        method: 'get'
+      }))
+    }
+
+    await Promise.all(promises)
+  })
+})

@@ -1068,6 +1068,10 @@ test('fastify-rc loads prior version plugins', t => {
     name: 'plugin',
     fastify: '^98.1.0'
   }
+  plugin2[Symbol.for('plugin-meta')] = {
+    name: 'plugin2',
+    fastify: '98.x'
+  }
 
   fastify.register(plugin)
 
@@ -1077,6 +1081,10 @@ test('fastify-rc loads prior version plugins', t => {
   })
 
   function plugin (instance, opts, done) {
+    done()
+  }
+
+  function plugin2 (instance, opts, done) {
     done()
   }
 })

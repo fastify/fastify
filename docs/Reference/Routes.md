@@ -426,9 +426,10 @@ Now your clients will have access to the following routes:
 - `/v2/user`
 
 You can do this as many times as you want, it also works for nested `register`,
-and route parameters are supported as well. 
+and route parameters are supported as well.
 
-In case you want to use prefix for all of your routes, you can put them inside a plugin:
+In case you want to use prefix for all of your routes, you can put them inside a
+plugin:
 
 ```js
 const fastify = require('fastify')()
@@ -437,13 +438,13 @@ const route = {
     method: 'POST',
     url: '/login',
     handler: () => {},
-    schema: {}, 
+    schema: {},
 }
 
 fastify.register(function(app, _, done) {
   app.get('/users', () => {})
   app.route(route)
-  
+
   done()
 }, { prefix: '/v1' }) // global route prefix
 
@@ -454,8 +455,9 @@ await fastify.listen({ port: 0 })
 <a id="fastify-plugin"></a>
 
 Be aware that if you use
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your routes, this option will
-not work. You can still make it work by wrapping a plugin in a plugin, e. g.:
+[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your
+routes, this option will not work. You can still make it work by wrapping a
+plugin in a plugin, e. g.:
 ```js
 const fp = require('fastify-plugin')
 const routes = require('./lib/routes')

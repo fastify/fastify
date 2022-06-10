@@ -96,9 +96,9 @@ If you pass an option with the key `prefix` with a `string` value, Fastify will
 use it to prefix all the routes inside the register, for more info check
 [here](./Routes.md#route-prefixing).
 
-Be aware that if you use
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will
-not work.
+Be aware that if you wrap your routes with
+[`fastify-plugin`](https://github.com/fastify/fastify-plugin), this option will
+not work (there is a [workaround](./Routes.md#fastify-plugin) available).
 
 #### Error handling
 <a id="error-handling"></a>

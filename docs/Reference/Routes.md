@@ -227,29 +227,58 @@ checked before parametric and wildcard.*
 
 ```js
 // parametric
-fastify.get('/example/:userId', (request, reply) => {})
-fastify.get('/example/:userId/:secretToken', (request, reply) => {})
+fastify.get('/example/:userId', function (request, reply) {
+  // curl ${app-url}/example/12345
+  // userId === '12345'
+  const { userId } = request.params;
+  // your code here
+})
+fastify.get('/example/:userId/:secretToken', function (request, reply) {
+  // curl ${app-url}/example/12345/abc.zHi
+  // userId === '12345'
+  // secretToken === 'abc.zHi'
+  const { userId, secretToken } = request.params;
+  // your code here
+})
 
 // wildcard
-fastify.get('/example/*', (request, reply) => {})
+fastify.get('/example/*', function (request, reply) {})
 ```
 
 Regular expression routes are supported as well, but be aware that you have to escape slashes. Take note that RegExp is also very expensive in terms of performance!
 ```js
 // parametric with regexp
-fastify.get('/example/:file(^\\d+).png', (request, reply) => {})
+fastify.get('/example/:file(^\\d+).png', function (request, reply) {
+  // curl ${app-url}/example/12345.png
+  // file === '12345'
+  const { file } = request.params;
+  // your code here
+})
 ```
 
 It is possible to define more than one parameter within the same couple of slash
 ("/"). Such as:
 ```js
-fastify.get('/example/near/:lat-:lng/radius/:r', (request, reply) => {})
+fastify.get('/example/near/:lat-:lng/radius/:r', function (request, reply) {
+  // curl ${app-url}/example/near/15°N-30°E/radius/20
+  // lat === "15°N"
+  // lng === "30°E"
+  // r ==="20"
+  const { lat, lng, r } = request.params;
+  // your code here
+})
 ```
 *Remember in this case to use the dash ("-") as parameters separator.*
 
 Finally, it is possible to have multiple parameters with RegExp:
 ```js
-fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', (request, reply) => {})
+fastify.get('/example/at/:hour(^\\d{2})h:minute(^\\d{2})m', function (request, reply) {
+  // curl ${app-url}/example/at/08h24m
+  // hour === "08"
+  // minute === "24"
+  const { hour, minute } = request.params;
+  // your code here
+})
 ```
 In this case as parameter separator it is possible to use whatever character is
 not matched by the regular expression.

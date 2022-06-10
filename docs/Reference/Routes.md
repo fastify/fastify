@@ -392,15 +392,12 @@ Now your clients will have access to the following routes:
 - `/v2/user`
 
 You can do this as many times as you want, it also works for nested `register`,
-and route parameters are supported as well. Be aware that if you use
-[`fastify-plugin`](https://github.com/fastify/fastify-plugin) this option will
-not work.
+and route parameters are supported as well. 
 
 In case you want to use prefix for all of your routes, you can put them inside a plugin:
 
 ```js
-import Fastify from 'fastify'
-const fastify = Fastify()
+const fastify = require('fastify')()
 
 const route = {
     method: 'POST',
@@ -409,14 +406,33 @@ const route = {
     schema: {}, 
 }
 
-fastify.register(function(fastify, _, done) {
-  fastify.get('/users', () => {})
-  fastify.route(route)
+fastify.register(function(app, _, done) {
+  app.get('/users', () => {})
+  app.route(route)
   
   done()
 }, { prefix: '/v1' }) // global route prefix
 
 await fastify.listen({ port: 0 })
+```
+
+### Route Prefixing and fastify-plugin
+<a id="fastify-plugin"></a>
+
+Be aware that if you use
+[`fastify-plugin`](https://github.com/fastify/fastify-plugin) for wrapping your routes, this option will
+not work. You can still make it work by wrapping a plugin in a plugin, e. g.:
+```js
+const fp = require('fastify-plugin')
+const routes = require('./lib/routes')
+
+module.exports = fp(async function (app, opts) {
+  app.register(routes, {
+    prefix: '/v1',
+  })
+}, {
+  name: 'my-routes'
+})
 ```
 
 #### Handling of / route inside prefixed plugins

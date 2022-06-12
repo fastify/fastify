@@ -520,7 +520,13 @@ const invalidErrorCodes = [
   undefined,
   null,
   'error_code',
-  700 // out of the 100-600 range
+
+  // out of the 100-599 range:
+  0,
+  1,
+  99,
+  600,
+  700
 ]
 invalidErrorCodes.forEach((invalidCode) => {
   test(`should throw error if error code is ${invalidCode}`, t => {

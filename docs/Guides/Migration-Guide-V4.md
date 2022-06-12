@@ -14,7 +14,7 @@ Starting this version of Fastify, we have deprecated the use of `app.use()`. We
 have decided not to support the use of middlewares. Both
 [`@fastify/middie`](https://github.com/fastify/middie) and
 [`@fastify/express`](https://github.com/fastify/fastify-express) will still be
-there and maintained. Use Fastify's [hooks](./Reference/Hooks.md) instead.
+there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
 
 ## Non Breaking Changes
 

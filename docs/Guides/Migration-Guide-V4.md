@@ -21,7 +21,7 @@ there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
 ### Change of schema for multiple types
 
 
-Since Fastiy v4 has upgraded to Ajv v8. The "type" keywords with multiple types
+Since Fastify v4 has upgraded to Ajv v8. The "type" keywords with multiple types
 (other than with "null") are prohibited. Read more
 ['here'](https://ajv.js.org/strict-mode.html#strict-types)
 

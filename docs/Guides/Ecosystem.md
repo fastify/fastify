@@ -346,6 +346,9 @@ section.
   minification and transformation of responses.
 - [`fastify-mongo-memory`](https://github.com/chapuletta/fastify-mongo-memory)
   Fastify MongoDB in Memory Plugin for testing support.
+- [`fastify-mongodb-sanitizer`](https://github.com/KlemenKozelj/fastify-mongodb-sanitizer)
+  Fastify plugin that sanitizes client input to prevent
+  potential MongoDB query injection attacks.
 - [`fastify-mongoose-api`](https://github.com/jeka-kiselyov/fastify-mongoose-api)
   Fastify plugin to create REST API methods based on Mongoose MongoDB models.
 - [`fastify-mongoose-driver`](https://github.com/alex-ppg/fastify-mongoose)

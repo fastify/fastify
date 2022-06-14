@@ -65,7 +65,8 @@ $ npm i @fastify/type-provider-typebox
 ```
 
 ```typescript
-import { TypeBoxTypeProvider, Type } from '@fastify/type-provider-typebox'
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+import { Type } from '@sinclair/typebox'
 
 import fastify from 'fastify'
 

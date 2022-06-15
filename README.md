@@ -56,7 +56,7 @@ developer experience with the least overhead and a powerful plugin architecture.
 It is inspired by Hapi and Express and as far as we know, it is one of the
 fastest web frameworks in town.
 
-This branch refers to the upcoming Fastify v4 release. Check out the
+This branch refers to the Fastify v4 release. Check out the
 [v3.x](https://github.com/fastify/fastify/tree/v3.x) branch for v3.
 
 ### Quick start
@@ -104,11 +104,11 @@ project as a dependency:
 
 Install with npm:
 ```sh
-npm i fastify@next
+npm i fastify
 ```
 Install with yarn:
 ```sh
-yarn add fastify@next
+yarn add fastify
 ```
 
 ### Example

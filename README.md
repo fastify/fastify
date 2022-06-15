@@ -104,11 +104,11 @@ project as a dependency:
 
 Install with npm:
 ```sh
-npm i fastify@next
+npm i fastify
 ```
 Install with yarn:
 ```sh
-yarn add fastify@next
+yarn add fastify
 ```
 
 ### Example

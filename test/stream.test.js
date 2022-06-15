@@ -741,3 +741,76 @@ test('reply.send handles aborted requests', t => {
     }, 1)
   })
 })
+
+test('request terminated should not crash fastify', t => {
+  t.plan(10)
+
+  const spyLogger = {
+    level: 'error',
+    fatal: () => { },
+    error: () => {
+      t.fail('should not log an error')
+    },
+    warn: () => { },
+    info: () => { },
+    debug: () => { },
+    trace: () => { },
+    child: () => { return spyLogger }
+  }
+  const fastify = Fastify({
+    logger: spyLogger
+  })
+
+  fastify.get('/', async (req, reply) => {
+    const stream = new Readable()
+    stream._read = () => {}
+    reply.header('content-type', 'text/html; charset=utf-8')
+    reply.header('transfer-encoding', 'chunked')
+    stream.push('<h1>HTML</h1>')
+
+    reply.send(stream)
+
+    await new Promise((resolve) => { setTimeout(resolve, 6).unref() })
+
+    stream.push('<h1>should disply on second stream</h1>')
+    stream.push(null)
+    return reply
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    const port = fastify.server.address().port
+    const http = require('http')
+    const req = http.get(`http://localhost:${port}`, function (res) {
+      const { statusCode, headers } = res
+      t.equal(statusCode, 200)
+      t.equal(headers['content-type'], 'text/html; charset=utf-8')
+      t.equal(headers['transfer-encoding'], 'chunked')
+      res.on('data', function (chunk) {
+        t.equal(chunk.toString(), '<h1>HTML</h1>')
+      })
+
+      setTimeout(() => {
+        req.destroy()
+
+        // the server is not crash, we can connect it
+        http.get(`http://localhost:${port}`, function (res) {
+          const { statusCode, headers } = res
+          t.equal(statusCode, 200)
+          t.equal(headers['content-type'], 'text/html; charset=utf-8')
+          t.equal(headers['transfer-encoding'], 'chunked')
+          let payload = ''
+          res.on('data', function (chunk) {
+            payload += chunk.toString()
+          })
+          res.on('end', function () {
+            t.equal(payload, '<h1>HTML</h1><h1>should disply on second stream</h1>')
+            t.pass('should end properly')
+          })
+        })
+      }, 1)
+    })
+  })
+})

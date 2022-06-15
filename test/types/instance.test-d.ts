@@ -133,7 +133,7 @@ expectError(server.setErrorHandler(invalidErrorHandler))
 server.setSchemaController({
   bucket: (parentSchemas: unknown) => {
     return {
-      addSchema (schema: unknown) {
+      add (schema: unknown) {
         expectType<unknown>(schema)
         expectType<FastifyInstance>(server.addSchema({ type: 'null' }))
         return server.addSchema({ type: 'null' })

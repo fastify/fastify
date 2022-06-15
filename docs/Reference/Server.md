@@ -1278,7 +1278,7 @@ const fastify = Fastify({
      */
     bucket: function factory (parentSchemas) {
       return {
-        addSchema (inputSchema) {
+        add (inputSchema) {
           // This function must store the schema added by the user.
           // This function is invoked when `fastify.addSchema()` is called.
         },

@@ -770,7 +770,7 @@ test('request terminated should not crash fastify', t => {
 
     reply.send(stream)
 
-    await new Promise((resolve) => { setTimeout(resolve, 6).unref() })
+    await new Promise((resolve) => { setTimeout(resolve, 100).unref() })
 
     stream.push('<h1>should disply on second stream</h1>')
     stream.push(null)

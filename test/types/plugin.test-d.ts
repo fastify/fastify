@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance, FastifyPluginOptions, RawServerDefault } from '../../fastify'
+import fastify, { FastifyInstance, FastifyPluginOptions } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
 import { expectType, expectError, expectAssignable } from 'tsd'

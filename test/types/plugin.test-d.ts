@@ -66,21 +66,3 @@ async function testAsync (): Promise<void> {
     .register(testPluginOpts)
     .register(testPluginOpts)
 }
-
-// With Type Provider
-type TestTypeProvider = { input: 'test', output: 'test' }
-const serverWithTypeProvider = fastify().withTypeProvider<TestTypeProvider>()
-const testPluginWithTypeProvider: FastifyPluginCallback<TestOptions, RawServerDefault, TestTypeProvider> = function (instance, opts, done) { }
-const testPluginWithTypeProviderAsync: FastifyPluginAsync<TestOptions, RawServerDefault, TestTypeProvider> = async function (instance, opts) { }
-const testPluginWithTypeProviderWithType = (instance: typeof serverWithTypeProvider, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
-const testPluginWithTypeProviderWithTypeAsync = async (instance: typeof serverWithTypeProvider, opts: FastifyPluginOptions) => { }
-serverWithTypeProvider.register(testPluginCallback)
-serverWithTypeProvider.register(testPluginAsync)
-serverWithTypeProvider.register(testPluginOpts)
-serverWithTypeProvider.register(testPluginOptsAsync)
-serverWithTypeProvider.register(testPluginOptsWithType)
-serverWithTypeProvider.register(testPluginOptsWithTypeAsync)
-serverWithTypeProvider.register(testPluginWithTypeProvider)
-serverWithTypeProvider.register(testPluginWithTypeProviderAsync)
-serverWithTypeProvider.register(testPluginWithTypeProviderWithType)
-serverWithTypeProvider.register(testPluginWithTypeProviderWithTypeAsync)

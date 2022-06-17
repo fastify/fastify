@@ -2,7 +2,7 @@ import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from 
 import { LogLevel } from './logger'
 import { FastifyInstance } from './instance'
 import { RawServerBase } from './utils'
-import { FastifyTypeProvider } from '../fastify'
+import { FastifyTypeProvider, RawServerDefault } from '../fastify'
 
 export interface RegisterOptions {
   prefix?: string;
@@ -17,17 +17,17 @@ export type FastifyRegisterOptions<Options> = (RegisterOptions & Options) | ((in
  *
  * Function for adding a plugin to fastify. The options are inferred from the passed in FastifyPlugin parameter.
  */
-export interface FastifyRegister<T = void> {
-  <Options extends FastifyPluginOptions, RawServer extends RawServerBase, TypeProvider extends FastifyTypeProvider>(
-    plugin: FastifyPluginCallback<Options, RawServer, TypeProvider>,
+export interface FastifyRegister<T = void, RawServer extends RawServerBase = RawServerDefault, TypeProviderDefault extends FastifyTypeProvider = FastifyTypeProvider> {
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault>(
+    plugin: FastifyPluginCallback<Options, Server, TypeProvider>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
-  <Options extends FastifyPluginOptions, RawServer extends RawServerBase, TypeProvider extends FastifyTypeProvider>(
-    plugin: FastifyPluginAsync<Options, RawServer, TypeProvider>,
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault>(
+    plugin: FastifyPluginAsync<Options, Server, TypeProvider>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
-  <Options extends FastifyPluginOptions, RawServer extends RawServerBase, TypeProvider extends FastifyTypeProvider>(
-    plugin: FastifyPluginCallback<Options, RawServer, TypeProvider> | FastifyPluginAsync<Options, RawServer, TypeProvider> | Promise<{ default: FastifyPluginCallback<Options, RawServer, TypeProvider> }> | Promise<{ default: FastifyPluginAsync<Options, RawServer, TypeProvider> }>,
+  <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault>(
+    plugin: FastifyPluginCallback<Options, Server, TypeProvider> | FastifyPluginAsync<Options, RawServer, TypeProvider> | Promise<{ default: FastifyPluginCallback<Options, RawServer, TypeProvider> }> | Promise<{ default: FastifyPluginAsync<Options, RawServer, TypeProvider> }>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
 }

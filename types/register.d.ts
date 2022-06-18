@@ -27,7 +27,7 @@ export interface FastifyRegister<T = void, RawServer extends RawServerBase = Raw
     opts?: FastifyRegisterOptions<Options>
   ): T;
   <Options extends FastifyPluginOptions, Server extends RawServerBase = RawServer, TypeProvider extends FastifyTypeProvider = TypeProviderDefault>(
-    plugin: FastifyPluginCallback<Options, Server, TypeProvider> | FastifyPluginAsync<Options, RawServer, TypeProvider> | Promise<{ default: FastifyPluginCallback<Options, RawServer, TypeProvider> }> | Promise<{ default: FastifyPluginAsync<Options, RawServer, TypeProvider> }>,
+    plugin: FastifyPluginCallback<Options, Server, TypeProvider> | FastifyPluginAsync<Options, Server, TypeProvider> | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider> }> | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider> }>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
 }

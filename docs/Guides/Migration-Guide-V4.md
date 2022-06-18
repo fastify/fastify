@@ -21,7 +21,7 @@ there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
 If you previously used the `reply.res` attribute to access the underlying Request
 object you'll instead need to depend on `reply.raw`.
 
-### Need to `return reply` in some instances
+### Need to `return reply` to signal a "fork" of the promise chain
 
 In some situations, like when a response is sent asynchronously or when you're
 just not explicitly returning a response, you'll need to return the `reply`

@@ -44,8 +44,8 @@ expectAssignable<FastifyInstance>(
 // With Http2
 const serverWithHttp2 = fastify({ http2: true })
 type ServerWithHttp2 = FastifyInstance<Http2Server, Http2ServerRequest, Http2ServerResponse>
-const testPluginWithHttp2: FastifyPluginCallback<TestOptions, RawServerDefault> = function (instance, opts, done) { }
-const testPluginWithHttp2Async: FastifyPluginAsync<TestOptions, RawServerDefault> = async function (instance, opts) { }
+const testPluginWithHttp2: FastifyPluginCallback<TestOptions, Http2Server> = function (instance, opts, done) { }
+const testPluginWithHttp2Async: FastifyPluginAsync<TestOptions, Http2Server> = async function (instance, opts) { }
 const testPluginWithHttp2WithType = (instance: ServerWithHttp2, opts: FastifyPluginOptions, done: (error?: FastifyError) => void) => { }
 const testPluginWithHttp2WithTypeAsync = async (instance: ServerWithHttp2, opts: FastifyPluginOptions) => { }
 expectAssignable<ServerWithHttp2>(serverWithHttp2.register(testPluginCallback))

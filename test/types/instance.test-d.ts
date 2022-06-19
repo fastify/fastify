@@ -325,6 +325,3 @@ expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
 
 expectAssignable<DefaultRoute<RawRequestDefaultExpression, RawReplyDefaultExpression>>(server.getDefaultRoute())
-
-expectType<Record<string, FastifyError>>(server.errors)
-expectType<FastifyError>(server.errors.FST_ERR_NOT_FOUND)

@@ -323,7 +323,6 @@ function fastify (options) {
     // custom error handling
     setNotFoundHandler,
     setErrorHandler,
-    errors,
     // Set fastify initial configuration options read-only object
     initialConfig,
     // constraint strategies
@@ -745,6 +744,14 @@ function wrapRouting (httpHandler, { rewriteUrl, logger }) {
     httpHandler(req, res)
   }
 }
+
+Object.defineProperties(fastify, {
+  errors: {
+    get () {
+      return errors
+    }
+  }
+})
 
 /**
  * These export configurations enable JS and TS developers

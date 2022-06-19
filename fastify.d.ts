@@ -175,6 +175,8 @@ export type FastifyServerOptions<
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
 
+type errors = Record<string, FastifyError>;
+
 declare module '@fastify/error' {
   interface FastifyError {
     validation?: ValidationResult[];
@@ -206,4 +208,4 @@ export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaul
 export * from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
-export { fastify }
+export { fastify, errors }

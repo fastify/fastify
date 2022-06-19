@@ -7,7 +7,7 @@ import fastify, {
   LightMyRequestChain,
   LightMyRequestResponse,
   LightMyRequestCallback,
-  InjectOptions, FastifyBaseLogger
+  InjectOptions, FastifyBaseLogger, FastifyError
 } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
@@ -208,3 +208,6 @@ fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInsta
 expectAssignable<FastifyPluginAsync>(async () => {})
 expectAssignable<FastifyPluginCallback>(() => {})
 expectAssignable<FastifyPlugin>(() => {})
+
+expectType<Record<string, FastifyError>>(fastify.errors)
+expectType<FastifyError>(fastify.errors.FST_ERR_NOT_FOUND)

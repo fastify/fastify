@@ -30,11 +30,11 @@ $ npm i @fastify/type-provider-json-schema-to-ts
 ```
 
 ```typescript
-import { JsonSchemaToTsTypeProvider } from '@fastify/type-provider-json-schema-to-ts'
+import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
 
 import fastify from 'fastify'
 
-const server = fastify().withTypeProvider<JsonSchemaToTsTypeProvider>()
+const server = fastify().withTypeProvider<JsonSchemaToTsProvider>()
 
 server.get('/route', {
     schema: {

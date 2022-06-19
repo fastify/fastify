@@ -27,6 +27,12 @@ In some situations, like when a response is sent asynchronously or when you're
 just not explicitly returning a response, you'll need to return the `reply`
 argument from your router handler.
 
+### `exposeHeadRoutes` true by default
+
+Starting from v4, all the `GET` routes will create a sibling `HEAD` route.
+You can revert this behaviour by setting the server's option `exposeHeadRoutes`
+to `false`.
+
 ## Non Breaking Changes
 
 ### Change of schema for multiple types

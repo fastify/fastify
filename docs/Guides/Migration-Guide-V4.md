@@ -16,6 +16,13 @@ have decided not to support the use of middlewares. Both
 [`@fastify/express`](https://github.com/fastify/fastify-express) will still be
 there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
 
+### `exposeHeadRoutes` true by default
+
+Starting from v4, all the `GET` routes will create a sibling `HEAD` route.
+You can revert this behaviour by setting the server's option `exposeHeadRoutes`
+to `false`.
+
+
 ## Non Breaking Changes
 
 ### Change of schema for multiple types

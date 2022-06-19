@@ -233,6 +233,10 @@ test('within an instance', t => {
     reply.redirect('/')
   })
 
+  fastify.get('/redirect-async', async function (req, reply) {
+    return reply.redirect('/')
+  })
+
   fastify.get('/redirect-code', function (req, reply) {
     reply.redirect(301, '/')
   })
@@ -408,6 +412,14 @@ test('within an instance', t => {
       t.plan(1)
 
       http.get('http://localhost:' + fastify.server.address().port + '/redirect-code-before-call-overwrite', function (response) {
+        t.equal(response.statusCode, 302)
+      })
+    })
+
+    test('redirect with async function to `/` - 10', t => {
+      t.plan(1)
+
+      http.get('http://localhost:' + fastify.server.address().port + '/redirect-async', function (response) {
         t.equal(response.statusCode, 302)
       })
     })

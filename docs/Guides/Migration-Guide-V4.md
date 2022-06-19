@@ -16,6 +16,17 @@ have decided not to support the use of middlewares. Both
 [`@fastify/express`](https://github.com/fastify/fastify-express) will still be
 there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
 
+### `reply.res` moved to `reply.raw`
+
+If you previously used the `reply.res` attribute to access the underlying Request
+object you'll instead need to depend on `reply.raw`.
+
+### Need to `return reply` to signal a "fork" of the promise chain
+
+In some situations, like when a response is sent asynchronously or when you're
+just not explicitly returning a response, you'll need to return the `reply`
+argument from your router handler.
+
 ## Non Breaking Changes
 
 ### Change of schema for multiple types

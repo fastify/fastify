@@ -7,6 +7,10 @@ const path = require('path')
 
 const { code } = require('../../build/build-error-serializer')
 
+function unifyLineBreak (str) {
+  return str.toString().replace(/\r\n/g, '\n')
+}
+
 test('check generated code syntax', async (t) => {
   t.plan(1)
 
@@ -24,5 +28,6 @@ test('ensure the current error serializer is latest', async (t) => {
 
   const current = await fs.promises.readFile(path.resolve('lib/error-serializer.js'))
 
-  t.equal(current.toString(), code)
+  // line break should not be a problem depends on system
+  t.equal(unifyLineBreak(current), unifyLineBreak(code))
 })

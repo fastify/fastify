@@ -237,35 +237,35 @@ function fastify (options) {
     getDefaultRoute: router.getDefaultRoute.bind(router),
     setDefaultRoute: router.setDefaultRoute.bind(router),
     // routes shorthand methods
-    delete: function _delete (url, opts, handler) {
-      return router.prepareRoute.call(this, 'DELETE', url, opts, handler)
+    delete: function _delete (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'DELETE', url, options, handler })
     },
-    get: function _get (url, opts, handler) {
-      return router.prepareRoute.call(this, 'GET', url, opts, handler)
+    get: function _get (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'GET', url, options, handler })
     },
-    head: function _head (url, opts, handler) {
-      return router.prepareRoute.call(this, 'HEAD', url, opts, handler)
+    head: function _head (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'HEAD', url, options, handler })
     },
-    patch: function _patch (url, opts, handler) {
-      return router.prepareRoute.call(this, 'PATCH', url, opts, handler)
+    patch: function _patch (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PATCH', url, options, handler })
     },
-    post: function _post (url, opts, handler) {
-      return router.prepareRoute.call(this, 'POST', url, opts, handler)
+    post: function _post (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'POST', url, options, handler })
     },
-    put: function _put (url, opts, handler) {
-      return router.prepareRoute.call(this, 'PUT', url, opts, handler)
+    put: function _put (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'PUT', url, options, handler })
     },
-    options: function _options (url, opts, handler) {
-      return router.prepareRoute.call(this, 'OPTIONS', url, opts, handler)
+    options: function _options (url, options, handler) {
+      return router.prepareRoute.call(this, { method: 'OPTIONS', url, options, handler })
     },
-    all: function _all (url, opts, handler) {
-      return router.prepareRoute.call(this, supportedMethods, url, opts, handler)
+    all: function _all (url, options, handler) {
+      return router.prepareRoute.call(this, { method: supportedMethods, url, options, handler })
     },
     // extended route
-    route: function _route (opts) {
+    route: function _route (options) {
       // we need the fastify object that we are producing so we apply a lazy loading of the function,
       // otherwise we should bind it after the declaration
-      return router.route.call(this, opts)
+      return router.route.call(this, { options })
     },
     // expose logger instance
     log: logger,

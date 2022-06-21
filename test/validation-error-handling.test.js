@@ -97,6 +97,38 @@ test('should be able to use setErrorHandler specify custom validation error', t 
   })
 })
 
+test('validation error has 400 statusCode set', t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  fastify.setErrorHandler((error, request, reply) => {
+    const errorResponse = {
+      message: error.message,
+      statusCode: error.statusCode || 500
+    }
+
+    reply.code(errorResponse.statusCode).send(errorResponse)
+  })
+
+  fastify.post('/', { schema }, echoBody)
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      hello: 'michelangelo'
+    },
+    url: '/'
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.json(), {
+      statusCode: 400,
+      message: "body must have required property 'name'"
+    })
+    t.equal(res.statusCode, 400)
+  })
+})
+
 test('error inside custom error handler should have validationContext', t => {
   t.plan(1)
 

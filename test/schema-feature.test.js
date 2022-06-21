@@ -826,7 +826,7 @@ test('Validation context in validation result', t => {
     t.equal(err instanceof Error, true)
     t.ok(err.validation, 'detailed errors')
     t.equal(err.validationContext, 'body')
-    reply.send()
+    reply.code(400).send()
   })
   fastify.post('/', {
     handler: echoParams,

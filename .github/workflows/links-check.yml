@@ -1,0 +1,72 @@
+name: Links
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # It will be possible to check only for the links in the changed files
+      # See: https://github.com/lycheeverse/lychee-action/issues/17
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v1.5.0
+        with:
+          fail: true
+          # As external links behaviour is not predictable, we check only internal links
+          # to ensure consistency
+          args: --offline --verbose --no-progress './**/*.md'
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+
+      - name: Render template
+        if: ${{ failure() }}
+        id: template
+        uses: chuhlomin/render-template@v1.4
+        with:
+          template: ./lychee/out.md
+
+      - name: Create failure comment
+        if: ${{ failure() && steps.fc.outputs.comment-id == '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.template.outputs.result }}
+
+      - name: Create success comment
+        if: ${{ success() && steps.fc.outputs.comment-id == '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: 'No broken links ✔'
+          reactions: hooray
+
+      - name: Update failure comment
+        if: ${{ failure() && steps.fc.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: ${{ steps.template.outputs.result }}
+          edit-mode: replace
+
+      - name: Update success comment
+        if: ${{ success() && steps.fc.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: 'No broken links ✔'
+          reactions: hooray
+          edit-mode: replace

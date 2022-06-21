@@ -324,7 +324,7 @@ test('invalid schema - ajv', t => {
 
   fastify.setErrorHandler((err, request, reply) => {
     t.ok(Array.isArray(err.validation))
-    reply.send('error')
+    reply.code(400).send('error')
   })
 
   fastify.inject({

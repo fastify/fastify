@@ -135,6 +135,10 @@ section.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
+- [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
+  Run REST APIs and other web applications using your existing Node.js 
+  application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda, 
+  Huawei and many other clouds.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).

@@ -211,4 +211,11 @@ expectAssignable<FastifyPluginAsync>(async () => {})
 expectAssignable<FastifyPluginCallback>(() => {})
 expectAssignable<FastifyPlugin>(() => {})
 
-expectAssignable<ValidationResult>({} as AjvErrorObject)
+const ajvErrorObject: AjvErrorObject = {
+  keyword: '',
+  instancePath: '',
+  schemaPath: '',
+  params: {},
+  message: ''
+}
+expectAssignable<ValidationResult>(ajvErrorObject)

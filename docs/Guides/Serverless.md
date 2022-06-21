@@ -24,23 +24,31 @@ snippet of code.
 
 ### Contents
 
-- [AWS Lambda](#aws-lambda)
+- [AWS](#aws)
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
 
-## AWS Lambda
+## AWS
+
+To integrate with AWS, you have two choices of library:
+
+- Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) 
+  which only adds API Gateway support but has heavy optimizations for fastify.
+- Using [@h4ad/serverless-adapter](https://github.com/H4ad/serverless-adapter) 
+  which is a little slower as it creates an HTTP request for each AWS event but 
+  has support for more AWS services such as: AWS SQS, AWS SNS and others.
+
+So you can decide which option is best for you, but you can test both libraries.
+
+### Using @fastify/aws-lambda
 
 The sample provided allows you to easily build serverless web
 applications/services and RESTful APIs using Fastify on top of AWS Lambda and
 Amazon API Gateway.
 
-*Note: Using
-[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) is just one
-possible way.*
-
-### app.js
+#### app.js
 
 ```js
 const fastify = require('fastify');
@@ -71,7 +79,7 @@ When you execute your Fastify application like always, i.e. `node app.js` *(the
 detection for this could be `require.main === module`)*, you can normally listen
 to your port, so you can still run your Fastify function locally.
 
-### lambda.js
+#### lambda.js
 
 ```js
 const awsLambdaFastify = require('@fastify/aws-lambda')
@@ -99,13 +107,131 @@ signature to be used as a lambda `handler` function. This way all the incoming
 events (API Gateway requests) are passed to the `proxy` function of
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
-### Example
+#### Example
 
 An example deployable with
 [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be
 found
 [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
 
+### Using @h4ad/serverless-adapter
+
+The sample provided allows you to easily build serverless web
+applications/services and RESTful APIs using Fastify on top of AWS Lambda and
+integrate with AWS Services like: API Gateway V1/V2, AWS SQS, AWS SNS, AWS DynamoDB
+and many others.
+
+#### app.js
+
+```js
+const fastify = require('fastify');
+
+function init() {
+  const app = fastify();
+  app.get('/', (request, reply) => reply.send({ hello: 'world' }));
+  return app;
+}
+
+if (require.main === module) {
+  // called directly i.e. "node app"
+  init().listen({ port: 3000 }, (err) => {
+    if (err) console.error(err);
+    console.log('server listening on 3000');
+  });
+} else {
+  // required as a module => executed on aws lambda
+  module.exports = init;
+}
+```
+
+When executed in your lambda function we do not need to listen to a specific
+port, so we just export the wrapper function `init` in this case. The
+[`lambda.js`](#lambdajs) file will use this export.
+
+When you execute your Fastify application like always, i.e. `node app.js` *(the
+detection for this could be `require.main === module`)*, you can normally listen
+to your port, so you can still run your Fastify function locally.
+
+#### lambda.js
+
+In the code below, we will add support to
+[AWS API Gateway V2](https://viniciusl.com.br/serverless-adapter/docs/main/adapters/aws/api-gateway-v2)
+ and [AWS SQS](https://viniciusl.com.br/serverless-adapter/docs/main/adapters/aws/sqs).
+ To learn which services of AWS you can integrate, see
+ [Adapters AWS docs](https://viniciusl.com.br/serverless-adapter/docs/category/aws).
+
+```js
+const { ServerlessAdapter } = require('@h4ad/serverless-adapter');
+const { ApiGatewayV2Adapter, SQSAdapter } = require('@h4ad/serverless-adapter/lib/adapters/aws');
+const { FastifyFramework } = require('@h4ad/serverless-adapter/lib/frameworks/fastify');
+const { DefaultHandler } = require('@h4ad/serverless-adapter/lib/handlers/default');
+const { PromiseResolver } = require('@h4ad/serverless-adapter/lib/resolvers/promise');
+const app = require('./app');
+
+exports.handler = ServerlessAdapter.new(app)
+  .setFramework(new FastifyFramework())
+  .setHandler(new DefaultHandler())
+  .setResolver(new PromiseResolver())
+  .addAdapter(new ApiGatewayV2Adapter())
+  .addAdapter(new SQSAdapter())
+  .build();
+```
+
+> See the [Architecture Section of Serverless Adapter](https://viniciusl.com.br/serverless-adapter/docs/main/architecture)
+> for what is Resolver, Adapter and Handler.
+
+That way, all inbound events coming from API Gateway and AWS SQS are correctly
+handled by the library.
+
+In the case of AWS SQS, by default it creates a `POST` request to `/sqs`,
+but you can [customize these default values](https://viniciusl.com.br/serverless-adapter/docs/main/adapters/aws/sqs#customizing).
+
+With AWS API Gateway, the library will just forward the user's request to
+your user, so if you create a `GET` request to `/`, it will return the
+json `{ "hello": "world" }`.
+
+#### But why would I use API Gateway and SQS together?
+
+It's a great question, let me present an architecture of a project:
+
+You have to create two microservices, one handles user details
+and another deals with payments. You will use Fastify to create these
+microservices and you have routes to create user, update user, delete user,
+make payments and buy animals.
+
+Each API has its own database, but the API that handles payments needs
+to know when the user is created to have the ID and Username to put on the invoice.
+So the question is, how do you communicate the payments API when the user is created?
+
+In on-premises solutions, you can host your APIs on any machine and connect your
+API with Redis, RabbitMQ or another solution that is responsible for handling
+some work be processed.
+
+But on AWS using AWS Lambda, your choice is to use AWS SQS because its APIs
+it's not stateful, so you can't use Redis or RabbitMQ (not in on-premise mode).
+
+In that case, you can create another AWS Lambda to be a responsible consumer
+to forward the AWS SQS event to your payment API, but you will be billed twice,
+the first when the consumer creates the request and the second when your API
+receive the order, that's expensive!
+
+> Random Guy: why not create a request inside the first API for the Payment API?
+>
+> It's a solution for many cases, but inside serverless you only have 29s
+> to process your requests, so it is not safe or scalable to do so.
+
+But with [@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/)
+, just add [SQSAdapter](https://viniciusl.com.br/serverless-adapter/docs/main/adapters/aws/sqs)
+to add AWS SQS support without having a consumer to forward the request
+for your API.
+This option is good because: you don't need to make 2 requests (only one) and
+you have the advantage of - sometimes - the payment API is already started if
+someone else has already requested something in the payment API.
+
+#### Examples
+
+You can see [here](https://github.com/H4ad/serverless-adapter-examples#fastify) 
+an example of working Fastify API integrated with AWS API Gateway.
 
 ### Considerations
 

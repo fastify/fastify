@@ -6,6 +6,9 @@ on:
       - 'docs/**'
       - '*.md'
 
+permissions:
+  pull-requests: write
+
 jobs:
   linkChecker:
     runs-on: ubuntu-latest

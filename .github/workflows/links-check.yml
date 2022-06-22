@@ -36,6 +36,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: 'github-actions[bot]'
+          body-includes: Internal Links Check 
 
       - name: Render template
         if: ${{ failure() }}
@@ -49,14 +50,18 @@ jobs:
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.template.outputs.result }}
+          body: |
+            # Internal Links Check:
+            ${{ steps.template.outputs.result }}
 
       - name: Create success comment
         if: ${{ success() && steps.fc.outputs.comment-id == '' }}
         uses: peter-evans/create-or-update-comment@v2
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          body: 'No broken links ✔'
+          body: |
+            # Internal Links Check:
+            No broken links ✔
           reactions: hooray
 
       - name: Update failure comment
@@ -64,7 +69,9 @@ jobs:
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
-          body: ${{ steps.template.outputs.result }}
+          body: |
+            # Internal Links Check:
+            ${{ steps.template.outputs.result }}
           edit-mode: replace
 
       - name: Update success comment
@@ -72,6 +79,8 @@ jobs:
         uses: peter-evans/create-or-update-comment@v2
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
-          body: 'No broken links ✔'
+          body: |
+            # Internal Links Check:
+            No broken links ✔
           reactions: hooray
           edit-mode: replace

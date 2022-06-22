@@ -13,7 +13,10 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       # It will be possible to check only for the links in the changed files
       # See: https://github.com/lycheeverse/lychee-action/issues/17

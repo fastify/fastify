@@ -1,4 +1,4 @@
-name: Links
+name: Internal Links Check
 
 on:
   pull_request:

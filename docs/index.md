@@ -16,7 +16,7 @@ Complete newcomers to Fastify should first read our [Getting
 Started](./Guides/Getting-Started.md) guide.
 
 Developers experienced with Fastify should consult the [reference
-documentation](./Reference/index.md) directly to find the topic they are seeking
+documentation](./Reference/Index.md) directly to find the topic they are seeking
 more information about.
 
 ## Additional Documentation

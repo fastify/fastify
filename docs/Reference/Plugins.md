@@ -13,7 +13,7 @@ way we create a *directed acyclic graph* (DAG) and we will not have issues
 caused by cross dependencies.
 
 You may have already seen in the [Getting
-Started]((../Guides/Getting-Started.md#your-first-plugin)) guide how easy it is
+Started](../Guides/Getting-Started.md#your-first-plugin) guide how easy it is
 to use this API:
 ```
 fastify.register(plugin, [options])

@@ -2,7 +2,6 @@ import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
-import { ErrorObject as AjvErrorObject } from 'ajv'
 
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
@@ -182,7 +181,13 @@ declare module '@fastify/error' {
   }
 }
 
-export interface ValidationResult extends AjvErrorObject {}
+export interface ValidationResult {
+  keyword: string;
+  instancePath: string;
+  schemaPath: string;
+  params: Record<string, string | string[]>;
+  message?: string;
+}
 
 /* Export all additional types */
 export type { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'

@@ -20,7 +20,8 @@ test('Regular request', t => {
   const request = new Request('id', 'params', req, 'query', 'log')
   t.type(request, Request)
   t.type(request.validate, Function)
-  t.type(request.serialize, Function)
+  t.type(request.getValidationFunction, Function)
+  t.type(request.compileValidationSchema, Function)
   t.equal(request.id, 'id')
   t.equal(request.params, 'params')
   t.equal(request.raw, req)
@@ -76,7 +77,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(17)
+  t.plan(19)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -106,7 +107,8 @@ test('Request with trust proxy', t => {
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
   t.type(request.validate, Function)
-  t.type(request.serialize, Function)
+  t.type(request.getValidationFunction, Function)
+  t.type(request.compileValidationSchema, Function)
 })
 
 test('Request with trust proxy, encrypted', t => {
@@ -225,7 +227,7 @@ test('Request with trust proxy - plain', t => {
 })
 
 test('Request with undefined socket', t => {
-  t.plan(17)
+  t.plan(19)
   const headers = {
     host: 'hostname'
   }
@@ -252,7 +254,8 @@ test('Request with undefined socket', t => {
   t.equal(request.protocol, undefined)
   t.same(request.socket, req.socket)
   t.type(request.validate, Function)
-  t.type(request.serialize, Function)
+  t.type(request.getValidationFunction, Function)
+  t.type(request.compileValidationSchema, Function)
 })
 
 test('Request with trust proxy and undefined socket', t => {

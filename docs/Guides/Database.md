@@ -13,7 +13,7 @@ plugins maintained within the Fastify organization.
 > a plugin can be written for the missing database engine. 
 
 > If you would like to write your own Fastify plugin 
-> please take a look at the [plugins guide](./Plugins-Guide.md)
+> please take a look at the [plugins guide](./Plugins-Gu.md)
 
 ### [MySQL](https://github.com/fastify/fastify-mysql)
 

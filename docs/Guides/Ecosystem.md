@@ -132,6 +132,8 @@ section.
   sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
+- [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
+  easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.

@@ -7,8 +7,10 @@ import fastify, {
   LightMyRequestChain,
   LightMyRequestResponse,
   LightMyRequestCallback,
-  InjectOptions, FastifyBaseLogger
+  InjectOptions, FastifyBaseLogger,
+  ValidationResult
 } from '../../fastify'
+import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
@@ -208,3 +210,12 @@ fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInsta
 expectAssignable<FastifyPluginAsync>(async () => {})
 expectAssignable<FastifyPluginCallback>(() => {})
 expectAssignable<FastifyPlugin>(() => {})
+
+const ajvErrorObject: AjvErrorObject = {
+  keyword: '',
+  instancePath: '',
+  schemaPath: '',
+  params: {},
+  message: ''
+}
+expectAssignable<ValidationResult>(ajvErrorObject)

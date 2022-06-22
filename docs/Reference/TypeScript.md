@@ -1359,7 +1359,7 @@ A method for checking the existence of a type parser of a certain content type
 
 ##### fastify.FastifyError
 
-[src](https://github.com/fastify/fastify/blob/main/types/error.d.ts#L17)
+[src](https://github.com/fastify/fastify/blob/main/fastify.d.ts#L179)
 
 FastifyError is a custom error object that includes status code and validation
 results.
@@ -1369,7 +1369,7 @@ properties: `statusCode: number` and `validation: ValiationResult[]`.
 
 ##### fastify.ValidationResult
 
-[src](https://github.com/fastify/fastify/blob/main/types/error.d.ts#L4)
+[src](https://github.com/fastify/fastify/blob/main/fastify.d.ts#L184)
 
 The route validation internally relies upon Ajv, which is a high-performance
 JSON schema validator.

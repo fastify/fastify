@@ -183,10 +183,10 @@ declare module '@fastify/error' {
 
 export interface ValidationResult {
   keyword: string;
-  dataPath: string;
+  instancePath: string;
   schemaPath: string;
   params: Record<string, string | string[]>;
-  message: string;
+  message?: string;
 }
 
 /* Export all additional types */

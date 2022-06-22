@@ -482,6 +482,8 @@ section.
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
   Server-Sent Events using Async Iterators (supports newer versions of Fastify).
+- [`fastify-ssr-vite`](https://github.com/nineohnine/fastify-ssr-vite) A simple
+  plugin for setting up server side rendering with vite.
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to
   initialize and encapsulate [Stripe
   Node.js](https://github.com/stripe/stripe-node) instances in Fastify.

@@ -22,7 +22,7 @@ jobs:
       # See: https://github.com/lycheeverse/lychee-action/issues/17
       - name: Link Checker
         id: lychee
-        uses: lycheeverse/lychee-action@76ab977fedbeaeb32029313724a2e56a8a393548 # 1.5.0
+        uses: lycheeverse/lychee-action@76ab977fedbeaeb32029313724a2e56a8a393548
         with:
           fail: true
           # As external links behaviour is not predictable, we check only internal links
@@ -34,7 +34,7 @@ jobs:
 
       - name: Find Comment
         if: ${{ always() }}
-        uses: peter-evans/find-comment@v2
+        uses: peter-evans/find-comment@1769778a0c5bd330272d749d12c036d65e70d39d
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
@@ -44,13 +44,13 @@ jobs:
       - name: Render template
         if: ${{ failure() }}
         id: template
-        uses: chuhlomin/render-template@v1.4
+        uses: chuhlomin/render-template@69462090a6315efa50069855670b3a4abab20512
         with:
           template: ./lychee/out.md
 
       - name: Create failure comment
         if: ${{ failure() && steps.fc.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
@@ -59,7 +59,7 @@ jobs:
 
       - name: Create success comment
         if: ${{ success() && steps.fc.outputs.comment-id == '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
@@ -69,7 +69,7 @@ jobs:
 
       - name: Update failure comment
         if: ${{ failure() && steps.fc.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |
@@ -79,7 +79,7 @@ jobs:
 
       - name: Update success comment
         if: ${{ success() && steps.fc.outputs.comment-id != '' }}
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: |

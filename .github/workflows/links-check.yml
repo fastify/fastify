@@ -20,12 +20,14 @@ jobs:
         with:
           fail: true
           # As external links behaviour is not predictable, we check only internal links
-          # to ensure consistency
+          # to ensure consistency.
+          # See: 
           args: --offline --verbose --no-progress './**/*.md'
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Find Comment
+        if: ${{ always() }}
         uses: peter-evans/find-comment@v2
         id: fc
         with:

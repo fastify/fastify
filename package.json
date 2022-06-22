@@ -146,7 +146,7 @@
     "eslint-plugin-n": "^15.2.0",
     "eslint-plugin-promise": "^6.0.0",
     "fast-json-body": "^1.1.0",
-    "fast-json-stringify": "^4.2.0",
+    "fast-json-stringify": "^5.0.0",
     "fastify-plugin": "^3.0.1",
     "fluent-json-schema": "^3.1.0",
     "form-data": "^4.0.0",
@@ -179,7 +179,7 @@
   "dependencies": {
     "@fastify/ajv-compiler": "^3.1.0",
     "@fastify/error": "^3.0.0",
-    "@fastify/fast-json-stringify-compiler": "^3.0.1",
+    "@fastify/fast-json-stringify-compiler": "^4.0.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.1.3",
     "find-my-way": "^6.3.0",

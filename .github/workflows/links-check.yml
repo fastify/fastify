@@ -2,6 +2,7 @@ name: Internal Links Check
 
 on:
   pull_request_target:
+    types: [opened, synchronize, reopened]
     paths:
       - 'docs/**'
       - '*.md'

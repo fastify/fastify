@@ -406,6 +406,8 @@ section.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
+- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
+  Lightweight cache plugin
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
   thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)

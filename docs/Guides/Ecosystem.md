@@ -275,6 +275,8 @@ section.
   the authentication API.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
   Handy plugin to provide multipart support and fastify-swagger integration.
+- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
+  Lightweight cache plugin
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace)
   [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference)
   Connector for Fastify.

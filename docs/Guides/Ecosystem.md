@@ -333,6 +333,8 @@ section.
   Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser)
   Fastify plugin to parse request language.
+- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
+  Lightweight cache plugin
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua

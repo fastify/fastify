@@ -7,7 +7,8 @@ import fastify, {
   LightMyRequestChain,
   LightMyRequestResponse,
   LightMyRequestCallback,
-  InjectOptions, FastifyBaseLogger
+  InjectOptions, FastifyBaseLogger,
+  ValidationResult
 } from '../../fastify'
 import * as http from 'http'
 import * as https from 'https'
@@ -71,8 +72,8 @@ expectAssignable<FastifyInstance>(fastify({ onProtoPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ onConstructorPoisoning: 'error' }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { rounding: 'ceil' } }))
 expectAssignable<FastifyInstance>(fastify({ serializerOpts: { ajv: { missingRefs: 'ignore' } } }))
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: { } } }))
-expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: { } } }))
+expectAssignable<FastifyInstance>(fastify({ serializerOpts: { schema: {} } }))
+expectAssignable<FastifyInstance>(fastify({ serializerOpts: { otherProp: {} } }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({ logger: true }))
 expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>>(fastify({
@@ -141,35 +142,35 @@ expectAssignable<FastifyInstance>(fastify({
     version: {
       name: 'version',
       storage: () => ({
-        get: () => () => {},
+        get: () => () => { },
         set: () => { },
         del: () => { },
         empty: () => { }
       }),
-      validate () {},
+      validate () { },
       deriveConstraint: () => 'foo'
     },
     host: {
       name: 'host',
       storage: () => ({
-        get: () => () => {},
+        get: () => () => { },
         set: () => { },
         del: () => { },
         empty: () => { }
       }),
-      validate () {},
+      validate () { },
       deriveConstraint: () => 'foo'
     },
     withObjectValue: {
       name: 'withObjectValue',
       storage: () => ({
-        get: () => () => {},
+        get: () => () => { },
         set: () => { },
         del: () => { },
         empty: () => { }
       }),
-      validate () {},
-      deriveConstraint: () => {}
+      validate () { },
+      deriveConstraint: () => { }
 
     }
   }
@@ -205,6 +206,22 @@ expectAssignable<FastifyInstance>(fastify({ jsonShorthand: true }))
 expectAssignable<PromiseLike<FastifyInstance>>(fastify({ return503OnClosing: true }))
 fastify().then(fastifyInstance => expectAssignable<FastifyInstance>(fastifyInstance))
 
-expectAssignable<FastifyPluginAsync>(async () => {})
-expectAssignable<FastifyPluginCallback>(() => {})
-expectAssignable<FastifyPlugin>(() => {})
+expectAssignable<FastifyPluginAsync>(async () => { })
+expectAssignable<FastifyPluginCallback>(() => { })
+expectAssignable<FastifyPlugin>(() => { })
+
+expectAssignable<ValidationResult>({
+  keyword: '',
+  instancePath: '',
+  schemaPath: '',
+  params: {},
+  message: ''
+})
+
+expectError<ValidationResult>({
+  keyword: '',
+  dataPath: '',
+  schemaPath: '',
+  params: {},
+  message: ''
+})

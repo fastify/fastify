@@ -275,8 +275,6 @@ section.
   the authentication API.
 - [`fastify-formidable`](https://github.com/climba03003/fastify-formidable)
   Handy plugin to provide multipart support and fastify-swagger integration.
-- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
-  Lightweight cache plugin
 - [`fastify-gcloud-trace`](https://github.com/mkinoshi/fastify-gcloud-trace)
   [Google Cloud Trace API](https://cloud.google.com/trace/docs/reference)
   Connector for Fastify.
@@ -335,6 +333,8 @@ section.
   Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser)
   Fastify plugin to parse request language.
+- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
+  Lightweight cache plugin
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua

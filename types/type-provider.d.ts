@@ -21,7 +21,8 @@ export type CallTypeProvider<F extends FastifyTypeProvider, I> = (F & { input: I
 // -----------------------------------------------------------------------------------------------
 
 // Used to map undefined SchemaCompiler properties to unknown
-type UndefinedToUnknown<T> = T extends undefined ? unknown : T
+//   Without brackets, UndefinedToUnknown<undefined | null> => unknown
+type UndefinedToUnknown<T> = [T] extends [undefined] ? unknown : T
 
 // union-aware keyof operator
 //    keyof ({ a: number} | { b: number}) => never

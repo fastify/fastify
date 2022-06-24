@@ -49,7 +49,7 @@ interface RequestData extends RequestGenericInterface {
 type Handler = RouteHandler<RequestData>
 
 type CustomRequest = FastifyRequest<{
-  Body: RequestBody;
+  Body: RequestBody | undefined;
   Querystring: RequestQuerystring;
   Params: RequestParams;
   Headers: RequestHeaders;
@@ -104,11 +104,15 @@ const postHandler: Handler = function (request) {
 }
 
 function putHandler (request: CustomRequest, reply: FastifyReply) {
-  expectType<RequestBody>(request.body)
+  expectType<RequestBody | undefined>(request.body)
   expectType<RequestParams>(request.params)
   expectType<RequestHeaders & RawRequestDefaultExpression['headers']>(request.headers)
   expectType<RequestQuerystring>(request.query)
-  expectType<string>(request.body.content)
+  if (typeof request.body === 'undefined') {
+    expectType<undefined>(request.body)
+  } else {
+    expectType<string>(request.body.content)
+  }
   expectType<string>(request.query.from)
   expectType<number>(request.params.id)
   expectType<string>(request.headers['x-foobar'])

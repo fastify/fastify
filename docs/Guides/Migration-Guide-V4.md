@@ -10,8 +10,10 @@ work after upgrading.
 
 ### Error handling composition ([#3261](https://github.com/fastify/fastify/pull/3261))
 
-When an error is thrown in a async error handler function, the upper-level error handler is executed if set.
-If there is not a upper-level error handler, the default will be executed as it was previously.
+When an error is thrown in a async error handler function, 
+the upper-level error handler is executed if set.
+If there is not a upper-level error handler, the default will 
+be executed as it was previously.
 
 ```
 import Fastify from 'fastify'
@@ -103,4 +105,5 @@ properties: {
 
 ### Add `reply.trailers` methods ([#3794](https://github.com/fastify/fastify/pull/3794))
 
-Fastify now supports the [HTTP Trailer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer) response headers.
+Fastify now supports the [HTTP Trailer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer) 
+response headers.

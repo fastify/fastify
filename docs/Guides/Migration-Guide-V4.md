@@ -105,6 +105,7 @@ properties: {
 
 ### Add `reply.trailers` methods ([#3794](https://github.com/fastify/fastify/pull/3794))
 
-Fastify now supports the 
-[HTTP Trailer](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer) 
-response headers.
+Fastify now supports the [HTTP Trailer] response headers.
+
+
+[HTTP Trailer]: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Trailer

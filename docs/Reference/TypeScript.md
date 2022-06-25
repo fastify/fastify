@@ -199,17 +199,18 @@ Below is how to setup schema validation using vanilla `typebox` and
 #### typebox
 
 A useful library for building types and a schema at once is
-[typebox](https://www.npmjs.com/package/@sinclair/typebox). With typebox you
-define your schema within your code and use them directly as types or schemas as
-you need them.
+[typebox](https://www.npmjs.com/package/@sinclair/typebox) along with 
+[fastify-type-provider-typebox](https://github.com/fastify/fastify-type-provider-typebox).
+With typebox you define your schema within your code and use them
+directly as types or schemas as you need them.
 
 When you want to use it for validation of some payload in a fastify route you
 can do it as follows:
 
-1. Install `typebox` in your project.
+1. Install `typebox` and `fastify-type-provider-typebox` in your project.
 
     ```bash
-    npm i @sinclair/typebox
+    npm i @sinclair/typebox @fastify/type-provider-typebox
     ```
 
 2. Define the schema you need with `Type` and create the respective type  with
@@ -218,40 +219,52 @@ can do it as follows:
     ```typescript
     import { Static, Type } from '@sinclair/typebox'
 
-    const User = Type.Object({
+    export const User = Type.Object({
       name: Type.String(),
-      mail: Type.Optional(Type.String({ format: "email" })),
-    });
-    type UserType = Static<typeof User>;
+      mail: Type.Optional(Type.String({ format: 'email' })),
+    })
+
+    export type UserType = Static<typeof User>
     ```
 
 3. Use the defined type and schema during the definition of your route
 
     ```typescript
-    const app = fastify();
+    import Fastify from 'fastify'
+    import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+    // ...
 
-    app.post<{ Body: UserType; Reply: UserType }>(
-      "/",
+    const fastify = Fastify().withTypeProvider<TypeBoxTypeProvider>()
+
+    app.post<{ Body: UserType, Reply: UserType }>(
+      '/',
       {
         schema: {
           body: User,
           response: {
-            200: User,
+            200: User
           },
         },
       },
       (request, reply) => {
-        const { body: user } = request;
-        /* user has type
-        * const user: StaticProperties<{
-        *  name: TString;
-        *  mail: TOptional<TString>;
-        * }>
-        */
-        //...
-        reply.status(200).send(user);
+        // The `name` and `mail` types are automatically inferred
+        const { name, mail } = request.body;
+        reply.status(200).send({ name, mail });
       }
-    );
+    )
+    ```
+
+     **Note** For Ajv version 7 and above is required to use the `ajvTypeBoxPlugin`:
+
+    ```typescript
+    import Fastify from 'fastify'
+    import { ajvTypeBoxPlugin, TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
+
+    const fastify = Fastify({
+      ajv: {
+        plugins: [ajvTypeBoxPlugin]
+      }
+    }).withTypeProvider<TypeBoxTypeProvider>()
     ```
 
 #### Schemas in JSON Files

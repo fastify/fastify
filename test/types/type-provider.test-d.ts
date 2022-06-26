@@ -390,11 +390,11 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 ))
 
 // https://github.com/fastify/fastify/issues/4088
-expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get("/", {
+expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
   schema: {
-      response: { type: 'string' }
+    response: { type: 'string' }
   } as const
-}, (_, res) => {    
+}, (_, res) => {
   return { foo: 555 }
 }))
 

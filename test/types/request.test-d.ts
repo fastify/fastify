@@ -85,7 +85,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyInstance>(request.server)
 }
 
-const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveFastifyReplyReturnType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>, CustomLoggerInterface> = function (request, _reply) {
+const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>, CustomLoggerInterface> = function (request, _reply) {
   expectType<CustomLoggerInterface>(request.log)
 }
 

@@ -298,7 +298,7 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       }
     }
   },
-  async (_, res): Promise<RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, TypeBoxProvider>> => {
+  async (_, res) => {
     return false
   }
 ))
@@ -384,10 +384,19 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       } as const
     }
   },
-  async (_, res): Promise<RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, TypeBoxProvider>> => {
+  async (_, res) => {
     return false
   }
 ))
+
+// https://github.com/fastify/fastify/issues/4088
+expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
+  schema: {
+    response: { type: 'string' }
+  } as const
+}, (_, res) => {
+  return { foo: 555 }
+}))
 
 // -------------------------------------------------------------------
 // Reply Type Override

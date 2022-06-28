@@ -72,6 +72,7 @@ better error reporting for route definition. As a result if you specify an `onRo
 in a plugin you should either:
 * wrap your routes in a plugin (recommended)
 * use `await register(...)`
+
 For example refactor this:
 ```
 fastify.register((instance, opts, done) => {

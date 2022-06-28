@@ -65,6 +65,35 @@ Starting from v4, all the `GET` routes will create a sibling `HEAD` route.
 You can revert this behaviour by setting the server's option `exposeHeadRoutes`
 to `false`.
 
+### Synchronous route definitions
+
+The route registration has been made synchronous from v4.
+This change was done to provide better error reporting for route definition.
+As a result if you specify an `onRoute` hook in a plugin you should either:
+* wrap your routes in a plugin (recommended)
+* use `await register(...)`
+
+For example refactor this:
+```
+fastify.register((instance, opts, done) => {
+  instance.addHook('onRoute', (routeOptions) => {
+    const { path, method } = routeOptions;
+    console.log({ path, method });
+  });
+  done();
+});
+```
+Into this:
+```
+await fastify.register((instance, opts, done) => {
+  instance.addHook('onRoute', (routeOptions) => {
+    const { path, method } = routeOptions;
+    console.log({ path, method });
+  });
+  done();
+});
+```
+
 ## Non Breaking Changes
 
 ### Change of schema for multiple types

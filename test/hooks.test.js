@@ -799,6 +799,27 @@ test('onRoute hook with many prefix', t => {
   fastify.ready(err => { t.error(err) })
 })
 
+test('onRoute hook should not be called when it registered after route', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.addHook('onRoute', () => {
+    t.pass()
+  })
+
+  fastify.get('/', function (req, reply) {
+    reply.send()
+  })
+
+  fastify.addHook('onRoute', () => {
+    t.fail('should not be called')
+  })
+
+  fastify.ready(err => {
+    t.error(err)
+  })
+})
+
 test('onResponse hook should log request error', t => {
   t.plan(4)
 

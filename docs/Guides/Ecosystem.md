@@ -132,9 +132,15 @@ section.
   sampling process metrics.
 - [`@dnlup/fastify-traps`](https://github.com/dnlup/fastify-traps) A plugin to
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
+- [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
+  easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
+- [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
+  Run REST APIs and other web applications using your existing Node.js 
+  application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda, 
+  Huawei and many other clouds.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
   dispatches to [statsd](https://github.com/statsd/statsd).
@@ -327,6 +333,8 @@ section.
   Kubernetes client plugin.
 - [`fastify-language-parser`](https://github.com/lependu/fastify-language-parser)
   Fastify plugin to parse request language.
+- [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
+  Lightweight cache plugin
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
@@ -478,6 +486,8 @@ section.
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
   Server-Sent Events using Async Iterators (supports newer versions of Fastify).
+- [`fastify-ssr-vite`](https://github.com/nineohnine/fastify-ssr-vite) A simple
+  plugin for setting up server side rendering with vite.
 - [`fastify-stripe`](https://github.com/coopflow/fastify-stripe) Plugin to
   initialize and encapsulate [Stripe
   Node.js](https://github.com/stripe/stripe-node) instances in Fastify.

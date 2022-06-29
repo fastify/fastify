@@ -206,7 +206,7 @@ test('Should throw of the schema does not exists in output', t => {
 
   fastify.ready(err => {
     t.equal(err.code, 'FST_ERR_SCH_SERIALIZATION_BUILD')
-    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot read propert.*/) // error from fast-json-strinfigy
+    t.match(err.message, /^Failed building the serialization schema for GET: \/:id, due to error Cannot find reference.*/) // error from fast-json-strinfigy
   })
 })
 
@@ -826,7 +826,7 @@ test('Validation context in validation result', t => {
     t.equal(err instanceof Error, true)
     t.ok(err.validation, 'detailed errors')
     t.equal(err.validationContext, 'body')
-    reply.send()
+    reply.code(400).send()
   })
   fastify.post('/', {
     handler: echoParams,

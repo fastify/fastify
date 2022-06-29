@@ -21,17 +21,24 @@ export type CallTypeProvider<F extends FastifyTypeProvider, I> = (F & { input: I
 // -----------------------------------------------------------------------------------------------
 
 // Used to map undefined SchemaCompiler properties to unknown
-type UndefinedToUnknown<T> = T extends undefined ? unknown : T
+//   Without brackets, UndefinedToUnknown<undefined | null> => unknown
+type UndefinedToUnknown<T> = [T] extends [undefined] ? unknown : T
+
+// union-aware keyof operator
+//    keyof ({ a: number} | { b: number}) => never
+//    KeysOf<{a: number} | {b: number}>   => "a" | "b"
+// this exists to allow users to override faulty type-provider logic.
+type KeysOf<T> = T extends any ? keyof T : never
 
 // Resolves Request types either from generic argument or Type Provider.
 type ResolveRequestParams<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<keyof RouteGeneric['Params'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['params']> : RouteGeneric['Params']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Params']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['params']> : RouteGeneric['Params']>
 type ResolveRequestQuerystring<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<keyof RouteGeneric['Querystring'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Querystring']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['querystring']> : RouteGeneric['Querystring']>
 type ResolveRequestHeaders<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<keyof RouteGeneric['Headers'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Headers']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['headers']> : RouteGeneric['Headers']>
 type ResolveRequestBody<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> =
-  UndefinedToUnknown<keyof RouteGeneric['Body'] extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
+  UndefinedToUnknown<KeysOf<RouteGeneric['Body']> extends never ? CallTypeProvider<TypeProvider, SchemaCompiler['body']> : RouteGeneric['Body']>
 
 // The target request type. This type is inferenced on fastify 'requests' via generic argument assignment
 export interface FastifyRequestType<Params = unknown, Querystring = unknown, Headers = unknown, Body = unknown> {

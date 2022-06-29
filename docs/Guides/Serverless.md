@@ -24,23 +24,31 @@ snippet of code.
 
 ### Contents
 
-- [AWS Lambda](#aws-lambda)
+- [AWS](#aws)
 - [Google Cloud Functions](#google-cloud-functions)
 - [Google Cloud Run](#google-cloud-run)
 - [Netlify Lambda](#netlify-lambda)
 - [Vercel](#vercel)
 
-## AWS Lambda
+## AWS
+
+To integrate with AWS, you have two choices of library:
+
+- Using [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) 
+  which only adds API Gateway support but has heavy optimizations for fastify.
+- Using [@h4ad/serverless-adapter](https://github.com/H4ad/serverless-adapter) 
+  which is a little slower as it creates an HTTP request for each AWS event but 
+  has support for more AWS services such as: AWS SQS, AWS SNS and others.
+
+So you can decide which option is best for you, but you can test both libraries.
+
+### Using @fastify/aws-lambda
 
 The sample provided allows you to easily build serverless web
 applications/services and RESTful APIs using Fastify on top of AWS Lambda and
 Amazon API Gateway.
 
-*Note: Using
-[@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify) is just one
-possible way.*
-
-### app.js
+#### app.js
 
 ```js
 const fastify = require('fastify');
@@ -71,7 +79,7 @@ When you execute your Fastify application like always, i.e. `node app.js` *(the
 detection for this could be `require.main === module`)*, you can normally listen
 to your port, so you can still run your Fastify function locally.
 
-### lambda.js
+#### lambda.js
 
 ```js
 const awsLambdaFastify = require('@fastify/aws-lambda')
@@ -99,13 +107,12 @@ signature to be used as a lambda `handler` function. This way all the incoming
 events (API Gateway requests) are passed to the `proxy` function of
 [@fastify/aws-lambda](https://github.com/fastify/aws-lambda-fastify).
 
-### Example
+#### Example
 
 An example deployable with
 [claudia.js](https://claudiajs.com/tutorials/serverless-express.html) can be
 found
 [here](https://github.com/claudiajs/example-projects/tree/master/fastify-app-lambda).
-
 
 ### Considerations
 
@@ -113,6 +120,12 @@ found
   [streams](../Reference/Reply.md#streams).
 - API Gateway has a timeout of 29 seconds, so it is important to provide a reply
   during this time.
+
+#### Beyond API Gateway
+
+If you need to integrate with more AWS services, take a look at
+[@h4ad/serverless-adapter](https://viniciusl.com.br/serverless-adapter/docs/main/frameworks/fastify)
+on Fastify to find out how to integrate.
 
 ## Google Cloud Functions
 

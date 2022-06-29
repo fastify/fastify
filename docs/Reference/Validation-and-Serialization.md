@@ -484,6 +484,17 @@ fastify.post('/the/url', {
 }, handler)
 ```
 
+##### .statusCode property
+
+All validation errors will be added a `.statusCode` property set to `400`. This guarantees
+that the default error handler will set the status code of the response to `400`.
+
+```js
+fastify.setErrorHandler(function (error, request, reply) {
+  request.log.error(error, `This error has status code ${error.statusCode}`)
+  reply.status(error.statusCode).send(error)
+})
+```
 
 ##### Validation messages with other validation libraries
 

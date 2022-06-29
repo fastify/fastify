@@ -144,7 +144,7 @@ test('pretty print - commonPrefix', t => {
 `
     const flatExpected = `└── / (-)
     ├── helicopter (GET, HEAD)
-    └── hello (GET, PUT, HEAD)
+    └── hello (GET, HEAD, PUT)
 `
     t.equal(typeof radixTree, 'string')
     t.equal(typeof flatTree, 'string')
@@ -200,7 +200,7 @@ test('pretty print - includeMeta, includeHooks', t => {
     │   • (onTimeout) ["onTimeout()"]
     │   • (onRequest) ["anonymous()"]
     │   • (errorHandler) "defaultErrorHandler()"
-    └── hello (GET, PUT, HEAD)
+    └── hello (GET, HEAD, PUT)
         • (onTimeout) ["onTimeout()"]
         • (onRequest) ["anonymous()"]
         • (errorHandler) "defaultErrorHandler()"
@@ -210,7 +210,7 @@ test('pretty print - includeMeta, includeHooks', t => {
     ├── helicopter (GET, HEAD)
     │   • (onTimeout) ["onTimeout()"]
     │   • (onRequest) ["anonymous()"]
-    └── hello (GET, PUT, HEAD)
+    └── hello (GET, HEAD, PUT)
         • (onTimeout) ["onTimeout()"]
         • (onRequest) ["anonymous()"]
 `

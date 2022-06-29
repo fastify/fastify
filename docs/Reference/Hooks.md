@@ -28,6 +28,7 @@ are Request/Reply hooks and application hooks:
   - [onRegister](#onregister)
 - [Scope](#scope)
 - [Route level hooks](#route-level-hooks)
+- [Using Hooks to Inject Custom Properties](#using-hooks-to-inject-custom-properties)
 - [Diagnostics Channel Hooks](#diagnostics-channel-hooks)
 
 **Notice:** the `done` callback is not available when using `async`/`await` or
@@ -648,6 +649,57 @@ fastify.route({
 ```
 
 **Note**: both options also accept an array of functions.
+
+## Using Hooks to Inject Custom Properties
+<a id="using-hooks-to-inject-custom-properties"></a>
+
+You can use a hook to inject custom properties into incoming requests.
+This is useful for reusing processed data from hooks in controllers.
+
+A very common use case is, for example, checking user authentication based
+on their token and then storing their recovered data into
+the [Request](./Request.md) instance. This way, your controllers can read it
+easily with `request.authenticatedUser` or whatever you want to call it.
+That's how it might look like:
+
+```js
+fastify.addHook('preParsing', async (request) => {
+  request.authenticatedUser = {
+    id: 42,
+    name: 'Jane Doe',
+    role: 'admin'
+  }
+})
+
+fastify.get('/me/is-admin', async function (req, reply) {
+  return { isAdmin: req.authenticatedUser?.role === 'admin' || false }
+})
+```
+
+Note that `.authenticatedUser` could actually be any property name
+choosen by yourself. Using your own custom property prevents you
+from mutating existing properties, which
+would be a dangerous and destructive operation. So be careful and
+make sure your property is entirely new, also using this approach
+only for very specific and small cases like this example.
+
+Regarding TypeScript in this example, you'd need to update the
+`FastifyRequest` core interface to include your new property typing
+(for more about it, see [TypeScript](./TypeScript.md) page), like:
+
+```ts
+interface AuthenticatedUser { /* ... */ }
+
+declare module 'fastify' {
+  export interface FastifyRequest {
+    authenticatedUser?: AuthenticatedUser;
+  }
+}
+```
+
+Although this is a very pragmatic approach, if you're trying to do
+something more complex that changes these core objects, then
+consider creating a custom [Plugin](./Plugins.md) instead.
 
 ## Diagnostics Channel Hooks
 

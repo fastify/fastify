@@ -194,7 +194,18 @@ expectAssignable<FastifyInstance>(fastify({ frameworkErrors: () => { } }))
 expectAssignable<FastifyInstance>(fastify({
   rewriteUrl: (req) => req.url === '/hi' ? '/hello' : req.url!
 }))
-expectAssignable<FastifyInstance>(fastify({ schemaErrorFormatter: (errors, dataVar) => new Error() }))
+expectAssignable<FastifyInstance>(fastify({
+  schemaErrorFormatter: (errors, dataVar) => {
+    console.log(
+      errors[0].keyword.toLowerCase(),
+      errors[0].message?.toLowerCase(),
+      errors[0].params,
+      errors[0].instancePath.toLowerCase(),
+      errors[0].schemaPath.toLowerCase()
+    )
+    return new Error()
+  }
+}))
 expectAssignable<FastifyInstance>(fastify({
   clientErrorHandler: (err, socket) => {
     expectType<ConnectionError>(err)

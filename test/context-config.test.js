@@ -12,6 +12,11 @@ const schema = {
   }
 }
 
+const defaultShape = {
+  validatorCompiler: null,
+  serializerCompiler: null
+}
+
 function handler (req, reply) {
   reply.send(reply.context.config)
 }
@@ -46,7 +51,7 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -55,7 +60,7 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -64,7 +69,7 @@ test('config', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/no-config', method: 'GET' }, defaultShape))
   })
 })
 
@@ -98,7 +103,7 @@ test('config with exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -107,7 +112,7 @@ test('config with exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -116,7 +121,7 @@ test('config with exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/no-config', method: 'GET' }, defaultShape))
   })
 })
 
@@ -150,7 +155,7 @@ test('config without exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/get', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -159,7 +164,7 @@ test('config without exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, schema.config))
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/route', method: 'GET' }, defaultShape, schema.config))
   })
 
   fastify.inject({
@@ -168,6 +173,6 @@ test('config without exposeHeadRoutes', t => {
   }, (err, response) => {
     t.error(err)
     t.equal(response.statusCode, 200)
-    t.same(JSON.parse(response.payload), { url: '/no-config', method: 'GET' })
+    t.same(JSON.parse(response.payload), Object.assign({ url: '/no-config', method: 'GET' }, defaultShape))
   })
 })

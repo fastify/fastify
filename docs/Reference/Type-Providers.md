@@ -70,14 +70,7 @@ import { Type } from '@sinclair/typebox'
 
 import fastify from 'fastify'
 
-const server = fastify({
-    ajv: {
-        customOptions: {
-            strict: 'log',
-            keywords: ['kind', 'modifier'],
-        },
-    },
-}).withTypeProvider<TypeBoxTypeProvider>()
+const server = fastify().withTypeProvider<TypeBoxTypeProvider>()
 
 server.get('/route', {
     schema: {

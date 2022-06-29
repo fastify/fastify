@@ -11,7 +11,7 @@ import { HookHandlerDoneFunction } from '../../types/hooks'
 import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
 import { DefaultRoute } from '../../types/route'
-import { FastifySchemaControllerOptions } from '../../types/schema'
+import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
 
 const server = fastify()
 
@@ -325,3 +325,6 @@ expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
 
 expectAssignable<DefaultRoute<RawRequestDefaultExpression, RawReplyDefaultExpression>>(server.getDefaultRoute())
+
+expectType<FastifySchemaCompiler<any> | undefined>(server.validatorCompiler)
+expectType<FastifySerializerCompiler<any> | undefined>(server.serializerCompiler)

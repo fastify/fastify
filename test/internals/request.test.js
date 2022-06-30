@@ -77,7 +77,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(19)
+  t.plan(18)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -227,7 +227,7 @@ test('Request with trust proxy - plain', t => {
 })
 
 test('Request with undefined socket', t => {
-  t.plan(19)
+  t.plan(18)
   const headers = {
     host: 'hostname'
   }

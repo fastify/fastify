@@ -775,21 +775,25 @@ tap.test('Request#SchemaValidation', test => {
         )
       })
 
-      tst.test('#getValidationFunction', { skip: true }, subtest => {
-        subtest.plan(3)
+      tst.test('#getValidationFunction', ntst => {
+        ntst.plan(3)
 
-        subtest.test('Should return a validation function', async t => {
+        ntst.test('Should return a validation function', async t => {
           const fastify = Fastify()
 
           t.plan(1)
 
-          fastify.get('/', (req, reply) => {
-            const original = req.compileValidationSchema(defaultSchema)
-            const referenced = req.getValidationFunction(defaultSchema)
+          fastify.register((instance, opts, next) => {
+            instance.get('/', (req, reply) => {
+              const original = req.compileValidationSchema(defaultSchema)
+              const referenced = req.getValidationFunction(defaultSchema)
 
-            t.equal(original, referenced)
+              t.equal(original, referenced)
 
-            reply.send({ hello: 'world' })
+              reply.send({ hello: 'world' })
+            })
+
+            next()
           })
 
           await fastify.inject({
@@ -798,14 +802,13 @@ tap.test('Request#SchemaValidation', test => {
           })
         })
 
-        subtest.test(
-          'Should return undefined if no schema compiled',
-          async t => {
-            const fastify = Fastify()
+        ntst.test('Should return undefined if no schema compiled', async t => {
+          const fastify = Fastify()
 
-            t.plan(1)
+          t.plan(1)
 
-            fastify.get('/', (req, reply) => {
+          fastify.register((instance, opts, next) => {
+            instance.get('/', (req, reply) => {
               const validate = req.getValidationFunction(defaultSchema)
 
               t.notOk(validate)
@@ -813,14 +816,16 @@ tap.test('Request#SchemaValidation', test => {
               reply.send({ hello: 'world' })
             })
 
-            await fastify.inject({
-              path: '/',
-              method: 'GET'
-            })
-          }
-        )
+            next()
+          })
 
-        subtest.test(
+          await fastify.inject({
+            path: '/',
+            method: 'GET'
+          })
+        })
+
+        ntst.test(
           'Should return the validation function from each HTTP part',
           async t => {
             const fastify = Fastify()
@@ -829,67 +834,72 @@ tap.test('Request#SchemaValidation', test => {
 
             t.plan(15)
 
-            fastify.post(
-              '/:id',
-              {
-                schema: requestSchema
-              },
-              (req, reply) => {
-                const { params } = req
+            fastify.register((instance, opts, next) => {
+              instance.post(
+                '/:id',
+                {
+                  schema: requestSchema
+                },
+                (req, reply) => {
+                  const { params } = req
 
-                switch (params.id) {
-                  case 1:
-                    customValidation = req.compileValidationSchema(
-                      defaultSchema
-                    )
-                    t.ok(req.getValidationFunction('body'))
-                    t.ok(req.getValidationFunction('body')({ hello: 'world' }))
-                    t.notOk(
-                      req.getValidationFunction('body')({ world: 'hello' })
-                    )
-                    break
-                  case 2:
-                    headerValidation = req.getValidationFunction('headers')
-                    t.ok(headerValidation)
-                    t.ok(headerValidation({ 'x-foo': 'world' }))
-                    t.notOk(headerValidation({ 'x-foo': [] }))
-                    break
-                  case 3:
-                    t.ok(req.getValidationFunction('params'))
-                    t.ok(req.getValidationFunction('params')({ id: 123 }))
-                    t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
-                    break
-                  case 4:
-                    t.ok(req.getValidationFunction('querystring'))
-                    t.ok(
-                      req.getValidationFunction('querystring')({ foo: 'bar' })
-                    )
-                    t.notOk(
-                      req.getValidationFunction('querystring')({
-                        foo: 'not-bar'
-                      })
-                    )
-                    break
-                  case 5:
-                    t.equal(
-                      customValidation,
-                      req.getValidationFunction(defaultSchema)
-                    )
-                    t.ok(customValidation({ hello: 'world' }))
-                    t.notOk(customValidation({}))
-                    t.equal(
-                      headerValidation,
-                      req.getValidationFunction('headers')
-                    )
-                    break
-                  default:
-                    t.fail('Invalid id')
+                  switch (params.id) {
+                    case 1:
+                      customValidation = req.compileValidationSchema(
+                        defaultSchema
+                      )
+                      t.ok(req.getValidationFunction('body'))
+                      t.ok(
+                        req.getValidationFunction('body')({ hello: 'world' })
+                      )
+                      t.notOk(
+                        req.getValidationFunction('body')({ world: 'hello' })
+                      )
+                      break
+                    case 2:
+                      headerValidation = req.getValidationFunction('headers')
+                      t.ok(headerValidation)
+                      t.ok(headerValidation({ 'x-foo': 'world' }))
+                      t.notOk(headerValidation({ 'x-foo': [] }))
+                      break
+                    case 3:
+                      t.ok(req.getValidationFunction('params'))
+                      t.ok(req.getValidationFunction('params')({ id: 123 }))
+                      t.notOk(req.getValidationFunction('params'({ id: 1.2 })))
+                      break
+                    case 4:
+                      t.ok(req.getValidationFunction('querystring'))
+                      t.ok(
+                        req.getValidationFunction('querystring')({ foo: 'bar' })
+                      )
+                      t.notOk(
+                        req.getValidationFunction('querystring')({
+                          foo: 'not-bar'
+                        })
+                      )
+                      break
+                    case 5:
+                      t.equal(
+                        customValidation,
+                        req.getValidationFunction(defaultSchema)
+                      )
+                      t.ok(customValidation({ hello: 'world' }))
+                      t.notOk(customValidation({}))
+                      t.equal(
+                        headerValidation,
+                        req.getValidationFunction('headers')
+                      )
+                      break
+                    default:
+                      t.fail('Invalid id')
+                  }
+
+                  reply.send({ hello: 'world' })
                 }
+              )
 
-                reply.send({ hello: 'world' })
-              }
-            )
-
+              next()
+            })
             const promises = []
 
             for (let i = 1; i < 6; i++) {
@@ -913,10 +923,10 @@ tap.test('Request#SchemaValidation', test => {
         )
       })
 
-      tst.test('#validate', { skip: true }, subtest => {
-        subtest.plan(6)
+      tst.test('#validate', { todo: true }, ntst => {
+        ntst.plan(6)
 
-        subtest.test(
+        ntst.test(
           'Should return true/false if input valid - Route without schema',
           async t => {
             const fastify = Fastify()
@@ -943,7 +953,7 @@ tap.test('Request#SchemaValidation', test => {
           }
         )
 
-        subtest.test(
+        ntst.test(
           'Should use the custom validator compiler for the route',
           async t => {
             const fastify = Fastify()
@@ -985,7 +995,7 @@ tap.test('Request#SchemaValidation', test => {
           }
         )
 
-        subtest.test(
+        ntst.test(
           'Should return true/false if input valid - With Schema for Route defined',
           async t => {
             const fastify = Fastify()
@@ -1047,7 +1057,7 @@ tap.test('Request#SchemaValidation', test => {
           }
         )
 
-        subtest.test(
+        ntst.test(
           'Should throw if missing validation fn for HTTP part and not schema provided',
           async t => {
             const fastify = Fastify()
@@ -1102,7 +1112,7 @@ tap.test('Request#SchemaValidation', test => {
           }
         )
 
-        subtest.test(
+        ntst.test(
           'Should throw if missing validation fn for HTTP part and not valid schema provided',
           async t => {
             const fastify = Fastify()
@@ -1157,7 +1167,7 @@ tap.test('Request#SchemaValidation', test => {
           }
         )
 
-        subtest.test('Should throw if invalid schema passed', async t => {
+        ntst.test('Should throw if invalid schema passed', async t => {
           const fastify = Fastify()
 
           t.plan(10)

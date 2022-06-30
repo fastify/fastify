@@ -1,0 +1,34 @@
+name: Lint Ecosystem Order
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - main
+    paths:
+      - "**/Ecosystem.md"
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - "**/Ecosystem.md"
+
+jobs:
+  build:
+    name: Lint Ecosystem Order
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Lint Doc
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./.github/scripts/lint-ecosystem.js')
+            await script({ core })
+

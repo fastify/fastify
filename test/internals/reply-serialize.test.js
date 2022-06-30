@@ -167,8 +167,7 @@ test('Reply#compileSerializationSchema', t => {
 test('Reply#getSerializationFunction', t => {
   t.plan(2)
 
-  t.test(
-    'Should retrieve the serialization function from the Schema definition',
+  t.test('Should retrieve the serialization function from the Schema definition',
     async t => {
       const fastify = Fastify()
       const okInput201 = {
@@ -190,7 +189,7 @@ test('Reply#getSerializationFunction', t => {
       let cached4xx
       let cached201
 
-      t.plan(8)
+      t.plan(9)
 
       const responseSchema = getResponseSchema()
 
@@ -212,6 +211,7 @@ test('Reply#getSerializationFunction', t => {
           if (parseInt(id) === 1) {
             const serialize4xx = reply.getSerializationFunction('4xx')
             const serialize201 = reply.getSerializationFunction(201)
+            const serializeUndefined = reply.getSerializationFunction(undefined)
 
             cached4xx = serialize4xx
             cached201 = serialize201
@@ -220,6 +220,7 @@ test('Reply#getSerializationFunction', t => {
             t.type(serialize201, Function)
             t.equal(serialize4xx(okInput4xx), JSON.stringify(okInput4xx))
             t.equal(serialize201(okInput201), JSON.stringify(okInput201))
+            t.notOk(serializeUndefined)
 
             try {
               serialize4xx(notOkInput4xx)
@@ -255,8 +256,7 @@ test('Reply#getSerializationFunction', t => {
     }
   )
 
-  t.test(
-    'Should retrieve the serialization function from the cached one',
+  t.test('Should retrieve the serialization function from the cached one',
     async t => {
       const fastify = Fastify()
 

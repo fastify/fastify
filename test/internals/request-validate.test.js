@@ -211,24 +211,22 @@ test('#getValidationFunction', subtest => {
   subtest.test('Should return undefined if no schema compiled', async t => {
     const fastify = Fastify()
 
-    t.plan(1)
+    t.plan(2)
 
     fastify.get('/', (req, reply) => {
       const validate = req.getValidationFunction(defaultSchema)
-
       t.notOk(validate)
+
+      const validateFn = req.getValidationFunction(42)
+      t.notOk(validateFn)
 
       reply.send({ hello: 'world' })
     })
 
-    await fastify.inject({
-      path: '/',
-      method: 'GET'
-    })
+    await fastify.inject('/')
   })
 
-  subtest.test(
-    'Should return the validation function from each HTTP part',
+  subtest.test('Should return the validation function from each HTTP part',
     async t => {
       const fastify = Fastify()
       let headerValidation = null

@@ -1,8 +1,10 @@
-const tap = require('tap')
+'use strict'
+
+const { test } = require('tap')
 const Fastify = require('../../fastify')
 
-tap.test('Reply#serialize', test => {
-  const defaultSchema = {
+function getDefaultSchema () {
+  return {
     type: 'object',
     required: ['hello'],
     properties: {
@@ -10,7 +12,10 @@ tap.test('Reply#serialize', test => {
       world: { type: 'string' }
     }
   }
-  const responseSchema = {
+}
+
+function getResponseSchema () {
+  return {
     201: {
       type: 'object',
       required: ['status'],
@@ -41,22 +46,61 @@ tap.test('Reply#serialize', test => {
       }
     }
   }
+}
 
-  test.plan(3)
+test('Reply#compileSerializationSchema', t => {
+  t.plan(3)
 
-  test.test('Reply#compileSerializationSchema', subtest => {
-    subtest.plan(3)
+  t.test('Should return a serialization function', async t => {
+    const fastify = Fastify()
 
-    subtest.test('Should return a serialization function', async t => {
+    t.plan(4)
+
+    fastify.get('/', (req, reply) => {
+      const serialize = reply.compileSerializationSchema(getDefaultSchema())
+      const input = { hello: 'world' }
+      t.type(serialize, Function)
+      t.type(serialize(input), 'string')
+      t.equal(serialize(input), JSON.stringify(input))
+
+      try {
+        serialize({ world: 'foo' })
+      } catch (err) {
+        t.equal(err.message, '"hello" is required!')
+      }
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  t.test('Should reuse the serialize fn across multiple invocations - Route without schema',
+    async t => {
       const fastify = Fastify()
+      let serialize = null
+      let counter = 0
 
-      t.plan(4)
+      t.plan(17)
+
+      const schemaObj = getDefaultSchema()
 
       fastify.get('/', (req, reply) => {
-        const serialize = reply.compileSerializationSchema(defaultSchema)
         const input = { hello: 'world' }
+        counter++
+        if (counter > 1) {
+          const newSerialize = reply.compileSerializationSchema(schemaObj)
+          t.equal(serialize, newSerialize, 'Are the same validate function')
+          serialize = newSerialize
+        } else {
+          t.pass('build the schema compilation function')
+          serialize = reply.compileSerializationSchema(schemaObj)
+        }
+
         t.type(serialize, Function)
-        t.type(serialize(input), 'string')
         t.equal(serialize(input), JSON.stringify(input))
 
         try {
@@ -68,304 +112,64 @@ tap.test('Reply#serialize', test => {
         reply.send({ hello: 'world' })
       })
 
+      await Promise.all([
+        fastify.inject('/'),
+        fastify.inject('/'),
+        fastify.inject('/'),
+        fastify.inject('/')
+      ])
+
+      t.equal(counter, 4)
+    }
+  )
+
+  t.test('Should use the custom serializer compiler for the route',
+    async t => {
+      const fastify = Fastify()
+      let called = 0
+      const custom = ({ schema, httpStatus, url, method }) => {
+        t.equal(schema, schemaObj)
+        t.equal(url, '/')
+        t.equal(method, 'GET')
+        t.equal(httpStatus, '201')
+
+        return input => {
+          called++
+          t.same(input, { hello: 'world' })
+          return JSON.stringify(input)
+        }
+      }
+
+      t.plan(10)
+      const schemaObj = getDefaultSchema()
+
+      fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
+        const input = { hello: 'world' }
+        const first = reply.compileSerializationSchema(schemaObj, '201')
+        const second = reply.compileSerializationSchema(schemaObj, '201')
+
+        t.equal(first, second)
+        t.ok(first(input), JSON.stringify(input))
+        t.ok(second(input), JSON.stringify(input))
+        t.equal(called, 2)
+
+        reply.send({ hello: 'world' })
+      })
+
       await fastify.inject({
         path: '/',
         method: 'GET'
       })
-    })
+    }
+  )
+})
 
-    subtest.test(
-      'Should reuse the serialize fn across multiple invocations - Route without schema',
-      async t => {
-        const fastify = Fastify()
-        let serialize = null
-        let counter = 0
+test('Reply#getSerializationFunction', t => {
+  t.plan(2)
 
-        t.plan(16)
-
-        fastify.get('/', (req, reply) => {
-          const input = { hello: 'world' }
-          counter++
-          if (counter > 1) {
-            const newSerialize = reply.compileSerializationSchema(defaultSchema)
-            t.equal(serialize, newSerialize, 'Are the same validate function')
-            serialize = newSerialize
-          } else {
-            serialize = reply.compileSerializationSchema(defaultSchema)
-          }
-
-          t.type(serialize, Function)
-          t.equal(serialize(input), JSON.stringify(input))
-
-          try {
-            serialize({ world: 'foo' })
-          } catch (err) {
-            t.equal(err.message, '"hello" is required!')
-          }
-
-          reply.send({ hello: 'world' })
-        })
-
-        await Promise.all([
-          fastify.inject({
-            path: '/',
-            method: 'GET'
-          }),
-          fastify.inject({
-            path: '/',
-            method: 'GET'
-          }),
-          fastify.inject({
-            path: '/',
-            method: 'GET'
-          }),
-          fastify.inject({
-            path: '/',
-            method: 'GET'
-          })
-        ])
-
-        t.equal(counter, 4)
-      }
-    )
-
-    subtest.test(
-      'Should use the custom serializer compiler for the route',
-      async t => {
-        const fastify = Fastify()
-        let called = 0
-        const custom = ({ schema, httpStatus, url, method }) => {
-          t.equal(schema, defaultSchema)
-          t.equal(url, '/')
-          t.equal(method, 'GET')
-          t.equal(httpStatus, '201')
-
-          return input => {
-            called++
-            t.same(input, { hello: 'world' })
-            return JSON.stringify(input)
-          }
-        }
-
-        t.plan(10)
-
-        fastify.get('/', { serializerCompiler: custom }, (req, reply) => {
-          const input = { hello: 'world' }
-          const first = reply.compileSerializationSchema(defaultSchema, '201')
-          const second = reply.compileSerializationSchema(defaultSchema, '201')
-
-          t.equal(first, second)
-          t.ok(first(input), JSON.stringify(input))
-          t.ok(second(input), JSON.stringify(input))
-          t.equal(called, 2)
-
-          reply.send({ hello: 'world' })
-        })
-
-        await fastify.inject({
-          path: '/',
-          method: 'GET'
-        })
-      }
-    )
-  })
-
-  test.test('Reply#getSerializationFunction', subtest => {
-    subtest.plan(2)
-
-    subtest.test(
-      'Should retrieve the serialization function from the Schema definition',
-      async t => {
-        const fastify = Fastify()
-        const okInput201 = {
-          status: 'ok',
-          message: 'done!'
-        }
-        const notOkInput201 = {
-          message: 'created'
-        }
-        const okInput4xx = {
-          status: 'error',
-          code: 2,
-          message: 'oops!'
-        }
-        const notOkInput4xx = {
-          status: 'error',
-          code: 'something'
-        }
-        let cached4xx
-        let cached201
-
-        t.plan(8)
-
-        fastify.get(
-          '/:id',
-          {
-            params: {
-              id: {
-                type: 'integer'
-              }
-            },
-            schema: {
-              response: responseSchema
-            }
-          },
-          (req, reply) => {
-            const { id } = req.params
-
-            if (parseInt(id) === 1) {
-              const serialize4xx = reply.getSerializationFunction('4xx')
-              const serialize201 = reply.getSerializationFunction(201)
-
-              cached4xx = serialize4xx
-              cached201 = serialize201
-
-              t.type(serialize4xx, Function)
-              t.type(serialize201, Function)
-              t.equal(serialize4xx(okInput4xx), JSON.stringify(okInput4xx))
-              t.equal(serialize201(okInput201), JSON.stringify(okInput201))
-
-              try {
-                serialize4xx(notOkInput4xx)
-              } catch (err) {
-                t.equal(
-                  err.message,
-                  'The value "something" cannot be converted to an integer.'
-                )
-              }
-
-              try {
-                serialize201(notOkInput201)
-              } catch (err) {
-                t.equal(err.message, '"status" is required!')
-              }
-
-              reply.status(201).send(okInput201)
-            } else {
-              const serialize201 = reply.getSerializationFunction(201)
-              const serialize4xx = reply.getSerializationFunction('4xx')
-
-              t.equal(serialize4xx, cached4xx)
-              t.equal(serialize201, cached201)
-              reply.status(401).send(okInput4xx)
-            }
-          }
-        )
-
-        await Promise.all([
-          fastify.inject({
-            path: '/1',
-            method: 'GET'
-          }),
-          fastify.inject({
-            path: '/2',
-            method: 'GET'
-          })
-        ])
-      }
-    )
-
-    subtest.test(
-      'Should retrieve the serialization function from the cached one',
-      async t => {
-        const fastify = Fastify()
-        const okInput = {
-          hello: 'world',
-          world: 'done!'
-        }
-        const notOkInput = {
-          world: 'done!'
-        }
-        let cached
-
-        t.plan(6)
-
-        fastify.get(
-          '/:id',
-          {
-            params: {
-              id: {
-                type: 'integer'
-              }
-            }
-          },
-          (req, reply) => {
-            const { id } = req.params
-
-            if (parseInt(id) === 1) {
-              const serialize = reply.compileSerializationSchema(defaultSchema)
-
-              t.type(serialize, Function)
-              t.equal(serialize(okInput), JSON.stringify(okInput))
-
-              try {
-                serialize(notOkInput)
-              } catch (err) {
-                t.equal(err.message, '"hello" is required!')
-              }
-
-              cached = serialize
-            } else {
-              const serialize = reply.getSerializationFunction(defaultSchema)
-
-              t.equal(serialize, cached)
-              t.equal(serialize(okInput), JSON.stringify(okInput))
-
-              try {
-                serialize(notOkInput)
-              } catch (err) {
-                t.equal(err.message, '"hello" is required!')
-              }
-            }
-
-            reply.status(201).send(okInput)
-          }
-        )
-
-        await Promise.all([
-          fastify.inject({
-            path: '/1',
-            method: 'GET'
-          }),
-          fastify.inject({
-            path: '/2',
-            method: 'GET'
-          })
-        ])
-      }
-    )
-  })
-
-  test.test('Reply#serializeInput', subtest => {
-    subtest.plan(4)
-
-    subtest.test(
-      'Should throw if missed serialization function from HTTP status',
-      async t => {
-        const fastify = Fastify()
-
-        t.plan(2)
-
-        fastify.get('/', (req, reply) => {
-          reply.serializeInput({}, 201)
-        })
-
-        const result = await fastify.inject({
-          path: '/',
-          method: 'GET'
-        })
-
-        t.equal(result.statusCode, 500)
-        t.same(result.json(), {
-          statusCode: 500,
-          code: 'FST_ERR_MISSING_SERIALIZATION_FN',
-          error: 'Internal Server Error',
-          message: 'Missing serialization function. Key "201"'
-        })
-      }
-    )
-
-    subtest.test('Should use a serializer fn from HTTP status', async t => {
+  t.test(
+    'Should retrieve the serialization function from the Schema definition',
+    async t => {
       const fastify = Fastify()
       const okInput201 = {
         status: 'ok',
@@ -383,11 +187,15 @@ tap.test('Reply#serialize', test => {
         status: 'error',
         code: 'something'
       }
+      let cached4xx
+      let cached201
 
-      t.plan(4)
+      t.plan(8)
+
+      const responseSchema = getResponseSchema()
 
       fastify.get(
-        '/',
+        '/:id',
         {
           params: {
             id: {
@@ -399,120 +207,252 @@ tap.test('Reply#serialize', test => {
           }
         },
         (req, reply) => {
-          t.equal(
-            reply.serializeInput(okInput4xx, '4xx'),
-            JSON.stringify(okInput4xx)
-          )
-          t.equal(
-            reply.serializeInput(okInput201, 201),
-            JSON.stringify(okInput201)
-          )
+          const { id } = req.params
 
-          try {
-            reply.serializeInput(notOkInput4xx, '4xx')
-          } catch (err) {
-            t.equal(
-              err.message,
-              'The value "something" cannot be converted to an integer.'
-            )
+          if (parseInt(id) === 1) {
+            const serialize4xx = reply.getSerializationFunction('4xx')
+            const serialize201 = reply.getSerializationFunction(201)
+
+            cached4xx = serialize4xx
+            cached201 = serialize201
+
+            t.type(serialize4xx, Function)
+            t.type(serialize201, Function)
+            t.equal(serialize4xx(okInput4xx), JSON.stringify(okInput4xx))
+            t.equal(serialize201(okInput201), JSON.stringify(okInput201))
+
+            try {
+              serialize4xx(notOkInput4xx)
+            } catch (err) {
+              t.equal(
+                err.message,
+                'The value "something" cannot be converted to an integer.'
+              )
+            }
+
+            try {
+              serialize201(notOkInput201)
+            } catch (err) {
+              t.equal(err.message, '"status" is required!')
+            }
+
+            reply.status(201).send(okInput201)
+          } else {
+            const serialize201 = reply.getSerializationFunction(201)
+            const serialize4xx = reply.getSerializationFunction('4xx')
+
+            t.equal(serialize4xx, cached4xx)
+            t.equal(serialize201, cached201)
+            reply.status(401).send(okInput4xx)
           }
-
-          try {
-            reply.serializeInput(notOkInput201, 201)
-          } catch (err) {
-            t.equal(err.message, '"status" is required!')
-          }
-
-          reply.status(204).send('')
         }
       )
 
-      await fastify.inject({
+      await Promise.all([
+        fastify.inject('/1'),
+        fastify.inject('/2')
+      ])
+    }
+  )
+
+  t.test(
+    'Should retrieve the serialization function from the cached one',
+    async t => {
+      const fastify = Fastify()
+
+      const schemaObj = getDefaultSchema()
+
+      const okInput = {
+        hello: 'world',
+        world: 'done!'
+      }
+      const notOkInput = {
+        world: 'done!'
+      }
+      let cached
+
+      t.plan(6)
+
+      fastify.get(
+        '/:id',
+        {
+          params: {
+            id: {
+              type: 'integer'
+            }
+          }
+        },
+        (req, reply) => {
+          const { id } = req.params
+
+          if (parseInt(id) === 1) {
+            const serialize = reply.compileSerializationSchema(schemaObj)
+
+            t.type(serialize, Function)
+            t.equal(serialize(okInput), JSON.stringify(okInput))
+
+            try {
+              serialize(notOkInput)
+            } catch (err) {
+              t.equal(err.message, '"hello" is required!')
+            }
+
+            cached = serialize
+          } else {
+            const serialize = reply.getSerializationFunction(schemaObj)
+
+            t.equal(serialize, cached)
+            t.equal(serialize(okInput), JSON.stringify(okInput))
+
+            try {
+              serialize(notOkInput)
+            } catch (err) {
+              t.equal(err.message, '"hello" is required!')
+            }
+          }
+
+          reply.status(201).send(okInput)
+        }
+      )
+
+      await Promise.all([
+        fastify.inject('/1'),
+        fastify.inject('/2')
+      ])
+    }
+  )
+})
+
+test('Reply#serializeInput', t => {
+  t.plan(4)
+
+  t.test(
+    'Should throw if missed serialization function from HTTP status',
+    async t => {
+      const fastify = Fastify()
+
+      t.plan(2)
+
+      fastify.get('/', (req, reply) => {
+        reply.serializeInput({}, 201)
+      })
+
+      const result = await fastify.inject({
         path: '/',
         method: 'GET'
       })
-    })
 
-    subtest.test(
-      'Should compile a serializer out of a schema if serializer fn missed',
-      async t => {
-        let compilerCalled = 0
-        let serializerCalled = 0
-        const testInput = { hello: 'world' }
-        const fastify = Fastify()
-        const serializerCompiler = ({ schema, httpStatus, method, url }) => {
-          t.equal(schema, defaultSchema)
-          t.notOk(httpStatus)
-          t.equal(method, 'GET')
-          t.equal(url, '/')
+      t.equal(result.statusCode, 500)
+      t.same(result.json(), {
+        statusCode: 500,
+        code: 'FST_ERR_MISSING_SERIALIZATION_FN',
+        error: 'Internal Server Error',
+        message: 'Missing serialization function. Key "201"'
+      })
+    }
+  )
 
-          compilerCalled++
-          return input => {
-            t.equal(input, testInput)
-            serializerCalled++
-            return JSON.stringify(input)
+  t.test('Should use a serializer fn from HTTP status', async t => {
+    const fastify = Fastify()
+    const okInput201 = {
+      status: 'ok',
+      message: 'done!'
+    }
+    const notOkInput201 = {
+      message: 'created'
+    }
+    const okInput4xx = {
+      status: 'error',
+      code: 2,
+      message: 'oops!'
+    }
+    const notOkInput4xx = {
+      status: 'error',
+      code: 'something'
+    }
+
+    t.plan(4)
+
+    fastify.get(
+      '/',
+      {
+        params: {
+          id: {
+            type: 'integer'
           }
+        },
+        schema: {
+          response: getResponseSchema()
+        }
+      },
+      (req, reply) => {
+        t.equal(
+          reply.serializeInput(okInput4xx, '4xx'),
+          JSON.stringify(okInput4xx)
+        )
+        t.equal(
+          reply.serializeInput(okInput201, 201),
+          JSON.stringify(okInput201)
+        )
+
+        try {
+          reply.serializeInput(notOkInput4xx, '4xx')
+        } catch (err) {
+          t.equal(
+            err.message,
+            'The value "something" cannot be converted to an integer.'
+          )
         }
 
-        t.plan(10)
+        try {
+          reply.serializeInput(notOkInput201, 201)
+        } catch (err) {
+          t.equal(err.message, '"status" is required!')
+        }
 
-        fastify.get('/', { serializerCompiler }, (req, reply) => {
-          t.equal(
-            reply.serializeInput(testInput, defaultSchema),
-            JSON.stringify(testInput)
-          )
-
-          t.equal(
-            reply.serializeInput(testInput, defaultSchema),
-            JSON.stringify(testInput)
-          )
-
-          reply.status(201).send(testInput)
-        })
-
-        await fastify.inject({
-          path: '/',
-          method: 'GET'
-        })
-
-        t.equal(compilerCalled, 1)
-        t.equal(serializerCalled, 2)
+        reply.status(204).send('')
       }
     )
-    subtest.test('Should use a cached serializer fn', async t => {
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
+
+  t.test(
+    'Should compile a serializer out of a schema if serializer fn missed',
+    async t => {
       let compilerCalled = 0
       let serializerCalled = 0
-      let cached
       const testInput = { hello: 'world' }
+      const schemaObj = getDefaultSchema()
       const fastify = Fastify()
-      const serializer = input => {
-        t.equal(input, testInput)
-        serializerCalled++
-        return JSON.stringify(input)
-      }
       const serializerCompiler = ({ schema, httpStatus, method, url }) => {
-        t.equal(schema, defaultSchema)
+        t.equal(schema, schemaObj)
         t.notOk(httpStatus)
         t.equal(method, 'GET')
         t.equal(url, '/')
 
         compilerCalled++
-        return serializer
+        return input => {
+          t.equal(input, testInput)
+          serializerCalled++
+          return JSON.stringify(input)
+        }
       }
 
-      t.plan(12)
+      t.plan(10)
 
       fastify.get('/', { serializerCompiler }, (req, reply) => {
         t.equal(
-          reply.serializeInput(testInput, defaultSchema),
+          reply.serializeInput(testInput, schemaObj),
           JSON.stringify(testInput)
         )
 
-        cached = reply.getSerializationFunction(defaultSchema)
-
         t.equal(
-          reply.serializeInput(testInput, defaultSchema),
-          cached(testInput)
+          reply.serializeInput(testInput, schemaObj),
+          JSON.stringify(testInput)
         )
 
         reply.status(201).send(testInput)
@@ -523,9 +463,58 @@ tap.test('Reply#serialize', test => {
         method: 'GET'
       })
 
-      t.equal(cached, serializer)
       t.equal(compilerCalled, 1)
-      t.equal(serializerCalled, 3)
+      t.equal(serializerCalled, 2)
+    }
+  )
+
+  t.test('Should use a cached serializer fn', async t => {
+    let compilerCalled = 0
+    let serializerCalled = 0
+    let cached
+    const testInput = { hello: 'world' }
+    const schemaObj = getDefaultSchema()
+    const fastify = Fastify()
+    const serializer = input => {
+      t.equal(input, testInput)
+      serializerCalled++
+      return JSON.stringify(input)
+    }
+    const serializerCompiler = ({ schema, httpStatus, method, url }) => {
+      t.equal(schema, schemaObj)
+      t.notOk(httpStatus)
+      t.equal(method, 'GET')
+      t.equal(url, '/')
+
+      compilerCalled++
+      return serializer
+    }
+
+    t.plan(12)
+
+    fastify.get('/', { serializerCompiler }, (req, reply) => {
+      t.equal(
+        reply.serializeInput(testInput, schemaObj),
+        JSON.stringify(testInput)
+      )
+
+      cached = reply.getSerializationFunction(schemaObj)
+
+      t.equal(
+        reply.serializeInput(testInput, schemaObj),
+        cached(testInput)
+      )
+
+      reply.status(201).send(testInput)
     })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+
+    t.equal(cached, serializer)
+    t.equal(compilerCalled, 1)
+    t.equal(serializerCalled, 3)
   })
 })

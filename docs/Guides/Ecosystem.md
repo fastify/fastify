@@ -138,8 +138,8 @@ section.
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
 - [`@h4ad/serverless-adapter`](https://github.com/H4ad/serverless-adapter)
-  Run REST APIs and other web applications using your existing Node.js 
-  application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda, 
+  Run REST APIs and other web applications using your existing Node.js
+  application framework (Express, Koa, Hapi and Fastify), on top of AWS Lambda,
   Huawei and many other clouds.
 - [`@immobiliarelabs/fastify-metrics`](https://github.com/immobiliare/fastify-metrics)
   Minimalistic and opinionated plugin that collects usage/process metrics and
@@ -151,12 +151,12 @@ section.
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)
   A plugin to enable compact request logging for Fastify
+- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session
+  plugin for Fastify that supports both stateless and stateful sessions
 - [`@mgcrea/fastify-session-redis-store`](https://github.com/mgcrea/fastify-session-redis-store)
   Redis store for @mgcrea/fastify-session using ioredis
 - [`@mgcrea/fastify-session-sodium-crypto`](https://github.com/mgcrea/fastify-session-sodium-crypto)
   Fast sodium-based crypto for @mgcrea/fastify-session
-- [`@mgcrea/fastify-session`](https://github.com/mgcrea/fastify-session) Session
-  plugin for Fastify that supports both stateless and stateful sessions
 - [`@mgcrea/pino-pretty-compact`](https://github.com/mgcrea/pino-pretty-compact)
   A custom compact pino-base prettifier
 - [`@trubavuong/fastify-seaweedfs`](https://github.com/trubavuong/fastify-seaweedfs)
@@ -169,6 +169,8 @@ section.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
+- [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
+  waterline. Decorates Fastify with waterline models.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds
   405 HTTP status to your routes
 - [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin
@@ -287,13 +289,13 @@ section.
   good Fastify sessions plugin focused on speed.
 - [`fastify-google-cloud-storage`](https://github.com/carlozamagni/fastify-google-cloud-storage)
   Fastify plugin that exposes a GCP Cloud Storage client instance.
+- [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown)
+  Shutdown Fastify gracefully and asynchronously.
 - [`fastify-grant`](https://github.com/simov/fastify-grant)
   Authentication/Authorization plugin for Fastify that supports 200+ OAuth
   Providers.
 - [`fastify-guard`](https://github.com/hsynlms/fastify-guard) A Fastify plugin
   that protects endpoints by checking authenticated user roles and/or scopes.
-- [`fastify-graceful-shutdown`](https://github.com/hemerajs/fastify-graceful-shutdown)
-  Shutdown Fastify gracefully and asynchronously.
 - [`fastify-hasura`](https://github.com/ManUtopiK/fastify-hasura) A Fastify
   plugin to have fun with [Hasura](https://github.com/hasura/graphql-engine).
 - [`fastify-healthcheck`](https://github.com/smartiniOnGitHub/fastify-healthcheck)
@@ -301,20 +303,19 @@ section.
 - [`fastify-hemera`](https://github.com/hemerajs/fastify-hemera) Fastify Hemera
   plugin, for writing reliable & fault-tolerant microservices with
   [nats.io](https://nats.io/).
+- [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
+  to send HTTP(s) requests. Built upon [urllib](https://github.com/node-modules/urllib).
 - [`fastify-http-context`](https://github.com/thorough-developer/fastify-http-context)
   Fastify plugin for "simulating" a thread of execution to allow for true HTTP
   context to take place per API call within the Fastify lifecycle of calls.
+- [`fastify-http-errors-enhanced`](https://github.com/ShogunPanda/fastify-http-errors-enhanced)
+  An error handling plugin for Fastify that uses enhanced HTTP errors.
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect
   HTTP requests to HTTPS, both using the same port number, or different response
   on HTTP and HTTPS.
-- [`fastify-http-client`](https://github.com/kenuyx/fastify-http-client) Plugin
-  to send HTTP(s) requests. Built upon
-  [urllib](https://github.com/node-modules/urllib).
-- [`fastify-http-errors-enhanced`](https://github.com/ShogunPanda/fastify-http-errors-enhanced)
-  An error handling plugin for Fastify that uses enhanced HTTP errors.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
-- [`fatify-impressions`](https://github.com/manju4ever/fastify-impressions)
+- [`fastify-impressions`](https://github.com/manju4ever/fastify-impressions)
   Fastify plugin to track impressions of all the routes.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
@@ -408,10 +409,10 @@ section.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
-- [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
-  thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
+- [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
+  thread pool plugin using [Piscina](https://github.com/piscinajs/piscina).
 - [`fastify-polyglot`](https://github.com/heply/fastify-polyglot) A plugin to
   handle i18n using
   [node-polyglot](https://www.npmjs.com/package/node-polyglot).
@@ -444,10 +445,10 @@ section.
 - [`fastify-register-routes`](https://github.com/israeleriston/fastify-register-routes)
   Plugin to automatically load routes from a specified path and optionally limit
   loaded file names by a regular expression.
-- [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add
-  `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-response-caching`](https://github.com/codeaholicguy/fastify-response-caching)
   A Fastify plugin for caching the response.
+- [`fastify-response-time`](https://github.com/lolo32/fastify-response-time) Add
+  `X-Response-Time` header at each request for Fastify, in milliseconds.
 - [`fastify-resty`](https://github.com/FastifyResty/fastify-resty) Fastify-based
   web framework with REST API routes auto-generation for TypeORM entities using
   DI and decorators.
@@ -518,8 +519,6 @@ section.
   should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
   Application Messaging Protocol router for Fastify.
-- [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
-  waterline. Decorates Fastify with waterline models.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.
 - [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot) Webpack

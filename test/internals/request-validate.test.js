@@ -776,7 +776,7 @@ tap.test('Request#SchemaValidation', test => {
       })
 
       tst.test('#getValidationFunction', ntst => {
-        ntst.plan(3)
+        ntst.plan(6)
 
         ntst.test('Should return a validation function', async t => {
           const fastify = Fastify()
@@ -921,6 +921,157 @@ tap.test('Request#SchemaValidation', test => {
             await Promise.all(promises)
           }
         )
+
+        ntst.test('Should return a validation function - nested', async t => {
+          const fastify = Fastify()
+          let called = false
+          const custom = ({ schema, httpPart, url, method }) => {
+            t.equal(schema, defaultSchema)
+            t.equal(url, '/')
+            t.equal(method, 'GET')
+            t.notOk(httpPart)
+
+            called = true
+            return () => true
+          }
+
+          t.plan(6)
+
+          fastify.setValidatorCompiler(custom)
+
+          fastify.register((instance, opts, next) => {
+            instance.get('/', (req, reply) => {
+              const original = req.compileValidationSchema(defaultSchema)
+              const referenced = req.getValidationFunction(defaultSchema)
+
+              t.equal(original, referenced)
+              t.equal(called, true)
+
+              reply.send({ hello: 'world' })
+            })
+
+            next()
+          })
+
+          await fastify.inject({
+            path: '/',
+            method: 'GET'
+          })
+        })
+
+        ntst.test(
+          'Should return undefined if no schema compiled - nested',
+          async t => {
+            const fastify = Fastify()
+            let called = 0
+            const custom = ({ schema, httpPart, url, method }) => {
+              called++
+              return () => true
+            }
+
+            t.plan(3)
+
+            fastify.setValidatorCompiler(custom)
+
+            fastify.get('/', (req, reply) => {
+              const validate = req.compileValidationSchema(defaultSchema)
+
+              t.equal(typeof validate, 'function')
+
+              reply.send({ hello: 'world' })
+            })
+
+            fastify.register(
+              (instance, opts, next) => {
+                instance.get('/', (req, reply) => {
+                  const validate = req.getValidationFunction(defaultSchema)
+
+                  t.notOk(validate)
+                  t.equal(called, 1)
+
+                  reply.send({ hello: 'world' })
+                })
+
+                next()
+              },
+              { prefix: '/nested' }
+            )
+
+            await fastify.inject({
+              path: '/',
+              method: 'GET'
+            })
+
+            await fastify.inject({
+              path: '/nested',
+              method: 'GET'
+            })
+          }
+        )
+
+        ntst.test('Should per-route defined validation compiler', async t => {
+          const fastify = Fastify()
+          let validateParent
+          let validateChild
+          let calledParent = 0
+          let calledChild = 0
+          const customParent = ({ schema, httpPart, url, method }) => {
+            calledParent++
+            return () => true
+          }
+
+          const customChild = ({ schema, httpPart, url, method }) => {
+            calledChild++
+            return () => true
+          }
+
+          t.plan(5)
+
+          fastify.setValidatorCompiler(customParent)
+
+          fastify.get('/', (req, reply) => {
+            validateParent = req.compileValidationSchema(defaultSchema)
+
+            t.equal(typeof validateParent, 'function')
+
+            reply.send({ hello: 'world' })
+          })
+
+          fastify.register(
+            (instance, opts, next) => {
+              instance.get(
+                '/',
+                {
+                  validatorCompiler: customChild
+                },
+                (req, reply) => {
+                  const validate1 = req.compileValidationSchema(defaultSchema)
+                  validateChild = req.getValidationFunction(defaultSchema)
+
+                  t.equal(validate1, validateChild)
+                  t.not(validateParent, validateChild)
+                  t.equal(calledParent, 1)
+                  t.equal(calledChild, 1)
+
+                  reply.send({ hello: 'world' })
+                }
+              )
+
+              next()
+            },
+            { prefix: '/nested' }
+          )
+
+          await fastify.inject({
+            path: '/',
+            method: 'GET'
+          })
+
+          await fastify.inject({
+            path: '/nested',
+            method: 'GET'
+          })
+        })
       })
 
       tst.test('#validate', { todo: true }, ntst => {

@@ -494,12 +494,17 @@ test('the custom error formatter context must be the server instance in options'
 })
 
 test('should call custom error formatter', t => {
-  t.plan(6)
+  t.plan(9)
 
   const fastify = Fastify({
     schemaErrorFormatter: (errors, dataVar) => {
       t.equal(errors.length, 1)
       t.equal(errors[0].message, "must have required property 'name'")
+      t.equal(errors[0].keyword, 'required')
+      t.equal(errors[0].schemaPath, '#/required')
+      t.same(errors[0].params, {
+        missingProperty: 'name'
+      })
       t.equal(dataVar, 'body')
       return new Error('my error')
     }

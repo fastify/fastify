@@ -551,9 +551,19 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
+   * Fastify schema validator for all routes.
+   */
+  validatorCompiler: FastifySchemaCompiler<any> | undefined;
+
+  /**
    * Set the schema validator for all routes.
    */
   setValidatorCompiler<T = FastifySchema>(schemaCompiler: FastifySchemaCompiler<T>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+
+  /**
+   * Fastify schema serializer for all routes.
+   */
+  serializerCompiler: FastifySerializerCompiler<any> | undefined;
 
   /**
    * Set the schema serializer for all routes.

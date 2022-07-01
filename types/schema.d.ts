@@ -23,8 +23,11 @@ export interface FastifyRouteSchemaDef<T> {
 }
 
 export interface FastifySchemaValidationError {
-  message?: string;
+  keyword: string;
   instancePath: string;
+  schemaPath: string;
+  params: Record<string, string | string[]>;
+  message?: string;
 }
 
 export interface FastifyValidationResult {

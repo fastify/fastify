@@ -143,7 +143,7 @@ route-level `request` object.
    curl localhost:8080/auth?username=admin&password=Password123!
    ```
    And it should return back `logged in!`
-6. But wait theres more! The generic interfaces are also available inside route
+6. But wait there's more! The generic interfaces are also available inside route
    level hook methods. Modify the previous route by adding a `preValidation`
    hook:
    ```typescript
@@ -403,7 +403,7 @@ definitions.
 #### json-schema-to-ts
 
 If you do not want to generate types from your schemas, but want to use them
-diretly from your code, you can use the package
+directly from your code, you can use the package
 [json-schema-to-ts](https://www.npmjs.com/package/json-schema-to-ts).
 
 You can install it as dev-dependency.
@@ -1378,7 +1378,7 @@ FastifyError is a custom error object that includes status code and validation
 results.
 
 It extends the Node.js `Error` type, and adds two additional, optional
-properties: `statusCode: number` and `validation: ValiationResult[]`.
+properties: `statusCode: number` and `validation: ValidationResult[]`.
 
 ##### fastify.ValidationResult
 

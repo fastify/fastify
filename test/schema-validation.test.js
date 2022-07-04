@@ -4,6 +4,7 @@ const { test } = require('tap')
 const Fastify = require('..')
 
 const AJV = require('ajv')
+const Schema = require('fluent-json-schema')
 
 const customSchemaCompilers = {
   body: new AJV({
@@ -944,5 +945,75 @@ test('Custom AJV settings on different parameters - pt2', t => {
     payload: {
       num: 12
     }
+  })
+})
+
+test("The same $id in route's schema must not overwrite others", t => {
+  t.plan(4)
+  const fastify = Fastify()
+
+  const UserSchema = Schema.object()
+    .id('http://mydomain.com/user')
+    .title('User schema')
+    .description('Contains all user fields')
+    .prop('id', Schema.integer())
+    .prop('username', Schema.string().minLength(4))
+    .prop('firstName', Schema.string().minLength(1))
+    .prop('lastName', Schema.string().minLength(1))
+    .prop('fullName', Schema.string().minLength(1))
+    .prop('email', Schema.string())
+    .prop('password', Schema.string().minLength(6))
+    .prop('bio', Schema.string())
+
+  const userCreateSchema = UserSchema.only([
+    'username',
+    'firstName',
+    'lastName',
+    'email',
+    'bio',
+    'password',
+    'password_confirm'
+  ])
+    .required([
+      'username',
+      'firstName',
+      'lastName',
+      'email',
+      'bio',
+      'password'
+    ])
+
+  const userPatchSchema = UserSchema.only([
+    'firstName',
+    'lastName',
+    'bio'
+  ])
+
+  fastify
+    .patch('/user/:id', {
+      schema: { body: userPatchSchema },
+      handler: () => { return 'ok' }
+    })
+    .post('/user', {
+      schema: { body: userCreateSchema },
+      handler: () => { return 'ok' }
+    })
+
+  fastify.inject({
+    method: 'POST',
+    url: '/user',
+    body: {}
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.json().message, "body must have required property 'username'")
+  })
+
+  fastify.inject({
+    url: '/user/1',
+    method: 'PATCH',
+    body: {}
+  }, (err, res) => {
+    t.error(err)
+    t.same(res.payload, 'ok')
   })
 })

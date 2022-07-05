@@ -38,18 +38,18 @@ resources of your server, knowing that you are serving the highest number of
 requests as possible, without sacrificing security validations and handy
 development?
 
- - [Quick start](./README.md#quick-start)
- - [Install](./README.md#install)
- - [Example](./README.md#example)
- - [Fastify v1.x and v2.x](./README.md#fastify-v1x-and-v2x)
- - [Core features](./README.md#core-features)
- - [Benchmarks](./README.md#benchmarks)
- - [Documentation](./README.md#documentation)
- - [Ecosystem](./README.md#ecosystem)
- - [Support](./README.md#support)
- - [Team](./README.md#team)
- - [Hosted by](./README.md#hosted-by)
- - [License](./README.md#license)
+ - [Quick start](#quick-start)
+ - [Install](#install)
+ - [Example](#example)
+ - [Fastify v1.x and v2.x](#fastify-v1x-and-v2x)
+ - [Core features](#core-features)
+ - [Benchmarks](#benchmarks)
+ - [Documentation](#documentation)
+ - [Ecosystem](#ecosystem)
+ - [Support](#support)
+ - [Team](#team)
+ - [Hosted by](#hosted-by)
+ - [License](#license)
 
 Enter Fastify. Fastify is a web framework highly focused on providing the best
 developer experience with the least overhead and a powerful plugin architecture.

@@ -196,6 +196,7 @@ fastify.get('/html', (request, reply) => {
   reply.html({ hello: 'world' })
 })
 ```
+Reminder that the `this` keyword is not available on *arrow functions*, when passing functions in *`decorateReply`* and *`decorateRequest`* as a utility, always use a function that is defined using the `function` keyword instead of an *arrow function expression*.
 
 In the same way you can do this for the `request` object:
 ```js

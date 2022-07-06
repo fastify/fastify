@@ -557,3 +557,5 @@ section.
 #### [Community Tools](#community-tools)
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
   generator by directory structure.
+- [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
+  generate JSON Schema from TypeScript interfaces.

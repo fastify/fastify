@@ -3,7 +3,7 @@ import fastify, {
   HookHandlerDoneFunction,
   FastifyRequest,
   FastifyReply,
-  FastifyInstance,
+  FastifyInstance
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
@@ -444,7 +444,7 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 interface AuxiliaryPluginProvider extends FastifyTypeProvider { output: 'plugin-auxiliary' }
 
 // Auxiliary plugins may have varying server types per application. Recommendation would be to explicitly remap instance provider context within plugin if required.
-function plugin<T extends FastifyInstance>(instance: T) {
+function plugin<T extends FastifyInstance> (instance: T) {
   expectAssignable(instance.withTypeProvider<AuxiliaryPluginProvider>().get(
     '/',
     {
@@ -493,7 +493,7 @@ expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
 interface AuxiliaryHandlerProvider extends FastifyTypeProvider { output: 'handler-auxiliary' }
 
 // Auxiliary handlers are likely shared for multiple routes and thus should infer as unknown due to potential varying parameters
-function auxiliaryHandler(request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void {
+function auxiliaryHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void {
   expectType<unknown>(request.body)
 }
 

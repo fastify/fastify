@@ -223,8 +223,7 @@ RawReplyDefaultExpression,
 RouteGenericInterface,
 ContextConfigDefault,
 FastifySchema,
-FastifyTypeProviderDefault,
-ResolveFastifyRequestType<FastifyTypeProviderDefault, FastifySchema, RouteGenericInterface>
+FastifyTypeProviderDefault
 > = async function (request, reply): Promise<void> {
   expectType<FastifyInstance>(this)
   expectAssignable<FastifyRequest>(request)

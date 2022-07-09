@@ -2,7 +2,7 @@ import { FastifyLoggerInstance } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
-import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
+import { FastifyTypeProvider, FastifyTypeProviderDefault, ResolveFastifyRequestType } from './type-provider'
 import { FastifySchema } from './schema'
 import { FastifyContext } from './context'
 
@@ -23,17 +23,16 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
 > {
   id: any;
-  params: RequestType['params'];
+  params: ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>['params']; // deferred inference
   raw: RawRequest;
-  query: RequestType['query'];
-  headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list
+  query: ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>['query'];
+  headers: RawRequest['headers'] & ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>['headers']; // this enables the developer to extend the existing http(s|2) headers list
   log: Logger;
   server: FastifyInstance;
-  body: RequestType['body'];
+  body: ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>['body'];
   context: FastifyContext<ContextConfig>;
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */

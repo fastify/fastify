@@ -48,12 +48,13 @@ export interface FastifyRequestType<Params = unknown, Querystring = unknown, Hea
   body: Body
 }
 
-export type ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = FastifyRequestType<
-ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
-ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
-ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>,
-ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>
->
+// Resolves the FastifyRequest generic parameters
+export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> extends FastifyRequestType {
+  params: ResolveRequestParams<TypeProvider, SchemaCompiler, RouteGeneric>,
+  query: ResolveRequestQuerystring<TypeProvider, SchemaCompiler, RouteGeneric>,
+  headers: ResolveRequestHeaders<TypeProvider, SchemaCompiler, RouteGeneric>,
+  body: ResolveRequestBody<TypeProvider, SchemaCompiler, RouteGeneric>
+}
 
 // -----------------------------------------------------------------------------------------------
 // FastifyReplyType

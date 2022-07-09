@@ -645,8 +645,6 @@ Inheritance](https://dev.to/ethanarrowood/is-declaration-merging-and-generic-inh
 Using a Fastify plugin in TypeScript is just as easy as using one in JavaScript.
 Import the plugin with `import/from` and you're all set.
 
-> Using `require` won't load the type definitions properly and may cause a type errors
-
 One exception users should be aware of is that Fastify plugins use declaration merging to modify existing Fastify type
 interfaces (check out the previous two examples for more details). Declaration
 merging is not very _smart_, meaning if the plugin type definition for a plugin
@@ -661,6 +659,27 @@ However, there are a couple of suggestions to help improve this experience:
 - Use a module such as [depcheck](https://www.npmjs.com/package/depcheck) or
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
+
+Note that using `require` won't load the type definitions properly and may cause type errors. TypeScript can only identify the types that are direct imported in code which means that you can use require inline with import on top, for example:
+
+```typescript
+import 'plugin' // here will trigger the type augmentation.
+
+fastify.register(require('plugin'))
+```
+
+```typescript
+import plugin from 'plugin' //  here will trigger the type augmentation.
+
+fastify.register(plugin)
+```
+
+Or even explicit config on tsconfig
+```json
+{
+  "types": ["plugin"] // we force TypeScript to import the types
+}
+```
 
 ## Code Completion In Vanilla JavaScript
 

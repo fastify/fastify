@@ -663,8 +663,8 @@ However, there are a couple of suggestions to help improve this experience:
 
 Note that using `require` will not load the type definitions properly and may
 cause type errors.
-TypeScript can only identify the types that are directly imported into code
-which means that you can use require inline with import on top, for example:
+TypeScript can only identify the types that are directly imported into code,
+which means that you can use require inline with import on top. For example:
 
 ```typescript
 import 'plugin' // here will trigger the type augmentation.

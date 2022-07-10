@@ -661,7 +661,7 @@ However, there are a couple of suggestions to help improve this experience:
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
 
-Note that using `require` won't load the type definitions properly and may
+Note that using `require` will not load the type definitions properly and may
 cause type errors.
 TypeScript can only identify the types that are directly imported into code
 which means that you can use require inline with import on top, for example:

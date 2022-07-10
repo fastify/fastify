@@ -204,7 +204,7 @@ function knexPlugin(fastify, options, done) {
   done()
 }
 
-export default fp(plugin, { name: 'fastify-knex-example' })
+export default fp(knexPlugin, { name: 'fastify-knex-example' })
 ```
 
 ### Writing a plugin for a database engine
@@ -213,7 +213,7 @@ In this example, we will create a basic Fastify MySQL plugin from scratch (it is
 a stripped-down example, please use the official plugin in production).
 
 ```javascript
-const fp = require('fp')
+const fp = require('fastify-plugin')
 const mysql = require('mysql2/promise')
 
 function fastifyMysql(fastify, options, done) {

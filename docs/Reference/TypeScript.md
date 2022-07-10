@@ -679,7 +679,7 @@ fastify.register(plugin)
 ```
 
 Or even explicit config on tsconfig
-```json
+```jsonc
 {
   "types": ["plugin"] // we force TypeScript to import the types
 }

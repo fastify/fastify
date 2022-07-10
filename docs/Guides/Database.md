@@ -204,7 +204,7 @@ function knexPlugin(fastify, options, done) {
   done()
 }
 
-export default fp(plugin, { name: 'fastify-knex-example' })
+export default fp(knexPlugin, { name: 'fastify-knex-example' })
 ```
 
 ### Writing a plugin for a database engine

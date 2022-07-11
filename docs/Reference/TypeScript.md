@@ -661,6 +661,30 @@ However, there are a couple of suggestions to help improve this experience:
   [npm-check](https://www.npmjs.com/package/npm-check) to verify plugin
   dependencies are being used somewhere in your project.
 
+Note that using `require` will not load the type definitions properly and may
+cause type errors.
+TypeScript can only identify the types that are directly imported into code,
+which means that you can use require inline with import on top. For example:
+
+```typescript
+import 'plugin' // here will trigger the type augmentation.
+
+fastify.register(require('plugin'))
+```
+
+```typescript
+import plugin from 'plugin' //  here will trigger the type augmentation.
+
+fastify.register(plugin)
+```
+
+Or even explicit config on tsconfig
+```jsonc
+{
+  "types": ["plugin"] // we force TypeScript to import the types
+}
+```
+
 ## Code Completion In Vanilla JavaScript
 
 Vanilla JavaScript can use the published types to provide code completion (e.g.

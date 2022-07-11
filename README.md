@@ -99,8 +99,7 @@ generate functionality of [Fastify CLI](https://github.com/fastify/fastify-cli).
 
 ### Install
 
-If installing in an existing project, then Fastify can be installed into the
-project as a dependency:
+To install Fastify in an existing project as a dependency:
 
 Install with npm:
 ```sh

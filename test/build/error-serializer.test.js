@@ -23,7 +23,9 @@ test('check generated code syntax', async (t) => {
   t.equal(result[0].fatalErrorCount, 0)
 })
 
-test('ensure the current error serializer is latest', async (t) => {
+const isPrebublish = !!process.env.PREPUBLISH
+
+test('ensure the current error serializer is latest', { skip: !isPrebublish }, async (t) => {
   t.plan(1)
 
   const current = await fs.promises.readFile(path.resolve('lib/error-serializer.js'))

@@ -17,7 +17,7 @@
     "lint:markdown": "markdownlint-cli2",
     "lint:standard": "standard | snazzy",
     "lint:typescript": "eslint -c types/.eslintrc.json types/**/*.d.ts test/types/**/*.test-d.ts",
-    "prepublishOnly": "tap --no-check-coverage test/build/**.test.js",
+    "prepublishOnly": "PREPUBLISH=true tap --no-check-coverage test/build/**.test.js",
     "test": "npm run lint && npm run unit && npm run test:typescript",
     "test:ci": "npm run unit -- -R terse --cov --coverage-report=lcovonly && npm run test:typescript",
     "test:report": "npm run lint && npm run unit:report && npm run test:typescript",

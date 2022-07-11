@@ -17,8 +17,6 @@
   "rules": {
     "no-console": "off",
     "@typescript-eslint/indent": ["error", 2],
-    "func-call-spacing": "off",
-    "@typescript-eslint/func-call-spacing": ["error"],
     "semi": ["error", "never"],
     "import/export": "off" // this errors on multiple exports (overload interfaces)
   },

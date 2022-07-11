@@ -107,45 +107,21 @@ export interface FastifyInstance<
   close(closeListener: () => void): undefined;
 
   // should be able to define something useful with the decorator getter/setter pattern using Generics to enforce the users function returns what they expect it to
-  decorate<K extends keyof FastifyInstance>(
-    property: K,
-    value: FastifyInstance[K] extends (...args: any[]) => any
-      ? (this: FastifyInstance, ...args: Parameters<FastifyInstance[K]>) => ReturnType<FastifyInstance[K]>
-      : FastifyInstance[K],
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-  decorate<K extends string | symbol, T>(
-    property: NotInInterface<K, FastifyInstance>,
+  decorate<T>(property: string | symbol,
     value: T extends (...args: any[]) => any
       ? (this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>, ...args: Parameters<T>) => ReturnType<T>
       : T,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  decorateRequest<K extends keyof FastifyRequest>(
-    property: K,
-    value: FastifyRequest[K] extends (...args: any[]) => any
-      ? (this: FastifyRequest, ...args: Parameters<FastifyRequest[K]>) => ReturnType<FastifyRequest[K]>
-      : FastifyRequest[K],
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-  decorateRequest<K extends string | symbol, T>(
-    property: NotInInterface<K, FastifyRequest>,
+  decorateRequest<T>(property: string | symbol,
     value: T extends (...args: any[]) => any
       ? (this: FastifyRequest, ...args: Parameters<T>) => ReturnType<T>
       : T,
     dependencies?: string[]
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  decorateReply<K extends keyof FastifyReply>(
-    property: K,
-    value: FastifyReply[K] extends (...args: any[]) => any
-      ? (this: FastifyReply, ...args: Parameters<FastifyReply[K]>) => ReturnType<FastifyReply[K]>
-      : FastifyReply[K],
-    dependencies?: string[]
-  ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
-  decorateReply<K extends string | symbol, T>(
-    property: NotInInterface<K, FastifyReply>,
+  decorateReply<T>(property: string | symbol,
     value: T extends (...args: any[]) => any
       ? (this: FastifyReply, ...args: Parameters<T>) => ReturnType<T>
       : T,
@@ -171,17 +147,17 @@ export interface FastifyInstance<
    * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
    * @see https://github.com/fastify/fastify/pull/3712
    */
-  listen(port: number | string, address: string, backlog: number, callback: (err: Error | null, address: string) => void): void;
+  listen(port: number | string, address: string, backlog: number, callback: (err: Error|null, address: string) => void): void;
   /**
    * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
    * @see https://github.com/fastify/fastify/pull/3712
    */
-  listen(port: number | string, address: string, callback: (err: Error | null, address: string) => void): void;
+  listen(port: number | string, address: string, callback: (err: Error|null, address: string) => void): void;
   /**
    * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject, callback)` instead. The variadic signature will be removed in `fastify@5`
    * @see https://github.com/fastify/fastify/pull/3712
    */
-  listen(port: number | string, callback: (err: Error | null, address: string) => void): void;
+  listen(port: number | string, callback: (err: Error|null, address: string) => void): void;
   /**
    * @deprecated Variadic listen method is deprecated. Please use `.listen(optionsObject)` instead. The variadic signature will be removed in `fastify@5`
    * @see https://github.com/fastify/fastify/pull/3712
@@ -508,11 +484,11 @@ export interface FastifyInstance<
   /**
    * Set the 404 handler
    */
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema> (
     handler: (request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>, reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfigDefault, SchemaCompiler, TypeProvider>) => void | Promise<RouteGeneric['Reply'] | void>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
-  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
+  setNotFoundHandler<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig extends ContextConfigDefault = ContextConfigDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault, SchemaCompiler extends FastifySchema = FastifySchema> (
     opts: {
       preValidation?: preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preValidationHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];
       preHandler?: preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider> | preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>[];

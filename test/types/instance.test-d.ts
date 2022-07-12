@@ -284,59 +284,29 @@ expectType<string>(server.printRoutes({ includeMeta: ['key1', Symbol('key2')] })
 
 expectType<string>(server.printRoutes())
 
-server.decorate('nonexistent', () => {})
-server.decorateRequest('nonexistent', () => {})
-server.decorateReply('nonexistent', () => {})
-
-declare module '../../fastify' {
-  interface FastifyInstance {
-    functionWithTypeDefinition: (foo: string, bar: number) => Promise<boolean>
-  }
-  interface FastifyRequest {
-    numberWithTypeDefinition: number
-  }
-  interface FastifyReply {
-    stringWithTypeDefinition: 'foo' | 'bar'
-  }
-}
-expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => {})) // error because invalid return type
-expectError(server.decorate('functionWithTypeDefinition', (foo: any, bar: any) => true)) // error because doesn't return a promise
-expectError(server.decorate('functionWithTypeDefinition', async (foo: any, bar: any, qwe: any) => true)) // error because too many args
-expectAssignable<FastifyInstance>(server.decorate('functionWithTypeDefinition', async (foo, bar) => {
-  expectType<string>(foo)
-  expectType<number>(bar)
-  return true
-}))
-
-expectError(server.decorateRequest('numberWithTypeDefinition', 'not a number')) // error because invalid type
-expectAssignable<FastifyInstance>(server.decorateRequest('numberWithTypeDefinition', 10))
-
-expectError(server.decorateReply('stringWithTypeDefinition', 'not in enum')) // error because invalid type
-expectAssignable<FastifyInstance>(server.decorateReply('stringWithTypeDefinition', 'foo'))
-
-server.decorate<'test', (x: string) => void>('test', function (x: string): void {
+server.decorate<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyInstance>(this)
 })
 server.decorate('test', function (x: string): void {
   expectType<FastifyInstance>(this)
 })
 
-server.decorateRequest<'test', (x: string, y: number) => void>('test', function (x: string, y: number): void {
+server.decorateRequest<(x: string, y: number) => void>('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
 })
 server.decorateRequest('test', function (x: string, y: number): void {
   expectType<FastifyRequest>(this)
 })
 
-server.decorateReply<'test', (x: string) => void>('test', function (x: string): void {
+server.decorateReply<(x: string) => void>('test', function (x: string): void {
   expectType<FastifyReply>(this)
 })
 server.decorateReply('test', function (x: string): void {
   expectType<FastifyReply>(this)
 })
 
-expectError(server.decorate<'test', string>('test', true))
-expectError(server.decorate<'test', (myNumber: number) => number>('test', function (myNumber: number): string {
+expectError(server.decorate<string>('test', true))
+expectError(server.decorate<(myNumber: number) => number>('test', function (myNumber: number): string {
   return ''
 }))
 

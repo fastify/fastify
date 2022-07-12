@@ -58,6 +58,21 @@ test('getParser', t => {
     t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, third)
   })
 
+  test('should return matching parser with caching', t => {
+    t.plan(6)
+
+    const fastify = Fastify()
+
+    fastify.addContentTypeParser('text/html', first)
+
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 0)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+    t.equal(fastify[keys.kContentTypeParser].getParser('text/html ').fn, first)
+    t.equal(fastify[keys.kContentTypeParser].cache.size, 1)
+  })
+
   test('should prefer content type parser with string value', t => {
     t.plan(2)
 

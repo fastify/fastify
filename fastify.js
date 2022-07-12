@@ -621,7 +621,7 @@ function fastify (options) {
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
-    if (socket.writable && socket.bytesWritten === 0) {
+    if (socket.writable) {
       socket.write(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
     }
     socket.destroy(err)

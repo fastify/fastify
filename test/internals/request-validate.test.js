@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Ajv = require('ajv')
+const { kRequestValidateWeakMap } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 const defaultSchema = {
@@ -35,7 +36,7 @@ const requestSchema = {
 }
 
 test('#compileValidationSchema', subtest => {
-  subtest.plan(4)
+  subtest.plan(5)
 
   subtest.test('Should return a function - Route without schema', async t => {
     const fastify = Fastify()
@@ -178,10 +179,48 @@ test('#compileValidationSchema', subtest => {
       })
     }
   )
+
+  subtest.test(
+    'Should instantiate a WeakMap when executed for first time',
+    async t => {
+      const fastify = Fastify()
+      let counter = 0
+
+      t.plan(5)
+
+      fastify.get('/', (req, reply) => {
+        counter++
+
+        if (counter === 1) {
+          t.equal(req.context[kRequestValidateWeakMap], null)
+        } else {
+          const validate = req.compileValidationSchema(defaultSchema)
+
+          t.type(req.context[kRequestValidateWeakMap], WeakMap)
+          t.type(validate, Function)
+          t.ok(validate({ hello: 'world' }))
+          t.notOk(validate({ world: 'foo' }))
+        }
+
+        reply.send({ hello: 'world' })
+      })
+
+      await Promise.all([
+        fastify.inject({
+          path: '/',
+          method: 'GET'
+        }),
+        fastify.inject({
+          path: '/',
+          method: 'GET'
+        })
+      ])
+    }
+  )
 })
 
 test('#getValidationFunction', subtest => {
-  subtest.plan(3)
+  subtest.plan(4)
 
   subtest.test('Should return a validation function', async t => {
     const fastify = Fastify()
@@ -301,10 +340,29 @@ test('#getValidationFunction', subtest => {
       await Promise.all(promises)
     }
   )
+
+  subtest.test('Should not set a WeakMap if there is no schema', async t => {
+    const fastify = Fastify()
+
+    t.plan(1)
+
+    fastify.get('/', (req, reply) => {
+      req.getValidationFunction(defaultSchema)
+      req.getValidationFunction('body')
+
+      t.equal(req.context[kRequestValidateWeakMap], null)
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('#validate', subtest => {
-  subtest.plan(6)
+  subtest.plan(7)
 
   subtest.test(
     'Should return true/false if input valid - Route without schema',
@@ -583,6 +641,28 @@ test('#validate', subtest => {
 
     await Promise.all(promises)
   })
+
+  subtest.test(
+    'Should set a WeakMap if compiling the very first schema',
+    async t => {
+      const fastify = Fastify()
+
+      t.plan(3)
+
+      fastify.get('/', (req, reply) => {
+        t.equal(req.context[kRequestValidateWeakMap], null)
+        t.equal(req.validate({ hello: 'world' }, defaultSchema), true)
+        t.type(req.context[kRequestValidateWeakMap], WeakMap)
+
+        reply.send({ hello: 'world' })
+      })
+
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
+    }
+  )
 })
 
 test('Nested Context', subtest => {

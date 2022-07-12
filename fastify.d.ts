@@ -194,7 +194,7 @@ export type { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRe
 export { FastifyRequest, RequestGenericInterface } from './types/request'
 export { FastifyReply } from './types/reply'
 export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
-export { FastifyInstance, PrintRoutesOptions } from './types/instance'
+export { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
 export { FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext, FastifyContextConfig } from './types/context'
 export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'

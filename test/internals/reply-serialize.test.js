@@ -1,6 +1,7 @@
 'use strict'
 
 const { test } = require('tap')
+const { kReplySerializeWeakMap } = require('../../lib/symbols')
 const Fastify = require('../../fastify')
 
 function getDefaultSchema () {
@@ -49,7 +50,7 @@ function getResponseSchema () {
 }
 
 test('Reply#compileSerializationSchema', t => {
-  t.plan(3)
+  t.plan(4)
 
   t.test('Should return a serialization function', async t => {
     const fastify = Fastify()
@@ -162,10 +163,31 @@ test('Reply#compileSerializationSchema', t => {
       })
     }
   )
+
+  t.test('Should build a WeakMap for cache when called', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      const input = { hello: 'world' }
+
+      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
+      t.type(reply.context[kReplySerializeWeakMap], WeakMap)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('Reply#getSerializationFunction', t => {
-  t.plan(2)
+  t.plan(3)
 
   t.test('Should retrieve the serialization function from the Schema definition',
     async t => {
@@ -321,10 +343,30 @@ test('Reply#getSerializationFunction', t => {
       ])
     }
   )
+
+  t.test('Should not instantiate a WeakMap if it is not needed', async t => {
+    const fastify = Fastify()
+
+    t.plan(4)
+
+    fastify.get('/', (req, reply) => {
+      t.notOk(reply.getSerializationFunction(getDefaultSchema()))
+      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.notOk(reply.getSerializationFunction('200'))
+      t.equal(reply.context[kReplySerializeWeakMap], null)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
+  })
 })
 
 test('Reply#serializeInput', t => {
-  t.plan(4)
+  t.plan(5)
 
   t.test(
     'Should throw if missed serialization function from HTTP status',
@@ -516,5 +558,25 @@ test('Reply#serializeInput', t => {
     t.equal(cached, serializer)
     t.equal(compilerCalled, 1)
     t.equal(serializerCalled, 3)
+  })
+
+  t.test('Should instantiate a WeakMap after first call', async t => {
+    const fastify = Fastify()
+
+    t.plan(3)
+
+    fastify.get('/', (req, reply) => {
+      const input = { hello: 'world' }
+      t.equal(reply.context[kReplySerializeWeakMap], null)
+      t.equal(reply.serializeInput(input, getDefaultSchema()), JSON.stringify(input))
+      t.type(reply.context[kReplySerializeWeakMap], WeakMap)
+
+      reply.send({ hello: 'world' })
+    })
+
+    await fastify.inject({
+      path: '/',
+      method: 'GET'
+    })
   })
 })

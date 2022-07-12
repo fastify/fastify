@@ -54,5 +54,10 @@ export interface FastifyReply<
   type(contentType: string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serializer(fn: (payload: any) => string): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   serialize(payload: any): string | ArrayBuffer | Buffer;
+  getSerializationFunction(httpStatus: string): (payload: any) => string;
+  getSerializationFunction(schema: {[key: string]: any}): (payload: any) => string;
+  compileSerializationSchema(schema: {[key: string]: any}, httpStatus?: string): (payload: any) => string;
+  serializeInput(input: any, schema: {[key: string]: any}, httpStatus?: string): string
+  serializeInput(input: any, httpStatus: string): string
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
 }

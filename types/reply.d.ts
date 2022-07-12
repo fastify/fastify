@@ -1,5 +1,5 @@
 import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault } from './utils'
-import { ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
+import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyContext } from './context'
 import { FastifyLoggerInstance } from './logger'
 import { FastifyRequest } from './request'
@@ -23,7 +23,8 @@ export interface FastifyReply<
   RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
   ContextConfig = ContextConfigDefault,
   SchemaCompiler extends FastifySchema = FastifySchema,
-  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  ReplyType extends FastifyReplyType = ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>
 > {
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
@@ -34,7 +35,7 @@ export interface FastifyReply<
   status(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   statusCode: number;
   sent: boolean;
-  send(payload?: ResolveFastifyReplyType<TypeProvider, SchemaCompiler, RouteGeneric>): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
+  send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   getHeader(key: string): string | undefined;

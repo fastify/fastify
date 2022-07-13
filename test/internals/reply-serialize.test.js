@@ -167,7 +167,7 @@ test('Reply#compileSerializationSchema', t => {
   t.test('Should build a WeakMap for cache when called', async t => {
     const fastify = Fastify()
 
-    t.plan(3)
+    t.plan(4)
 
     fastify.get('/', (req, reply) => {
       const input = { hello: 'world' }
@@ -175,6 +175,7 @@ test('Reply#compileSerializationSchema', t => {
       t.equal(reply.context[kReplySerializeWeakMap], null)
       t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
       t.type(reply.context[kReplySerializeWeakMap], WeakMap)
+      t.equal(reply.compileSerializationSchema(getDefaultSchema())(input), JSON.stringify(input))
 
       reply.send({ hello: 'world' })
     })

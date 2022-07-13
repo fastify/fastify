@@ -184,37 +184,23 @@ test('#compileValidationSchema', subtest => {
     'Should instantiate a WeakMap when executed for first time',
     async t => {
       const fastify = Fastify()
-      let counter = 0
 
       t.plan(5)
 
       fastify.get('/', (req, reply) => {
-        counter++
-
-        if (counter === 1) {
-          t.equal(req.context[kRequestValidateWeakMap], null)
-        } else {
-          const validate = req.compileValidationSchema(defaultSchema)
-
-          t.type(req.context[kRequestValidateWeakMap], WeakMap)
-          t.type(validate, Function)
-          t.ok(validate({ hello: 'world' }))
-          t.notOk(validate({ world: 'foo' }))
-        }
+        t.equal(req.context[kRequestValidateWeakMap], null)
+        t.type(req.compileValidationSchema(defaultSchema), Function)
+        t.type(req.context[kRequestValidateWeakMap], WeakMap)
+        t.type(req.compileValidationSchema(Object.assign({}, defaultSchema)), Function)
+        t.type(req.context[kRequestValidateWeakMap], WeakMap)
 
         reply.send({ hello: 'world' })
       })
 
-      await Promise.all([
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        }),
-        fastify.inject({
-          path: '/',
-          method: 'GET'
-        })
-      ])
+      await fastify.inject({
+        path: '/',
+        method: 'GET'
+      })
     }
   )
 })

@@ -1266,9 +1266,4 @@ test('Nested Context', subtest => {
       )
     })
   })
-
-  subtest.test('Level_2', { skip: true }, tst => {
-    tst.test('Level_2.1', { skip: true })
-    tst.test('Level_2.2', { skip: true })
-  })
 })

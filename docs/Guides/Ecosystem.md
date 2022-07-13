@@ -169,6 +169,8 @@ section.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
+- [`electron-server`](https://github.com/anonrig/electron-server) A plugin for 
+  using Fastify without the need of consuming a port on Electron apps.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds

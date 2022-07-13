@@ -652,7 +652,7 @@ test('#validate', subtest => {
 })
 
 test('Nested Context', subtest => {
-  subtest.plan(2)
+  subtest.plan(1)
 
   subtest.test('Level_1', tst => {
     tst.plan(3)

@@ -369,7 +369,7 @@ const serialize = reply
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 ```
 
-See [.compileSerializationSchema(schema, httpStatus)](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
 ### .compileSerializationSchema(schema, httpStatus)
@@ -499,7 +499,7 @@ reply
   .serializeInput({ foo: 'bar'}, 200) // '{"foo":"bar"}'
 ```
 
-See [.compileSerializationSchema(schema, httpStatus)](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
 ### .serializer(func)

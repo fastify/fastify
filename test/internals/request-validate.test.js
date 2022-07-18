@@ -358,8 +358,8 @@ test('#validate', subtest => {
       t.plan(2)
 
       fastify.get('/', (req, reply) => {
-        const isNotValid = req.validate({ world: 'string' }, defaultSchema)
-        const isValid = req.validate({ hello: 'string' }, defaultSchema)
+        const isNotValid = req.validateInput({ world: 'string' }, defaultSchema)
+        const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
 
         t.notOk(isNotValid)
         t.ok(isValid)
@@ -395,12 +395,12 @@ test('#validate', subtest => {
       t.plan(9)
 
       fastify.get('/', { validatorCompiler: custom }, (req, reply) => {
-        const ok = req.validate(
+        const ok = req.validateInput(
           { hello: 'world' },
           defaultSchema,
           'querystring'
         )
-        const ok2 = req.validate({ hello: 'world' }, defaultSchema)
+        const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
 
         t.ok(ok)
         t.ok(ok2)
@@ -433,20 +433,20 @@ test('#validate', subtest => {
 
           switch (params.id) {
             case 1:
-              t.ok(req.validate({ hello: 'world' }, 'body'))
-              t.notOk(req.validate({ hello: [], world: 'foo' }, 'body'))
+              t.ok(req.validateInput({ hello: 'world' }, 'body'))
+              t.notOk(req.validateInput({ hello: [], world: 'foo' }, 'body'))
               break
             case 2:
-              t.notOk(req.validate({ foo: 'something' }, 'querystring'))
-              t.ok(req.validate({ foo: 'bar' }, 'querystring'))
+              t.notOk(req.validateInput({ foo: 'something' }, 'querystring'))
+              t.ok(req.validateInput({ foo: 'bar' }, 'querystring'))
               break
             case 3:
-              t.notOk(req.validate({ 'x-foo': [] }, 'headers'))
-              t.ok(req.validate({ 'x-foo': 'something' }, 'headers'))
+              t.notOk(req.validateInput({ 'x-foo': [] }, 'headers'))
+              t.ok(req.validateInput({ 'x-foo': 'something' }, 'headers'))
               break
             case 4:
-              t.ok(req.validate({ id: params.id }, 'params'))
-              t.notOk(req.validate({ id: 0 }, 'params'))
+              t.ok(req.validateInput({ id: params.id }, 'params'))
+              t.notOk(req.validateInput({ id: 0 }, 'params'))
               break
             default:
               t.fail('Invalid id')
@@ -490,19 +490,19 @@ test('#validate', subtest => {
 
         switch (parseInt(params.id)) {
           case 1:
-            req.validate({}, 'body')
+            req.validateInput({}, 'body')
             break
           case 2:
-            req.validate({}, 'querystring')
+            req.validateInput({}, 'querystring')
             break
           case 3:
-            req.validate({}, 'query')
+            req.validateInput({}, 'query')
             break
           case 4:
-            req.validate({ 'x-foo': [] }, 'headers')
+            req.validateInput({ 'x-foo': [] }, 'headers')
             break
           case 5:
-            req.validate({ id: 0 }, 'params')
+            req.validateInput({ id: 0 }, 'params')
             break
           default:
             t.fail('Invalid id')
@@ -539,19 +539,19 @@ test('#validate', subtest => {
 
         switch (parseInt(params.id)) {
           case 1:
-            req.validate({}, 1, 'body')
+            req.validateInput({}, 1, 'body')
             break
           case 2:
-            req.validate({}, [], 'querystring')
+            req.validateInput({}, [], 'querystring')
             break
           case 3:
-            req.validate({}, '', 'query')
+            req.validateInput({}, '', 'query')
             break
           case 4:
-            req.validate({ 'x-foo': [] }, null, 'headers')
+            req.validateInput({ 'x-foo': [] }, null, 'headers')
             break
           case 5:
-            req.validate({ id: 0 }, () => {}, 'params')
+            req.validateInput({ id: 0 }, () => {}, 'params')
             break
           default:
             t.fail('Invalid id')
@@ -589,19 +589,19 @@ test('#validate', subtest => {
 
       switch (parseInt(params.id)) {
         case 1:
-          req.validate({}, 1)
+          req.validateInput({}, 1)
           break
         case 2:
-          req.validate({}, '')
+          req.validateInput({}, '')
           break
         case 3:
-          req.validate({}, [])
+          req.validateInput({}, [])
           break
         case 4:
-          req.validate({ 'x-foo': [] }, null)
+          req.validateInput({ 'x-foo': [] }, null)
           break
         case 5:
-          req.validate({ id: 0 }, () => {})
+          req.validateInput({ id: 0 }, () => {})
           break
         default:
           t.fail('Invalid id')
@@ -637,7 +637,7 @@ test('#validate', subtest => {
 
       fastify.get('/', (req, reply) => {
         t.equal(req.context[kRequestValidateWeakMap], null)
-        t.equal(req.validate({ hello: 'world' }, defaultSchema), true)
+        t.equal(req.validateInput({ hello: 'world' }, defaultSchema), true)
         t.type(req.context[kRequestValidateWeakMap], WeakMap)
 
         reply.send({ hello: 'world' })
@@ -1096,11 +1096,11 @@ test('Nested Context', subtest => {
 
           fastify.register((instance, opts, next) => {
             instance.get('/', (req, reply) => {
-              const isNotValid = req.validate(
+              const isNotValid = req.validateInput(
                 { world: 'string' },
                 defaultSchema
               )
-              const isValid = req.validate({ hello: 'string' }, defaultSchema)
+              const isValid = req.validateInput({ hello: 'string' }, defaultSchema)
 
               t.notOk(isNotValid)
               t.ok(isValid)
@@ -1149,12 +1149,12 @@ test('Nested Context', subtest => {
               '/',
               { validatorCompiler: customChild },
               (req, reply) => {
-                const ok = req.validate(
+                const ok = req.validateInput(
                   { hello: 'world' },
                   defaultSchema,
                   'querystring'
                 )
-                const ok2 = req.validate({ hello: 'world' }, defaultSchema)
+                const ok2 = req.validateInput({ hello: 'world' }, defaultSchema)
 
                 t.ok(ok)
                 t.ok(ok2)
@@ -1214,20 +1214,20 @@ test('Nested Context', subtest => {
 
                 switch (parseInt(params.id)) {
                   case 1:
-                    t.ok(req.validate({ hello: 'world' }, 'body'))
-                    t.notOk(req.validate({ hello: [], world: 'foo' }, 'body'))
+                    t.ok(req.validateInput({ hello: 'world' }, 'body'))
+                    t.notOk(req.validateInput({ hello: [], world: 'foo' }, 'body'))
                     break
                   case 2:
-                    t.notOk(req.validate({ foo: 'something' }, 'querystring'))
-                    t.ok(req.validate({ foo: 'bar' }, 'querystring'))
+                    t.notOk(req.validateInput({ foo: 'something' }, 'querystring'))
+                    t.ok(req.validateInput({ foo: 'bar' }, 'querystring'))
                     break
                   case 3:
-                    t.notOk(req.validate({ 'x-foo': [] }, 'headers'))
-                    t.ok(req.validate({ 'x-foo': 'something' }, 'headers'))
+                    t.notOk(req.validateInput({ 'x-foo': [] }, 'headers'))
+                    t.ok(req.validateInput({ 'x-foo': 'something' }, 'headers'))
                     break
                   case 4:
-                    t.ok(req.validate({ id: 1 }, 'params'))
-                    t.notOk(req.validate({ id: params.id }, 'params'))
+                    t.ok(req.validateInput({ id: 1 }, 'params'))
+                    t.notOk(req.validateInput({ id: params.id }, 'params'))
                     break
                   default:
                     t.fail('Invalid id')

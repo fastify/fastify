@@ -43,7 +43,7 @@ Request is a core Fastify object containing the following fields:
   using the default (or customized) `ValidationCompiler`.
   The optional `httpPart` is forwarded to the `ValidationCompiler`
   if provided, defaults to `null`.
-- [.validate(data, schema | httpPart, [httpPart])](#validate) -
+- [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
   Validates the specified input by using the specified
   schema and returns the serialized payload. If the optional
   `httpPart` is provided, the function will use the serializer
@@ -157,7 +157,7 @@ const validate = request
                       } 
                     } 
                   }, 200)
-console.log(validateInput({ hello: 'world' })) // false
+console.log(validate({ hello: 'world' })) // false
 ```
 
 Note that you should be careful when using this function, as it will cache
@@ -207,7 +207,7 @@ const newValidate = request.compileValidationSchema(newSchema)
 console.log(newValidate === validate) // false
 ```
 
-### .validate(data, [schema | httpStatus], [httpStatus])
+### .validateInput(data, [schema | httpStatus], [httpStatus])
 <a id="validate"></a>
 
 This function will validate the input based on the provided schema,
@@ -219,7 +219,7 @@ function will be compiled, forwarding the `httpPart` if provided.
 
 ```js
 request
-  .validate({ foo: 'bar'}, {  
+  .validateInput({ foo: 'bar'}, {  
     type: 'object', 
     properties: { 
       foo: { 
@@ -231,7 +231,7 @@ request
 // or
 
 request
-  .validate({ foo: 'bar'}, {
+  .validateInput({ foo: 'bar'}, {
     type: 'object', 
     properties: { 
       foo: { 

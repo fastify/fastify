@@ -2,9 +2,7 @@
 
 ## HTTP2
 
-_Fastify_ offers **experimental support** for HTTP2 starting from Node 8 LTS,
-which includes HTTP2 without a flag; HTTP2 is supported over either HTTPS or
-plaintext.
+_Fastify_ supports HTTP2 over either HTTPS (h2) or plaintext (h2c).
 
 Currently, none of the HTTP2-specific APIs are available through _Fastify_, but
 Node's `req` and `res` can be accessed through our `Request` and `Reply`

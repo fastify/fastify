@@ -42,12 +42,12 @@ Request is a core Fastify object containing the following fields:
   Compiles the specified schema and returns a validation function
   using the default (or customized) `ValidationCompiler`.
   The optional `httpPart` is forwarded to the `ValidationCompiler`
-  if provided, default to `null`.
+  if provided, defaults to `null`.
 - [.validate(data, schema | httpPart, [httpPart])](#validate) -
   Validates the specified input by using the specified
   schema and returns the serialized payload. If the optional
   `httpPart` is provided, the function will use the serializer
-  function given for that HTTP Status Code. Default to `null`.
+  function given for that HTTP Status Code. Defaults to `null`.
 - `context` - A Fastify internal object. You should not use it directly or
   modify it. It is useful to access one special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
@@ -113,11 +113,11 @@ validate({ foo: 'bar' }) // true
 // or
 
 const validate = request
-                  .getSerializationFunction('body')
+                  .getValidationFunction('body')
 validate({ foo: 0.5 }) // false
 ```
 
-See [.compilaValidationSchema(schema, [httpStatus])](#compileserializationschema)
+See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
 for more information on how to compile validation function.
 
 ### .compileValidationSchema(schema, [httpPart])
@@ -126,10 +126,10 @@ for more information on how to compile validation function.
 This function will compile a validation schema and
 return a function that can be used to validate data.
 The function returned (a.k.a. _validation function_) is compiled
-by using the provided `SchemaControler#ValidationCompiler`.
-Also this is cached by using a `WeakMap` for reducing compilation calls.
+by using the provided [`SchemaControler#ValidationCompiler`](./Server.md#schema-controller).
+A `WeakMap` is used to cached this, reducing compilation calls.
 
-The optional paramater `httpPart`, if provided, is forwarded directly
+The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation
 function if a custom `ValidationCompiler` is provided for the route.
 
@@ -144,12 +144,12 @@ const validate = request
                       } 
                     } 
                   })
-validate({ foo: 'bar' }) // true
+console.log(validate({ foo: 'bar' })) // true
 
 // or
 
 const validate = request
-                  .compileSerializationSchema({
+                  .compileValidationSchema({
                     type: 'object', 
                     properties: { 
                       foo: { 
@@ -157,21 +157,21 @@ const validate = request
                       } 
                     } 
                   }, 200)
-validate({ hello: 'world' }) // false
+console.log(validateInput({ hello: 'world' })) // false
 ```
 
 Note that you should be careful when using this function, as it will cache
-the compiled valiadtion functions based on the schema provided. If the
-schemas provided is mutated or changed, the serialization functions will not
+the compiled validation functions based on the schema provided. If the
+schemas provided are mutated or changed, the validation functions will not
 detect that the schema has been altered and for instance it will reuse the
-previously compiled serialization function, as the cache is based on
+previously compiled validation function, as the cache is based on
 the reference of the schema (Object) previously provided.
 
-If there's a need to change the properties of a schema, always opt to create
-a totally new schema (object), otherwise the implementation won't benefit from
+If there is a need to change the properties of a schema, always opt to create
+a totally new schema (object), otherwise the implementation will not benefit from
 the cache mechanism.
 
-:Using the following schema as example:
+:Using the following schema as an example:
 ```js
 const schema1 = {
   type: 'object',
@@ -211,11 +211,11 @@ console.log(newValidate === validate) // false
 <a id="validate"></a>
 
 This function will validate the input based on the provided schema,
-or http part passed. If both provided, the `httpPart` parameter
-will take presedence.
+or HTTP part passed. If both are provided, the `httpPart` parameter
+will take precedence.
 
-If there is not a valiodation function for a given `schema`, a new validation
-function will be compiled forwarding the `httpPart` if provided.
+If there is not a validation function for a given `schema`, a new validation
+function will be compiled, forwarding the `httpPart` if provided.
 
 ```js
 request
@@ -243,7 +243,7 @@ request
 // or
 
 request
-  .serializeInput({ hello: 'world'}, 'query') // false
+  .validateInput({ hello: 'world'}, 'query') // false
 ```
 
 See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)

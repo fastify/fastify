@@ -35,6 +35,19 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
+- [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
+  Returns a validation function for the specified schema or http part,
+  if any of either are set or cached.
+- [.compileValidationSchema(schema, [httpPart])](#compilevalidationschema) -
+  Compiles the specified schema and returns a validation function
+  using the default (or customized) `ValidationCompiler`.
+  The optional `httpPart` is forwarded to the `ValidationCompiler`
+  if provided, defaults to `null`.
+- [.validateInput(data, schema | httpPart, [httpPart])](#validate) -
+  Validates the specified input by using the specified
+  schema and returns the serialized payload. If the optional
+  `httpPart` is provided, the function will use the serializer
+  function given for that HTTP Status Code. Defaults to `null`.
 - `context` - A Fastify internal object. You should not use it directly or
   modify it. It is useful to access one special key:
   - `context.config` - The route [`config`](./Routes.md#routes-config) object.
@@ -77,3 +90,161 @@ fastify.post('/:params', options, function (request, reply) {
   request.log.info('some info')
 })
 ```
+### .getValidationFunction(schema | httpPart)
+<a id="getvalidationfunction"></a>
+
+By calling this function using a provided `schema` or `httpPart`, 
+it will return a `validation` function that can be used to
+validate diverse inputs. It returns `undefined` if no
+serialization function was found using either of the provided inputs.
+
+```js
+const validate = request
+                  .getValidationFunction({
+                    type: 'object', 
+                    properties: { 
+                      foo: { 
+                        type: 'string' 
+                      } 
+                    } 
+                  })
+validate({ foo: 'bar' }) // true
+
+// or
+
+const validate = request
+                  .getValidationFunction('body')
+validate({ foo: 0.5 }) // false
+```
+
+See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
+for more information on how to compile validation function.
+
+### .compileValidationSchema(schema, [httpPart])
+<a id="compilevalidationschema"></a>
+
+This function will compile a validation schema and
+return a function that can be used to validate data.
+The function returned (a.k.a. _validation function_) is compiled
+by using the provided [`SchemaControler#ValidationCompiler`](./Server.md#schema-controller).
+A `WeakMap` is used to cached this, reducing compilation calls.
+
+The optional parameter `httpPart`, if provided, is forwarded directly
+the `ValidationCompiler`, so it can be used to compile the validation
+function if a custom `ValidationCompiler` is provided for the route.
+
+
+```js
+const validate = request
+                  .compileValidationSchema({
+                    type: 'object', 
+                    properties: { 
+                      foo: { 
+                        type: 'string' 
+                      } 
+                    } 
+                  })
+console.log(validate({ foo: 'bar' })) // true
+
+// or
+
+const validate = request
+                  .compileValidationSchema({
+                    type: 'object', 
+                    properties: { 
+                      foo: { 
+                        type: 'string' 
+                      } 
+                    } 
+                  }, 200)
+console.log(validate({ hello: 'world' })) // false
+```
+
+Note that you should be careful when using this function, as it will cache
+the compiled validation functions based on the schema provided. If the
+schemas provided are mutated or changed, the validation functions will not
+detect that the schema has been altered and for instance it will reuse the
+previously compiled validation function, as the cache is based on
+the reference of the schema (Object) previously provided.
+
+If there is a need to change the properties of a schema, always opt to create
+a totally new schema (object), otherwise the implementation will not benefit from
+the cache mechanism.
+
+Using the following schema as an example:
+```js
+const schema1 = {
+  type: 'object',
+  properties: {
+    foo: {
+      type: 'string'
+    }
+  }
+}
+```
+
+*Not*
+```js 
+const validate = request.compileValidationSchema(schema1)
+
+// Later on...
+schema1.properties.foo.type. = 'integer'
+const newValidate = request.compileValidationSchema(schema1)
+
+console.log(newValidate === validate) // true
+```
+
+*Instead*
+```js
+const validate = request.compileValidationSchema(schema1)
+
+// Later on...
+const newSchema = Object.assign({}, schema1)
+newSchema.properties.foo.type = 'integer'
+
+const newValidate = request.compileValidationSchema(newSchema)
+
+console.log(newValidate === validate) // false
+```
+
+### .validateInput(data, [schema | httpStatus], [httpStatus])
+<a id="validate"></a>
+
+This function will validate the input based on the provided schema,
+or HTTP part passed. If both are provided, the `httpPart` parameter
+will take precedence.
+
+If there is not a validation function for a given `schema`, a new validation
+function will be compiled, forwarding the `httpPart` if provided.
+
+```js
+request
+  .validateInput({ foo: 'bar'}, {  
+    type: 'object', 
+    properties: { 
+      foo: { 
+        type: 'string' 
+      } 
+    } 
+  }) // true
+
+// or
+
+request
+  .validateInput({ foo: 'bar'}, {
+    type: 'object', 
+    properties: { 
+      foo: { 
+        type: 'string' 
+      } 
+    } 
+  }, 'body') // true
+
+// or
+
+request
+  .validateInput({ hello: 'world'}, 'query') // false
+```
+
+See [.compileValidationSchema(schema, [httpStatus])](#compileValidationSchema)
+for more information on how to compile validation schemas.

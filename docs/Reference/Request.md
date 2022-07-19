@@ -171,7 +171,7 @@ If there is a need to change the properties of a schema, always opt to create
 a totally new schema (object), otherwise the implementation will not benefit from
 the cache mechanism.
 
-:Using the following schema as an example:
+Using the following schema as an example:
 ```js
 const schema1 = {
   type: 'object',

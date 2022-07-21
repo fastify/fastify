@@ -24,11 +24,17 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>,
-  Logger extends FastifyLoggerInstance = FastifyLoggerInstance
+  Logger extends FastifyLoggerInstance = FastifyLoggerInstance,
+  RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
+  // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
+  //   generic list. This generic argument is now considered optional as it can be
+  //   automatically inferred from the SchemaCompiler, RouteGeneric and TypeProvider
+  //   arguments. Implementations that already pass this argument can either omit
+  //   the RequestType (preferred) or swap Logger and RequestType arguments when
+  //   creating custom types of FastifyRequest. Related issue #4123
 > {
   id: any;
-  params: RequestType['params'];
+  params: RequestType['params']; // deferred inference
   raw: RawRequest;
   query: RequestType['query'];
   headers: RawRequest['headers'] & RequestType['headers']; // this enables the developer to extend the existing http(s|2) headers list

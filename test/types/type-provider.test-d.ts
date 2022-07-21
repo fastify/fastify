@@ -1,15 +1,14 @@
 import fastify, {
-  ContextConfigDefault, FastifySchema,
-  FastifyTypeProvider, RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerDefault,
-  RouteHandlerMethod
+  FastifyTypeProvider,
+  HookHandlerDoneFunction,
+  FastifyRequest,
+  FastifyReply,
+  FastifyInstance
 } from '../../fastify'
 import { expectAssignable, expectError, expectType } from 'tsd'
 import { IncomingHttpHeaders } from 'http'
 import { Type, TSchema, Static } from '@sinclair/typebox'
 import { FromSchema, JSONSchema } from 'json-schema-to-ts'
-import { RouteGenericInterface } from '../../types/route'
 
 const server = fastify()
 
@@ -435,5 +434,76 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
   },
   async (_, res) => {
     return true
+  }
+))
+
+// -------------------------------------------------------------------
+// FastifyPlugin: Auxiliary
+// -------------------------------------------------------------------
+
+interface AuxiliaryPluginProvider extends FastifyTypeProvider { output: 'plugin-auxiliary' }
+
+// Auxiliary plugins may have varying server types per application. Recommendation would be to explicitly remap instance provider context within plugin if required.
+function plugin<T extends FastifyInstance> (instance: T) {
+  expectAssignable(instance.withTypeProvider<AuxiliaryPluginProvider>().get(
+    '/',
+    {
+      schema: { body: null }
+    },
+    (req) => {
+      expectType<'plugin-auxiliary'>(req.body)
+    }
+  ))
+}
+
+expectAssignable(server.withTypeProvider<AuxiliaryPluginProvider>().register(plugin).get(
+  '/',
+  {
+    schema: { body: null }
+  },
+  (req) => {
+    expectType<'plugin-auxiliary'>(req.body)
+  }
+))
+
+// -------------------------------------------------------------------
+// Handlers: Inline
+// -------------------------------------------------------------------
+
+interface InlineHandlerProvider extends FastifyTypeProvider { output: 'handler-inline' }
+
+// Inline handlers should infer for the request parameters (non-shared)
+expectAssignable(server.withTypeProvider<InlineHandlerProvider>().get(
+  '/',
+  {
+    onRequest: (req, res) => {
+      expectType<'handler-inline'>(req.body)
+    },
+    schema: { body: null }
+  },
+  (req) => {
+    expectType<'handler-inline'>(req.body)
+  }
+))
+
+// -------------------------------------------------------------------
+// Handlers: Auxiliary
+// -------------------------------------------------------------------
+
+interface AuxiliaryHandlerProvider extends FastifyTypeProvider { output: 'handler-auxiliary' }
+
+// Auxiliary handlers are likely shared for multiple routes and thus should infer as unknown due to potential varying parameters
+function auxiliaryHandler (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction): void {
+  expectType<unknown>(request.body)
+}
+
+expectAssignable(server.withTypeProvider<AuxiliaryHandlerProvider>().get(
+  '/',
+  {
+    onRequest: auxiliaryHandler,
+    schema: { body: null }
+  },
+  (req) => {
+    expectType<'handler-auxiliary'>(req.body)
   }
 ))

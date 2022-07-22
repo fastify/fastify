@@ -24,13 +24,10 @@ class Foo {}
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
 })
 
-/*
-// TODO make pino export BaseLogger again
 interface CustomLogger extends FastifyBaseLogger {
   customMethod(msg: string, ...args: unknown[]): void;
 }
 
-//   // ToDo https://github.com/pinojs/pino/issues/1100
 class CustomLoggerImpl implements CustomLogger {
   level = 'info'
   customMethod (msg: string, ...args: unknown[]) { console.log(msg, args) }
@@ -60,7 +57,6 @@ CustomLoggerImpl
 >({ logger: customLogger })
 
 expectType<CustomLoggerImpl>(serverWithCustomLogger.log)
-*/
 
 const serverWithPino = fastify<
 Server,

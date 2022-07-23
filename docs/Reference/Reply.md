@@ -36,6 +36,7 @@
     - [Type of the final payload](#type-of-the-final-payload)
     - [Async-Await and Promises](#async-await-and-promises)
   - [.then(fulfilled, rejected)](#thenfulfilled-rejected)
+  - [.catch(rejected)](#catch-rejected)
 
 ### Introduction
 <a id="introduction"></a>
@@ -819,3 +820,13 @@ For more details, see:
 - https://promisesaplus.com/ for the definition of thenables
 - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
   for the signature
+
+### .catch(rejected)
+<a id="catch"></a>
+
+Equivalent to `reply.then(null, rejected)`.
+
+`reply.catch(rejected)` accepts one parameter:
+
+- `rejected` will be called if the underlying stream had an error, e.g. the
+  socket has been destroyed.

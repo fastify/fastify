@@ -60,4 +60,5 @@ export interface FastifyReply<
   serializeInput(input: any, schema: {[key: string]: any}, httpStatus?: string): string
   serializeInput(input: any, httpStatus: string): string
   then(fulfilled?: () => void, rejected?: (err: Error) => void): void;
+  catch(rejected?: (err: Error) => void): void;
 }

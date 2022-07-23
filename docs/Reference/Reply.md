@@ -343,7 +343,7 @@ If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 ### .getSerializationFunction(schema | httpStatus)
 <a id="getserializationfunction"></a>
 
-By calling this function using a provided `schema` or `httpStatus`, 
+By calling this function using a provided `schema` or `httpStatus`,
 it will return a `serialzation` function that can be used to
 serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
@@ -354,12 +354,12 @@ the serialization functions compiled by using `compileSerializationSchema`.
 ```js
 const serialize = reply
                   .getSerializationFunction({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
@@ -392,12 +392,12 @@ the serialization functions compiled by using `compileSerializationSchema`.
 ```js
 const serialize = reply
                   .compileSerializationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   })
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
@@ -405,12 +405,12 @@ serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 
 const serialize = reply
                   .compileSerializationSchema({
-                    type: 'object', 
-                    properties: { 
-                      foo: { 
-                        type: 'string' 
-                      } 
-                    } 
+                    type: 'object',
+                    properties: {
+                      foo: {
+                        type: 'string'
+                      }
+                    }
                   }, 200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 ```
@@ -439,7 +439,7 @@ const schema1 = {
 ```
 
 *Not*
-```js 
+```js
 const serialize = reply.compileSerializationSchema(schema1)
 
 // Later on...
@@ -473,25 +473,25 @@ function will be compiled forwarding the `httpStatus` if provided.
 
 ```js
 reply
-  .serializeInput({ foo: 'bar'}, {  
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+  .serializeInput({ foo: 'bar'}, {
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }) // '{"foo":"bar"}'
 
 // or
 
 reply
   .serializeInput({ foo: 'bar'}, {
-    type: 'object', 
-    properties: { 
-      foo: { 
-        type: 'string' 
-      } 
-    } 
+    type: 'object',
+    properties: {
+      foo: {
+        type: 'string'
+      }
+    }
   }, 200) // '{"foo":"bar"}'
 
 // or

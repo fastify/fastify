@@ -59,6 +59,6 @@ export interface FastifyReply<
   compileSerializationSchema(schema: {[key: string]: any}, httpStatus?: string): (payload: any) => string;
   serializeInput(input: any, schema: {[key: string]: any}, httpStatus?: string): string
   serializeInput(input: any, httpStatus: string): string
-  then(fulfilled?: () => void, rejected?: (err: Error) => void): void;
-  catch(rejected?: (err: Error) => void): void;
+  then(fulfilled?: () => any, rejected?: (err: Error) => any): Promise<any>;
+  catch(rejected?: (err: Error) => any): Promise<any>;
 }

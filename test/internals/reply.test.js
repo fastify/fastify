@@ -1044,7 +1044,7 @@ test('reply.hasHeader returns correct values', t => {
 })
 
 test('reply.getHeader returns correct values', t => {
-  t.plan(4)
+  t.plan(5)
 
   const fastify = require('../../')()
 
@@ -1054,6 +1054,9 @@ test('reply.getHeader returns correct values', t => {
 
     reply.header('x-foo', 'bar')
     t.strictSame(reply.getHeader('x-foo'), 'bar')
+
+    reply.header('x-foo', 42)
+    t.strictSame(reply.getHeader('x-foo'), 42)
 
     reply.header('set-cookie', 'one')
     reply.header('set-cookie', 'two')

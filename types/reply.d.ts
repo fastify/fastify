@@ -38,7 +38,7 @@ export interface FastifyReply<
   send(payload?: ReplyType): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   header(key: string, value: any): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
   headers(values: {[key: string]: any}): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;
-  getHeader(key: string): string | undefined;
+  getHeader(key: string): number | string | string[] | undefined;
   getHeaders(): {
     // Node's `getHeaders()` can return numbers and arrays, so they're included here as possible types.
     [key: string]: number | string | string[] | undefined;

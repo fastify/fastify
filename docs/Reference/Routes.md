@@ -32,8 +32,9 @@ fastify.route(options)
 ### Routes options
 <a id="options"></a>
 
-*`method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
-  `'POST'`, `'PUT'` and `'OPTIONS'`. It could also be an array of methods.
+* `method`: currently it supports `'DELETE'`, `'GET'`, `'HEAD'`, `'PATCH'`,
+  `'POST'`, `'PUT'`, `'OPTIONS'`, `'SEARCH'`, `'TRACE'`, `'PROPFIND'`, `'PROPPATCH'`, `'MKCOL'`,
+  `'COPY'`, `'MOVE'`, `'LOCK'`  and `'UNLOCK'`. It could also be an array of methods.
 * `url`: the path of the URL to match this route (alias: `path`).
 * `schema`: an object containing the schemas for the request and response. They
   need to be in [JSON Schema](https://json-schema.org/) format, check

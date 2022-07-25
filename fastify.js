@@ -34,7 +34,7 @@ const {
 const { createServer, compileValidateHTTPVersion } = require('./lib/server')
 const Reply = require('./lib/reply')
 const Request = require('./lib/request')
-const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
+const { supportedMethods } = require('./lib/httpMethods')
 const decorator = require('./lib/decorate')
 const ContentTypeParser = require('./lib/contentTypeParser')
 const SchemaController = require('./lib/schema-controller')

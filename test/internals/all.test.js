@@ -3,9 +3,15 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('../..')
-const supportedMethods = ['DELETE', 'GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'OPTIONS']
+const { supportedMethods } = require('../../lib/httpMethods')
 
 test('fastify.all should add all the methods to the same url', t => {
+  const requirePayload = [
+    'POST',
+    'PUT',
+    'PATCH'
+  ]
+
   t.plan(supportedMethods.length * 2)
 
   const fastify = Fastify()
@@ -22,7 +28,7 @@ test('fastify.all should add all the methods to the same url', t => {
       method
     }
 
-    if (method === 'POST' || method === 'PUT' || method === 'PATCH') {
+    if (requirePayload.includes(method)) {
       options.payload = { hello: 'world' }
     }
 

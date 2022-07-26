@@ -88,8 +88,8 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<FastifyInstance>(request.server)
   expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>(request.getValidationFunction)
   expectAssignable<(schema: {[key: string]: unknown}) => ExpectedGetValidationFunction>(request.getValidationFunction)
-  expectAssignable<(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validate)
-  expectAssignable<(input: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validate)
+  expectAssignable<(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
+  expectAssignable<(input: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, CustomLoggerInterface> = function (request, _reply) {

@@ -215,6 +215,8 @@ section.
   to add [boom](https://github.com/hapijs/boom) support.
 - [`fastify-bree`](https://github.com/climba03003/fastify-bree) Fastify plugin
   to add [bree](https://github.com/breejs/bree) support.
+- [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
+  to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
 - [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
   for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)

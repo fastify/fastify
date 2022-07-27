@@ -1,4 +1,4 @@
-import { expectError, expectType } from 'tsd'
+import { expectDeprecated, expectError, expectType } from 'tsd'
 import fastify, {
   FastifyLogFn,
   LogLevel,
@@ -208,6 +208,9 @@ const passPinoOption = fastify({
 })
 
 expectType<FastifyBaseLogger>(passPinoOption.log)
+
+// FastifyLoggerInstance is deprecated
+expectDeprecated({} as FastifyLoggerInstance)
 
 const childParent = fastify().log
 // we test different option variant here

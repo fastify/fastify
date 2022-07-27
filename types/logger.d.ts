@@ -19,12 +19,15 @@ export type Bindings = pino.Bindings
 
 export type ChildLoggerOptions = pino.ChildLoggerOptions
 
-export type FastifyLoggerInstance = pino.Logger
-// TODO make pino export BaseLogger again
-// export type FastifyBaseLogger = pino.BaseLogger & {
-export type FastifyBaseLogger = pino.Logger & {
+export type FastifyBaseLogger = pino.BaseLogger & {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
 }
+
+// TODO delete FastifyLoggerInstance in the next major release. It seems that it is enough to have only FastifyBaseLogger.
+/**
+ * @deprecated Use FastifyBaseLogger instead
+ */
+export type FastifyLoggerInstance = FastifyBaseLogger
 
 export interface FastifyLoggerStreamDestination {
   write(msg: string): void;

@@ -170,7 +170,7 @@ app.addHook('preHandler', function (req, reply, done) {
 You can also supply your own logger instance. Instead of passing configuration
 options, pass the instance. The logger you supply must conform to the Pino
 interface; that is, it must have the following methods: `info`, `error`,
-`debug`, `fatal`, `warn`, `trace`, `child`.
+`debug`, `fatal`, `warn`, `trace`, `silent`, `child` and a string property `level`.
 
 Example:
 

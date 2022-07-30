@@ -890,7 +890,7 @@ fastify.ready().then(() => {
 Starts the server and internally waits for the `.ready()` event. The signature
 is `.listen([options][, callback])`. Both the `options` object and the
 `callback` parameters follow the [Node.js
-core][https://nodejs.org/api/net.html#serverlistenoptions-callback] parameter
+core](https://nodejs.org/api/net.html#serverlistenoptions-callback) parameter
 definitions.
 
 By default, the server will listen on the address(es) resolved by `localhost`

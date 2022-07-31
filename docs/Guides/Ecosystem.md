@@ -535,6 +535,7 @@ section.
   Parse XML payload / request body into JS / JSON object.
 - [`fastify-xray`](https://github.com/jeromemacias/fastify-xray) Fastify plugin
   for AWS XRay recording.
+- [`formzilla`](https://github.com/FlameWolf/formzilla) Fastify plugin to handle `multipart/form-data` content. Easy to use with with JSON schemas and `@fastify/swagger`.
 - [`i18next-http-middleware`](https://github.com/i18next/i18next-http-middleware#fastify-usage)
   An [i18next](https://www.i18next.com) based i18n (internationalization)
   middleware to be used with Node.js web frameworks like Express or Fastify and

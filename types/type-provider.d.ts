@@ -60,15 +60,6 @@ export interface ResolveFastifyRequestType<TypeProvider extends FastifyTypeProvi
 // FastifyReplyType
 // -----------------------------------------------------------------------------------------------
 
-// Tests if the user has specified a generic argument for Reply
-type UseReplyFromRouteGeneric<RouteGeneric extends RouteGenericInterface> = keyof RouteGeneric['Reply'] extends never ? false : true
-
-// Tests if the user has specified a response schema.
-type UseReplyFromSchemaCompiler<SchemaCompiler extends FastifySchema> = keyof SchemaCompiler['response'] extends never ? false : true
-
-// Resolves the Reply type from the generic argument
-type ResolveReplyFromRouteGeneric<RouteGeneric extends RouteGenericInterface> = RouteGeneric['Reply']
-
 // Resolves the Reply type by taking a union of response status codes
 type ResolveReplyFromSchemaCompiler<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema> = {
   [K in keyof SchemaCompiler['response']]: CallTypeProvider<TypeProvider, SchemaCompiler['response'][K]>
@@ -80,11 +71,7 @@ export type FastifyReplyType<Reply = unknown> = Reply
 // Resolves the Reply type either via generic argument or from response schema. This type uses a different
 // resolution strategy to Requests where the Reply will infer a union of each status code type specified
 // by the user. The Reply can be explicitly overriden by users providing a generic Reply type on the route.
-export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = FastifyReplyType<
-UseReplyFromRouteGeneric<RouteGeneric> extends true ? ResolveReplyFromRouteGeneric<RouteGeneric> :
-  UseReplyFromSchemaCompiler<SchemaCompiler> extends true ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> :
-    unknown
->
+export type ResolveFastifyReplyType<TypeProvider extends FastifyTypeProvider, SchemaCompiler extends FastifySchema, RouteGeneric extends RouteGenericInterface> = UndefinedToUnknown<KeysOf<RouteGeneric['Reply']> extends never ? ResolveReplyFromSchemaCompiler<TypeProvider, SchemaCompiler> : RouteGeneric['Reply']>
 
 // -----------------------------------------------------------------------------------------------
 // FastifyReplyReturnType

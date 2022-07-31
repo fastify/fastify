@@ -40,6 +40,14 @@ interface ReplyPayload {
   };
 }
 
+interface ReplyUnion {
+  Reply: {
+    success: boolean;
+  } | {
+    error: string;
+  }
+}
+
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
   expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
 }
@@ -53,9 +61,35 @@ server.get<ReplyPayload>('/get-generic-send', async function handler (request, r
 server.get<ReplyPayload>('/get-generic-return', async function handler (request, reply) {
   return { test: false }
 })
-expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
+expectError(server.get<ReplyPayload>('/get-generic-send-error', async function handler (request, reply) {
   reply.send({ foo: 'bar' })
 }))
 expectError(server.get<ReplyPayload>('/get-generic-return-error', async function handler (request, reply) {
   return { foo: 'bar' }
+}))
+server.get<ReplyUnion>('/get-generic-union-send', async function handler (request, reply) {
+  if (0 as number === 0) {
+    reply.send({ success: true })
+  } else {
+    reply.send({ error: 'error' })
+  }
+})
+server.get<ReplyUnion>('/get-generic-union-return', async function handler (request, reply) {
+  if (0 as number === 0) {
+    return { success: true }
+  } else {
+    return { error: 'error' }
+  }
+})
+expectError(server.get<ReplyUnion>('/get-generic-union-send-error-1', async function handler (request, reply) {
+  reply.send({ successes: true })
+}))
+expectError(server.get<ReplyUnion>('/get-generic-union-send-error-2', async function handler (request, reply) {
+  reply.send({ error: 500 })
+}))
+expectError(server.get<ReplyUnion>('/get-generic-union-return-error-1', async function handler (request, reply) {
+  return { successes: true }
+}))
+expectError(server.get<ReplyUnion>('/get-generic-union-return-error-2', async function handler (request, reply) {
+  return { error: 500 }
 }))

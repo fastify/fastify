@@ -767,6 +767,7 @@ Fastify natively handles promises and supports async-await.
 
 *Note that in the following examples we are not using reply.send.*
 ```js
+const { promisify } = require('util')
 const delay = promisify(setTimeout)
 
 fastify.get('/promises', options, function (request, reply) {

@@ -37,8 +37,8 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectAssignable<((httpStatus: string) => DefaultSerializationFunction)>(reply.getSerializationFunction)
   expectAssignable<((schema: {[key: string]: unknown}) => DefaultSerializationFunction)>(reply.getSerializationFunction)
   expectAssignable<((schema: {[key: string]: unknown}, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
-  expectAssignable<((input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string) => unknown)>(reply.serialize)
-  expectAssignable<((input: {[key: string]: unknown}, httpStatus: string) => unknown)>(reply.serialize)
+  expectAssignable<((input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string) => unknown)>(reply.serializeInput)
+  expectAssignable<((input: {[key: string]: unknown}, httpStatus: string) => unknown)>(reply.serializeInput)
 }
 
 interface ReplyPayload {

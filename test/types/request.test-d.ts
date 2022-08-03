@@ -1,4 +1,4 @@
-import { expectType } from 'tsd'
+import { expectAssignable, expectType } from 'tsd'
 import pino from 'pino'
 import fastify, {
   RouteHandler,
@@ -54,6 +54,9 @@ type CustomRequest = FastifyRequest<{
   Headers: RequestHeaders;
 }>
 
+type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
+type ExpectedGetValidationFunction = (input: {[key: string]: unknown}) => boolean
+
 interface CustomLoggerInterface extends FastifyLoggerInstance {
   foo: FastifyLogFn; // custom severity logger method
 }
@@ -82,6 +85,10 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<RawRequestDefaultExpression['socket']>(request.socket)
   expectType<Error & { validation: any; validationContext: string } | undefined>(request.validationError)
   expectType<FastifyInstance>(request.server)
+  expectAssignable<(httpPart: HTTPRequestPart) => ExpectedGetValidationFunction>(request.getValidationFunction)
+  expectAssignable<(schema: {[key: string]: unknown}) => ExpectedGetValidationFunction>(request.getValidationFunction)
+  expectAssignable<(input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
+  expectAssignable<(input: {[key: string]: unknown}, httpPart?: HTTPRequestPart) => boolean>(request.validateInput)
 }
 
 const getHandlerWithCustomLogger: RouteHandlerMethod<RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression, RouteGenericInterface, ContextConfigDefault, FastifySchema, FastifyTypeProviderDefault, CustomLoggerInterface> = function (request, _reply) {

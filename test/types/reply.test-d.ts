@@ -1,10 +1,12 @@
-import { expectType, expectError } from 'tsd'
+import { expectType, expectError, expectAssignable } from 'tsd'
 import fastify, { RouteHandlerMethod, RouteHandler, RawRequestDefaultExpression, FastifyContext, FastifyContextConfig, FastifyRequest, FastifyReply } from '../../fastify'
 import { RawServerDefault, RawReplyDefaultExpression, ContextConfigDefault } from '../../types/utils'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { RouteGenericInterface } from '../../types/route'
 import { FastifyInstance } from '../../types/instance'
 import { Buffer } from 'buffer'
+
+type DefaultSerializationFunction = (payload: {[key: string]: unknown}) => string
 
 const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<RawReplyDefaultExpression>(reply.raw)
@@ -32,6 +34,11 @@ const getHandler: RouteHandlerMethod = function (_request, reply) {
   expectType<(payload: any) => string | ArrayBuffer | Buffer>(reply.serialize)
   expectType<(fulfilled: () => void, rejected: (err: Error) => void) => void>(reply.then)
   expectType<FastifyInstance>(reply.server)
+  expectAssignable<((httpStatus: string) => DefaultSerializationFunction)>(reply.getSerializationFunction)
+  expectAssignable<((schema: {[key: string]: unknown}) => DefaultSerializationFunction)>(reply.getSerializationFunction)
+  expectAssignable<((schema: {[key: string]: unknown}, httpStatus?: string) => DefaultSerializationFunction)>(reply.compileSerializationSchema)
+  expectAssignable<((input: {[key: string]: unknown}, schema: {[key: string]: unknown}, httpStatus?: string) => unknown)>(reply.serializeInput)
+  expectAssignable<((input: {[key: string]: unknown}, httpStatus: string) => unknown)>(reply.serializeInput)
 }
 
 interface ReplyPayload {

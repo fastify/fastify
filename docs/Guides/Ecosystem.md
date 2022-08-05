@@ -112,6 +112,8 @@ section.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
+- [`fastify-type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+  Fastify [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
   Fastify.
@@ -515,6 +517,8 @@ section.
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+  Fastify [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) for [zod](https://github.com/colinhacks/zod).
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy
   subdomain HTTP requests to another server (useful if you want to point
   multiple subdomains to the same IP address, while running different servers on

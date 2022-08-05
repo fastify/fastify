@@ -112,6 +112,14 @@ section.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
   serving Swagger/OpenAPI documentation for Fastify, supporting dynamic
   generation.
+- [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
+  for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts). 
+- [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
   Fastify.
@@ -513,6 +521,10 @@ section.
   TOTP (e.g. for 2FA).
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
   Useful functions for Twitch Extension Backend Services (EBS).
+- [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
+  Fastify 
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.
 - [`fastify-vhost`](https://github.com/patrickpissurno/fastify-vhost) Proxy

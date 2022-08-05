@@ -147,6 +147,9 @@ section.
 - [`@immobiliarelabs/fastify-sentry`](https://github.com/immobiliare/fastify-sentry)
   Sentry errors handler that just works! Install, add your DSN and you're good
   to go!
+- [`@mateonunez/fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
+  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine 
+  on Fastify
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
 - [`@mgcrea/fastify-request-logger`](https://github.com/mgcrea/fastify-request-logger)

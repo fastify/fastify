@@ -1402,6 +1402,8 @@ handlers. *async-await* is supported as well.
 *Note: If the error `statusCode` is less than 400, Fastify will automatically
 set it at 500 before calling the error handler.*
 
+*Also note* that `setErrorHandler` will ***not*** catch any error inside `onResponse` hook
+
 ```js
 fastify.setErrorHandler(function (error, request, reply) {
   // Log error

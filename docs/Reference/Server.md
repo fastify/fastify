@@ -1403,7 +1403,7 @@ handlers. *async-await* is supported as well.
 set it at 500 before calling the error handler.*
 
 *Also note* that `setErrorHandler` will ***not*** catch any error inside
-`onResponse` hook
+`onResponse` hook because the response is already sent to the client.
 
 ```js
 fastify.setErrorHandler(function (error, request, reply) {

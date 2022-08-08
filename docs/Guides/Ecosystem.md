@@ -341,6 +341,8 @@ section.
   authentication for Fastify-based web apps.
 - [`fastify-kafkajs`](https://github.com/kffl/fastify-kafkajs) Fastify plugin
   that adds support for KafkaJS - a modern Apache Kafka client library.
+- [`fastify-keycloak-adapter`](https://github.com/yubinTW/fastify-keycloak-adapter)
+  A keycloak adapter for a Fastify app.
 - [`fastify-knexjs`](https://github.com/chapuletta/fastify-knexjs) Fastify
   plugin for support KnexJS Query Builder.
 - [`fastify-knexjs-mock`](https://github.com/chapuletta/fastify-knexjs-mock)

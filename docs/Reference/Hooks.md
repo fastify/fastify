@@ -244,6 +244,9 @@ The `onResponse` hook is executed when a response has been sent, so you will not
 be able to send more data to the client. It can however be useful for sending
 data to external services, for example, to gather statistics.
 
+**Note:** setting `disableRequestLogging` to `true` will disable any error log 
+inside the `onResponse` hook. In this case use `try - catch` to log errors. 
+
 ### onTimeout
 
 ```js
@@ -287,7 +290,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 Or if you're using `async/await` you can just throw an error:
 ```js
-fastify.addHook('onResponse', async (request, reply) => {
+fastify.addHook('onRequest', async (request, reply) => {
   throw new Error('Some error')
 })
 ```

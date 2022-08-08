@@ -290,7 +290,7 @@ fastify.addHook('preHandler', (request, reply, done) => {
 
 Or if you're using `async/await` you can just throw an error:
 ```js
-fastify.addHook('onResponse', async (request, reply) => {
+fastify.addHook('onRequest', async (request, reply) => {
   throw new Error('Some error')
 })
 ```

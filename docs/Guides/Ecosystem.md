@@ -426,6 +426,8 @@ section.
 - [`fastify-orientdb`](https://github.com/mahmed8003/fastify-orientdb) Fastify
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
+- [`fastify-osm`](https://github.com/gzileni/fastify-osm) Fastify
+  OSM plugin to run overpass queries by OpenStreetMap.  
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker

@@ -1116,8 +1116,10 @@ three ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the
    metadata `name` is used.
-2. If you `module.exports` a plugin the filename is used.
-3. If you use a regular [function
+2. If the exported plugin has the `Symbol.for('fastify.display-name')` property
+   set. Eg: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
+3. If you `module.exports` a plugin the filename is used.
+4. If you use a regular [function
    declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
    the function name is used.
 

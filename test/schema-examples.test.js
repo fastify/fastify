@@ -509,6 +509,60 @@ test('should return custom error messages with ajv-errors', t => {
   })
 })
 
+test('should be able to handle formats of ajv-formats when added by plugins option', t => {
+  t.plan(3)
+
+  const fastify = Fastify({
+    ajv: {
+      plugins: [
+        require('ajv-formats')
+      ]
+    }
+  })
+
+  const schema = {
+    body: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', format: 'uuid' },
+        email: { type: 'string', format: 'email' }
+      },
+      required: ['id', 'email']
+    }
+  }
+
+  fastify.post('/', { schema }, function (req, reply) {
+    reply.code(200).send(req.body.id)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      id: '254381a5-888c-4b41-8116-e3b1a54980bd',
+      email: 'info@fastify.io'
+    },
+    url: '/'
+  }, (_err, res) => {
+    t.equal(res.body, '254381a5-888c-4b41-8116-e3b1a54980bd')
+    t.equal(res.statusCode, 200)
+  })
+
+  fastify.inject({
+    method: 'POST',
+    payload: {
+      id: 'invalid',
+      email: 'info@fastify.io'
+    },
+    url: '/'
+  }, (_err, res) => {
+    t.same(JSON.parse(res.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'body/id must match format "uuid"'
+    })
+  })
+})
+
 test('should return localized error messages with ajv-i18n', t => {
   t.plan(3)
 

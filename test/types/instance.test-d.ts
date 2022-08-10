@@ -267,7 +267,7 @@ type InitialConfig = Readonly<{
   onProtoPoisoning?: 'error' | 'remove' | 'ignore',
   onConstructorPoisoning?: 'error' | 'remove' | 'ignore',
   pluginTimeout?: number,
-  requestIdHeader?: string,
+  requestIdHeader?: string | false,
   requestIdLogLabel?: string,
   http2SessionTimeout?: number
 }>

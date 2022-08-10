@@ -121,6 +121,7 @@ expectAssignable<FastifyInstance<http.Server, http.IncomingMessage, http.ServerR
 expectAssignable<FastifyInstance>(fastify({ serverFactory: () => http.createServer() }))
 expectAssignable<FastifyInstance>(fastify({ caseSensitive: true }))
 expectAssignable<FastifyInstance>(fastify({ requestIdHeader: 'request-id' }))
+expectAssignable<FastifyInstance>(fastify({ requestIdHeader: false }))
 expectAssignable<FastifyInstance>(fastify({ genReqId: () => 'request-id' }))
 expectAssignable<FastifyInstance>(fastify({ trustProxy: true }))
 expectAssignable<FastifyInstance>(fastify({ querystringParser: () => ({ foo: 'bar' }) }))

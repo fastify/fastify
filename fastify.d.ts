@@ -123,7 +123,7 @@ export type FastifyServerOptions<
   serializerOpts?: FJSOptions | Record<string, unknown>,
   serverFactory?: FastifyServerFactory<RawServer>,
   caseSensitive?: boolean,
-  requestIdHeader?: string,
+  requestIdHeader?: string | false,
   requestIdLogLabel?: string;
   jsonShorthand?: boolean;
   genReqId?: <RequestGeneric extends RequestGenericInterface = RequestGenericInterface, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault>(req: FastifyRequest<RequestGeneric, RawServer, RawRequestDefaultExpression<RawServer>, FastifySchema, TypeProvider>) => string,

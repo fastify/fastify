@@ -658,7 +658,7 @@ fastify.inject({
 >
 > ```js
 > const append = require('vary').append
-> fastify.addHook('onSend', async (req, reply) => {
+> fastify.addHook('onSend', (req, reply, payload, done) => {
 >   if (req.headers['accept-version']) { // or the custom header you are using
 >     let value = reply.getHeader('Vary') || ''
 >     const header = Array.isArray(value) ? value.join(', ') : String(value)
@@ -666,6 +666,7 @@ fastify.inject({
 >       reply.header('Vary', value)
 >     }
 >   }
+>  done()
 > })
 > ```
 

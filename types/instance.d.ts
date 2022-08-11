@@ -573,7 +573,7 @@ export interface FastifyInstance<
     onProtoPoisoning?: ProtoAction,
     onConstructorPoisoning?: ConstructorAction,
     pluginTimeout?: number,
-    requestIdHeader?: string,
+    requestIdHeader?: string | false,
     requestIdLogLabel?: string,
     http2SessionTimeout?: number
   }>

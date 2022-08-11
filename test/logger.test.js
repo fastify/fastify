@@ -330,6 +330,51 @@ test('The request id header key can be customized', t => {
   })
 })
 
+test('The request id header key can be ignored', t => {
+  t.plan(9)
+  const REQUEST_ID = 'ignore-me'
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: { stream, level: 'info' },
+    requestIdHeader: false
+  })
+  t.teardown(() => fastify.close())
+
+  fastify.get('/', (req, reply) => {
+    t.equal(req.id, 'req-1')
+    req.log.info('some log message')
+    reply.send({ id: req.id })
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/',
+    headers: {
+      'request-id': REQUEST_ID
+    }
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, 'req-1')
+
+    stream.once('data', line => {
+      t.equal(line.reqId, 'req-1')
+      t.equal(line.msg, 'incoming request', 'message is set')
+
+      stream.once('data', line => {
+        t.equal(line.reqId, 'req-1')
+        t.equal(line.msg, 'some log message', 'message is set')
+
+        stream.once('data', line => {
+          t.equal(line.reqId, 'req-1')
+          t.equal(line.msg, 'request completed', 'message is set')
+        })
+      })
+    })
+  })
+})
+
 test('The request id header key can be customized along with a custom id generator', t => {
   t.plan(12)
   const REQUEST_ID = '42'
@@ -381,6 +426,69 @@ test('The request id header key can be customized along with a custom id generat
     t.error(err)
     const payload = JSON.parse(res.payload)
     t.equal(payload.id, REQUEST_ID)
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/two'
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, 'foo')
+  })
+})
+
+test('The request id header key can be ignored along with a custom id generator', t => {
+  t.plan(12)
+  const REQUEST_ID = 'ignore-me'
+
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: { stream, level: 'info' },
+    requestIdHeader: false,
+    genReqId (req) {
+      return 'foo'
+    }
+  })
+  t.teardown(() => fastify.close())
+
+  fastify.get('/one', (req, reply) => {
+    t.equal(req.id, 'foo')
+    req.log.info('some log message')
+    reply.send({ id: req.id })
+  })
+
+  fastify.get('/two', (req, reply) => {
+    t.equal(req.id, 'foo')
+    req.log.info('some log message 2')
+    reply.send({ id: req.id })
+  })
+
+  const matches = [
+    { reqId: 'foo', msg: /incoming request/ },
+    { reqId: 'foo', msg: /some log message/ },
+    { reqId: 'foo', msg: /request completed/ },
+    { reqId: 'foo', msg: /incoming request/ },
+    { reqId: 'foo', msg: /some log message 2/ },
+    { reqId: 'foo', msg: /request completed/ }
+  ]
+
+  let i = 0
+  stream.on('data', line => {
+    t.match(line, matches[i])
+    i += 1
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/one',
+    headers: {
+      'request-id': REQUEST_ID
+    }
+  }, (err, res) => {
+    t.error(err)
+    const payload = JSON.parse(res.payload)
+    t.equal(payload.id, 'foo')
   })
 
   fastify.inject({

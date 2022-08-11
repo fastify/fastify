@@ -1112,7 +1112,7 @@ fastify.register(function (instance, opts, done) {
 <a id="pluginName"></a>
 
 Name of the current plugin. The root plugin is called `'fastify'`. There are
-three ways to define a name (in order).
+different ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the
    metadata `name` is used.

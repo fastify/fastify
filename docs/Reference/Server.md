@@ -55,7 +55,7 @@ describes the properties available in that options object.
     - [routing](#routing)
     - [route](#route)
     - [close](#close)
-    - [decorate\*](#decorate)
+    - [decorate*](#decorate)
     - [register](#register)
     - [addHook](#addhook)
     - [prefix](#prefix)
@@ -488,11 +488,18 @@ about safe regexp: [Safe-regex2](https://www.npmjs.com/package/safe-regex2)
 ### `requestIdHeader`
 <a id="factory-request-id-header"></a>
 
-The header name used to know the request-id. See [the
+The header name used to set the request-id. See [the
 request-id](./Logging.md#logging-request-id) section.
+Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid)
 
 + Default: `'request-id'`
-
+  
+```js
+const fastify = require('fastify')({
+  requestIdHeader: 'x-custom-id', // -> use 'X-Custom-Id' header if available
+  //requestIdHeader: false, // -> always use genReqId
+})
+```
 ### `requestIdLogLabel`
 <a id="factory-request-id-log-label"></a>
 

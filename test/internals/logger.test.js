@@ -46,7 +46,7 @@ test('The logger should add a unique id for every request', t => {
   }
 })
 
-test('The logger should reuse request id header for req.id', t => {
+test('The logger should not reuse request id header for req.id', t => {
   const fastify = Fastify()
   fastify.get('/', (req, reply) => {
     t.ok(req.id)
@@ -65,7 +65,8 @@ test('The logger should reuse request id header for req.id', t => {
     }, (err, res) => {
       t.error(err)
       const payload = JSON.parse(res.payload)
-      t.ok(payload.id === 'request-id-1', 'the request id from the header should be returned')
+      t.ok(payload.id !== 'request-id-1', 'the request id from the header should not be returned with default configuration')
+      t.ok(payload.id === 'req-1') // first request id when using the default configuration
       fastify.close()
       t.end()
     })

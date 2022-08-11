@@ -38,7 +38,7 @@ const defaultInitOptions = {
   onProtoPoisoning: 'error',
   onConstructorPoisoning: 'error',
   pluginTimeout: 10000,
-  requestIdHeader: 'request-id',
+  requestIdHeader: false,
   requestIdLogLabel: 'reqId',
   http2SessionTimeout: 72000, // 72 seconds
   exposeHeadRoutes: true

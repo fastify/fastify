@@ -1119,12 +1119,15 @@ fastify.register(function (instance, opts, done) {
 <a id="pluginName"></a>
 
 Name of the current plugin. The root plugin is called `'fastify'`. There are
-three ways to define a name (in order).
+different ways to define a name (in order).
 
 1. If you use [fastify-plugin](https://github.com/fastify/fastify-plugin) the
    metadata `name` is used.
-2. If you `module.exports` a plugin the filename is used.
-3. If you use a regular [function
+2. If the exported plugin has the `Symbol.for('fastify.display-name')` property,
+   then the value of that property is used.
+   Example: `pluginFn[Symbol.for('fastify.display-name')] = "Custom Name"`
+3. If you `module.exports` a plugin the filename is used.
+4. If you use a regular [function
    declaration](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Defining_functions)
    the function name is used.
 

@@ -268,7 +268,7 @@ fastify.listen({ port: 3000 }, (err) => {
 ```sh
 curl -X GET "http://localhost:3000/?ids=1
 
-{"params":{"hello":["1"]}}
+{"params":{"ids":["1"]}}
 ```
 
 You can also specify a custom schema validator for each parameter type (body,

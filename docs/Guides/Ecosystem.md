@@ -328,6 +328,8 @@ section.
 - [`fastify-http2https`](https://github.com/lolo32/fastify-http2https) Redirect
   HTTP requests to HTTPS, both using the same port number, or different response
   on HTTP and HTTPS.
+- [`fastify-https-always`](https://github.com/mattbishop/fastify-https-always)
+  Lightweight, proxy-aware redirect plugin from HTTP to HTTPS.
 - [`fastify-https-redirect`](https://github.com/tomsvogel/fastify-https-redirect)
   Fastify plugin for auto-redirect from HTTP to HTTPS.
 - [`fastify-impressions`](https://github.com/manju4ever/fastify-impressions)

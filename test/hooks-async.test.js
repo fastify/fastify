@@ -710,3 +710,46 @@ test('preSerializationEnd should handle errors if the serialize method throws', 
 
   t.end()
 })
+
+t.test('nested hooks to do not crash on 404', t => {
+  t.plan(2)
+  const fastify = Fastify()
+
+  fastify.get('/hello', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.register(async function (fastify) {
+    fastify.get('/something', (req, reply) => {
+      reply.callNotFound()
+    })
+
+    fastify.setNotFoundHandler(async (request, reply) => {
+      reply.statusCode = 404
+      return { status: 'nested-not-found' }
+    })
+
+    fastify.setErrorHandler(async (error, request, reply) => {
+      reply.statusCode = 500
+      return { status: 'nested-error', error }
+    })
+  }, { prefix: '/nested' })
+
+  fastify.setNotFoundHandler(async (request, reply) => {
+    reply.statusCode = 404
+    return { status: 'not-found' }
+  })
+
+  fastify.setErrorHandler(async (error, request, reply) => {
+    reply.statusCode = 500
+    return { status: 'error', error }
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/nested/something'
+  }, (err, res) => {
+    t.error(err)
+    t.equal(res.statusCode, 404)
+  })
+})

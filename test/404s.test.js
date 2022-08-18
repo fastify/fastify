@@ -1944,3 +1944,68 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
 
   t.end()
 })
+
+test('hooks are applied to not found handlers /1', async ({ equal }) => {
+  const fastify = Fastify()
+
+  // adding await here is fundamental for this test
+  await fastify.register(async function (fastify) {
+  })
+
+  fastify.setErrorHandler(function (_, request, reply) {
+    return reply.code(401).send({ error: 'Unauthorized' })
+  })
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
+})
+
+test('hooks are applied to not found handlers /2', async ({ equal }) => {
+  const fastify = Fastify()
+
+  async function plugin (fastify) {
+    fastify.setErrorHandler(function (_, request, reply) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    })
+  }
+
+  plugin[Symbol.for('skip-override')] = true
+
+  fastify.register(plugin)
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
+})
+
+test('hooks are applied to not found handlers /3', async ({ equal, fail }) => {
+  const fastify = Fastify()
+
+  async function plugin (fastify) {
+    fastify.setNotFoundHandler({ errorHandler }, async () => {
+      fail('this should never be called')
+    })
+
+    function errorHandler (_, request, reply) {
+      return reply.code(401).send({ error: 'Unauthorized' })
+    }
+  }
+
+  plugin[Symbol.for('skip-override')] = true
+
+  fastify.register(plugin)
+
+  fastify.addHook('preValidation', async function (request, reply) {
+    throw new Error('kaboom')
+  })
+
+  const { statusCode } = await fastify.inject('/')
+  equal(statusCode, 401)
+})

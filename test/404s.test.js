@@ -1945,7 +1945,7 @@ test('Send 404 when frameworkError calls reply.callNotFound', t => {
   t.end()
 })
 
-test('hooks are applied to not found handlers', async ({ equal }) => {
+test('hooks are applied to not found handlers /1', async ({ equal }) => {
   const fastify = Fastify()
 
   // adding await here is fundamental for this test

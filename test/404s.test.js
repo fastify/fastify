@@ -1985,7 +1985,7 @@ test('hooks are applied to not found handlers /2', async ({ equal }) => {
   equal(statusCode, 401)
 })
 
-test('hooks are applied to not found handlers /2', async ({ equal, fail }) => {
+test('hooks are applied to not found handlers /3', async ({ equal, fail }) => {
   const fastify = Fastify()
 
   async function plugin (fastify) {

@@ -102,11 +102,15 @@ section.
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
+- [`@fastify/secure-session`](https://github.com/fastify/fastify-secure-session)
+  Create a secure stateless cookie session for Fastify.
 - [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) Defaults
   for Fastify that everyone can agree on. It adds some useful decorators such as
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
+- [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
+  client plugin for Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
@@ -485,8 +489,6 @@ section.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)
   Generate typescript types based on your JSON/YAML validation schemas so they
   are always in sync.
-- [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session)
-  Create a secure stateless cookie session for Fastify.
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
   to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify
@@ -497,8 +499,6 @@ section.
   `fastify-caching`.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
-- [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
-  client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator)

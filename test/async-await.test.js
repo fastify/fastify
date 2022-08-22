@@ -441,7 +441,7 @@ test('promise was fulfilled with undefined using inject', async (t) => {
 
   const res = await fastify.inject('/')
 
-  t.equal(res.body, undefined)
+  t.equal(res.body, '')
   t.equal(res.statusCode, 200)
 })
 

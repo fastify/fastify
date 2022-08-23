@@ -642,7 +642,7 @@ test('should register empty values', t => {
 
   fastify.register((instance, opts, done) => {
     instance.decorate('test', null)
-    t.ok(Object.prototype.hasOwnProperty(instance, 'test'))
+    t.ok(Object.prototype.hasOwnProperty.call(instance, 'test'))
     done()
   })
 

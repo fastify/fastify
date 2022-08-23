@@ -154,6 +154,6 @@ test('decorate should recognize getter/setter objects', t => {
   decorator.add.call(two, 'foo', {
     getter: () => 'a getter'
   })
-  t.equal(Object.prototype.hasOwnProperty(two, 'foo'), true)
+  t.equal(Object.prototype.hasOwnProperty.call(two, 'foo'), true)
   t.equal(two.foo, 'a getter')
 })

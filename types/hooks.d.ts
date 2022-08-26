@@ -20,6 +20,10 @@ interface RequestPayload extends Readable {
   receivedEncodedLength?: number;
 }
 
+export type LifecycleHook = 'onTimeout' | 'onRequest' | 'preParsing' | 'preValidation' | 'preSerialization' | 'preHandler' | 'onSend' | 'onResponse' | 'onError';
+export type ApplicationHook = 'onRoute' | 'onRegister' | 'onReady' | 'onClose';
+export type SupportedHook = LifecycleHook | ApplicationHook;
+
 // Lifecycle Hooks
 
 /**

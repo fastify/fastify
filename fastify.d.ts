@@ -84,7 +84,7 @@ export type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
-  https: https.ServerOptions
+  https: https.ServerOptions | null
 }
 
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2

@@ -1,7 +1,7 @@
 import { RawReplyDefaultExpression, RawServerBase, RawServerDefault, ContextConfigDefault, RawRequestDefaultExpression, ReplyDefault } from './utils'
 import { FastifyReplyType, ResolveFastifyReplyType, FastifyTypeProvider, FastifyTypeProviderDefault } from './type-provider'
 import { FastifyContext } from './context'
-import { FastifyLoggerInstance } from './logger'
+import { FastifyBaseLogger } from './logger'
 import { FastifyRequest } from './request'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
@@ -28,7 +28,7 @@ export interface FastifyReply<
 > {
   raw: RawReply;
   context: FastifyContext<ContextConfig>;
-  log: FastifyLoggerInstance;
+  log: FastifyBaseLogger;
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider>;
   server: FastifyInstance;
   code(statusCode: number): FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>;

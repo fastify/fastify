@@ -80,7 +80,7 @@ to show that the plugin works as intended. Both
 Actions](https://github.com/features/actions) are free for open source projects
 and easy to set up.
 
-In addition, you can enable services like [Dependabot](https://dependabot.com/),
+In addition, you can enable services like [Dependabot](https://github.com/dependabot),
 which will help you keep your dependencies up to date and discover if a new
 release of Fastify has some issues with your plugin.
 

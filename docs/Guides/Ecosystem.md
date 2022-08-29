@@ -218,6 +218,8 @@ section.
   directory.
 - [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
   send HTTP requests via [axios](https://github.com/axios/axios).
+- [`fastify-aws-timestream`](https://github.com/gzileni/fastify-aws-timestream) Plugins to 
+  managing databases, tables and querying and creating scheduled queries with AWS Timestream.
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/heply/fastify-bcrypt) A Bcrypt hash

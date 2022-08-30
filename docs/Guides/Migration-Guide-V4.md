@@ -72,25 +72,37 @@ This change was done to provide better error reporting for route definition.
 As a result if you specify an `onRoute` hook in a plugin you should either:
 * wrap your routes in a plugin (recommended)
 
-  For example refactor your server to this:
+  For example refactor this:
 
   ```
-  import Fastify from 'fastify'
-  import FP from 'fastify-plugin'
+  fastify.register((instance, opts, done) => {
+    instance.addHook('onRoute', (routeOptions) => {
+      const { path, method } = routeOptions;
+      console.log({ path, method });
+      done();
+    });
+  });
 
-  fastify.register(FP(function(fastify, option, done) {
-    fastify.addHook('onRoute', function() {
-      console.log('onRoute')
-    })
-    done()
-  }))
-
-  fastify.register(function(fastify, option, done) {
-    fastify.get('/', () => 'hello')
-    done()
-  })
+  fastify.get('/', () => 'hello');
   ```
-  
+
+  Into this:
+
+  ```
+  fastify.register((instance, opts, done) => {
+    instance.addHook('onRoute', (routeOptions) => {
+      const { path, method } = routeOptions;
+      console.log({ path, method });
+      done();
+    });
+  });
+
+  fastify.register((instance, opts, done) => {
+    instance.get('/', () => 'hello');
+    done();
+  });
+  ```
+
 * use `await register(...)`
 
   For example refactor this:

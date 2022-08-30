@@ -2,6 +2,7 @@
 
 const { connect } = require('net')
 const t = require('tap')
+const semver = require('semver')
 const test = t.test
 const Fastify = require('..')
 const { kRequest } = require('../lib/symbols.js')
@@ -153,7 +154,7 @@ test('default clientError handler ignores sockets in destroyed state', t => {
 })
 
 test('default clientError handler destroys sockets in writable state', t => {
-  t.plan(1)
+  t.plan(2)
 
   const fastify = Fastify({
     bodyLimit: 1,
@@ -169,6 +170,9 @@ test('default clientError handler destroys sockets in writable state', t => {
     },
     destroy () {
       t.pass('destroy should be called')
+    },
+    write (response) {
+      t.match(response, /^HTTP\/1.1 400 Bad Request/)
     }
   })
 })
@@ -189,6 +193,9 @@ test('default clientError handler destroys http sockets in non-writable state', 
     },
     destroy () {
       t.pass('destroy should be called')
+    },
+    write (response) {
+      t.fail('write should not be called')
     }
   })
 })
@@ -271,5 +278,44 @@ test('encapsulated error handler binding', t => {
       statusCode: 400
     })
     t.equal(fastify.hello, undefined)
+  })
+})
+
+const skip = semver.lt(process.versions.node, '11.0.0')
+
+test('default clientError replies with bad request on reused keep-alive connection', { skip }, t => {
+  t.plan(2)
+
+  let response = ''
+
+  const fastify = Fastify({
+    bodyLimit: 1,
+    keepAliveTimeout: 100
+  })
+
+  fastify.get('/', (request, reply) => {
+    reply.send('OK\n')
+  })
+
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    fastify.server.unref()
+
+    const client = connect(fastify.server.address().port)
+
+    client.on('data', chunk => {
+      response += chunk.toString('utf-8')
+    })
+
+    client.on('end', () => {
+      t.match(response, /^HTTP\/1.1 200 OK.*HTTP\/1.1 400 Bad Request/s)
+    })
+
+    client.resume()
+    client.write('GET / HTTP/1.1\r\n')
+    client.write('\r\n\r\n')
+    client.write('GET /?a b HTTP/1.1\r\n')
+    client.write('Connection: close\r\n')
+    client.write('\r\n\r\n')
   })
 })

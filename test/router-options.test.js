@@ -1,20 +1,10 @@
 'use strict'
 
 const test = require('tap').test
-const sget = require('simple-get')
 const Fastify = require('../')
 const { FST_ERR_BAD_URL } = require('../lib/errors')
 
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
-
-test('Should honor ignoreTrailingSlash option', t => {
+test('Should honor ignoreTrailingSlash option', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -24,27 +14,16 @@ test('Should honor ignoreTrailingSlash option', t => {
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test/', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test/')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreDuplicateSlashes option', t => {
+test('Should honor ignoreDuplicateSlashes option', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: true
@@ -54,27 +33,16 @@ test('Should honor ignoreDuplicateSlashes option', t => {
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test/test/test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test/test/test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test//test///test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test//test///test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', t => {
+test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -85,24 +53,13 @@ test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', t =>
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test/test/test/')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test/test/test/', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test//test///test//', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test//test///test//')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
 test('Should honor maxParamLength option', t => {
@@ -130,7 +87,8 @@ test('Should honor maxParamLength option', t => {
   })
 })
 
-test('Should expose router options via getters on request and reply', t => {
+// TODO: fix once agreed on the new router options object
+test('Should expose router options via getters on request and reply', { todo: true }, t => {
   t.plan(7)
   const fastify = Fastify()
 

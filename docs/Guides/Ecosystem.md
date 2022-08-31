@@ -218,10 +218,11 @@ section.
   directory.
 - [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
   send HTTP requests via [axios](https://github.com/axios/axios).
-- [fastify-aws-timestream](https://github.com/gzileni/fastify-aws-timestream) Fastify plugins 
-  to managing databases, tables and querying and creating scheduled queries with AWS Timestream
-- [fastify-aws-sns](https://github.com/gzileni/fastify-aws-sns) Fastify plugin 
-  to AWS Simple Notification Service (AWS SNS) to coordinates and manages 
+- [fastify-aws-timestream](https://github.com/gzileni/fastify-aws-timestream)
+  Fastify plugins to managing databases, tables and querying and creating
+  scheduled queries with AWS Timestream
+- [fastify-aws-sns](https://github.com/gzileni/fastify-aws-sns) Fastify plugin
+  to AWS Simple Notification Service (AWS SNS) to coordinates and manages
   the delivery or sending of messages to subscribing endpoints or clients
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for
   development servers that require Babel transformations of JavaScript sources.

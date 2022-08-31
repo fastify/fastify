@@ -1020,7 +1020,8 @@ const defaultRoute = fastify.getDefaultRoute()
 <a id="setDefaultRoute"></a>
 
 **Note**: The default 404 handler, or one set using `setNotFoundHandler`, will
-never trigger if the default route is overridden. Use
+never trigger if the default route is overridden. This sets the handler for the 
+Fastify application, not just the current instance context. Use
 [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
 instead. Method to set the `defaultRoute` for the server:
 

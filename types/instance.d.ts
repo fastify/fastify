@@ -186,6 +186,12 @@ export interface FastifyInstance<
   patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
 
+  hasRoute<
+    RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+    ContextConfig = ContextConfigDefault,
+    SchemaCompiler extends FastifySchema = FastifySchema,
+  >(opts: Pick<RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>, 'method' | 'url' | 'constraints'>): boolean;
+
   // addHook: overloads
 
   // Lifecycle addHooks

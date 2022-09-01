@@ -39,9 +39,9 @@ const res = await fastify.inject('/encapsulated')
 console.log(res.json().message) // 'wrapped'
 ```
 
-### Deprecation of `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
+### Removed `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
-With v4 of Fastify, `app.use()` has been deprecated and the use of middleware is
+With v4 of Fastify, `app.use()` has been removed and the use of middleware is
 no longer supported.
 
 If you need to use middleware, use [`@fastify/middie`](https://github.com/fastify/middie) or

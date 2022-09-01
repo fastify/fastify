@@ -10,9 +10,9 @@ work after upgrading.
 
 ### Error handling composition ([#3261](https://github.com/fastify/fastify/pull/3261))
 
-When an error is thrown in an async error handler function, the upper-level error 
-handler is executed if set. If there is no upper-level error handler, the default
-will be executed as it was previously:
+When an error is thrown in an async error handler function, the upper-level
+error handler is executed if set. If there is no upper-level error handler,
+the default will be executed as it was previously:
 
 ```js
 import Fastify from 'fastify'
@@ -44,9 +44,10 @@ console.log(res.json().message) // 'wrapped'
 With v4 of Fastify, `app.use()` has been removed and the use of middleware is
 no longer supported.
 
-If you need to use middleware, use [`@fastify/middie`](https://github.com/fastify/middie) or
-[`@fastify/express`](https://github.com/fastify/fastify-express), which will continue to be
-maintained.
+If you need to use middleware, use
+[`@fastify/middie`](https://github.com/fastify/middie) or
+[`@fastify/express`](https://github.com/fastify/fastify-express), which will
+continue to be maintained.
 However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
 ### `reply.res` moved to `reply.raw`
@@ -56,9 +57,9 @@ object you will now need to use `reply.raw`.
 
 ### Need to `return reply` to signal a "fork" of the promise chain
 
-In some situations, like when a response is sent asynchronously or when you are not
-explicitly returning a response, you will now need to return the `reply` argument from your
-router handler.
+In some situations, like when a response is sent asynchronously or when you are
+not explicitly returning a response, you will now need to return the `reply`
+argument from your router handler.
 
 ### `exposeHeadRoutes` true by default
 
@@ -128,8 +129,8 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 
 ### Deprecation of variadic `.listen()` signature
 
-The [variadic signature](https://en.wikipedia.org/wiki/Variadic_function) of the `fastify.listen()` method
-is now deprecated.
+The [variadic signature](https://en.wikipedia.org/wiki/Variadic_function) of the
+`fastify.listen()` method is now deprecated.
 
 Prior to this release, the following invocations of this method were valid:
 
@@ -137,17 +138,24 @@ Prior to this release, the following invocations of this method were valid:
   - `fastify.listen(8000, ‘127.0.0.1’)`
   - `fastify.listen(8000, ‘127.0.0.1’, 511)`
   - `fastify.listen(8000, (err) => { if (err) throw err })`
-  - `fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, (err) => { if (err) throw err })`
-
+  - ```js
+    fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, 
+      (err) => { if (err) throw err })`
+    ```
 With Fastify v4, only the following invocations are valid:
 
   - `fastify.listen()`
   - `fastify.listen({ port: 8000 })`
-  - `fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, (err) => { if (err) throw err })`
+  - ```js
+    fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, 
+      (err) => { if (err) throw err })`
+    ```
 
 ### Change of schema for multiple types
 
-Ajv has been upgraded to v8 in Fastify v4, meaning ["type" keywords with multiple types other than "null" are now prohibited](https://ajv.js.org/strict-mode.html#strict-types).
+Ajv has been upgraded to v8 in Fastify v4, meaning "type" keywords with multiple
+types other than "null"
+[are now prohibited](https://ajv.js.org/strict-mode.html#strict-types).
 
 You may encounter a console warning such as:
 ```sh

@@ -1064,7 +1064,6 @@ fastify.hasRoute({
 // false if route is not registered
 ```
 
-
 #### close
 <a id="close"></a>
 

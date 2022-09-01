@@ -15,7 +15,7 @@ the upper-level error handler is executed if set.
 If there is not a upper-level error handler, the default will 
 be executed as it was previously.
 
-```
+```js
 import Fastify from 'fastify'
 
 const fastify = Fastify()
@@ -74,7 +74,7 @@ As a result if you specify an `onRoute` hook in a plugin you should either:
 
   For example refactor this:
 
-  ```
+  ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
@@ -88,7 +88,7 @@ As a result if you specify an `onRoute` hook in a plugin you should either:
 
   Into this:
 
-  ```
+  ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
@@ -106,7 +106,7 @@ As a result if you specify an `onRoute` hook in a plugin you should either:
 * use `await register(...)`
 
   For example refactor this:
-  ```
+  ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
@@ -116,7 +116,7 @@ As a result if you specify an `onRoute` hook in a plugin you should either:
   });
   ```
   Into this:
-  ```
+  ```js
   await fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
@@ -137,7 +137,7 @@ Since Fastify v4 has upgraded to Ajv v8. The "type" keywords with multiple types
 
 You may encounter a console warning such as
 
-```
+```sh
 strict mode: use allowUnionTypes to allow union type keyword at "#/properties/image" (strictTypes)
 ```
 So schemas like below will need to be changed from

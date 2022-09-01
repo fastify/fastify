@@ -81,7 +81,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     });
   });
 
-  fastify.get('/', () => 'hello');
+  fastify.get('/', (request, reply) => { reply.send('hello') });
   ```
 
   Into this:
@@ -95,7 +95,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
   });
 
   fastify.register((instance, opts, done) => {
-    instance.get('/', () => 'hello');
+    instance.get('/', (request, reply) => { reply.send('hello') });
     done();
   });
   ```
@@ -120,6 +120,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
       const { path, method } = routeOptions;
       console.log({ path, method });
     });
+    done();
   });
   ```
 

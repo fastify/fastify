@@ -39,7 +39,7 @@ const envToLogger = {
   test: false,
 }
 const fastify = require('fastify')({
-  logger: envToLogger[environment] || true // defaults to true if no entry matches in the map
+  logger: envToLogger[environment] ?? true // defaults to true if no entry matches in the map
 })
 ```
 ⚠️ `pino-pretty` needs to be installed as a dev dependency, it is not included

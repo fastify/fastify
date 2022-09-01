@@ -22,21 +22,24 @@ const fastify = require('fastify')({
 ```
 
 Enabling the logger with appropriate configuration for both local development
-and production environment requires bit more configuration:
+and production and test environment requires bit more configuration:
+
 ```js
+const envToLogger = {
+  development: {
+    transport: {
+      target: 'pino-pretty',
+      options: {
+        translateTime: 'HH:MM:ss Z',
+        ignore: 'pid,hostname',
+      },
+    },
+  },
+  production: true,
+  test: false,
+}
 const fastify = require('fastify')({
-  logger: {
-      transport:
-        environment === 'development'
-          ? {
-              target: 'pino-pretty',
-              options: {
-                translateTime: 'HH:MM:ss Z',
-                ignore: 'pid,hostname'
-              }
-            }
-          : undefined
-    }
+  logger: envToLogger[environment] ?? true // defaults to true if no entry matches in the map
 })
 ```
 ⚠️ `pino-pretty` needs to be installed as a dev dependency, it is not included

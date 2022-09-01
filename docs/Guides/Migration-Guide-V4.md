@@ -147,16 +147,14 @@ With Fastify v4, only the following invocations are valid:
 
 ### Change of schema for multiple types
 
-Since Fastify v4 has upgraded to Ajv v8, the "type" keywords with multiple types
-(other than with "null") are prohibited. Read more
-['here'](https://ajv.js.org/strict-mode.html#strict-types)
+Ajv has been upgraded to v8 in Fastify v4, meaning ["type" keywords with multiple types other than "null" are now prohibited](https://ajv.js.org/strict-mode.html#strict-types).
 
 You may encounter a console warning such as:
 ```sh
 strict mode: use allowUnionTypes to allow union type keyword at "#/properties/image" (strictTypes)
 ```
 
-So schemas like below will need to be changed from
+As such, schemas like below will need to be changed from:
 ```
 type: 'object',
 properties: {
@@ -165,8 +163,8 @@ properties: {
   }
 }
 ```
-to
 
+Into:
 ```
 type: 'object',
 properties: {

@@ -72,7 +72,6 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 * wrap your routes in a plugin (recommended)
 
   For example, refactor this:
-
   ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
@@ -86,7 +85,6 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
   ```
 
   Into this:
-
   ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
@@ -104,7 +102,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
 
 * use `await register(...)`
 
-  For example refactor this:
+  For example, refactor this:
   ```js
   fastify.register((instance, opts, done) => {
     instance.addHook('onRoute', (routeOptions) => {
@@ -114,6 +112,7 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
     done();
   });
   ```
+
   Into this:
   ```js
   await fastify.register((instance, opts) => {
@@ -125,6 +124,25 @@ As a result, if you specify an `onRoute` hook in a plugin you should now either:
   ```
 
 ## Non-Breaking Changes
+
+### Deprecation of variadic `.listen()` signature
+
+The [variadic signature](https://en.wikipedia.org/wiki/Variadic_function) of the `fastify.listen()` method
+is now deprecated.
+
+Prior to this release, the following invocations of this method were valid:
+
+  - `fastify.listen(8000)`
+  - `fastify.listen(8000, ‘127.0.0.1’)`
+  - `fastify.listen(8000, ‘127.0.0.1’, 511)`
+  - `fastify.listen(8000, (err) => { if (err) throw err })`
+  - `fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, (err) => { if (err) throw err })`
+
+With Fastify v4, only the following invocations are valid:
+
+  - `fastify.listen()`
+  - `fastify.listen({ port: 8000 })`
+  - `fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, (err) => { if (err) throw err })`
 
 ### Change of schema for multiple types
 

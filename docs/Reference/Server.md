@@ -1058,8 +1058,10 @@ Method to check if a route is already registered to the internal router:
 fastify.hasRoute({
   url: '/',
   method: 'GET',
-  constraints: { version: '1.0.0' }
+  constraints: { version: '1.0.0' } // optional
 })
+// true if route is already registered
+// false if route is not registered
 ```
 
 

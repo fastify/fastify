@@ -138,18 +138,13 @@ Prior to this release, the following invocations of this method were valid:
   - `fastify.listen(8000, ‘127.0.0.1’)`
   - `fastify.listen(8000, ‘127.0.0.1’, 511)`
   - `fastify.listen(8000, (err) => { if (err) throw err })`
-  - ```js
-    fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, 
-      (err) => { if (err) throw err })`
-    ```
+  - `fastify.listen({ port: 8000 }, (err) => { if (err) throw err })`
+
 With Fastify v4, only the following invocations are valid:
 
   - `fastify.listen()`
   - `fastify.listen({ port: 8000 })`
-  - ```js
-    fastify.listen({ port: 8000, host: ‘127.0.0.1’ }, 
-      (err) => { if (err) throw err })`
-    ```
+  - `fastify.listen({ port: 8000 }, (err) => { if (err) throw err })`
 
 ### Change of schema for multiple types
 

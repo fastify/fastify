@@ -10,10 +10,9 @@ work after upgrading.
 
 ### Error handling composition ([#3261](https://github.com/fastify/fastify/pull/3261))
 
-When an error is thrown in a async error handler function, 
-the upper-level error handler is executed if set.
-If there is not a upper-level error handler, the default will 
-be executed as it was previously.
+When an error is thrown in an async error handler function, the upper-level error 
+handler is executed if set. If there is no upper-level error handler, the default
+will be executed as it was previously:
 
 ```js
 import Fastify from 'fastify'
@@ -42,37 +41,37 @@ console.log(res.json().message) // 'wrapped'
 
 ### Deprecation of `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
-Starting this version of Fastify, we have deprecated the use of `app.use()`. We
-have decided not to support the use of middlewares. Both
-[`@fastify/middie`](https://github.com/fastify/middie) and
-[`@fastify/express`](https://github.com/fastify/fastify-express) will still be
-there and maintained. Use Fastify's [hooks](../Reference/Hooks.md) instead.
+With v4 of Fastify, `app.use()` has been deprecated and the use of middleware is
+no longer supported.
+
+If you need to use middleware, use [`@fastify/middie`](https://github.com/fastify/middie) or
+[`@fastify/express`](https://github.com/fastify/fastify-express), which will continue to be
+maintained.
+However, it is strongly recommended that you migrate to Fastify's [hooks](../Reference/Hooks.md).
 
 ### `reply.res` moved to `reply.raw`
 
 If you previously used the `reply.res` attribute to access the underlying Request
-object you'll instead need to depend on `reply.raw`.
+object you will now need to use `reply.raw`.
 
 ### Need to `return reply` to signal a "fork" of the promise chain
 
-In some situations, like when a response is sent asynchronously or when you're
-just not explicitly returning a response, you'll need to return the `reply`
-argument from your router handler.
+In some situations, like when a response is sent asynchronously or when you are not
+explicitly returning a response, you will now need to return the `reply` argument from your
+router handler.
 
 ### `exposeHeadRoutes` true by default
 
-Starting from v4, all the `GET` routes will create a sibling `HEAD` route.
-You can revert this behaviour by setting the server's option `exposeHeadRoutes`
-to `false`.
+Starting with v4, every `GET` route will create a sibling `HEAD` route.
+You can revert this behavior by setting `exposeHeadRoutes: false` in the server options.
 
-### Synchronous route definitions
+### Synchronous route definitions ([#2954](https://github.com/fastify/fastify/pull/2954))
 
-The route registration has been made synchronous from v4.
-This change was done to provide better error reporting for route definition.
-As a result if you specify an `onRoute` hook in a plugin you should either:
+To improve error reporting in route definitions, route registration is now synchronous.
+As a result, if you specify an `onRoute` hook in a plugin you should now either:
 * wrap your routes in a plugin (recommended)
 
-  For example refactor this:
+  For example, refactor this:
 
   ```js
   fastify.register((instance, opts, done) => {
@@ -117,29 +116,27 @@ As a result if you specify an `onRoute` hook in a plugin you should either:
   ```
   Into this:
   ```js
-  await fastify.register((instance, opts, done) => {
+  await fastify.register((instance, opts) => {
     instance.addHook('onRoute', (routeOptions) => {
       const { path, method } = routeOptions;
       console.log({ path, method });
     });
-    done();
   });
   ```
 
-## Non Breaking Changes
+## Non-Breaking Changes
 
 ### Change of schema for multiple types
 
-
-Since Fastify v4 has upgraded to Ajv v8. The "type" keywords with multiple types
+Since Fastify v4 has upgraded to Ajv v8, the "type" keywords with multiple types
 (other than with "null") are prohibited. Read more
 ['here'](https://ajv.js.org/strict-mode.html#strict-types)
 
-You may encounter a console warning such as
-
+You may encounter a console warning such as:
 ```sh
 strict mode: use allowUnionTypes to allow union type keyword at "#/properties/image" (strictTypes)
 ```
+
 So schemas like below will need to be changed from
 ```
 type: 'object',

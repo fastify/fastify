@@ -1055,13 +1055,15 @@ Method to add routes to the server, it also has shorthand functions, check
 Method to check if a route is already registered to the internal router:
 
 ```js
-fastify.hasRoute({
+const routeExists = fastify.hasRoute({
   url: '/',
   method: 'GET',
   constraints: { version: '1.0.0' } // optional
 })
-// true if route is already registered
-// false if route is not registered
+
+if (routeExists === false) {
+  // add route
+}
 ```
 
 #### close

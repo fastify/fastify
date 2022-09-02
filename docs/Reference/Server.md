@@ -1055,7 +1055,7 @@ Method to add routes to the server, it also has shorthand functions, check
 Method to check if a route is already registered to the internal router. It
 expects an object as payload. `url` and `method` are mandatory fields. It is
 possible to also specify `constraints`. The method returns true if the route is
-already  registered, and false if it is not registered.
+registered, and false if it is not registered.
 
 ```js
 const routeExists = fastify.hasRoute({

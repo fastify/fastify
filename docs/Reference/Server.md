@@ -54,6 +54,7 @@ describes the properties available in that options object.
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
     - [route](#route)
+    - [hasRoute](#hasRoute)
     - [close](#close)
     - [decorate*](#decorate)
     - [register](#register)
@@ -1048,6 +1049,26 @@ fastify.routing(req, res)
 
 Method to add routes to the server, it also has shorthand functions, check
 [here](./Routes.md).
+
+#### hasRoute
+<a id="hasRoute"></a>
+
+Method to check if a route is already registered to the internal router. It
+expects an object as payload. `url` and `method` are mandatory fields. It is
+possible to also specify `constraints`. The method returns true if the route is
+registered, and false if it is not registered.
+
+```js
+const routeExists = fastify.hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { version: '1.0.0' } // optional
+})
+
+if (routeExists === false) {
+  // add route
+}
+```
 
 #### close
 <a id="close"></a>

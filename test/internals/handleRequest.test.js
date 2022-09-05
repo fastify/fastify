@@ -5,7 +5,7 @@ const handleRequest = require('../../lib/handleRequest')
 const internals = require('../../lib/handleRequest')[Symbol.for('internals')]
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
-const { kContext } = require('../../lib/symbols')
+const { kRouteContext } = require('../../lib/symbols')
 const buildSchema = require('../../lib/validation').compileSchemasForValidation
 const sget = require('simple-get').concat
 
@@ -70,7 +70,7 @@ test('handler function - invalid schema', t => {
   buildSchema(context, schemaValidator)
   const request = {
     body: { hello: 'world' },
-    [kContext]: context
+    [kRouteContext]: context
   }
   internals.handler(request, new Reply(res, request))
 })
@@ -97,7 +97,7 @@ test('handler function - reply', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({ [kContext]: context }, new Reply(res, { [kContext]: context }))
+  internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
 })
 
 test('handler function - preValidationCallback with finished response', t => {
@@ -122,7 +122,7 @@ test('handler function - preValidationCallback with finished response', t => {
     onError: []
   }
   buildSchema(context, schemaValidator)
-  internals.handler({ [kContext]: context }, new Reply(res, { [kContext]: context }))
+  internals.handler({ [kRouteContext]: context }, new Reply(res, { [kRouteContext]: context }))
 })
 
 test('request should be defined in onSend Hook on post request with content type application/json', t => {

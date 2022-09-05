@@ -1,6 +1,6 @@
 'use strict'
 const test = require('tap').test
-const { kContext } = require('../lib/symbols')
+const { kRouteContext } = require('../lib/symbols')
 const fastify = require('../')
 
 test('handlers receive correct `this` context', async (t) => {
@@ -33,11 +33,11 @@ test('handlers have access to the internal context', async (t) => {
 
   const instance = fastify()
   instance.get('/', { config: { foo: 'bar' } }, function (req, reply) {
-    t.ok(reply[kContext])
-    t.ok(reply[kContext].config)
-    t.type(reply[kContext].config, Object)
-    t.ok(reply[kContext].config.foo)
-    t.equal(reply[kContext].config.foo, 'bar')
+    t.ok(reply[kRouteContext])
+    t.ok(reply[kRouteContext].config)
+    t.type(reply[kRouteContext].config, Object)
+    t.ok(reply[kRouteContext].config.foo)
+    t.equal(reply[kRouteContext].config.foo, 'bar')
     reply.send()
   })
 

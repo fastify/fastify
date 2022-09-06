@@ -235,4 +235,8 @@ const ajvErrorObject: AjvErrorObject = {
 expectAssignable<ValidationResult>(ajvErrorObject)
 
 const routeGeneric: RouteGenericInterface = {}
-expectType<RouteGenericInterface>(routeGeneric)
+expectType<unknown>(routeGeneric.Body)
+expectType<unknown>(routeGeneric.Headers)
+expectType<unknown>(routeGeneric.Params)
+expectType<unknown>(routeGeneric.Querystring)
+expectType<unknown>(routeGeneric.Reply)

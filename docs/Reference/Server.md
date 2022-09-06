@@ -668,7 +668,7 @@ the incoming request as usual.
 
 Configure the Ajv v8 instance used by Fastify without providing a custom one.
 The default configuration is explained in the
-[#schema-validator](Validation-and-Serialization.md#schema-validator) section.
+[#schema-validator](./Validation-and-Serialization.md#schema-validator) section.
 
 ```js
 const fastify = require('fastify')({

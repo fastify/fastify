@@ -216,14 +216,14 @@ section.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
   Plugin to scan and load routes based on filesystem path from a custom
   directory.
-- [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
-  send HTTP requests via [axios](https://github.com/axios/axios).
-- [fastify-aws-timestream](https://github.com/gzileni/fastify-aws-timestream)
-  Fastify plugin for managing databases, tables, and querying and creating
-  scheduled queries with AWS Timestream.
-- [fastify-aws-sns](https://github.com/gzileni/fastify-aws-sns) Fastify plugin
+- [`fastify-aws-sns`](https://github.com/gzileni/fastify-aws-sns) Fastify plugin
   for AWS Simple Notification Service (AWS SNS) that coordinates and manages
   the delivery or sending of messages to subscribing endpoints or clients.
+- [`fastify-aws-timestream`](https://github.com/gzileni/fastify-aws-timestream)
+  Fastify plugin for managing databases, tables, and querying and creating
+  scheduled queries with AWS Timestream.
+- [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
+  send HTTP requests via [axios](https://github.com/axios/axios).
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for
   development servers that require Babel transformations of JavaScript sources.
 - [`fastify-bcrypt`](https://github.com/heply/fastify-bcrypt) A Bcrypt hash

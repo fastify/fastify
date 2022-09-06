@@ -54,6 +54,7 @@ describes the properties available in that options object.
     - [setDefaultRoute](#setdefaultroute)
     - [routing](#routing)
     - [route](#route)
+    - [hasRoute](#hasRoute)
     - [close](#close)
     - [decorate*](#decorate)
     - [register](#register)
@@ -667,7 +668,7 @@ the incoming request as usual.
 
 Configure the Ajv v8 instance used by Fastify without providing a custom one.
 The default configuration is explained in the
-[#schema-validator](Validation-and-Serialization.md#schema-validator) section.
+[#schema-validator](./Validation-and-Serialization.md#schema-validator) section.
 
 ```js
 const fastify = require('fastify')({
@@ -1020,7 +1021,8 @@ const defaultRoute = fastify.getDefaultRoute()
 <a id="setDefaultRoute"></a>
 
 **Note**: The default 404 handler, or one set using `setNotFoundHandler`, will
-never trigger if the default route is overridden. Use
+never trigger if the default route is overridden. This sets the handler for the 
+Fastify application, not just the current instance context. Use
 [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
 instead. Method to set the `defaultRoute` for the server:
 
@@ -1047,6 +1049,26 @@ fastify.routing(req, res)
 
 Method to add routes to the server, it also has shorthand functions, check
 [here](./Routes.md).
+
+#### hasRoute
+<a id="hasRoute"></a>
+
+Method to check if a route is already registered to the internal router. It
+expects an object as payload. `url` and `method` are mandatory fields. It is
+possible to also specify `constraints`. The method returns true if the route is
+registered, and false if it is not registered.
+
+```js
+const routeExists = fastify.hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { version: '1.0.0' } // optional
+})
+
+if (routeExists === false) {
+  // add route
+}
+```
 
 #### close
 <a id="close"></a>

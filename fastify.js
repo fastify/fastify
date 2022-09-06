@@ -267,6 +267,9 @@ function fastify (options) {
       // otherwise we should bind it after the declaration
       return router.route.call(this, { options })
     },
+    hasRoute: function _route (options) {
+      return router.hasRoute.call(this, { options })
+    },
     // expose logger instance
     log: logger,
     // type provider

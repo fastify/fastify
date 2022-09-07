@@ -16,26 +16,33 @@ module.exports = async function ({ core }) {
   const moduleNameRegex = /^\- \[\`(.+)\`\]/
   let hasOutOfOrderItem = false
   let lineNumber = 0
-  let inCommmunitySection = false
+  let inCommunitySection = false
   let modules = []
 
   for await (const line of rl) {
     lineNumber += 1
     if (line.startsWith('#### [Community]')) {
-      inCommmunitySection = true
+      inCommunitySection = true
     }
     if (line.startsWith('#### [Community Tools]')) {
-      inCommmunitySection = false
+      inCommunitySection = false
     }
-    if (inCommmunitySection === false) {
+    if (inCommunitySection === false) {
       continue
     }
 
-    if (line.startsWith('- [`') !== true) {
+    if (line.startsWith('- [') !== true) {
       continue
     }
 
-    const moduleName = moduleNameRegex.exec(line)[1]
+    const moduleNameTest = moduleNameRegex.exec(line)
+    
+    if (moduleNameTest === null)
+    {
+      return core.setFailed(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
+    }
+
+    const moduleName = moduleNameTest[1]
     if (modules.length > 0) {
       if (compare(moduleName, modules.at(-1)) > 0) {
         core.error(`line ${lineNumber}: ${moduleName} not listed in alphabetical order`)

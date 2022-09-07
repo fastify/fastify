@@ -18,6 +18,7 @@ module.exports = async function ({ core }) {
   let lineNumber = 0
   let inCommunitySection = false
   let modules = []
+  let hasImproperFormat = false
 
   for await (const line of rl) {
     lineNumber += 1
@@ -35,15 +36,15 @@ module.exports = async function ({ core }) {
       continue
     }
 
-    const moduleNameTest = moduleNameRegex.exec(line)
+    const moduleName = moduleNameRegex.exec(line)?.[1]
     
-    if (moduleNameTest === null)
+    if (moduleName === undefined)
     {
-      return core.setFailed(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
+      core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
+      hasImproperFormat = true
     }
 
-    const moduleName = moduleNameTest[1]
-    if (modules.length > 0) {
+    if (moduleName && modules.at(-1) && modules.length > 0) {
       if (compare(moduleName, modules.at(-1)) > 0) {
         core.error(`line ${lineNumber}: ${moduleName} not listed in alphabetical order`)
         hasOutOfOrderItem = true
@@ -54,6 +55,10 @@ module.exports = async function ({ core }) {
 
   if (hasOutOfOrderItem === true) {
     core.setFailed('Some ecosystem modules are not in alphabetical order.')
+  }
+  
+  if (hasImproperFormat === true) {
+    core.setFailed('Some ecosystem modules are improperly formatted.')
   }
 }
 

@@ -19,29 +19,34 @@ module.exports = async function ({ core }) {
   let inCommunitySection = false
   let modules = []
   let hasImproperFormat = false
+  let moduleName
 
   for await (const line of rl) {
     lineNumber += 1
+
+    if (line.startsWith('- [') === true) {
+      moduleName = moduleNameRegex.exec(line)?.[1]
+      if (moduleName === undefined)
+      {
+        core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
+        hasImproperFormat = true
+      }
+    }
+
     if (line.startsWith('#### [Community]')) {
       inCommunitySection = true
     }
+
     if (line.startsWith('#### [Community Tools]')) {
       inCommunitySection = false
     }
+
     if (inCommunitySection === false) {
       continue
     }
 
     if (line.startsWith('- [') !== true) {
       continue
-    }
-
-    const moduleName = moduleNameRegex.exec(line)?.[1]
-    
-    if (moduleName === undefined)
-    {
-      core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
-      hasImproperFormat = true
     }
 
     if (moduleName && modules.at(-1) && modules.length > 0) {

@@ -31,6 +31,7 @@ module.exports = async function ({ core }) {
         core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
         hasImproperFormat = true
       }
+      continue
     }
 
     if (line.startsWith('#### [Community]')) {
@@ -49,7 +50,7 @@ module.exports = async function ({ core }) {
       continue
     }
 
-    if (moduleName && modules.at(-1) && modules.length > 0) {
+    if (modules.length > 0) {
       if (compare(moduleName, modules.at(-1)) > 0) {
         core.error(`line ${lineNumber}: ${moduleName} not listed in alphabetical order`)
         hasOutOfOrderItem = true

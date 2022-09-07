@@ -8,6 +8,7 @@ import fastify, {
   LightMyRequestResponse,
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
+  RouteGenericInterface,
   ValidationResult
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
@@ -232,3 +233,10 @@ const ajvErrorObject: AjvErrorObject = {
   message: ''
 }
 expectAssignable<ValidationResult>(ajvErrorObject)
+
+const routeGeneric: RouteGenericInterface = {}
+expectType<unknown>(routeGeneric.Body)
+expectType<unknown>(routeGeneric.Headers)
+expectType<unknown>(routeGeneric.Params)
+expectType<unknown>(routeGeneric.Querystring)
+expectType<unknown>(routeGeneric.Reply)

@@ -75,6 +75,9 @@ section.
   connection pool across every part of your server.
 - [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify.
+- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
+  server-side rendering support for Fastify with
+  [Next](https://github.com/zeit/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
@@ -82,6 +85,11 @@ section.
   connection pool in every part of your server.
 - [`@fastify/rate-limit`](https://github.com/fastify/fastify-rate-limit) A low
   overhead rate limiter for your routes.
+- [`@fastify/redis`](https://github.com/fastify/fastify-redis) Fastify Redis
+  connection plugin, with which you can share the same Redis connection across
+  every part of your server.
+- [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) Plugin
+  to forward the current HTTP request to another server.
 - [`@fastify/request-context`](https://github.com/fastify/fastify-request-context)
   Request-scoped storage, based on
   [AsyncLocalStorage](https://nodejs.org/api/async_hooks.html#async_hooks_class_asynclocalstorage)
@@ -89,14 +97,6 @@ section.
   providing functionality similar to thread-local storages.
 - [`@fastify/response-validation`](https://github.com/fastify/fastify-response-validation)
   A simple plugin that enables response validation for Fastify.
-- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
-  server-side rendering support for Fastify with
-  [Next](https://github.com/zeit/next.js/).
-- [`@fastify/redis`](https://github.com/fastify/fastify-redis) Fastify Redis
-  connection plugin, with which you can share the same Redis connection across
-  every part of your server.
-- [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) Plugin
-  to forward the current HTTP request to another server.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for

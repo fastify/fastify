@@ -18,22 +18,9 @@ module.exports = async function ({ core }) {
   let lineNumber = 0
   let modules = []
   let hasImproperFormat = false
-  let moduleName
 
   for await (const line of rl) {
     lineNumber += 1
-
-    const lineContainsModuleName = line.startsWith('- [')
-    if (lineContainsModuleName === true) {
-      moduleName = moduleNameRegex.exec(line)?.[1]
-      if (moduleName === undefined)
-      {
-        core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
-        hasImproperFormat = true
-        continue
-      }
-    }
-
     if (line.startsWith('#### [Community]')) {
       modules = []
     }
@@ -42,11 +29,20 @@ module.exports = async function ({ core }) {
       modules = []
     }
 
-
-    if (lineContainsModuleName === false) {
+    if (line.startsWith('- [') !== true) {
       continue
     }
 
+    const moduleNameTest = moduleNameRegex.exec(line)
+    
+    if (moduleNameTest === null)
+    {
+      core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
+      hasImproperFormat = true
+      continue
+    }
+
+    const moduleName = moduleNameTest[1]
     if (modules.length > 0) {
       if (compare(moduleName, modules.at(-1)) > 0) {
         core.error(`line ${lineNumber}: ${moduleName} not listed in alphabetical order`)

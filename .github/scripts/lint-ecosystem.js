@@ -16,7 +16,6 @@ module.exports = async function ({ core }) {
   const moduleNameRegex = /^\- \[\`(.+)\`\]/
   let hasOutOfOrderItem = false
   let lineNumber = 0
-  let inCommunitySection = false
   let modules = []
   let hasImproperFormat = false
   let moduleName
@@ -36,16 +35,13 @@ module.exports = async function ({ core }) {
     }
 
     if (line.startsWith('#### [Community]')) {
-      inCommunitySection = true
+      modules = []
     }
 
     if (line.startsWith('#### [Community Tools]')) {
-      inCommunitySection = false
+      modules = []
     }
 
-    if (inCommunitySection === false) {
-      continue
-    }
 
     if (lineContainsModuleName === false) {
       continue

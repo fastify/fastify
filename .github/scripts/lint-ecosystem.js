@@ -24,7 +24,8 @@ module.exports = async function ({ core }) {
   for await (const line of rl) {
     lineNumber += 1
 
-    if (line.startsWith('- [') === true) {
+    const lineContainsModuleName = line.startsWith('- [')
+    if (lineContainsModuleName === true) {
       moduleName = moduleNameRegex.exec(line)?.[1]
       if (moduleName === undefined)
       {
@@ -46,7 +47,7 @@ module.exports = async function ({ core }) {
       continue
     }
 
-    if (line.startsWith('- [') !== true) {
+    if (lineContainsModuleName === false) {
       continue
     }
 

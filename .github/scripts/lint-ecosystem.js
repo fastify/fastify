@@ -16,20 +16,17 @@ module.exports = async function ({ core }) {
   const moduleNameRegex = /^\- \[\`(.+)\`\]/
   let hasOutOfOrderItem = false
   let lineNumber = 0
-  let inCommunitySection = false
   let modules = []
   let hasImproperFormat = false
 
   for await (const line of rl) {
     lineNumber += 1
     if (line.startsWith('#### [Community]')) {
-      inCommunitySection = true
+      modules = []
     }
+
     if (line.startsWith('#### [Community Tools]')) {
-      inCommunitySection = false
-    }
-    if (inCommunitySection === false) {
-      continue
+      modules = []
     }
 
     if (line.startsWith('- [') !== true) {
@@ -58,7 +55,7 @@ module.exports = async function ({ core }) {
   if (hasOutOfOrderItem === true) {
     core.setFailed('Some ecosystem modules are not in alphabetical order.')
   }
-  
+
   if (hasImproperFormat === true) {
     core.setFailed('Some ecosystem modules are improperly formatted.')
   }

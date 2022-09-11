@@ -619,7 +619,7 @@ const schema = {
         200: [
           { 
             content: 'application/json', 
-            type: { 
+            schema: { 
               id: { type: 'number' }, 
               name: { type: 'string' } 
             } 
@@ -627,7 +627,7 @@ const schema = {
           {
             content: 'application/vnd.v1+json',
             type: {
-              type: 'array',
+              schema: 'array',
               items: { $ref: 'test' }
             }
           }
@@ -635,7 +635,7 @@ const schema = {
         '3xx': [
           { 
             content: 'application/vnd.v2+json', 
-            type: { 
+            schema: { 
               to: { type: 'string' } 
             } 
           }

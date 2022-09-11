@@ -76,17 +76,17 @@ test('Different content types', t => {
     schema: {
       response: {
         200: [
-          { content: 'application/json', type: { id: { type: 'number' }, name: { type: 'string' } } },
+          { content: 'application/json', schema: { id: { type: 'number' }, name: { type: 'string' } } },
           {
             content: 'application/vnd.v1+json',
-            type: {
+            schema: {
               type: 'array',
               items: { $ref: 'test' }
             }
           }
         ],
         '3xx': [
-          { content: 'application/vnd.v2+json', type: { name: { type: 'string' } } }
+          { content: 'application/vnd.v2+json', schema: { name: { type: 'string' } } }
         ]
       }
     }

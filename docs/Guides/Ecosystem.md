@@ -580,12 +580,12 @@ section.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
   Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
   Fastify.
+- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
+  plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
-  plugin to easily create Google Cloud PubSub endpoints.
 
 #### [Community Tools](#community-tools)
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration

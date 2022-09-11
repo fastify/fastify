@@ -63,12 +63,7 @@ test('custom serializer options', t => {
 test('Different content types', t => {
   t.plan(15)
 
-  const fastify = Fastify({
-    serializerOpts: {
-      rounding: 'ceil'
-    }
-  })
-
+  const fastify = Fastify()
   fastify.addSchema({
     $id: 'test',
     type: 'object',

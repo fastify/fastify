@@ -611,7 +611,7 @@ const schema = {
 
 fastify.post('/the/url', { schema }, handler)
 ```
-You can even have a speific response schema for different content types.
+You can even have a specific response schema for different content types.
 for example:
 ```js
 const schema = {

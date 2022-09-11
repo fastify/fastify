@@ -611,6 +611,40 @@ const schema = {
 
 fastify.post('/the/url', { schema }, handler)
 ```
+You can even have a speific response schema for different content types.
+for example:
+```js
+const schema = {
+      response: {
+        200: [
+          { 
+            content: 'application/json', 
+            type: { 
+              id: { type: 'number' }, 
+              name: { type: 'string' } 
+            } 
+          },
+          {
+            content: 'application/vnd.v1+json',
+            type: {
+              type: 'array',
+              items: { $ref: 'test' }
+            }
+          }
+        ],
+        '3xx': [
+          { 
+            content: 'application/vnd.v2+json', 
+            type: { 
+              to: { type: 'string' } 
+            } 
+          }
+        ]
+      }
+    }
+
+fastify.post('/url', { schema }, handler)
+```
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>

@@ -78,7 +78,7 @@ test('Different content types', t => {
         200: [
           { content: 'application/json', type: { id: { type: 'number' }, name: { type: 'string' } } },
           {
-            content: 'application/vnd.bla.v1+json',
+            content: 'application/vnd.v1+json',
             type: {
               type: 'array',
               items: { $ref: 'test' }
@@ -86,7 +86,7 @@ test('Different content types', t => {
           }
         ],
         '3xx': [
-          { content: 'application/vnd.bla.v2+json', type: { name: { type: 'string' } } }
+          { content: 'application/vnd.v2+json', type: { name: { type: 'string' } } }
         ]
       }
     }
@@ -96,23 +96,23 @@ test('Different content types', t => {
         reply.header('Content-Type', 'application/json')
         reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
         break
-      case 'application/vnd.bla.v1+json':
-        reply.header('Content-Type', 'application/vnd.bla.v1+json')
+      case 'application/vnd.v1+json':
+        reply.header('Content-Type', 'application/vnd.v1+json')
         reply.send([{ id: 1, name: 'Foo', image: 'BIG IMAGE' }, { id: 2, name: 'Foo2', image: 'BIG IMAGE2' }])
         break
-      case 'application/vnd.bla.v2+json':
-        reply.header('Content-Type', 'application/vnd.bla.v2+json')
+      case 'application/vnd.v2+json':
+        reply.header('Content-Type', 'application/vnd.v2+json')
         reply.code(300)
         reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
         break
-      case 'application/vnd.bla.v3+json':
-        reply.header('Content-Type', 'application/vnd.bla.v3+json')
+      case 'application/vnd.v3+json':
+        reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(300)
         reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
         break
       default:
         // to test if schema not found
-        reply.header('Content-Type', 'application/vnd.bla.v3+json')
+        reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(200)
         reply.send([{ id: 1, name: 'Foo', image: 'BIG IMAGE' }, { id: 2, name: 'Foo2', image: 'BIG IMAGE2' }])
     }
@@ -124,7 +124,7 @@ test('Different content types', t => {
     t.equal(res.statusCode, 200)
   })
 
-  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.bla.v1+json' } }, (err, res) => {
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify([{ image: 'BIG IMAGE' }, { image: 'BIG IMAGE2' }]))
     t.equal(res.statusCode, 200)
@@ -136,13 +136,13 @@ test('Different content types', t => {
     t.equal(res.statusCode, 200)
   })
 
-  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.bla.v2+json' } }, (err, res) => {
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ name: 'Foo' }))
     t.equal(res.statusCode, 300)
   })
 
-  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.bla.v3+json' } }, (err, res) => {
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ id: 1, name: 'Foo', image: 'BIG IMAGE' }))
     t.equal(res.statusCode, 300)

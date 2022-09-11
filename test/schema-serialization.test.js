@@ -68,7 +68,9 @@ test('Different content types', t => {
     $id: 'test',
     type: 'object',
     properties: {
-      image: { type: 'string' }
+      name: { type: 'string' },
+      age: { type: 'number' },
+      verified: { type: 'boolean' }
     }
   })
 
@@ -76,7 +78,7 @@ test('Different content types', t => {
     schema: {
       response: {
         200: [
-          { content: 'application/json', schema: { id: { type: 'number' }, name: { type: 'string' } } },
+          { content: 'application/json', schema: { name: { type: 'string' }, image: { type: 'string' }, address: { type: 'string' } } },
           {
             content: 'application/vnd.v1+json',
             schema: {
@@ -86,7 +88,7 @@ test('Different content types', t => {
           }
         ],
         '3xx': [
-          { content: 'application/vnd.v2+json', schema: { name: { type: 'string' } } }
+          { content: 'application/vnd.v2+json', schema: { fullName: { type: 'string' }, phone: { type: 'string' } } }
         ]
       }
     }
@@ -94,57 +96,57 @@ test('Different content types', t => {
     switch (req.headers.accept) {
       case 'application/json':
         reply.header('Content-Type', 'application/json')
-        reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
+        reply.send({ id: 1, name: 'Foo', image: 'profile picture', address: 'New Node' })
         break
       case 'application/vnd.v1+json':
         reply.header('Content-Type', 'application/vnd.v1+json')
-        reply.send([{ id: 1, name: 'Foo', image: 'BIG IMAGE' }, { id: 2, name: 'Foo2', image: 'BIG IMAGE2' }])
+        reply.send([{ id: 2, name: 'Boo', age: 18, verified: false }, { id: 3, name: 'Woo', age: 30, verified: true }])
         break
       case 'application/vnd.v2+json':
         reply.header('Content-Type', 'application/vnd.v2+json')
         reply.code(300)
-        reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
+        reply.send({ fullName: 'Jhon Smith', phone: '01090000000', authMethod: 'google' })
         break
       case 'application/vnd.v3+json':
         reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(300)
-        reply.send({ id: 1, name: 'Foo', image: 'BIG IMAGE' })
+        reply.send({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' })
         break
       default:
         // to test if schema not found
         reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(200)
-        reply.send([{ id: 1, name: 'Foo', image: 'BIG IMAGE' }, { id: 2, name: 'Foo2', image: 'BIG IMAGE2' }])
+        reply.send([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }])
     }
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ id: 1, name: 'Foo' }))
+    t.equal(res.payload, JSON.stringify({ name: 'Foo', image: 'profile picture', address: 'New Node' }))
     t.equal(res.statusCode, 200)
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v1+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify([{ image: 'BIG IMAGE' }, { image: 'BIG IMAGE2' }]))
+    t.equal(res.payload, JSON.stringify([{ name: 'Boo', age: 18, verified: false }, { name: 'Woo', age: 30, verified: true }]))
     t.equal(res.statusCode, 200)
   })
 
   fastify.inject({ method: 'GET', url: '/' }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify([{ id: 1, name: 'Foo', image: 'BIG IMAGE' }, { id: 2, name: 'Foo2', image: 'BIG IMAGE2' }]))
+    t.equal(res.payload, JSON.stringify([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }]))
     t.equal(res.statusCode, 200)
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v2+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ name: 'Foo' }))
+    t.equal(res.payload, JSON.stringify({ fullName: 'Jhon Smith', phone: '01090000000' }))
     t.equal(res.statusCode, 300)
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v3+json' } }, (err, res) => {
     t.error(err)
-    t.equal(res.payload, JSON.stringify({ id: 1, name: 'Foo', image: 'BIG IMAGE' }))
+    t.equal(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
     t.equal(res.statusCode, 300)
   })
 })

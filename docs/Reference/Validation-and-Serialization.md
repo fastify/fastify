@@ -626,8 +626,8 @@ const schema = {
           },
           {
             content: 'application/vnd.v1+json',
-            type: {
-              schema: 'array',
+            schema: {
+              type: 'array',
               items: { $ref: 'test' }
             }
           }

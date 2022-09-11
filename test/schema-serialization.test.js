@@ -77,19 +77,23 @@ test('Different content types', t => {
   fastify.get('/', {
     schema: {
       response: {
-        200: [
-          { content: 'application/json', schema: { name: { type: 'string' }, image: { type: 'string' }, address: { type: 'string' } } },
-          {
-            content: 'application/vnd.v1+json',
-            schema: {
-              type: 'array',
-              items: { $ref: 'test' }
+        200: {
+          contentTypes: [
+            { content: 'application/json', schema: { name: { type: 'string' }, image: { type: 'string' }, address: { type: 'string' } } },
+            {
+              content: 'application/vnd.v1+json',
+              schema: {
+                type: 'array',
+                items: { $ref: 'test' }
+              }
             }
-          }
-        ],
-        '3xx': [
-          { content: 'application/vnd.v2+json', schema: { fullName: { type: 'string' }, phone: { type: 'string' } } }
-        ]
+          ]
+        },
+        '3xx': {
+          contentTypes: [
+            { content: 'application/vnd.v2+json', schema: { fullName: { type: 'string' }, phone: { type: 'string' } } }
+          ]
+        }
       }
     }
   }, function (req, reply) {

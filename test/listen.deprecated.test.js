@@ -223,3 +223,13 @@ test('listen accepts a port as string, address and callback', t => {
     t.error(err)
   })
 })
+
+test('listen with invalid port string without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen('-1')
+    .then(address => {
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
+    })
+})

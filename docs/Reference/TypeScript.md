@@ -254,18 +254,6 @@ can do it as follows:
     )
     ```
 
-     **Note** For Ajv version 7 and above is required to use the `ajvTypeBoxPlugin`:
-
-    ```typescript
-    import Fastify from 'fastify'
-    import { ajvTypeBoxPlugin, TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-
-    const fastify = Fastify({
-      ajv: {
-        plugins: [ajvTypeBoxPlugin]
-      }
-    }).withTypeProvider<TypeBoxTypeProvider>()
-    ```
 
 #### Schemas in JSON Files
 

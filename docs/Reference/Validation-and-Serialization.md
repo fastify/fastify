@@ -617,32 +617,32 @@ For example:
 const schema = {
       response: {
         200: {
-          contentTypes: [
-            { 
-              content: 'application/json', 
-              schema: { 
-                id: { type: 'number' }, 
-                name: { type: 'string' } 
-              } 
+          description: 'Response schema that support different content types'
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
             },
-            {
-              content: 'application/vnd.v1+json',
+            'application/vnd.v1+json': {
               schema: {
                 type: 'array',
                 items: { $ref: 'test' }
               }
             }
-          ],
+          }
         },
         '3xx': {
-          contentTypes: [
-            { 
-              content: 'application/vnd.v2+json', 
-              schema: { 
-                to: { type: 'string' } 
-              } 
+          content: {
+            'application/vnd.v2+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
             }
-          ]
+          }
         }
       }
     }

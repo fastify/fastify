@@ -61,7 +61,7 @@ test('custom serializer options', t => {
 })
 
 test('Different content types', t => {
-  t.plan(15)
+  t.plan(18)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -77,22 +77,35 @@ test('Different content types', t => {
   fastify.get('/', {
     schema: {
       response: {
+        201: {
+          content: { type: 'string' }
+        },
         200: {
-          contentTypes: [
-            { content: 'application/json', schema: { name: { type: 'string' }, image: { type: 'string' }, address: { type: 'string' } } },
-            {
-              content: 'application/vnd.v1+json',
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            },
+            'application/vnd.v1+json': {
               schema: {
                 type: 'array',
                 items: { $ref: 'test' }
               }
             }
-          ]
+          }
         },
         '3xx': {
-          contentTypes: [
-            { content: 'application/vnd.v2+json', schema: { fullName: { type: 'string' }, phone: { type: 'string' } } }
-          ]
+          content: {
+            'application/vnd.v2+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
+            }
+          }
         }
       }
     }
@@ -115,6 +128,11 @@ test('Different content types', t => {
         reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(300)
         reply.send({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' })
+        break
+      case 'application/vnd.v4+json':
+        reply.header('Content-Type', 'application/vnd.v4+json')
+        reply.code(201)
+        reply.send({ boxId: 1, content: 'Games' })
         break
       default:
         // to test if schema not found
@@ -152,6 +170,12 @@ test('Different content types', t => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ firstName: 'New', lastName: 'Hoo', country: 'eg', city: 'node' }))
     t.equal(res.statusCode, 300)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v4+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ content: 'Games' }))
+    t.equal(res.statusCode, 201)
   })
 })
 

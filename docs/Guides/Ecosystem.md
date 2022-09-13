@@ -146,6 +146,13 @@ section.
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
+- [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
+  A plugin that let you use session and decide only where to load/save from/to. Has
+  great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
+  Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
+- [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
+  A plugin to easily create git server and make one/many Git repositories available
+  for clone/fetch/push through the standard `git` (over http) commands.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.

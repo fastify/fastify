@@ -7,7 +7,6 @@
   - [.statusCode](#statuscode)
   - [.server](#server)
   - [.header(key, value)](#headerkey-value)
-      - [set-cookie](#set-cookie)
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
@@ -16,13 +15,13 @@
   - [.trailer(key, function)](#trailerkey-function)
   - [.hasTrailer(key)](#hastrailerkey)
   - [.removeTrailer(key)](#removetrailerkey)
-  - [.redirect([code,] dest)](#redirectcode--dest)
+  - [.redirect([code ,] dest)](#redirectcode--dest)
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
-  - [.getSerializationFunction(schema | httpStatus)](#getserializationfunction)
-  - [.compileSerializationSchema(schema, httpStatus)](#compileserializationschema)
-  - [.serializeInput(data, [schema | httpStatus], [httpStatus])](#serializeinput)
+  - [.getSerializationFunction(schema | httpStatus)](#getserializationfunctionschema--httpstatus)
+  - [.compileSerializationSchema(schema, httpStatus)](#compileserializationschemaschema-httpstatus)
+  - [.serializeInput(data, [schema | httpStatus], [httpStatus])](#serializeinputdata-schema--httpstatus-httpstatus)
   - [.serializer(func)](#serializerfunc)
   - [.raw](#raw)
   - [.sent](#sent)
@@ -84,7 +83,6 @@ object that exposes the following functions and properties:
   from Node core.
 - `.log` - The logger instance of the incoming request.
 - `.request` - The incoming request.
-- `.context` - Access the [Request's context](./Request.md) property.
 
 ```js
 fastify.get('/', options, function (request, reply) {

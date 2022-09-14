@@ -16,8 +16,6 @@ section.
   multiple schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
-- [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
-  plugins in a directory.
 - [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency
   injection support for Fastify, based on
   [awilix](https://github.com/jeffijoe/awilix).
@@ -133,6 +131,8 @@ section.
   rendering (_ejs, pug, handlebars, marko_) plugin support for Fastify.
 - [`@fastify/websocket`](https://github.com/fastify/fastify-websocket) WebSocket
   support for Fastify. Built upon [ws](https://github.com/websockets/ws).
+- [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
+  plugins in a directory.
 
 #### [Community](#community)
 

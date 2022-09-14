@@ -34,7 +34,7 @@ module.exports = async function ({ core }) {
     }
 
     const moduleNameTest = moduleNameRegex.exec(line)
-    
+
     if (moduleNameTest === null)
     {
       core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)

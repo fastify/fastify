@@ -52,13 +52,20 @@ module.exports = async function ({ core }) {
     modules.push(moduleName)
   }
 
+  const failures = [];
   if (hasOutOfOrderItem === true) {
-    core.setFailed('Some ecosystem modules are not in alphabetical order.')
+    const failure = 'Some ecosystem modules are not in alphabetical order.'
+    failures.push(failure)
+    core.setFailed(failure)
   }
 
   if (hasImproperFormat === true) {
-    core.setFailed('Some ecosystem modules are improperly formatted.')
+    const failure = 'Some ecosystem modules are improperly formatted.'
+    failures.push(failure)
+    core.setFailed(failure)
   }
+
+  return { failures }
 }
 
 function compare(current, previous) {

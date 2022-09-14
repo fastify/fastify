@@ -56,7 +56,7 @@ const opts: RouteShorthandOptions = {
 };
 
 // Add our route handler with correct types
-server.get<{
+server.post<{
   Querystring: PingQuerystring;
   Params: PingParams;
   Headers: PingHeaders;

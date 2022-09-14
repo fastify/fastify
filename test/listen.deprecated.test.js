@@ -200,3 +200,36 @@ test('listen when firstArg is { path: string(pipe) } and with backlog and callba
     t.equal(address, '\\\\.\\pipe\\testPipe3')
   })
 })
+
+test('listen accepts a port as string, and callback', t => {
+  t.plan(2)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  const port = 3000
+  fastify.listen(port.toString(), localhost, (err) => {
+    t.equal(fastify.server.address().port, port)
+    t.error(err)
+  })
+})
+
+test('listen accepts a port as string, address and callback', t => {
+  t.plan(3)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  const port = 3000
+  fastify.listen(port.toString(), localhost, (err) => {
+    t.equal(fastify.server.address().port, port)
+    t.equal(fastify.server.address().address, localhost)
+    t.error(err)
+  })
+})
+
+test('listen with invalid port string without callback with (address)', t => {
+  t.plan(1)
+  const fastify = Fastify()
+  t.teardown(fastify.close.bind(fastify))
+  fastify.listen('-1')
+    .then(address => {
+      t.equal(address, `http://${localhostForURL}:${fastify.server.address().port}`)
+    })
+})

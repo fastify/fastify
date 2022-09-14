@@ -423,6 +423,28 @@ test('promise was fulfilled with undefined', t => {
   })
 })
 
+test('promise was fulfilled with undefined using inject', async (t) => {
+  const stream = split(JSON.parse)
+  const fastify = Fastify({
+    logger: {
+      stream,
+      level: 'error'
+    }
+  })
+
+  fastify.get('/', async (req, reply) => {
+  })
+
+  stream.once('data', line => {
+    t.fail('should not log an error')
+  })
+
+  const res = await fastify.inject('/')
+
+  t.equal(res.body, '')
+  t.equal(res.statusCode, 200)
+})
+
 test('error is not logged because promise was fulfilled with undefined but response was sent before promise resolution', t => {
   t.plan(4)
 

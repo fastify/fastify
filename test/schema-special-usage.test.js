@@ -2,6 +2,7 @@
 
 const { test } = require('tap')
 const Joi = require('joi')
+const yup = require('yup')
 const AJV = require('ajv')
 const S = require('fluent-json-schema')
 const Fastify = require('..')
@@ -672,4 +673,32 @@ test('JOI validation overwrite request headers', t => {
       host: 'localhost:80'
     })
   })
+})
+
+test('Custom schema object should not trigger FST_ERR_SCH_DUPLICATE', async t => {
+  const fastify = Fastify()
+  const handler = () => { }
+
+  fastify.get('/the/url', {
+    schema: {
+      query: yup.object({
+        foo: yup.string()
+      })
+    },
+    validatorCompiler: ({ schema, method, url, httpPart }) => {
+      return function (data) {
+        // with option strict = false, yup `validateSync` function returns the coerced value if validation was successful, or throws if validation failed
+        try {
+          const result = schema.validateSync(data, {})
+          return { value: result }
+        } catch (e) {
+          return { error: e }
+        }
+      }
+    },
+    handler
+  })
+
+  await fastify.ready()
+  t.pass('fastify is ready')
 })

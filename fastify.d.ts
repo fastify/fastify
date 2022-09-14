@@ -84,7 +84,7 @@ export type FastifyHttpsOptions<
   Server extends https.Server,
   Logger extends FastifyBaseLogger = FastifyLoggerInstance
 > = FastifyServerOptions<Server, Logger> & {
-  https: https.ServerOptions
+  https: https.ServerOptions | null
 }
 
 type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
@@ -197,7 +197,7 @@ export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, Fastif
 export { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
 export { FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
 export { FastifyContext, FastifyContextConfig } from './types/context'
-export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler } from './types/route'
+export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
 export * from './types/register'
 export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
 export { FastifyError } from '@fastify/error'

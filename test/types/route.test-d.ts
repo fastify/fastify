@@ -230,3 +230,14 @@ expectType<FastifyInstance>(fastify().route({
   method: 'GET',
   handler: routeHandlerWithReturnValue
 }))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET'
+}))
+
+expectType<boolean>(fastify().hasRoute({
+  url: '/',
+  method: 'GET',
+  constraints: { version: '1.2.0' }
+}))

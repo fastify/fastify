@@ -75,6 +75,9 @@ section.
   connection pool across every part of your server.
 - [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) Multipart
   support for Fastify.
+- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
+  server-side rendering support for Fastify with
+  [Next](https://github.com/zeit/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
@@ -82,6 +85,11 @@ section.
   connection pool in every part of your server.
 - [`@fastify/rate-limit`](https://github.com/fastify/fastify-rate-limit) A low
   overhead rate limiter for your routes.
+- [`@fastify/redis`](https://github.com/fastify/fastify-redis) Fastify Redis
+  connection plugin, with which you can share the same Redis connection across
+  every part of your server.
+- [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) Plugin
+  to forward the current HTTP request to another server.
 - [`@fastify/request-context`](https://github.com/fastify/fastify-request-context)
   Request-scoped storage, based on
   [AsyncLocalStorage](https://nodejs.org/api/async_hooks.html#async_hooks_class_asynclocalstorage)
@@ -89,24 +97,20 @@ section.
   providing functionality similar to thread-local storages.
 - [`@fastify/response-validation`](https://github.com/fastify/fastify-response-validation)
   A simple plugin that enables response validation for Fastify.
-- [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
-  server-side rendering support for Fastify with
-  [Next](https://github.com/zeit/next.js/).
-- [`@fastify/redis`](https://github.com/fastify/fastify-redis) Fastify Redis
-  connection plugin, with which you can share the same Redis connection across
-  every part of your server.
-- [`@fastify/reply-from`](https://github.com/fastify/fastify-reply-from) Plugin
-  to forward the current HTTP request to another server.
 - [`@fastify/routes`](https://github.com/fastify/fastify-routes) Plugin that
   provides a `Map` of routes.
 - [`@fastify/schedule`](https://github.com/fastify/fastify-schedule) Plugin for
   scheduling periodic jobs, based on
   [toad-scheduler](https://github.com/kibertoad/toad-scheduler).
+- [`@fastify/secure-session`](https://github.com/fastify/fastify-secure-session)
+  Create a secure stateless cookie session for Fastify.
 - [`@fastify/sensible`](https://github.com/fastify/fastify-sensible) Defaults
   for Fastify that everyone can agree on. It adds some useful decorators such as
   HTTP errors and assertions, but also more request and reply methods.
 - [`@fastify/session`](https://github.com/fastify/session) a session plugin for
   Fastify.
+- [`@fastify/soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
+  client plugin for Fastify.
 - [`@fastify/static`](https://github.com/fastify/fastify-static) Plugin for
   serving static files as fast as possible.
 - [`@fastify/swagger`](https://github.com/fastify/fastify-swagger) Plugin for
@@ -142,6 +146,13 @@ section.
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
+- [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
+  A plugin that let you use session and decide only where to load/save from/to. Has
+  great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
+  Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
+- [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
+  A plugin to easily create git server and make one/many Git repositories available
+  for clone/fetch/push through the standard `git` (over http) commands.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
@@ -212,6 +223,12 @@ section.
 - [`fastify-autoroutes`](https://github.com/GiovanniCardamone/fastify-autoroutes)
   Plugin to scan and load routes based on filesystem path from a custom
   directory.
+- [`fastify-aws-sns`](https://github.com/gzileni/fastify-aws-sns) Fastify plugin
+  for AWS Simple Notification Service (AWS SNS) that coordinates and manages
+  the delivery or sending of messages to subscribing endpoints or clients.
+- [`fastify-aws-timestream`](https://github.com/gzileni/fastify-aws-timestream)
+  Fastify plugin for managing databases, tables, and querying and creating
+  scheduled queries with AWS Timestream.
 - [`fastify-axios`](https://github.com/davidedantonio/fastify-axios) Plugin to
   send HTTP requests via [axios](https://github.com/axios/axios).
 - [`fastify-babel`](https://github.com/cfware/fastify-babel) Fastify plugin for
@@ -485,8 +502,6 @@ section.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)
   Generate typescript types based on your JSON/YAML validation schemas so they
   are always in sync.
-- [`fastify-secure-session`](https://github.com/mcollina/fastify-secure-session)
-  Create a secure stateless cookie session for Fastify.
 - [`fastify-sentry`](https://github.com/alex-ppg/fastify-sentry) Fastify plugin
   to add the Sentry SDK error handler to requests.
 - [`fastify-sequelize`](https://github.com/lyquocnam/fastify-sequelize) Fastify
@@ -497,8 +512,6 @@ section.
   `fastify-caching`.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
-- [`fastify-soap-client`](https://github.com/fastify/fastify-soap-client) a SOAP
-  client plugin for Fastify.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator)
@@ -574,6 +587,8 @@ section.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
   Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
   Fastify.
+- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
+  plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple

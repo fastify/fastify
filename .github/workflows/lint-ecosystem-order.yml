@@ -28,21 +28,7 @@ jobs:
       - name: Lint Doc
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const script = require('./.github/scripts/lint-ecosystem.js')
-            const result = await script({ core })
-            
-            const output = `
-            ## :x: Failed: Lint Ecosystem Order
-
-            ${result.failures.map((failure) => '- ' + failure + '\n')} 
-  
-            [View Details](https://github.com/fastify/fastify/actions/runs/${context.runId}/jobs/${context.job})
-            `;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+            await script({ core, context, github })

@@ -6,12 +6,12 @@ const readline = require('readline')
 
 const ecosystemDocFile = path.join(__dirname, '..', '..', 'docs', 'Guides', 'Ecosystem.md')
 
-module.exports = async function ({ core }) {
+module.exports = async function ({ core, github, context }) {
   const stream = await fs.createReadStream(ecosystemDocFile)
   const rl = readline.createInterface({
     input: stream,
     crlfDelay: Infinity
-  });
+  })
 
   const moduleNameRegex = /^\- \[\`(.+)\`\]/
   let hasOutOfOrderItem = false
@@ -35,8 +35,7 @@ module.exports = async function ({ core }) {
 
     const moduleNameTest = moduleNameRegex.exec(line)
 
-    if (moduleNameTest === null)
-    {
+    if (moduleNameTest === null) {
       core.error(`line ${lineNumber}: improper pattern, module name should be enclosed with backticks`)
       hasImproperFormat = true
       continue
@@ -52,7 +51,7 @@ module.exports = async function ({ core }) {
     modules.push(moduleName)
   }
 
-  const failures = [];
+  const failures = []
   if (hasOutOfOrderItem === true) {
     const failure = 'Some ecosystem modules are not in alphabetical order.'
     failures.push(failure)
@@ -65,13 +64,35 @@ module.exports = async function ({ core }) {
     core.setFailed(failure)
   }
 
-  return { failures }
+  handleFailures(failures, { core, github, context })
 }
 
-function compare(current, previous) {
+function handleFailures (failures, workflow) {
+  const { github, context, core } = workflow;
+
+  if (failures.length) {
+
+    const output = `
+    ## :x: Failed: Lint Ecosystem Order
+
+    ${failures.map((failure) => '- ' + failure + '\n')} 
+
+    [View Details](https://github.com/fastify/fastify/actions/runs/${context.runId}/jobs/${context.job})
+    `
+
+    github.rest.issues.createComment({
+      issue_number: context.issue.number,
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      body: output
+    })
+  }
+}
+
+function compare (current, previous) {
   return previous.localeCompare(
     current,
     'en',
-    {sensitivity: 'base'}
+    { sensitivity: 'base' }
   )
 }

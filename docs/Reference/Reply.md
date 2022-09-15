@@ -10,6 +10,7 @@
   - [.headers(object)](#headersobject)
   - [.getHeader(key)](#getheaderkey)
   - [.getHeaders()](#getheaders)
+    - [set-cookie](#set-cookie)
   - [.removeHeader(key)](#removeheaderkey)
   - [.hasHeader(key)](#hasheaderkey)
   - [.trailer(key, function)](#trailerkey-function)

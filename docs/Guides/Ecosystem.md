@@ -471,7 +471,9 @@ section.
   [qs](https://github.com/ljharb/qs).
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
-- [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB connection plugin. It exposes the same `DocumentStore` (or multiple ones) across the whole Fastify application.
+- [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB
+  connection plugin. It exposes the same `DocumentStore` (or multiple ones)
+  across the whole Fastify application.
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the
   `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based

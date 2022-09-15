@@ -119,10 +119,10 @@ section.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
-  for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts). 
+  for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -167,7 +167,7 @@ section.
   Sentry errors handler that just works! Install, add your DSN and you're good
   to go!
 - [`@mateonunez/fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
-  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine 
+  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
@@ -191,7 +191,7 @@ section.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
-- [`electron-server`](https://github.com/anonrig/electron-server) A plugin for 
+- [`electron-server`](https://github.com/anonrig/electron-server) A plugin for
   using Fastify without the need of consuming a port on Electron apps.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
@@ -446,7 +446,7 @@ section.
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
 - [`fastify-osm`](https://github.com/gzileni/fastify-osm) Fastify
-  OSM plugin to run overpass queries by OpenStreetMap.  
+  OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
@@ -471,6 +471,9 @@ section.
   [qs](https://github.com/ljharb/qs).
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
+- [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB
+  connection plugin. It exposes the same `DocumentStore` (or multiple ones)
+  across the whole Fastify application.
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the
   `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based
@@ -543,8 +546,8 @@ section.
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
-  Fastify 
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.

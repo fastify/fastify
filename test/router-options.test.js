@@ -87,14 +87,21 @@ test('Should honor maxParamLength option', t => {
   })
 })
 
-// TODO: fix once agreed on the new router options object
-test('Should expose router options via getters on request and reply', { todo: true }, t => {
-  t.plan(7)
+test('Should expose router options via getters on request and reply', t => {
+  t.plan(8)
   const fastify = Fastify()
+  const expectedSchema = {
+    params: {
+      id: { type: 'integer' }
+    }
+  }
 
-  fastify.get('/test/:id', (req, reply) => {
-    t.equal(reply.context.config.url, '/test/:id')
-    t.equal(reply.context.config.method, 'GET')
+  fastify.get('/test/:id', {
+    schema: expectedSchema
+  }, (req, reply) => {
+    t.equal(req.routeConfig.url, '/test/:id')
+    t.equal(req.routeConfig.method, 'GET')
+    t.same(req.routeSchema, expectedSchema)
     t.equal(req.routerPath, '/test/:id')
     t.equal(req.routerMethod, 'GET')
     t.equal(req.is404, false)

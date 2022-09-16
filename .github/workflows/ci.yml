@@ -54,12 +54,12 @@ jobs:
           npm run lint
 
   coverage-nix:
-    needs: [linter]
+    needs: linter
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-nix.yml
   coverage-win:
-    needs: [linter]
+    needs: linter
     permissions:
       contents: read
     uses: ./.github/workflows/coverage-win.yml

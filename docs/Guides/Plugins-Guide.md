@@ -309,8 +309,8 @@ fastify.get('/plugin2', (request, reply) => {
 Now your hook will run just for the first route!
 
 An alternative approach is to make use of the [onRoute hook](../Reference/Hooks.md#onroute)
-to customize application routes dynamically from inside the plugin. Every time a new route gets registered, you can read  
-and modify the route options, for example 
+to customize application routes dynamically from inside the plugin. Every time a new route gets registered, you can read
+and modify the route options, for example
 based on a [route config option](../Reference/Routes.md#routes-options):
 
 ```js

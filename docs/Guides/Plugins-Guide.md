@@ -308,10 +308,10 @@ fastify.get('/plugin2', (request, reply) => {
 ```
 Now your hook will run just for the first route!
 
-An alternative approach is to make use of the [onRoute hook](https://www.fastify.io/docs/latest/Reference/Hooks/#onroute)
+An alternative approach is to make use of the [onRoute hook](../Reference/Hooks.md#onroute)
 to customize application routes dynamically from inside the plugin. Every time a new route gets registered, you can read  
 and modify the route options, for example 
-based on a [route config option](https://www.fastify.io/docs/latest/Reference/Routes/#routes-options):
+based on a [route config option](../Reference/Routes.md#routes-options):
 
 ```js
 fastify.register((instance, opts, done) => {

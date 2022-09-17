@@ -6,6 +6,7 @@ const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
+const FormData = require('form-data')
 const Fastify = require('..')
 
 function getUrl (app) {
@@ -70,6 +71,23 @@ test('default 404', t => {
         json: true
       }, (err, response, body) => {
         t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      })
+    })
+
+    test('not registered route with unsupported content type', t => {
+      t.plan(3)
+      const form = FormData()
+      form.append('test-field', 'just some field')
+      sget({
+        method: 'POST',
+        url: getUrl(fastify) + '/nonSupportedRoute',
+        body: form,
+        json: false
+      }, (err, response, body) => {
+        t.error(err)
+        console.log('from test, status', response.statusCode)
         t.equal(response.statusCode, 404)
         t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
       })

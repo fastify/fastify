@@ -19,7 +19,7 @@ function getUrl (app) {
 }
 
 test('default 404', t => {
-  t.plan(4)
+  t.plan(5)
 
   const test = t.test
   const fastify = Fastify()
@@ -76,18 +76,18 @@ test('default 404', t => {
       })
     })
 
-    test('not registered route with unsupported content type', t => {
+    test('using post method and multipart/formdata', t => {
       t.plan(3)
       const form = FormData()
       form.append('test-field', 'just some field')
+
       sget({
         method: 'POST',
-        url: getUrl(fastify) + '/nonSupportedRoute',
+        url: getUrl(fastify) + '/notSupported',
         body: form,
         json: false
       }, (err, response, body) => {
         t.error(err)
-        console.log('from test, status', response.statusCode)
         t.equal(response.statusCode, 404)
         t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
       })

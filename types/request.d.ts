@@ -1,4 +1,4 @@
-import { ErrorObject } from 'ajv'
+import { ErrorObject } from '@fastify/ajv-compiler'
 import { FastifyBaseLogger } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'

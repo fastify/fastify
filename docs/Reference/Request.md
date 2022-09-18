@@ -141,7 +141,6 @@ function if a custom `ValidationCompiler` is provided for the route.
 This function has property errors. Errors encountered during the last validation
 are assigned to errors
 
-
 ```js
 const validate = request
                   .compileValidationSchema({

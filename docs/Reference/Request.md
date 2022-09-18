@@ -98,7 +98,8 @@ it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
-This function has property errors. Errors encountered during the last validation are assigned to errors
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
 
 ```js
 const validate = request
@@ -137,7 +138,8 @@ The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation
 function if a custom `ValidationCompiler` is provided for the route.
 
-This function has property errors. Errors encountered during the last validation are assigned to errors
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
 
 
 ```js

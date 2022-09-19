@@ -231,7 +231,7 @@ test('Reply#getSerializationFunction', t => {
         (req, reply) => {
           const { id } = req.params
 
-          if (parseInt(id) === 1) {
+          if (Number(id) === 1) {
             const serialize4xx = reply.getSerializationFunction('4xx')
             const serialize201 = reply.getSerializationFunction(201)
             const serializeUndefined = reply.getSerializationFunction(undefined)
@@ -308,7 +308,7 @@ test('Reply#getSerializationFunction', t => {
         (req, reply) => {
           const { id } = req.params
 
-          if (parseInt(id) === 1) {
+          if (Number(id) === 1) {
             const serialize = reply.compileSerializationSchema(schemaObj)
 
             t.type(serialize, Function)

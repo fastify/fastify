@@ -98,6 +98,9 @@ it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
+
 ```js
 const validate = request
                   .getValidationFunction({
@@ -108,13 +111,15 @@ const validate = request
                       } 
                     } 
                   })
-validate({ foo: 'bar' }) // true
+console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
 const validate = request
                   .getValidationFunction('body')
-validate({ foo: 0.5 }) // false
+console.log(validate({ foo: 0.5 })) // false
+console.log(validate.errors) // validation errors
 ```
 
 See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
@@ -133,6 +138,8 @@ The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation
 function if a custom `ValidationCompiler` is provided for the route.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
 
 ```js
 const validate = request
@@ -145,6 +152,7 @@ const validate = request
                     } 
                   })
 console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
@@ -158,6 +166,7 @@ const validate = request
                     } 
                   }, 200)
 console.log(validate({ hello: 'world' })) // false
+console.log(validate.errors) // validation errors
 ```
 
 Note that you should be careful when using this function, as it will cache

@@ -1,12 +1,6 @@
 name: Lint Ecosystem Order
 
 on:
-  push:
-    branches-ignore:
-      - master
-      - main
-    paths:
-      - "**/Ecosystem.md"
   pull_request:
     branches:
       - master
@@ -31,4 +25,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const script = require('./.github/scripts/lint-ecosystem.js')
-            await script({ core, context, github })
+            await script({ core })

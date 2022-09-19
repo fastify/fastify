@@ -16,11 +16,11 @@ section.
   multiple schemas and decide which one to use to serialize the payload
 - [`@fastify/auth`](https://github.com/fastify/fastify-auth) Run multiple auth
   functions in Fastify.
-- [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
-  plugins in a directory.
 - [`@fastify/awilix`](https://github.com/fastify/fastify-awilix) Dependency
   injection support for Fastify, based on
   [awilix](https://github.com/jeffijoe/awilix).
+- [`@fastify/autoload`](https://github.com/fastify/fastify-autoload) Require all
+  plugins in a directory.
 - [`@fastify/aws-lambda`](https://github.com/fastify/aws-lambda-fastify) allows
   you to easily build serverless web applications/services and RESTful APIs
   using Fastify on top of AWS Lambda and Amazon API Gateway.
@@ -78,8 +78,8 @@ section.
 - [`@fastify/nextjs`](https://github.com/fastify/fastify-nextjs) React
   server-side rendering support for Fastify with
   [Next](https://github.com/zeit/next.js/).
-- [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
+- [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
   PostgreSQL connection plugin, with this you can share the same PostgreSQL
   connection pool in every part of your server.
@@ -245,10 +245,10 @@ section.
   to add [bree](https://github.com/breejs/bree) support.
 - [`fastify-bugsnag`](https://github.com/ZigaStrgar/fastify-bugsnag) Fastify plugin
   to add support for [Bugsnag](https://www.bugsnag.com/) error reporting.
-- [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
-  for Fastify.
 - [`fastify-casbin-rest`](https://github.com/nearform/fastify-casbin-rest)
   Casbin support for Fastify based on a RESTful model.
+- [`fastify-casbin`](https://github.com/nearform/fastify-casbin) Casbin support
+  for Fastify.
 - [`fastify-casl`](https://github.com/Inlecom/fastify-casl) Fastify
   [CASL](https://github.com/stalniy/casl) plugin that supports ACL-like
   protection of endpoints via either a preSerialization & preHandler hook,
@@ -589,10 +589,10 @@ section.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
   Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
   Fastify.
-- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
-  plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
+- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
+  plugin to easily create Google Cloud PubSub endpoints.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
 

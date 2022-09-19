@@ -112,7 +112,7 @@ const validate = request
                     } 
                   })
 console.log(validate({ foo: 'bar' })) // true
-console.log(validate.errors) // undefined
+console.log(validate.errors) // null
 
 // or
 
@@ -152,7 +152,7 @@ const validate = request
                     } 
                   })
 console.log(validate({ foo: 'bar' })) // true
-console.log(validate.errors) // undefined
+console.log(validate.errors) // null
 
 // or
 

@@ -80,6 +80,8 @@ section.
   [Next](https://github.com/zeit/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
+- [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Helps
+  Formatting fastify's logs into a nice one line message
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
   PostgreSQL connection plugin, with this you can share the same PostgreSQL
   connection pool in every part of your server.

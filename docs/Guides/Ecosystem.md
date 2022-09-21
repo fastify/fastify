@@ -517,6 +517,8 @@ section.
   `fastify-caching`.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
+- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin 
+  to delay the response from the server.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator)

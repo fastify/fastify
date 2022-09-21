@@ -1779,3 +1779,28 @@ test('Should return a human-friendly error if response status codes are not spec
     t.match(err.message, 'Failed building the serialization schema for GET: /, due to error response schemas should be nested under a valid status code, e.g { 2xx: { type: "object" } }')
   })
 })
+
+test('setSchemaController: custom validator instance should not mutate headers schema', async t => {
+  t.plan(2)
+  class Headers {}
+  const fastify = Fastify()
+
+  fastify.setSchemaController({
+    compilersFactory: {
+      buildValidator: function () {
+        return ({ schema, method, url, httpPart }) => {
+          t.type(schema, Headers)
+          return () => {}
+        }
+      }
+    }
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: new Headers()
+    }
+  }, () => {})
+
+  await fastify.ready()
+})

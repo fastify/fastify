@@ -1017,3 +1017,22 @@ test("The same $id in route's schema must not overwrite others", t => {
     t.same(res.payload, 'ok')
   })
 })
+
+test('Custom validator compiler should not mutate schema', async t => {
+  t.plan(2)
+  class Headers {}
+  const fastify = Fastify()
+
+  fastify.setValidatorCompiler(({ schema, method, url, httpPart }) => {
+    t.type(schema, Headers)
+    return () => {}
+  })
+
+  fastify.get('/', {
+    schema: {
+      headers: new Headers()
+    }
+  }, () => {})
+
+  await fastify.ready()
+})

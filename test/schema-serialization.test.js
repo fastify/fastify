@@ -61,7 +61,7 @@ test('custom serializer options', t => {
 })
 
 test('Different content types', t => {
-  t.plan(18)
+  t.plan(21)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -77,9 +77,6 @@ test('Different content types', t => {
   fastify.get('/', {
     schema: {
       response: {
-        201: {
-          content: { type: 'string' }
-        },
         200: {
           content: {
             'application/json': {
@@ -96,6 +93,12 @@ test('Different content types', t => {
               }
             }
           }
+        },
+        201: {
+          content: { type: 'string' }
+        },
+        202: {
+          content: { const: 'Processing exclusive content' }
         },
         '3xx': {
           content: {
@@ -133,6 +136,11 @@ test('Different content types', t => {
         reply.header('Content-Type', 'application/vnd.v4+json')
         reply.code(201)
         reply.send({ boxId: 1, content: 'Games' })
+        break
+      case 'application/vnd.v5+json':
+        reply.header('Content-Type', 'application/vnd.v5+json')
+        reply.code(202)
+        reply.send({ content: 'interesting content' })
         break
       default:
         // to test if schema not found
@@ -176,6 +184,12 @@ test('Different content types', t => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ content: 'Games' }))
     t.equal(res.statusCode, 201)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v5+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ content: 'Processing exclusive content' }))
+    t.equal(res.statusCode, 202)
   })
 })
 

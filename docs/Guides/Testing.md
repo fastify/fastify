@@ -243,33 +243,66 @@ after initializing routes and plugins with `fastify.ready()`.
 
 Uses **app.js** from the previous example.
 
-**test-listen.js** (testing with
-[`Request`](https://www.npmjs.com/package/request))
+**test-listen.js** (testing with [`undici`](https://www.npmjs.com/package/undici))
 ```js
 const tap = require('tap')
-const request = require('request')
+const { Client } = require('undici')
 const buildFastify = require('./app')
 
-tap.test('GET `/` route', t => {
-  t.plan(5)
+tap.test('should work with undici', async t => {
+  t.plan(2)
+
+  const fastify = buildFastify()
+
+  await fastify.listen()
+
+   const client = new Client(
+    'http://localhost:' + fastify.server.address().port, {
+      keepAliveTimeout: 10,
+      keepAliveMaxTimeout: 10
+    } 
+  )
+
+  t.teardown(() => {
+    fastify.close()
+    client.close()
+  })
+
+  const response = await client.request({ method: 'GET', path: '/' })
+
+  t.equal(await response.body.text(), '{"hello":"world"}')
+  t.equal(response.statusCode, 200)
+})
+```
+
+Alternatively, starting with Node.js 18, 
+[`fetch`](https://nodejs.org/docs/latest-v18.x/api/globals.html#fetch) 
+may be used without requiring any extra dependencies:
+
+**test-listen.js**
+```js
+const tap = require('tap')
+const buildFastify = require('./app')
+
+tap.test('should work with fetch', async t => {
+  t.plan(3)
 
   const fastify = buildFastify()
 
   t.teardown(() => fastify.close())
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.error(err)
+  await fastify.listen()
+  
+  const response = await fetch(
+    'http://localhost:' + fastify.server.address().port
+  )
 
-    request({
-      method: 'GET',
-      url: 'http://localhost:' + fastify.server.address().port
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-      t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
-      t.same(JSON.parse(body), { hello: 'world' })
-    })
-  })
+  t.equal(response.status, 200)
+  t.equal(
+    response.headers.get('content-type'),
+    'application/json; charset=utf-8'
+  )
+  t.has(await response.json(), { hello: 'world' })
 })
 ```
 

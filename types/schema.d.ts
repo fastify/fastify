@@ -20,6 +20,7 @@ export interface FastifyRouteSchemaDef<T> {
   url: string;
   httpPart?: string;
   httpStatus?: string;
+  contentType?: string;
 }
 
 export interface FastifySchemaValidationError {

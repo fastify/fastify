@@ -61,7 +61,7 @@ test('custom serializer options', t => {
 })
 
 test('Different content types', t => {
-  t.plan(21)
+  t.plan(32)
 
   const fastify = Fastify()
   fastify.addSchema({
@@ -109,6 +109,15 @@ test('Different content types', t => {
               }
             }
           }
+        },
+        default: {
+          content: {
+            'application/json': {
+              schema: {
+                details: { type: 'string' }
+              }
+            }
+          }
         }
       }
     }
@@ -142,12 +151,46 @@ test('Different content types', t => {
         reply.code(202)
         reply.send({ content: 'interesting content' })
         break
+      case 'application/vnd.v6+json':
+        reply.header('Content-Type', 'application/vnd.v6+json')
+        reply.code(400)
+        reply.send({ desc: 'age is missing', details: 'validation error' })
+        break
+      case 'application/vnd.v7+json':
+        reply.code(400)
+        reply.send({ details: 'validation error' })
+        break
       default:
         // to test if schema not found
         reply.header('Content-Type', 'application/vnd.v3+json')
         reply.code(200)
         reply.send([{ type: 'student', grade: 6 }, { type: 'student', grade: 9 }])
     }
+  })
+
+  fastify.get('/test', {
+    serializerCompiler: ({ contentType }) => {
+      t.equal(contentType, 'application/json')
+      return data => JSON.stringify(data)
+    },
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/json')
+    reply.send({ age: 18, city: 'AU' })
   })
 
   fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/json' } }, (err, res) => {
@@ -190,6 +233,24 @@ test('Different content types', t => {
     t.error(err)
     t.equal(res.payload, JSON.stringify({ content: 'Processing exclusive content' }))
     t.equal(res.statusCode, 202)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v6+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ desc: 'age is missing', details: 'validation error' }))
+    t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({ method: 'GET', url: '/', headers: { Accept: 'application/vnd.v7+json' } }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ details: 'validation error' }))
+    t.equal(res.statusCode, 400)
+  })
+
+  fastify.inject({ method: 'GET', url: '/test' }, (err, res) => {
+    t.error(err)
+    t.equal(res.payload, JSON.stringify({ age: 18, city: 'AU' }))
+    t.equal(res.statusCode, 200)
   })
 })
 

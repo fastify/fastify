@@ -85,11 +85,13 @@ The Fastify structure is detailed in the [GOVERNANCE](GOVERNANCE.md) document.
 Welcome to the team! We are happy to have you. Before you start, please complete
 the following tasks:
 1. Set up 2 factor authentication for GitHub and NPM
-  - [GitHub
+    - [GitHub
     2FA](https://help.github.com/en/articles/securing-your-account-with-two-factor-authentication-2fa)
-  - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
+    - [NPM 2FA](https://docs.npmjs.com/about-two-factor-authentication)
 2. Choose which team to join *(more than one is ok!)* based on how you want to
    help.
+    - Core team: maintains the Fastify core and its documentation
+    - Plugins team: maintains the Fastify's plugins and its ecosystem
 3. Open a pull request to
    [`fastify/fastify:HEAD`](https://github.com/fastify/fastify/pulls) that adds
    your name, username, and email to the team you have choosen in the

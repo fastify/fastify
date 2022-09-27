@@ -35,6 +35,13 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
+- `context` - A Fastify internal object. You should not use it directly or
+  modify it. It is useful to access one special key:	
+  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
+- `routeSchema` - the scheme definition set for the router that is
+  handling the request
+- `routeConfig` - The route [`config`](./Routes.md#routes-config) 
+  object.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
@@ -48,9 +55,6 @@ Request is a core Fastify object containing the following fields:
   schema and returns the serialized payload. If the optional
   `httpPart` is provided, the function will use the serializer
   function given for that HTTP Status Code. Defaults to `null`.
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 
 ### Headers
 

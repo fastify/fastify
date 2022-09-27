@@ -3,6 +3,12 @@
 const { test } = require('tap')
 
 const Request = require('../../lib/request')
+const Context = require('../../lib/context')
+const {
+  kPublicRouteContext,
+  kReply,
+  kRequest
+} = require('../../lib/symbols')
 
 process.removeAllListeners('warning')
 
@@ -16,8 +22,28 @@ test('Regular request', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request
+    }
+  })
   req.connection = req.socket
-  const request = new Request('id', 'params', req, 'query', 'log')
+  const request = new Request('id', 'params', req, 'query', 'log', context)
   t.type(request, Request)
   t.type(request.validateInput, Function)
   t.type(request.getValidationFunction, Function)
@@ -36,6 +62,10 @@ test('Regular request', t => {
   t.equal(request.url, '/')
   t.equal(request.socket, req.socket)
   t.equal(request.protocol, 'http')
+  t.equal(request.routerPath, context.config.url)
+  t.equal(request.routerMethod, context.config.method)
+  t.equal(request.routeConfig, context[kPublicRouteContext].config)
+  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
 
   // This will be removed, it's deprecated
   t.equal(request.connection, req.connection)
@@ -77,7 +107,7 @@ test('Regular request - host header has precedence over authority', t => {
 })
 
 test('Request with trust proxy', t => {
-  t.plan(18)
+  t.plan(22)
   const headers = {
     'x-forwarded-for': '2.2.2.2, 1.1.1.1',
     'x-forwarded-host': 'example.com'
@@ -88,9 +118,29 @@ test('Request with trust proxy', t => {
     socket: { remoteAddress: 'ip' },
     headers
   }
+  const context = new Context({
+    schema: {
+      body: {
+        type: 'object',
+        required: ['hello'],
+        properties: {
+          hello: { type: 'string' }
+        }
+      }
+    },
+    config: {
+      some: 'config',
+      url: req.url,
+      method: req.method
+    },
+    server: {
+      [kReply]: {},
+      [kRequest]: Request
+    }
+  })
 
   const TpRequest = Request.buildRequest(Request, true)
-  const request = new TpRequest('id', 'params', req, 'query', 'log')
+  const request = new TpRequest('id', 'params', req, 'query', 'log', context)
   t.type(request, TpRequest)
   t.equal(request.id, 'id')
   t.equal(request.params, 'params')
@@ -109,6 +159,10 @@ test('Request with trust proxy', t => {
   t.type(request.validateInput, Function)
   t.type(request.getValidationFunction, Function)
   t.type(request.compileValidationSchema, Function)
+  t.equal(request.routerPath, context.config.url)
+  t.equal(request.routerMethod, context.config.method)
+  t.equal(request.routeConfig, context[kPublicRouteContext].config)
+  t.equal(request.routeSchema, context[kPublicRouteContext].schema)
 })
 
 test('Request with trust proxy, encrypted', t => {

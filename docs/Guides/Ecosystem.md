@@ -501,7 +501,9 @@ section.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config)
   Fastify Rob-Config integration.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
-  Convenient grouping and inheritance of routes
+  Convenient grouping and inheritance of routes.
+- [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
+  Ensure the existence of defined S3 buckets on the application startup.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)
   Choose the JSON schema to use based on request parameters.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)

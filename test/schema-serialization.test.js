@@ -254,7 +254,7 @@ test('Different content types', t => {
   })
 })
 
-test('Use the same schema id in different places', t => {
+test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH error', t => {
   t.plan(3)
   const fastify = Fastify()
 

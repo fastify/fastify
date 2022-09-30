@@ -659,7 +659,7 @@ change the default serialization method by providing a function to serialize
 every route where you do.
 
 ```js
-fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+fastify.setSerializerCompiler(({ schema, method, url, httpStatus, contentType }) => {
   return data => JSON.stringify(data)
 })
 

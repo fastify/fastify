@@ -263,7 +263,7 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH err
       response: {
         200: {
           content: {
-            'application/vnd.v3+json': {
+            'application/json': {
               schema: {
                 fullName: { type: 'string' },
                 phone: { type: 'string' }

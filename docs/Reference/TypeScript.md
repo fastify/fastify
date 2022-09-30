@@ -61,6 +61,11 @@ in a blank http Fastify server.
 *Note: Set `target` property in `tsconfig.json` to `es2017` or greater to avoid
 [FastifyDeprecation](https://github.com/fastify/fastify/issues/3284) warning.*
 
+*Note 2: Avoid using ```"moduleResolution": "NodeNext"``` in tsconfig.json with 
+```"type": "module"``` in package.json. This combination is currently not 
+supported by fastify typing system.
+[ts(2349)](https://github.com/fastify/fastify/issues/4241) warning.*
+
 4. Create an `index.ts` file - this will contain the server code
 5. Add the following code block to your file:
    ```typescript
@@ -254,18 +259,6 @@ can do it as follows:
     )
     ```
 
-     **Note** For Ajv version 7 and above is required to use the `ajvTypeBoxPlugin`:
-
-    ```typescript
-    import Fastify from 'fastify'
-    import { ajvTypeBoxPlugin, TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
-
-    const fastify = Fastify({
-      ajv: {
-        plugins: [ajvTypeBoxPlugin]
-      }
-    }).withTypeProvider<TypeBoxTypeProvider>()
-    ```
 
 #### Schemas in JSON Files
 

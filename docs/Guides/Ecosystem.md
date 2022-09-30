@@ -80,6 +80,8 @@ section.
   [Next](https://github.com/zeit/next.js/).
 - [`@fastify/oauth2`](https://github.com/fastify/fastify-oauth2) Wrap around
   [`simple-oauth2`](https://github.com/lelylan/simple-oauth2).
+- [`@fastify/one-line-logger`](https://github.com/fastify/one-line-logger) Formats
+  Fastify's logs into a nice one-line message.
 - [`@fastify/postgres`](https://github.com/fastify/fastify-postgres) Fastify
   PostgreSQL connection plugin, with this you can share the same PostgreSQL
   connection pool in every part of your server.
@@ -119,10 +121,10 @@ section.
 - [`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)
   Fastify
   [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
-  for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts). 
+  for [json-schema-to-ts](https://github.com/ThomasAribart/json-schema-to-ts).
 - [`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)
   Fastify
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
   for [Typebox](https://github.com/sinclairzx81/typebox).
 - [`@fastify/under-pressure`](https://github.com/fastify/under-pressure) Measure
   process load with automatic handling of _"Service Unavailable"_ plugin for
@@ -146,6 +148,13 @@ section.
   close the server gracefully on `SIGINT` and `SIGTERM` signals.
 - [`@eropple/fastify-openapi3`](https://github.com/eropple/fastify-openapi3) Provides
   easy, developer-friendly OpenAPI 3.1 specs + doc explorer based on your routes.
+- [`@ethicdevs/fastify-custom-session`](https://github.com/EthicDevs/fastify-custom-session)
+  A plugin that let you use session and decide only where to load/save from/to. Has
+  great TypeScript support + built-in adapters for common ORMs/databases (Firebase,
+  Prisma Client, Postgres (wip), InMemory) and you can easily make your own adapter!
+- [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
+  A plugin to easily create git server and make one/many Git repositories available
+  for clone/fetch/push through the standard `git` (over http) commands.
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
@@ -160,7 +169,7 @@ section.
   Sentry errors handler that just works! Install, add your DSN and you're good
   to go!
 - [`@mateonunez/fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
-  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine 
+  A plugin to implement [Lyra](https://github.com/nearform/lyra) search engine
   on Fastify
 - [`@mgcrea/fastify-graceful-exit`](https://github.com/mgcrea/fastify-graceful-exit)
   A plugin to close the server gracefully
@@ -184,7 +193,7 @@ section.
 - [`cls-rtracer`](https://github.com/puzpuzpuz/cls-rtracer) Fastify middleware
   for CLS-based request ID generation. An out-of-the-box solution for adding
   request IDs into your logs.
-- [`electron-server`](https://github.com/anonrig/electron-server) A plugin for 
+- [`electron-server`](https://github.com/anonrig/electron-server) A plugin for
   using Fastify without the need of consuming a port on Electron apps.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
@@ -439,7 +448,7 @@ section.
   OrientDB connection plugin, with which you can share the OrientDB connection
   across every part of your server.
 - [`fastify-osm`](https://github.com/gzileni/fastify-osm) Fastify
-  OSM plugin to run overpass queries by OpenStreetMap.  
+  OSM plugin to run overpass queries by OpenStreetMap.
 - [`fastify-peekaboo`](https://github.com/simone-sanfratello/fastify-peekaboo)
   Fastify plugin for memoize responses by expressive settings.
 - [`fastify-piscina`](https://github.com/piscinajs/fastify-piscina) A worker
@@ -464,6 +473,9 @@ section.
   [qs](https://github.com/ljharb/qs).
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
+- [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB
+  connection plugin. It exposes the same `DocumentStore` (or multiple ones)
+  across the whole Fastify application.
 - [`fastify-raw-body`](https://github.com/Eomm/fastify-raw-body) Add the
   `request.rawBody` field.
 - [`fastify-rbac`](https://gitlab.com/m03geek/fastify-rbac) Fastify role-based
@@ -489,7 +501,9 @@ section.
 - [`fastify-rob-config`](https://github.com/jeromemacias/fastify-rob-config)
   Fastify Rob-Config integration.
 - [`fastify-route-group`](https://github.com/TakNePoidet/fastify-route-group)
-  Convenient grouping and inheritance of routes
+  Convenient grouping and inheritance of routes.
+- [`fastify-s3-buckets`](https://github.com/kibertoad/fastify-s3-buckets)
+  Ensure the existence of defined S3 buckets on the application startup.
 - [`fastify-schema-constraint`](https://github.com/Eomm/fastify-schema-constraint)
   Choose the JSON schema to use based on request parameters.
 - [`fastify-schema-to-typescript`](https://github.com/thomasthiebaud/fastify-schema-to-typescript)
@@ -505,11 +519,15 @@ section.
   `fastify-caching`.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
+- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin 
+  to delay the response from the server.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
 - [`fastify-split-validator`](https://github.com/MetCoder95/fastify-split-validator)
   Small plugin to allow you use multiple validators in one route based on each
   HTTP part of the request.
+- [`fastify-sqlite`](https://github.com/Eomm/fastify-sqlite) connects your
+  application to a sqlite3 database.
 - [`fastify-sse`](https://github.com/lolo32/fastify-sse) to provide Server-Sent
   Events with `reply.sse( … )` to Fastify.
 - [`fastify-sse-v2`](https://github.com/nodefactoryio/fastify-sse-v2) to provide
@@ -534,8 +552,8 @@ section.
 - [`fastify-twitch-ebs-tools`](https://github.com/lukemnet/fastify-twitch-ebs-tools)
   Useful functions for Twitch Extension Backend Services (EBS).
 - [`fastify-type-provider-zod`](https://github.com/turkerdev/fastify-type-provider-zod)
-  Fastify 
-  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/) 
+  Fastify
+  [type provider](https://www.fastify.io/docs/latest/Reference/Type-Providers/)
   for [zod](https://github.com/colinhacks/zod).
 - [`fastify-typeorm-plugin`](https://github.com/inthepocket/fastify-typeorm-plugin)
   Fastify plugin to work with TypeORM.
@@ -580,6 +598,8 @@ section.
 - [`openapi-validator-middleware`](https://github.com/PayU/openapi-validator-middleware#fastify)
   Swagger and OpenAPI 3.0 spec-based request validation middleware that supports
   Fastify.
+- [`pubsub-http-handler`](https://github.com/cobraz/pubsub-http-handler) A Fastify
+  plugin to easily create Google Cloud PubSub endpoints.
 - [`sequelize-fastify`](https://github.com/hsynlms/sequelize-fastify) A simple
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple

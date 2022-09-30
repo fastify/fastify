@@ -268,6 +268,21 @@ test('build schema - headers are not lowercased in case of custom object', t => 
   })
 })
 
+test('build schema - headers are not lowercased in case of custom validator provided', t => {
+  t.plan(1)
+
+  class Headers {}
+  const opts = {
+    schema: {
+      headers: new Headers()
+    }
+  }
+  validation.compileSchemasForValidation(opts, ({ schema, method, url, httpPart }) => {
+    t.type(schema, Headers)
+    return () => {}
+  }, true)
+})
+
 test('build schema - uppercased headers are not included', t => {
   t.plan(1)
   const opts = {

@@ -1,18 +1,15 @@
 name: Lint Ecosystem Order
 
 on:
-  push:
-    branches-ignore:
-      - master
-      - main
-    paths:
-      - "**/Ecosystem.md"
   pull_request:
     branches:
       - master
       - main
     paths:
       - "**/Ecosystem.md"
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
 
 jobs:
   build:
@@ -28,7 +25,7 @@ jobs:
       - name: Lint Doc
         uses: actions/github-script@v6
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const script = require('./.github/scripts/lint-ecosystem.js')
             await script({ core })
-

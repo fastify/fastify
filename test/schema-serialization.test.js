@@ -255,6 +255,38 @@ test('Different content types', t => {
 })
 
 test('Use the same schema id in different places', t => {
+  t.plan(3)
+  const fastify = Fastify()
+
+  fastify.get('/testInvalid', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/vnd.v3+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
+            },
+            type: 'string'
+          }
+        }
+      }
+    }
+  }, function (req, reply) {
+    reply.header('Content-Type', 'application/json')
+    reply.send({ fullName: 'Any name', phone: '0109001010' })
+  })
+
+  fastify.ready((err) => {
+    t.equal(err.message, "Schema is missing for the content type 'type'")
+    t.equal(err.statusCode, 500)
+    t.equal(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCH')
+  })
+})
+
+test('Use the same schema id in different places', t => {
   t.plan(2)
   const fastify = Fastify()
 

@@ -254,7 +254,7 @@ test('Different content types', t => {
   })
 })
 
-test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH error', t => {
+test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCHEMA error', t => {
   t.plan(3)
   const fastify = Fastify()
 
@@ -270,7 +270,7 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH err
               },
               example: {
                 fullName: 'John Doe',
-                phone: '201090243795',
+                phone: '201090243795'
               }
             },
             type: 'string'
@@ -286,7 +286,7 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH err
   fastify.ready((err) => {
     t.equal(err.message, "Schema is missing for the content type 'type'")
     t.equal(err.statusCode, 500)
-    t.equal(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCH')
+    t.equal(err.code, 'FST_ERR_SCH_CONTENT_MISSING_SCHEMA')
   })
 })
 

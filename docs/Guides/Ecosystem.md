@@ -468,7 +468,7 @@ section.
   Fastify and protobufjs, together at last. Uses protobufjs by default.
 - [`fastify-qrcode`](https://github.com/chonla/fastify-qrcode) This plugin
   utilizes [qrcode](https://github.com/soldair/node-qrcode) to generate QR Code.
-- [`fastify-qs`](https://github.com/webdevium/fastify-qs) A plugin for Fastify
+- [`fastify-qs`](https://github.com/vanodevium/fastify-qs) A plugin for Fastify
   that adds support for parsing URL query parameters with
   [qs](https://github.com/ljharb/qs).
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's

@@ -267,6 +267,10 @@ test('Invalid multiple content schema, throw FST_ERR_SCH_CONTENT_MISSING_SCH err
               schema: {
                 fullName: { type: 'string' },
                 phone: { type: 'string' }
+              },
+              example: {
+                fullName: 'John Doe',
+                phone: '201090243795',
               }
             },
             type: 'string'

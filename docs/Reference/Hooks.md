@@ -449,6 +449,33 @@ fastify.addHook('onRoute', (routeOptions) => {
 })
 ```
 
+If you want to add more routes within an onRoute hook, you have to tag these
+routes properly. If you don't, the hook will run into an infinite loop. The
+recommended approach is shown below.
+
+```js
+const kRouteAlreadyProcessed = Symbol('route-already-processed')
+
+fastify.addHook('onRoute', function (routeOptions) {
+  const { url, method } = routeOptions
+
+  const isAlreadyProcessed = (routeOptions.custom && routeOptions.custom[kRouteAlreadyProcessed]) || false
+
+  if (!isAlreadyProcessed) {
+    this.route({
+      url,
+      method,
+      custom: {
+        [kRouteAlreadyProcessed]: true
+      },
+      handler: () => {}
+    })
+  }
+})
+```
+
+For more details, see this [issue](https://github.com/fastify/fastify/issues/4319).
+
 ### onRegister
 <a id="on-register"></a>
 

@@ -20,6 +20,7 @@ import { SerializerCompiler } from '@fastify/fast-json-stringify-compiler'
 import { FastifySchema } from './types/schema'
 import { FastifyContextConfig } from './types/context'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
+import { FastifyErrorCodes } from './types/errors'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -60,6 +61,10 @@ declare function fastify<
   Logger extends FastifyBaseLogger = FastifyLoggerInstance,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+
+declare namespace fastify {
+  export const errorCodes: FastifyErrorCodes;
+}
 
 export default fastify
 
@@ -206,4 +211,5 @@ export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaul
 export * from './types/hooks'
 export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
+export { FastifyErrorCodes } from './types/errors'
 export { fastify }

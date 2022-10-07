@@ -48,14 +48,18 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
+const {
+  appendStackTrace,
+  AVVIO_ERRORS_MAP,
+  ...errorCodes
+} = require('./lib/errors')
+
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
   FST_ERR_BAD_URL,
-  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
-  AVVIO_ERRORS_MAP,
-  appendStackTrace
-} = require('./lib/errors')
+  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE
+} = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
 
@@ -719,6 +723,8 @@ function fastify (options) {
     return router.printRoutes(opts)
   }
 }
+
+fastify.errorCodes = errorCodes
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {

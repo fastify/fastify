@@ -9,7 +9,8 @@ import fastify, {
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
   RouteGenericInterface,
-  ValidationResult
+  ValidationResult,
+  FastifyErrorCodes
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
@@ -240,3 +241,6 @@ expectType<unknown>(routeGeneric.Headers)
 expectType<unknown>(routeGeneric.Params)
 expectType<unknown>(routeGeneric.Querystring)
 expectType<unknown>(routeGeneric.Reply)
+
+// ErrorCodes
+expectType<FastifyErrorCodes>(fastify.errorCodes)

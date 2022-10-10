@@ -732,6 +732,60 @@ fastify.route({
 })
 ```
 
+#### Asynchronous Custom Constraints
+
+You can provide your custom constraints and the `constraint` criteria can be
+fetched from other source, for example `database`. Usage of asynchronous custom
+constraint should place at the last resort since it impacts the router
+performance.
+
+```js
+function databaseOperation(field, done) {
+  done(null, field)
+}
+
+const secret = {
+  // strategy name for referencing in the route handler `constraints` options
+  name: 'secret',
+  // storage factory for storing routes in the find-my-way route tree
+  storage: function () {
+    let handlers = {}
+    return {
+      get: (type) => { return handlers[type] || null },
+      set: (type, store) => { handlers[type] = store }
+    }
+  },
+  // function to get the value of the constraint from each incoming request
+  deriveConstraint: (req, ctx, done) => {
+    databaseOperation(req.headers['secret'], done)
+  },
+  // optional flag marking if handlers without constraints can match requests that have a value for this constraint
+  mustMatchWhenDerived: true
+}
+```
+
+> ## ⚠  Security Notice
+> When using with asynchronous constraint. It is highly recommend never return error
+> inside the callback. If the error is not preventable, it is recommended to provide
+> a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
+> may break or expose sensitive information to attackers.
+> 
+> ```js
+> const Fastify = require('fastify')
+> 
+> const fastify = Fastify({
+>   frameworkErrors: function(err, res, res) {
+>     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>       res.code(400)
+>       return res.send("Invalid header provided")
+>     } else {
+>       res.send(err)
+>     }
+>   }
+> })
+> ```
+
+
 ### ⚠  HTTP version check
 
 Fastify will check the HTTP version of every request, based on configuration

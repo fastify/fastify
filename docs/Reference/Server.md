@@ -731,6 +731,9 @@ const fastify = require('fastify')({
     if (error instanceof FST_ERR_BAD_URL) {
       res.code(400)
       return res.send("Provided url is not valid")
+    } else if(error instanceof FST_ERR_ASYNC_CONSTRAINT) {
+      res.code(400)
+      return res.send("Provided header is not valid")
     } else {
       res.send(err)
     }

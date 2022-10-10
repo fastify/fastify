@@ -196,7 +196,7 @@ test('add', t => {
     const contentTypeParser = fastify[keys.kContentTypeParser]
 
     contentTypeParser.add('*', {}, first)
-    t.equal(contentTypeParser.customParsers[''].fn, first)
+    t.equal(contentTypeParser.customParsers.get('').fn, first)
   })
 
   t.end()
@@ -306,7 +306,7 @@ test('remove', t => {
 
     contentTypeParser.remove('image/png')
 
-    t.same(Object.keys(contentTypeParser.customParsers).length, 2)
+    t.same(contentTypeParser.customParsers.size, 2)
   })
 
   t.end()
@@ -328,4 +328,70 @@ test('remove all should remove all existing parsers and reset cache', t => {
   t.same(contentTypeParser.parserList.length, 0)
   t.same(contentTypeParser.parserRegExpList.length, 0)
   t.same(Object.keys(contentTypeParser.customParsers).length, 0)
+})
+
+test('Safeguard against malicious content-type / 1', async t => {
+  const badNames = Object.getOwnPropertyNames({}.__proto__) // eslint-disable-line
+  t.plan(badNames.length)
+
+  const fastify = Fastify()
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  for (const prop of badNames) {
+    const response = await fastify.inject({
+      method: 'POST',
+      path: '/',
+      headers: {
+        'content-type': prop
+      },
+      body: ''
+    })
+
+    t.same(response.statusCode, 415)
+  }
+})
+
+test('Safeguard against malicious content-type / 2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': '\\u0063\\u006fnstructor'
+    },
+    body: ''
+  })
+
+  t.same(response.statusCode, 415)
+})
+
+test('Safeguard against malicious content-type / 3', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'constructor; charset=utf-8'
+    },
+    body: ''
+  })
+
+  t.same(response.statusCode, 415)
 })

@@ -5,7 +5,7 @@ const test = t.test
 const Fastify = require('..')
 
 test('should remove content-type for setErrorHandler', async t => {
-  t.plan(6)
+  t.plan(8)
   let count = 0
 
   const fastify = Fastify()
@@ -19,9 +19,13 @@ test('should remove content-type for setErrorHandler', async t => {
     t.same(typeof payload, 'string')
     switch (count) {
       case 1: {
+        // should guess the correct content-type based on payload
+        t.same(reply.getHeader('content-type'), 'text/plain; charset=utf-8')
         throw Error('kaboom')
       }
       case 2: {
+        // should guess the correct content-type based on payload
+        t.same(reply.getHeader('content-type'), 'application/json; charset=utf-8')
         return payload
       }
       default: {

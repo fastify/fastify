@@ -42,6 +42,17 @@ To integrate with AWS, you have two choices of library:
 
 So you can decide which option is best for you, but you can test both libraries.
 
+**Note**:
+
+Fastify will not allow adding more routes or registering plugins once `ready()` is called. See [here](https://github.com/fastify/fastify/issues/1771#issuecomment-515339364)
+
+In some serverless environment, codes outside the exported handlers could be cached. This means you
+cannot add routes or register plugins inside the exported handlers because it will be added more than once
+to the cached Fastify instance.
+
+Either declare all your routes and register all your plugins outside the handlers
+or initialize new instance of Fastify inside the handlers instead. See [here](https://github.com/fastify/fastify/issues/4328)
+
 ### Using @fastify/aws-lambda
 
 The sample provided allows you to easily build serverless web

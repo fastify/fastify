@@ -3301,3 +3301,20 @@ test('onTimeout should be triggered and socket _meta is set', t => {
     })
   })
 })
+
+test('registering invalid hooks should throw an error', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/invalidHook',
+      onRequest: [undefined],
+      async handler () {
+        return 'hello world'
+      }
+    })
+  }, new Error('onRequest hook should be a function, instead got undefined'))
+})

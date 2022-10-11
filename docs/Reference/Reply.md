@@ -69,10 +69,11 @@ object that exposes the following functions and properties:
   the specified schema and returns a serialization function using the default 
   (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded 
   to the `SerializerCompiler` if provided, default to `undefined`.
-- `.serializeInput(data, schema, [,httpStatus])` - Serializes the specified data
-  using the specified schema and returns the serialized payload.
-  If the optional `httpStatus` is provided, the function will use the serializer
-  function given for that HTTP Status Code. Default to `undefined`.
+- `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes 
+  the specified data using the specified schema and returns the serialized payload.
+  If the optional `httpStatus`, and `contentType` are provided, the function 
+  will use the serializer function given for that specific content type and 
+  HTTP Status Code. Default to `undefined`.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a
   buffer, JSON, stream, or an Error object.

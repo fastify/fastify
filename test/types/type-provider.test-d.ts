@@ -88,6 +88,8 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   }
 ))
 
+expectAssignable<FastifyInstance>(server.withTypeProvider<TypeBoxProvider>())
+
 // -------------------------------------------------------------------
 // JsonSchemaToTs
 // -------------------------------------------------------------------
@@ -114,6 +116,8 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+expectAssignable<FastifyInstance>(server.withTypeProvider<JsonSchemaToTsProvider>())
 
 // -------------------------------------------------------------------
 // Instance Type Remappable

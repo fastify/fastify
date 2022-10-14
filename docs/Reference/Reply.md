@@ -20,9 +20,9 @@
   - [.callNotFound()](#callnotfound)
   - [.getResponseTime()](#getresponsetime)
   - [.type(contentType)](#typecontenttype)
-  - [.getSerializationFunction(schema | httpStatus)](#getserializationfunctionschema--httpstatus)
-  - [.compileSerializationSchema(schema, httpStatus)](#compileserializationschemaschema-httpstatus)
-  - [.serializeInput(data, [schema | httpStatus], [httpStatus])](#serializeinputdata-schema--httpstatus-httpstatus)
+  - [.getSerializationFunction(schema | httpStatus, [contentType])](#getserializationfunctionschema--httpstatus)
+  - [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschemaschema-httpstatus)
+  - [.serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])](#serializeinputdata-schema--httpstatus-httpstatus)
   - [.serializer(func)](#serializerfunc)
   - [.raw](#raw)
   - [.sent](#sent)
@@ -63,16 +63,17 @@ object that exposes the following functions and properties:
 - `.serialize(payload)` - Serializes the specified payload using the default
   JSON serializer or using the custom serializer (if one is set) and returns the
   serialized payload.
-- `.getSerializationFunction(schema | httpStatus)` - Returns the serialization
+- `.getSerializationFunction(schema | httpStatus, [contentType])` - Returns the serialization
   function for the specified schema or http status, if any of either are set.
-- `.compileSerializationSchema(schema, httpStatus)` - Compiles the specified
-  schema and returns a serialization function using the default (or customized)
-  `SerializerCompiler`. The optional `httpStatus` is forwarded to the
-  `SerializerCompiler` if provided, default to `undefined`.
-- `.serializeInput(data, schema, [,httpStatus])` - Serializes the specified data
-  using the specified schema and returns the serialized payload.
-  If the optional `httpStatus` is provided, the function will use the serializer
-  function given for that HTTP Status Code. Default to `undefined`.
+- `.compileSerializationSchema(schema, [httpStatus], [contentType])` - Compiles 
+  the specified schema and returns a serialization function using the default 
+  (or customized) `SerializerCompiler`. The optional `httpStatus` is forwarded 
+  to the `SerializerCompiler` if provided, default to `undefined`.
+- `.serializeInput(data, schema, [,httpStatus], [contentType])` - Serializes 
+  the specified data using the specified schema and returns the serialized payload.
+  If the optional `httpStatus`, and `contentType` are provided, the function 
+  will use the serializer function given for that specific content type and 
+  HTTP Status Code. Default to `undefined`.
 - `.serializer(function)` - Sets a custom serializer for the payload.
 - `.send(payload)` - Sends the payload to the user, could be a plain text, a
   buffer, JSON, stream, or an Error object.
@@ -339,12 +340,12 @@ reply.type('text/html')
 If the `Content-Type` has a JSON subtype, and the charset parameter is not set,
 `utf-8` will be used as the charset by default.
 
-### .getSerializationFunction(schema | httpStatus)
+### .getSerializationFunction(schema | httpStatus, [contentType])
 <a id="getserializationfunction"></a>
 
 By calling this function using a provided `schema` or `httpStatus`, 
-it will return a `serialzation` function that can be used to
-serialize diverse inputs. It returns `undefined` if no
+and the optional `contentType`, it will return a `serialzation` function 
+that can be used to serialize diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
 This heavily depends of the `schema#responses` attached to the route, or
@@ -367,12 +368,18 @@ serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 const serialize = reply
                   .getSerializationFunction(200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
+
+// or
+
+const serialize = reply
+                  .getSerializationFunction(200, 'application/json')
+serialize({ foo: 'bar' }) // '{"foo":"bar"}'
 ```
 
-See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
-### .compileSerializationSchema(schema, httpStatus)
+### .compileSerializationSchema(schema, [httpStatus], [contentType])
 <a id="compileserializationschema"></a>
 
 This function will compile a serialization schema and
@@ -381,9 +388,9 @@ The function returned (a.k.a. _serialization function_) returned is compiled
 by using the provided `SerializerCompiler`. Also this is cached by using
 a `WeakMap` for reducing compilation calls.
 
-The optional paramater `httpStatus`, if provided, is forwarded directly
-the `SerializerCompiler`, so it can be used to compile the serialization
-function if a custom `SerializerCompiler` is used.
+The optional paramaters `httpStatus` and `contentType`, if provided, 
+are forwarded directly to the `SerializerCompiler`, so it can be used 
+to compile the serialization function if a custom `SerializerCompiler` is used.
 
 This heavily depends of the `schema#responses` attached to the route, or
 the serialization functions compiled by using `compileSerializationSchema`.
@@ -412,6 +419,23 @@ const serialize = reply
                     } 
                   }, 200)
 serialize({ foo: 'bar' }) // '{"foo":"bar"}'
+
+// or
+
+const serialize = reply
+                  .compileSerializationSchema({
+                        '3xx': {
+                          content: {
+                            'application/json': {
+                              schema: {
+                                name: { type: 'string' },
+                                phone: { type: 'number' }
+                              }
+                            }
+                          }
+                        }
+                  }, '3xx', 'application/json')
+serialize({ name: 'Jone', phone: 201090909090 }) // '{"name":"Jone", "phone":201090909090}'
 ```
 
 Note that you should be careful when using this function, as it will cache
@@ -461,14 +485,14 @@ const newSerialize = reply.compileSerializationSchema(newSchema)
 console.log(newSerialize === serialize) // false
 ```
 
-### .serializeInput(data, [schema | httpStatus], [httpStatus])
+### .serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])
 <a id="serializeinput"></a>
 
 This function will serialize the input data based on the provided schema,
 or http status code. If both provided, the `httpStatus` will take presedence.
 
 If there is not a serialization function for a given `schema`, a new serialization
-function will be compiled forwarding the `httpStatus` if provided.
+function will be compiled forwarding the `httpStatus`, and the `contentType` if provided.
 
 ```js
 reply
@@ -497,9 +521,14 @@ reply
 
 reply
   .serializeInput({ foo: 'bar'}, 200) // '{"foo":"bar"}'
+
+// or
+
+reply
+  .serializeInput({ name: 'Jone', age: 18 }, '200', 'application/vnd.v1+json') // '{"name": "Jone", "age": 18}'
 ```
 
-See [.compileSerializationSchema(schema, [httpStatus])](#compileserializationschema)
+See [.compileSerializationSchema(schema, [httpStatus], [contentType])](#compileserializationschema)
 for more information on how to compile serialization schemas.
 
 ### .serializer(func)

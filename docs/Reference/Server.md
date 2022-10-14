@@ -1370,7 +1370,7 @@ const fastify = Fastify({
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
         // See [#schema-serializer](./Validation-and-Serialization.md#schema-serializer) for details.
-        return function serializerCompiler ({ schema, method, url, httpStatus }) {
+        return function serializerCompiler ({ schema, method, url, httpStatus, contentType }) {
           return data => JSON.stringify(data)
         }
       }

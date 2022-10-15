@@ -656,13 +656,14 @@ fastify.get('/json', options, function (request, reply) {
 #### Streams
 <a id="send-streams"></a>
 
-*send* can also handle streams out of the box. If you are sending a stream and
-you have not set a `'Content-Type'` header, *send* will set it at
-`'application/octet-stream'`.
+*send* can also handle streams by setting the `'Content-Type'` header to
+`'application/octet-stream'`. For proxied responses, this header should be 
+unspecified instead.
 ```js
 fastify.get('/streams', function (request, reply) {
   const fs = require('fs')
   const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
   reply.send(stream)
 })
 ```

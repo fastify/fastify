@@ -263,8 +263,8 @@ section.
   Sequelize ORM.
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify
   plugin to add CouchDB support via [nano](https://github.com/apache/nano).
-- [`fastify-crud-generator`](https://github.com/beliven-it/fastify-crud-generator) A
-  plugin to rapidly generate CRUD routes for any entity.
+- [`fastify-crud-generator`](https://github.com/beliven-it/fastify-crud-generator)
+  A plugin to rapidly generate CRUD routes for any entity.
 - [`fastify-custom-healthcheck`](https://github.com/gkampitakis/fastify-custom-healthcheck)
   Fastify plugin to add health route in your server that asserts custom
   functions.

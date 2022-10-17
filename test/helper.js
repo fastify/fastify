@@ -337,6 +337,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
+        agent: false,
         headers: {
           'Content-Type': 'application/json'
         }
@@ -370,6 +371,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
+        agent: false,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -404,6 +406,7 @@ module.exports.payloadMethod = function (method, t, isSetErrorHandler = false) {
       sget({
         method: upMethod,
         url: `http://localhost:${fastify.server.address().port}`,
+        agent: false,
         headers: {
           'Content-Type': 'application/json'
         },

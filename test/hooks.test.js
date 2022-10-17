@@ -3301,3 +3301,41 @@ test('onTimeout should be triggered and socket _meta is set', t => {
     })
   })
 })
+
+test('registering invalid hooks should throw an error', async t => {
+  t.plan(3)
+
+  const fastify = Fastify()
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/invalidHook',
+      onRequest: [undefined],
+      async handler () {
+        return 'hello world'
+      }
+    })
+  }, new Error('onRequest hook should be a function, instead got undefined'))
+
+  t.throws(() => {
+    fastify.route({
+      method: 'GET',
+      path: '/invalidHook',
+      onRequest: undefined,
+      async handler () {
+        return 'hello world'
+      }
+    })
+  }, new Error('onRequest hook should be a function, instead got undefined'))
+
+  t.throws(() => {
+    fastify.addHook('onRoute', (routeOptions) => {
+      routeOptions.onSend = [undefined]
+    })
+
+    fastify.get('/', function (request, reply) {
+      reply.send('hello world')
+    })
+  }, new Error('onSend hook should be a function, instead got undefined'))
+})

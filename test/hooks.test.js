@@ -3322,12 +3322,22 @@ test('registering invalid hooks should throw an error', async t => {
     fastify.route({
       method: 'GET',
       path: '/invalidHook',
-      onRequest: undefined,
+      onRequest: null,
       async handler () {
         return 'hello world'
       }
     })
-  }, new Error('onRequest hook should be a function, instead got undefined'))
+  }, new Error('onRequest hook should be a function, instead got object'))
+
+  // undefined is ok
+  fastify.route({
+    method: 'GET',
+    path: '/validhook',
+    onRequest: undefined,
+    async handler () {
+      return 'hello world'
+    }
+  })
 
   t.throws(() => {
     fastify.addHook('onRoute', (routeOptions) => {

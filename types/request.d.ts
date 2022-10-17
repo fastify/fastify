@@ -5,7 +5,7 @@ import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
 import { FastifySchema } from './schema'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 export interface RequestGenericInterface {
@@ -48,6 +48,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   server: FastifyInstance;
   body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
+  routeConfig: FastifyContextConfig & ContextConfig;
+  routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };

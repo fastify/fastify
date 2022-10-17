@@ -332,7 +332,7 @@ The router received an invalid url.
 ### FST_ERR_ASYNC_CONSTRAINT
 <a id="FST_ERR_ASYNC_CONSTRAINT"></a>
 
-The router received error when using asynchronous constraints.
+The router received an error when using asynchronous constraints.
 
 #### FST_ERR_DEFAULT_ROUTE_INVALID_TYPE
 <a id="FST_ERR_DEFAULT_ROUTE_INVALID_TYPE"></a>

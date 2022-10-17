@@ -734,9 +734,9 @@ fastify.route({
 
 #### Asynchronous Custom Constraints
 
-You can provide your custom constraints and the `constraint` criteria can be
-fetched from other source, for example `database`. Usage of asynchronous custom
-constraint should place at the last resort since it impacts the router
+Custom constraints can be provided and the `constraint` criteria can be
+fetched from another source such as `database`. The use of asynchronous
+custom constraints should be a last resort as it impacts router
 performance.
 
 ```js

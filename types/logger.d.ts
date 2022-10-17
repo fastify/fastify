@@ -21,7 +21,6 @@ export type ChildLoggerOptions = pino.ChildLoggerOptions
 
 export type FastifyBaseLogger = pino.BaseLogger & {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
-  bindings(): Bindings
   setBindings(bindings: Bindings): void
 }
 

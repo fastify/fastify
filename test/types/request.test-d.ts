@@ -143,7 +143,6 @@ const customLogger: CustomLoggerInterface = {
   debug: () => { },
   foo: () => { }, // custom severity logger method
   child: () => customLogger as pino.Logger<never>,
-  bindings: () => ({}) as pino.Bindings,
   setBindings: () => { }
 }
 

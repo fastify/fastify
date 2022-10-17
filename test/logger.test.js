@@ -1691,7 +1691,13 @@ test('should not throw error when serializing custom req', t => {
 test('set bindings', t => {
   t.plan(1)
 
-  const fastify = Fastify({ logger: { level: 'info' } })
-  fastify.log.setBindings({ a: 'b' })
-  t.same(fastify.log.bindings(), { a: 'b' })
+  const stream = split(JSON.parse)
+  stream.once('data', info => {
+    t.same(info.hello, 'world')
+  })
+
+  const fastify = Fastify({ logger: { level: 'info', stream } })
+
+  fastify.log.setBindings({ hello: 'world' })
+  fastify.log.info('hello world')
 })

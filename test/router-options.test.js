@@ -2,7 +2,10 @@
 
 const test = require('tap').test
 const Fastify = require('../')
-const { FST_ERR_BAD_URL } = require('../lib/errors')
+const {
+  FST_ERR_BAD_URL,
+  FST_ERR_ASYNC_CONSTRAINT
+} = require('../lib/errors')
 
 test('Should honor ignoreTrailingSlash option', async t => {
   t.plan(4)
@@ -137,7 +140,7 @@ test('Should set is404 flag for unmatched paths', t => {
   })
 })
 
-test('Should honor frameworkErrors option', t => {
+test('Should honor frameworkErrors option - FST_ERR_BAD_URL', t => {
   t.plan(3)
   const fastify = Fastify({
     frameworkErrors: function (err, req, res) {
@@ -162,6 +165,57 @@ test('Should honor frameworkErrors option', t => {
     (err, res) => {
       t.error(err)
       t.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+    }
+  )
+})
+
+test('Should honor frameworkErrors option - FST_ERR_ASYNC_CONSTRAINT', t => {
+  t.plan(3)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(Error('kaboom'))
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_ASYNC_CONSTRAINT) {
+        t.ok(true)
+      } else {
+        t.fail()
+      }
+      res.send(`${err.message} - ${err.code}`)
+    },
+    constraints: { secret: constraint }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.body, 'Unexpected error from async constraint - FST_ERR_ASYNC_CONSTRAINT')
     }
   )
 })

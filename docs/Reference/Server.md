@@ -731,6 +731,9 @@ const fastify = require('fastify')({
     if (error instanceof FST_ERR_BAD_URL) {
       res.code(400)
       return res.send("Provided url is not valid")
+    } else if(error instanceof FST_ERR_ASYNC_CONSTRAINT) {
+      res.code(400)
+      return res.send("Provided header is not valid")
     } else {
       res.send(err)
     }
@@ -1367,7 +1370,7 @@ const fastify = Fastify({
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
         // See [#schema-serializer](./Validation-and-Serialization.md#schema-serializer) for details.
-        return function serializerCompiler ({ schema, method, url, httpStatus }) {
+        return function serializerCompiler ({ schema, method, url, httpStatus, contentType }) {
           return data => JSON.stringify(data)
         }
       }

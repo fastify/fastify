@@ -449,9 +449,9 @@ fastify.addHook('onRoute', (routeOptions) => {
 })
 ```
 
-If you want to add more routes within an onRoute hook, you have to tag these
-routes properly. If you don't, the hook will run into an infinite loop. The
-recommended approach is shown below.
+To add more routes within an onRoute hook, the routes must
+be tagged correctly. The hook will run into an infinite loop if
+not tagged. The recommended approach is shown below.
 
 ```js
 const kRouteAlreadyProcessed = Symbol('route-already-processed')

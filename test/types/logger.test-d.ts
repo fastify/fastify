@@ -10,6 +10,7 @@ import fastify, {
 import { Server, IncomingMessage, ServerResponse } from 'http'
 import * as fs from 'fs'
 import P from 'pino'
+import { DefaultFastifyLogger } from '../../types/logger'
 
 expectType<FastifyLoggerInstance>(fastify().log)
 
@@ -24,7 +25,7 @@ class Foo {}
   expectType<void>(fastify<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>().log[logLevel as LogLevel](new Foo()))
 })
 
-interface CustomLogger extends FastifyBaseLogger {
+interface CustomLogger extends DefaultFastifyLogger {
   customMethod(msg: string, ...args: unknown[]): void;
 }
 
@@ -45,6 +46,7 @@ class CustomLoggerImpl implements CustomLogger {
   silent (...args: unknown[]) { }
 
   child (bindings: P.Bindings, options?: P.ChildLoggerOptions): CustomLoggerImpl { return new CustomLoggerImpl() }
+  setBindings (bindings: P.Bindings): void { }
 }
 
 const customLogger = new CustomLoggerImpl()

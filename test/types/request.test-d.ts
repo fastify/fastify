@@ -142,7 +142,8 @@ const customLogger: CustomLoggerInterface = {
   trace: () => { },
   debug: () => { },
   foo: () => { }, // custom severity logger method
-  child: () => customLogger as pino.Logger<never>
+  child: () => customLogger as pino.Logger<never>,
+  setBindings: () => { }
 }
 
 const serverWithCustomLogger = fastify({ logger: customLogger })

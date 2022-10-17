@@ -611,6 +611,44 @@ const schema = {
 
 fastify.post('/the/url', { schema }, handler)
 ```
+You can even have a specific response schema for different content types.
+For example:
+```js
+const schema = {
+      response: {
+        200: {
+          description: 'Response schema that support different content types'
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            },
+            'application/vnd.v1+json': {
+              schema: {
+                type: 'array',
+                items: { $ref: 'test' }
+              }
+            }
+          }
+        },
+        '3xx': {
+          content: {
+            'application/vnd.v2+json': {
+              schema: {
+                fullName: { type: 'string' },
+                phone: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+
+fastify.post('/url', { schema }, handler)
+```
 
 #### Serializer Compiler
 <a id="schema-serializer"></a>
@@ -621,7 +659,7 @@ change the default serialization method by providing a function to serialize
 every route where you do.
 
 ```js
-fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+fastify.setSerializerCompiler(({ schema, method, url, httpStatus, contentType }) => {
   return data => JSON.stringify(data)
 })
 

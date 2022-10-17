@@ -135,9 +135,9 @@ async function utilityDecorator (fastify, opts) {
   })
 }
 
-fastify.register(fp(greetDecorator, { name: 'greet' }))
-fastify.register(fp(hiDecorator, { name: 'hi' }))
-fastify.register(fp(utilityDecorator, { dependencies: ['greet', 'hi'] }))
+fastify.register(fastifyPlugin(greetDecorator, { name: 'greet' }))
+fastify.register(fastifyPlugin(hiDecorator, { name: 'hi' }))
+fastify.register(fastifyPlugin(utilityDecorator, { dependencies: ['greet', 'hi'] }))
 
 fastify.get('/', function (req, reply) {
   // Response: {"hello":"greet message | hi message"}

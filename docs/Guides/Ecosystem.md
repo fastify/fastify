@@ -155,6 +155,10 @@ section.
 - [`@ethicdevs/fastify-git-server`](https://github.com/EthicDevs/fastify-git-server)
   A plugin to easily create git server and make one/many Git repositories available
   for clone/fetch/push through the standard `git` (over http) commands.
+- [`@fastify-userland/request-id`](https://github.com/fastify-userland/request-id)
+  Fastify Request ID Plugin
+- [`@fastify-userland/typeorm-query-runner`](https://github.com/fastify-userland/typeorm-query-runner)
+  Fastify typeorm QueryRunner plugin
 - [`@gquittet/graceful-server`](https://github.com/gquittet/graceful-server)
   Tiny (~5k), Fast, KISS, and dependency-free Node.JS library to make your
   Fastify API graceful.
@@ -606,6 +610,8 @@ section.
   and updated Typeorm plugin for use with Fastify.
 
 #### [Community Tools](#community-tools)
+- [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
+  Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
   generator by directory structure.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to

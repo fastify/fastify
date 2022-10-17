@@ -1687,3 +1687,11 @@ test('should not throw error when serializing custom req', t => {
 
   t.same(lines[0].req, {})
 })
+
+test('set bindings', t => {
+  t.plan(1)
+
+  const fastify = Fastify({ logger: { level: 'info' } })
+  fastify.log.setBindings({ a: 'b' })
+  t.same(fastify.log.bindings(), { a: 'b' })
+})

@@ -21,6 +21,8 @@ export type ChildLoggerOptions = pino.ChildLoggerOptions
 
 export type FastifyBaseLogger = pino.BaseLogger & {
   child(bindings: Bindings, options?: ChildLoggerOptions): FastifyBaseLogger
+  bindings(): Bindings
+  setBindings(bindings: Bindings): void
 }
 
 // TODO delete FastifyBaseLogger in the next major release. It seems that it is enough to have only FastifyBaseLogger.

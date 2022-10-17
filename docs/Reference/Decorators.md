@@ -114,10 +114,39 @@ fastify.get('/', async function (request, reply) {
 The `dependencies` parameter is an optional list of decorators that the
 decorator being defined relies upon. This list is simply a list of string names
 of other decorators. In the following example, the "utility" decorator depends
-upon "greet" and "log" decorators:
+upon "greet" and "hi" decorators:
 
 ```js
-fastify.decorate('utility', fn, ['greet', 'log'])
+async function greetDecorator (fastify, opts) {
+  fastify.decorate('greet', () => {
+    return 'greet message'
+  })
+}
+
+async function hiDecorator (fastify, opts) {
+  fastify.decorate('hi', () => {
+    return 'hi message'
+  })
+}
+
+async function utilityDecorator (fastify, opts) {
+  fastify.decorate('utility', () => {
+    return `${fastify.greet()} | ${fastify.hi()}`
+  })
+}
+
+fastify.register(fastifyPlugin(greetDecorator, { name: 'greet' }))
+fastify.register(fastifyPlugin(hiDecorator, { name: 'hi' }))
+fastify.register(fastifyPlugin(utilityDecorator, { dependencies: ['greet', 'hi'] }))
+
+fastify.get('/', function (req, reply) {
+  // Response: {"hello":"greet message | hi message"}
+  reply.send({ hello: fastify.utility() })
+})
+
+fastify.listen({ port: 3000 }, (err, address) => {
+  if (err) throw err
+})
 ```
 
 Note: using an arrow function will break the binding of `this` to the

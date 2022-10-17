@@ -117,13 +117,6 @@ of other decorators. In the following example, the "utility" decorator depends
 upon "greet" and "hi" decorators:
 
 ```js
-'use strict'
-
-const fastify = require('../fastify')({
-  logger: false
-})
-const fp = require('fastify-plugin')
-
 async function greetDecorator (fastify, opts) {
   fastify.decorate('greet', () => {
     return 'greet message'

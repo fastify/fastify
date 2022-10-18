@@ -1,5 +1,5 @@
 import { ErrorObject } from '@fastify/ajv-compiler'
-import { DefaultFastifyLogger, FastifyBaseLogger } from './logger'
+import { FastifyBaseLogger } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
@@ -30,7 +30,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   SchemaCompiler extends FastifySchema = FastifySchema,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
   ContextConfig = ContextConfigDefault,
-  Logger extends FastifyBaseLogger = DefaultFastifyLogger,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   RequestType extends FastifyRequestType = ResolveFastifyRequestType<TypeProvider, SchemaCompiler, RouteGeneric>
   // ^ Temporary Note: RequestType has been re-ordered to be the last argument in
   //   generic list. This generic argument is now considered optional as it can be

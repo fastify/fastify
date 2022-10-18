@@ -488,11 +488,11 @@ console.log(newSerialize === serialize) // false
 ### .serializeInput(data, [schema | httpStatus], [httpStatus], [contentType])
 <a id="serializeinput"></a>
 
-This function will serialize the input data based on the provided schema,
-or http status code. If both provided, the `httpStatus` will take presedence.
+This function will serialize the input data based on the provided schema
+or HTTP status code. If both are provided the `httpStatus` will take precedence.
 
-If there is not a serialization function for a given `schema`, a new serialization
-function will be compiled forwarding the `httpStatus`, and the `contentType` if provided.
+If there is not a serialization function for a given `schema` a new serialization
+function will be compiled, forwarding the `httpStatus` and `contentType` if provided.
 
 ```js
 reply

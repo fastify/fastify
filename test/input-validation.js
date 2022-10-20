@@ -1,4 +1,3 @@
-
 'use strict'
 
 const sget = require('simple-get').concat

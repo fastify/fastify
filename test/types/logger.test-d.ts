@@ -123,35 +123,6 @@ const serverAutoInferredFileOption = fastify({
 
 expectType<FastifyBaseLogger>(serverAutoInferredFileOption.log)
 
-const serverAutoInferredPinoPrettyBooleanOption = fastify({
-  logger: {
-    prettyPrint: true
-  }
-})
-
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyBooleanOption.log)
-
-const serverAutoInferredPinoPrettyObjectOption = fastify({
-  logger: {
-    prettyPrint: {
-      translateTime: true,
-      levelFirst: false,
-      messageKey: 'msg',
-      timestampKey: 'time',
-      messageFormat: false,
-      colorize: true,
-      crlf: false,
-      errorLikeObjectKeys: ['err', 'error'],
-      errorProps: '',
-      search: 'foo == `bar`',
-      ignore: 'pid,hostname',
-      suppressFlushSyncWarning: true
-    }
-  }
-})
-
-expectType<FastifyBaseLogger>(serverAutoInferredPinoPrettyObjectOption.log)
-
 const serverAutoInferredSerializerObjectOption = fastify({
   logger: {
     serializers: {
@@ -200,9 +171,6 @@ const passPinoOption = fastify({
     redact: ['custom'],
     messageKey: 'msg',
     nestedKey: 'nested',
-    prettyPrint: {
-
-    },
     enabled: true
   }
 })

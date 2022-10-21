@@ -6,6 +6,7 @@ const t = require('tap')
 const test = t.test
 const Fastify = require('..')
 const { Client } = require('undici')
+const semver = require('semver')
 
 test('close callback', t => {
   t.plan(4)
@@ -202,7 +203,8 @@ test('Should return error while closing (callback) - injection', t => {
   })
 })
 
-t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false', t => {
+const isV19plus = semver.satisfies(process.version, '>= v19.0.0')
+t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
   const fastify = Fastify({
     return503OnClosing: false,
     forceCloseConnections: false
@@ -235,6 +237,45 @@ t.test('Current opened connection should continue to work after closing and retu
             t.end()
           })
         })
+      })
+    })
+  })
+})
+
+t.test('Current opened connection should NOT continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node < v19.x', { skip: !isV19plus }, t => {
+  t.plan(4)
+  const fastify = Fastify({
+    return503OnClosing: false,
+    forceCloseConnections: false
+  })
+
+  fastify.get('/', (req, reply) => {
+    fastify.close()
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const port = fastify.server.address().port
+    const client = net.createConnection({ port }, () => {
+      client.write('GET / HTTP/1.1\r\n\r\n')
+
+      client.on('error', function () {
+        // Dependending on the Operating System
+        // the socket could error or not.
+        // However, it will always be closed.
+      })
+
+      client.on('close', function () {
+        t.pass('close')
+      })
+
+      client.once('data', data => {
+        t.match(data.toString(), /Connection:\s*keep-alive/i)
+        t.match(data.toString(), /200 OK/i)
+
+        client.write('GET / HTTP/1.1\r\n\r\n')
       })
     })
   })

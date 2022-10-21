@@ -261,8 +261,14 @@ t.test('Current opened connection should NOT continue to work after closing and 
     const client = net.createConnection({ port }, () => {
       client.write('GET / HTTP/1.1\r\n\r\n')
 
-      client.on('error', function (err) {
-        t.ok(err)
+      client.on('error', function () {
+        // Dependending on the Operating System
+        // the socket could error or not.
+        // However, it will always be closed.
+      })
+
+      client.on('close', function () {
+        t.pass('close')
       })
 
       client.once('data', data => {

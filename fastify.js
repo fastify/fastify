@@ -410,11 +410,12 @@ function fastify (options) {
 
         /* istanbul ignore next: Cannot test this without Node.js core support */
         if (forceCloseConnections === 'idle') {
+          // Not needed in Node 19
           instance.server.closeIdleConnections()
         /* istanbul ignore next: Cannot test this without Node.js core support */
         } else if (serverHasCloseAllConnections && forceCloseConnections) {
           instance.server.closeAllConnections()
-        } else {
+        } else if (forceCloseConnections === true) {
           for (const conn of fastify[kKeepAliveConnections]) {
             // We must invoke the destroy method instead of merely unreffing
             // the sockets. If we only unref, then the callback passed to

@@ -585,33 +585,37 @@ test('preHandler respond with a stream', t => {
 
 test('Should log a warning if is an async function with `done`', t => {
   t.test('3 arguments', t => {
-    t.plan(1)
+    t.plan(2)
     const fastify = Fastify()
 
     try {
       fastify.addHook('onRequest', async (req, reply, done) => {})
     } catch (e) {
+      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
       t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })
 
   t.test('4 arguments', t => {
-    t.plan(3)
+    t.plan(6)
     const fastify = Fastify()
 
     try {
       fastify.addHook('onSend', async (req, reply, payload, done) => {})
     } catch (e) {
+      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
       t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('preSerialization', async (req, reply, payload, done) => {})
     } catch (e) {
+      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
       t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
     try {
       fastify.addHook('onError', async (req, reply, payload, done) => {})
     } catch (e) {
+      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
       t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
     }
   })

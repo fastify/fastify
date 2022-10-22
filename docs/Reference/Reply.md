@@ -311,7 +311,6 @@ reply.code(303).redirect(302, '/home')
 Invokes the custom not found handler. Note that it will only call `preHandler`
 hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 
-
 ```js
 reply.callNotFound()
 ```

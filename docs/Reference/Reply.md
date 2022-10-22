@@ -311,6 +311,11 @@ reply.code(303).redirect(302, '/home')
 Invokes the custom not found handler. Note that it will only call `preHandler`
 hook specified in [`setNotFoundHandler`](./Server.md#set-not-found-handler).
 
+
+> Note: Be aware that some config properties from the request object will be undefined inside the custom not found handler. E.g:
+> request.routerPath, routerMethod and context.config. 
+> This method design goal is to allow calling the common not found route. If you want to return a per-route customized 404 response, you can just do it in the response itself.
+
 ```js
 reply.callNotFound()
 ```

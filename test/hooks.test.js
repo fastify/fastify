@@ -23,7 +23,7 @@ function getUrl (app) {
 }
 
 test('hooks', t => {
-  t.plan(43)
+  t.plan(49)
   const fastify = Fastify({ exposeHeadRoutes: false })
 
   try {
@@ -39,6 +39,22 @@ test('hooks', t => {
     t.pass()
   } catch (e) {
     t.fail()
+  }
+
+  try {
+    fastify.addHook('preHandler', null)
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
+    t.equal(e.message, 'preHandler hook should be a function, instead got null')
+    t.pass()
+  }
+
+  try {
+    fastify.addHook('preParsing')
+  } catch (e) {
+    t.equal(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
+    t.equal(e.message, 'preParsing hook should be a function, instead got undefined')
+    t.pass()
   }
 
   try {

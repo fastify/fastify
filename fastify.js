@@ -566,17 +566,21 @@ function fastify (options) {
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
+    if (fn == null) {
+      throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
+    }
+
     if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else if (name === 'onReady') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     }
 

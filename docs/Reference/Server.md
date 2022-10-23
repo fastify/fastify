@@ -1426,11 +1426,11 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> Note: Be aware that some config properties from the request object will be 
+> Note: Some config properties from the request object will be 
 > undefined inside the custom not found handler. E.g:
-> request.routerPath, routerMethod and context.config. 
-> This method design goal is to allow calling the common not found route. If
-> you want to return a per-route customized 404 response, you can just do it in
+> `request.routerPath`, `routerMethod` and `context.config`. 
+> This method design goal is to allow calling the common not found route.
+> To return a per-route customized 404 response, you can do it in
 > the response itself.
 
 #### setErrorHandler

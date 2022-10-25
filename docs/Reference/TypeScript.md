@@ -843,7 +843,7 @@ const server = fastify()
 Check out the Learn By Example - [Getting Started](#getting-started) example for
 a more detailed http server walkthrough.
 
-###### Example 2: HTTPS sever
+###### Example 2: HTTPS server
 
 1. Create the following imports from `@types/node` and `fastify`
    ```typescript

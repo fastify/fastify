@@ -339,6 +339,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+* [__Simone Busoli__](https://github.com/simoneb),
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited

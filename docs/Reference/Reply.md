@@ -234,6 +234,9 @@ as soon as possible.
 *Note: The header `Transfer-Encoding: chunked` will be added once you use the
 trailer. It is a hard requirement for using trailer in Node.js.*
 
+*Note: Any error passed to `done` callback will be ignored. If you interested
+in the error, you may turn on `debug` level logging.*
+
 ```js
 reply.trailer('server-timing', function() {
   return 'db;dur=53, app;dur=47.2'

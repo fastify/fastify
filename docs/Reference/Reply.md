@@ -235,7 +235,7 @@ as soon as possible.
 trailer. It is a hard requirement for using trailer in Node.js.*
 
 *Note: Any error passed to `done` callback will be ignored. If you interested
-in the error, you may turn on `debug` level logging.*
+in the error, you can turn on `debug` level logging.*
 
 ```js
 reply.trailer('server-timing', function() {

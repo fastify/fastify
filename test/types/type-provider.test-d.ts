@@ -68,7 +68,7 @@ expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'over
 // TypeBox
 // -------------------------------------------------------------------
 
-interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : never }
+interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : unknown }
 
 expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   '/',
@@ -88,11 +88,13 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   }
 ))
 
+expectAssignable<FastifyInstance>(server.withTypeProvider<TypeBoxProvider>())
+
 // -------------------------------------------------------------------
 // JsonSchemaToTs
 // -------------------------------------------------------------------
 
-interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : never }
+interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : unknown }
 
 expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
@@ -114,6 +116,8 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+expectAssignable<FastifyInstance>(server.withTypeProvider<JsonSchemaToTsProvider>())
 
 // -------------------------------------------------------------------
 // Instance Type Remappable

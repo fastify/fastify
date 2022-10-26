@@ -161,6 +161,30 @@ test('send trailers when using async-await', t => {
   })
 })
 
+test('error in trailers should be ignored', t => {
+  t.plan(5)
+
+  const fastify = Fastify()
+
+  fastify.get('/', function (request, reply) {
+    reply.trailer('ETag', function (reply, payload, done) {
+      done('error')
+    })
+    reply.send('')
+  })
+
+  fastify.inject({
+    method: 'GET',
+    url: '/'
+  }, (error, res) => {
+    t.error(error)
+    t.equal(res.statusCode, 200)
+    t.equal(res.headers.trailer, 'etag')
+    t.notHas(res.trailers, 'etag')
+    t.notHas(res.headers, 'content-length')
+  })
+})
+
 test('should be deprecated usage', t => {
   t.plan(5)
 

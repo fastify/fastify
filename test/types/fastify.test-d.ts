@@ -10,7 +10,8 @@ import fastify, {
   InjectOptions, FastifyBaseLogger,
   RouteGenericInterface,
   ValidationResult,
-  FastifyErrorCodes
+  FastifyErrorCodes,
+  FastifyError
 } from '../../fastify'
 import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
@@ -234,6 +235,12 @@ const ajvErrorObject: AjvErrorObject = {
   message: ''
 }
 expectAssignable<ValidationResult>(ajvErrorObject)
+
+expectAssignable<FastifyError['validation']>([ajvErrorObject])
+expectAssignable<FastifyError['validationContext']>('body')
+expectAssignable<FastifyError['validationContext']>('headers')
+expectAssignable<FastifyError['validationContext']>('parameters')
+expectAssignable<FastifyError['validationContext']>('querystring')
 
 const routeGeneric: RouteGenericInterface = {}
 expectType<unknown>(routeGeneric.Body)

@@ -380,7 +380,7 @@ This project is kindly sponsored by:
 Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
 
-This list includes all companies that supports one or more of the team members
+This list includes all companies that support one or more of the team members
 in the maintainance of this project.
 
 ## License

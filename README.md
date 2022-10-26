@@ -374,10 +374,14 @@ in the [OpenJS Foundation](https://openjsf.org/).
 ## Acknowledgements
 
 This project is kindly sponsored by:
-- [nearForm](https://nearform.com)
+- [NearForm](https://nearform.com)
+- [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
+
+This list includes all companies that support one or more of the team members
+in the maintainance of this project.
 
 ## License
 

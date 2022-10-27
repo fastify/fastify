@@ -185,8 +185,8 @@ test('error in trailers should be ignored', t => {
   })
 })
 
-test('should be deprecated usage', t => {
-  t.plan(5)
+test('should emit deprecation warning when using direct return', t => {
+  t.plan(7)
 
   const fastify = Fastify()
 
@@ -196,6 +196,13 @@ test('should be deprecated usage', t => {
     })
     reply.send('')
   })
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifyDeprecation')
+    t.equal(warning.code, 'FSTDEP013')
+  }
+  t.teardown(() => process.removeListener('warning', onWarning))
 
   fastify.inject({
     method: 'GET',

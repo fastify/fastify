@@ -291,12 +291,13 @@ t.test('onReady cannot add lifecycle hooks', t => {
 })
 
 t.test('onReady throw loading error', t => {
-  t.plan(1)
+  t.plan(2)
   const fastify = Fastify()
 
   try {
     fastify.addHook('onReady', async function (done) {})
   } catch (e) {
+    t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
     t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
   }
 })

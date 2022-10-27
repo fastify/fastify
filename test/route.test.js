@@ -1464,3 +1464,32 @@ test('invalid url attribute - non string URL', t => {
     t.equal(error.code, FST_ERR_INVALID_URL().code)
   }
 })
+
+test('exposeHeadRoute should not reuse the same route option', async t => {
+  t.plan(2)
+
+  const fastify = Fastify()
+
+  // we update the onRequest hook in onRoute hook
+  // if we reuse the same route option
+  // that means we will append another function inside the array
+  fastify.addHook('onRoute', function (routeOption) {
+    if (Array.isArray(routeOption.onRequest)) {
+      routeOption.onRequest.push(() => {})
+    } else {
+      routeOption.onRequest = [() => {}]
+    }
+  })
+
+  fastify.addHook('onRoute', function (routeOption) {
+    t.equal(routeOption.onRequest.length, 1)
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/more-coffee',
+    async handler () {
+      return 'hello world'
+    }
+  })
+})

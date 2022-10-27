@@ -68,7 +68,7 @@ expectAssignable(server.withTypeProvider<OverriddenProvider>().get<{ Body: 'over
 // TypeBox
 // -------------------------------------------------------------------
 
-interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : never }
+interface TypeBoxProvider extends FastifyTypeProvider { output: this['input'] extends TSchema ? Static<this['input']> : unknown }
 
 expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   '/',
@@ -88,11 +88,13 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
   }
 ))
 
+expectAssignable<FastifyInstance>(server.withTypeProvider<TypeBoxProvider>())
+
 // -------------------------------------------------------------------
 // JsonSchemaToTs
 // -------------------------------------------------------------------
 
-interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : never }
+interface JsonSchemaToTsProvider extends FastifyTypeProvider { output: this['input'] extends JSONSchema ? FromSchema<this['input']> : unknown }
 
 expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
   '/',
@@ -114,6 +116,8 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     expectType<boolean | undefined>(req.body.z)
   }
 ))
+
+expectAssignable<FastifyInstance>(server.withTypeProvider<JsonSchemaToTsProvider>())
 
 // -------------------------------------------------------------------
 // Instance Type Remappable
@@ -232,6 +236,40 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
 ))
 
 // -------------------------------------------------------------------
+// TypeBox Reply Type (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: Type.String()
+            },
+            'application/json': {
+              schema: Type.Object({
+                msg: Type.String()
+              })
+            }
+          }
+        },
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    res.send('hello')
+    res.send({ msg: 'hello' })
+    res.send({ error: 'error' })
+  }
+))
+
+// -------------------------------------------------------------------
 // TypeBox Reply Type: Non Assignable
 // -------------------------------------------------------------------
 
@@ -242,6 +280,38 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       response: {
         200: Type.String(),
         400: Type.Number(),
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    res.send(false)
+  }
+))
+
+// -------------------------------------------------------------------
+// TypeBox Reply Type: Non Assignable (Different Content-types)
+// -------------------------------------------------------------------
+
+expectError(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: Type.String()
+            },
+            'application/json': {
+              schema: Type.Object({
+                msg: Type.String()
+              })
+            }
+          }
+        },
         500: Type.Object({
           error: Type.String()
         })
@@ -281,6 +351,43 @@ expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
 ))
 
 // -------------------------------------------------------------------
+// TypeBox Reply Return Type (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: Type.String()
+            },
+            'application/json': {
+              schema: Type.Object({
+                msg: Type.String()
+              })
+            }
+          }
+        },
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return { msg: 'hello' }
+      case 3: return { error: 'error' }
+    }
+  }
+))
+
+// -------------------------------------------------------------------
 // TypeBox Reply Return Type: Non Assignable
 // -------------------------------------------------------------------
 
@@ -291,6 +398,38 @@ expectError(server.withTypeProvider<TypeBoxProvider>().get(
       response: {
         200: Type.String(),
         400: Type.Number(),
+        500: Type.Object({
+          error: Type.String()
+        })
+      }
+    }
+  },
+  async (_, res) => {
+    return false
+  }
+))
+
+// -------------------------------------------------------------------
+// TypeBox Reply Return Type: Non Assignable (Different Content-types)
+// -------------------------------------------------------------------
+
+expectError(server.withTypeProvider<TypeBoxProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: Type.String()
+            },
+            'application/json': {
+              schema: Type.Object({
+                msg: Type.String()
+              })
+            }
+          }
+        },
         500: Type.Object({
           error: Type.String()
         })
@@ -325,6 +464,36 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
 ))
 
 // -------------------------------------------------------------------
+// JsonSchemaToTs Reply Type (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  (_, res) => {
+    res.send('hello')
+    res.send({ msg: 'hello' })
+    res.send({ error: 'error' })
+  }
+))
+
+// -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type: Non Assignable
 // -------------------------------------------------------------------
 
@@ -335,6 +504,34 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    res.send(false)
+  }
+))
+
+// -------------------------------------------------------------------
+// JsonSchemaToTs Reply Type: Non Assignable (Different Content-types)
+// -------------------------------------------------------------------
+
+expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
         500: { type: 'object', properties: { error: { type: 'string' } } }
       } as const
     }
@@ -368,6 +565,40 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
     }
   }
 ))
+
+// -------------------------------------------------------------------
+// JsonSchemaToTs Reply Type Return (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    const option = 1 as 1 | 2 | 3
+    switch (option) {
+      case 1: return 'hello'
+      case 2: return { msg: 'hello' }
+      case 3: return { error: 'error' }
+    }
+  }
+))
+
 // -------------------------------------------------------------------
 // JsonSchemaToTs Reply Type Return: Non Assignable
 // -------------------------------------------------------------------
@@ -400,6 +631,34 @@ expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get('/', {
 }))
 
 // -------------------------------------------------------------------
+// JsonSchemaToTs Reply Type Return: Non Assignable (Different Content-types)
+// -------------------------------------------------------------------
+
+expectError(server.withTypeProvider<JsonSchemaToTsProvider>().get(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    return false
+  }
+))
+
+// -------------------------------------------------------------------
 // Reply Type Override
 // -------------------------------------------------------------------
 
@@ -420,6 +679,34 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
 ))
 
 // -------------------------------------------------------------------
+// Reply Type Override (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    res.send(true)
+  }
+))
+
+// -------------------------------------------------------------------
 // Reply Type Return Override
 // -------------------------------------------------------------------
 
@@ -430,6 +717,34 @@ expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: b
       response: {
         200: { type: 'string' },
         400: { type: 'number' },
+        500: { type: 'object', properties: { error: { type: 'string' } } }
+      } as const
+    }
+  },
+  async (_, res) => {
+    return true
+  }
+))
+
+// -------------------------------------------------------------------
+// Reply Type Return Override (Different Content-types)
+// -------------------------------------------------------------------
+
+expectAssignable(server.withTypeProvider<JsonSchemaToTsProvider>().get<{Reply: boolean}>(
+  '/',
+  {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'text/string': {
+              schema: { type: 'string' }
+            },
+            'application/json': {
+              schema: { type: 'object', properties: { msg: { type: 'string' } } }
+            }
+          }
+        },
         500: { type: 'object', properties: { error: { type: 'string' } } }
       } as const
     }

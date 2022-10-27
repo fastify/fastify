@@ -1,10 +1,11 @@
+import { ErrorObject } from '@fastify/ajv-compiler'
 import { FastifyBaseLogger } from './logger'
 import { ContextConfigDefault, RawServerBase, RawServerDefault, RawRequestDefaultExpression, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './utils'
 import { RouteGenericInterface } from './route'
 import { FastifyInstance } from './instance'
 import { FastifyTypeProvider, FastifyTypeProviderDefault, FastifyRequestType, ResolveFastifyRequestType } from './type-provider'
 import { FastifySchema } from './schema'
-import { FastifyContext } from './context'
+import { FastifyContext, FastifyContextConfig } from './context'
 
 type HTTPRequestPart = 'body' | 'query' | 'querystring' | 'params' | 'headers'
 export interface RequestGenericInterface {
@@ -12,6 +13,11 @@ export interface RequestGenericInterface {
   Querystring?: RequestQuerystringDefault;
   Params?: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
+}
+
+export interface ValidationFunction {
+  (input: any): boolean
+  errors?: null | ErrorObject[];
 }
 
 /**
@@ -42,6 +48,8 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   server: FastifyInstance;
   body: RequestType['body'];
   context: FastifyContext<ContextConfig>;
+  routeConfig: FastifyContextConfig & ContextConfig;
+  routeSchema: FastifySchema
 
   /** in order for this to be used the user should ensure they have set the attachValidation option. */
   validationError?: Error & { validation: any; validationContext: string };
@@ -61,9 +69,9 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 
-  getValidationFunction(httpPart: HTTPRequestPart): (input: any) => boolean
-  getValidationFunction(schema: {[key: string]: any}): (input: any) => boolean
-  compileValidationSchema(schema: {[key: string]: any}, httpPart?: HTTPRequestPart): (input: any) => boolean
+  getValidationFunction(httpPart: HTTPRequestPart): ValidationFunction
+  getValidationFunction(schema: {[key: string]: any}): ValidationFunction
+  compileValidationSchema(schema: {[key: string]: any}, httpPart?: HTTPRequestPart): ValidationFunction
   validateInput(input: any, schema: {[key: string]: any}, httpPart?: HTTPRequestPart): boolean
   validateInput(input: any, httpPart?: HTTPRequestPart): boolean
 

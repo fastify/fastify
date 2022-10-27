@@ -4,7 +4,7 @@ const t = require('tap')
 const proxyquire = require('proxyquire')
 const test = t.test
 const { Readable } = require('stream')
-const { kTestInternals } = require('../../lib/symbols')
+const { kTestInternals, kRouteContext } = require('../../lib/symbols')
 const Request = require('../../lib/request')
 const Reply = require('../../lib/reply')
 
@@ -50,7 +50,7 @@ test('rawBody function', t => {
   internals.rawBody(
     request,
     reply,
-    reply.context._parserOptions,
+    reply[kRouteContext]._parserOptions,
     parser,
     done
   )
@@ -103,7 +103,7 @@ test('Should support Webpack and faux modules', t => {
   internals.rawBody(
     request,
     reply,
-    reply.context._parserOptions,
+    reply[kRouteContext]._parserOptions,
     parser,
     done
   )

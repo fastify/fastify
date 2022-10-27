@@ -41,8 +41,8 @@ fastify.route(options)
   need to be in [JSON Schema](https://json-schema.org/) format, check
   [here](./Validation-and-Serialization.md) for more info.
 
-  * `body`: validates the body of the request if it is a POST, PUT, or PATCH
-    method.
+  * `body`: validates the body of the request if it is a POST, PUT, PATCH,
+    TRACE, or SEARCH method.
   * `querystring` or `query`: validates the querystring. This can be a complete
     JSON Schema object, with the property `type` of `object` and `properties`
     object of parameters, or simply the values of what would be contained in the
@@ -94,8 +94,8 @@ fastify.route(options)
   schemas for request validations. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-validator)
   documentation.
-* `serializerCompiler({ { schema, method, url, httpStatus } })`: function that
-  builds schemas for response serialization. See the [Validation and
+* `serializerCompiler({ { schema, method, url, httpStatus, contentType } })`: 
+  function that builds schemas for response serialization. See the [Validation and
   Serialization](./Validation-and-Serialization.md#schema-serializer)
   documentation.
 * `schemaErrorFormatter(errors, dataVar)`: function that formats the errors from
@@ -731,6 +731,60 @@ fastify.route({
   }
 })
 ```
+
+#### Asynchronous Custom Constraints
+
+Custom constraints can be provided and the `constraint` criteria can be
+fetched from another source such as `database`. The use of asynchronous
+custom constraints should be a last resort as it impacts router
+performance.
+
+```js
+function databaseOperation(field, done) {
+  done(null, field)
+}
+
+const secret = {
+  // strategy name for referencing in the route handler `constraints` options
+  name: 'secret',
+  // storage factory for storing routes in the find-my-way route tree
+  storage: function () {
+    let handlers = {}
+    return {
+      get: (type) => { return handlers[type] || null },
+      set: (type, store) => { handlers[type] = store }
+    }
+  },
+  // function to get the value of the constraint from each incoming request
+  deriveConstraint: (req, ctx, done) => {
+    databaseOperation(req.headers['secret'], done)
+  },
+  // optional flag marking if handlers without constraints can match requests that have a value for this constraint
+  mustMatchWhenDerived: true
+}
+```
+
+> ## ⚠  Security Notice
+> When using with asynchronous constraint. It is highly recommend never return error
+> inside the callback. If the error is not preventable, it is recommended to provide
+> a custom `frameworkErrors` handler to deal with it. Otherwise, you route selection
+> may break or expose sensitive information to attackers.
+> 
+> ```js
+> const Fastify = require('fastify')
+> 
+> const fastify = Fastify({
+>   frameworkErrors: function(err, res, res) {
+>     if(err instanceof Fastify.errorCodes.FST_ERR_ASYNC_CONSTRAINT) {
+>       res.code(400)
+>       return res.send("Invalid header provided")
+>     } else {
+>       res.send(err)
+>     }
+>   }
+> })
+> ```
+
 
 ### ⚠  HTTP version check
 

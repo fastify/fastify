@@ -12,7 +12,8 @@ const {
   kReplyHeaders,
   kReplySerializer,
   kReplyIsError,
-  kReplySerializerDefault
+  kReplySerializerDefault,
+  kRouteContext
 } = require('../../lib/symbols')
 const fs = require('fs')
 const path = require('path')
@@ -34,7 +35,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.plan(13)
   const response = { res: 'res' }
   const context = {}
-  const request = { context }
+  const request = { [kRouteContext]: context }
   const reply = new Reply(response, request)
   t.equal(typeof reply, 'object')
   t.equal(typeof reply[kReplyIsError], 'boolean')
@@ -47,7 +48,7 @@ test('Once called, Reply should return an object with methods', t => {
   t.equal(typeof reply.getResponseTime, 'function')
   t.equal(typeof reply[kReplyHeaders], 'object')
   t.same(reply.raw, response)
-  t.equal(reply.context, context)
+  t.equal(reply[kRouteContext], context)
   t.equal(reply.request, request)
 })
 
@@ -76,7 +77,7 @@ test('reply.send will logStream error and destroy the stream', t => {
     warn: () => {}
   }
 
-  const reply = new Reply(response, { context: { onSend: null } }, log)
+  const reply = new Reply(response, { [kRouteContext]: { onSend: null } }, log)
   reply.send(payload)
   payload.destroy(new Error('stream error'))
 
@@ -93,7 +94,7 @@ test('reply.send throw with circular JSON', t => {
     write: () => {},
     end: () => {}
   }
-  const reply = new Reply(response, { context: { onSend: [] } })
+  const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.throws(() => {
     const obj = {}
     obj.obj = obj
@@ -111,7 +112,7 @@ test('reply.send returns itself', t => {
     write: () => {},
     end: () => {}
   }
-  const reply = new Reply(response, { context: { onSend: [] } })
+  const reply = new Reply(response, { [kRouteContext]: { onSend: [] } })
   t.equal(reply.send('hello'), reply)
 })
 
@@ -152,7 +153,7 @@ test('reply.serialize should serialize payload', t => {
   t.plan(1)
   const response = { statusCode: 200 }
   const context = {}
-  const reply = new Reply(response, { context })
+  const reply = new Reply(response, { [kRouteContext]: context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
 })
 
@@ -161,7 +162,7 @@ test('reply.serialize should serialize payload with a custom serializer', t => {
   let customSerializerCalled = false
   const response = { statusCode: 200 }
   const context = {}
-  const reply = new Reply(response, { context })
+  const reply = new Reply(response, { [kRouteContext]: context })
   reply.serializer((x) => (customSerializerCalled = true) && JSON.stringify(x))
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
@@ -172,7 +173,7 @@ test('reply.serialize should serialize payload with a context default serializer
   let customSerializerCalled = false
   const response = { statusCode: 200 }
   const context = { [kReplySerializerDefault]: (x) => (customSerializerCalled = true) && JSON.stringify(x) }
-  const reply = new Reply(response, { context })
+  const reply = new Reply(response, { [kRouteContext]: context })
   t.equal(reply.serialize({ foo: 'bar' }), '{"foo":"bar"}')
   t.equal(customSerializerCalled, true, 'custom serializer not called')
 })

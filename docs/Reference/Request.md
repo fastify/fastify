@@ -35,6 +35,13 @@ Request is a core Fastify object containing the following fields:
 - `connection` - Deprecated, use `socket` instead. The underlying connection of
   the incoming request.
 - `socket` - the underlying connection of the incoming request
+- `context` - A Fastify internal object. You should not use it directly or
+  modify it. It is useful to access one special key:	
+  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
+- `routeSchema` - the scheme definition set for the router that is
+  handling the request
+- `routeConfig` - The route [`config`](./Routes.md#routes-config) 
+  object.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.
@@ -48,9 +55,6 @@ Request is a core Fastify object containing the following fields:
   schema and returns the serialized payload. If the optional
   `httpPart` is provided, the function will use the serializer
   function given for that HTTP Status Code. Defaults to `null`.
-- `context` - A Fastify internal object. You should not use it directly or
-  modify it. It is useful to access one special key:
-  - `context.config` - The route [`config`](./Routes.md#routes-config) object.
 
 ### Headers
 
@@ -98,6 +102,9 @@ it will return a `validation` function that can be used to
 validate diverse inputs. It returns `undefined` if no
 serialization function was found using either of the provided inputs.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
+
 ```js
 const validate = request
                   .getValidationFunction({
@@ -108,13 +115,15 @@ const validate = request
                       } 
                     } 
                   })
-validate({ foo: 'bar' }) // true
+console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
 const validate = request
                   .getValidationFunction('body')
-validate({ foo: 0.5 }) // false
+console.log(validate({ foo: 0.5 })) // false
+console.log(validate.errors) // validation errors
 ```
 
 See [.compilaValidationSchema(schema, [httpStatus])](#compilevalidationschema)
@@ -133,6 +142,8 @@ The optional parameter `httpPart`, if provided, is forwarded directly
 the `ValidationCompiler`, so it can be used to compile the validation
 function if a custom `ValidationCompiler` is provided for the route.
 
+This function has property errors. Errors encountered during the last validation
+are assigned to errors
 
 ```js
 const validate = request
@@ -145,6 +156,7 @@ const validate = request
                     } 
                   })
 console.log(validate({ foo: 'bar' })) // true
+console.log(validate.errors) // null
 
 // or
 
@@ -158,6 +170,7 @@ const validate = request
                     } 
                   }, 200)
 console.log(validate({ hello: 'world' })) // false
+console.log(validate.errors) // validation errors
 ```
 
 Note that you should be careful when using this function, as it will cache

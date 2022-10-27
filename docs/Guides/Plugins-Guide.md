@@ -308,6 +308,50 @@ fastify.get('/plugin2', (request, reply) => {
 ```
 Now your hook will run just for the first route!
 
+An alternative approach is to make use of the [onRoute hook](../Reference/Hooks.md#onroute)
+to customize application routes dynamically from inside the plugin. Every time
+a new route is registered, you can read and modify the route options. For example,
+based on a [route config option](../Reference/Routes.md#routes-options):
+
+```js
+fastify.register((instance, opts, done) => {
+  instance.decorate('util', (request, key, value) => { request[key] = value })
+  
+  function handler(request, reply, done) {
+    instance.util(request, 'timestamp', new Date())
+    done()
+  }
+
+  instance.addHook('onRoute', (routeOptions) => {
+    if (routeOptions.config && routeOptions.config.useUtil === true) {
+      // set or add our handler to the route preHandler hook
+      if (!routeOptions.preHandler) {
+        routeOptions.preHandler = [handler]
+        return
+      }
+      if (Array.isArray(routeOptions.preHandler)) {
+        routeOptions.preHandler.push(handler)
+        return
+      }
+      routeOptions.preHandler = [routeOptions.preHandler, handler]
+    }
+  })
+
+  fastify.get('/plugin1', {config: {useUtil: true}}, (request, reply) => {
+    reply.send(request)
+  })
+
+  fastify.get('/plugin2', (request, reply) => {
+    reply.send(request)
+  })
+
+  done()
+})
+```
+
+This variant becomes extremely useful if you plan to distribute your plugin, as
+described in the next section.
+
 As you probably noticed by now, `request` and `reply` are not the standard
 Nodejs *request* and *response* objects, but Fastify's objects.
 

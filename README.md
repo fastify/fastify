@@ -339,6 +339,8 @@ listed in alphabetical order.
   <https://twitter.com/manueomm>, <https://www.npmjs.com/~eomm>
 * [__Rafael Gonzaga__](https://github.com/rafaelgss),
   <https://twitter.com/_rafaelgss>, <https://www.npmjs.com/~rafaelgss>
+* [__Simone Busoli__](https://github.com/simoneb),
+  <https://twitter.com/simonebu>, <https://www.npmjs.com/~simoneb>  
 
 ### Great Contributors
 Great contributors on a specific area in the Fastify ecosystem will be invited
@@ -374,10 +376,14 @@ in the [OpenJS Foundation](https://openjsf.org/).
 ## Acknowledgements
 
 This project is kindly sponsored by:
-- [nearForm](https://nearform.com)
+- [NearForm](https://nearform.com)
+- [Platformatic](https://platformatic.dev)
 
 Past Sponsors:
 - [LetzDoIt](https://www.letzdoitapp.com/)
+
+This list includes all companies that support one or more of the team members
+in the maintainance of this project.
 
 ## License
 

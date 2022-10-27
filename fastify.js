@@ -48,14 +48,19 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
+const {
+  appendStackTrace,
+  AVVIO_ERRORS_MAP,
+  ...errorCodes
+} = require('./lib/errors')
+
 const { defaultInitOptions } = getSecuredInitialConfig
 
 const {
+  FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
-  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
-  AVVIO_ERRORS_MAP,
-  appendStackTrace
-} = require('./lib/errors')
+  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE
+} = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
 
@@ -178,7 +183,7 @@ function fastify (options) {
   const fourOhFour = build404(options)
 
   // HTTP server and its handler
-  const httpHandler = wrapRouting(router.routing, options)
+  const httpHandler = wrapRouting(router, options)
 
   // we need to set this before calling createServer
   options.http2SessionTimeout = initialConfig.http2SessionTimeout
@@ -405,11 +410,12 @@ function fastify (options) {
 
         /* istanbul ignore next: Cannot test this without Node.js core support */
         if (forceCloseConnections === 'idle') {
+          // Not needed in Node 19
           instance.server.closeIdleConnections()
         /* istanbul ignore next: Cannot test this without Node.js core support */
         } else if (serverHasCloseAllConnections && forceCloseConnections) {
           instance.server.closeAllConnections()
-        } else {
+        } else if (forceCloseConnections === true) {
           for (const conn of fastify[kKeepAliveConnections]) {
             // We must invoke the destroy method instead of merely unreffing
             // the sockets. If we only unref, then the callback passed to
@@ -560,17 +566,21 @@ function fastify (options) {
   function addHook (name, fn) {
     throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
 
+    if (fn == null) {
+      throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
+    }
+
     if (name === 'onSend' || name === 'preSerialization' || name === 'onError' || name === 'preParsing') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 4) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else if (name === 'onReady') {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
-        throw new Error('Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
     }
 
@@ -662,6 +672,30 @@ function fastify (options) {
     res.end(body)
   }
 
+  function buildAsyncConstraintCallback (isAsync, req, res) {
+    if (isAsync === false) return undefined
+    return function onAsyncConstraintError (err) {
+      if (err) {
+        if (frameworkErrors) {
+          const id = genReqId(req)
+          const childLogger = logger.child({ reqId: id })
+
+          childLogger.info({ req }, 'incoming request')
+
+          const request = new Request(id, null, req, null, childLogger, onBadUrlContext)
+          const reply = new Reply(res, request, childLogger)
+          return frameworkErrors(new FST_ERR_ASYNC_CONSTRAINT(), request, reply)
+        }
+        const body = '{"error":"Internal Server Error","message":"Unexpected error from async constraint","statusCode":500}'
+        res.writeHead(500, {
+          'Content-Type': 'application/json',
+          'Content-Length': body.length
+        })
+        res.end(body)
+      }
+    }
+  }
+
   function setNotFoundHandler (opts, handler) {
     throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
 
@@ -718,32 +752,36 @@ function fastify (options) {
     opts.includeMeta = opts.includeHooks ? opts.includeMeta ? supportedHooks.concat(opts.includeMeta) : supportedHooks : opts.includeMeta
     return router.printRoutes(opts)
   }
+
+  function wrapRouting (router, { rewriteUrl, logger }) {
+    let isAsync
+    return function preRouting (req, res) {
+      // only call isAsyncConstraint once
+      if (isAsync === undefined) isAsync = router.isAsyncConstraint()
+      if (rewriteUrl) {
+        const originalUrl = req.url
+        const url = rewriteUrl(req)
+        if (originalUrl !== url) {
+          logger.debug({ originalUrl, url }, 'rewrite url')
+          if (typeof url === 'string') {
+            req.url = url
+          } else {
+            req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
+          }
+        }
+      }
+      router.routing(req, res, buildAsyncConstraintCallback(isAsync, req, res))
+    }
+  }
 }
+
+fastify.errorCodes = errorCodes
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
     throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof schemaErrorFormatter}`)
   } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {
     throw new Error('schemaErrorFormatter option should not be an async function')
-  }
-}
-
-function wrapRouting (httpHandler, { rewriteUrl, logger }) {
-  if (!rewriteUrl) {
-    return httpHandler
-  }
-  return function preRouting (req, res) {
-    const originalUrl = req.url
-    const url = rewriteUrl(req)
-    if (originalUrl !== url) {
-      logger.debug({ originalUrl, url }, 'rewrite url')
-      if (typeof url === 'string') {
-        req.url = url
-      } else {
-        req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
-      }
-    }
-    httpHandler(req, res)
   }
 }
 

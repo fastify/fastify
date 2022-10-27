@@ -6,6 +6,7 @@ const fp = require('fastify-plugin')
 const sget = require('simple-get').concat
 const errors = require('http-errors')
 const split = require('split2')
+const FormData = require('form-data')
 const Fastify = require('..')
 
 function getUrl (app) {
@@ -18,7 +19,7 @@ function getUrl (app) {
 }
 
 test('default 404', t => {
-  t.plan(4)
+  t.plan(5)
 
   const test = t.test
   const fastify = Fastify()
@@ -68,6 +69,23 @@ test('default 404', t => {
         url: getUrl(fastify) + '/notSupported',
         body: {},
         json: true
+      }, (err, response, body) => {
+        t.error(err)
+        t.equal(response.statusCode, 404)
+        t.equal(response.headers['content-type'], 'application/json; charset=utf-8')
+      })
+    })
+
+    test('using post method and multipart/formdata', t => {
+      t.plan(3)
+      const form = FormData()
+      form.append('test-field', 'just some field')
+
+      sget({
+        method: 'POST',
+        url: getUrl(fastify) + '/notSupported',
+        body: form,
+        json: false
       }, (err, response, body) => {
         t.error(err)
         t.equal(response.statusCode, 404)

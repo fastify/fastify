@@ -1,20 +1,13 @@
 'use strict'
 
 const test = require('tap').test
-const sget = require('simple-get')
 const Fastify = require('../')
-const { FST_ERR_BAD_URL } = require('../lib/errors')
+const {
+  FST_ERR_BAD_URL,
+  FST_ERR_ASYNC_CONSTRAINT
+} = require('../lib/errors')
 
-function getUrl (app) {
-  const { address, port } = app.server.address()
-  if (address === '::1') {
-    return `http://[${address}]:${port}`
-  } else {
-    return `http://${address}:${port}`
-  }
-}
-
-test('Should honor ignoreTrailingSlash option', t => {
+test('Should honor ignoreTrailingSlash option', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true
@@ -24,27 +17,16 @@ test('Should honor ignoreTrailingSlash option', t => {
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test/', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test/')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreDuplicateSlashes option', t => {
+test('Should honor ignoreDuplicateSlashes option', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreDuplicateSlashes: true
@@ -54,27 +36,16 @@ test('Should honor ignoreDuplicateSlashes option', t => {
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test/test/test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test/test/test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test//test///test', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test//test///test')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
-test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', t => {
+test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', async t => {
   t.plan(4)
   const fastify = Fastify({
     ignoreTrailingSlash: true,
@@ -85,24 +56,13 @@ test('Should honor ignoreTrailingSlash and ignoreDuplicateSlashes options', t =>
     res.send('test')
   })
 
-  fastify.listen({ port: 0 }, (err) => {
-    t.teardown(() => { fastify.close() })
-    if (err) t.threw(err)
+  let res = await fastify.inject('/test/test/test/')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 
-    const baseUrl = getUrl(fastify)
-
-    sget.concat(baseUrl + '/test/test/test/', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-
-    sget.concat(baseUrl + '/test//test///test//', (err, res, data) => {
-      if (err) t.threw(err)
-      t.equal(res.statusCode, 200)
-      t.equal(data.toString(), 'test')
-    })
-  })
+  res = await fastify.inject('/test//test///test//')
+  t.equal(res.statusCode, 200)
+  t.equal(res.payload.toString(), 'test')
 })
 
 test('Should honor maxParamLength option', t => {
@@ -131,12 +91,22 @@ test('Should honor maxParamLength option', t => {
 })
 
 test('Should expose router options via getters on request and reply', t => {
-  t.plan(7)
+  t.plan(10)
   const fastify = Fastify()
+  const expectedSchema = {
+    params: {
+      id: { type: 'integer' }
+    }
+  }
 
-  fastify.get('/test/:id', (req, reply) => {
+  fastify.get('/test/:id', {
+    schema: expectedSchema
+  }, (req, reply) => {
     t.equal(reply.context.config.url, '/test/:id')
     t.equal(reply.context.config.method, 'GET')
+    t.equal(req.routeConfig.url, '/test/:id')
+    t.equal(req.routeConfig.method, 'GET')
+    t.same(req.routeSchema, expectedSchema)
     t.equal(req.routerPath, '/test/:id')
     t.equal(req.routerMethod, 'GET')
     t.equal(req.is404, false)
@@ -170,7 +140,7 @@ test('Should set is404 flag for unmatched paths', t => {
   })
 })
 
-test('Should honor frameworkErrors option', t => {
+test('Should honor frameworkErrors option - FST_ERR_BAD_URL', t => {
   t.plan(3)
   const fastify = Fastify({
     frameworkErrors: function (err, req, res) {
@@ -195,6 +165,57 @@ test('Should honor frameworkErrors option', t => {
     (err, res) => {
       t.error(err)
       t.equal(res.body, '\'/test/%world\' is not a valid url component - FST_ERR_BAD_URL')
+    }
+  )
+})
+
+test('Should honor frameworkErrors option - FST_ERR_ASYNC_CONSTRAINT', t => {
+  t.plan(3)
+
+  const constraint = {
+    name: 'secret',
+    storage: function () {
+      const secrets = {}
+      return {
+        get: (secret) => { return secrets[secret] || null },
+        set: (secret, store) => { secrets[secret] = store }
+      }
+    },
+    deriveConstraint: (req, ctx, done) => {
+      done(Error('kaboom'))
+    },
+    validate () { return true }
+  }
+
+  const fastify = Fastify({
+    frameworkErrors: function (err, req, res) {
+      if (err instanceof FST_ERR_ASYNC_CONSTRAINT) {
+        t.ok(true)
+      } else {
+        t.fail()
+      }
+      res.send(`${err.message} - ${err.code}`)
+    },
+    constraints: { secret: constraint }
+  })
+
+  fastify.route({
+    method: 'GET',
+    url: '/',
+    constraints: { secret: 'alpha' },
+    handler: (req, reply) => {
+      reply.send({ hello: 'from alpha' })
+    }
+  })
+
+  fastify.inject(
+    {
+      method: 'GET',
+      url: '/'
+    },
+    (err, res) => {
+      t.error(err)
+      t.equal(res.body, 'Unexpected error from async constraint - FST_ERR_ASYNC_CONSTRAINT')
     }
   )
 })

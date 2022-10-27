@@ -731,6 +731,9 @@ const fastify = require('fastify')({
     if (error instanceof FST_ERR_BAD_URL) {
       res.code(400)
       return res.send("Provided url is not valid")
+    } else if(error instanceof FST_ERR_ASYNC_CONSTRAINT) {
+      res.code(400)
+      return res.send("Provided header is not valid")
     } else {
       res.send(err)
     }
@@ -1367,7 +1370,7 @@ const fastify = Fastify({
       buildSerializer: function factory (externalSchemas, serializerOptsServerOption) {
         // This factory function must return a schema serializer compiler.
         // See [#schema-serializer](./Validation-and-Serialization.md#schema-serializer) for details.
-        return function serializerCompiler ({ schema, method, url, httpStatus }) {
+        return function serializerCompiler ({ schema, method, url, httpStatus, contentType }) {
           return data => JSON.stringify(data)
         }
       }
@@ -1422,6 +1425,13 @@ plugins are registered. If you would like to augment the behavior of the default
 404 handler, for example with plugins, you can call setNotFoundHandler with no
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
+
+> Note: Some config properties from the request object will be 
+> undefined inside the custom not found handler. E.g:
+> `request.routerPath`, `routerMethod` and `context.config`. 
+> This method design goal is to allow calling the common not found route.
+> To return a per-route customized 404 response, you can do it in
+> the response itself.
 
 #### setErrorHandler
 <a id="set-error-handler"></a>

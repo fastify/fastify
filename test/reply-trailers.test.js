@@ -5,7 +5,8 @@ const test = t.test
 const Fastify = require('..')
 const { Readable } = require('stream')
 const { createHash } = require('crypto')
-const { setTimeout: sleep } = require('timers/promises')
+const { promisify } = require('util')
+const sleep = promisify(setTimeout)
 
 test('send trailers when payload is empty string', t => {
   t.plan(5)

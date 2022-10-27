@@ -234,8 +234,8 @@ as soon as possible.
 *Note: The header `Transfer-Encoding: chunked` will be added once you use the
 trailer. It is a hard requirement for using trailer in Node.js.*
 
-*Note: Currently, the computation function only supports synchronous function.
-That means `async-await` and `promise` are not supported.*
+*Note: Any error passed to `done` callback will be ignored. If you interested
+in the error, you can turn on `debug` level logging.*
 
 ```js
 reply.trailer('server-timing', function() {
@@ -246,7 +246,15 @@ const { createHash } = require('crypto')
 // trailer function also recieve two argument
 // @param {object} reply fastify reply
 // @param {string|Buffer|null} payload payload that already sent, note that it will be null when stream is sent
-reply.trailer('content-md5', function(reply, payload) {
+// @param {function} done callback to set trailer value
+reply.trailer('content-md5', function(reply, payload, done) {
+  const hash = createHash('md5')
+  hash.update(payload)
+  done(null, hash.disgest('hex'))
+})
+
+// when you prefer async-await
+reply.trailer('content-md5', async function(reply, payload) {
   const hash = createHash('md5')
   hash.update(payload)
   return hash.disgest('hex')

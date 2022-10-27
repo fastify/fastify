@@ -176,6 +176,7 @@
     "@fastify/fast-json-stringify-compiler": "^4.1.0",
     "abstract-logging": "^2.0.1",
     "avvio": "^8.2.0",
+    "cloneable-readable": "^3.0.0",
     "find-my-way": "^7.3.0",
     "light-my-request": "^5.6.1",
     "pino": "^8.5.0",

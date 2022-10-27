@@ -111,29 +111,76 @@ test('send trailers when payload is json', t => {
 })
 
 test('send trailers when payload is stream', t => {
-  t.plan(7)
+  t.plan(2)
 
-  const fastify = Fastify()
+  t.test('single trailers', t => {
+    t.plan(7)
 
-  fastify.get('/', function (request, reply) {
-    reply.trailer('ETag', function (reply, payload, done) {
-      t.same(payload, null)
-      done(null, 'custom-etag')
+    const fastify = Fastify()
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        t.same(typeof payload.pipe === 'function', true)
+        done(null, 'custom-etag')
+      })
+      const stream = Readable.from([JSON.stringify({ hello: 'world' })])
+      reply.send(stream)
     })
-    const stream = Readable.from([JSON.stringify({ hello: 'world' })])
-    reply.send(stream)
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['transfer-encoding'], 'chunked')
+      t.equal(res.headers.trailer, 'etag')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.notHas(res.headers, 'content-length')
+    })
   })
 
-  fastify.inject({
-    method: 'GET',
-    url: '/'
-  }, (error, res) => {
-    t.error(error)
-    t.equal(res.statusCode, 200)
-    t.equal(res.headers['transfer-encoding'], 'chunked')
-    t.equal(res.headers.trailer, 'etag')
-    t.equal(res.trailers.etag, 'custom-etag')
-    t.notHas(res.headers, 'content-length')
+  t.test('multiple trailers', t => {
+    t.plan(9)
+
+    const fastify = Fastify()
+    const data = JSON.stringify({ hello: 'world' })
+    const hash = createHash('md5')
+    hash.update(data)
+    const md5 = hash.digest('hex')
+
+    fastify.get('/', function (request, reply) {
+      reply.trailer('ETag', function (reply, payload, done) {
+        t.same(typeof payload.pipe === 'function', true)
+        payload.on('end', () => {
+          done(null, 'custom-etag')
+        })
+      })
+      reply.trailer('Content-MD5', function (reply, payload, done) {
+        t.same(typeof payload.pipe === 'function', true)
+        const hash = createHash('md5')
+        payload.pipe(hash)
+        payload.on('end', () => {
+          hash.end()
+          done(null, hash.read().toString('hex'))
+        })
+      })
+      const stream = Readable.from([data])
+      reply.send(stream)
+    })
+
+    fastify.inject({
+      method: 'GET',
+      url: '/'
+    }, (error, res) => {
+      t.error(error)
+      t.equal(res.statusCode, 200)
+      t.equal(res.headers['transfer-encoding'], 'chunked')
+      t.equal(res.headers.trailer, 'etag content-md5')
+      t.equal(res.trailers.etag, 'custom-etag')
+      t.equal(res.trailers['content-md5'], md5)
+      t.notHas(res.headers, 'content-length')
+    })
   })
 })
 

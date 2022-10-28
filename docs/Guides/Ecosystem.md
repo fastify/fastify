@@ -608,6 +608,7 @@ section.
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
+- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes) A simple plugin for Fastify list all available routes.
 
 #### [Community Tools](#community-tools)
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)

@@ -378,6 +378,7 @@ section.
   Fastify plugin to parse request language.
 - [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
   Lightweight cache plugin
+- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes) A simple plugin for Fastify list all available routes.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
@@ -608,7 +609,6 @@ section.
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes) A simple plugin for Fastify list all available routes.
 
 #### [Community Tools](#community-tools)
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)

@@ -318,10 +318,10 @@ the necessary performance tests.
 That said, you may also consider the following as a rule of a thumb:
 
 * In order to have the lowest possible latency, 2 vCPU are recommended per app 
-instance (e.g., a k8s pod). The second vCPU will mostly be used by the garbage collector (GC) and libuv
-threadpool. This will minimize the latency for your users, as well as the
-memory usage, as the GC will be run more frequently. Also, the main thread won't
-have to stop to let the GC run.
+instance (e.g., a k8s pod). The second vCPU will mostly be used by the 
+garbage collector (GC) and libuv threadpool. This will minimize the latency 
+for your users, as well as the memory usage, as the GC will be run more
+frequently. Also, the main thread won't have to stop to let the GC run.
 
 * In order to optimize for throughput (handling the largest possible amount of
 requests per second per vCPU), consider using smaller amount of vCPUs per app 

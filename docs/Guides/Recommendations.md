@@ -304,8 +304,16 @@ readinessProbe:
 ## Capacity planning for production
 <a id="capacity"></a>
 
-In order to rightsize your fastify application deployment in production, the 
-following considerations need to be taken into account:
+In order to rightsize your fastify application deployment in production, 
+you are highly recommended to perform your own measurements against 
+different configurations of the production environment 
+(2 vCPU, 1 vCPU, fractional parts of vCPU).
+
+You can use such tools as [k6](https://github.com/grafana/k6) 
+or [autocannon](https://github.com/mcollina/autocannon) for conducting
+the necessary performance tests.
+
+That said, you may also consider the following as a rule of a thumb:
 
 * In order to have the lowest possible latency, 2 vCPU are recommended per app 
 instance (k8s pod). The second vCPU will mostly be used by the GC and libuv

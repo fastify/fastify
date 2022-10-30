@@ -8,7 +8,8 @@ This document contains a set of recommendations when using Fastify.
   - [HAProxy](#haproxy)
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
-
+- [Kubernetes](#kubernetes)
+- [Capacity planning for production](#capacity)
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
 
@@ -298,3 +299,17 @@ readinessProbe:
     timeoutSeconds: 3
     successThreshold: 1
     failureThreshold: 5
+```
+
+## Capacity planning for production
+<a id="capacity"></a>
+
+In order to rightsize your fastify application deployment in production, the following considerations need to be taken into account:
+
+* In order to have the lowest possible latency, 2 vCPU are recommended per app instance (k8s pod). The second vCPU will mostly be used by the GC and libuv threadpool. This will minimize the latency for your users, as well as the memory usage, as the GC will be run more frequently. The main thread won't have to stop to let the GC run.
+
+* In order to optimize for throughput (handling the largest possible amount of requests per second per vCPU), consider using smaller amount of vCPUs per app instance. It is totally fine to run Node.js application with 1 vCPU.
+
+* You may experiment with even smaller amount of vCPU, which may provide even better throughput in certain use-cases. There are reports of e. g. API gateway solutions working well with 100m-200m vCPU in Kubernetes.
+
+See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8) in order to understand the workings of Node.js in greater detail and make a better determination about what your specific application needs.

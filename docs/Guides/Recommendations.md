@@ -9,7 +9,7 @@ This document contains a set of recommendations when using Fastify.
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
 - [Kubernetes](#kubernetes)
-- [Capacity planning for production](#capacity)
+- [Capacity Planning For Production](#capacity)
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
 

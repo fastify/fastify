@@ -304,10 +304,12 @@ readinessProbe:
 ## Capacity Planning For Production
 <a id="capacity"></a>
 
-In order to rightsize your fastify application deployment in production, 
+In order to rightsize your Fastify application deployment in production, 
 you are highly recommended to perform your own measurements against 
-different configurations of the production environment 
-(2 vCPU, 1 vCPU, fractional parts of vCPU).
+different configurations of the production environment, which may
+use real CPU cores, virtual CPU cores (vCPU), or even fractional
+vCPU cores. We will use the term vCPU throughout this
+recommendation to represent any CPU type.
 
 You can use such tools as [k6](https://github.com/grafana/k6) 
 or [autocannon](https://github.com/mcollina/autocannon) for conducting

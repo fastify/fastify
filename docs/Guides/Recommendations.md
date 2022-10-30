@@ -301,7 +301,7 @@ readinessProbe:
     failureThreshold: 5
 ```
 
-## Capacity planning for production
+## Capacity Planning For Production
 <a id="capacity"></a>
 
 In order to rightsize your fastify application deployment in production, 

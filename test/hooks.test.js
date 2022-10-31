@@ -3343,7 +3343,7 @@ test('registering invalid hooks should throw an error', async t => {
         return 'hello world'
       }
     })
-  }, new Error('onRequest hook should be a function, instead got null'))
+  }, new Error('onRequest hook should be a function, instead got [object Null]'))
 
   // undefined is ok
   fastify.route({

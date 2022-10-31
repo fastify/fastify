@@ -3332,7 +3332,7 @@ test('registering invalid hooks should throw an error', async t => {
         return 'hello world'
       }
     })
-  }, new Error('onRequest hook should be a function, instead got undefined'))
+  }, new Error('onRequest hook should be a function, instead got [object Undefined]'))
 
   t.throws(() => {
     fastify.route({
@@ -3343,7 +3343,7 @@ test('registering invalid hooks should throw an error', async t => {
         return 'hello world'
       }
     })
-  }, new Error('onRequest hook should be a function, instead got object'))
+  }, new Error('onRequest hook should be a function, instead got [object Null]'))
 
   // undefined is ok
   fastify.route({
@@ -3363,5 +3363,5 @@ test('registering invalid hooks should throw an error', async t => {
     fastify.get('/', function (request, reply) {
       reply.send('hello world')
     })
-  }, new Error('onSend hook should be a function, instead got undefined'))
+  }, new Error('onSend hook should be a function, instead got [object Undefined]'))
 })

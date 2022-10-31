@@ -78,6 +78,6 @@ test('should throw on wrong parameters', t => {
     t.fail()
   } catch (e) {
     t.equal(e.code, 'FST_ERR_HOOK_INVALID_HANDLER')
-    t.equal(e.message, 'onSend hook should be a function, instead got object')
+    t.equal(e.message, 'onSend hook should be a function, instead got [object Null]')
   }
 })

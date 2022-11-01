@@ -304,12 +304,10 @@ readinessProbe:
 ## Running Multiple Instances
 <a id="multiple"></a>
 
-While [Use A Reverse Proxy](#use-a-reverse-proxy) explains why 
-multiple Fastify apps on the same server should not be used for horizontal
-scaling purposes, there are several use-cases where running multiple apps 
-would be a recommended approach. Most common examples would be exposing
-healthcheck and metrics endpoints on a separate port, in order to prevent 
-public access.
+There are several use-cases where running multiple Fastify
+apps on the same server is a recommended approach. Most common examples
+would be exposing healthcheck and metrics endpoints on a separate port, in 
+order to prevent public access.
 
 It is perfectly fine to spin up several Fastify instances within the same 
 Node.js process and run them concurrently, even in the heavy load systems. 

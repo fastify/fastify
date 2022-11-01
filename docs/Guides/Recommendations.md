@@ -324,8 +324,8 @@ for your users, as well as the memory usage, as the GC will be run more
 frequently. Also, the main thread won't have to stop to let the GC run.
 
 * In order to optimize for throughput (handling the largest possible amount of
-requests per second per vCPU available), consider using smaller amount of vCPUs per app 
-instance. It is totally fine to run Node.js application with 1 vCPU.
+requests per second per vCPU available), consider using smaller amount of vCPUs
+per app instance. It is totally fine to run Node.js application with 1 vCPU.
 
 * You may experiment with even smaller amount of vCPU, which may provide even 
 better throughput in certain use-cases. There are reports of e. g. API gateway

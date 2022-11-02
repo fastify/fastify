@@ -345,6 +345,6 @@ would be exposing healthcheck and metrics endpoints on a separate port,
 to prevent public access.
 
 It is perfectly fine to spin up several Fastify instances within the same 
-Node.js process and run them concurrently, even in heavy load systems. 
+Node.js process and run them concurrently, even in high load systems. 
 Each Fastify instance only generates as much load as the traffic it receives,
 plus the memory used for that Fastify instance.

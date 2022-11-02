@@ -305,32 +305,32 @@ readinessProbe:
 <a id="capacity"></a>
 
 In order to rightsize the production environment for your Fastify application, 
-you are highly recommended to perform your own measurements against 
+it is highly recommended that you perform your own measurements against 
 different configurations of the environment, which may
 use real CPU cores, virtual CPU cores (vCPU), or even fractional
 vCPU cores. We will use the term vCPU throughout this
 recommendation to represent any CPU type.
 
-You can use such tools as [k6](https://github.com/grafana/k6) 
-or [autocannon](https://github.com/mcollina/autocannon) for conducting
-the necessary performance tests.
+Tools such as [k6](https://github.com/grafana/k6) 
+or [autocannon](https://github.com/mcollina/autocannon) can be used for
+conducting the necessary performance tests.
 
-That said, you may also consider the following as a rule of a thumb:
+That said, you may also consider the following as a rule of thumb:
 
-* In order to have the lowest possible latency, 2 vCPU are recommended per app 
+* To have the lowest possible latency, 2 vCPU are recommended per app 
 instance (e.g., a k8s pod). The second vCPU will mostly be used by the 
 garbage collector (GC) and libuv threadpool. This will minimize the latency 
 for your users, as well as the memory usage, as the GC will be run more
 frequently. Also, the main thread won't have to stop to let the GC run.
 
-* In order to optimize for throughput (handling the largest possible amount of
-requests per second per vCPU available), consider using smaller amount of vCPUs
+* To optimize for throughput (handling the largest possible amount of
+requests per second per vCPU available), consider using a smaller amount of vCPUs
 per app instance. It is totally fine to run Node.js application with 1 vCPU.
 
-* You may experiment with even smaller amount of vCPU, which may provide even 
-better throughput in certain use-cases. There are reports of e. g. API gateway
+* You may experiment with an even smaller amount of vCPU, which may provide 
+even better throughput in certain use-cases. There are reports of API gateway
 solutions working well with 100m-200m vCPU in Kubernetes.
 
 See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8)
-in order to understand the workings of Node.js in greater detail and make a
+to understand the workings of Node.js in greater detail and make a
 better determination about what your specific application needs.

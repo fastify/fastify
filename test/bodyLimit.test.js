@@ -89,7 +89,7 @@ test('default request.routeBodyLimit should be 1048576', t => {
       reply.send({ error: 'handler should not be called' })
     }
   })
-  fastify.listen({ port: 30 }, function (err) {
+  fastify.listen({ port: 0 }, function (err) {
     t.error(err)
     t.teardown(() => { fastify.close() })
 

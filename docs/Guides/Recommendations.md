@@ -327,7 +327,7 @@ frequently. Also, the main thread won't have to stop to let the GC run.
 requests per second per vCPU available), consider using a smaller amount of vCPUs
 per app instance. It is totally fine to run Node.js application with 1 vCPU.
 
-* You may experiment with an even smaller amount of vCPU, which may provide even 
+* You may experiment with an even smaller amount of vCPU, which may provide 
 even better throughput in certain use-cases. There are reports of API gateway
 solutions working well with 100m-200m vCPU in Kubernetes.
 

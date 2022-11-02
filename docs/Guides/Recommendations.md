@@ -328,7 +328,7 @@ requests per second per vCPU available), consider using a smaller amount of vCPU
 per app instance. It is totally fine to run Node.js application with 1 vCPU.
 
 * You may experiment with an even smaller amount of vCPU, which may provide even 
-better throughput in certain use-cases. There are reports of API gateway
+even better throughput in certain use-cases. There are reports of API gateway
 solutions working well with 100m-200m vCPU in Kubernetes.
 
 See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8)

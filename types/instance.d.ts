@@ -446,12 +446,12 @@ export interface FastifyInstance<
   */
   addHook(
     name: 'onReady',
-    hook: onReadyHookHandler
+    hook: onReadyHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   addHook(
     name: 'onReady',
-    hook: onReadyAsyncHookHandler,
+    hook: onReadyAsyncHookHandler<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

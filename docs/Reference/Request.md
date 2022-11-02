@@ -27,6 +27,7 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
+- `routeBodyLimit` - either server limit or route limit
 - `routerMethod` - the method defined for the router that is handling the
   request
 - `routerPath` - the path pattern defined for the router that is handling the
@@ -90,6 +91,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.protocol)
   console.log(request.url)
   console.log(request.routerMethod)
+  console.log(request.routeBodyLimit)
   console.log(request.routerPath)
   request.log.info('some info')
 })

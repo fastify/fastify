@@ -66,6 +66,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
+  readonly routeBodyLimit: number;
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

@@ -66,6 +66,7 @@ const getHandler: RouteHandler = function (request, _reply) {
   expectType<string>(request.method)
   expectType<string>(request.routerPath)
   expectType<string>(request.routerMethod)
+  expectType<number>(request.routeBodyLimit)
   expectType<boolean>(request.is404)
   expectType<string>(request.hostname)
   expectType<string>(request.ip)

@@ -341,8 +341,8 @@ better determination about what your specific application needs.
 
 There are several use-cases where running multiple Fastify
 apps on the same server is a recommended approach. Most common examples
-would be exposing healthcheck and metrics endpoints on a separate port, in 
-order to prevent public access.
+would be exposing healthcheck and metrics endpoints on a separate port,
+to prevent public access.
 
 It is perfectly fine to spin up several Fastify instances within the same 
 Node.js process and run them concurrently, even in heavy load systems. 

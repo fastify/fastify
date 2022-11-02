@@ -340,8 +340,8 @@ better determination about what your specific application needs.
 <a id="multiple"></a>
 
 There are several use-cases where running multiple Fastify
-apps on the same server is a recommended approach. Most common examples
-would be exposing healthcheck and metrics endpoints on a separate port,
+apps on the same server is a recommended approach. Most common example
+would be exposing metrics endpoints on a separate port,
 to prevent public access.
 
 It is perfectly fine to spin up several Fastify instances within the same 

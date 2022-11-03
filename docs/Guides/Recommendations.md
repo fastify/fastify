@@ -340,9 +340,10 @@ better determination about what your specific application needs.
 <a id="multiple"></a>
 
 There are several use-cases where running multiple Fastify
-apps on the same server is a recommended approach. Most common example
+apps on the same server might be considered. Most common example
 would be exposing metrics endpoints on a separate port,
-to prevent public access.
+to prevent public access, when using proxy or an ingress firewall
+is not an option.
 
 It is perfectly fine to spin up several Fastify instances within the same 
 Node.js process and run them concurrently, even in high load systems. 

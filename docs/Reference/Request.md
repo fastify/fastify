@@ -27,7 +27,6 @@ Request is a core Fastify object containing the following fields:
 - `protocol` - the protocol of the incoming request (`https` or `http`)
 - `method` - the method of the incoming request
 - `url` - the URL of the incoming request
-- `routeBodyLimit` - either server limit or route limit
 - `routerMethod` - the method defined for the router that is handling the
   request
 - `routerPath` - the path pattern defined for the router that is handling the
@@ -43,6 +42,7 @@ Request is a core Fastify object containing the following fields:
   handling the request
 - `routeConfig` - The route [`config`](./Routes.md#routes-config) 
   object.
+- `routeBodyLimit` - either server limit or route limit.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.

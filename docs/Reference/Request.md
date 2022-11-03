@@ -42,7 +42,7 @@ Request is a core Fastify object containing the following fields:
   handling the request
 - `routeConfig` - The route [`config`](./Routes.md#routes-config) 
   object.
-- `routeOptions`
+- `routeOptions` - The route [`option`](./Routes.md#routes-options) object
   - `bodyLimit` - either server limit or route limit
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
@@ -92,7 +92,7 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.protocol)
   console.log(request.url)
   console.log(request.routerMethod)
-  console.log(request.routeBodyLimit)
+  console.log(request.routeOptions.bodyLimit)
   console.log(request.routerPath)
   request.log.info('some info')
 })

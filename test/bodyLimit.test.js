@@ -6,7 +6,7 @@ const t = require('tap')
 const test = t.test
 
 test('bodyLimit', t => {
-  t.plan(10)
+  t.plan(5)
 
   try {
     Fastify({ bodyLimit: 1.3 })
@@ -28,21 +28,6 @@ test('bodyLimit', t => {
     reply.send({ error: 'handler should not be called' })
   })
 
-  fastify.post('/route-limit', {
-    bodyLimit: 1000,
-    handler (request, reply) {
-      t.equal(1000, request.routeBodyLimit)
-      reply.send({ error: 'handler should not be called' })
-    }
-  })
-
-  fastify.post('/server-limit', {
-    handler (request, reply) {
-      t.equal(1, request.routeBodyLimit)
-      reply.send({ error: 'handler should not be called' })
-    }
-  })
-
   fastify.listen({ port: 0 }, function (err) {
     t.error(err)
     t.teardown(() => { fastify.close() })
@@ -50,26 +35,6 @@ test('bodyLimit', t => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 413)
-    })
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/route-limit',
-      headers: { 'Content-Type': 'application/json' },
-      body: [],
-      json: true
-    }, (err, response, body) => {
-      t.error(err)
-      t.equal(response.statusCode, 200)
-    })
-    sget({
-      method: 'POST',
-      url: 'http://localhost:' + fastify.server.address().port + '/server-limit',
       headers: { 'Content-Type': 'application/json' },
       body: [],
       json: true
@@ -86,7 +51,7 @@ test('default request.routeBodyLimit should be 1048576', t => {
   fastify.post('/default-bodylimit', {
     handler (request, reply) {
       t.equal(1048576, request.routeBodyLimit)
-      reply.send({ error: 'handler should not be called' })
+      reply.send({ })
     }
   })
   fastify.listen({ port: 0 }, function (err) {
@@ -96,6 +61,59 @@ test('default request.routeBodyLimit should be 1048576', t => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port + '/default-bodylimit',
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('request.routeBodyLimit should be equal to route limit', t => {
+  t.plan(4)
+  const fastify = Fastify({ bodyLimit: 1 })
+  fastify.post('/route-limit', {
+    bodyLimit: 1000,
+    handler (request, reply) {
+      t.equal(1000, request.routeBodyLimit)
+      reply.send({})
+    }
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/route-limit',
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('request.routeBodyLimit should be equal to server limit', t => {
+  t.plan(4)
+  const fastify = Fastify({ bodyLimit: 100 })
+  fastify.post('/server-limit', {
+    handler (request, reply) {
+      t.equal(100, request.routeBodyLimit)
+      reply.send({})
+    }
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/server-limit',
       headers: { 'Content-Type': 'application/json' },
       body: [],
       json: true

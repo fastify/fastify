@@ -45,12 +45,12 @@ test('bodyLimit', t => {
   })
 })
 
-test('default request.routeBodyLimit should be 1048576', t => {
+test('default request.routeOptions.bodyLimit should be 1048576', t => {
   t.plan(4)
   const fastify = Fastify()
   fastify.post('/default-bodylimit', {
     handler (request, reply) {
-      t.equal(1048576, request.routeBodyLimit)
+      t.equal(1048576, request.routeOptions.bodyLimit)
       reply.send({ })
     }
   })
@@ -71,13 +71,13 @@ test('default request.routeBodyLimit should be 1048576', t => {
   })
 })
 
-test('request.routeBodyLimit should be equal to route limit', t => {
+test('request.routeOptions.bodyLimit should be equal to route limit', t => {
   t.plan(4)
   const fastify = Fastify({ bodyLimit: 1 })
   fastify.post('/route-limit', {
     bodyLimit: 1000,
     handler (request, reply) {
-      t.equal(1000, request.routeBodyLimit)
+      t.equal(1000, request.routeOptions.bodyLimit)
       reply.send({})
     }
   })
@@ -98,12 +98,12 @@ test('request.routeBodyLimit should be equal to route limit', t => {
   })
 })
 
-test('request.routeBodyLimit should be equal to server limit', t => {
+test('request.routeOptions.bodyLimit should be equal to server limit', t => {
   t.plan(4)
   const fastify = Fastify({ bodyLimit: 100 })
   fastify.post('/server-limit', {
     handler (request, reply) {
-      t.equal(100, request.routeBodyLimit)
+      t.equal(100, request.routeOptions.bodyLimit)
       reply.send({})
     }
   })

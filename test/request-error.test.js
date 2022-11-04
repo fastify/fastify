@@ -333,7 +333,7 @@ test('request.routeOptions should be immutable', t => {
     } catch (err) {
       t.ok(err)
     }
-    res.send({ hello: 'world' })
+    res.send({ })
   }
   fastify.post('/', {
     bodyLimit: 1000,
@@ -346,6 +346,56 @@ test('request.routeOptions should be immutable', t => {
     sget({
       method: 'POST',
       url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+  })
+})
+
+test('test request.routeOptions.version', t => {
+  t.plan(7)
+  const fastify = Fastify()
+
+  fastify.route({
+    method: 'POST',
+    url: '/version',
+    constraints: { version: '1.2.0' },
+    handler: function (request, reply) {
+      t.equal('1.2.0', request.routeOptions.version)
+      reply.send({})
+    }
+  })
+
+  fastify.route({
+    method: 'POST',
+    url: '/version-undefined',
+    handler: function (request, reply) {
+      t.equal(undefined, request.routeOptions.version)
+      reply.send({})
+    }
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/version',
+      headers: { 'Content-Type': 'application/json', 'Accept-Version': '1.2.0' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port + '/version-undefined',
       headers: { 'Content-Type': 'application/json' },
       body: [],
       json: true

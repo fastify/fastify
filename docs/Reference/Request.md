@@ -46,7 +46,7 @@ Request is a core Fastify object containing the following fields:
   - `bodyLimit` - either server limit or route limit
   - `method` - the http method for the route
   - `url` - the path of the URL to match this route
-  - `attachValidation` - attach `validationError` to request (if there is a schema)
+  - `attachValidation` - attach `validationError` to request(if schema is defined)
   - `logLevel` - log level defined for this route
   - `version` -  a semver compatible string that defines the version of the endpoint
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 

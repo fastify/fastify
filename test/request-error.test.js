@@ -1,6 +1,7 @@
 'use strict'
 
 const { connect } = require('net')
+const sget = require('simple-get').concat
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
@@ -311,5 +312,46 @@ test('default clientError replies with bad request on reused keep-alive connecti
     client.write('GET /?a b HTTP/1.1\r\n')
     client.write('Connection: close\r\n')
     client.write('\r\n\r\n')
+  })
+})
+
+test('request.routeOptions should be immutable', t => {
+  t.plan(7)
+  const fastify = Fastify()
+  const handler = function (req, res) {
+    t.equal('POST', req.routeOptions.method)
+    t.equal('/', req.routeOptions.url)
+    try {
+      req.routeOptions.bodyLimit = 1001
+      t.fail('property bodyLimit is immutable')
+    } catch (err) {
+      t.ok(err)
+    }
+    try {
+      req.routeOptions = null
+      t.fail('routerOptions is immutable')
+    } catch (err) {
+      t.ok(err)
+    }
+    res.send({ hello: 'world' })
+  }
+  fastify.post('/', {
+    bodyLimit: 1000,
+    handler
+  })
+  fastify.listen({ port: 0 }, function (err) {
+    t.error(err)
+    t.teardown(() => { fastify.close() })
+
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port,
+      headers: { 'Content-Type': 'application/json' },
+      body: [],
+      json: true
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 200)
+    })
   })
 })

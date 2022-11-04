@@ -20,6 +20,14 @@ export interface ValidationFunction {
   errors?: null | ErrorObject[];
 }
 
+export interface RequestRouteOptions {
+  method: string,
+  url: string,
+  bodyLimit:number,
+  attachValidation:boolean,
+  logLevel:string
+}
+
 /**
  * FastifyRequest is an instance of the standard http or http2 request objects.
  * It defaults to http.IncomingMessage, and it also extends the relative request object.
@@ -66,7 +74,7 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   readonly method: string;
   readonly routerPath: string;
   readonly routerMethod: string;
-  readonly routeBodyLimit: number;
+  readonly routeOptions: Readonly<RequestRouteOptions>
   readonly is404: boolean;
   readonly socket: RawRequest['socket'];
 

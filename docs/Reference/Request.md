@@ -43,7 +43,11 @@ Request is a core Fastify object containing the following fields:
 - `routeConfig` - The route [`config`](./Routes.md#routes-config) 
   object.
 - `routeOptions` - The route [`option`](./Routes.md#routes-options) object
-  - `bodyLimit` - either server limit or route limit
+  - `bodyLimit` - either get server limit or route limit
+  - `method` - get http method
+  - `url` - get the path of the URL to match this route
+  - `attachValidation` - attach `validationError` to request, if there is a schema
+  - `logLevel` - get log level for this route.
 - [.getValidationFunction(schema | httpPart)](#getvalidationfunction) - 
   Returns a validation function for the specified schema or http part,
   if any of either are set or cached.

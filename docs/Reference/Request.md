@@ -97,7 +97,11 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.url)
   console.log(request.routerMethod)
   console.log(request.routeOptions.bodyLimit)
-  console.log(request.routerPath)
+  console.log(request.routeOptions.method)
+  console.log(request.routeOptions.url)
+  console.log(request.routeOptions.attachValidation)
+  console.log(request.routeOptions.logLevel)
+  console.log(request.routerPath.logLevel)
   request.log.info('some info')
 })
 ```

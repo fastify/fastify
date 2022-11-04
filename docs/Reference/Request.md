@@ -107,6 +107,8 @@ fastify.post('/:params', options, function (request, reply) {
   console.log(request.routeOptions.attachValidation)
   console.log(request.routeOptions.logLevel)
   console.log(request.routeOptions.version)
+  console.log(request.routeOptions.exposeHeadRoute)
+  console.log(request.routeOptions.prefixTrailingSlash)
   console.log(request.routerPath.logLevel)
   request.log.info('some info')
 })

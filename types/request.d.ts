@@ -26,7 +26,9 @@ export interface RequestRouteOptions {
   bodyLimit:number,
   attachValidation:boolean,
   logLevel:string,
-  version: string | undefined
+  version: string | undefined,
+  exposeHeadRoute: boolean,
+  prefixTrailingSlash: string
 }
 
 /**

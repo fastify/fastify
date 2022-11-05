@@ -316,24 +316,28 @@ test('default clientError replies with bad request on reused keep-alive connecti
 })
 
 test('request.routeOptions should be immutable', t => {
-  t.plan(7)
+  t.plan(14)
   const fastify = Fastify()
   const handler = function (req, res) {
     t.equal('POST', req.routeOptions.method)
     t.equal('/', req.routeOptions.url)
-    try {
-      req.routeOptions.bodyLimit = 1001
-      t.fail('property bodyLimit is immutable')
-    } catch (err) {
-      t.ok(err)
+    t.throws(() => { req.routeOptions = null }, new TypeError('Cannot set property routeOptions of #<Request> which has only a getter'))
+    t.throws(() => { req.routeOptions.method = 'INVALID' }, new TypeError('Cannot assign to read only property \'method\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.url = '//' }, new TypeError('Cannot assign to read only property \'url\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.bodyLimit = 0xDEADBEEF }, new TypeError('Cannot assign to read only property \'bodyLimit\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.attachValidation = true }, new TypeError('Cannot assign to read only property \'attachValidation\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.logLevel = 'invalid' }, new TypeError('Cannot assign to read only property \'logLevel\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.version = '95.0.1' }, new TypeError('Cannot assign to read only property \'version\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.prefixTrailingSlash = true }, new TypeError('Cannot assign to read only property \'prefixTrailingSlash\' of object \'#<Object>\''))
+    t.throws(() => { req.routeOptions.newAttribute = {} }, new TypeError('Cannot add property newAttribute, object is not extensible'))
+
+    for (const key of Object.keys(req.routeOptions)) {
+      if (typeof req.routeOptions[key] === 'object' && req.routeOptions[key] !== null) {
+        t.fail('Object.freeze must run recursively on nested structures to ensure that routeOptions is immutable.')
+      }
     }
-    try {
-      req.routeOptions = null
-      t.fail('routerOptions is immutable')
-    } catch (err) {
-      t.ok(err)
-    }
-    res.send({ })
+
+    res.send({})
   }
   fastify.post('/', {
     bodyLimit: 1000,

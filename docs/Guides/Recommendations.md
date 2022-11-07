@@ -9,6 +9,8 @@ This document contains a set of recommendations when using Fastify.
   - [Nginx](#nginx)
 - [Kubernetes](#kubernetes)
 - [Capacity Planning For Production](#capacity)
+- [Running Multiple Instances](#multiple)
+
 ## Use A Reverse Proxy
 <a id="reverseproxy"></a>
 
@@ -333,3 +335,17 @@ solutions working well with 100m-200m vCPU in Kubernetes.
 See [Node's Event Loop From the Inside Out ](https://www.youtube.com/watch?v=P9csgxBgaZ8)
 to understand the workings of Node.js in greater detail and make a
 better determination about what your specific application needs.
+
+## Running Multiple Instances
+<a id="multiple"></a>
+
+There are several use-cases where running multiple Fastify
+apps on the same server might be considered. A common example
+would be exposing metrics endpoints on a separate port,
+to prevent public access, when using a reverse proxy or an ingress
+firewall is not an option.
+
+It is perfectly fine to spin up several Fastify instances within the same 
+Node.js process and run them concurrently, even in high load systems. 
+Each Fastify instance only generates as much load as the traffic it receives,
+plus the memory used for that Fastify instance.

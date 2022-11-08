@@ -108,12 +108,12 @@ fastify.decorate('db', new DbConnection())
 
 fastify.get('/', async function (request, reply) {
   // using return
-  return { hello: await this.db.query('world') };
+  return { hello: await this.db.query('world') }
   
   // or
   // using reply.send()
-  reply.send({ hello: await this.db.query('world') });
-  await reply;
+  reply.send({ hello: await this.db.query('world') })
+  await reply
 })
 ```
 

@@ -439,24 +439,6 @@ async function plugin (fastify, opts) {
 
 export default plugin
 ```
-__Note__: Fastify does not support named imports within an ESM context. Instead,
-the `default` export is available.
-
-```js
-// server.mjs
-import Fastify from 'fastify'
-
-const fastify = Fastify()
-
-///...
-
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) {
-    fastify.log.error(err)
-    process.exit(1)
-  }
-})
-```
 
 ## Handle errors
 <a id="handle-errors"></a>

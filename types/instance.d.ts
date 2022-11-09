@@ -177,13 +177,22 @@ export interface FastifyInstance<
     SchemaCompiler extends FastifySchema = FastifySchema,
   >(opts: RouteOptions<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
+  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   get: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   head: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   post: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   put: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  delete: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   options: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
-  patch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  propfind: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  proppatch: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  mkcol: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  copy: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  move: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  lock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  unlock: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  trace: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
+  search: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
   all: RouteShorthandMethod<RawServer, RawRequest, RawReply, TypeProvider>;
 
   hasRoute<

@@ -674,7 +674,7 @@ The default configuration is explained in the
 const fastify = require('fastify')({
   ajv: {
     customOptions: {
-      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/#options)
+      removeAdditional: 'all' // Refer to [ajv options](https://ajv.js.org/options.html#removeadditional)
     },
     plugins: [
       require('ajv-merge-patch'),

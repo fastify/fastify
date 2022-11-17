@@ -3,6 +3,7 @@
 const t = require('tap')
 const test = t.test
 const Fastify = require('..')
+const semver = require('semver')
 
 test('listen should accept null port', t => {
   t.plan(1)
@@ -36,19 +37,26 @@ test('listen should accept stringified number port', t => {
 
 test('listen should reject string port', async (t) => {
   t.plan(2)
-
   const fastify = Fastify()
   t.teardown(fastify.close.bind(fastify))
 
   try {
     await fastify.listen({ port: 'hello-world' })
   } catch (error) {
-    t.same(error.message, 'options.port should be >= 0 and < 65536. Received hello-world.')
+    if (semver.lt(process.version, '19.1.0')) {
+      t.same(error.message, 'options.port should be >= 0 and < 65536. Received hello-world.')
+    } else {
+      t.same(error.message, 'options.port should be >= 0 and < 65536. Received type string (\'hello-world\').')
+    }
   }
 
   try {
     await fastify.listen({ port: '1234hello' })
   } catch (error) {
-    t.same(error.message, 'options.port should be >= 0 and < 65536. Received 1234hello.')
+    if (semver.lt(process.version, '19.1.0')) {
+      t.same(error.message, 'options.port should be >= 0 and < 65536. Received 1234hello.')
+    } else {
+      t.same(error.message, "options.port should be >= 0 and < 65536. Received type string ('1234hello').")
+    }
   }
 })

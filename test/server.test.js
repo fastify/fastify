@@ -46,7 +46,7 @@ test('listen should reject string port', async (t) => {
     if (semver.lt(process.version, '19.1.0')) {
       t.same(error.message, 'options.port should be >= 0 and < 65536. Received hello-world.')
     } else {
-      t.same(error.message, 'options.port should be >= 0 and < 65536. Received type string (\'hello-world\').')
+      t.same(error.message, "options.port should be >= 0 and < 65536. Received type string ('hello-world').")
     }
   }
 

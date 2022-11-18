@@ -265,6 +265,8 @@ section.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.
+- [`fastify-constraints`](https://github.com/nearform/fastify-constraints)
+  Fastify plugin to add constraints to multiple routes
 - [`fastify-couchdb`](https://github.com/nigelhanlon/fastify-couchdb) Fastify
   plugin to add CouchDB support via [nano](https://github.com/apache/nano).
 - [`fastify-crud-generator`](https://github.com/beliven-it/fastify-crud-generator)

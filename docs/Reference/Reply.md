@@ -703,7 +703,7 @@ When using async-await, please return the reply object to signal fastify wait
 for your further response.
 ```js
 const fs = require('fs')
-fastify.get('/streams', function (request, reply) {
+fastify.get('/streams', async function (request, reply) {
   fs.readFile('some-file', (err, fileBuffer) => {
     reply.send(err || fileBuffer)
   })

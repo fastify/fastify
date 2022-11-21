@@ -1120,7 +1120,7 @@ test('The charset should not interfere with the content type handling', t => {
       url: 'http://localhost:' + fastify.server.address().port,
       body: '{"hello":"world"}',
       headers: {
-        'Content-Type': 'application/json charset=utf-8'
+        'Content-Type': 'application/json; charset=utf-8'
       }
     }, (err, response, body) => {
       t.error(err)
@@ -1303,7 +1303,7 @@ test('contentTypeParser should add a custom parser with RegExp value', t => {
         url: 'http://localhost:' + fastify.server.address().port,
         body: '{"hello":"world"}',
         headers: {
-          'Content-Type': 'weird-content-type+json'
+          'Content-Type': 'weird/content-type+json'
         }
       }, (err, response, body) => {
         t.error(err)
@@ -1333,7 +1333,7 @@ test('contentTypeParser should add multiple custom parsers with RegExp values', 
     done(null, 'xml')
   })
 
-  fastify.addContentTypeParser(/.*\+myExtension$/, function (req, payload, done) {
+  fastify.addContentTypeParser(/.*\+myExtension$/i, function (req, payload, done) {
     let data = ''
     payload.on('data', chunk => { data += chunk })
     payload.on('end', () => {

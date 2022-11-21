@@ -187,6 +187,7 @@
     "light-my-request": "^4.2.0",
     "pino": "^6.13.0",
     "process-warning": "^1.0.0",
+    "content-type": "^1.0.4",
     "proxy-addr": "^2.0.7",
     "rfdc": "^1.1.4",
     "secure-json-parse": "^2.0.0",

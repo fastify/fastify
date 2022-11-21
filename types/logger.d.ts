@@ -13,7 +13,7 @@ import pino from 'pino'
  */
 export type FastifyLogFn = pino.LogFn
 
-export type LogLevel = pino.Level
+export type LogLevel = pino.LevelWithSilent
 
 export type Bindings = pino.Bindings
 

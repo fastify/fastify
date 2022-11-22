@@ -44,7 +44,7 @@ declare function fastify<
   Server extends http2.Http2SecureServer,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttp2SecureOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -52,7 +52,7 @@ declare function fastify<
   Server extends http2.Http2Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttp2Options<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -60,7 +60,7 @@ declare function fastify<
   Server extends https.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts: FastifyHttpsOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -68,7 +68,7 @@ declare function fastify<
   Server extends http.Server,
   Request extends RawRequestDefaultExpression<Server> = RawRequestDefaultExpression<Server>,
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
 >(opts?: FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
@@ -80,7 +80,7 @@ export default fastify
 
 export type FastifyHttp2SecureOptions<
   Server extends http2.Http2SecureServer,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   https: http2.SecureServerOptions,
@@ -89,7 +89,7 @@ export type FastifyHttp2SecureOptions<
 
 export type FastifyHttp2Options<
   Server extends http2.Http2Server,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = FastifyServerOptions<Server, Logger> & {
   http2: true,
   http2SessionTimeout?: number
@@ -97,7 +97,7 @@ export type FastifyHttp2Options<
 
 export type FastifyHttpsOptions<
   Server extends https.Server,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = FastifyServerOptions<Server, Logger> & {
   https: https.ServerOptions | null
 }
@@ -118,7 +118,7 @@ export interface ConnectionError extends Error {
  */
 export type FastifyServerOptions<
   RawServer extends RawServerBase = RawServerDefault,
-  Logger extends FastifyBaseLogger = FastifyLoggerInstance
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
 > = {
   ignoreTrailingSlash?: boolean,
   ignoreDuplicateSlashes?: boolean,

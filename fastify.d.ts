@@ -25,6 +25,13 @@ import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-pr
 import { FastifyReply } from './types/reply'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 
+declare module '@fastify/error' {
+  interface FastifyError {
+    validation?: ValidationResult[];
+    validationContext?: 'body' | 'headers' | 'parameters' | 'querystring';
+  }
+}
+
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
  *
@@ -182,13 +189,6 @@ export type FastifyServerOptions<
 }
 
 type TrustProxyFunction = (address: string, hop: number) => boolean
-
-declare module '@fastify/error' {
-  interface FastifyError {
-    validation?: ValidationResult[];
-    validationContext?: 'body' | 'headers' | 'parameters' | 'querystring';
-  }
-}
 
 export interface ValidationResult {
   keyword: string;

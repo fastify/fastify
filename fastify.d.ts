@@ -1,26 +1,29 @@
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
-import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
-
-import { FastifyRequest, RequestGenericInterface } from './types/request'
-import { RawServerBase, RawServerDefault, RawRequestDefaultExpression, RawReplyDefaultExpression } from './types/utils'
-import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions } from './types/logger'
-import { FastifyInstance } from './types/instance'
-import { FastifyServerFactory } from './types/serverFactory'
-import { Options as AjvOptions } from '@fastify/ajv-compiler'
-import { Options as FJSOptions } from '@fastify/fast-json-stringify-compiler'
-import { FastifyError } from '@fastify/error'
-import { FastifyReply } from './types/reply'
-import { FastifySchemaValidationError } from './types/schema'
-import { ConstructorAction, ProtoAction } from "./types/content-type-parser";
 import { Socket } from 'net'
-import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { SerializerCompiler } from '@fastify/fast-json-stringify-compiler'
-import { FastifySchema } from './types/schema'
-import { FastifyContextConfig } from './types/context'
-import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
+
+import { Options as AjvOptions, ValidatorCompiler } from '@fastify/ajv-compiler'
+import { FastifyError } from '@fastify/error'
+import { Options as FJSOptions, SerializerCompiler } from '@fastify/fast-json-stringify-compiler'
+import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
+import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
+
+import { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
+import { FastifyContext, FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
+import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './types/hooks'
+import { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
+import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel } from './types/logger'
+import { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
+import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
+import { FastifyRequest, RequestGenericInterface } from './types/request'
+import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError } from './types/schema'
+import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
+import { FastifyReply } from './types/reply'
+import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 
 /**
  * Fastify factory function for the standard fastify http, https, or http2 server instance.
@@ -195,22 +198,25 @@ export interface ValidationResult {
   message?: string;
 }
 
-/* Export all additional types */
-export type { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
-export { FastifyRequest, RequestGenericInterface } from './types/request'
-export { FastifyReply } from './types/reply'
-export { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
-export { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
-export { FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel } from './types/logger'
-export { FastifyContext, FastifyContextConfig } from './types/context'
-export { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
-export * from './types/register'
-export { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
-export { FastifyError } from '@fastify/error'
-export { FastifySchema, FastifySchemaCompiler } from './types/schema'
-export { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
-export * from './types/hooks'
-export { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
-export { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
-export { FastifyErrorCodes } from './types/errors'
+/* Export additional types */
+export type {
+  LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'
+  FastifyRequest, RequestGenericInterface, // './types/request'
+  FastifyReply, // './types/reply'
+  FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
+  FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
+  FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
+  FastifyContext, FastifyContextConfig, // './types/context'
+  RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
+  FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'
+  FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, // './types/content-type-parser'
+  FastifyError, // '@fastify/error'
+  FastifySchema, FastifySchemaCompiler, // './types/schema'
+  HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, // './types/utils'
+  DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, // './types/hooks'
+  FastifyServerFactory, FastifyServerFactoryHandler, // './types/serverFactory'
+  FastifyTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
+  FastifyErrorCodes, // './types/errors'
+}
+
 export { fastify }

@@ -674,8 +674,7 @@ fastify.get('/streams', function (request, reply) {
   reply.send(stream)
 })
 ```
-When using async-await, please return the reply object to signal fastify wait 
-for your further response.
+When using async-await you will need to return the reply object:
 ```js
 fastify.get('/streams', async function (request, reply) {
   const fs = require('fs')

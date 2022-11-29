@@ -203,7 +203,7 @@ test('Should return error while closing (callback) - injection', t => {
   })
 })
 
-const isV19plus = semver.satisfies(process.version, '>= v19.0.0')
+const isV19plus = semver.gte(process.version, '19.0.0')
 t.test('Current opened connection should continue to work after closing and return "connection: close" header - return503OnClosing: false, skip Node >= v19.x', { skip: isV19plus }, t => {
   const fastify = Fastify({
     return503OnClosing: false,

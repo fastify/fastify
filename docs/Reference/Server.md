@@ -1670,7 +1670,7 @@ information.
 `fastify.defaultTextParser()` can be used to parse content as plain text.
 
 ```js
-fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser())
+fastify.addContentTypeParser('text/json', { asString: true }, fastify.defaultTextParser)
 ```
 
 #### errorHandler

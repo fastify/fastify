@@ -421,31 +421,24 @@ test('Safeguard against content-type spoofing - string', async t => {
   })
 })
 
-test('Safeguard against content-type spoofing - regexp', async t => {
-  t.plan(1)
+test('Warning against improper content-type - regexp', t => {
+  t.plan(2)
 
   const fastify = Fastify()
+
+  process.on('warning', onWarning)
+  function onWarning (warning) {
+    t.equal(warning.name, 'FastifySecurity')
+    t.equal(warning.code, 'FSTSEC001')
+  }
+  t.teardown(() => process.removeListener('warning', onWarning))
+
   fastify.removeAllContentTypeParsers()
   fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
-    t.pass('should be called')
     done(null, body)
   })
   fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
-    t.fail('shouldn\'t be called')
     done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'text/plain; content-type="application/json"'
-    },
-    body: ''
   })
 })
 
@@ -472,34 +465,6 @@ test('content-type match parameters - string 1', async t => {
     path: '/',
     headers: {
       'content-type': 'application/json; charset=utf8'
-    },
-    body: ''
-  })
-})
-
-test('content-type match parameters - string 2', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
-    t.pass('should be called')
-    done(null, body)
-  })
-  fastify.addContentTypeParser('text/plain; charset=utf8; foo=bar', function (request, body, done) {
-    t.fail('shouldn\'t be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8'
     },
     body: ''
   })
@@ -648,72 +613,6 @@ test('content-type regexp list should be cloned when plugin override', async t =
     t.same(headers['content-type'], 'image/png')
     t.same(payload, 'png')
   }
-})
-
-test('allow partial content-type - essence check', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser('json', function (request, body, done) {
-    t.pass('should be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8'
-    },
-    body: ''
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'image/jpeg'
-    },
-    body: ''
-  })
-})
-
-test('allow partial content-type - not essence check', async t => {
-  t.plan(1)
-
-  const fastify = Fastify()
-  fastify.removeAllContentTypeParsers()
-  fastify.addContentTypeParser('json;', function (request, body, done) {
-    t.pass('should be called')
-    done(null, body)
-  })
-
-  fastify.post('/', async () => {
-    return 'ok'
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'application/json; foo=bar; charset=utf8'
-    },
-    body: ''
-  })
-
-  await fastify.inject({
-    method: 'POST',
-    path: '/',
-    headers: {
-      'content-type': 'image/jpeg'
-    },
-    body: ''
-  })
 })
 
 test('edge case content-type - ;', async t => {

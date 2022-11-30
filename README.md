@@ -289,8 +289,6 @@ listed in alphabetical order.
 ### Fastify Core team
 * [__Tommaso Allevi__](https://github.com/allevo),
   <https://twitter.com/allevitommaso>, <https://www.npmjs.com/~allevo>
-* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
-  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 * [__Harry Brundage__](https://github.com/airhorns/),
   <https://twitter.com/harrybrundage>, <https://www.npmjs.com/~airhorns>
 * [__David Mark Clements__](https://github.com/davidmarkclements),
@@ -362,6 +360,8 @@ to join this group by Lead Maintainers.
   <https://twitter.com/cemremengu>, <https://www.npmjs.com/~cemremengu>
 * [__Nathan Woltman__](https://github.com/nwoltman),
   <https://twitter.com/NathanWoltman>, <https://www.npmjs.com/~nwoltman>
+* [__Ethan Arrowood__](https://github.com/Ethan-Arrowood/),
+  <https://twitter.com/arrowoodtech>, <https://www.npmjs.com/~ethan_arrowood>
 
 ## Hosted by
 

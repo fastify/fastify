@@ -10,8 +10,13 @@ export type FastifyPluginOptions = Record<string, any>
  *
  * Fastify allows the user to extend its functionalities with plugins. A plugin can be a set of routes, a server decorator or whatever. To activate plugins, use the `fastify.register()` method.
  */
-export type FastifyPluginCallback<Options extends FastifyPluginOptions = Record<never, never>, Server extends RawServerBase = RawServerDefault, TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault> = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyBaseLogger, TypeProvider>,
+export type FastifyPluginCallback<
+  Options extends FastifyPluginOptions = Record<never, never>,
+  Server extends RawServerBase = RawServerDefault,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
+> = (
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options,
   done: (err?: Error) => void
 ) => void
@@ -25,8 +30,9 @@ export type FastifyPluginAsync<
   Options extends FastifyPluginOptions = Record<never, never>,
   Server extends RawServerBase = RawServerDefault,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger,
 > = (
-  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, FastifyBaseLogger, TypeProvider>,
+  instance: FastifyInstance<Server, RawRequestDefaultExpression<Server>, RawReplyDefaultExpression<Server>, Logger, TypeProvider>,
   opts: Options
 ) => Promise<void>;
 

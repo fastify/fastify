@@ -395,3 +395,217 @@ test('Safeguard against malicious content-type / 3', async t => {
 
   t.same(response.statusCode, 415)
 })
+
+test('Safeguard against content-type spoofing - string', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('application/json', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; content-type="application/json"'
+    },
+    body: ''
+  })
+})
+
+test('Safeguard against content-type spoofing - regexp', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser(/text\/plain/, function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser(/application\/json/, function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'text/plain; content-type="application/json"'
+    },
+    body: ''
+  })
+})
+
+test('content-type match parameters - string 1', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('text/plain; charset=utf8', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('application/json; charset=utf8', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type match parameters - string 2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain; charset=utf8; foo=bar', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type match parameters - regexp', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser(/application\/json; charset=utf8/, function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type fail when parameters not match - string 1', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf8'
+    },
+    body: ''
+  })
+
+  t.same(response.statusCode, 415)
+})
+
+test('content-type fail when parameters not match - string 2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('application/json; charset=utf8; foo=bar', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf8; foo=baz'
+    },
+    body: ''
+  })
+
+  t.same(response.statusCode, 415)
+})
+
+test('content-type fail when parameters not match - regexp', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser(/application\/json; charset=utf8; foo=bar/, function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  const response = await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; charset=utf8'
+    },
+    body: ''
+  })
+
+  t.same(response.statusCode, 415)
+})

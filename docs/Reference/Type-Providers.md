@@ -11,7 +11,7 @@ keep associated types for each schema defined in your project.
 
 Type Providers are offered as additional packages you will need to install into
 your project. Each provider uses a different inference library under the hood;
-allowing you to select the library most appropriate for your needs. Official type
+allowing you to select the library most appropriate for your needs. Official Type
 Provider packages follow a `@fastify/type-provider-{provider-name}` naming
 convention, and there are several community ones available as well.
 
@@ -135,6 +135,7 @@ Example:
 import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
+
 import { Type } from '@sinclair/typebox'
 
 const fastify = Fastify()

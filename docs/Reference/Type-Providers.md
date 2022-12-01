@@ -97,7 +97,7 @@ up AJV to work with TypeBox.
 The following sets up a Zod Type Provider
 
 ```bash
-$ npm i @fastify/type-provider-typebox
+$ npm i fastify-type-provider-zod
 ```
 
 ```typescript

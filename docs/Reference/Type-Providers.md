@@ -88,6 +88,10 @@ server.get('/route', {
 })
 ```
 
+See also the [TypeBox
+documentation](https://github.com/sinclairzx81/typebox#validation) on how to set
+up AJV to work with TypeBox.
+
 ### Zod
 
 The following sets up a Zod Type Provider

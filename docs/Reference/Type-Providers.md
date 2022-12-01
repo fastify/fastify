@@ -139,7 +139,6 @@ Example:
 import Fastify from 'fastify'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import { JsonSchemaToTsProvider } from '@fastify/type-provider-json-schema-to-ts'
-
 import { Type } from '@sinclair/typebox'
 
 const fastify = Fastify()

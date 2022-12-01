@@ -11,15 +11,16 @@ keep associated types for each schema defined in your project.
 
 Type Providers are offered as additional packages you will need to install into
 your project. Each provider uses a different inference library under the hood;
-allowing you to select the library most appropriate for your needs. Type
+allowing you to select the library most appropriate for your needs. Official type
 Provider packages follow a `@fastify/type-provider-{provider-name}` naming
-convention.
+convention, and there are several community ones available as well.
 
 The following inference packages are supported:
 
 - `json-schema-to-ts` -
   [github](https://github.com/ThomasAribart/json-schema-to-ts)
 - `typebox` - [github](https://github.com/sinclairzx81/typebox)
+- `zod` - [github](https://github.com/colinhacks/zod)
 
 ### Json Schema to Ts
 
@@ -87,9 +88,40 @@ server.get('/route', {
 })
 ```
 
-See also the [TypeBox
-documentation](https://github.com/sinclairzx81/typebox#validation) on how to set
-up AJV to work with TypeBox.
+### Zod
+
+The following sets up a Zod Type Provider
+
+```bash
+$ npm i @fastify/type-provider-typebox
+```
+
+```typescript
+import { ZodTypeProvider, validatorCompiler, serializerCompiler } from "fastify-type-provider-zod";
+import { z } from 'zod';
+
+import fastify from 'fastify'
+
+const server = fastify().withTypeProvider<ZodTypeProvider>()
+
+// This part is necessary if you also want to use zod for validating your requests and responses
+server.setValidatorCompiler(validatorCompiler)
+server.setSerializerCompiler(serializerCompiler)
+
+server.get('/route', {
+    schema: {
+        querystring: z.object({
+          foo: z.number(),
+          bar: z.string(),
+        })
+    }
+}, (request, reply) => {
+
+    // type Query = { foo: number, bar: string }
+
+    const { foo, bar } = request.query // type safe!
+})
+```
 
 ### Scoped Type-Provider
 

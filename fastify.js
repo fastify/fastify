@@ -89,7 +89,7 @@ function defaultBuildPrettyMeta (route) {
 
 function fastify (options) {
   // Options validations
-  options = deepClone(options) || {}
+  options = deepClone(options || {})
 
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')

@@ -4,6 +4,7 @@ const VERSION = '4.10.2'
 
 const Avvio = require('avvio')
 const http = require('http')
+const deepClone = require('rfdc')({ circles: true, proto: false })
 let lightMyRequest
 
 const {
@@ -48,6 +49,7 @@ const getSecuredInitialConfig = require('./lib/initialConfigValidation')
 const override = require('./lib/pluginOverride')
 const warning = require('./lib/warnings')
 const noopSet = require('./lib/noop-set')
+
 const {
   appendStackTrace,
   AVVIO_ERRORS_MAP,
@@ -87,7 +89,7 @@ function defaultBuildPrettyMeta (route) {
 
 function fastify (options) {
   // Options validations
-  options = Object.assign({}, options) || {}
+  options = deepClone(options) || {}
 
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')

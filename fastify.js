@@ -4,7 +4,7 @@ const VERSION = '4.10.2'
 
 const Avvio = require('avvio')
 const http = require('http')
-const deepClone = require('rfdc')({ circles: true, proto: false })
+const deepClone = require('rfdc')({ circles: false, proto: false })
 let lightMyRequest
 
 const {

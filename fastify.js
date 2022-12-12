@@ -87,7 +87,7 @@ function defaultBuildPrettyMeta (route) {
 
 function fastify (options) {
   // Options validations
-  options = options || {}
+  options = Object.assign({}, options) || {}
 
   if (typeof options !== 'object') {
     throw new TypeError('Options must be an object')

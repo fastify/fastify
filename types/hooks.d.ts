@@ -182,7 +182,7 @@ export interface preHandlerAsyncHookHandler<
 interface DoneFuncWithErrOrRes {
   (): void;
   <TError extends Error = FastifyError>(err: TError): void;
-  (err: null | Error, res: unknown): void;
+  (err: null, res: unknown): void;
 }
 
 /**

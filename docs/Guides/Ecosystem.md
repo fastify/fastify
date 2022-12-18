@@ -220,6 +220,8 @@ section.
   plugin to authenticate HTTP requests based on api key and signature
 - [`fastify-appwrite`](https://github.com/Dev-Manny/fastify-appwrite) Fastify
   Plugin for interacting with Appwrite server.
+- [`fastify-at-mysql`](https://github.com/mateonunez/fastify-at-mysql) Fastify
+  MySQL plugin with auto SQL injection attack prevention.
 - [`fastify-auth0-verify`](https://github.com/nearform/fastify-auth0-verify):
   Auth0 verification plugin for Fastify, internally uses
   [fastify-jwt](https://npm.im/fastify-jwt) and

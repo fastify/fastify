@@ -387,6 +387,9 @@ section.
 - [`fastify-lured`](https://github.com/lependu/fastify-lured) Plugin to load lua
   scripts with [fastify-redis](https://github.com/fastify/fastify-redis) and
   [lured](https://github.com/enobufs/lured).
+- [`fastify-lyra`](https://github.com/mateonunez/fastify-lyra)
+  A plugin to implement [Lyra](https://github.com/LyraSearch/lyra) search engine
+  on Fastify.
 - [`fastify-mailer`](https://github.com/coopflow/fastify-mailer) Plugin to
   initialize and encapsulate [Nodemailer](https://nodemailer.com)'s transporters
   instances in Fastify.

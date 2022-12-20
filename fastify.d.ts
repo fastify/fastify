@@ -156,6 +156,11 @@ declare namespace fastify {
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
   }
 
+  /**
+   * @deprecated use {@link FastifySchemaValidationError}
+   */
+  export type ValidationResult = FastifySchemaValidationError;
+
   /* Export additional types */
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'

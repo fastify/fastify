@@ -20,15 +20,15 @@ import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './type
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
-import { FastifySchema, FastifySchemaCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
+import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
 
 declare module '@fastify/error' {
   interface FastifyError {
-    validation?: fastify.ValidationResult[];
     validationContext?: SchemaErrorDataVar;
+    validation?: FastifySchemaValidationError[];
   }
 }
 
@@ -154,14 +154,6 @@ declare namespace fastify {
      * listener to error events emitted by client connections
      */
     clientErrorHandler?: (error: ConnectionError, socket: Socket) => void
-  }
-
-  export interface ValidationResult {
-    keyword: string;
-    instancePath: string;
-    schemaPath: string;
-    params: Record<string, string | string[]>;
-    message?: string;
   }
 
   /* Export additional types */

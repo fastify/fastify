@@ -9,7 +9,6 @@ import fastify, {
   LightMyRequestCallback,
   InjectOptions, FastifyBaseLogger,
   RouteGenericInterface,
-  ValidationResult,
   FastifyErrorCodes,
   FastifyError
 } from '../../fastify'
@@ -235,7 +234,6 @@ const ajvErrorObject: AjvErrorObject = {
   params: {},
   message: ''
 }
-expectAssignable<ValidationResult>(ajvErrorObject)
 
 expectAssignable<FastifyError['validation']>([ajvErrorObject])
 expectAssignable<FastifyError['validationContext']>('body')

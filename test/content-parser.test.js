@@ -609,3 +609,87 @@ test('content-type fail when parameters not match - regexp', async t => {
 
   t.same(response.statusCode, 415)
 })
+
+test('content-type isEssence-check should use ParserListItem.type /1', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('   application/json', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type isEssence-check should use ParserListItem.type /2', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('application/json   ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
+test('content-type isEssence-check should use ParserListItem.type /3', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('   application/json   ', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+  fastify.addContentTypeParser('text/plain', function (request, body, done) {
+    t.fail('shouldn\'t be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})

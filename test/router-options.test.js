@@ -91,7 +91,7 @@ test('Should honor maxParamLength option', t => {
 })
 
 test('Should expose router options via getters on request and reply', t => {
-  t.plan(10)
+  t.plan(13)
   const fastify = Fastify()
   const expectedSchema = {
     params: {
@@ -108,6 +108,8 @@ test('Should expose router options via getters on request and reply', t => {
     t.equal(req.routeConfig.method, 'GET')
     t.same(req.routeSchema, expectedSchema) // TODO: deprecate on @v5
     t.same(req.routeOptions.schema, expectedSchema)
+    t.equal(req.routeOptions.config.url, '/test/:id')
+    t.equal(req.routeOptions.config.method, 'GET')
     t.equal(req.routerPath, '/test/:id')
     t.equal(req.routerMethod, 'GET')
     t.equal(req.is404, false)

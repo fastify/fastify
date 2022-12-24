@@ -104,8 +104,8 @@ test('Should expose router options via getters on request and reply', t => {
   }, (req, reply) => {
     t.equal(reply.context.config.url, '/test/:id')
     t.equal(reply.context.config.method, 'GET')
-    t.equal(req.routeConfig.url, '/test/:id')
-    t.equal(req.routeConfig.method, 'GET')
+    t.equal(req.routeConfig.url, '/test/:id') // TODO: deprecate on @v5
+    t.equal(req.routeConfig.method, 'GET') // TODO: deprecate on @v5
     t.same(req.routeSchema, expectedSchema) // TODO: deprecate on @v5
     t.same(req.routeOptions.schema, expectedSchema)
     t.equal(req.routeOptions.config.url, '/test/:id')

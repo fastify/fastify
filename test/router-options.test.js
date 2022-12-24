@@ -106,7 +106,9 @@ test('Should expose router options via getters on request and reply', t => {
     t.equal(reply.context.config.method, 'GET')
     t.equal(req.routeConfig.url, '/test/:id')
     t.equal(req.routeConfig.method, 'GET')
-    t.same(req.routeSchema, expectedSchema)
+    t.same(req.routeSchema, expectedSchema) // TODO: deprecate on @v5
+    t.same(req.routeOptions.schema, expectedSchema)
+    t.same(typeof req.routeOptions.handler, 'function')
     t.equal(req.routerPath, '/test/:id')
     t.equal(req.routerMethod, 'GET')
     t.equal(req.is404, false)

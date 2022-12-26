@@ -1011,6 +1011,9 @@ Note that the array contains the `fastify.server.address()` too.
 #### getDefaultRoute
 <a id="getDefaultRoute"></a>
 
+**Notice**: this method is deprecated and should be removed in the next Fastify
+major version.
+
 The `defaultRoute` handler handles requests that do not match any URL specified
 by your Fastify application. This defaults to the 404 handler, but can be
 overridden with [setDefaultRoute](#setdefaultroute). Method to get the
@@ -1023,15 +1026,19 @@ const defaultRoute = fastify.getDefaultRoute()
 #### setDefaultRoute
 <a id="setDefaultRoute"></a>
 
-**Note**: The default 404 handler, or one set using `setNotFoundHandler`, will
+**Notice**: this method is deprecated and should be removed in the next Fastify
+major version. Please, consider to use `setNotFoundHandler` or a wildcard
+matching route.
+
+The default 404 handler, or one set using `setNotFoundHandler`, will
 never trigger if the default route is overridden. This sets the handler for the
 Fastify application, not just the current instance context. Use
 [setNotFoundHandler](#setnotfoundhandler) if you want to customize 404 handling
 instead.
 
-This method set the `defaultRoute` for the server. Note that, its purpose is
+This method sets the `defaultRoute` for the server. Note that, its purpose is
 to interact with the underlying raw requests. Unlike other Fastify handlers, the
-arguments received are from type [RawRequest](./TypeScript.md#rawrequest) and
+arguments received are of type [RawRequest](./TypeScript.md#rawrequest) and
 [RawReply](./TypeScript.md#rawreply) respectively.
 
 ```js

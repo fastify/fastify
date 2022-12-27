@@ -8,7 +8,7 @@ import { FastifyBaseLogger } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
 import { FastifyRequest } from './request'
-import { DefaultRoute, RouteGenericInterface, RouteOptions, RouteShorthandMethod } from './route'
+import { RouteGenericInterface, RouteOptions, RouteShorthandMethod } from './route'
 import {
   FastifySchema,
   FastifySchemaCompiler,
@@ -168,8 +168,6 @@ export interface FastifyInstance<
   register: FastifyRegister<FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider> & PromiseLike<undefined>>;
 
   routing(req: RawRequest, res: RawReply): void;
-  getDefaultRoute(): DefaultRoute<RawRequest, RawReply>;
-  setDefaultRoute(defaultRoute: DefaultRoute<RawRequest, RawReply>): void;
 
   route<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

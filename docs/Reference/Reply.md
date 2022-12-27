@@ -674,6 +674,15 @@ fastify.get('/streams', function (request, reply) {
   reply.send(stream)
 })
 ```
+When using async-await you will need to return or await the reply object:
+```js
+fastify.get('/streams', async function (request, reply) {
+  const fs = require('fs')
+  const stream = fs.createReadStream('some-file', 'utf8')
+  reply.header('Content-Type', 'application/octet-stream')
+  return reply.send(stream)
+})
+```
 
 #### Buffers
 <a id="send-buffers"></a>
@@ -689,6 +698,16 @@ fastify.get('/streams', function (request, reply) {
 })
 ```
 
+When using async-await you will need to return or await the reply object:
+```js
+const fs = require('fs')
+fastify.get('/streams', async function (request, reply) {
+  fs.readFile('some-file', (err, fileBuffer) => {
+    reply.send(err || fileBuffer)
+  })
+  return reply
+})
+```
 #### Errors
 <a id="errors"></a>
 

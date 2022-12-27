@@ -112,7 +112,11 @@ fastify.setErrorHandler(function (error, request, reply) {
     this.log.error(error)
     // Send error response
     reply.status(500).send({ ok: false })
+    return
   }
+  
+  // pop error to default error handler
+  return error
 })
 
 // Run the server!

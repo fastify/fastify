@@ -60,7 +60,7 @@ export interface FastifyLoggerOptions<
       [key: string]: unknown;
     };
     res?: (res: RawReply) => {
-      statusCode: string | number;
+      statusCode?: string | number;
       [key: string]: unknown;
     };
   };

@@ -114,7 +114,7 @@ fastify.setErrorHandler(function (error, request, reply) {
     reply.status(500).send({ ok: false })
   } else {
     // fastify will use parent error handler to handle this
-    reply.send(err)
+    reply.send(error)
   }
 })
 

@@ -56,7 +56,7 @@ interface ReplyUnion {
 }
 
 const typedHandler: RouteHandler<ReplyPayload> = async (request, reply) => {
-  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, ReplyPayload>)>(reply.send)
+  expectType<((payload?: ReplyPayload['Reply']) => FastifyReply<ReplyPayload, RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>)>(reply.send)
 }
 
 const server = fastify()

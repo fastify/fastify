@@ -35,3 +35,12 @@ export type FastifyPluginAsync<
  * @deprecated union type doesn't work well with type inference in TS and is therefore deprecated in favor of explicit types. See FastifyRegister.
  */
 export type FastifyPlugin<Options extends FastifyPluginOptions = Record<never, never>> = FastifyPluginCallback<Options> | FastifyPluginAsync<Options>
+
+declare namespace fastify {
+  export type {
+    FastifyPlugin,
+    FastifyPluginAsync,
+    FastifyPluginCallback,
+    FastifyPluginOptions
+  }
+}

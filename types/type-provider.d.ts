@@ -93,3 +93,9 @@ RouteGeneric
 // review: support both async and sync return types
 // (Promise<Return> | Return | Promise<void> | void)
   : unknown
+
+declare namespace fastify {
+  export type {
+    FastifyTypeProvider, FastifyTypeProviderDefault
+  }
+}

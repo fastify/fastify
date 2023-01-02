@@ -69,3 +69,10 @@ export interface FastifyLoggerOptions<
   genReqId?: (req: RawRequest) => string;
   stream?: FastifyLoggerStreamDestination;
 }
+
+declare namespace fastify {
+  export type {
+    FastifyBaseLogger, FastifyLogFn, FastifyLoggerInstance,
+    FastifyLoggerOptions, LogLevel
+  }
+}

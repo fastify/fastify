@@ -73,3 +73,10 @@ export type getDefaultJsonParser = (onProtoPoisoning: ProtoAction, onConstructor
 export type removeContentTypeParser = (contentType: string | RegExp | (string | RegExp)[]) => void
 
 export type removeAllContentTypeParsers = () => void
+
+declare namespace fastify {
+  export type {
+    FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser,
+    hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction
+  }
+}

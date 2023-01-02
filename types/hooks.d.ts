@@ -489,3 +489,18 @@ export interface onCloseAsyncHookHandler<
     instance: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>
   ): Promise<unknown>;
 }
+
+declare namespace fastify {
+  export type {
+    DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload,
+    onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler,
+    onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler,
+    onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler,
+    onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler,
+    onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler,
+    onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler,
+    preParsingAsyncHookHandler, preParsingHookHandler,
+    preSerializationAsyncHookHandler, preSerializationHookHandler,
+    preValidationAsyncHookHandler, preValidationHookHandler
+  }
+}

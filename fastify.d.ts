@@ -1,3 +1,19 @@
+/// <reference path="./types/content-type-parser.d.ts" />
+/// <reference path="./types/context.d.ts" />
+/// <reference path="./types/errors.d.ts" />
+/// <reference path="./types/hooks.d.ts" />
+/// <reference path="./types/instance.d.ts" />
+/// <reference path="./types/logger.d.ts" />
+/// <reference path="./types/plugin.d.ts" />
+/// <reference path="./types/register.d.ts" />
+/// <reference path="./types/reply.d.ts" />
+/// <reference path="./types/request.d.ts" />
+/// <reference path="./types/route.d.ts" />
+/// <reference path="./types/schema.d.ts" />
+/// <reference path="./types/serverFactory.d.ts" />
+/// <reference path="./types/type-provider.d.ts" />
+/// <reference path="./types/utils.d.ts" />
+
 import * as http from 'http'
 import * as http2 from 'http2'
 import * as https from 'https'
@@ -9,21 +25,17 @@ import { Options as FJSOptions, SerializerCompiler } from '@fastify/fast-json-st
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 
-import { FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction } from './types/content-type-parser'
-import { FastifyContext, FastifyContextConfig } from './types/context'
+import { ProtoAction, ConstructorAction } from './types/content-type-parser'
+import { FastifyContextConfig } from './types/context'
 import { FastifyErrorCodes } from './types/errors'
-import { DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './types/hooks'
-import { FastifyListenOptions, FastifyInstance, PrintRoutesOptions } from './types/instance'
-import { FastifyBaseLogger, FastifyLoggerInstance, FastifyLoggerOptions, PinoLoggerOptions, FastifyLogFn, LogLevel } from './types/logger'
-import { FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin } from './types/plugin'
-import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './types/register'
+import { FastifyInstance } from './types/instance'
+import { FastifyBaseLogger, FastifyLoggerOptions, PinoLoggerOptions } from './types/logger'
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
-import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
-import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError } from './types/schema'
-import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
+import { FastifySchema, FastifySchemaValidationError } from './types/schema'
+import { FastifyServerFactory } from './types/serverFactory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
-import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
+import { RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault } from './types/utils'
 
 declare module '@fastify/error' {
   interface FastifyError {
@@ -160,23 +172,9 @@ declare namespace fastify {
   /* Export additional types */
   export type {
     LightMyRequestChain, InjectOptions, LightMyRequestResponse, LightMyRequestCallback, // 'light-my-request'
-    FastifyRequest, RequestGenericInterface, // './types/request'
-    FastifyReply, // './types/reply'
-    FastifyPluginCallback, FastifyPluginAsync, FastifyPluginOptions, FastifyPlugin, // './types/plugin'
-    FastifyListenOptions, FastifyInstance, PrintRoutesOptions, // './types/instance'
-    FastifyLoggerOptions, FastifyBaseLogger, FastifyLoggerInstance, FastifyLogFn, LogLevel, // './types/logger'
-    FastifyContext, FastifyContextConfig, // './types/context'
-    RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface, // './types/route'
-    FastifyRegister, FastifyRegisterOptions, RegisterOptions, // './types/register'
-    FastifyBodyParser, FastifyContentTypeParser, AddContentTypeParser, hasContentTypeParser, getDefaultJsonParser, ProtoAction, ConstructorAction, // './types/content-type-parser'
     FastifyError, // '@fastify/error'
-    FastifySchema, FastifySchemaCompiler, // './types/schema'
-    HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault, // './types/utils'
-    DoneFuncWithErrOrRes, HookHandlerDoneFunction, RequestPayload, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler, // './types/hooks'
-    FastifyServerFactory, FastifyServerFactoryHandler, // './types/serverFactory'
-    FastifyTypeProvider, FastifyTypeProviderDefault, // './types/type-provider'
-    FastifyErrorCodes, // './types/errors'
   }
+
   // named export
   // import { plugin } from 'plugin'
   // const { plugin } = require('plugin')

@@ -91,3 +91,9 @@ export interface FastifyRequest<RouteGeneric extends RouteGenericInterface = Rou
   // @deprecated
   readonly connection: RawRequest['socket'];
 }
+
+declare namespace fastify {
+  export type {
+    FastifyRequest, RequestGenericInterface
+  }
+}

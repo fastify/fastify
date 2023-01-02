@@ -584,3 +584,9 @@ export interface FastifyInstance<
     http2SessionTimeout?: number
   }>
 }
+
+declare namespace fastify {
+  export type {
+    FastifyInstance, FastifyListenOptions, PrintRoutesOptions
+  }
+}

@@ -43,3 +43,12 @@ export type RequestHeadersDefault = unknown
 
 export type ContextConfigDefault = unknown
 export type ReplyDefault = unknown
+
+declare namespace fastify {
+  export type {
+    HTTPMethods, RawServerBase, RawRequestDefaultExpression,
+    RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault,
+    RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault,
+    RequestHeadersDefault
+  }
+}

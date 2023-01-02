@@ -1,8 +1,8 @@
 import { FastifyPluginOptions, FastifyPluginCallback, FastifyPluginAsync } from './plugin'
 import { LogLevel } from './logger'
 import { FastifyInstance } from './instance'
-import { RawServerBase } from './utils'
-import { FastifyTypeProvider, RawServerDefault } from '../fastify'
+import { RawServerBase, RawServerDefault } from './utils'
+import { FastifyTypeProvider } from './type-provider'
 
 export interface RegisterOptions {
   prefix?: string;
@@ -30,4 +30,10 @@ export interface FastifyRegister<T = void, RawServer extends RawServerBase = Raw
     plugin: FastifyPluginCallback<Options, Server, TypeProvider> | FastifyPluginAsync<Options, Server, TypeProvider> | Promise<{ default: FastifyPluginCallback<Options, Server, TypeProvider> }> | Promise<{ default: FastifyPluginAsync<Options, Server, TypeProvider> }>,
     opts?: FastifyRegisterOptions<Options>
   ): T;
+}
+
+declare namespace fastify {
+  export type {
+    FastifyRegister, FastifyRegisterOptions, RegisterOptions
+  }
 }

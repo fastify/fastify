@@ -17,3 +17,9 @@ export interface FastifyServerFactory<
 > {
   (handler: FastifyServerFactoryHandler<RawServer>, opts: Record<string, unknown>): RawServer;
 }
+
+declare namespace fastify {
+  export type {
+    FastifyServerFactory, FastifyServerFactoryHandler
+  }
+}

@@ -13,7 +13,7 @@ import {
 } from './type-provider'
 import { FastifyBaseLogger, LogLevel } from './logger'
 
-export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface {}
+export interface RouteGenericInterface extends RequestGenericInterface, ReplyGenericInterface { }
 
 /**
  * Route shorthand options for the various shorthand methods
@@ -39,7 +39,7 @@ export interface RouteShorthandOptions<
   config?: FastifyContext<ContextConfig>['config'];
   version?: string;
   constraints?: { [name: string]: any },
-  prefixTrailingSlash?: 'slash'|'no-slash'|'both';
+  prefixTrailingSlash?: 'slash' | 'no-slash' | 'both';
   errorHandler?: (this: FastifyInstance, error: FastifyError, request: FastifyRequest, reply: FastifyReply) => void;
   // TODO: Change to actual type.
   schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error;
@@ -72,7 +72,7 @@ export type RouteHandlerMethod<
   this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
   request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
   reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
-// This return type used to be a generic type argument. Due to TypeScript's inference of return types, this rendered returns unchecked.
+  // This return type used to be a generic type argument. Due to TypeScript's inference of return types, this rendered returns unchecked.
 ) => ResolveFastifyReplyReturnType<TypeProvider, SchemaCompiler, RouteGeneric>
 
 /**
@@ -152,3 +152,10 @@ export type DefaultRoute<Request, Reply> = (
   req: Request,
   res: Reply,
 ) => void;
+
+declare namespace fastify {
+  export type {
+    RouteGenericInterface, RouteHandler, RouteHandlerMethod, RouteOptions,
+    RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler
+  }
+}

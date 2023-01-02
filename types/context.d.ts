@@ -13,3 +13,9 @@ export interface FastifyContext<ContextConfig = ContextConfigDefault> {
    */
   config: FastifyContextConfig & ContextConfig;
 }
+
+declare namespace fastify {
+  export type {
+    FastifyContext, FastifyContextConfig
+  }
+}

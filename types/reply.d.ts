@@ -62,3 +62,9 @@ export interface FastifyReply<
   serializeInput(input: {[key: string]: unknown}, httpStatus: string, contentType?: string): unknown;
   then(fulfilled: () => void, rejected: (err: Error) => void): void;
 }
+
+declare namespace fastify {
+  export type {
+    FastifyReply
+  }
+}

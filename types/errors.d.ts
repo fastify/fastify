@@ -51,3 +51,9 @@ export type FastifyErrorCodes = Record<
 'FST_ERR_PARENT_PLUGIN_BOOTED' |
 'FST_ERR_PLUGIN_TIMEOUT'
 , FastifyErrorConstructor>
+
+declare namespace fastify {
+  export type {
+    FastifyErrorCodes
+  }
+}

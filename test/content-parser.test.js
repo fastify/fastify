@@ -609,3 +609,46 @@ test('content-type fail when parameters not match - regexp', async t => {
 
   t.same(response.statusCode, 415)
 })
+
+// Refs: https://github.com/fastify/fastify/issues/4495
+test('content-type regexp list should be cloned when plugin override', async t => {
+  t.plan(6)
+
+  const fastify = Fastify()
+
+  fastify.addContentTypeParser(/^image\/.*/, { parseAs: 'buffer' }, (req, payload, done) => {
+    done(null, payload)
+  })
+
+  fastify.register(function plugin (fastify, options, done) {
+    fastify.post('/', function (request, reply) {
+      reply.type(request.headers['content-type']).send(request.body)
+    })
+
+    done()
+  })
+
+  {
+    const { payload, headers, statusCode } = await fastify.inject({
+      method: 'POST',
+      path: '/',
+      payload: 'jpeg',
+      headers: { 'content-type': 'image/jpeg' }
+    })
+    t.same(statusCode, 200)
+    t.same(headers['content-type'], 'image/jpeg')
+    t.same(payload, 'jpeg')
+  }
+
+  {
+    const { payload, headers, statusCode } = await fastify.inject({
+      method: 'POST',
+      path: '/',
+      payload: 'png',
+      headers: { 'content-type': 'image/png' }
+    })
+    t.same(statusCode, 200)
+    t.same(headers['content-type'], 'image/png')
+    t.same(payload, 'png')
+  }
+})

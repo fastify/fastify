@@ -16,7 +16,7 @@ import { ErrorObject as AjvErrorObject } from 'ajv'
 import * as http from 'http'
 import * as https from 'https'
 import * as http2 from 'http2'
-import { expectType, expectError, expectAssignable } from 'tsd'
+import { expectType, expectError, expectAssignable, expectNotAssignable } from 'tsd'
 import { FastifyLoggerInstance } from '../../types/logger'
 import { Socket } from 'net'
 
@@ -234,6 +234,13 @@ const ajvErrorObject: AjvErrorObject = {
   params: {},
   message: ''
 }
+expectNotAssignable<AjvErrorObject>({
+  keyword: '',
+  instancePath: '',
+  schemaPath: '',
+  params: '',
+  message: ''
+})
 
 expectAssignable<FastifyError['validation']>([ajvErrorObject])
 expectAssignable<FastifyError['validationContext']>('body')

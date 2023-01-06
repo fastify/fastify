@@ -39,6 +39,11 @@ const res = await fastify.inject('/encapsulated')
 console.log(res.json().message) // 'wrapped'
 ```
 
+>The root error handler is Fastify’s generic error handler. 
+>This error handler will use the headers and status code in the Error object, 
+>if they exist. **The headers and status code will not be automatically set if
+>a custom error handler is provided**. 
+
 ### Removed `app.use()` ([#3506](https://github.com/fastify/fastify/pull/3506))
 
 With v4 of Fastify, `app.use()` has been removed and the use of middleware is

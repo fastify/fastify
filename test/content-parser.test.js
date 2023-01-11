@@ -653,6 +653,30 @@ test('content-type regexp list should be cloned when plugin override', async t =
   }
 })
 
+test('allow partial content-type', async t => {
+  t.plan(1)
+
+  const fastify = Fastify()
+  fastify.removeAllContentTypeParsers()
+  fastify.addContentTypeParser('json', function (request, body, done) {
+    t.pass('should be called')
+    done(null, body)
+  })
+
+  fastify.post('/', async () => {
+    return 'ok'
+  })
+
+  await fastify.inject({
+    method: 'POST',
+    path: '/',
+    headers: {
+      'content-type': 'application/json; foo=bar; charset=utf8'
+    },
+    body: ''
+  })
+})
+
 test('content-type isEssence-check should use ParserListItem.type /1', async t => {
   t.plan(1)
 

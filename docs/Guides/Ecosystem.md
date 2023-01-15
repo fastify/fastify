@@ -474,6 +474,8 @@ section.
 - [`fastify-postgraphile`](https://github.com/alemagio/fastify-postgraphile)
   Plugin to integrate [PostGraphile](https://www.graphile.org/postgraphile/) in
   a Fastify project.
+- [`fastify-postgres-dot-js`](https://github.com/kylerush/fastify-postgresjs) Fastify
+  PostgreSQL connection plugin that uses [Postgres.js](https://github.com/porsager/postgres).
 - [`fastify-prettier`](https://github.com/hsynlms/fastify-prettier) A Fastify
   plugin that uses [prettier](https://github.com/prettier/prettier) under the
   hood to beautify outgoing responses and/or other things in the Fastify server.

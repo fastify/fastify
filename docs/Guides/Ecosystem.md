@@ -490,7 +490,8 @@ section.
   [qs](https://github.com/ljharb/qs).
 - [`fastify-racing`](https://github.com/metcoder95/fastify-racing) Fastify's
   plugin that adds support to handle an aborted request asynchronous.
-- [`fastify-ip`](https://github.com/metcoder95/fastify-ip) A plugin for Fastify that allows you to infer a request ID by a given set of custom Request headers.
+- [`fastify-ip`](https://github.com/metcoder95/fastify-ip) A plugin for Fastify
+  that allows you to infer a request ID by a given set of custom Request headers.
 - [`fastify-ravendb`](https://github.com/nearform/fastify-ravendb) RavenDB
   connection plugin. It exposes the same `DocumentStore` (or multiple ones)
   across the whole Fastify application.

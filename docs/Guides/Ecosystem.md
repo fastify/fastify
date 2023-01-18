@@ -366,6 +366,9 @@ section.
 - [`fastify-influxdb`](https://github.com/alex-ppg/fastify-influxdb) Fastify
   InfluxDB plugin connecting to an InfluxDB instance via the Influx default
   package.
+- [`fastify-ip`](https://github.com/metcoder95/fastify-ip) A plugin
+  for Fastify that allows you to infer a request ID by a
+  given set of custom Request headers.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT
   user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT

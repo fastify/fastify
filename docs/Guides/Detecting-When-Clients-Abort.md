@@ -1,20 +1,34 @@
 <h1 align="center">Fastify</h1>
 
-# Detecting When Clients Have Aborted
+# Detecting When Clients Abort
 
 ## Introduction
 
-Fastify provides request events to trigger at certain points in a requests lifecycle. This guide covers methods to detect if and when a client intentionally aborts a request. There isn't, though, a mechanism built-in to detect unintentional client disconnection scenariors such as when the client's internet connection is interupted.
+Fastify provides request events to trigger at certain points in a requests 
+lifecycle. This guide covers methods to detect if and when a client \
+intentionally aborts a request. There isn't, though, a mechanism built-in to 
+detect unintentional client disconnection scenariors such as when the client's 
+internet connection is interupted.
 
-Keep in mind, Fastify's clientErrorHandler is not designed to detect when a client aborts a request. This works in the same way as the standard Node HTTP module, which triggers the clientError event when there is a bad request or exceedingly large header data. When a client aborts a request, there is no error on the socket and the clientErrorHandler will not be triggered.
+Keep in mind, Fastify's clientErrorHandler is not designed to detect when a 
+client aborts a request. This works in the same way as the standard Node HTTP 
+module, which triggers the clientError event when there is a bad request or 
+exceedingly large header data. When a client aborts a request, there is no 
+error on the socket and the clientErrorHandler will not be triggered.
 
 ## Solution
 
 ### Overview
 
-The proposed solution is a possible way of detecting when a client intentionally aborts a request, such as when a browser is closed or the HTTP request is aborted from your client application. If there is an error in your application code that results in the server crashing, you may require additional logic to avoid a false abort detection.
+The proposed solution is a possible way of detecting when a client 
+intentionally aborts a request, such as when a browser is closed or the HTTP 
+request is aborted from your client application. If there is an error in your 
+application code that results in the server crashing, you may require 
+additional logic to avoid a false abort detection.
 
-The main goal here is to detect when a client intentionally aborts a connection so your application logic can proceed accordingly. This can be useful for logging purposes or halting business logic when necessary.
+The main goal here is to detect when a client intentionally aborts a connection 
+so your application logic can proceed accordingly. This can be useful for 
+logging purposes or halting business logic when necessary.
 
 ### Hands-on
 
@@ -29,7 +43,9 @@ Say we have the following base server set up:
 ```js
 import Fastify from 'fastify';
 
-const sleep = async (time) => await new Promise(resolve => setTimeout(resolve, time || 1000));
+const sleep = async (time) => {
+  return await new Promise(resolve => setTimeout(resolve, time || 1000));
+}
 
 const app = Fastify({
   logger: {
@@ -68,14 +84,20 @@ const start = async () => {
 start()
 ```
 
-Our code is simply setting up a Fastify server which includes the following functionality:
+Our code is simply setting up a Fastify server which includes the following 
+functionality:
 
-- Accepting requests at http://localhost:3000, with a 3 second delayed response of { ok: true }.
+- Accepting requests at http://localhost:3000, with a 3 second delayed response 
+of { ok: true }.
 - An onRequest hook that triggers when every request is received.
 - Logic that triggers in the hook when the request is closed.
 - Logging that occurs when the closed request attribute 'aborted' is true.
 
-In the request close event, you should examine the diff between a successful request and one aborted by the client to determine the best attribute for your use case. There are many other attributes on a request that will differ between a successfully closed request and one that has been aborted by the client. Examples of such attributes include:
+In the request close event, you should examine the diff between a successful 
+request and one aborted by the client to determine the best attribute for your 
+use case. There are many other attributes on a request that will differ between 
+a successfully closed request and one that has been aborted by the client. 
+Examples of such attributes include:
 
 - destroyed
 - errors
@@ -94,7 +116,8 @@ app.get('/', async (request, reply) => {
 })
 ```
 
-At any point in your business logic, you can check if the request has been aborted and perform alternative actions.
+At any point in your business logic, you can check if the request has been 
+aborted and perform alternative actions.
 
 ```js
 app.get('/', async (request, reply) => {
@@ -107,11 +130,15 @@ app.get('/', async (request, reply) => {
 })
 ```
 
-A benefit to adding this in your application code is that you can log Fastify details such as the reqId, which may be unavailable in lower-level code that only has access to the raw request information.
+A benefit to adding this in your application code is that you can log Fastify 
+details such as the reqId, which may be unavailable in lower-level code that 
+only has access to the raw request information.
 
 ### Testing
 
-To test this functionality you can use an app like Postman and cancel your request within 3 seconds. Alternatively, you can use Node to send an HTTP request with logic to abort the request before 3 seconds. Example:
+To test this functionality you can use an app like Postman and cancel your 
+request within 3 seconds. Alternatively, you can use Node to send an HTTP 
+request with logic to abort the request before 3 seconds. Example:
 
 ```js
 import axios from 'axios'
@@ -130,7 +157,8 @@ setTimeout(() => {
 }, 1000)
 ```
 
-With either approach, you should see the Fastify log appear at the moment the request is aborted.
+With either approach, you should see the Fastify log appear at the moment the 
+request is aborted.
 
 ## Conclusion
 
@@ -138,8 +166,13 @@ Specifics of the implementation will vary from one problem to another, but the
 main goal of this guide was to show a very specific use case of an issue that
 could be solved within Fastify's ecosystem.
 
-You can listen to the request close event and determine if the request was aborted or if it was successfully delivered. You can implement this solution in an onRequest hook or directly in an individual route.
+You can listen to the request close event and determine if the request was 
+aborted or if it was successfully delivered. You can implement this solution 
+in an onRequest hook or directly in an individual route.
 
-This approach will not trigger in the event of internet disruption, and such detection would require additional business logic. If you have flawed backend application logic that results in a server crash, then you could trigger a false detection. The clientErrorHandler, either by default or with custom logic, is not intended to handle this scenario and will not trigger when the client aborts a request.
-
-The keywords here were [Hooks](../Reference/Hooks.md), and [Request](../Reference/Request.md). Combining what Fastify has to offer can lead to very ingenious and creative solutions to a wide variety of problems. Let's be creative! :)
+This approach will not trigger in the event of internet disruption, and such 
+detection would require additional business logic. If you have flawed backend 
+application logic that results in a server crash, then you could trigger a 
+false detection. The clientErrorHandler, either by default or with custom 
+logic, is not intended to handle this scenario and will not trigger when the 
+client aborts a request.

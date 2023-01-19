@@ -266,6 +266,25 @@ test('can use external logger instance with custom serializer', t => {
   })
 })
 
+test('should throw in case external logger does not has a child property', t => {
+  t.plan(2)
+  const loggerInstance = {
+    info: console.info,
+    error: console.error,
+    debug: console.debug,
+    fatal: console.error,
+    warn: console.warn,
+    trace: console.trace
+  }
+
+  try {
+    Fastify({ logger: loggerInstance })
+  } catch (err) {
+    t.equal(err.code, 'FST_ERR_LOG_INVALID_OBJECT')
+    t.equal(err.message, "Invalid logger object provided. The logger instance should have a 'child' function. child")
+  }
+})
+
 test('expose the logger', t => {
   t.plan(2)
   let fastify = null

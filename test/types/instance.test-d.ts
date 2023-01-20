@@ -12,6 +12,7 @@ import { FastifyReply } from '../../types/reply'
 import { FastifyRequest } from '../../types/request'
 import { DefaultRoute } from '../../types/route'
 import { FastifySchemaControllerOptions, FastifySchemaCompiler, FastifySerializerCompiler } from '../../types/schema'
+import { AddressInfo } from 'net'
 
 const server = fastify()
 
@@ -26,6 +27,7 @@ expectAssignable<FastifyInstance>(server.addSchema({
 }))
 
 expectType<Record<string, unknown>>(server.getSchemas())
+expectType<AddressInfo[]>(server.addresses())
 expectType<unknown>(server.getSchema('SchemaId'))
 expectType<string>(server.printRoutes())
 expectType<string>(server.printPlugins())

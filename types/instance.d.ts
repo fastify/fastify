@@ -21,6 +21,7 @@ import {
   FastifyTypeProviderDefault
 } from './type-provider'
 import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { AddressInfo } from 'net'
 
 export interface PrintRoutesOptions {
   includeMeta?: boolean | (string | symbol)[]
@@ -92,6 +93,7 @@ export interface FastifyInstance<
   version: string;
   log: Logger;
 
+  addresses(): AddressInfo[]
   withTypeProvider<Provider extends FastifyTypeProvider>(): FastifyInstance<RawServer, RawRequest, RawReply, Logger, Provider>;
 
   addSchema(schema: unknown): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;

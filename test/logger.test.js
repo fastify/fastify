@@ -1,7 +1,6 @@
 'use strict'
 
 const { test, teardown, before } = require('tap')
-const helper = require('./helper')
 const http = require('http')
 const stream = require('stream')
 const split = require('split2')
@@ -12,6 +11,9 @@ const os = require('os')
 const fs = require('fs')
 const sget = require('simple-get').concat
 const dns = require('dns')
+
+const helper = require('./helper')
+const { FST_ERR_LOG_INVALID_LOGGER } = require('../lib/errors')
 
 const files = []
 let count = 0
@@ -267,7 +269,7 @@ test('can use external logger instance with custom serializer', t => {
 })
 
 test('should throw in case the external logger provided does not have a child method', t => {
-  t.plan(2)
+  t.plan(1)
   const loggerInstance = {
     info: console.info,
     error: console.error,
@@ -277,23 +279,21 @@ test('should throw in case the external logger provided does not have a child me
     trace: console.trace
   }
 
-  try {
-    Fastify({ logger: loggerInstance })
-  } catch (err) {
-    t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER')
-    t.equal(err.message, "Invalid logger object provided. The logger instance should have these functions(s): 'child'.")
-  }
+  t.throws(
+    () => Fastify({ logger: loggerInstance }),
+    FST_ERR_LOG_INVALID_LOGGER,
+    "Invalid logger object provided. The logger instance should have these functions(s): 'child'."
+  )
 })
 
 test('should throw in case a partially matching logger is provided', t => {
-  t.plan(2)
+  t.plan(1)
 
-  try {
-    Fastify({ logger: console })
-  } catch (err) {
-    t.equal(err.code, 'FST_ERR_LOG_INVALID_LOGGER')
-    t.equal(err.message, "Invalid logger object provided. The logger instance should have these functions(s): 'fatal,child'.")
-  }
+  t.throws(
+    () => Fastify({ logger: console }),
+    FST_ERR_LOG_INVALID_LOGGER,
+    "Invalid logger object provided. The logger instance should have these functions(s): 'fatal,child'."
+  )
 })
 
 test('expose the logger', t => {

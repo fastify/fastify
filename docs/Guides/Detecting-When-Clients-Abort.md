@@ -5,10 +5,10 @@
 ## Introduction
 
 Fastify provides request events to trigger at certain points in a request's 
-lifecycle. This guide covers methods to detect if and when a client 
-intentionally aborts a request. There isn't, though, a mechanism built-in to 
-detect unintentional client disconnection scenariors such as when the client's 
-internet connection is interupted.
+lifecycle. However, there isn't a mechanism built-in to 
+detect unintentional client disconnection scenarios such as when the client's 
+internet connection is interrupted. This guide covers methods to detect if
+and when a client intentionally aborts a request.
 
 Keep in mind, Fastify's clientErrorHandler is not designed to detect when a 
 client aborts a request. This works in the same way as the standard Node HTTP 

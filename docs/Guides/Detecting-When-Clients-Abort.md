@@ -141,20 +141,22 @@ request within 3 seconds. Alternatively, you can use Node to send an HTTP
 request with logic to abort the request before 3 seconds. Example:
 
 ```js
-import axios from 'axios'
-
 const controller = new AbortController();
+const signal = controller.signal;
 
-axios.get('http://localhost:3000', {
-   signal: controller.signal
-}).then(function(response) {
-   //...
-   console.log(response.data)
-});
-// cancel the request
+(async () => {
+   try {
+      const response = await fetch('http://localhost:3000', { signal });
+      const body = await response.text();
+      console.log(body);
+   } catch (error) {
+      console.error(error);
+   }
+})();
+
 setTimeout(() => {
-  controller.abort()
-}, 1000)
+   controller.abort()
+}, 1000);
 ```
 
 With either approach, you should see the Fastify log appear at the moment the 

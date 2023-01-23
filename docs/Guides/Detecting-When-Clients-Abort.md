@@ -84,7 +84,7 @@ const start = async () => {
 start()
 ```
 
-Our code is simply setting up a Fastify server which includes the following 
+Our code is setting up a Fastify server which includes the following 
 functionality:
 
 - Accepting requests at http://localhost:3000, with a 3 second delayed response 

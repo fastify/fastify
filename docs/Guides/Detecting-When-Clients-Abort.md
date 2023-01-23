@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Fastify provides request events to trigger at certain points in a requests 
+Fastify provides request events to trigger at certain points in a request's 
 lifecycle. This guide covers methods to detect if and when a client 
 intentionally aborts a request. There isn't, though, a mechanism built-in to 
 detect unintentional client disconnection scenariors such as when the client's 

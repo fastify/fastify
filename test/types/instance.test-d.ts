@@ -326,6 +326,8 @@ const versionConstraintStrategy = {
 expectType<void>(server.addConstraintStrategy(versionConstraintStrategy))
 expectType<boolean>(server.hasConstraintStrategy(versionConstraintStrategy.name))
 
+expectType<boolean>(server.hasPlugin(''))
+
 expectAssignable<DefaultRoute<RawRequestDefaultExpression, RawReplyDefaultExpression>>(server.getDefaultRoute())
 
 expectType<FastifySchemaCompiler<any> | undefined>(server.validatorCompiler)

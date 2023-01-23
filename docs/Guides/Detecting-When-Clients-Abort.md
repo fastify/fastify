@@ -26,9 +26,9 @@ request is aborted from your client application. If there is an error in your
 application code that results in the server crashing, you may require 
 additional logic to avoid a false abort detection.
 
-The main goal here is to detect when a client intentionally aborts a connection 
+The goal here is to detect when a client intentionally aborts a connection 
 so your application logic can proceed accordingly. This can be useful for 
-logging purposes or halting business logic when necessary.
+logging purposes or halting business logic.
 
 ### Hands-on
 

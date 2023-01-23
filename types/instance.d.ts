@@ -131,6 +131,7 @@ export interface FastifyInstance<
   hasDecorator(decorator: string | symbol): boolean;
   hasRequestDecorator(decorator: string | symbol): boolean;
   hasReplyDecorator(decorator: string | symbol): boolean;
+  hasPlugin(name: string): boolean;
 
   addConstraintStrategy(strategy: ConstraintStrategy<FindMyWayVersion<RawServer>, unknown>): void;
   hasConstraintStrategy(strategyName: string): boolean;

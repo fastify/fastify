@@ -12,7 +12,7 @@ and when a client intentionally aborts a request.
 
 Keep in mind, Fastify's `clientErrorHandler` is not designed to detect when a 
 client aborts a request. This works in the same way as the standard Node HTTP 
-module, which triggers the clientError event when there is a bad request or 
+module, which triggers the `clientError` event when there is a bad request or 
 exceedingly large header data. When a client aborts a request, there is no 
 error on the socket and the `clientErrorHandler` will not be triggered.
 

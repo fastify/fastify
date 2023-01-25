@@ -89,9 +89,7 @@ of `{ ok: true }`.
 
 In the request close event, you should examine the diff between a successful 
 request and one aborted by the client to determine the best property for your 
-use case. There are many other properties on a request that will differ between 
-a successfully closed request and one that has been aborted by the client. You 
-can find details about request properties in the 
+use case. You can find details about request properties in the 
 [NodeJS documentation](https://nodejs.org/api/http.html).
 
 You can also perform this logic outside of a hook, directly in a specific route.

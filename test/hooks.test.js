@@ -1275,7 +1275,6 @@ test('onSend hook throws', t => {
     './lib/schemas.js': {
       getSchemaSerializer: (param1, param2, param3) => {
         t.equal(param3, 'application/json; charset=utf-8', 'param3 should be "application/json; charset=utf-8"')
-        t.end()
       }
     }
   })

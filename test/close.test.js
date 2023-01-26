@@ -220,13 +220,13 @@ t.test('Current opened connection should continue to work after closing and retu
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
         client.once('data', data => {
           t.match(data.toString(), /Connection:\s*close/i)
@@ -259,7 +259,7 @@ t.test('Current opened connection should NOT continue to work after closing and 
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/1.1\r\n\r\n')
+      client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
       client.on('error', function () {
         // Dependending on the Operating System
@@ -275,7 +275,7 @@ t.test('Current opened connection should NOT continue to work after closing and 
         t.match(data.toString(), /Connection:\s*keep-alive/i)
         t.match(data.toString(), /200 OK/i)
 
-        client.write('GET / HTTP/1.1\r\n\r\n')
+        client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
       })
     })
   })

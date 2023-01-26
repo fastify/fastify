@@ -10,6 +10,7 @@ const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
+const proxyquire = require('proxyquire')
 
 process.removeAllListeners('warning')
 
@@ -1269,16 +1270,16 @@ test('clear payload', t => {
 })
 
 test('onSend hook throws', t => {
-  t.plan(12)
-  const MockedFastify = t.mock('../', {
-    '../lib/schemas': {
+  t.plan(11)
+  const Fastify = proxyquire('..', {
+    './lib/schemas.js': {
       getSchemaSerializer: (param1, param2, param3) => {
         t.equal(param3, 'application/json; charset=utf-8', 'param3 should be "application/json; charset=utf-8"')
         t.end()
       }
     }
   })
-  const fastify = MockedFastify()
+  const fastify = Fastify()
   fastify.addHook('onSend', function (request, reply, payload, done) {
     if (request.raw.method === 'DELETE') {
       done(new Error('some error'))

@@ -590,6 +590,8 @@ section.
   should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
   Application Messaging Protocol router for Fastify.
+- [`fastify-web-response`](https://github.com/erfanium/fastify-web-response) 
+  Enables returning web streams objects `Response` and `ReadableStream` in routes.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.
 - [`fastify-webpack-hot`](https://github.com/gajus/fastify-webpack-hot) Webpack

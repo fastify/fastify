@@ -5,16 +5,16 @@
 ## Introduction
 
 Fastify provides request events to trigger at certain points in a request's 
-lifecycle. However, there isn't a mechanism built-in to 
+lifecycle. However, there isn't a built-in mechanism to 
 detect unintentional client disconnection scenarios such as when the client's 
 internet connection is interrupted. This guide covers methods to detect if
 and when a client intentionally aborts a request.
 
-Keep in mind, Fastify's clientErrorHandler is not designed to detect when a 
+Keep in mind, Fastify's `clientErrorHandler` is not designed to detect when a 
 client aborts a request. This works in the same way as the standard Node HTTP 
-module, which triggers the clientError event when there is a bad request or 
+module, which triggers the `clientError` event when there is a bad request or 
 exceedingly large header data. When a client aborts a request, there is no 
-error on the socket and the clientErrorHandler will not be triggered.
+error on the socket and the `clientErrorHandler` will not be triggered.
 
 ## Solution
 
@@ -31,12 +31,6 @@ so your application logic can proceed accordingly. This can be useful for
 logging purposes or halting business logic.
 
 ### Hands-on
-
-For this sample solution, we'll be using the following:
-
-- `node.js v18.12.1`
-- `npm 8.19.2`
-- `fastify 4.11.0`
 
 Say we have the following base server set up:
 
@@ -88,19 +82,15 @@ Our code is setting up a Fastify server which includes the following
 functionality:
 
 - Accepting requests at http://localhost:3000, with a 3 second delayed response 
-of { ok: true }.
+of `{ ok: true }`.
 - An onRequest hook that triggers when every request is received.
 - Logic that triggers in the hook when the request is closed.
-- Logging that occurs when the closed request attribute 'aborted' is true.
+- Logging that occurs when the closed request property `aborted` is true.
 
 In the request close event, you should examine the diff between a successful 
-request and one aborted by the client to determine the best attribute for your 
-use case. There are many other attributes on a request that will differ between 
-a successfully closed request and one that has been aborted by the client. 
-Examples of such attributes include:
-
-- destroyed
-- errors
+request and one aborted by the client to determine the best property for your 
+use case. You can find details about request properties in the 
+[NodeJS documentation](https://nodejs.org/api/http.html).
 
 You can also perform this logic outside of a hook, directly in a specific route.
 
@@ -175,6 +165,6 @@ in an onRequest hook or directly in an individual route.
 This approach will not trigger in the event of internet disruption, and such 
 detection would require additional business logic. If you have flawed backend 
 application logic that results in a server crash, then you could trigger a 
-false detection. The clientErrorHandler, either by default or with custom 
+false detection. The `clientErrorHandler`, either by default or with custom 
 logic, is not intended to handle this scenario and will not trigger when the 
 client aborts a request.

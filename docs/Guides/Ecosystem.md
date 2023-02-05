@@ -628,7 +628,7 @@ section.
   and lightweight Sequelize plugin for Fastify.
 - [`typeorm-fastify-plugin`](https://github.com/jclemens24/fastify-typeorm) A simple
   and updated Typeorm plugin for use with Fastify.
-
+- [`fastify-shared-schema`](https://github.com/Adibla/fastify-shared-schema) Plugin for sharing schemas between different routes.
 #### [Community Tools](#community-tools)
 - [`@fastify-userland/workflows`](https://github.com/fastify-userland/workflows)
   Reusable workflows for use in the Fastify plugin

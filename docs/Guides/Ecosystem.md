@@ -201,6 +201,8 @@ section.
   using Fastify without the need of consuming a port on Electron apps.
 - [`fast-water`](https://github.com/tswayne/fast-water) A Fastify plugin for
   waterline. Decorates Fastify with waterline models.
+- [`fastify-204`](https://github.com/Shiva127/fastify-204) Fastify plugin that
+  return 204 status on empty response.
 - [`fastify-405`](https://github.com/Eomm/fastify-405) Fastify plugin that adds
   405 HTTP status to your routes
 - [`fastify-allow`](https://github.com/mattbishop/fastify-allow) Fastify plugin

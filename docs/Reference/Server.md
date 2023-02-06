@@ -9,6 +9,7 @@ options object which is used to customize the resulting instance. This document
 describes the properties available in that options object.
 
 - [Factory](#factory)
+  - [`http`](#http)
   - [`http2`](#http2)
   - [`https`](#https)
   - [`connectionTimeout`](#connectiontimeout)
@@ -90,6 +91,18 @@ describes the properties available in that options object.
     - [defaultTextParser](#defaulttextparser)
     - [errorHandler](#errorhandler)
     - [initialConfig](#initialconfig)
+
+### `http`
+<a id="factory-http"></a>
+
+An object used to configure the server's listening socket. The options
+are the same as the Node.js core [`createServer`
+method](https://nodejs.org/dist/latest-v14.x/docs/api/http.html#http_http_createserver_options_requestlistener).
+
+This option is ignored if options [`http2`](#factory-http2) or
+[`https`](#factory-https) are set.
+
++ Default: `null`
 
 ### `http2`
 <a id="factory-http2"></a>
@@ -494,7 +507,7 @@ request-id](./Logging.md#logging-request-id) section.
 Setting `requestIdHeader` to `false` will always use [genReqId](#genreqid)
 
 + Default: `'request-id'`
-  
+
 ```js
 const fastify = require('fastify')({
   requestIdHeader: 'x-custom-id', // -> use 'X-Custom-Id' header if available
@@ -1440,9 +1453,9 @@ plugins are registered. If you would like to augment the behavior of the default
 arguments `fastify.setNotFoundHandler()` within the context of these registered
 plugins.
 
-> Note: Some config properties from the request object will be 
+> Note: Some config properties from the request object will be
 > undefined inside the custom not found handler. E.g:
-> `request.routerPath`, `routerMethod` and `context.config`. 
+> `request.routerPath`, `routerMethod` and `context.config`.
 > This method design goal is to allow calling the common not found route.
 > To return a per-route customized 404 response, you can do it in
 > the response itself.

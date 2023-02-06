@@ -620,11 +620,20 @@ function fastify (options) {
       return
     }
 
-    const body = JSON.stringify({
-      error: http.STATUS_CODES['400'],
-      message: 'Client Error',
-      statusCode: 400
-    })
+    let body
+    if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
+      body = JSON.stringify({
+        error: http.STATUS_CODES['408'],
+        message: 'Client Timeout',
+        statusCode: 408
+      })
+    } else {
+      body = JSON.stringify({
+        error: http.STATUS_CODES['400'],
+        message: 'Client Error',
+        statusCode: 400
+      })
+    }
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some

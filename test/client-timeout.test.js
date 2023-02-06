@@ -30,7 +30,7 @@ test('requestTimeout should return 408', t => {
     socket.on('end', () => {
       t.equal(
         data.toString('utf-8'),
-        'HTTP/1.1 400 Bad Request\r\nContent-Length: 71\r\nContent-Type: application/json\r\n\r\n{"error":"Request Timeout","message":"Client Timeout","statusCode":408}'
+        'HTTP/1.1 408 Request Timeout\r\nContent-Length: 71\r\nContent-Type: application/json\r\n\r\n{"error":"Request Timeout","message":"Client Timeout","statusCode":408}'
       )
       t.end()
     })

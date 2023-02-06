@@ -24,7 +24,7 @@ test('requestTimeout should return 408', t => {
     let data = Buffer.alloc(0)
     const socket = connect(fastify.server.address().port)
 
-    socket.write('POST / HTTP/1.1\r\nConnection-Length: 1\r\n')
+    socket.write('POST / HTTP/1.1\r\nHost: example.com\r\nConnection-Length: 1\r\n')
 
     socket.on('data', c => (data = Buffer.concat([data, c])))
     socket.on('end', () => {

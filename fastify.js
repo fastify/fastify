@@ -59,7 +59,13 @@ const { defaultInitOptions } = getSecuredInitialConfig
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
-  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE
+  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
+  FST_ERR_OPTIONS_NOT_OBJ,
+  FST_ERR_QSP_NOT_FN,
+  FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
+  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
+  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
+  FST_ERR_VERSION_CONSTRAINT_NOT_STR
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -90,15 +96,15 @@ function fastify (options) {
   options = options || {}
 
   if (typeof options !== 'object') {
-    throw new TypeError('Options must be an object')
+    throw new FST_ERR_OPTIONS_NOT_OBJ()
   }
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
-    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+    throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
-    throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
+    throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
   }
 
   validateBodyLimitOption(options.bodyLimit)
@@ -117,10 +123,10 @@ function fastify (options) {
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
-    throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
   }
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
   }
 
   // Instance Fastify components
@@ -156,7 +162,7 @@ function fastify (options) {
         deriveConstraint: options.versioning.deriveVersion,
         validate (value) {
           if (typeof value !== 'string') {
-            throw new Error('Version constraint should be a string.')
+            throw new FST_ERR_VERSION_CONSTRAINT_NOT_STR()
           }
         }
       }

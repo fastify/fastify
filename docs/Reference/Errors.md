@@ -316,6 +316,11 @@ The JSON schema provided for validation to a route is not valid.
 
 The JSON schema provided for serialization of a route response is not valid.
 
+#### FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX
+<a id="FST_ERR_SCH_RESPONSE_SCHEMA_NOT_NESTED_2XX"></a>
+
+Response schemas should be nested under a valid status code (2XX).
+
 #### FST_ERR_HTTP2_INVALID_VERSION
 <a id="FST_ERR_HTTP2_INVALID_VERSION"></a>
 

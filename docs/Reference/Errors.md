@@ -133,6 +133,36 @@ fastify.listen({ port: 3000 }, function (err, address) {
 
 404 Not Found.
 
+#### FST_ERR_OPTIONS_NOT_OBJ
+<a id="FST_ERR_OPTIONS_NOT_OBJ"></a>
+
+Fastify options must be an object.
+
+#### FST_ERR_QSP_NOT_FN
+<a id="FST_ERR_QSP_NOT_FN"></a>
+
+QueryStringParser option should be a function.
+
+#### FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN
+<a id="FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN"></a>
+
+SchemaController.bucket option should be a function.
+
+#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ
+<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ"></a>
+
+Sajv.customOptions option should be an object.
+
+#### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR
+<a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR"></a>
+
+Sajv.plugins option should be an array.
+
+#### FST_ERR_VERSION_CONSTRAINT_NOT_STR
+<a id="FST_ERR_VERSION_CONSTRAINT_NOT_STR"></a>
+
+Version constraint should be a string.
+
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>

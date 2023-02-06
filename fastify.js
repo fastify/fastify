@@ -66,7 +66,10 @@ const {
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
   FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
   FST_ERR_VERSION_CONSTRAINT_NOT_STR,
-  FST_ERR_REOPENED_SERVER
+  FST_ERR_REOPENED_SERVER,
+  FST_ERR_REOPENED_CLOSE_SERVER,
+  FST_ERR_ROUTE_REWRITE_NOT_STR,
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -486,7 +489,7 @@ function fastify (options) {
     if (fastify[kState].started) {
       if (fastify[kState].closing) {
         // Force to return an error
-        const error = new Error('Server is closed')
+        const error = new FST_ERR_REOPENED_CLOSE_SERVER()
         if (cb) {
           cb(error)
           return
@@ -773,7 +776,8 @@ function fastify (options) {
           if (typeof url === 'string') {
             req.url = url
           } else {
-            req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
+            const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+            req.destroy(err)
           }
         }
       }
@@ -786,9 +790,9 @@ fastify.errorCodes = errorCodes
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
-    throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof schemaErrorFormatter}`)
+    throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
   } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {
-    throw new Error('schemaErrorFormatter option should not be an async function')
+    throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN('AsyncFunction')
   }
 }
 

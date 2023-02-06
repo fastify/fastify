@@ -148,6 +148,11 @@ QueryStringParser option should be a function.
 
 SchemaController.bucket option should be a function.
 
+#### FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
+<a id="FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN"></a>
+
+SchemaErrorFormatter option should be a non async function.
+
 #### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ
 <a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ"></a>
 
@@ -426,6 +431,11 @@ Body validation schema route is not supported.
 <a id="FST_ERR_ROUTE_BODY_LIMIT_OPTION_NOT_INT"></a>
 
 BodyLimit option must be an integer.
+
+#### FST_ERR_ROUTE_REWRITE_NOT_STR
+<a id="FST_ERR_ROUTE_REWRITE_NOT_STR"></a>
+
+Rewrite url needs to be of type "string".
 
 #### FST_ERR_REOPENED_CLOSE_SERVER
 <a id="FST_ERR_REOPENED_CLOSE_SERVER"></a>

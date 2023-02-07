@@ -55,4 +55,6 @@ export interface FastifySchemaControllerOptions{
   };
 }
 
-export type SchemaErrorFormatter = (errors: FastifySchemaValidationError[], dataVar: 'body' | 'headers' | 'parameters' | 'querystring') => Error
+export type SchemaErrorDataVar = 'body' | 'headers' | 'params' | 'querystring'
+
+export type SchemaErrorFormatter = (errors: FastifySchemaValidationError[], dataVar: SchemaErrorDataVar) => Error

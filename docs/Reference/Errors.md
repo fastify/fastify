@@ -156,7 +156,7 @@ SchemaErrorFormatter option should be a non async function.
 #### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ
 <a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ"></a>
 
-Sajv.customOptions option should be an object.
+ajv.customOptions option should be an object.
 
 #### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR
 <a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR"></a>

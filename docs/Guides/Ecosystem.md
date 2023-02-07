@@ -375,7 +375,7 @@ section.
   for Fastify that allows you to infer a request ID by a
   given set of custom Request headers.
 - [`fastify-json-to-xml`](https://github.com/Fdawgs/fastify-json-to-xml) Fastify
-  plugin to serialize JSON responses to XML.
+  plugin to serialize JSON responses into XML.
 - [`fastify-jwt-authz`](https://github.com/Ethan-Arrowood/fastify-jwt-authz) JWT
   user scope verifier.
 - [`fastify-jwt-webapp`](https://github.com/charlesread/fastify-jwt-webapp) JWT

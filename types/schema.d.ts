@@ -54,3 +54,5 @@ export interface FastifySchemaControllerOptions{
     buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions['serializerOpts']) => FastifySerializerCompiler<unknown>;
   };
 }
+
+export type SchemaErrorFormatter = (errors: FastifySchemaValidationError[], dataVar: 'body' | 'headers' | 'parameters' | 'querystring') => Error

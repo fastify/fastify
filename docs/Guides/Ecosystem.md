@@ -282,6 +282,9 @@ section.
   functions.
 - [`fastify-decorators`](https://github.com/L2jLiga/fastify-decorators) Fastify
   plugin that provides the set of TypeScript decorators.
+- [`fastify-delay-request`](https://github.com/climba03003/fastify-delay-request)
+  Fastify plugin that allows requests to be delayed whilst a task the response is
+  dependent on is run, such as a resource intensive process.
 - [`fastify-disablecache`](https://github.com/Fdawgs/fastify-disablecache)
   Fastify plugin to disable client-side caching, inspired by
   [nocache](https://github.com/helmetjs/nocache).

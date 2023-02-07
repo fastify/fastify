@@ -169,6 +169,7 @@ ajv.plugins option should be an array.
 Version constraint should be a string.
 
 <a name="FST_ERR_CTP_ALREADY_PRESENT"></a>
+
 #### FST_ERR_CTP_ALREADY_PRESENT
 <a id="FST_ERR_CTP_ALREADY_PRESENT"></a>
 
@@ -223,6 +224,11 @@ Body cannot be empty when content-type is set to `application/json`.
 <a id="FST_ERR_CTP_INSTANCE_ALREADY_STARTED"></a>
 
 Fastify is already started.
+
+#### FST_ERR_INSTANCE_ALREADY_LISTENING
+<a id="FST_ERR_INSTANCE_ALREADY_LISTENING"></a>
+
+Fastify instance is already listening.
 
 #### FST_ERR_DEC_ALREADY_PRESENT
 <a id="FST_ERR_DEC_ALREADY_PRESENT"></a>

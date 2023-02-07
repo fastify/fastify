@@ -161,7 +161,7 @@ ajv.customOptions option should be an object.
 #### FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR
 <a id="FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR"></a>
 
-Sajv.plugins option should be an array.
+ajv.plugins option should be an array.
 
 #### FST_ERR_VERSION_CONSTRAINT_NOT_STR
 <a id="FST_ERR_VERSION_CONSTRAINT_NOT_STR"></a>

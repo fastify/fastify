@@ -2,6 +2,7 @@ import { expectAssignable } from 'tsd'
 import fastify, { FastifyInstance, FastifySchema } from '../../fastify'
 import Ajv from 'ajv'
 import { StandaloneValidator } from '@fastify/ajv-compiler'
+import { StandaloneSerializer } from '@fastify/fast-json-stringify-compiler'
 
 const server = fastify()
 
@@ -66,14 +67,30 @@ expectAssignable<FastifyInstance>(server.setSerializerCompiler<FastifySchema & {
 {
   const factory = StandaloneValidator({
     readMode: false,
-    storeFunction(routeOpts, schemaValidationCode) {}
+    storeFunction (routeOpts, schemaValidationCode) { }
   })
 
   const app = fastify({
     jsonShorthand: false,
     schemaController: {
       compilersFactory: {
-        buildValidator: factory 
+        buildValidator: factory
+      }
+    }
+  })
+}
+
+{
+  const factory = StandaloneSerializer({
+    readMode: false,
+    storeFunction (routeOpts, schemaValidationCode) { }
+  })
+
+  const app = fastify({
+    jsonShorthand: false,
+    schemaController: {
+      compilersFactory: {
+        buildSerializer: factory
       }
     }
   })

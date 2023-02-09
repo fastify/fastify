@@ -1740,7 +1740,7 @@ test('cannot set the replySerializer when the server is running', t => {
       fastify.setReplySerializer(() => {})
       t.fail('this serializer should not be setup')
     } catch (e) {
-      t.equal(e.message, 'Cannot call "setReplySerializer" when fastify instance is already started!')
+      t.equal(e.code, 'FST_ERR_INSTANCE_ALREADY_LISTENING')
     }
   })
 })

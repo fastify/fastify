@@ -270,6 +270,10 @@ section.
 - [`fastify-cloudevents`](https://github.com/smartiniOnGitHub/fastify-cloudevents)
   Fastify plugin to generate and forward Fastify events in the Cloudevents
   format.
+- [`fastify-cloudinary`](https://github.com/Vanilla-IceCream/fastify-cloudinary)
+  The Cloudinary Fastify SDK allows you to quickly and easily integrate your
+  application with Cloudinary. Effortlessly optimize and transform your cloud's
+  assets.
 - [`fastify-cockroachdb`](https://github.com/alex-ppg/fastify-cockroachdb)
   Fastify plugin to connect to a CockroachDB PostgreSQL instance via the
   Sequelize ORM.
@@ -396,7 +400,7 @@ section.
   Fastify plugin to parse request language.
 - [`fastify-lcache`](https://github.com/denbon05/fastify-lcache)
   Lightweight cache plugin
-- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes) 
+- [`fastify-list-routes`](https://github.com/chuongtrh/fastify-list-routes)
   A simple plugin for Fastify list all available routes.
 - [`fastify-loader`](https://github.com/TheNoim/fastify-loader) Load routes from
   a directory and inject the Fastify instance in each file.
@@ -550,7 +554,7 @@ section.
   for sharing schemas between different routes.
 - [`fastify-slonik`](https://github.com/Unbuttun/fastify-slonik) Fastify Slonik
   plugin, with this you can use slonik in every part of your server.
-- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin 
+- [`fastify-slow-down`](https://github.com/nearform/fastify-slow-down) A plugin
   to delay the response from the server.
 - [`fastify-socket.io`](https://github.com/alemagio/fastify-socket.io) a
   Socket.io plugin for Fastify.
@@ -601,7 +605,7 @@ section.
   should use.
 - [`fastify-wamp-router`](https://github.com/lependu/fastify-wamp-router) Web
   Application Messaging Protocol router for Fastify.
-- [`fastify-web-response`](https://github.com/erfanium/fastify-web-response) 
+- [`fastify-web-response`](https://github.com/erfanium/fastify-web-response)
   Enables returning web streams objects `Response` and `ReadableStream` in routes.
 - [`fastify-webpack-hmr`](https://github.com/lependu/fastify-webpack-hmr)
   Webpack hot module reloading plugin for Fastify.

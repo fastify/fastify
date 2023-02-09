@@ -61,6 +61,13 @@ declare namespace fastify {
     https: https.ServerOptions | null
   }
 
+  export type FastifyHttpOptions<
+    Server extends http.Server,
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
+  > = FastifyServerOptions<Server, Logger> & {
+    http?: http.ServerOptions | null
+  }
+
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
 
   export interface ConnectionError extends Error {
@@ -224,7 +231,7 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts?: fastify.FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+>(opts?: fastify.FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 // CJS export
 // const fastify = require('fastify')

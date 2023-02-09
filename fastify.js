@@ -630,22 +630,30 @@ function fastify (options) {
       return
     }
 
-    const body = JSON.stringify({
-      error: http.STATUS_CODES['400'],
-      message: 'Client Error',
-      statusCode: 400
-    })
+    let body, errorCode, errorStatus, errorLabel
+
+    if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
+      errorCode = '408'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
+      errorLabel = 'timeout'
+    } else {
+      errorCode = '400'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`
+      errorLabel = 'error'
+    }
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
-    this.log.trace({ err }, 'client error')
+    this.log.trace({ err }, `client ${errorLabel}`)
     // Copying standard node behaviour
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
     if (socket.writable) {
-      socket.write(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
     }
     socket.destroy(err)
   }

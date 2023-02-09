@@ -165,7 +165,7 @@ test('Should return error while closing (promise) - injection', t => {
         url: '/'
       }).catch(err => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })
@@ -197,7 +197,7 @@ test('Should return error while closing (callback) - injection', t => {
         url: '/'
       }, (err, res) => {
         t.ok(err)
-        t.equal(err.message, 'Server is closed')
+        t.equal(err.code, 'FST_ERR_REOPENED_CLOSE_SERVER')
       })
     }, 100)
   })

@@ -1,5 +1,6 @@
-import { ValidatorCompiler } from '@fastify/ajv-compiler'
-import { FastifyInstance, FastifyServerOptions } from '../fastify'
+import { ValidatorFactory } from '@fastify/ajv-compiler'
+import { SerializerFactory } from '@fastify/fast-json-stringify-compiler'
+import { FastifyInstance } from '../fastify'
 /**
  * Schemas in Fastify follow the JSON-Schema standard. For this reason
  * we have opted to not ship strict schema based types. Instead we provide
@@ -50,8 +51,8 @@ export interface FastifySchemaControllerOptions{
     getSchemas(): Record<string, unknown>;
   };
   compilersFactory?: {
-    buildValidator?: ValidatorCompiler;
-    buildSerializer?: (externalSchemas: unknown, serializerOptsServerOption: FastifyServerOptions['serializerOpts']) => FastifySerializerCompiler<unknown>;
+    buildValidator?: ValidatorFactory;
+    buildSerializer?: SerializerFactory;
   };
 }
 

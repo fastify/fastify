@@ -3,9 +3,9 @@ import * as http2 from 'http2'
 import * as https from 'https'
 import { Socket } from 'net'
 
-import { Options as AjvOptions, ValidatorCompiler } from '@fastify/ajv-compiler'
+import { Options as AjvOptions, ValidatorFactory } from '@fastify/ajv-compiler'
 import { FastifyError } from '@fastify/error'
-import { Options as FJSOptions, SerializerCompiler } from '@fastify/fast-json-stringify-compiler'
+import { Options as FJSOptions, SerializerFactory } from '@fastify/fast-json-stringify-compiler'
 import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse, CallbackFunc as LightMyRequestCallback } from 'light-my-request'
 
@@ -134,8 +134,8 @@ declare namespace fastify {
         getSchemas(): Record<string, unknown>;
       };
       compilersFactory?: {
-        buildValidator?: ValidatorCompiler;
-        buildSerializer?: SerializerCompiler;
+        buildValidator?: ValidatorFactory;
+        buildSerializer?: SerializerFactory;
       };
     };
     return503OnClosing?: boolean,

@@ -204,7 +204,7 @@ function testHandlerOrBeforeHandlerHook (test, hookOrHandler) {
       app.listen({ port: 0 }, err => {
         t.error(err)
         const client = net.createConnection({ port: (app.server.address()).port }, () => {
-          client.write('GET / HTTP/1.1\r\n\r\n')
+          client.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
           let chunks = ''
           client.setEncoding('utf8')

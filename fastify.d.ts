@@ -20,7 +20,7 @@ import { FastifyRegister, FastifyRegisterOptions, RegisterOptions } from './type
 import { FastifyReply } from './types/reply'
 import { FastifyRequest, RequestGenericInterface } from './types/request'
 import { RouteHandler, RouteHandlerMethod, RouteOptions, RouteShorthandMethod, RouteShorthandOptions, RouteShorthandOptionsWithHandler, RouteGenericInterface } from './types/route'
-import { FastifySchema, FastifySchemaCompiler, FastifySchemaValidationError } from './types/schema'
+import { FastifySchema, FastifySchemaCompiler, SchemaErrorDataVar, SchemaErrorFormatter } from './types/schema'
 import { FastifyServerFactory, FastifyServerFactoryHandler } from './types/serverFactory'
 import { FastifyTypeProvider, FastifyTypeProviderDefault } from './types/type-provider'
 import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaultExpression, RawServerDefault, ContextConfigDefault, RequestBodyDefault, RequestQuerystringDefault, RequestParamsDefault, RequestHeadersDefault } from './types/utils'
@@ -28,7 +28,7 @@ import { HTTPMethods, RawServerBase, RawRequestDefaultExpression, RawReplyDefaul
 declare module '@fastify/error' {
   interface FastifyError {
     validation?: fastify.ValidationResult[];
-    validationContext?: 'body' | 'headers' | 'parameters' | 'querystring';
+    validationContext?: SchemaErrorDataVar;
   }
 }
 
@@ -59,6 +59,13 @@ declare namespace fastify {
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   > = FastifyServerOptions<Server, Logger> & {
     https: https.ServerOptions | null
+  }
+
+  export type FastifyHttpOptions<
+    Server extends http.Server,
+    Logger extends FastifyBaseLogger = FastifyBaseLogger
+  > = FastifyServerOptions<Server, Logger> & {
+    http?: http.ServerOptions | null
   }
 
   type FindMyWayVersion<RawServer extends RawServerBase> = RawServer extends http.Server ? HTTPVersion.V1 : HTTPVersion.V2
@@ -142,7 +149,7 @@ declare namespace fastify {
       res: FastifyReply<RawServer, RawRequestDefaultExpression<RawServer>, RawReplyDefaultExpression<RawServer>, RequestGeneric, FastifyContextConfig, SchemaCompiler, TypeProvider>
     ) => void,
     rewriteUrl?: (req: RawRequestDefaultExpression<RawServer>) => string,
-    schemaErrorFormatter?: (errors: FastifySchemaValidationError[], dataVar: string) => Error,
+    schemaErrorFormatter?: SchemaErrorFormatter,
     /**
      * listener to error events emitted by client connections
      */
@@ -224,7 +231,7 @@ declare function fastify<
   Reply extends RawReplyDefaultExpression<Server> = RawReplyDefaultExpression<Server>,
   Logger extends FastifyBaseLogger = FastifyBaseLogger,
   TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
->(opts?: fastify.FastifyServerOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
+>(opts?: fastify.FastifyHttpOptions<Server, Logger>): FastifyInstance<Server, Request, Reply, Logger, TypeProvider> & PromiseLike<FastifyInstance<Server, Request, Reply, Logger, TypeProvider>>
 
 // CJS export
 // const fastify = require('fastify')

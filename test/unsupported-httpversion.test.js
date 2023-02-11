@@ -18,7 +18,7 @@ t.test('Will return 505 HTTP error if HTTP version (2.0 when server is 1.1) is n
 
     const port = fastify.server.address().port
     const client = net.createConnection({ port }, () => {
-      client.write('GET / HTTP/2.0\r\n\r\n')
+      client.write('GET / HTTP/2.0\r\nHost: example.com\r\n\r\n')
 
       client.once('data', data => {
         t.match(data.toString(), /505 HTTP Version Not Supported/i)

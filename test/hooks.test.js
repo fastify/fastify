@@ -10,6 +10,7 @@ const fs = require('fs')
 const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
+const proxyquire = require('proxyquire')
 
 process.removeAllListeners('warning')
 
@@ -1269,7 +1270,14 @@ test('clear payload', t => {
 })
 
 test('onSend hook throws', t => {
-  t.plan(9)
+  t.plan(11)
+  const Fastify = proxyquire('..', {
+    './lib/schemas.js': {
+      getSchemaSerializer: (param1, param2, param3) => {
+        t.equal(param3, 'application/json; charset=utf-8', 'param3 should be "application/json; charset=utf-8"')
+      }
+    }
+  })
   const fastify = Fastify()
   fastify.addHook('onSend', function (request, reply, payload, done) {
     if (request.raw.method === 'DELETE') {
@@ -1281,10 +1289,34 @@ test('onSend hook throws', t => {
       throw new Error('some error')
     }
 
+    if (request.raw.method === 'POST') {
+      throw new Error('some error')
+    }
+
     done()
   })
 
   fastify.get('/', (req, reply) => {
+    reply.send({ hello: 'world' })
+  })
+
+  fastify.post('/', {
+    schema: {
+      response: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                name: { type: 'string' },
+                image: { type: 'string' },
+                address: { type: 'string' }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, (req, reply) => {
     reply.send({ hello: 'world' })
   })
 
@@ -1308,6 +1340,13 @@ test('onSend hook throws', t => {
       t.equal(response.statusCode, 200)
       t.equal(response.headers['content-length'], '' + body.length)
       t.same(JSON.parse(body), { hello: 'world' })
+    })
+    sget({
+      method: 'POST',
+      url: 'http://localhost:' + fastify.server.address().port
+    }, (err, response, body) => {
+      t.error(err)
+      t.equal(response.statusCode, 500)
     })
     sget({
       method: 'DELETE',

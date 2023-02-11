@@ -1,6 +1,6 @@
 'use strict'
 
-const VERSION = '4.11.0'
+const VERSION = '4.13.0'
 
 const Avvio = require('avvio')
 const http = require('http')
@@ -59,7 +59,17 @@ const { defaultInitOptions } = getSecuredInitialConfig
 const {
   FST_ERR_ASYNC_CONSTRAINT,
   FST_ERR_BAD_URL,
-  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE
+  FST_ERR_FORCE_CLOSE_CONNECTIONS_IDLE_NOT_AVAILABLE,
+  FST_ERR_OPTIONS_NOT_OBJ,
+  FST_ERR_QSP_NOT_FN,
+  FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN,
+  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ,
+  FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR,
+  FST_ERR_VERSION_CONSTRAINT_NOT_STR,
+  FST_ERR_INSTANCE_ALREADY_LISTENING,
+  FST_ERR_REOPENED_CLOSE_SERVER,
+  FST_ERR_ROUTE_REWRITE_NOT_STR,
+  FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN
 } = errorCodes
 
 const { buildErrorHandler } = require('./lib/error-handler.js')
@@ -90,15 +100,15 @@ function fastify (options) {
   options = options || {}
 
   if (typeof options !== 'object') {
-    throw new TypeError('Options must be an object')
+    throw new FST_ERR_OPTIONS_NOT_OBJ()
   }
 
   if (options.querystringParser && typeof options.querystringParser !== 'function') {
-    throw new Error(`querystringParser option should be a function, instead got '${typeof options.querystringParser}'`)
+    throw new FST_ERR_QSP_NOT_FN(typeof options.querystringParser)
   }
 
   if (options.schemaController && options.schemaController.bucket && typeof options.schemaController.bucket !== 'function') {
-    throw new Error(`schemaController.bucket option should be a function, instead got '${typeof options.schemaController.bucket}'`)
+    throw new FST_ERR_SCHEMA_CONTROLLER_BUCKET_OPT_NOT_FN(typeof options.schemaController.bucket)
   }
 
   validateBodyLimitOption(options.bodyLimit)
@@ -117,10 +127,10 @@ function fastify (options) {
 
   // Ajv options
   if (!ajvOptions.customOptions || Object.prototype.toString.call(ajvOptions.customOptions) !== '[object Object]') {
-    throw new Error(`ajv.customOptions option should be an object, instead got '${typeof ajvOptions.customOptions}'`)
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_OBJ(typeof ajvOptions.customOptions)
   }
   if (!ajvOptions.plugins || !Array.isArray(ajvOptions.plugins)) {
-    throw new Error(`ajv.plugins option should be an array, instead got '${typeof ajvOptions.plugins}'`)
+    throw new FST_ERR_AJV_CUSTOM_OPTIONS_OPT_NOT_ARR(typeof ajvOptions.plugins)
   }
 
   // Instance Fastify components
@@ -156,7 +166,7 @@ function fastify (options) {
         deriveConstraint: options.versioning.deriveVersion,
         validate (value) {
           if (typeof value !== 'string') {
-            throw new Error('Version constraint should be a string.')
+            throw new FST_ERR_VERSION_CONSTRAINT_NOT_STR()
           }
         }
       }
@@ -463,7 +473,7 @@ function fastify (options) {
   return fastify
 
   function throwIfAlreadyStarted (msg) {
-    if (fastify[kState].started) throw new Error(msg)
+    if (fastify[kState].started) throw new FST_ERR_INSTANCE_ALREADY_LISTENING(msg)
   }
 
   // HTTP injection handling
@@ -479,7 +489,7 @@ function fastify (options) {
     if (fastify[kState].started) {
       if (fastify[kState].closing) {
         // Force to return an error
-        const error = new Error('Server is closed')
+        const error = new FST_ERR_REOPENED_CLOSE_SERVER()
         if (cb) {
           cb(error)
           return
@@ -564,7 +574,7 @@ function fastify (options) {
 
   // wrapper that we expose to the user for hooks handling
   function addHook (name, fn) {
-    throwIfAlreadyStarted('Cannot call "addHook" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "addHook"!')
 
     if (fn == null) {
       throw new errorCodes.FST_ERR_HOOK_INVALID_HANDLER(name, fn)
@@ -607,7 +617,7 @@ function fastify (options) {
 
   // wrapper that we expose to the user for schemas handling
   function addSchema (schema) {
-    throwIfAlreadyStarted('Cannot call "addSchema" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "addSchema"!')
     this[kSchemaController].add(schema)
     this[kChildren].forEach(child => child.addSchema(schema))
     return this
@@ -620,22 +630,30 @@ function fastify (options) {
       return
     }
 
-    const body = JSON.stringify({
-      error: http.STATUS_CODES['400'],
-      message: 'Client Error',
-      statusCode: 400
-    })
+    let body, errorCode, errorStatus, errorLabel
+
+    if (err.code === 'ERR_HTTP_REQUEST_TIMEOUT') {
+      errorCode = '408'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Client Timeout","statusCode":408}`
+      errorLabel = 'timeout'
+    } else {
+      errorCode = '400'
+      errorStatus = http.STATUS_CODES[errorCode]
+      body = `{"error":"${errorStatus}","message":"Client Error","statusCode":400}`
+      errorLabel = 'error'
+    }
 
     // Most devs do not know what to do with this error.
     // In the vast majority of cases, it's a network error and/or some
     // config issue on the load balancer side.
-    this.log.trace({ err }, 'client error')
+    this.log.trace({ err }, `client ${errorLabel}`)
     // Copying standard node behaviour
     // https://github.com/nodejs/node/blob/6ca23d7846cb47e84fd344543e394e50938540be/lib/_http_server.js#L666
 
     // If the socket is not writable, there is no reason to try to send data.
     if (socket.writable) {
-      socket.write(`HTTP/1.1 400 Bad Request\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
+      socket.write(`HTTP/1.1 ${errorCode} ${errorStatus}\r\nContent-Length: ${body.length}\r\nContent-Type: application/json\r\n\r\n${body}`)
     }
     socket.destroy(err)
   }
@@ -697,33 +715,33 @@ function fastify (options) {
   }
 
   function setNotFoundHandler (opts, handler) {
-    throwIfAlreadyStarted('Cannot call "setNotFoundHandler" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setNotFoundHandler"!')
 
     fourOhFour.setNotFoundHandler.call(this, opts, handler, avvio, router.routeHandler)
     return this
   }
 
   function setValidatorCompiler (validatorCompiler) {
-    throwIfAlreadyStarted('Cannot call "setValidatorCompiler" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setValidatorCompiler"!')
     this[kSchemaController].setValidatorCompiler(validatorCompiler)
     return this
   }
 
   function setSchemaErrorFormatter (errorFormatter) {
-    throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setSchemaErrorFormatter"!')
     validateSchemaErrorFormatter(errorFormatter)
     this[kSchemaErrorFormatter] = errorFormatter.bind(this)
     return this
   }
 
   function setSerializerCompiler (serializerCompiler) {
-    throwIfAlreadyStarted('Cannot call "setSerializerCompiler" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setSerializerCompiler"!')
     this[kSchemaController].setSerializerCompiler(serializerCompiler)
     return this
   }
 
   function setSchemaController (schemaControllerOpts) {
-    throwIfAlreadyStarted('Cannot call "setSchemaController" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setSchemaController"!')
     const old = this[kSchemaController]
     const schemaController = SchemaController.buildSchemaController(old, Object.assign({}, old.opts, schemaControllerOpts))
     this[kSchemaController] = schemaController
@@ -733,7 +751,7 @@ function fastify (options) {
   }
 
   function setReplySerializer (replySerializer) {
-    throwIfAlreadyStarted('Cannot call "setReplySerializer" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setReplySerializer"!')
 
     this[kReplySerializerDefault] = replySerializer
     return this
@@ -741,7 +759,7 @@ function fastify (options) {
 
   // wrapper that we expose to the user for configure the custom error handler
   function setErrorHandler (func) {
-    throwIfAlreadyStarted('Cannot call "setErrorHandler" when fastify instance is already started!')
+    throwIfAlreadyStarted('Cannot call "setErrorHandler"!')
 
     this[kErrorHandler] = buildErrorHandler(this[kErrorHandler], func.bind(this))
     return this
@@ -766,7 +784,8 @@ function fastify (options) {
           if (typeof url === 'string') {
             req.url = url
           } else {
-            req.destroy(new Error(`Rewrite url for "${req.url}" needs to be of type "string" but received "${typeof url}"`))
+            const err = new FST_ERR_ROUTE_REWRITE_NOT_STR(req.url, typeof url)
+            req.destroy(err)
           }
         }
       }
@@ -779,9 +798,9 @@ fastify.errorCodes = errorCodes
 
 function validateSchemaErrorFormatter (schemaErrorFormatter) {
   if (typeof schemaErrorFormatter !== 'function') {
-    throw new Error(`schemaErrorFormatter option should be a function, instead got ${typeof schemaErrorFormatter}`)
+    throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN(typeof schemaErrorFormatter)
   } else if (schemaErrorFormatter.constructor.name === 'AsyncFunction') {
-    throw new Error('schemaErrorFormatter option should not be an async function')
+    throw new FST_ERR_SCHEMA_ERROR_FORMATTER_NOT_FN('AsyncFunction')
   }
 }
 

@@ -394,9 +394,11 @@ configuration](https://github.com/fastify/ajv-compiler#ajv-configuration) is:
 
 ```js
 {
-  coerceTypes: true, // change data type of data to match type keyword
+  coerceTypes: 'array', // change data type of data to match type keyword
   useDefaults: true, // replace missing properties and items with the values from corresponding default keyword
   removeAdditional: true, // remove additional properties
+  uriResolver: require('fast-uri'),
+  addUsedSchema: false,
   // Explicitly set allErrors to `false`.
   // When set to `true`, a DoS attack is possible.
   allErrors: false

@@ -13,8 +13,8 @@ import {
   FastifySchema,
   FastifySchemaCompiler,
   FastifySchemaControllerOptions,
-  FastifySchemaValidationError,
-  FastifySerializerCompiler
+  FastifySerializerCompiler,
+  SchemaErrorFormatter
 } from './schema'
 import {
   FastifyTypeProvider,
@@ -530,7 +530,7 @@ export interface FastifyInstance<
   /*
   * Set the schema error formatter for all routes.
   */
-  setSchemaErrorFormatter(errorFormatter: (errors: FastifySchemaValidationError[], dataVar: string) => Error): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
+  setSchemaErrorFormatter(errorFormatter: SchemaErrorFormatter): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
   /**
    * Add a content type parser
    */

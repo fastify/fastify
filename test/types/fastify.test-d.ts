@@ -240,7 +240,7 @@ expectAssignable<ValidationResult>(ajvErrorObject)
 expectAssignable<FastifyError['validation']>([ajvErrorObject])
 expectAssignable<FastifyError['validationContext']>('body')
 expectAssignable<FastifyError['validationContext']>('headers')
-expectAssignable<FastifyError['validationContext']>('parameters')
+expectAssignable<FastifyError['validationContext']>('params')
 expectAssignable<FastifyError['validationContext']>('querystring')
 
 const routeGeneric: RouteGenericInterface = {}

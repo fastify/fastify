@@ -7,6 +7,10 @@ fastify.listen({
   port: 3000
 })
 
+fastify.addHook('onListen', function () {
+  console.log('listening')
+})
+
 fastify.get('/', async function (request, reply) {
   reply.code(200).send({ data: 'home page' })
 })

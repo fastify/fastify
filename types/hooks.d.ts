@@ -394,6 +394,45 @@ export interface onErrorAsyncHookHandler<
   ): Promise<unknown>;
 }
 
+/**
+ * `onClientAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
+ * The `onClientAbort` hook is executed when a client closes the connection before the entire response has been received. Therefore, you will not be able to send data to the client.
+ */
+export interface onClientAbortHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>,
+    done: HookHandlerDoneFunction
+  ): void;
+}
+
+export interface onClientAbortAsyncHookHandler<
+  RawServer extends RawServerBase = RawServerDefault,
+  RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+  RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
+  RouteGeneric extends RouteGenericInterface = RouteGenericInterface,
+  ContextConfig = ContextConfigDefault,
+  SchemaCompiler extends FastifySchema = FastifySchema,
+  TypeProvider extends FastifyTypeProvider = FastifyTypeProviderDefault,
+  Logger extends FastifyBaseLogger = FastifyBaseLogger
+> {
+  (
+    this: FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>,
+    request: FastifyRequest<RouteGeneric, RawServer, RawRequest, SchemaCompiler, TypeProvider, ContextConfig, Logger>,
+    reply: FastifyReply<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider>
+  ): Promise<unknown>;
+}
+
 // Application Hooks
 
 /**

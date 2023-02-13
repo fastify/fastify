@@ -11,6 +11,10 @@ const split = require('split2')
 const symbols = require('../lib/symbols.js')
 const payload = { hello: 'world' }
 const proxyquire = require('proxyquire')
+const { promisify } = require('util')
+const { connect } = require('net')
+
+const sleep = promisify(setTimeout)
 
 process.removeAllListeners('warning')
 
@@ -3403,4 +3407,87 @@ test('registering invalid hooks should throw an error', async t => {
       reply.send('hello world')
     })
   }, new Error('onSend hook should be a function, instead got [object Undefined]'))
+})
+
+test('onClientAbort should be triggered', t => {
+  const fastify = Fastify()
+  let order = 0
+
+  t.plan(3)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onClientAbort', function (req, res, done) {
+    t.ok(++order, 1, 'called in hook')
+    done()
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    async handler (request, reply) {
+      await sleep(1000)
+      return { hello: 'world' }
+    },
+    async onClientAbort (_req, _reply) {
+      t.equal(++order, 2, 'called in route')
+    }
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(console.error)
+  })
+})
+
+test('onClientAbort should support encapsulation', t => {
+  const fastify = Fastify()
+  let order = 0
+  let child
+
+  t.plan(6)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onClientAbort', function (req, res, done) {
+    t.ok(++order, 1, 'called in root')
+    t.strictSame(this.pluginName, child.pluginName)
+    done()
+  })
+
+  fastify.register(async function (_child, _, done) {
+    child = _child
+
+    fastify.addHook('onClientAbort', async function (req, res) {
+      t.ok(++order, 2, 'called in child')
+      t.strictSame(this.pluginName, child.pluginName)
+    })
+
+    child.route({
+      method: 'GET',
+      path: '/',
+      async handler (request, reply) {
+        await sleep(1000)
+        return { hello: 'world' }
+      },
+      async onClientAbort (_req, _reply) {
+        t.equal(++order, 3, 'called in route')
+      }
+    })
+
+    done()
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(console.error)
+  })
 })

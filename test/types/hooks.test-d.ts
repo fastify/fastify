@@ -114,6 +114,15 @@ server.addHook('onError', function (request, reply, error, done) {
   expectType<void>(done())
 })
 
+server.addHook('onClientAbort', function (request, reply, done) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
+  expectAssignable<(err?: FastifyError) => void>(done)
+  expectAssignable<(err?: NodeJS.ErrnoException) => void>(done)
+  expectType<void>(done(new Error()))
+})
+
 server.addHook('onRoute', function (opts) {
   expectType<FastifyInstance>(this)
   expectType<RouteOptions & { routePath: string; path: string; prefix: string}>(opts)
@@ -199,6 +208,12 @@ server.addHook('onError', async function (request, reply, error) {
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
   expectType<FastifyError>(error)
+})
+
+server.addHook('onClientAbort', async function (request, reply) {
+  expectType<FastifyInstance>(this)
+  expectType<FastifyRequest>(request)
+  expectType<FastifyReply>(reply)
 })
 
 server.addHook('onRegister', async (instance, opts) => {

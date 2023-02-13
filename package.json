@@ -168,7 +168,7 @@
     "typescript": "^4.8.3",
     "undici": "^5.10.0",
     "vary": "^1.1.2",
-    "yup": "^0.32.11"
+    "yup": "^1.0.0"
   },
   "dependencies": {
     "@fastify/ajv-compiler": "^3.5.0",

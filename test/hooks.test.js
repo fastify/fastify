@@ -3440,7 +3440,7 @@ test('onClientAbort should be triggered', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(console.error)
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
   })
 })
 
@@ -3488,6 +3488,6 @@ test('onClientAbort should support encapsulation', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(console.error)
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
   })
 })

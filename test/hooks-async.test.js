@@ -584,6 +584,18 @@ test('preHandler respond with a stream', t => {
 })
 
 test('Should log a warning if is an async function with `done`', t => {
+  t.test('2 arguments', t => {
+    t.plan(2)
+    const fastify = Fastify()
+
+    try {
+      fastify.addHook('onRequestAbort', async (req, done) => {})
+    } catch (e) {
+      t.ok(e.code, 'FST_ERR_HOOK_INVALID_ASYNC_HANDLER')
+      t.ok(e.message === 'Async function has too many arguments. Async hooks should not use the \'done\' argument.')
+    }
+  })
+
   t.test('3 arguments', t => {
     t.plan(2)
     const fastify = Fastify()

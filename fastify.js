@@ -588,6 +588,10 @@ function fastify (options) {
       if (fn.constructor.name === 'AsyncFunction' && fn.length !== 0) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
       }
+    } else if (name === 'onRequestAbort') {
+      if (fn.constructor.name === 'AsyncFunction' && fn.length !== 1) {
+        throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()
+      }
     } else {
       if (fn.constructor.name === 'AsyncFunction' && fn.length === 3) {
         throw new errorCodes.FST_ERR_HOOK_INVALID_ASYNC_HANDLER()

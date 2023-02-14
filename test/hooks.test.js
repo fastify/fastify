@@ -3416,7 +3416,7 @@ test('onRequestAbort should be triggered', t => {
   t.plan(3)
   t.teardown(() => fastify.close())
 
-  fastify.addHook('onRequestAbort', function (req, res, done) {
+  fastify.addHook('onRequestAbort', function (req, done) {
     t.ok(++order, 1, 'called in hook')
     done()
   })
@@ -3428,7 +3428,7 @@ test('onRequestAbort should be triggered', t => {
       await sleep(1000)
       return { hello: 'world' }
     },
-    async onRequestAbort (_req, _reply) {
+    async onRequestAbort (req) {
       t.equal(++order, 2, 'called in route')
     }
   })
@@ -3452,7 +3452,7 @@ test('onRequestAbort should support encapsulation', t => {
   t.plan(6)
   t.teardown(() => fastify.close())
 
-  fastify.addHook('onRequestAbort', function (req, res, done) {
+  fastify.addHook('onRequestAbort', function (req, done) {
     t.ok(++order, 1, 'called in root')
     t.strictSame(this.pluginName, child.pluginName)
     done()
@@ -3461,7 +3461,7 @@ test('onRequestAbort should support encapsulation', t => {
   fastify.register(async function (_child, _, done) {
     child = _child
 
-    fastify.addHook('onRequestAbort', async function (req, res) {
+    fastify.addHook('onRequestAbort', async function (req) {
       t.ok(++order, 2, 'called in child')
       t.strictSame(this.pluginName, child.pluginName)
     })
@@ -3473,12 +3473,136 @@ test('onRequestAbort should support encapsulation', t => {
         await sleep(1000)
         return { hello: 'world' }
       },
-      async onRequestAbort (_req, _reply) {
+      async onRequestAbort (_req) {
         t.equal(++order, 3, 'called in route')
       }
     })
 
     done()
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+  })
+})
+
+test('onRequestAbort should handle errors / 1', t => {
+  const fastify = Fastify()
+
+  t.plan(2)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onRequestAbort', function (req, done) {
+    process.nextTick(() => t.pass())
+    done(new Error('KABOOM!'))
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    async handler (request, reply) {
+      await sleep(1000)
+      return { hello: 'world' }
+    }
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+  })
+})
+
+test('onRequestAbort should handle errors / 2', t => {
+  const fastify = Fastify()
+
+  t.plan(2)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onRequestAbort', function (req, done) {
+    process.nextTick(() => t.pass())
+    throw new Error('KABOOM!')
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    async handler (request, reply) {
+      await sleep(1000)
+      return { hello: 'world' }
+    }
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+  })
+})
+
+test('onRequestAbort should handle async errors / 1', t => {
+  const fastify = Fastify()
+
+  t.plan(2)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onRequestAbort', async function (req) {
+    process.nextTick(() => t.pass())
+    throw new Error('KABOOM!')
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    async handler (request, reply) {
+      await sleep(1000)
+      return { hello: 'world' }
+    }
+  })
+
+  fastify.listen({ port: 0 }, err => {
+    t.error(err)
+
+    const socket = connect(fastify.server.address().port)
+
+    socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
+
+    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+  })
+})
+
+test('onRequestAbort should handle async errors / 2', t => {
+  const fastify = Fastify()
+
+  t.plan(2)
+  t.teardown(() => fastify.close())
+
+  fastify.addHook('onRequestAbort', async function (req) {
+    process.nextTick(() => t.pass())
+    return Promise.reject()
+  })
+
+  fastify.route({
+    method: 'GET',
+    path: '/',
+    async handler (request, reply) {
+      await sleep(1000)
+      return { hello: 'world' }
+    }
   })
 
   fastify.listen({ port: 0 }, err => {

@@ -3409,14 +3409,14 @@ test('registering invalid hooks should throw an error', async t => {
   }, new Error('onSend hook should be a function, instead got [object Undefined]'))
 })
 
-test('onClientAbort should be triggered', t => {
+test('onRequestAbort should be triggered', t => {
   const fastify = Fastify()
   let order = 0
 
   t.plan(3)
   t.teardown(() => fastify.close())
 
-  fastify.addHook('onClientAbort', function (req, res, done) {
+  fastify.addHook('onRequestAbort', function (req, res, done) {
     t.ok(++order, 1, 'called in hook')
     done()
   })
@@ -3428,7 +3428,7 @@ test('onClientAbort should be triggered', t => {
       await sleep(1000)
       return { hello: 'world' }
     },
-    async onClientAbort (_req, _reply) {
+    async onRequestAbort (_req, _reply) {
       t.equal(++order, 2, 'called in route')
     }
   })
@@ -3444,7 +3444,7 @@ test('onClientAbort should be triggered', t => {
   })
 })
 
-test('onClientAbort should support encapsulation', t => {
+test('onRequestAbort should support encapsulation', t => {
   const fastify = Fastify()
   let order = 0
   let child
@@ -3452,7 +3452,7 @@ test('onClientAbort should support encapsulation', t => {
   t.plan(6)
   t.teardown(() => fastify.close())
 
-  fastify.addHook('onClientAbort', function (req, res, done) {
+  fastify.addHook('onRequestAbort', function (req, res, done) {
     t.ok(++order, 1, 'called in root')
     t.strictSame(this.pluginName, child.pluginName)
     done()
@@ -3461,7 +3461,7 @@ test('onClientAbort should support encapsulation', t => {
   fastify.register(async function (_child, _, done) {
     child = _child
 
-    fastify.addHook('onClientAbort', async function (req, res) {
+    fastify.addHook('onRequestAbort', async function (req, res) {
       t.ok(++order, 2, 'called in child')
       t.strictSame(this.pluginName, child.pluginName)
     })
@@ -3473,7 +3473,7 @@ test('onClientAbort should support encapsulation', t => {
         await sleep(1000)
         return { hello: 'world' }
       },
-      async onClientAbort (_req, _reply) {
+      async onRequestAbort (_req, _reply) {
         t.equal(++order, 3, 'called in route')
       }
     })

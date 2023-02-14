@@ -3,7 +3,7 @@ import { ConstraintStrategy, HTTPVersion } from 'find-my-way'
 import * as http from 'http'
 import { CallbackFunc as LightMyRequestCallback, Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request'
 import { AddContentTypeParser, ConstructorAction, FastifyBodyParser, getDefaultJsonParser, hasContentTypeParser, ProtoAction, removeAllContentTypeParsers, removeContentTypeParser } from './content-type-parser'
-import { onClientAbortAsyncHookHandler, onClientAbortHookHandler, onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
+import { onCloseAsyncHookHandler, onCloseHookHandler, onErrorAsyncHookHandler, onErrorHookHandler, onReadyAsyncHookHandler, onReadyHookHandler, onRegisterHookHandler, onRequestAsyncHookHandler, onRequestHookHandler, onRequestAbortAsyncHookHandler, onRequestAbortHookHandler, onResponseAsyncHookHandler, onResponseHookHandler, onRouteHookHandler, onSendAsyncHookHandler, onSendHookHandler, onTimeoutAsyncHookHandler, onTimeoutHookHandler, preHandlerAsyncHookHandler, preHandlerHookHandler, preParsingAsyncHookHandler, preParsingHookHandler, preSerializationAsyncHookHandler, preSerializationHookHandler, preValidationAsyncHookHandler, preValidationHookHandler } from './hooks'
 import { FastifyBaseLogger } from './logger'
 import { FastifyRegister } from './register'
 import { FastifyReply } from './reply'
@@ -394,8 +394,8 @@ export interface FastifyInstance<
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**
-   * `onClientAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
-   * The `onClientAbort` hook is executed when a client closes the connection before the entire response has been received. Therefore, you will not be able to send data to the client.
+   * `onRequestAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
+   * The `onRequestAbort` hook is executed when a client closes the connection before the entire request has been received. Therefore, you will not be able to send data to the client.
    * Notice: client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
   */
   addHook<
@@ -404,8 +404,8 @@ export interface FastifyInstance<
     SchemaCompiler extends FastifySchema = FastifySchema,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
-    name: 'onClientAbort',
-    hook: onClientAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
+    name: 'onRequestAbort',
+    hook: onRequestAbortHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   addHook<
@@ -414,8 +414,8 @@ export interface FastifyInstance<
     SchemaCompiler extends FastifySchema = FastifySchema,
     Logger extends FastifyBaseLogger = FastifyBaseLogger
   >(
-    name: 'onClientAbort',
-    hook: onClientAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
+    name: 'onRequestAbort',
+    hook: onRequestAbortAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   ): FastifyInstance<RawServer, RawRequest, RawReply, Logger, TypeProvider>;
 
   /**

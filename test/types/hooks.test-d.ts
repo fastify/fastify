@@ -114,7 +114,7 @@ server.addHook('onError', function (request, reply, error, done) {
   expectType<void>(done())
 })
 
-server.addHook('onClientAbort', function (request, reply, done) {
+server.addHook('onRequestAbort', function (request, reply, done) {
   expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)
@@ -210,7 +210,7 @@ server.addHook('onError', async function (request, reply, error) {
   expectType<FastifyError>(error)
 })
 
-server.addHook('onClientAbort', async function (request, reply) {
+server.addHook('onRequestAbort', async function (request, reply) {
   expectType<FastifyInstance>(this)
   expectType<FastifyRequest>(request)
   expectType<FastifyReply>(reply)

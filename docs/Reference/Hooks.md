@@ -19,7 +19,7 @@ are Request/Reply hooks and application hooks:
   - [onSend](#onsend)
   - [onResponse](#onresponse)
   - [onTimeout](#ontimeout)
-  - [onClientAbort](#onclientabort)
+  - [onRequestAbort](#onrequestabort)
   - [Manage Errors from a hook](#manage-errors-from-a-hook)
   - [Respond to a request from a hook](#respond-to-a-request-from-a-hook)
 - [Application Hooks](#application-hooks)
@@ -268,25 +268,25 @@ service (if the `connectionTimeout` property is set on the Fastify instance).
 The `onTimeout` hook is executed when a request is timed out and the HTTP socket
 has been hanged up. Therefore, you will not be able to send data to the client.
 
-### onClientAbort
+### onRequestAbort
 
 ```js
-fastify.addHook('onClientAbort', (request, reply, done) => {
+fastify.addHook('onRequestAbort', (request, reply, done) => {
   // Some code
   done()
 })
 ```
 Or `async/await`:
 ```js
-fastify.addHook('onClientAbort', async (request, reply) => {
+fastify.addHook('onRequestAbort', async (request, reply) => {
   // Some code
   await asyncMethod()
 })
 ```
-`onClientAbort` is useful if you need to monitor the if the client aborts the request
+`onRequestAbort` is useful if you need to monitor the if the client aborts the request
 (if the `request.raw.aborted` property is set to true).
-The `onClientAbort` hook is executed when a client closes the connection before
-the entire response has been received. Therefore, you will not be able to send
+The `onRequestAbort` hook is executed when a client closes the connection before
+the entire request has been received. Therefore, you will not be able to send
 data to the client.
 
 **Notice:** client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md

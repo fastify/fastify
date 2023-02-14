@@ -395,11 +395,11 @@ export interface onErrorAsyncHookHandler<
 }
 
 /**
- * `onClientAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
- * The `onClientAbort` hook is executed when a client closes the connection before the entire response has been received. Therefore, you will not be able to send data to the client.
+ * `onRequestAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
+ * The `onRequestAbort` hook is executed when a client closes the connection before the entire request has been received. Therefore, you will not be able to send data to the client.
  * Notice: client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
  */
-export interface onClientAbortHookHandler<
+export interface onRequestAbortHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
@@ -417,7 +417,7 @@ export interface onClientAbortHookHandler<
   ): void;
 }
 
-export interface onClientAbortAsyncHookHandler<
+export interface onRequestAbortAsyncHookHandler<
   RawServer extends RawServerBase = RawServerDefault,
   RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
   RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,

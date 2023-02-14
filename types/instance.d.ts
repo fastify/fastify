@@ -396,6 +396,7 @@ export interface FastifyInstance<
   /**
    * `onClientAbort` is useful if you need to monitor the if the client aborts the request (if the `request.raw.aborted` property is set to `true`).
    * The `onClientAbort` hook is executed when a client closes the connection before the entire response has been received. Therefore, you will not be able to send data to the client.
+   * Notice: client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
   */
   addHook<
     RouteGeneric extends RouteGenericInterface = RouteGenericInterface,

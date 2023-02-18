@@ -8,11 +8,14 @@ const dns = require('dns').promises
 const dnsCb = require('dns')
 const sget = require('simple-get').concat
 const Fastify = require('..')
+const { buildCertificate } = require('./build-certificate')
 
 let localhost
 let localhostForURL
 
 before(async function () {
+  await buildCertificate()
+
   const lookup = await dns.lookup('localhost')
   localhost = lookup.address
   if (lookup.family === 6) {
@@ -401,6 +404,45 @@ test('addresses getter', async t => {
 
   await app.close()
   t.same(app.addresses(), [], 'after close')
+})
+
+test('url getter', async t => {
+  t.plan(4)
+  const app = Fastify()
+  app.get('/', async () => 'hello localhost')
+
+  t.same(app.url, null, 'before ready')
+  await app.ready()
+
+  t.same(app.url, null, 'after ready')
+  await app.listen({ port: 3000, host: 'localhost' })
+  t.same(app.url, 'http://localhost:3000', 'after listen')
+
+  await app.close()
+  t.same(app.url, null, 'after close')
+})
+
+test('url getter with https', async t => {
+  t.plan(4)
+  const app = Fastify({
+    https: {
+      allowHTTP1: true,
+      key: global.context.key,
+      cert: global.context.cert
+    }
+  })
+  app.get('/', async () => 'hello localhost')
+
+  t.same(app.url, null, 'before ready')
+  await app.ready()
+
+  t.same(app.url, null, 'after ready')
+
+  await app.listen({ port: 3000, host: '127.0.0.1' })
+  t.same(app.url, 'https://127.0.0.1:3000', 'after listen')
+
+  await app.close()
+  t.same(app.url, null, 'after close')
 })
 
 function getUrl (fastify, lookup) {

@@ -283,8 +283,6 @@ fastify.addHook('onRequestAbort', async (request, reply) => {
   await asyncMethod()
 })
 ```
-`onRequestAbort` is useful if you need to monitor the if the client aborts the request
-(if the `request.raw.aborted` property is set to true).
 The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been received. Therefore, you will not be able to send
 data to the client.

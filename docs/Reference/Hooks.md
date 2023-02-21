@@ -287,7 +287,7 @@ The `onRequestAbort` hook is executed when a client closes the connection before
 the entire request has been received. Therefore, you will not be able to send
 data to the client.
 
-**Notice:** client abort detection is not completely reliable. See: https://github.com/fastify/fastify/blob/main/docs/Guides/Detecting-When-Clients-Abort.md
+**Notice:** client abort detection is not completely reliable. See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)
 
 ### Manage Errors from a hook
 If you get an error during the execution of your hook, just pass it to `done()`

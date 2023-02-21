@@ -3417,7 +3417,7 @@ test('onRequestAbort should be triggered', t => {
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
-    t.ok(++order, 1, 'called in hook')
+    t.equal(++order, 1, 'called in hook')
     done()
   })
 
@@ -3440,7 +3440,7 @@ test('onRequestAbort should be triggered', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })
 
@@ -3453,7 +3453,7 @@ test('onRequestAbort should support encapsulation', t => {
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
-    t.ok(++order, 1, 'called in root')
+    t.equal(++order, 1, 'called in root')
     t.strictSame(this.pluginName, child.pluginName)
     done()
   })
@@ -3462,7 +3462,7 @@ test('onRequestAbort should support encapsulation', t => {
     child = _child
 
     fastify.addHook('onRequestAbort', async function (req) {
-      t.ok(++order, 2, 'called in child')
+      t.equal(++order, 2, 'called in child')
       t.strictSame(this.pluginName, child.pluginName)
     })
 
@@ -3488,7 +3488,7 @@ test('onRequestAbort should support encapsulation', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })
 
@@ -3519,7 +3519,7 @@ test('onRequestAbort should handle errors / 1', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })
 
@@ -3550,7 +3550,7 @@ test('onRequestAbort should handle errors / 2', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })
 
@@ -3581,7 +3581,7 @@ test('onRequestAbort should handle async errors / 1', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })
 
@@ -3612,6 +3612,6 @@ test('onRequestAbort should handle async errors / 2', t => {
 
     socket.write('GET / HTTP/1.1\r\nHost: example.com\r\n\r\n')
 
-    sleep(500).then(() => socket.destroy()).catch(error => t.error(error))
+    sleep(500).then(() => socket.destroy())
   })
 })

@@ -16,7 +16,7 @@ jobs:
       matrix:
         # Maintenance and active LTS
         node-version: [14, 16]
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3
@@ -44,7 +44,7 @@ jobs:
       matrix:
         # Maintenance and active LTS
         node-version: [14, 16]
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
 
     steps:
       - uses: actions/checkout@v3

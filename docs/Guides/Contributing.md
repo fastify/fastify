@@ -162,11 +162,11 @@ the left sidebar. But wait! We are not quite done yet. There are a few more
 baseline settings that should be set before VSCode is ready.
 
 Press `cmd+shift+p` to bring up the VSCode command input prompt. Type `open
-settings (json)`. Three options will appear in the dropdown: Workspace, Default,
-and User settings. Select the [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
-that works best for you. This will open a document that is the settings for the
-editor. Paste the following JSON into this document, overwriting any text already
-present, and save it:
+settings (json)`. Three [VSCode Setting](https://code.visualstudio.com/docs/getstarted/settings)
+options will appear in the dropdown: Workspace, Default,
+and User settings. We recommend selecting Default. This will open a document
+that is the settings for the editor. Paste the following JSON into this
+document, overwriting any text already present, and save it:
 
 ```json
 {

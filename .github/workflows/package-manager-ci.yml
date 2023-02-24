@@ -2,13 +2,8 @@ name: package-manager-ci
 
 on:
   push:
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
+    branches:
+      - main
 
 permissions:
   contents: read

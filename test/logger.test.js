@@ -1,6 +1,6 @@
 'use strict'
 
-const { test, teardown, before } = require('tap')
+const { test, before } = require('tap')
 const helper = require('./helper')
 const http = require('http')
 const stream = require('stream')
@@ -13,29 +13,17 @@ const fs = require('fs')
 const sget = require('simple-get').concat
 const dns = require('dns')
 
-const files = []
 let count = 0
 let localhost
 let localhostForURL
 
 function file () {
   const file = path.join(os.tmpdir(), `sonic-boom-${process.pid}-${process.hrtime().toString()}-${count++}`)
-  files.push(file)
   return file
 }
 
 before(async function () {
   [localhost, localhostForURL] = await helper.getLoopbackHost()
-})
-
-teardown(() => {
-  files.forEach((file) => {
-    try {
-      fs.unlinkSync(file)
-    } catch (e) {
-      console.log(e)
-    }
-  })
 })
 
 test('defaults to info level', t => {

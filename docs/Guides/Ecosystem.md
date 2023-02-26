@@ -648,5 +648,7 @@ section.
   Reusable workflows for use in the Fastify plugin
 - [`fast-maker`](https://github.com/imjuni/fast-maker) route configuration
   generator by directory structure.
+- [`fastify-flux`](https://github.com/Jnig/fastify-flux) Tool for building
+  Fastify APIs using decorators and convert Typescript interface to JSON Schema.
 - [`simple-tjscli`](https://github.com/imjuni/simple-tjscli) CLI tool to
   generate JSON Schema from TypeScript interfaces.

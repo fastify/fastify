@@ -738,7 +738,8 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+*Note: Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at 
+the moment.*
 
 ```js
 const fastify = require('fastify')({

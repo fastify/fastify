@@ -3413,13 +3413,29 @@ test('onRequestAbort should be triggered', t => {
   const fastify = Fastify()
   let order = 0
 
-  t.plan(6)
+  t.plan(9)
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
     t.equal(++order, 1, 'called in hook')
     t.ok(req.pendingResolve, 'request has pendingResolve')
     req.pendingResolve()
+    done()
+  })
+
+  fastify.addHook('onError', function hook (request, reply, error, done) {
+    t.same(error, { hello: 'world' }, 'onError should be called')
+    t.ok(request.raw.aborted, 'request should be aborted')
+    done()
+  })
+
+  fastify.addHook('onSend', function hook (request, reply, payload, done) {
+    t.equal(payload, '{"hello":"world"}', 'onSend should be called')
+    done(null, payload)
+  })
+
+  fastify.addHook('onResponse', function hook (request, reply, done) {
+    t.fail('onResponse should not be called')
     done()
   })
 

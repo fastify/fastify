@@ -284,7 +284,7 @@ fastify.addHook('onRequestAbort', async (request, reply) => {
 })
 ```
 The `onRequestAbort` hook is executed when a client closes the connection before
-the entire request has been received. Therefore, you will not be able to send
+the entire request has been processed. Therefore, you will not be able to send
 data to the client.
 
 **Notice:** client abort detection is not completely reliable. See: [`Detecting-When-Clients-Abort.md`](../Guides/Detecting-When-Clients-Abort.md)

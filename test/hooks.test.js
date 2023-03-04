@@ -3413,11 +3413,13 @@ test('onRequestAbort should be triggered', t => {
   const fastify = Fastify()
   let order = 0
 
-  t.plan(3)
+  t.plan(6)
   t.teardown(() => fastify.close())
 
   fastify.addHook('onRequestAbort', function (req, done) {
     t.equal(++order, 1, 'called in hook')
+    t.ok(req.pendingResolve, 'request has pendingResolve')
+    req.pendingResolve()
     done()
   })
 
@@ -3425,7 +3427,12 @@ test('onRequestAbort should be triggered', t => {
     method: 'GET',
     path: '/',
     async handler (request, reply) {
-      await sleep(1000)
+      t.pass('handler called')
+      let resolvePromise
+      const promise = new Promise(resolve => { resolvePromise = resolve })
+      request.pendingResolve = resolvePromise
+      await promise
+      t.pass('handler promise resolved')
       return { hello: 'world' }
     },
     async onRequestAbort (req) {

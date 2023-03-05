@@ -32,7 +32,7 @@ const doGet = function (url) {
 }
 
 test('Once called, Reply should return an object with methods', t => {
-  t.plan(13)
+  t.plan(14)
   const response = { res: 'res' }
   const context = {}
   const request = { [kRouteContext]: context }
@@ -50,6 +50,8 @@ test('Once called, Reply should return an object with methods', t => {
   t.same(reply.raw, response)
   t.equal(reply[kRouteContext], context)
   t.equal(reply.request, request)
+  // Aim to not bad property keys (including Symbols)
+  t.notOk('undefined' in reply)
 })
 
 test('reply.send will logStream error and destroy the stream', t => {

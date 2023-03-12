@@ -20,10 +20,11 @@ import {
   FastifyTypeProvider,
   FastifyTypeProviderDefault
 } from './type-provider'
-import { ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
+import { HTTPMethods, ContextConfigDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerBase, RawServerDefault } from './utils'
 import { AddressInfo } from 'net'
 
 export interface PrintRoutesOptions {
+  method?: HTTPMethods;
   includeMeta?: boolean | (string | symbol)[]
   commonPrefix?: boolean
   includeHooks?: boolean

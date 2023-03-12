@@ -382,7 +382,9 @@ fastify.addHook('onResponse', (req, reply, done) => {
 ```
 
 Please note that this setting will also disable an error log written by the
-default `onResponse` hook on reply callback errors.
+default `onResponse` hook on reply callback errors. Other log messages 
+emitted by Fastify will stay enabled, like deprecation warnings and messages
+emitted when requests are received while the server is closing.
 
 ### `serverFactory`
 <a id="custom-http-server"></a>
@@ -736,7 +738,8 @@ Fastify provides default error handlers for the most common use cases. It is
 possible to override one or more of those handlers with custom code using this
 option.
 
-*Note: Only `FST_ERR_BAD_URL` is implemented at the moment.*
+*Note: Only `FST_ERR_BAD_URL` and `FST_ERR_ASYNC_CONSTRAINT` are implemented at 
+the moment.*
 
 ```js
 const fastify = require('fastify')({
